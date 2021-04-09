@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// PreferencesInterface.cpp - Released 2020-12-17T15:46:55Z
+// PreferencesInterface.cpp - Released 2021-04-09T19:41:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -1472,17 +1472,17 @@ EphemeridesPreferencesPage::EphemeridesPreferencesPage( PreferencesInstance& ins
    FundamentalEphemerides_File.SetToolTip(
       "<p>Path to the global fundamental ephemerides file (XEPH format).</p>"
       "<p>As of writing this documentation, the standard fundamental ephemerides file provides the "
-      "complete JPL DE438/LE438 ephemerides. Nutations, librations and time differences are not included "
+      "complete JPL DE440/LE440 ephemerides. Nutations, librations and time differences are not included "
       "in the standard .xeph file.</p>" );
 
-   ShortTermFundamentalEphemerides_File.label.SetText( "Short-Term Fundamental Ephemerides" );
-   ShortTermFundamentalEphemerides_File.item = &instance.application.shortTermFundamentalEphemeridesFile;
-   ShortTermFundamentalEphemerides_File.dialogTitle = "<p>Select the core short-term fundamental ephemerides file (XEPH format).</p>";
-   ShortTermFundamentalEphemerides_File.fileExtensions << ".xeph";
-   ShortTermFundamentalEphemerides_File.SetToolTip(
-      "<p>Path to the global short-term fundamental ephemerides file (XEPH format).</p>"
-      "<p>The standard short-term fundamental ephemeris file provides DE438/LE438 ephemerides for the "
-      "period from 1850 January 1.0 to 2150 December 32.0.</p>" );
+//    ShortTermFundamentalEphemerides_File.label.SetText( "Short-Term Fundamental Ephemerides" );
+//    ShortTermFundamentalEphemerides_File.item = &instance.application.shortTermFundamentalEphemeridesFile;
+//    ShortTermFundamentalEphemerides_File.dialogTitle = "<p>Select the core short-term fundamental ephemerides file (XEPH format).</p>";
+//    ShortTermFundamentalEphemerides_File.fileExtensions << ".xeph";
+//    ShortTermFundamentalEphemerides_File.SetToolTip(
+//       "<p>Path to the global short-term fundamental ephemerides file (XEPH format).</p>"
+//       "<p>The standard short-term fundamental ephemeris file provides DE440/LE440 ephemerides for the "
+//       "period from 1850 January 1.0 to 2150 December 32.0.</p>" );
 
    AsteroidEphemerides_File.label.SetText( "Asteroid Ephemerides" );
    AsteroidEphemerides_File.item = &instance.application.asteroidEphemeridesFile;
@@ -1492,17 +1492,36 @@ EphemeridesPreferencesPage::EphemeridesPreferencesPage( PreferencesInstance& ins
       "<p>Path to the global asteroid ephemerides file (XEPH format).</p>"
       "<p>As of writing this documentation, the standard asteroid ephemerides file provides the complete "
       "set of 343 asteroids used for the numerical integration of DE430 ephemerides, with barycentric "
-      "coordinates coherent with DE438.</p>" );
+      "coordinates coherent with DE440.</p>" );
 
-   ShortTermAsteroidEphemerides_File.label.SetText( "Short-Term Asteroid Ephemerides" );
-   ShortTermAsteroidEphemerides_File.item = &instance.application.shortTermAsteroidEphemeridesFile;
-   ShortTermAsteroidEphemerides_File.dialogTitle = "<p>Select the core short-term asteroid ephemerides file (XEPH format).</p>";
-   ShortTermAsteroidEphemerides_File.fileExtensions << ".xeph";
-   ShortTermAsteroidEphemerides_File.SetToolTip(
-      "<p>Path to the global short-term asteroid ephemerides file (XEPH format).</p>"
-      "<p>The standard short-term asteroid ephemerides file provides the complete set of 343 asteroids "
-      "used for the numerical integration of DE430 ephemerides, with barycentric coordinates coherent "
-      "with DE438, covering the period from 1950 January 1.0 to 2100 January 32.0.</p>" );
+//    ShortTermAsteroidEphemerides_File.label.SetText( "Short-Term Asteroid Ephemerides" );
+//    ShortTermAsteroidEphemerides_File.item = &instance.application.shortTermAsteroidEphemeridesFile;
+//    ShortTermAsteroidEphemerides_File.dialogTitle = "<p>Select the core short-term asteroid ephemerides file (XEPH format).</p>";
+//    ShortTermAsteroidEphemerides_File.fileExtensions << ".xeph";
+//    ShortTermAsteroidEphemerides_File.SetToolTip(
+//       "<p>Path to the global short-term asteroid ephemerides file (XEPH format).</p>"
+//       "<p>The standard short-term asteroid ephemerides file provides the complete set of 343 asteroids "
+//       "used for the numerical integration of DE430 ephemerides, with barycentric coordinates coherent "
+//       "with DE440, covering the period from 1950 January 1.0 to 2100 January 32.0.</p>" );
+
+   KBOEphemerides_File.label.SetText( "KBO Ephemerides" );
+   KBOEphemerides_File.item = &instance.application.kboEphemeridesFile;
+   KBOEphemerides_File.dialogTitle = "<p>Select the core KBO ephemerides file (XEPH format).</p>";
+   KBOEphemerides_File.fileExtensions << ".xeph";
+   KBOEphemerides_File.SetToolTip(
+      "<p>Path to the global Kuiper belt objects (KBOs) ephemerides file (XEPH format).</p>"
+      "<p>As of writing this documentation, the standard KBO ephemerides file provides the set of the "
+      "30 most massive known KBOs used for the numerical integration of DE440 fundamental ephemerides.</p>" );
+
+//    ShortTermKBOEphemerides_File.label.SetText( "Short-Term KBO Ephemerides" );
+//    ShortTermKBOEphemerides_File.item = &instance.application.shortTermKBOEphemeridesFile;
+//    ShortTermKBOEphemerides_File.dialogTitle = "<p>Select the core short-term KBO ephemerides file (XEPH format).</p>";
+//    ShortTermKBOEphemerides_File.fileExtensions << ".xeph";
+//    ShortTermKBOEphemerides_File.SetToolTip(
+//       "<p>Path to the global short-term Kuiper belt objects (KBOs) ephemerides file (XEPH format).</p>"
+//       "<p>As of writing this documentation, the standard short-term KBO ephemerides file provides the set of the "
+//       "30 most massive known KBOs used for the numerical integration of DE440, covering the period from 1950 "
+//       "January 1.0 to 2100 January 32.0.</p>" );
 
    NutationModel_File.label.SetText( "Nutation Model" );
    NutationModel_File.item = &instance.application.nutationModelFile;
@@ -1514,15 +1533,15 @@ EphemeridesPreferencesPage::EphemeridesPreferencesPage( PreferencesInstance& ins
       "2006/2000A_R nutation model (MHB2000 luni-solar and planetary nutation with adjustments "
       "to match the IAU 2006 precession).</p>" );
 
-   ShortTermNutationModel_File.label.SetText( "Short-Term Nutation Model" );
-   ShortTermNutationModel_File.item = &instance.application.shortTermNutationModelFile;
-   ShortTermNutationModel_File.dialogTitle = "<p>Select the core short-term nutation model file (XEPH format).</p>";
-   ShortTermNutationModel_File.fileExtensions << ".xeph";
-   ShortTermNutationModel_File.SetToolTip(
-      "<p>Path to the global short-term nutation model ephemerides file (XEPH format).</p>"
-      "<p>The standard short-term nutation model file provides the IAU 2006/2000A_R nutation model "
-      "(MHB2000 luni-solar and planetary nutation with adjustments to match the IAU 2006 precession) "
-      "covering the period from 1850 January 1.0 to 2150 December 32.0.</p>" );
+//    ShortTermNutationModel_File.label.SetText( "Short-Term Nutation Model" );
+//    ShortTermNutationModel_File.item = &instance.application.shortTermNutationModelFile;
+//    ShortTermNutationModel_File.dialogTitle = "<p>Select the core short-term nutation model file (XEPH format).</p>";
+//    ShortTermNutationModel_File.fileExtensions << ".xeph";
+//    ShortTermNutationModel_File.SetToolTip(
+//       "<p>Path to the global short-term nutation model ephemerides file (XEPH format).</p>"
+//       "<p>The standard short-term nutation model file provides the IAU 2006/2000A_R nutation model "
+//       "(MHB2000 luni-solar and planetary nutation with adjustments to match the IAU 2006 precession) "
+//       "covering the period from 1850 January 1.0 to 2150 December 32.0.</p>" );
 
    DeltaTData_File.label.SetText( "DeltaT Database" );
    DeltaTData_File.item = &instance.application.deltaTDataFile;
@@ -1563,11 +1582,13 @@ EphemeridesPreferencesPage::EphemeridesPreferencesPage( PreferencesInstance& ins
 
    Page_Sizer.SetSpacing( 4 );
    Page_Sizer.Add( FundamentalEphemerides_File );
-   Page_Sizer.Add( ShortTermFundamentalEphemerides_File );
+//    Page_Sizer.Add( ShortTermFundamentalEphemerides_File );
    Page_Sizer.Add( AsteroidEphemerides_File );
-   Page_Sizer.Add( ShortTermAsteroidEphemerides_File );
+//    Page_Sizer.Add( ShortTermAsteroidEphemerides_File );
+   Page_Sizer.Add( KBOEphemerides_File );
+//    Page_Sizer.Add( ShortTermKBOEphemerides_File );
    Page_Sizer.Add( NutationModel_File );
-   Page_Sizer.Add( ShortTermNutationModel_File );
+//    Page_Sizer.Add( ShortTermNutationModel_File );
    Page_Sizer.Add( DeltaTData_File );
    Page_Sizer.Add( DeltaATData_File );
    Page_Sizer.Add( CIPITRSData_File );
@@ -1579,11 +1600,13 @@ EphemeridesPreferencesPage::EphemeridesPreferencesPage( PreferencesInstance& ins
 void EphemeridesPreferencesPage::TransferSettings( PreferencesInstance& to, const PreferencesInstance& from )
 {
    to.application.fundamentalEphemeridesFile          = from.application.fundamentalEphemeridesFile;
-   to.application.shortTermFundamentalEphemeridesFile = from.application.shortTermFundamentalEphemeridesFile;
+//    to.application.shortTermFundamentalEphemeridesFile = from.application.shortTermFundamentalEphemeridesFile;
    to.application.asteroidEphemeridesFile             = from.application.asteroidEphemeridesFile;
-   to.application.shortTermAsteroidEphemeridesFile    = from.application.shortTermAsteroidEphemeridesFile;
+//    to.application.shortTermAsteroidEphemeridesFile    = from.application.shortTermAsteroidEphemeridesFile;
+   to.application.kboEphemeridesFile                  = from.application.kboEphemeridesFile;
+//    to.application.shortTermKBOEphemeridesFile         = from.application.shortTermKBOEphemeridesFile;
    to.application.nutationModelFile                   = from.application.nutationModelFile;
-   to.application.shortTermNutationModelFile          = from.application.shortTermNutationModelFile;
+//    to.application.shortTermNutationModelFile          = from.application.shortTermNutationModelFile;
    to.application.deltaTDataFile                      = from.application.deltaTDataFile;
    to.application.deltaATDataFile                     = from.application.deltaATDataFile;
    to.application.cipITRSDataFile                     = from.application.cipITRSDataFile;
@@ -2832,4 +2855,4 @@ void PreferencesInterface::GUIData::InitializeCategories()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInterface.cpp - Released 2020-12-17T15:46:55Z
+// EOF PreferencesInterface.cpp - Released 2021-04-09T19:41:48Z

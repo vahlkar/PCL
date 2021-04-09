@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
 // Standard EphemerisGeneration Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// EphemerisGeneratorInstance.cpp - Released 2021-03-24T20:01:50Z
+// EphemerisGeneratorInstance.cpp - Released 2021-04-09T19:41:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -106,6 +106,7 @@ EphemerisGeneratorInstance::EphemerisGeneratorInstance( const MetaProcess* m )
    , p_figureEffects( TheEGFigureEffectsParameter->DefaultValue() )
    , p_outputXEPHFile( TheEGOutputXEPHFileParameter->DefaultValue() )
    , p_outputXEPHFilePath( TheEGOutputXEPHFilePathParameter->DefaultValue() )
+   , p_overwriteExistingFiles( TheEGOverwriteExistingFilesParameter->DefaultValue() )
    , p_denseOutputToleranceFactor( TheEGDenseOutputToleranceFactorParameter->DefaultValue() )
    , p_ephemerisToleranceFactor( TheEGEphemerisToleranceFactorParameter->DefaultValue() )
 {
@@ -167,6 +168,7 @@ void EphemerisGeneratorInstance::Assign( const ProcessImplementation& p )
       p_figureEffects = x->p_figureEffects;
       p_outputXEPHFile = x->p_outputXEPHFile;
       p_outputXEPHFilePath = x->p_outputXEPHFilePath;
+      p_overwriteExistingFiles = x->p_overwriteExistingFiles;
       p_denseOutputToleranceFactor = x->p_denseOutputToleranceFactor;
       p_ephemerisToleranceFactor = x->p_ephemerisToleranceFactor;
    }
@@ -381,6 +383,16 @@ private:
 };
 
 typedef IndirectArray<IntegrationThread> thread_list;
+
+static String UniqueFilePath( const String& filePath )
+{
+   for ( unsigned u = 1; ; ++u )
+   {
+      String tryFilePath = File::AppendToName( filePath, '_' + String( u ) );
+      if ( !File::Exists( tryFilePath ) )
+         return tryFilePath;
+   }
+}
 
 bool EphemerisGeneratorInstance::ExecuteGlobal()
 {
@@ -652,7 +664,16 @@ bool EphemerisGeneratorInstance::ExecuteGlobal()
 
    if ( p_outputXEPHFile )
    {
+      String outputFilePath = p_outputXEPHFilePath;
       console.WriteLn( "<end><cbr><br>Generating output ephemerides file: <raw>" + p_outputXEPHFilePath + "</raw>" );
+      if ( File::Exists( p_outputXEPHFilePath ) )
+         if ( p_overwriteExistingFiles )
+            console.WarningLn( "** Warning: Overwriting existing file" );
+         else
+         {
+            outputFilePath = UniqueFilePath( p_outputXEPHFilePath );
+            console.NoteLn( "* File already exists, writing to: " + outputFilePath );
+         }
       Module->ProcessEvents();
 
       EphemerisMetadata metadata;
@@ -664,7 +685,7 @@ bool EphemerisGeneratorInstance::ExecuteGlobal()
       metadata.authors = "PTeam";
       metadata.copyright = String().Format( "Copyright (C) %d, Pleiades Astrophoto S.L.", TimePoint::Now().Year() );
 
-      xeph->Serialize( p_outputXEPHFilePath, metadata );
+      xeph->Serialize( outputFilePath, metadata );
    }
 
    console.NoteLn( String().Format( "<end><cbr><br>===== EphemerisGenerator: %d succeeded, %d failed =====", succeeded, failed ) );
@@ -759,6 +780,8 @@ void* EphemerisGeneratorInstance::LockParameter( const MetaParameter* p, size_ty
       return &p_outputXEPHFile;
    if ( p == TheEGOutputXEPHFilePathParameter )
       return p_outputXEPHFilePath.Begin();
+   if ( p == TheEGOverwriteExistingFilesParameter )
+      return &p_overwriteExistingFiles;
    if ( p == TheEGDenseOutputToleranceFactorParameter )
       return &p_denseOutputToleranceFactor;
    if ( p == TheEGEphemerisToleranceFactorParameter )
@@ -862,4 +885,4 @@ size_type EphemerisGeneratorInstance::ParameterLength( const MetaParameter* p, s
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF EphemerisGeneratorInstance.cpp - Released 2021-03-24T20:01:50Z
+// EOF EphemerisGeneratorInstance.cpp - Released 2021-04-09T19:41:48Z

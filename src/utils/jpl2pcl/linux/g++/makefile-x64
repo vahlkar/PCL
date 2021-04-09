@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.121
+# PixInsight Makefile Generator Script v1.122
 # Copyright (C) 2009-2021 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2021-01-07T18:32:05.997Z
+# Generated on .... 2021-03-28T09:50:52.797Z
 # Project id ...... jpl2pcl
 # Project type .... Executable
 # Platform ........ Linux/g++
@@ -54,6 +54,6 @@ post-build:
 	cp $(OBJ_DIR)/jpl2pcl $(PCLBINDIR64)
 
 ./x64/Release/%.o: ../../%.cpp
-	g++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -D__PCL_AVX2 -D__PCL_FMA -D__PCL_CUDA -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"$(CUDA_HOME)/include" -march=haswell -mtune=znver2 -mfpmath=sse -msse4.2 -mavx2 -mfma -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fnon-call-exceptions -std=c++17 -Wall -Wno-parentheses -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	g++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -D__PCL_AVX2 -D__PCL_FMA -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"$(CUDA_HOME)/include" -march=haswell -mtune=znver2 -mfpmath=sse -msse4.2 -mavx2 -mfma -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fnon-call-exceptions -std=c++17 -Wall -Wno-parentheses -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 

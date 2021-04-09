@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// PreferencesInterface.h - Released 2020-12-17T15:46:55Z
+// PreferencesInterface.h - Released 2021-04-09T19:41:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -564,11 +564,13 @@ public:
    void TransferSettings( PreferencesInstance& to, const PreferencesInstance& from ) override;
 
    GlobalFileControl          FundamentalEphemerides_File;
-   GlobalFileControl          ShortTermFundamentalEphemerides_File;
+//    GlobalFileControl          ShortTermFundamentalEphemerides_File;
    GlobalFileControl          AsteroidEphemerides_File;
-   GlobalFileControl          ShortTermAsteroidEphemerides_File;
+//    GlobalFileControl          ShortTermAsteroidEphemerides_File;
+   GlobalFileControl          KBOEphemerides_File;
+//    GlobalFileControl          ShortTermKBOEphemerides_File;
    GlobalFileControl          NutationModel_File;
-   GlobalFileControl          ShortTermNutationModel_File;
+//    GlobalFileControl          ShortTermNutationModel_File;
    GlobalFileControl          DeltaTData_File;
    GlobalFileControl          DeltaATData_File;
    GlobalFileControl          CIPITRSData_File;
@@ -948,4 +950,4 @@ PCL_END_LOCAL
 #endif   // __PreferencesInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInterface.h - Released 2020-12-17T15:46:55Z
+// EOF PreferencesInterface.h - Released 2021-04-09T19:41:48Z

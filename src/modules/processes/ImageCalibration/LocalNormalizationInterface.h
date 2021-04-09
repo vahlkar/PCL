@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// LocalNormalizationInterface.h - Released 2020-12-17T15:46:55Z
+// LocalNormalizationInterface.h - Released 2021-04-09T19:41:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -216,4 +216,4 @@ PCL_END_LOCAL
 #endif   // __LocalNormalizationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationInterface.h - Released 2020-12-17T15:46:55Z
+// EOF LocalNormalizationInterface.h - Released 2021-04-09T19:41:48Z

@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// pcl/ImageDescription.h - Released 2020-12-17T15:46:28Z
+// pcl/ImageDescription.h - Released 2021-04-09T19:40:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -138,4 +138,4 @@ typedef Array<ImageDescription>  ImageDescriptionArray;
 #endif   // __PCL_ImageDescription_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ImageDescription.h - Released 2020-12-17T15:46:28Z
+// EOF pcl/ImageDescription.h - Released 2021-04-09T19:40:59Z

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.121
-# Copyright (C) 2009-2020 Pleiades Astrophoto
+# PixInsight Makefile Generator Script v1.122
+# Copyright (C) 2009-2021 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-12-21T12:28:13.323Z
+# Generated on .... 2021-04-09T20:05:23.793Z
 # Project id ...... TIFF
 # Project type .... Module
 # Platform ........ Windows/vc16
@@ -37,7 +37,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{907AC53B-161E-4824-94C3-DFCB72665A5E}</ProjectGuid>
+    <ProjectGuid>{5618CDCA-D3D6-4585-A680-D758C3F1CE92}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>

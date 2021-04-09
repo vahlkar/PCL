@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
 // Standard EphemerisGeneration Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// EphemerisGeneratorParameters.cpp - Released 2021-03-24T20:01:50Z
+// EphemerisGeneratorParameters.cpp - Released 2021-04-09T19:41:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -99,6 +99,7 @@ EGRelativisticPerturbations*   TheEGRelativisticPerturbationsParameter = nullptr
 EGFigureEffects*               TheEGFigureEffectsParameter = nullptr;
 EGOutputXEPHFile*              TheEGOutputXEPHFileParameter = nullptr;
 EGOutputXEPHFilePath*          TheEGOutputXEPHFilePathParameter = nullptr;
+EGOverwriteExistingFiles*      TheEGOverwriteExistingFilesParameter = nullptr;
 EGDenseOutputToleranceFactor*  TheEGDenseOutputToleranceFactorParameter = nullptr;
 EGEphemerisToleranceFactor*    TheEGEphemerisToleranceFactorParameter = nullptr;
 
@@ -1076,6 +1077,23 @@ IsoString EGOutputXEPHFilePath::Id() const
 
 // ----------------------------------------------------------------------------
 
+EGOverwriteExistingFiles::EGOverwriteExistingFiles( MetaProcess* P ) : MetaBoolean( P )
+{
+   TheEGOverwriteExistingFilesParameter = this;
+}
+
+IsoString EGOverwriteExistingFiles::Id() const
+{
+   return "overwriteExistingFiles";
+}
+
+bool EGOverwriteExistingFiles::DefaultValue() const
+{
+   return false;
+}
+
+// ----------------------------------------------------------------------------
+
 EGDenseOutputToleranceFactor::EGDenseOutputToleranceFactor( MetaProcess* P )
    : MetaDouble( P )
 {
@@ -1145,4 +1163,4 @@ double EGEphemerisToleranceFactor::MaximumValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF EphemerisGeneratorParameters.cpp - Released 2021-03-24T20:01:50Z
+// EOF EphemerisGeneratorParameters.cpp - Released 2021-04-09T19:41:48Z

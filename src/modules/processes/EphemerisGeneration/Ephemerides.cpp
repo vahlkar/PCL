@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
 // Standard EphemerisGeneration Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// Ephemerides.cpp - Released 2021-03-24T20:01:50Z
+// Ephemerides.cpp - Released 2021-04-09T19:41:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -88,8 +88,14 @@ Ephemerides::Ephemerides( const EphemerisGeneratorInstance& instance, bool funda
       if ( instance.p_useKBOPerturbers )
       {
          if ( instance.p_KBOsFilePath.IsEmpty() )
-            throw Error( "No KBO ephemerides file has been selected." );
-         m_kbo = new EphemerisFile( instance.p_KBOsFilePath );
+         {
+            String filePath = PixInsightSettings::GlobalString( "Application/KBOEphemeridesFilePath" );
+            if ( filePath.IsEmpty() )
+               throw Error( "The core KBO ephemerides file has not been defined." );
+            m_kbo = new EphemerisFile( filePath );
+         }
+         else
+            m_kbo = new EphemerisFile( instance.p_KBOsFilePath );
       }
    }
 }
@@ -138,6 +144,11 @@ double Ephemerides::KBOMass( const EphemerisObject& obj )
    static Mutex mutex;
    {
       volatile AutoLock lock( mutex );
+
+      /*
+       * The following mass parameters have been taken from DE440 headers
+       * (MA8001 ... MA8030 integration constants).
+       */
       if ( s_knownKBOs.IsEmpty() )
          s_knownKBOs << KBOData{ "136199",   "Eris",          2.48544803028732e-12 }
                      << KBOData{ "136108",   "Haumea",        5.96163005450428e-13 }
@@ -180,4 +191,4 @@ double Ephemerides::KBOMass( const EphemerisObject& obj )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Ephemerides.cpp - Released 2021-03-24T20:01:50Z
+// EOF Ephemerides.cpp - Released 2021-04-09T19:41:48Z

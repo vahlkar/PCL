@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// pcl/AstrometricMetadata.h - Released 2020-12-17T15:46:29Z
+// pcl/AstrometricMetadata.h - Released 2021-04-09T19:40:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -128,6 +128,7 @@ public:
       String projectionOrigin;
       String resolution;
       String rotation;
+      String referenceSystem;
       String observationStartTime;
       String observationEndTime;
       String observerLocation;
@@ -153,6 +154,7 @@ public:
    AstrometricMetadata( const AstrometricMetadata& x )
       : m_projection( x.m_projection->Clone() )
       , m_transformWI( x.m_transformWI->Clone() )
+      , m_refSys( x.m_refSys )
       , m_width( x.m_width )
       , m_height( x.m_height )
       , m_pixelSize( x.m_pixelSize )
@@ -223,6 +225,7 @@ public:
    {
       m_projection   = x.m_projection->Clone();
       m_transformWI  = x.m_transformWI->Clone();
+      m_refSys       = x.m_refSys;
       m_width        = x.m_width;
       m_height       = x.m_height;
       m_pixelSize    = x.m_pixelSize;
@@ -350,6 +353,48 @@ public:
     * function.
     */
    void Write( XISFWriter& writer ) const;
+
+   /*!
+    * Returns the coordinate reference system to which this astrometric
+    * solution has been referred.
+    *
+    * This corresponds to the reference system of the coordinates of the
+    * reference point sources (usually stars with data acquired from
+    * astrometric catalogs) used to compute the astrometric solution. The
+    * current implementation supports the following reference systems:
+    *
+    * \b ICRS
+    *
+    * Reference point source positions are \e astrometric: they include
+    * corrections for space motion (proper motions, annual parallax and radial
+    * velocity, when available) and gravitational deflection of light, but
+    * \e not annual aberration. This is the default reference system that is
+    * assumed when none is specified or acquired from existing metadata.
+    *
+    * \b GCRS
+    *
+    * Reference point source positions are \e proper: they include corrections
+    * for space motion (proper motions, annual parallax and radial velocity,
+    * when available), gravitational deflection of light, and annual aberration
+    * (rigorous relativistic model).
+    *
+    * Other nonstandard values can be returned by this function, such as
+    * different values of the RADESYS FITS keyword. Such values will be
+    * preserved but won't be supported by standard platform implementations.
+    */
+   IsoString ReferenceSystem() const
+   {
+      return m_refSys.IsEmpty() ? IsoString( "ICRS" ) : m_refSys;
+   }
+
+   /*!
+    * Sets the coordinate reference system. See ReferenceSystem() for more
+    * information and supported values.
+    */
+   void SetReferenceSystem( const IsoString& refSys )
+   {
+      m_refSys = refSys.Trimmed();
+   }
 
    /*!
     * Returns the width in pixels of the image associated with the astrometric
@@ -585,6 +630,10 @@ public:
     * Returns true iff the specified point \a pI can be projected on the
     * celestial sphere using this astrometric solution.
     *
+    * The output coordinates stored in \a pRD will be referred to the reference
+    * system of this astrometric solution, either ICRS or GCRS, as returned by
+    * the ReferenceSystem() member function.
+    *
     * \sa RawImageToCelestial(), CelestialToImage()
     */
    bool ImageToCelestial( DPoint& pRD, const DPoint& pI ) const
@@ -621,6 +670,10 @@ public:
     * Returns true iff the specified point \a pI can be projected on the
     * celestial sphere using this astrometric solution.
     *
+    * The output coordinates stored in \a pRD will be referred to the reference
+    * system of this astrometric solution, either ICRS or GCRS, as returned by
+    * the ReferenceSystem() member function.
+    *
     * This function is useful for interpolation schemes where discontinuities
     * caused by zero crossings in right ascension, i.e. abrupt changes from 360
     * to 0 degrees, are not admissible numerically. Right ascensions returned
@@ -649,6 +702,10 @@ public:
     * Returns true iff the specified celestial coordinates can be reprojected
     * on the image coordinate system. Note that the output image coordinates
     * can lie outside of the image bounds defined by [0,0]-[Width(),Height()].
+    *
+    * The input coordinates specified in \a pRD are expected to be referred to
+    * the reference system of this astrometric solution, either ICRS or GCRS,
+    * as returned by the ReferenceSystem() member function.
     *
     * \sa ImageToCelestial(), RawImageToCelestial()
     */
@@ -748,8 +805,6 @@ public:
     * XPIXSZ
     * YPIXSZ
     * PIXSIZE
-    * EQUINOX
-    * RADESYS
     * </pre>
     *
     * Keywords are updated when the corresponding metadata items are available.
@@ -851,6 +906,9 @@ public:
     * observational keywords, as well as the following keywords:
     *
     * <pre>
+    * RADESYS
+    * EQUINOX
+    * EPOCH
     * CTYPE1
     * CTYPE2
     * CRVAL1
@@ -886,9 +944,6 @@ public:
     * OBJCTRA
     * DEC
     * OBJCTDEC
-    * RADESYS
-    * EQUINOX
-    * EPOCH
     * </pre>
     *
     * If \a removeScaleKeywords is true, the following keywords will also be
@@ -1015,6 +1070,8 @@ private:
 
    AutoPointer<ProjectionBase>      m_projection;
    AutoPointer<WorldTransformation> m_transformWI;
+   IsoString                        m_refSys;         // ICRS(default) or GCRS
+   Optional<double>                 m_equinox;        // years - deprecated
    int                              m_width = 0;      // px
    int                              m_height = 0;     // px
    Optional<double>                 m_pixelSize;      // um
@@ -1037,4 +1094,4 @@ private:
 #endif // __AstrometricMetadata_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AstrometricMetadata.h - Released 2020-12-17T15:46:29Z
+// EOF pcl/AstrometricMetadata.h - Released 2021-04-09T19:40:59Z

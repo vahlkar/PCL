@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.121
-# Copyright (C) 2009-2020 Pleiades Astrophoto
+# PixInsight Makefile Generator Script v1.122
+# Copyright (C) 2009-2021 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-12-21T12:28:24.816Z
+# Generated on .... 2021-04-09T20:05:31.644Z
 # Project id ...... IntensityTransformations
 # Project type .... Module
 # Platform ........ Windows/vc16
@@ -16,13 +16,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>a23bcc66-7046-4178-b2de-d65aa920b48b</UniqueIdentifier>
+      <UniqueIdentifier>b0c9d628-61b9-45d2-aebb-03ce06e9af74</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>64a9967d-6198-4503-b223-5559f666b31a</UniqueIdentifier>
+      <UniqueIdentifier>4f6ff1b6-17f4-4ed0-abbe-121c9db8ab7c</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>54a58fe2-7284-4055-b3f3-17abc369a875</UniqueIdentifier>
+      <UniqueIdentifier>2146d561-4fb3-4bef-9a51-4ab88d15fed7</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

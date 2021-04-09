@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.8.0
+// Standard PixelMath Process Module Version 1.8.1
 // ----------------------------------------------------------------------------
-// Function.h - Released 2021-01-23T18:24:14Z
+// Function.h - Released 2021-04-09T19:41:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -2388,6 +2388,66 @@ public:
 
 // ----------------------------------------------------------------------------
 
+class RAFunction : public Function
+{
+public:
+
+   RAFunction( int p = 0, int n = 0 ) : Function( p, n ) {}
+
+   Expression* Clone() const override { return new RAFunction( *this ); }
+   Expression* Generate( int p ) const override { return new RAFunction( p ); }
+
+   String Meta() const override            { return "ra( image, x, y )"; }
+   String Id() const override              { return "<p>Right ascension equatorial coordinate calculated for the specified image "
+                                                    "at (<i>x</i>,<i>y</i>) image coordinates. The returned value is expressed "
+                                                    "in degrees in the range [0,360).</p>"
+                                                    "<p>This function requires a valid astrometric solution available in the "
+                                                    "specified image.</p>"; }
+   String Token() const override           { return "ra"; }
+   String Aliases() const override         { return "RA"; }
+   int RequiredArguments() const override  { return 3; }
+   int MaximumArguments() const override   { return 3; }
+
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+
+   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+
+   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
+   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+};
+
+// ----------------------------------------------------------------------------
+
+class DecFunction : public Function
+{
+public:
+
+   DecFunction( int p = 0, int n = 0 ) : Function( p, n ) {}
+
+   Expression* Clone() const override { return new DecFunction( *this ); }
+   Expression* Generate( int p ) const override { return new DecFunction( p ); }
+
+   String Meta() const override            { return "dec( image, x, y )"; }
+   String Id() const override              { return "<p>Declination equatorial coordinate calculated for the specified image at "
+                                                    "(<i>x</i>,<i>y</i>) image coordinates. The returned value is expressed "
+                                                    "in degrees in the range [-90,+90].</p>"
+                                                    "<p>This function requires a valid astrometric solution available in the "
+                                                    "specified image.</p>"; }
+   String Token() const override           { return "dec"; }
+   String Aliases() const override         { return "Dec"; }
+   int RequiredArguments() const override  { return 3; }
+   int MaximumArguments() const override   { return 3; }
+
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+
+   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+
+   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
+   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+};
+
+// ----------------------------------------------------------------------------
+
 class DistToLineFunction : public Function
 {
 public:
@@ -3574,4 +3634,4 @@ public:
 #endif   // __Function_h
 
 // ----------------------------------------------------------------------------
-// EOF Function.h - Released 2021-01-23T18:24:14Z
+// EOF Function.h - Released 2021-04-09T19:41:48Z

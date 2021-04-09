@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
 // Standard EphemerisGeneration Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// EphemerisGeneratorInterface.h - Released 2021-03-24T20:01:50Z
+// EphemerisGeneratorInterface.h - Released 2021-04-09T19:41:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -213,6 +213,8 @@ private:
             Label             OutputXEPHFilePath_Label;
             Edit              OutputXEPHFilePath_Edit;
             ToolButton        OutputXEPHFilePath_ToolButton;
+         HorizontalSizer   OverwriteExistingFiles_Sizer;
+            CheckBox          OverwriteExistingFiles_CheckBox;
    };
 
    GUIData* GUI = nullptr;
@@ -251,4 +253,4 @@ PCL_END_LOCAL
 #endif   // __EphemerisGeneratorInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF EphemerisGeneratorInterface.h - Released 2021-03-24T20:01:50Z
+// EOF EphemerisGeneratorInterface.h - Released 2021-04-09T19:41:48Z

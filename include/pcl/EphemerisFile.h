@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// pcl/EphemerisFile.h - Released 2020-12-17T15:46:29Z
+// pcl/EphemerisFile.h - Released 2021-04-09T19:40:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -57,6 +57,7 @@
 #include <pcl/Defs.h>
 
 #include <pcl/Atomic.h>
+#include <pcl/AutoLock.h>
 #include <pcl/ChebyshevFit.h>
 #include <pcl/File.h>
 #include <pcl/Mutex.h>
@@ -605,7 +606,7 @@ typedef Array<EphemerisObject> EphemerisObjectList;
  * An XEPH file storing up-to-date JPL DE/LE ephemeris data is part of all
  * standard PixInsight distributions since 1.8.5 versions released Fall 2018.
  * As of writing this documentation, the standard XEPH file provides the
- * complete JPL DE438/LE438 ephemerides. See the
+ * complete JPL DE440/LE440 ephemerides. See the
  * EphemerisFile::FundamentalEphemerides() static member function for detailed
  * information.
  *
@@ -930,8 +931,8 @@ public:
     * fitted within the time subspan by truncated Chebyshev polynomials with
     * relatively few coefficients (typically in the range of 15 to 30
     * coefficients) to achieve a prescribed accuracy. The faster and more
-    * perturbed the object's motion is, the shorter subspans are necessary to
-    * fit an accurate representation of the object's orbit.
+    * perturbed the object's motion is, the more and shorter subspans are
+    * necessary to fit an accurate representation of the object's orbit.
     *
     * In the event of invalid, incongruent or malformed data, or if an I/O
     * error occurs, this function will throw an Error exception.
@@ -983,7 +984,7 @@ public:
     * </table>
     *
     * As of writing this documentation, the standard fundamental ephemeris file
-    * provides the complete JPL's DE438/LE438 ephemerides, but nutations,
+    * provides the complete JPL's DE440/LE440 ephemerides, but nutations,
     * librations and time differences are not included.
     *
     * The fundamental ephemeris file can be overridden by the caller module.
@@ -1006,7 +1007,7 @@ public:
     * Under normal running conditions, the returned object should be a
     * shortened version (that is, covering a shorter time span) of the standard
     * fundamental ephemerides file. As of writing this documentation, the
-    * standard short-term fundamental ephemeris file provides DE438/LE438
+    * standard short-term fundamental ephemeris file provides DE440/LE440
     * ephemerides for the period from 1850 January 1.0 to 2150 December 32.0.
     *
     * The short-term fundamental ephemeris file can be overridden by the caller
@@ -1048,7 +1049,7 @@ public:
     * As of writing this documentation, the standard asteroid ephemeris file
     * provides the complete set of 343 asteroids used for the numerical
     * integration of DE430 ephemerides, with barycentric coordinates coherent
-    * with DE438.
+    * with DE440.
     *
     * The asteroid ephemeris file can be overridden by the caller module. See
     * the OverrideAsteroidEphemerides() member function for more information.
@@ -1080,6 +1081,84 @@ public:
     * multiple execution threads running concurrently.
     */
    static const EphemerisFile& ShortTermAsteroidEphemerides();
+
+   /*!
+    * Returns a reference to the global Kuiper belt objects (KBOs) ephemerides
+    * file currently defined by the running PixInsight platform.
+    *
+    * As of writing this documentation (March 2021), the default KBO
+    * ephemerides file includes the set of 30 most massive known
+    * trans-Neptunian objects used in JPL's DE440 numerical integration:
+    *
+    * <table border="1" cellpadding="4" cellspacing="0">
+    * <tr><td>Identifier</td><td>Name</td></tr>
+    * <tr><td>19521</td><td>Chaos</td></tr>
+    * <tr><td>20000</td><td>Varuna</td></tr>
+    * <tr><td>28978</td><td>Ixion</td></tr>
+    * <tr><td>42301</td><td>2001 UR163</td></tr>
+    * <tr><td>50000</td><td>Quaoar</td></tr>
+    * <tr><td>55565</td><td>2002 AW197</td></tr>
+    * <tr><td>55637</td><td>2002 UX25</td></tr>
+    * <tr><td>84522</td><td>2002 TC302</td></tr>
+    * <tr><td>90377</td><td>Sedna</td></tr>
+    * <tr><td>90482</td><td>Orcus</td></tr>
+    * <tr><td>90568</td><td>2004 GV9</td></tr>
+    * <tr><td>120347</td><td>Salacia</td></tr>
+    * <tr><td>136108</td><td>Haumea</td></tr>
+    * <tr><td>136199</td><td>Eris</td></tr>
+    * <tr><td>136472</td><td>Makemake</td></tr>
+    * <tr><td>145452</td><td>2005 RN43</td></tr>
+    * <tr><td>174567</td><td>Varda</td></tr>
+    * <tr><td>208996</td><td>2003 AZ84</td></tr>
+    * <tr><td>225088</td><td>Gonggong</td></tr>
+    * <tr><td>230965</td><td>2004 XA192</td></tr>
+    * <tr><td>278361</td><td>2007 JJ43</td></tr>
+    * <tr><td>307261</td><td>2002 MS4</td></tr>
+    * <tr><td>455502</td><td>2003 UZ413</td></tr>
+    * <tr><td>523639</td><td>2010 RE64</td></tr>
+    * <tr><td>528381</td><td>2008 ST291</td></tr>
+    * <tr><td></td><td>2004 XR190</td></tr>
+    * <tr><td></td><td>2006 QH181</td></tr>
+    * <tr><td></td><td>2010 FX86</td></tr>
+    * <tr><td></td><td>2010 KZ39</td></tr>
+    * <tr><td></td><td>2010 RF43</td></tr>
+    * </table>
+    *
+    * KBO ephemeris data are provided relative to the solar system barycenter
+    * ("SSB" identifier), with position and velocity coordinates coherent with
+    * global fundamental ephemerides. These ephemerides have been generated by
+    * numerical integration with starting state vectors provided by official
+    * NASA/JPL asteroid databases.
+    *
+    * The KBO ephemeris file can be overridden by the caller module. See the
+    * OverrideKBOEphemerides() member function for more information.
+    *
+    * This static member function is thread-safe. It can be called safely from
+    * multiple execution threads running concurrently.
+    */
+   static const EphemerisFile& KBOEphemerides();
+
+   /*!
+    * Returns a reference to the global short-term Kuiper belt objects (KBOs)
+    * ephemerides file currently defined by the running PixInsight platform.
+    *
+    * See the KBOEphemerides() static member function for information on
+    * asteroid ephemerides and their status in current versions of PixInsight.
+    *
+    * Under normal running conditions, the returned object should be a
+    * shortened version (that is, covering a shorter time span) of the standard
+    * KBO ephemerides file. As of writing this documentation, the standard
+    * short-term asteroid ephemeris file covers the period from 1950 January
+    * 1.0 to 2100 January 32.0.
+    *
+    * The short-term KBO ephemeris file can be overridden by the caller module.
+    * See the OverrideShortTermKBOEphemerides() member function for more
+    * information.
+    *
+    * This static member function is thread-safe. It can be called safely from
+    * multiple execution threads running concurrently.
+    */
+   static const EphemerisFile& ShortTermKBOEphemerides();
 
    /*!
     * Returns a reference to the global nutation model ephemeris file currently
@@ -1284,6 +1363,43 @@ public:
    static void OverrideShortTermAsteroidEphemerides( const String& filePath );
 
    /*!
+    * Override the default Kuiper belt objects (KBOs) ephemerides file.
+    *
+    * The specified \a filePath must be a valid path to an existing file in
+    * XEPH format, which must provide KBO ephemerides coherent with the global
+    * fundamental ephemerides being used. See the KBOEphemerides() member
+    * function for a more comprehensive description.
+    *
+    * After calling this member function, all KBO ephemerides will be
+    * calculated using the specified XEPH file, which will be installed
+    * automatically upon the first call to KBOEphemerides().
+    *
+    * This function is useful to build standalone applications that don't
+    * depend on a running PixInsight core application, which is necessary to
+    * retrieve the default file names and directories from global settings.
+    */
+   static void OverrideKBOEphemerides( const String& filePath );
+
+   /*!
+    * Override the default short-term Kuiper belt objects (KBOs) ephemerides
+    * file.
+    *
+    * The specified \a filePath must be a valid path to an existing file in
+    * XEPH format, which must provide KBO ephemerides coherent with the global
+    * fundamental ephemerides being used. See the KBOEphemerides() member
+    * function for a more comprehensive description.
+    *
+    * After calling this member function, short-term KBO ephemerides will be
+    * calculated using the specified XEPH file, which will be installed
+    * automatically upon the first call to ShortTermKBOEphemerides().
+    *
+    * This function is useful to build standalone applications that don't
+    * depend on a running PixInsight core application, which is necessary to
+    * retrieve the default file names and directories from global settings.
+    */
+   static void OverrideShortTermKBOEphemerides( const String& filePath );
+
+   /*!
     * Override the global nutation model ephemeris file.
     *
     * The specified \a filePath must be a valid path to an existing file in
@@ -1481,6 +1597,8 @@ private:
    static String s_ephFilePath_s;
    static String s_astFilePath;
    static String s_astFilePath_s;
+   static String s_kboFilePath;
+   static String s_kboFilePath_s;
    static String s_nutFilePath;
    static String s_nutFilePath_s;
    static String s_deltaTFilePath;
@@ -1590,6 +1708,7 @@ public:
          m_index = x.m_index;
          m_node[0] = x.m_node[0];
          m_node[1] = x.m_node[1];
+         m_node[2] = x.m_node[2];
          if ( m_parent != nullptr )
             m_parent->m_handleCount.Increment();
       }
@@ -1604,6 +1723,7 @@ public:
          m_index = x.m_index;
          m_node[0] = x.m_node[0];
          m_node[1] = x.m_node[1];
+         m_node[2] = x.m_node[2];
       }
 
       /*!
@@ -1626,6 +1746,7 @@ public:
          m_index = x.m_index;
          m_node[0] = x.m_node[0];
          m_node[1] = x.m_node[1];
+         m_node[2] = x.m_node[2];
          if ( m_parent != nullptr )
             m_parent->m_handleCount.Increment();
          return *this;
@@ -1643,6 +1764,7 @@ public:
          m_index = x.m_index;
          m_node[0] = x.m_node[0];
          m_node[1] = x.m_node[1];
+         m_node[2] = x.m_node[2];
          return *this;
       }
 
@@ -1713,7 +1835,41 @@ public:
       void ComputeState( Vector& p, Vector& v, TimePoint t )
       {
          ComputeState( p, t );
+         ComputeFirstDerivative( v, t );
+      }
 
+      /*!
+       * Computes the first derivative of the state vector for the specified
+       * time point \a t.
+       *
+       * \param[out] v     Reference to a vector where the components of the
+       *                   computed first derivative will be stored.
+       *
+       * \param t          The requested time point in the TDB time scale
+       *                   (rigorously, this is Teph as defined by JPL, but is
+       *                   equivalent to TDB or TT for all practical purposes).
+       *
+       * Rectangular coordinates for velocity are provided in au/day, except
+       * for the geocentric Moon, for which velocity is provided in km/day.
+       *
+       * Angle variations are provided in radians/day.
+       *
+       * Time difference variations are provided in seconds/day.
+       *
+       * The reference system is ICRS/J2000.0.
+       *
+       * If the parent ephemeris file provides Chebyshev expansions of state
+       * vector derivatives for the object being calculated, the components of
+       * \a v will be calculated directly from these expansions. Otherwise the
+       * components of \a v will be approximated by numerical differentiation
+       * of the Chebyshev expansions for state vectors.
+       *
+       * If \a t is either an invalid (uninitialized) TimePoint instance, or a
+       * time point outside the time span available from the parent ephemeris
+       * file, this member function throws an Error exception.
+       */
+      void ComputeFirstDerivative( Vector& v, TimePoint t )
+      {
          if ( HasDerivative() )
             Update( t, 1 );
          else if ( m_node[1].current != m_node[0].current )
@@ -1724,6 +1880,57 @@ public:
             m_node[1].expansion = m_node[0].expansion.Derivative();
          }
          v = m_node[1].expansion( t - m_node[1].startTime );
+      }
+
+      /*!
+       * Computes the second derivative of the state vector for the specified
+       * time point \a t.
+       *
+       * \param[out] a     Reference to a vector where the components of the
+       *                   computed second derivative will be stored.
+       *
+       * \param t          The requested time point in the TDB time scale
+       *                   (rigorously, this is Teph as defined by JPL, but is
+       *                   equivalent to TDB or TT for all practical purposes).
+       *
+       * Rectangular coordinates for acceleration are provided in au/day^2,
+       * except for the geocentric Moon, for which acceleration is provided in
+       * km/day^2.
+       *
+       * Angular second derivatives are provided in radians/day^2.
+       *
+       * Time second derivatives are provided in seconds/day^2.
+       *
+       * The reference system is ICRS/J2000.0.
+       *
+       * The components of the second derivative will be approximated by
+       * numerical differentiation of the Chebyshev expansions for the first
+       * derivative. The latter can be either provided directly by the parent
+       * ephemeris file, or also approximated by numerical differentiation.
+       *
+       * If \a t is either an invalid (uninitialized) TimePoint instance, or a
+       * time point outside the time span available from the parent ephemeris
+       * file, this member function throws an Error exception.
+       */
+      void ComputeSecondDerivative( Vector& a, TimePoint t )
+      {
+         if ( HasDerivative() )
+            Update( t, 1 );
+         else if ( m_node[1].current != m_node[0].current )
+         {
+            m_node[1].current = m_node[0].current;
+            m_node[1].startTime = m_node[0].startTime;
+            m_node[1].endTime = m_node[0].endTime;
+            m_node[1].expansion = m_node[0].expansion.Derivative();
+         }
+         if ( m_node[2].current != m_node[0].current )
+         {
+            m_node[2].current = m_node[0].current;
+            m_node[2].startTime = m_node[0].startTime;
+            m_node[2].endTime = m_node[0].endTime;
+            m_node[2].expansion = m_node[1].expansion.Derivative();
+         }
+         a = m_node[2].expansion( t - m_node[2].startTime );
       }
 
       /*!
@@ -1763,6 +1970,46 @@ public:
          Vector p, v;
          ComputeState( p, v, t );
          return MultiVector( p, v );
+      }
+
+      /*!
+       * Computes the first derivative of a state vector for the specified time
+       * point \a t.
+       *
+       * \param t          The requested time point in the TDB time scale
+       *                   (rigorously, this is Teph as defined by JPL, but is
+       *                   equivalent to TDB or TT for all practical purposes).
+       *
+       * Returns the computed first derivative vector.
+       *
+       * See ComputeFirstDerivative( Vector&, TimePoint ) for complete
+       * information.
+       */
+      Vector FirstDerivative( TimePoint t )
+      {
+         Vector v;
+         ComputeFirstDerivative( v, t );
+         return v;
+      }
+
+      /*!
+       * Computes the second derivative of a state vector for the specified
+       * time point \a t.
+       *
+       * \param t          The requested time point in the TDB time scale
+       *                   (rigorously, this is Teph as defined by JPL, but is
+       *                   equivalent to TDB or TT for all practical purposes).
+       *
+       * Returns the computed second derivative vector.
+       *
+       * See ComputeSecondDerivative( Vector&, TimePoint ) for complete
+       * information.
+       */
+      Vector SecondDerivative( TimePoint t )
+      {
+         Vector v;
+         ComputeSecondDerivative( v, t );
+         return v;
       }
 
       /*!
@@ -1907,7 +2154,7 @@ public:
 
       const EphemerisFile*        m_parent = nullptr;
       const EphemerisFile::Index* m_index = nullptr;
-            NodeInfo              m_node[ 2 ];
+            NodeInfo              m_node[ 3 ];
 
       /*!
        * \internal
@@ -1938,13 +2185,16 @@ public:
                {
                   if ( m != info.current )
                   {
-                     m_parent->m_file.SetPosition( node.position );
                      ChebyshevFit::coefficient_series coefficients;
-                     for ( int i = 0, n = node.NumberOfComponents(); i < n; ++i )
                      {
-                        Vector c( node.n[i] );
-                        m_parent->m_file.Read( reinterpret_cast<void*>( c.Begin() ), c.Size() );
-                        coefficients << c;
+                        volatile AutoLock lock( m_parent->m_mutex );
+                        m_parent->m_file.SetPosition( node.position );
+                        for ( int i = 0, n = node.NumberOfComponents(); i < n; ++i )
+                        {
+                           Vector c( node.n[i] );
+                           m_parent->m_file.Read( reinterpret_cast<void*>( c.Begin() ), c.Size() );
+                           coefficients << c;
+                        }
                      }
                      info.current = m;
                      info.startTime = t0;
@@ -1973,7 +2223,7 @@ private:
    mutable bool m_finalized = false;
 
    /*
-    * In the core JavaScript engine we must identity static objects that can be
+    * In the core JavaScript engine we must identify static objects that can be
     * shared and must never be destroyed. This includes fundamental
     * ephemerides, nutation, etc.
     */
@@ -1996,4 +2246,4 @@ private:
 #endif  // __PCL_EphemerisFile_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/EphemerisFile.h - Released 2020-12-17T15:46:29Z
+// EOF pcl/EphemerisFile.h - Released 2021-04-09T19:40:59Z

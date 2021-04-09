@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.2
 // ----------------------------------------------------------------------------
-// LRGBCombinationParameters.cpp - Released 2020-12-17T15:46:55Z
+// LRGBCombinationParameters.cpp - Released 2021-04-09T19:41:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -288,4 +288,4 @@ double LRGBLayersProtected::MaximumValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LRGBCombinationParameters.cpp - Released 2020-12-17T15:46:55Z
+// EOF LRGBCombinationParameters.cpp - Released 2021-04-09T19:41:48Z

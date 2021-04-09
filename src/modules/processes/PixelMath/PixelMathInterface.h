@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.8.0
+// Standard PixelMath Process Module Version 1.8.1
 // ----------------------------------------------------------------------------
-// PixelMathInterface.h - Released 2021-01-23T18:24:14Z
+// PixelMathInterface.h - Released 2021-04-09T19:41:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -212,4 +212,4 @@ PCL_END_LOCAL
 #endif   // __PixelMathInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF PixelMathInterface.h - Released 2021-01-23T18:24:14Z
+// EOF PixelMathInterface.h - Released 2021-04-09T19:41:48Z

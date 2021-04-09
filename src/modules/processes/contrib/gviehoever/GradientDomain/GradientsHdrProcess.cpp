@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsHdrProcess.cpp - Released 2020-12-17T15:46:56Z
+// GradientsHdrProcess.cpp - Released 2021-04-09T19:41:49Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
@@ -229,4 +229,4 @@ int GradientsHdrProcess::ProcessCommandLine( const StringList& argv ) const
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF GradientsHdrProcess.cpp - Released 2020-12-17T15:46:56Z
+// EOF GradientsHdrProcess.cpp - Released 2021-04-09T19:41:49Z

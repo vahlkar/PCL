@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// pcl/Rotation.h - Released 2020-12-17T15:46:29Z
+// pcl/Rotation.h - Released 2021-04-09T19:40:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -79,10 +79,11 @@ public:
    /*!
     * Constructs a %Rotation object using the specified pixel interpolation
     * \a p, rotation \a angle in radians, and rotation center coordinates
-    * \a cx and \a cy.
+    * \a cx and \a cy measured in pixels with respect to the geometric center
+    * of the target image.
     *
-    * The specified pixel interpolation object \a p must remain valid while
-    * this object exists.
+    * \note The specified pixel interpolation object \a p must remain valid
+    * while this object exists.
     */
    Rotation( PixelInterpolation& p, float angle = 0, double cx = 0, double cy = 0 )
       : InterpolatingGeometricTransformation( p )
@@ -93,10 +94,11 @@ public:
 
    /*!
     * Constructs a %Rotation object using the specified pixel interpolation
-    * \a p, rotation \a angle in radians, and rotation \a center.
+    * \a p, rotation \a angle in radians, and rotation \a center expressed in
+    * pixels with respect to the geometric center of the target image.
     *
-    * The specified pixel interpolation object \a p must remain valid while
-    * this object exists.
+    * \note The specified pixel interpolation object \a p must remain valid
+    * while this object exists.
     */
    Rotation( PixelInterpolation& p, float angle, const DPoint& center )
       : InterpolatingGeometricTransformation( p )
@@ -127,7 +129,9 @@ public:
    }
 
    /*!
-    * Returns the center of rotation.
+    * Returns the center of rotation. The returned point coordinates are
+    * measured in pixels with respect to the geometric center of the target
+    * image.
     */
    DPoint Center() const
    {
@@ -135,7 +139,8 @@ public:
    }
 
    /*!
-    * Returns the horizontal coordinate of center of rotation.
+    * Returns the horizontal coordinate of the center of rotation, measured in
+    * pixels with respect to the geometric center of the target image.
     */
    double CenterX() const
    {
@@ -143,7 +148,8 @@ public:
    }
 
    /*!
-    * Returns the vertical coordinate of center of rotation.
+    * Returns the vertical coordinate of the center of rotation, measured in
+    * pixels with respect to the geometric center of the target image.
     */
    double CenterY() const
    {
@@ -151,7 +157,9 @@ public:
    }
 
    /*!
-    * Sets the center of rotation.
+    * Sets the center of rotation. The specified \a center point coordinates
+    * must be expressed in pixels and will be interpreted relative to the
+    * geometric center of the target image.
     */
    void SetCenter( const DPoint& center )
    {
@@ -159,7 +167,9 @@ public:
    }
 
    /*!
-    * Sets the center of rotation to the specified coordinates \a xc and \a yc.
+    * Sets the center of rotation to the specified coordinates \a xc and \a yc,
+    * which must be expressed in pixels and will be interpreted relative to the
+    * geometric center of the target image.
     */
    void SetCenter( double xc, double yc )
    {
@@ -219,4 +229,4 @@ protected:
 #endif   // __PCL_Rotation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Rotation.h - Released 2020-12-17T15:46:29Z
+// EOF pcl/Rotation.h - Released 2021-04-09T19:40:59Z

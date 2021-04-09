@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
 // Standard EphemerisGeneration Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// EphemerisGeneratorParameters.h - Released 2021-03-24T20:01:50Z
+// EphemerisGeneratorParameters.h - Released 2021-04-09T19:41:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -700,6 +700,20 @@ extern EGOutputXEPHFilePath* TheEGOutputXEPHFilePathParameter;
 
 // ----------------------------------------------------------------------------
 
+class EGOverwriteExistingFiles : public MetaBoolean
+{
+public:
+
+   EGOverwriteExistingFiles( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern EGOverwriteExistingFiles* TheEGOverwriteExistingFilesParameter;
+
+// ----------------------------------------------------------------------------
+
 class EGDenseOutputToleranceFactor : public MetaDouble
 {
 public:
@@ -743,4 +757,4 @@ PCL_END_LOCAL
 #endif   // __EphemerisGeneratorParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF EphemerisGeneratorParameters.h - Released 2021-03-24T20:01:50Z
+// EOF EphemerisGeneratorParameters.h - Released 2021-04-09T19:41:48Z

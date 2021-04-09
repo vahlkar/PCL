@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.121
-# Copyright (C) 2009-2020 Pleiades Astrophoto
+# PixInsight Makefile Generator Script v1.122
+# Copyright (C) 2009-2021 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-12-21T12:28:32.729Z
+# Generated on .... 2021-04-09T20:05:36.534Z
 # Project id ...... INDIClient
 # Project type .... Module
 # Platform ........ MacOSX/g++
@@ -45,7 +45,8 @@ SRC_FILES= \
 ../../INDIMountInterface.cpp \
 ../../INDIMountParameters.cpp \
 ../../INDIMountProcess.cpp \
-../../IndigoClient.cpp
+../../IndigoClient.cpp \
+../../ZeroconfServiceDetection.cpp
 
 #
 # Object files
@@ -69,7 +70,8 @@ OBJ_FILES= \
 ./x64/Release/INDIMountInterface.o \
 ./x64/Release/INDIMountParameters.o \
 ./x64/Release/INDIMountProcess.o \
-./x64/Release/IndigoClient.o
+./x64/Release/IndigoClient.o \
+./x64/Release/ZeroconfServiceDetection.o
 
 #
 # Dependency files
@@ -93,7 +95,8 @@ DEP_FILES= \
 ./x64/Release/INDIMountInterface.d \
 ./x64/Release/INDIMountParameters.d \
 ./x64/Release/INDIMountProcess.d \
-./x64/Release/IndigoClient.d
+./x64/Release/IndigoClient.d \
+./x64/Release/ZeroconfServiceDetection.d
 
 #
 # Rules

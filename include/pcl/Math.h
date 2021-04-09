@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// pcl/Math.h - Released 2020-12-17T15:46:29Z
+// pcl/Math.h - Released 2021-04-09T19:40:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -1061,7 +1061,7 @@ template <typename T> inline void Split( T x, T& i, T& f ) noexcept
  */
 template <typename T> inline constexpr T Sqrt( T x ) noexcept
 {
-   return std::sqrt( x );
+   return sqrt( x );
 }
 
 // ----------------------------------------------------------------------------
@@ -1782,7 +1782,11 @@ template <typename T> inline T PowI( T x, int n ) noexcept
  */
 template <typename T> inline constexpr T ArcSinh( T x ) noexcept
 {
+#ifndef __PCL_NO_STD_INV_HYP_TRIG_FUNCTIONS
+   return std::asinh( x );
+#else
    return Ln( x + Sqrt( 1 + x*x ) );
+#endif
 }
 
 // ----------------------------------------------------------------------------
@@ -1796,7 +1800,11 @@ template <typename T> inline constexpr T ArcSinh( T x ) noexcept
  */
 template <typename T> inline constexpr T ArcCosh( T x ) noexcept
 {
+#ifndef __PCL_NO_STD_INV_HYP_TRIG_FUNCTIONS
+   return std::acosh( x );
+#else
    return 2*Ln( Sqrt( (x + 1)/2 ) + Sqrt( (x - 1)/2 ) );
+#endif
 }
 
 // ----------------------------------------------------------------------------
@@ -1810,7 +1818,11 @@ template <typename T> inline constexpr T ArcCosh( T x ) noexcept
  */
 template <typename T> inline constexpr T ArcTanh( T x ) noexcept
 {
+#ifndef __PCL_NO_STD_INV_HYP_TRIG_FUNCTIONS
+   return std::atanh( x );
+#else
    return (Ln( 1 + x ) - Ln( 1 - x ))/2;
+#endif
 }
 
 // ----------------------------------------------------------------------------
@@ -1913,6 +1925,18 @@ template <typename T> inline constexpr T MasRad( T x ) noexcept
 template <typename T> inline constexpr T UasRad( T x ) noexcept
 {
    return Rad( x/3600000000 );
+}
+
+// ----------------------------------------------------------------------------
+
+/*!
+ * An angle in radians reduced to the [-pi,+pi] range.
+ * \ingroup mathematical_functions
+ */
+template <typename T> inline constexpr T ModPi( T x ) noexcept
+{
+   x = Mod( x + static_cast<T>( Pi() ), static_cast<T>( TwoPi() ) ) - static_cast<T>( Pi() );
+   return (x < -static_cast<T>( Pi() )) ? x + static_cast<T>( TwoPi() ) : x;
 }
 
 // ----------------------------------------------------------------------------
@@ -2041,6 +2065,16 @@ inline void Rotate( T& x, T& y, T1 a, T2 xc, T2 yc ) noexcept
 
 // ----------------------------------------------------------------------------
 
+template <typename T, typename P, typename N> inline
+N __pcl_norm__( const T* i, const T* j, const P& p, N* ) noexcept
+{
+   PCL_PRECONDITION( p > P( 0 ) )
+   N n = N( 0 );
+   for ( ; i < j; ++i )
+      n += Pow( Abs( N( *i ) ), N( p ) );
+   return Pow( n, N( 1/p ) );
+}
+
 /*!
  * Computes the norm of the elements in the sequence [i,j). For any real p > 0,
  * the norm N is given by:
@@ -2054,13 +2088,57 @@ inline void Rotate( T& x, T& y, T1 a, T2 xc, T2 yc ) noexcept
  * \ingroup mathematical_functions
  * \sa L1Norm(), L2Norm()
  */
-template <typename T> inline double Norm( const T* i, const T* j, double p ) noexcept
+template <typename T, typename P> inline T Norm( const T* i, const T* j, const P& p ) noexcept
 {
-   PCL_PRECONDITION( p > 0 )
-   double N = 0;
+   return __pcl_norm__( i, j, p, (T*)( 0 ) );
+}
+
+template <typename P> inline double Norm( const float* i, const float* j, const P& p ) noexcept
+{
+   return __pcl_norm__( i, j, p, (double*)( 0 ) );
+}
+template <typename P> inline double Norm( const int* i, const int* j, const P& p ) noexcept
+{
+   return __pcl_norm__( i, j, p, (double*)( 0 ) );
+}
+template <typename P> inline double Norm( const unsigned* i, const unsigned* j, const P& p ) noexcept
+{
+   return __pcl_norm__( i, j, p, (double*)( 0 ) );
+}
+template <typename P> inline double Norm( const int8* i, const int8* j, const P& p ) noexcept
+{
+   return __pcl_norm__( i, j, p, (double*)( 0 ) );
+}
+template <typename P> inline double Norm( const uint8* i, const uint8* j, const P& p ) noexcept
+{
+   return __pcl_norm__( i, j, p, (double*)( 0 ) );
+}
+template <typename P> inline double Norm( const int16* i, const int16* j, const P& p ) noexcept
+{
+   return __pcl_norm__( i, j, p, (double*)( 0 ) );
+}
+template <typename P> inline double Norm( const uint16* i, const uint16* j, const P& p ) noexcept
+{
+   return __pcl_norm__( i, j, p, (double*)( 0 ) );
+}
+template <typename P> inline double Norm( const int64* i, const int64* j, const P& p ) noexcept
+{
+   return __pcl_norm__( i, j, p, (double*)( 0 ) );
+}
+template <typename P> inline double Norm( const uint64* i, const uint64* j, const P& p ) noexcept
+{
+   return __pcl_norm__( i, j, p, (double*)( 0 ) );
+}
+
+// ----------------------------------------------------------------------------
+
+template <typename T, typename N> inline
+N __pcl_l1norm__( const T* i, const T* j, N* ) noexcept
+{
+   N n = N( 0 );
    for ( ; i < j; ++i )
-      N += Pow( Abs( double( *i ) ), p );
-   return Pow( N, 1/p );
+      n += N( Abs( *i ) );
+   return n;
 }
 
 /*!
@@ -2069,12 +2147,57 @@ template <typename T> inline double Norm( const T* i, const T* j, double p ) noe
  *
  * \ingroup mathematical_functions
  */
-template <typename T> inline double L1Norm( const T* i, const T* j ) noexcept
+template <typename T> inline T L1Norm( const T* i, const T* j ) noexcept
 {
-   double N = 0;
+   return __pcl_l1norm__( i, j, (T*)( 0 ) );
+}
+
+inline double L1Norm( const float* i, const float* j ) noexcept
+{
+   return __pcl_l1norm__( i, j, (double*)( 0 ) );
+}
+inline double L1Norm( const int* i, const int* j ) noexcept
+{
+   return __pcl_l1norm__( i, j, (double*)( 0 ) );
+}
+inline double L1Norm( const unsigned* i, const unsigned* j ) noexcept
+{
+   return __pcl_l1norm__( i, j, (double*)( 0 ) );
+}
+inline double L1Norm( const int8* i, const int8* j ) noexcept
+{
+   return __pcl_l1norm__( i, j, (double*)( 0 ) );
+}
+inline double L1Norm( const uint8* i, const uint8* j ) noexcept
+{
+   return __pcl_l1norm__( i, j, (double*)( 0 ) );
+}
+inline double L1Norm( const int16* i, const int16* j ) noexcept
+{
+   return __pcl_l1norm__( i, j, (double*)( 0 ) );
+}
+inline double L1Norm( const uint16* i, const uint16* j ) noexcept
+{
+   return __pcl_l1norm__( i, j, (double*)( 0 ) );
+}
+inline double L1Norm( const int64* i, const int64* j ) noexcept
+{
+   return __pcl_l1norm__( i, j, (double*)( 0 ) );
+}
+inline double L1Norm( const uint64* i, const uint64* j ) noexcept
+{
+   return __pcl_l1norm__( i, j, (double*)( 0 ) );
+}
+
+// ----------------------------------------------------------------------------
+
+template <typename T, typename N> inline
+N __pcl_l2norm__( const T* i, const T* j, N* ) noexcept
+{
+   N n = N( 0 );
    for ( ; i < j; ++i )
-      N += Abs( *i );
-   return N;
+      n += N( *i ) * N( *i );
+   return Sqrt( n );
 }
 
 /*!
@@ -2083,13 +2206,49 @@ template <typename T> inline double L1Norm( const T* i, const T* j ) noexcept
  *
  * \ingroup mathematical_functions
  */
-template <typename T> inline double L2Norm( const T* i, const T* j ) noexcept
+template <typename T> inline T L2Norm( const T* i, const T* j ) noexcept
 {
-   double N = 0;
-   for ( ; i < j; ++i )
-      N += double( *i ) * *i;
-   return Sqrt( N );
+   return __pcl_l2norm__( i, j, (T*)( 0 ) );
 }
+
+inline double L2Norm( const float* i, const float* j ) noexcept
+{
+   return __pcl_l2norm__( i, j, (double*)( 0 ) );
+}
+inline double L2Norm( const int* i, const int* j ) noexcept
+{
+   return __pcl_l2norm__( i, j, (double*)( 0 ) );
+}
+inline double L2Norm( const unsigned* i, const unsigned* j ) noexcept
+{
+   return __pcl_l2norm__( i, j, (double*)( 0 ) );
+}
+inline double L2Norm( const int8* i, const int8* j ) noexcept
+{
+   return __pcl_l2norm__( i, j, (double*)( 0 ) );
+}
+inline double L2Norm( const uint8* i, const uint8* j ) noexcept
+{
+   return __pcl_l2norm__( i, j, (double*)( 0 ) );
+}
+inline double L2Norm( const int16* i, const int16* j ) noexcept
+{
+   return __pcl_l2norm__( i, j, (double*)( 0 ) );
+}
+inline double L2Norm( const uint16* i, const uint16* j ) noexcept
+{
+   return __pcl_l2norm__( i, j, (double*)( 0 ) );
+}
+inline double L2Norm( const int64* i, const int64* j ) noexcept
+{
+   return __pcl_l2norm__( i, j, (double*)( 0 ) );
+}
+inline double L2Norm( const uint64* i, const uint64* j ) noexcept
+{
+   return __pcl_l2norm__( i, j, (double*)( 0 ) );
+}
+
+// ----------------------------------------------------------------------------
 
 /*!
  * Computes the L2 norm (or Euclidean norm) of the elements in the sequence
@@ -2097,9 +2256,46 @@ template <typename T> inline double L2Norm( const T* i, const T* j ) noexcept
  *
  * \ingroup mathematical_functions
  */
-template <typename T> inline double Norm( const T* i, const T* j ) noexcept
+template <typename T> inline T Norm( const T* i, const T* j ) noexcept
 {
    return L2Norm( i, j );
+}
+
+inline double Norm( const float* i, const float* j ) noexcept
+{
+   return __pcl_l2norm__( i, j, (double*)( 0 ) );
+}
+inline double Norm( const int* i, const int* j ) noexcept
+{
+   return __pcl_l2norm__( i, j, (double*)( 0 ) );
+}
+inline double Norm( const unsigned* i, const unsigned* j ) noexcept
+{
+   return __pcl_l2norm__( i, j, (double*)( 0 ) );
+}
+inline double Norm( const int8* i, const int8* j ) noexcept
+{
+   return __pcl_l2norm__( i, j, (double*)( 0 ) );
+}
+inline double Norm( const uint8* i, const uint8* j ) noexcept
+{
+   return __pcl_l2norm__( i, j, (double*)( 0 ) );
+}
+inline double Norm( const int16* i, const int16* j ) noexcept
+{
+   return __pcl_l2norm__( i, j, (double*)( 0 ) );
+}
+inline double Norm( const uint16* i, const uint16* j ) noexcept
+{
+   return __pcl_l2norm__( i, j, (double*)( 0 ) );
+}
+inline double Norm( const int64* i, const int64* j ) noexcept
+{
+   return __pcl_l2norm__( i, j, (double*)( 0 ) );
+}
+inline double Norm( const uint64* i, const uint64* j ) noexcept
+{
+   return __pcl_l2norm__( i, j, (double*)( 0 ) );
 }
 
 // ----------------------------------------------------------------------------
@@ -4624,4 +4820,4 @@ inline uint32 Hash32( const void* data, size_type size, uint32 seed = 0 ) noexce
 #endif   // __PCL_Math_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Math.h - Released 2020-12-17T15:46:29Z
+// EOF pcl/Math.h - Released 2021-04-09T19:40:59Z

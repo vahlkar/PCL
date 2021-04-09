@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// CurvesTransformationInstance.cpp - Released 2020-12-17T15:46:55Z
+// CurvesTransformationInstance.cpp - Released 2021-04-09T19:41:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -267,7 +267,8 @@ private:
 
       void Generate( const AbstractImage& image, const CurvesTransformationInstance& instance )
       {
-         R = G = B = K = A = L = a = b = c = H = S = DVector();
+         R = G = B = K = A = IVector();
+         L = a = b = c = H = S = DVector();
 
          bool isColor = image.IsColor();
          bool isR = isColor && !instance[CurveIndex::R].IsIdentity();
@@ -934,4 +935,4 @@ size_type CurvesTransformationInstance::ParameterLength( const MetaParameter* p,
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CurvesTransformationInstance.cpp - Released 2020-12-17T15:46:55Z
+// EOF CurvesTransformationInstance.cpp - Released 2021-04-09T19:41:48Z

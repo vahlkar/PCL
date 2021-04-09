@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
 // Standard EphemerisGeneration Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// EphemerisGeneratorInterface.cpp - Released 2021-03-24T20:01:50Z
+// EphemerisGeneratorInterface.cpp - Released 2021-04-09T19:41:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -276,7 +276,8 @@ void EphemerisGeneratorInterface::UpdateControls()
 
    GUI->KBOPerturbers_CheckBox.SetChecked( m_instance.p_useKBOPerturbers );
 
-   GUI->KBOEphemerides_Edit.SetText( m_instance.p_KBOsFilePath );
+   GUI->KBOEphemerides_Edit.SetText( m_instance.p_KBOsFilePath.IsEmpty() ?
+                                    DEFAULT_CORE_XEPH_FILE_TAG : m_instance.p_KBOsFilePath );
    GUI->KBOEphemerides_Edit.Enable( m_instance.p_useKBOPerturbers );
    GUI->KBOEphemerides_ToolButton.Enable( m_instance.p_useKBOPerturbers );
 
@@ -291,6 +292,9 @@ void EphemerisGeneratorInterface::UpdateControls()
    GUI->OutputXEPHFilePath_Label.Enable( m_instance.p_outputXEPHFile );
    GUI->OutputXEPHFilePath_Edit.Enable( m_instance.p_outputXEPHFile );
    GUI->OutputXEPHFilePath_ToolButton.Enable( m_instance.p_outputXEPHFile );
+
+   GUI->OverwriteExistingFiles_CheckBox.Enable( m_instance.p_outputXEPHFile );
+   GUI->OverwriteExistingFiles_CheckBox.SetChecked( m_instance.p_overwriteExistingFiles );
 }
 
 // ----------------------------------------------------------------------------
@@ -427,7 +431,7 @@ void EphemerisGeneratorInterface::e_IdEditCompleted( Edit& sender )
 void EphemerisGeneratorInterface::e_FilePathEditCompleted( Edit& sender )
 {
    String text = sender.Text().Trimmed();
-   if ( sender == GUI->FundamentalEphemerides_Edit || sender == GUI->AsteroidEphemerides_Edit )
+   if ( sender == GUI->FundamentalEphemerides_Edit || sender == GUI->AsteroidEphemerides_Edit || sender == GUI->KBOEphemerides_Edit )
       if ( text == DEFAULT_CORE_XEPH_FILE_TAG )
          text.Clear();
 
@@ -442,7 +446,7 @@ void EphemerisGeneratorInterface::e_FilePathEditCompleted( Edit& sender )
    else if ( sender == GUI->OutputXEPHFilePath_Edit )
       m_instance.p_outputXEPHFilePath = text;
 
-   if ( sender == GUI->FundamentalEphemerides_Edit || sender == GUI->AsteroidEphemerides_Edit )
+   if ( sender == GUI->FundamentalEphemerides_Edit || sender == GUI->AsteroidEphemerides_Edit || sender == GUI->KBOEphemerides_Edit )
       if ( text.IsEmpty() )
          text = DEFAULT_CORE_XEPH_FILE_TAG;
 
@@ -454,7 +458,7 @@ void EphemerisGeneratorInterface::e_FilePathEditCompleted( Edit& sender )
 void EphemerisGeneratorInterface::e_FilePathEditGetFocus( Control& sender )
 {
    Edit& edit = static_cast<Edit&>( sender );
-   if ( edit == GUI->FundamentalEphemerides_Edit || edit == GUI->AsteroidEphemerides_Edit )
+   if ( edit == GUI->FundamentalEphemerides_Edit || edit == GUI->AsteroidEphemerides_Edit || edit == GUI->KBOEphemerides_Edit )
       if ( edit.Text().Trimmed() == DEFAULT_CORE_XEPH_FILE_TAG )
          edit.Clear();
 }
@@ -464,7 +468,7 @@ void EphemerisGeneratorInterface::e_FilePathEditGetFocus( Control& sender )
 void EphemerisGeneratorInterface::e_FilePathEditLoseFocus( Control& sender )
 {
    Edit& edit = static_cast<Edit&>( sender );
-   if ( edit == GUI->FundamentalEphemerides_Edit || edit == GUI->AsteroidEphemerides_Edit )
+   if ( edit == GUI->FundamentalEphemerides_Edit || edit == GUI->AsteroidEphemerides_Edit || edit == GUI->KBOEphemerides_Edit )
       if ( edit.Text().Trimmed().IsEmpty() )
          edit.SetText( DEFAULT_CORE_XEPH_FILE_TAG );
 }
@@ -804,6 +808,10 @@ void EphemerisGeneratorInterface::e_Click( Button& sender, bool checked )
          m_instance.p_outputXEPHFilePath = d.FileName();
          UpdateControls();
       }
+   }
+   else if ( sender == GUI->OverwriteExistingFiles_CheckBox )
+   {
+      m_instance.p_overwriteExistingFiles = checked;
    }
 }
 
@@ -1538,7 +1546,7 @@ EphemerisGeneratorInterface::GUIData::GUIData( EphemerisGeneratorInterface& w )
    const char* asteroidEphemeridesToolTip = "<p>The XEPH file providing massive asteroid ephemerides.</p>"
                         "<p>If this field is left blank (or with its default &lt;core default&gt; value), "
                         "the default core asteroid ephemerides file will be used.</p>"
-                        "<p>This file will only be used (and required) when the <i>Asteroid perturbers</i>"
+                        "<p>This file will only be used (and required) when the <i>Asteroid perturbers</i> "
                         "option is selected.</p>"
                         "<b>Important: </b> The selected fundamental and asteroid ephemerides files must be "
                         "coherent, that is, both must be referred to the same dynamical solar system model. "
@@ -1581,7 +1589,7 @@ EphemerisGeneratorInterface::GUIData::GUIData( EphemerisGeneratorInterface& w )
    //
 
    const char* kboEphemeridesToolTip = "<p>The XEPH file providing massive KBO ephemerides.</p>"
-                        "<p>This file will only be used (and required) when the <i>KBO perturbers</i>"
+                        "<p>This file will only be used (and required) when the <i>KBO perturbers</i> "
                         "option is selected.</p>";
 
    KBOEphemerides_Label.SetText( "KBO ephemerides:" );
@@ -1676,9 +1684,22 @@ EphemerisGeneratorInterface::GUIData::GUIData( EphemerisGeneratorInterface& w )
 
    //
 
+   OverwriteExistingFiles_CheckBox.SetText( "Overwrite existing files" );
+   OverwriteExistingFiles_CheckBox.SetToolTip( "<p>If this option is selected, EphemerisGenerator will overwrite "
+      "existing .xeph files with the same names as generated output files. This can be dangerous because the original "
+      "contents of overwritten files will be lost.</p>"
+      "<p><b>Enable this option <u>at your own risk.</u></b></p>" );
+   OverwriteExistingFiles_CheckBox.OnClick( (Button::click_event_handler)&EphemerisGeneratorInterface::e_Click, w );
+
+   OverwriteExistingFiles_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   OverwriteExistingFiles_Sizer.Add( OverwriteExistingFiles_CheckBox );
+
+   //
+
    Output_Sizer.SetSpacing( 4 );
    Output_Sizer.Add( OutputXEPHFile_Sizer );
    Output_Sizer.Add( OutputXEPHFilePath_Sizer );
+   Output_Sizer.Add( OverwriteExistingFiles_Sizer );
 
    Output_Control.SetSizer( Output_Sizer );
 
@@ -1757,4 +1778,4 @@ EphemerisGeneratorInterface::GUIData::GUIData( EphemerisGeneratorInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF EphemerisGeneratorInterface.cpp - Released 2021-03-24T20:01:50Z
+// EOF EphemerisGeneratorInterface.cpp - Released 2021-04-09T19:41:48Z

@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// PreferencesInstance.cpp - Released 2020-12-17T15:46:55Z
+// PreferencesInstance.cpp - Released 2021-04-09T19:41:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -135,6 +135,8 @@ bool PreferencesInstance::ExecuteGlobal()
       PixInsightSettings::SetGlobalString  ( "Application/ShortTermFundamentalEphemeridesFile", application.shortTermFundamentalEphemeridesFile );
       PixInsightSettings::SetGlobalString  ( "Application/AsteroidEphemeridesFile",             application.asteroidEphemeridesFile );
       PixInsightSettings::SetGlobalString  ( "Application/ShortTermAsteroidEphemeridesFile",    application.shortTermAsteroidEphemeridesFile );
+      PixInsightSettings::SetGlobalString  ( "Application/KBOEphemeridesFile",                  application.kboEphemeridesFile );
+      PixInsightSettings::SetGlobalString  ( "Application/ShortTermKBOEphemeridesFile",         application.shortTermKBOEphemeridesFile );
       PixInsightSettings::SetGlobalString  ( "Application/NutationModelFile",                   application.nutationModelFile );
       PixInsightSettings::SetGlobalString  ( "Application/ShortTermNutationModelFile",          application.shortTermNutationModelFile );
       PixInsightSettings::SetGlobalString  ( "Application/DeltaTDataFile",                      application.deltaTDataFile );
@@ -334,6 +336,10 @@ void* PreferencesInstance::LockParameter( const MetaParameter* p, size_type tabl
       return application.asteroidEphemeridesFile.Begin();
    if ( p == METAPARAMETER_INSTANCE_ID( Application, shortTermAsteroidEphemeridesFile ) )
       return application.shortTermAsteroidEphemeridesFile.Begin();
+   if ( p == METAPARAMETER_INSTANCE_ID( Application, kboEphemeridesFile ) )
+      return application.kboEphemeridesFile.Begin();
+   if ( p == METAPARAMETER_INSTANCE_ID( Application, shortTermKBOEphemeridesFile ) )
+      return application.shortTermKBOEphemeridesFile.Begin();
    if ( p == METAPARAMETER_INSTANCE_ID( Application, nutationModelFile ) )
       return application.nutationModelFile.Begin();
    if ( p == METAPARAMETER_INSTANCE_ID( Application, shortTermNutationModelFile ) )
@@ -671,8 +677,10 @@ void PreferencesInstance::LoadDefaultSettings()
    application.highResMonoFont                  =         METAPARAMETER_INSTANCE_ID( Application, highResMonoFont                  )->DefaultValue();
    application.fundamentalEphemeridesFile       =         METAPARAMETER_INSTANCE_ID( Application, fundamentalEphemeridesFile       )->DefaultValue();
    application.shortTermFundamentalEphemeridesFile =      METAPARAMETER_INSTANCE_ID( Application, shortTermFundamentalEphemeridesFile )->DefaultValue();
-   application.asteroidEphemeridesFile          =         METAPARAMETER_INSTANCE_ID( Application, asteroidEphemeridesFile       )->DefaultValue();
+   application.asteroidEphemeridesFile          =         METAPARAMETER_INSTANCE_ID( Application, asteroidEphemeridesFile          )->DefaultValue();
    application.shortTermAsteroidEphemeridesFile =         METAPARAMETER_INSTANCE_ID( Application, shortTermAsteroidEphemeridesFile )->DefaultValue();
+   application.kboEphemeridesFile               =         METAPARAMETER_INSTANCE_ID( Application, kboEphemeridesFile               )->DefaultValue();
+   application.shortTermKBOEphemeridesFile      =         METAPARAMETER_INSTANCE_ID( Application, shortTermKBOEphemeridesFile      )->DefaultValue();
    application.nutationModelFile                =         METAPARAMETER_INSTANCE_ID( Application, nutationModelFile                )->DefaultValue();
    application.shortTermNutationModelFile       =         METAPARAMETER_INSTANCE_ID( Application, shortTermNutationModelFile       )->DefaultValue();
    application.deltaTDataFile                   =         METAPARAMETER_INSTANCE_ID( Application, deltaTDataFile                   )->DefaultValue();
@@ -832,9 +840,11 @@ void PreferencesInstance::LoadCurrentSettings()
    application.lowResMonoFont                   = PixInsightSettings::GlobalString  ( "Application/LowResMonoFont" );
    application.highResMonoFont                  = PixInsightSettings::GlobalString  ( "Application/HighResMonoFont" );
    application.fundamentalEphemeridesFile       = PixInsightSettings::GlobalString  ( "Application/FundamentalEphemeridesFile" );
-   application.shortTermFundamentalEphemeridesFile = PixInsightSettings::GlobalString  ( "Application/ShortTermFundamentalEphemeridesFile" );
+   application.shortTermFundamentalEphemeridesFile = PixInsightSettings::GlobalString( "Application/ShortTermFundamentalEphemeridesFile" );
    application.asteroidEphemeridesFile          = PixInsightSettings::GlobalString  ( "Application/AsteroidEphemeridesFile" );
    application.shortTermAsteroidEphemeridesFile = PixInsightSettings::GlobalString  ( "Application/ShortTermAsteroidEphemeridesFile" );
+   application.kboEphemeridesFile               = PixInsightSettings::GlobalString  ( "Application/KBOEphemeridesFile" );
+   application.shortTermKBOEphemeridesFile      = PixInsightSettings::GlobalString  ( "Application/ShortTermKBOEphemeridesFile" );
    application.nutationModelFile                = PixInsightSettings::GlobalString  ( "Application/NutationModelFile" );
    application.shortTermNutationModelFile       = PixInsightSettings::GlobalString  ( "Application/ShortTermNutationModelFile" );
    application.deltaTDataFile                   = PixInsightSettings::GlobalString  ( "Application/DeltaTDataFile" );
@@ -1013,6 +1023,10 @@ String* PreferencesInstance::StringParameterFromMetaParameter( const MetaParamet
       s = &application.asteroidEphemeridesFile;
    else if ( p == METAPARAMETER_INSTANCE_ID( Application, shortTermAsteroidEphemeridesFile ) )
       s = &application.shortTermAsteroidEphemeridesFile;
+   else if ( p == METAPARAMETER_INSTANCE_ID( Application, kboEphemeridesFile ) )
+      s = &application.kboEphemeridesFile;
+   else if ( p == METAPARAMETER_INSTANCE_ID( Application, shortTermKBOEphemeridesFile ) )
+      s = &application.shortTermKBOEphemeridesFile;
    else if ( p == METAPARAMETER_INSTANCE_ID( Application, nutationModelFile ) )
       s = &application.nutationModelFile;
    else if ( p == METAPARAMETER_INSTANCE_ID( Application, shortTermNutationModelFile ) )
@@ -1084,4 +1098,4 @@ String* PreferencesInstance::StringParameterFromMetaParameter( const MetaParamet
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInstance.cpp - Released 2020-12-17T15:46:55Z
+// EOF PreferencesInstance.cpp - Released 2021-04-09T19:41:48Z

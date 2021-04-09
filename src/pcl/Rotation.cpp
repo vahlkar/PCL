@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// pcl/Rotation.cpp - Released 2020-12-17T15:46:35Z
+// pcl/Rotation.cpp - Released 2021-04-09T19:41:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -67,10 +67,10 @@ void GetRotatedBounds( int& width, int& height, double& x0, double& y0, const Ro
 
    double sa, ca;
    pcl::SinCos( double( R.Angle() ), sa, ca );
-   pcl::Rotate( p1, sa, ca, R.Center() );
-   pcl::Rotate( p2, sa, ca, R.Center() );
-   pcl::Rotate( p3, sa, ca, R.Center() );
-   pcl::Rotate( p4, sa, ca, R.Center() );
+   p1.Rotate( sa, ca, R.Center() );
+   p2.Rotate( sa, ca, R.Center() );
+   p3.Rotate( sa, ca, R.Center() );
+   p4.Rotate( sa, ca, R.Center() );
 
    x0 = pcl::Min( p1.x, pcl::Min( p2.x, pcl::Min( p3.x, p4.x ) ) );
    y0 = pcl::Min( p1.y, pcl::Min( p2.y, pcl::Min( p3.y, p4.y ) ) );
@@ -137,7 +137,7 @@ public:
 
          for ( int c = 0; c < n; ++c )
          {
-            ThreadData<P> data( sa, ca, center, DPoint( x0, y0 ), w0, h0, width, status, N );
+            ThreadData<P> data( sa, ca, center, DPoint( x0, y0 ) - center, w0, h0, width, status, N );
 
             data.f = f = image.Allocator().AllocatePixels( size_type( width )*size_type( height ) );
             data.fillValue = (c < R.FillValues().Length()) ? P::ToSample( R.FillValues()[c] ) : P::MinSampleValue();
@@ -233,7 +233,7 @@ private:
             for ( int j = 0; j < m_data.width; ++j, ++f )
             {
                DPoint p( m_data.origin.x+j, oy );
-               Rotate( p, m_data.sa, m_data.ca, m_data.center.x, m_data.center.y );
+               p.Rotate( m_data.sa, m_data.ca, m_data.center );
                *f = (p.x >= 0 && p.x < m_data.w0 && p.y >= 0 && p.y < m_data.h0) ? (*m_interpolator)( p ) : m_data.fillValue;
 
                UPDATE_THREAD_MONITOR( 65536 )
@@ -282,4 +282,4 @@ void Rotation::Apply( pcl::UInt32Image& image ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Rotation.cpp - Released 2020-12-17T15:46:35Z
+// EOF pcl/Rotation.cpp - Released 2021-04-09T19:41:11Z

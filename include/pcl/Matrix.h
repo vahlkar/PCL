@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// pcl/Matrix.h - Released 2020-12-17T15:46:29Z
+// pcl/Matrix.h - Released 2021-04-09T19:40:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -1476,6 +1476,132 @@ public:
       GenericMatrix Tf( m_data->Cols(), m_data->Rows() );
       pcl::CopyReversed( Tf.m_data->End(), m_data->Begin(), m_data->End() );
       return Tf;
+   }
+
+   /*!
+    * Returns a 3x3 rotation matrix about the X axis.
+    *
+    * \param sphi    Sine of the rotation angle.
+    *
+    * \param cphi    Cosine of the rotation angle.
+    *
+    * Positive rotation angles apply anticlockwise rotations about the X axis,
+    * as seen looking towards the origin from positive x.
+    *
+    * The returned matrix is:
+    *
+    * <pre>
+    * 1     0       0
+    * 0   +cphi   +sphi
+    * 0   -sphi   +cphi
+    * </pre>
+    *
+    * \sa RotationX( double )
+    */
+   static GenericMatrix RotationX( double sphi, double cphi )
+   {
+      return GenericMatrix( element( 1 ), element(     0 ), element(     0 ),
+                            element( 0 ), element( +cphi ), element( +sphi ),
+                            element( 0 ), element( -sphi ), element( +cphi ) );
+   }
+
+   /*!
+    * Returns a 3x3 rotation matrix about the X axis by the specified angle
+    * \a phi in radians.
+    *
+    * Calling this function is equivalent to:
+    *
+    * \code RotationX( Sin( phi ), Cos( phi ) ) \endcode
+    */
+   static GenericMatrix RotationX( double phi )
+   {
+      double sphi, cphi;
+      SinCos( phi, sphi, cphi );
+      return RotationX( sphi, cphi );
+   }
+
+   /*!
+    * Returns a 3x3 rotation matrix about the Y axis.
+    *
+    * \param sphi    Sine of the rotation angle.
+    *
+    * \param cphi    Cosine of the rotation angle.
+    *
+    * Positive rotation angles apply anticlockwise rotations about the Y axis,
+    * as seen looking towards the origin from positive y.
+    *
+    * The returned matrix is:
+    *
+    * <pre>
+    * +cphi  0  -sphi
+    *   0    1    0
+    * +sphi  0  +cphi
+    * </pre>
+    *
+    * \sa RotationY( double )
+    */
+   static GenericMatrix RotationY( double sphi, double cphi )
+   {
+      return GenericMatrix( element( +cphi ), element( 0 ), element( -sphi ),
+                            element(     0 ), element( 1 ), element( 0     ),
+                            element( +sphi ), element( 0 ), element( +cphi ) );
+   }
+
+   /*!
+    * Returns a 3x3 rotation matrix about the Y axis by the specified angle
+    * \a phi in radians.
+    *
+    * Calling this function is equivalent to:
+    *
+    * \code RotationY( Sin( phi ), Cos( phi ) ) \endcode
+    */
+   static GenericMatrix RotationY( double phi )
+   {
+      double sphi, cphi;
+      SinCos( phi, sphi, cphi );
+      return RotationY( sphi, cphi );
+   }
+
+   /*!
+    * Returns a 3x3 rotation matrix about the Z axis.
+    *
+    * \param sphi    Sine of the rotation angle.
+    *
+    * \param cphi    Cosine of the rotation angle.
+    *
+    * Positive rotation angles apply anticlockwise rotations about the Z axis,
+    * as seen looking towards the origin from positive z.
+    *
+    * The returned matrix is:
+    *
+    * <pre>
+    * +cphi  +sphi  0
+    * -sphi  +cphi  0
+    *   0      0    1
+    * </pre>
+    *
+    * \sa RotationZ( double )
+    */
+   static GenericMatrix RotationZ( double sphi, double cphi )
+   {
+      return GenericMatrix( element( +cphi ), element( +sphi ), element( 0 ),
+                            element( -sphi ), element( +cphi ), element( 0 ),
+                            element(     0 ), element(     0 ), element( 1 ) );
+   }
+
+   /*!
+    * Returns a 3x3 rotation matrix about the Z axis by the specified angle
+    * \a phi in radians.
+    *
+    * Calling this function is equivalent to:
+    *
+    * \code RotationZ( Sin( phi ), Cos( phi ) ) \endcode
+    */
+   static GenericMatrix RotationZ( double phi )
+   {
+      double sphi, cphi;
+      SinCos( phi, sphi, cphi );
+      return RotationZ( sphi, cphi );
    }
 
    /*!
@@ -3617,4 +3743,4 @@ typedef F80Matrix                   LDMatrix;
 #endif   // __PCL_Matrix_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Matrix.h - Released 2020-12-17T15:46:29Z
+// EOF pcl/Matrix.h - Released 2021-04-09T19:40:59Z

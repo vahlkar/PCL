@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// pcl/ImageWindow.cpp - Released 2020-12-17T15:46:35Z
+// pcl/ImageWindow.cpp - Released 2021-04-09T19:41:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -555,6 +555,20 @@ void ImageWindow::ClearAstrometricSolution( bool notify )
 void ImageWindow::UpdateAstrometryMetadata( bool notify )
 {
    (*API->ImageWindow->UpdateImageWindowAstrometryMetadata)( handle, api_bool( notify ) );
+}
+
+// ----------------------------------------------------------------------------
+
+bool ImageWindow::ImageToCelestial( double& x, double& y, bool rawRA ) const
+{
+   return (*API->ImageWindow->ImageToCelestial)( handle, &x, &y, api_bool( rawRA ) ) != api_false;
+}
+
+// ----------------------------------------------------------------------------
+
+bool ImageWindow::CelestialToImage( double& ra, double& dec ) const
+{
+   return (*API->ImageWindow->CelestialToImage)( handle, &ra, &dec ) != api_false;
 }
 
 // ----------------------------------------------------------------------------
@@ -1200,4 +1214,4 @@ Array<ImageWindow> ImageWindow::AllWindows( bool includeIconicWindows )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ImageWindow.cpp - Released 2020-12-17T15:46:35Z
+// EOF pcl/ImageWindow.cpp - Released 2021-04-09T19:41:11Z

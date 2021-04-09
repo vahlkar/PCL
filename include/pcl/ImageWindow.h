@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// pcl/ImageWindow.h - Released 2020-12-17T15:46:29Z
+// pcl/ImageWindow.h - Released 2021-04-09T19:40:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -1381,6 +1381,113 @@ public:
     * \sa AstrometricMetadata
     */
    void UpdateAstrometryMetadata( bool notify = true );
+
+   /*!
+    * Converts the specified \a x and \a y coordinates from the image
+    * coordinate system to celestial equatorial coordinates.
+    *
+    * If the window has a valid astrometric solution and the image-to-celestial
+    * coordinate transformation succeeds, the values of the specified \a x and
+    * \a y variables are replaced with the corresponding right ascension and
+    * declination, respectively, and the function returns true. Right ascension
+    * and declination are provided expressed in degrees in the ranges [0,360)
+    * (if \a rawRA is false; see below) and [-90,+90], respectively. Note that
+    * both input image and output equatorial coordinates can legally be outside
+    * image bounds. Output equatorial coordinates will be referred to the
+    * reference system of the astrometric solution associated with this image
+    * window (ICRS or GCRS).
+    *
+    * If \a rawRA is true, the output right ascension is \e not constrained to
+    * the [0,360) range. This is useful for interpolation schemes where
+    * discontinuities caused by zero crossings in right ascension, i.e. abrupt
+    * changes from 360 to 0 degrees, are not admissible numerically. Right
+    * ascensions returned by this function when \a rawRA = true is specified
+    * can be larger than 360 degrees or less than zero, ensuring smooth
+    * transitions.
+    *
+    * If the window has no valid astrometric solution, or if the coordinate
+    * transformation cannot be performed, the \a x and \a y variables are not
+    * modified and the function returns false.
+    *
+    * \ingroup astrometry_support
+    * \sa AstrometricMetadata
+    */
+   bool ImageToCelestial( double& x, double& y, bool rawRA = false ) const;
+
+   /*!
+    * Converts the specified point \a pI from the image coordinate system to
+    * celestial equatorial coordinates.
+    *
+    * If the conversion is successful, the computed right ascension and
+    * declination in degrees are stored in the \a pRD.x and \a pRD.y
+    * coordinates, respectively, and the function returns true. Otherwise the
+    * point \a pRD is not modified and the function returns false.
+    *
+    * See ImageToCelestial( double&, double&, bool ) const for complete
+    * information.
+    *
+    * \ingroup astrometry_support
+    * \sa AstrometricMetadata
+    */
+   template <typename T>
+   bool ImageToCelestial( DPoint& pRD, const GenericPoint<T>& pI, bool rawRA = false ) const
+   {
+      DPoint qI( double( pI.x ), double( pI.y ) );
+      if ( ImageToCelestial( qI.x, qI.y, rawRA ) )
+      {
+         pRD = qI;
+         return true;
+      }
+      return false;
+   }
+
+   /*!
+    * Converts the specified \a ra and \a dec coordinates, expressed in
+    * degrees, from celestial equatorial coordinates to the image coordinate
+    * system.
+    *
+    * If the window has a valid astrometric solution and the celestial-to-image
+    * coordinate transformation succeeds, the values of the specified \a ra and
+    * \a dec variables are replaced with the corresponding \a x and \a y image
+    * coordinates, respectively, expressed in pixels. Note that both input
+    * equatorial and output image coordinates can legally be outside image
+    * bounds. Input equatorial coordinates are assumed to be referred to the
+    * reference system of the astrometric solution associated with this image
+    * window (ICRS or GCRS).
+    *
+    * If the window has no valid astrometric solution, or if the coordinate
+    * transformation cannot be performed, the \a ra and \a dec variables are
+    * not modified and the function returns false.
+    *
+    * \ingroup astrometry_support
+    * \sa AstrometricMetadata
+    */
+   bool CelestialToImage( double& ra, double& dec ) const;
+
+   /*!
+    * Converts the specified point \a pRD from celestial equatorial coordinates
+    * in degrees to the image coordinate system.
+    *
+    * If the conversion is successful, the computed \a x and \a y image
+    * coordinates in pixels are stored in the \a pI.x and \a pI.y members,
+    * respectively, and the function returns true. Otherwise the point \a pI is
+    * not modified and the function returns false.
+    *
+    * See CelestialToImage( double&, double& ) const for detailed information.
+    *
+    * \ingroup astrometry_support
+    * \sa AstrometricMetadata
+    */
+   bool CelestialToImage( DPoint& pI, const DPoint& pRD ) const
+   {
+      DPoint qI = pRD;
+      if ( CelestialToImage( qI.x, qI.y ) )
+      {
+         pI = qI;
+         return true;
+      }
+      return false;
+   }
 
    /*!
     * Gets the current image resolution parameters in this image window.
@@ -2915,4 +3022,4 @@ private:
 #endif   // __PCL_ImageWindow_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ImageWindow.h - Released 2020-12-17T15:46:29Z
+// EOF pcl/ImageWindow.h - Released 2021-04-09T19:40:59Z

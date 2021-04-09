@@ -2,7 +2,7 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.8
 // ----------------------------------------------------------------------------
 //
 // This file is part of the astjpl2pcl ephemeris generation utility.
@@ -72,7 +72,7 @@ using namespace pcl;
 // ----------------------------------------------------------------------------
 
 #define PROGRAM_NAME    "astjpl2pcl"
-#define PROGRAM_VERSION "1.20"
+#define PROGRAM_VERSION "1.35"
 #define PROGRAM_YEAR    "2021"
 
 #define TESTS_PER_DAY   4
@@ -593,27 +593,27 @@ void MakeObjectData( SerializableEphemerisObjectData& object,
             + IsoString( AsteroidNumberForIndex( index ) ) + ' ' + asteroidNames[index] );
    LogLn();
 
-
    const double au_km = sun.ParentFile().ConstantValue( "AU" );
-   const double truncation_km = 1.0e-01; // 100 m
-   const int maxLength = 25;
+   const double truncation_km = 5.0e-03; // 5 m
 
-   const int startingDelta = 200;
-   int delta = startingDelta;
+   // Maximum allowed expansion length
+   const int maxLength = 120;
+
+   int delta = 200;
    int minDelta = int32_max;
    int maxDelta = 0;
 
-   double epsilon = 0.75*truncation_km/au_km;
    double maxError[ 3 ] = { 0, 0, 0 };
    int totalCoefficients = 0;
 
    for ( int jdi1 = startJDI, count = 0; jdi1 < endJDI; ++count )
    {
       int jdi2;
-      int n;
+      int length = 25;
+      double epsilon = 0.65*truncation_km/au_km;
       ChebyshevFit T;
 
-      for ( bool reduce = false; ; )
+      for ( bool reduce = false, truncated = false;; )
       {
          jdi2 = jdi1 + delta;
          if ( jdi2 > endJDI )
@@ -638,25 +638,39 @@ void MakeObjectData( SerializableEphemerisObjectData& object,
                                              state[4]/au_km*86400 + s0[1][1],
                                              state[5]/au_km*86400 + s0[1][2] );
                            },
-                           0, delta, 3, 2*maxLength );
+                           0, delta, 3, 2*length );
+
          T.Truncate( epsilon );
-         n = T.TruncatedLength();
-         bool high = n > maxLength;
-         if ( high )
+         if ( T.TruncatedLength() > length )
+         {
             --delta;
+            reduce = true;
+         }
          else if ( !reduce && jdi2 < endJDI )
             ++delta;
          else
-            break;
-
-         reduce = high;
-
-         if ( delta < 16 )
          {
-            delta = startingDelta;
-            epsilon *= 1.01;
+            if ( truncated )
+               LogLn( String().Format( "** Warning: Increased truncation error to %.3e", epsilon ) );
+            break;
+         }
+
+         if ( delta == 0 )
+         {
+            // Fast movement: try with longer coefficient series.
+            length += 10;
+            if ( length > maxLength )
+            {
+               // Extremely fast movement: try a larger truncation error.
+               // N.B. This should not happen under normal working conditions
+               // with core asteroid ephemerides.
+               length = 50;
+               epsilon *= 2;
+               truncated = true;
+            }
+
+            delta = 12;
             reduce = false;
-            LogLn( String().Format( "** Warning: Increasing truncation error to %.3e", epsilon ) );
          }
       }
 
@@ -667,10 +681,10 @@ void MakeObjectData( SerializableEphemerisObjectData& object,
 
       object.data[order] << SerializableEphemerisData( TimePoint( jdi1, 0.5 ), T );
 
-      LogLn( String().Format( "%5d : %+10.1f -> %+10.1f (%4d) : %2d %2d %2d %.3e %.3e %.3e",
-                              count, jdi1+0.5, jdi2+0.5, delta,
-                              T.TruncatedLength( 0 ), T.TruncatedLength( 1 ), T.TruncatedLength( 2 ),
-                              T.TruncationError( 0 ), T.TruncationError( 1 ), T.TruncationError( 2 ) ) );
+      LogLn( String().Format( "%5d : %+10.1f -> %+10.1f (%5d) : %3d %3d %3d %.3e %.3e %.3e"
+                              , count, jdi1+0.5, jdi2+0.5, delta
+                              , T.TruncatedLength( 0 ), T.TruncatedLength( 1 ), T.TruncatedLength( 2 )
+                              , T.TruncationError( 0 ), T.TruncationError( 1 ), T.TruncationError( 2 ) ) );
 
       for ( int i = 0; i < 3; ++i )
          if ( T.TruncationError( i ) > maxError[i] )
@@ -679,7 +693,7 @@ void MakeObjectData( SerializableEphemerisObjectData& object,
       totalCoefficients += T.NumberOfTruncatedCoefficients();
 
       if ( delta < minDelta )
-         if ( jdi2 < endJDI )
+         if ( jdi2 < endJDI || count == 0 )
             minDelta = delta;
       if ( delta > maxDelta )
          maxDelta = delta;
@@ -688,13 +702,14 @@ void MakeObjectData( SerializableEphemerisObjectData& object,
    }
 
    LogLn();
-   LogLn( "Object             : " + IsoString( AsteroidNumberForIndex( index ) ) + ' ' + asteroidNames[index] );
-   LogLn( "Order              : " + String( order ) );
-   LogLn( "Total expansions   : " + String( object.data[order].Length() ) );
-   LogLn( "Smallest time span : " + String( minDelta ) );
-   LogLn( "Largest time span  : " + String( maxDelta ) );
-   LogLn( "Largest errors     : " + String().Format( "%.3e  %.3e  %.3e", maxError[0], maxError[1], maxError[2] ) );
-   LogLn( "Total coefficients : " + String( totalCoefficients ) );
+   LogLn( "Object ....................... " + IsoString( AsteroidNumberForIndex( index ) ) + ' ' + asteroidNames[index] );
+   LogLn( "Derivative order ............. " + String( order ) );
+   LogLn( "Total Chebyshev expansions ... " + String( object.data[order].Length() ) );
+   LogLn( "Smallest time span ........... " + String( minDelta ) + " (days)" );
+   LogLn( "Largest time span ............ " + String( maxDelta ) + " (days)" );
+   LogLn( "Largest truncation errors .... " + String().Format( "%.3e  %.3e  %.3e  (%s)"
+                                                         , maxError[0], maxError[1], maxError[2], order ? "au/day" : "au" ) );
+   LogLn( "Total coefficients ........... " + String( totalCoefficients ) );
    LogLn();
 }
 
@@ -1046,4 +1061,4 @@ int main( int argc, const char* argv[] )
 }
 
 // ----------------------------------------------------------------------------
-// EOF pcl/astjpl2pcl.cpp - Released 2021-01-09T19:39:12Z
+// EOF pcl/astjpl2pcl.cpp - Released 2021-03-28T09:52:26Z

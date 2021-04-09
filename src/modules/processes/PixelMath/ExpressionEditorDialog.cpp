@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.8.0
+// Standard PixelMath Process Module Version 1.8.1
 // ----------------------------------------------------------------------------
-// ExpressionEditorDialog.cpp - Released 2021-01-23T18:24:14Z
+// ExpressionEditorDialog.cpp - Released 2021-04-09T19:41:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -56,7 +56,6 @@
 #include "Operator.h"
 #include "PixelMathInstance.h"
 
-#include <pcl/ImageWindow.h>
 #include <pcl/ErrorHandler.h>
 
 #define NO_ITEM_TEXT "<i>Select an image, a symbol, or a PixelMath function or operator.</i>"
@@ -1084,4 +1083,4 @@ void ExpressionEditorDialog::e_MouseMove( Control& sender, const pcl::Point& pos
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ExpressionEditorDialog.cpp - Released 2021-01-23T18:24:14Z
+// EOF ExpressionEditorDialog.cpp - Released 2021-04-09T19:41:48Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
 // Standard EphemerisGeneration Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// EphemerisGeneratorProcess.cpp - Released 2021-03-24T20:01:50Z
+// EphemerisGeneratorProcess.cpp - Released 2021-04-09T19:41:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -116,6 +116,7 @@ EphemerisGeneratorProcess::EphemerisGeneratorProcess()
    new EGFigureEffects( this );
    new EGOutputXEPHFile( this );
    new EGOutputXEPHFilePath( this );
+   new EGOverwriteExistingFiles( this );
    new EGDenseOutputToleranceFactor( this );
    new EGEphemerisToleranceFactor( this );
 }
@@ -238,4 +239,4 @@ int EphemerisGeneratorProcess::FindDatabaseFormatByName( const String& name )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF EphemerisGeneratorProcess.cpp - Released 2021-03-24T20:01:50Z
+// EOF EphemerisGeneratorProcess.cpp - Released 2021-04-09T19:41:48Z

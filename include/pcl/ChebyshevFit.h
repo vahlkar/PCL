@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// pcl/ChebyshevFit.h - Released 2020-12-17T15:46:29Z
+// pcl/ChebyshevFit.h - Released 2021-04-09T19:40:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -412,6 +412,12 @@ public:
     * component with a maximum error close to &plusmn;|e| within the fitting
     * interval.
     *
+    * The optional parameter \a mmin is the minimum allowed length of a
+    * coefficient series. The value of this parameter is 2 by default, which is
+    * the minimum number of Chebyshev coefficients in a series expansion.
+    * Specifying a value greater than 2 can be useful sometimes to impose
+    * stricter accuracy constraints on the truncated series.
+    *
     * This member function does not remove any polynomial coefficients, so the
     * original polynomial expansion remains intact. This means that the fitted
     * polynomials can be truncated successively to achieve different error
@@ -425,15 +431,16 @@ public:
     * polynomials for those components. In such case this function returns
     * \c false.
     */
-   bool Truncate( Ty e )
+   bool Truncate( Ty e, int mmin = 2 )
    {
       e = Abs( e );
+      mmin = Max( 2, mmin );
       int N = NumberOfComponents();
       int tc = 0;
       for ( int i = 0; i < N; ++i )
       {
          Ty s = Ty( 0 );
-         for ( m[i] = c[i].Length(); m[i] > 2; --m[i] )
+         for ( m[i] = c[i].Length(); m[i] > mmin; --m[i] )
             if ( (s += Abs( c[i][m[i]-1] )) >= e )
                break;
          if ( m[i] < c[i].Length() )
@@ -935,4 +942,4 @@ typedef F80ScalarChebyshevFit                         LDScalarChebyshevFit;
 #endif  // __PCL_ChebyshevFit_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ChebyshevFit.h - Released 2020-12-17T15:46:29Z
+// EOF pcl/ChebyshevFit.h - Released 2021-04-09T19:40:59Z

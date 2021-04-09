@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// pcl/WCSKeywords.h - Released 2020-12-17T15:46:29Z
+// pcl/WCSKeywords.h - Released 2021-04-09T19:40:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -92,7 +92,7 @@ public:
    Optional<double> objctra;   //!< Right ascension coordinate of the center of the image in degrees.
    Optional<double> objctdec;  //!< Declination coordinate of the center of the image in degrees.
    IsoString        radesys;   //!< Reference system of celestial coordinates.
-   Optional<double> equinox;   //!< Equinox in years for the celestial coordinate system (not applicable if radesys = ICRS).
+   Optional<double> equinox;   //!< Equinox in years for the celestial coordinate system (not applicable if radesys = ICRS | GCRS).
    Optional<double> dateobs;   //!< Observation start time as a Julian date, UTC timescale.
    Optional<double> dateend;   //!< Observation end time as a Julian date, UTC timescale.
    Optional<double> longobs;   //!< Geodetic longitude of the observation location in degrees. Reckoned positive east of the reference meridian.
@@ -169,4 +169,4 @@ public:
 #endif   // __PCL_WCSKeywords_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/WCSKeywords.h - Released 2020-12-17T15:46:29Z
+// EOF pcl/WCSKeywords.h - Released 2021-04-09T19:40:59Z

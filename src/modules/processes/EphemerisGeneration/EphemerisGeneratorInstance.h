@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
 // Standard EphemerisGeneration Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// EphemerisGeneratorInstance.h - Released 2021-03-24T20:01:50Z
+// EphemerisGeneratorInstance.h - Released 2021-04-09T19:41:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -111,6 +111,7 @@ private:
    pcl_bool p_figureEffects;        // include oblateness perturbations
    pcl_bool p_outputXEPHFile;       // whether to generate an ephemeris file
    String   p_outputXEPHFilePath;   // the output XEPH file
+   pcl_bool p_overwriteExistingFiles; // whether existing files should be overwritten or preserved
    double   p_denseOutputToleranceFactor; // factor to scale up tolerance for integration dense output generation
    double   p_ephemerisToleranceFactor;   // additional factor to scale up tolerance for ephemeris generation
 
@@ -142,4 +143,4 @@ private:
 #endif   // __EphemerisGeneratorInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF EphemerisGeneratorInstance.h - Released 2021-03-24T20:01:50Z
+// EOF EphemerisGeneratorInstance.h - Released 2021-04-09T19:41:48Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.8.0
+// Standard PixelMath Process Module Version 1.8.1
 // ----------------------------------------------------------------------------
-// Functional.cpp - Released 2021-01-23T18:24:14Z
+// Functional.cpp - Released 2021-04-09T19:41:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -149,4 +149,4 @@ void Functional::CheckParsedGlobalVariables( const String& beingParsed ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Functional.cpp - Released 2021-01-23T18:24:14Z
+// EOF Functional.cpp - Released 2021-04-09T19:41:48Z

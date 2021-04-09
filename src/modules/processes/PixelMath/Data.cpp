@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.8.0
+// Standard PixelMath Process Module Version 1.8.1
 // ----------------------------------------------------------------------------
-// Data.cpp - Released 2021-01-23T18:24:14Z
+// Data.cpp - Released 2021-04-09T19:41:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -54,6 +54,7 @@
 #include "ImageCache.h"
 #include "PixelMathInstance.h"
 
+#include <pcl/AstrometricMetadata.h>
 #include <pcl/Image.h>
 #include <pcl/ImageWindow.h>
 #include <pcl/PixelInterpolation.h>
@@ -68,70 +69,73 @@ class ReferencedWindow
 public:
 
    ReferencedWindow( const String& imageId )
-      : id( imageId )
+      : m_id( imageId )
    {
    }
 
    ReferencedWindow( const ReferencedWindow& ) = default;
 
-   ImageVariant* NewImage() const
-   {
-      ImageWindow w = ImageWindow::WindowById( id );
-      if ( w.IsNull() )
-         return nullptr;
-
-      View v = w.MainView();
-
-      if ( !locked )
-         if ( v.CanWrite() )
-         {
-            v.LockForWrite();
-            locked = true;
-         }
-
-      Attach();
-
-      return new ImageVariant( v.Image() );
-   }
-
    void Attach() const
    {
-      ++refCount;
+      ++m_refCount;
    }
 
    void Detach() const
    {
-      if ( --refCount == 0 )
-         if ( locked )
+      if ( --m_refCount == 0 )
+         if ( m_locked )
          {
-            ImageWindow w = ImageWindow::WindowById( id );
-            View v = w.MainView();
-            if ( !v.CanWrite() )
-               v.UnlockForWrite();
-            locked = false;
+            View view = Window().MainView();
+            if ( !view.CanWrite() )
+               view.UnlockForWrite();
+            m_locked = false;
          }
    }
 
    bool IsGarbage() const
    {
-      return refCount <= 0;
+      return m_refCount <= 0;
+   }
+
+   ImageWindow Window() const
+   {
+      return ImageWindow::WindowById( m_id );
+   }
+
+   ImageVariant* NewImage() const
+   {
+      ImageWindow window = Window();
+      if ( window.IsNull() ) // ?!
+         return nullptr;
+
+      View view = window.MainView();
+      if ( !m_locked )
+         if ( view.CanWrite() )
+         {
+            view.LockForWrite();
+            m_locked = true;
+         }
+
+      Attach();
+
+      return new ImageVariant( view.Image() );
    }
 
    bool operator ==( const ReferencedWindow& x ) const
    {
-      return id == x.id;
+      return m_id == x.m_id;
    }
 
    bool operator <( const ReferencedWindow& x ) const
    {
-      return id < x.id;
+      return m_id < x.m_id;
    }
 
 private:
 
-   String       id;
-   mutable int  refCount = 0;
-   mutable bool locked = false;
+   String       m_id;
+   mutable int  m_refCount = 0;
+   mutable bool m_locked = false;
 };
 
 static SortedArray<ReferencedWindow> s_referencedWindows;
@@ -149,17 +153,23 @@ ImageReference::ImageReference( const String& id, int p, bool isWindow )
 
 ImageReference::ImageReference( const ImageReference& x )
    : ObjectReference( x )
-   , m_image( (x.m_image != nullptr) ? new ImageVariant( *x.m_image ) : nullptr )
-   , m_byReference( x.m_byReference )
    , m_isWindow( x.m_isWindow )
+   , m_byReference( x.m_byReference )
+   , m_astrometryRequired( x.m_astrometryRequired )
+   , m_image( (x.m_image != nullptr) ? new ImageVariant( *x.m_image ) : nullptr )
 {
    if ( m_isWindow )
+   {
+      if ( x.m_window )
+         m_window = new ImageWindow( *x.m_window.Ptr() );
+
       if ( m_image != nullptr )
       {
          SortedArray<ReferencedWindow>::const_iterator r = s_referencedWindows.Search( Id() );
          if ( r != s_referencedWindows.End() )
             r->Attach();
       }
+   }
 }
 
 // ----------------------------------------------------------------------------
@@ -215,8 +225,7 @@ ImageReference::~ImageReference()
 
 bool ImageReference::FindImage()
 {
-   if ( m_image != nullptr )
-      delete m_image, m_image = nullptr;
+   delete m_image, m_image = nullptr;
 
    if ( m_isWindow )
    {
@@ -226,10 +235,20 @@ bool ImageReference::FindImage()
          s_referencedWindows << Id();
          r = s_referencedWindows.Search( Id() );
       }
+      m_window = new ImageWindow( r->Window() );
       m_image = r->NewImage();
    }
 
    return m_image != nullptr;
+}
+
+// ----------------------------------------------------------------------------
+
+bool ImageReference::HasAstrometricSolution() const
+{
+   if ( m_window )
+      return m_window->HasAstrometricSolution();
+   return false; // ?!
 }
 
 // ----------------------------------------------------------------------------
@@ -286,4 +305,4 @@ bool InternalImageReference::FindImage()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Data.cpp - Released 2021-01-23T18:24:14Z
+// EOF Data.cpp - Released 2021-04-09T19:41:48Z

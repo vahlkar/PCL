@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
 // Standard Flux Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// B3EProcess.h - Released 2020-12-17T15:46:55Z
+// B3EProcess.h - Released 2021-04-09T19:41:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Flux PixInsight module.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -92,4 +92,4 @@ PCL_END_LOCAL
 #endif   // __B3EProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF B3EProcess.h - Released 2020-12-17T15:46:55Z
+// EOF B3EProcess.h - Released 2021-04-09T19:41:48Z

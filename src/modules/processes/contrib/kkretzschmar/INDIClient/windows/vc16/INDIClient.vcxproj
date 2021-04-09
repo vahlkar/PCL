@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.121
-# Copyright (C) 2009-2020 Pleiades Astrophoto
+# PixInsight Makefile Generator Script v1.122
+# Copyright (C) 2009-2021 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-12-21T12:28:32.807Z
+# Generated on .... 2021-04-09T20:05:36.627Z
 # Project id ...... INDIClient
 # Project type .... Module
 # Platform ........ Windows/vc16
@@ -42,7 +42,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{0095584F-BC59-485F-802C-3472F42DE225}</ProjectGuid>
+    <ProjectGuid>{F2ED7B4A-6B16-4335-9F84-7491C82A3E9D}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -259,10 +259,12 @@
     <ClCompile Include="..\..\INDIMountParameters.cpp"/>
     <ClCompile Include="..\..\INDIMountProcess.cpp"/>
     <ClCompile Include="..\..\IndigoClient.cpp"/>
+    <ClCompile Include="..\..\ZeroconfServiceDetection.cpp"/>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Alignment.h"/>
     <ClInclude Include="..\..\DeviceConfigBase.h"/>
+    <ClInclude Include="..\..\ExclusiveAccess.h"/>
     <ClInclude Include="..\..\IIndigoProperty.h"/>
     <ClInclude Include="..\..\INDICCDFrameInstance.h"/>
     <ClInclude Include="..\..\INDICCDFrameInterface.h"/>
@@ -282,6 +284,7 @@
     <ClInclude Include="..\..\IndigoClient.h"/>
     <ClInclude Include="..\..\IndigoDefs.h"/>
     <ClInclude Include="..\..\ModuleParameterRegistration.h"/>
+    <ClInclude Include="..\..\ZeroconfServiceDetection.h"/>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets"/>
   <ImportGroup Label="ExtensionTargets">

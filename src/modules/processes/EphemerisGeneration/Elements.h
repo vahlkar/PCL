@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
 // Standard EphemerisGeneration Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// Elements.h - Released 2021-03-24T20:01:50Z
+// Elements.h - Released 2021-04-09T19:41:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -86,7 +86,17 @@ inline bool NearParabolic( const Vector& el )
 }
 
 /*
+ * Mean motion.
  *
+ * el       Vector of orbital elements (a, q, e, M, T, i, Omega, omega)
+ *
+ * GMS      Mass parameter of the Sun (au^3/day^2). If not specified or <= 0, a
+ *          default value from current fundamental ephemerides will be used.
+ *
+ * m        Mass of the body in solar mass units.
+ *
+ * Returns the mean motion in radians, computed from the semimajor axis or the
+ * perihelion distance (for near-parabolic motion).
  */
 double MeanMotion( const Vector& el, double GMS = 0, double m = 0 );
 
@@ -102,22 +112,33 @@ double MeanMotion( const Vector& el, double GMS = 0, double m = 0 );
  *
  * m        Mass of the body in solar mass units.
  *
- * Returns the mean anomaly in degrees and (-360,+360).
+ * Returns the mean anomaly in degrees, in the range (-360,+360).
  */
 double MeanAnomalyFromTimeOfPerihelionPassage( const Vector& el, double t, double GMS = 0, double m = 0 );
 
 /*
+ * Time of perihelion passage.
  *
+ * el       Vector of orbital elements (a, q, e, M, T, i, Omega, omega)
+ *
+ * t        Epoch of osculating elements (JD, TDB).
+ *
+ * GMS      Mass parameter of the Sun (au^3/day^2). If not specified or <= 0, a
+ *          default value from current fundamental ephemerides will be used.
+ *
+ * m        Mass of the body in solar mass units.
+ *
+ * Returns the time of perihelion passage (T) as a JD in TDB.
  */
 double TimeOfPerihelionPassageFromMeanAnomaly( const Vector& el, double t, double GMS = 0, double m = 0 );
 
 /*
- *
+ * Perihelion distance (au) from semimajor axis and eccentricity.
  */
 double PerihelionDistanceFromSemimajorAxis( const Vector& el );
 
 /*
- *
+ * Semimajor axis (au) from perihelion distance and eccentricity.
  */
 double SemimajorAxisFromPerihelionDistance( const Vector& el );
 
@@ -164,4 +185,4 @@ void OrbitalElementsFromStateVectors( Vector& el, const Vector& r, const Vector&
 #endif   // __Elements_h
 
 // ----------------------------------------------------------------------------
-// EOF Elements.h - Released 2021-03-24T20:01:50Z
+// EOF Elements.h - Released 2021-04-09T19:41:48Z

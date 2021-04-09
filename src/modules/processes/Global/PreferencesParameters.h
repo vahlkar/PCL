@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// PreferencesParameters.h - Released 2020-12-17T15:46:55Z
+// PreferencesParameters.h - Released 2021-04-09T19:41:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -247,6 +247,8 @@ DECLARE_STRING_METAPARAMETER  ( Application, fundamentalEphemeridesFile,        
 DECLARE_STRING_METAPARAMETER  ( Application, shortTermFundamentalEphemeridesFile, "core-fundamental-s.xeph" )
 DECLARE_STRING_METAPARAMETER  ( Application, asteroidEphemeridesFile,             "core-asteroids.xeph" )
 DECLARE_STRING_METAPARAMETER  ( Application, shortTermAsteroidEphemeridesFile,    "core-asteroids-s.xeph" )
+DECLARE_STRING_METAPARAMETER  ( Application, kboEphemeridesFile,                  "core-kbo.xeph" )
+DECLARE_STRING_METAPARAMETER  ( Application, shortTermKBOEphemeridesFile,         "core-kbo-s.xeph" )
 DECLARE_STRING_METAPARAMETER  ( Application, nutationModelFile,                   "core-nutation.xeph" )
 DECLARE_STRING_METAPARAMETER  ( Application, shortTermNutationModelFile,          "core-nutation-s.xeph" )
 DECLARE_STRING_METAPARAMETER  ( Application, deltaTDataFile,                      "core-deltat.txt" )
@@ -406,4 +408,4 @@ PCL_END_LOCAL
 #endif   // __PreferencesParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesParameters.h - Released 2020-12-17T15:46:55Z
+// EOF PreferencesParameters.h - Released 2021-04-09T19:41:48Z

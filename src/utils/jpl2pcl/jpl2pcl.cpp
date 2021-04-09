@@ -2,7 +2,7 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.8
 // ----------------------------------------------------------------------------
 //
 // This file is part of the jpl2pcl ephemeris generation and testing utility.
@@ -67,7 +67,7 @@ using namespace pcl;
 // ----------------------------------------------------------------------------
 
 #define PROGRAM_NAME    "jpl2pcl"
-#define PROGRAM_VERSION "1.10"
+#define PROGRAM_VERSION "1.35"
 #define PROGRAM_YEAR    "2021"
 
 #define TESTS_PER_DAY   4
@@ -94,6 +94,7 @@ IsoString ObjectIdFromJPLEphemerisItem( int item )
    case JPLEphemerisItem::Nutations:           return "Nut";
    case JPLEphemerisItem::LunarLibration:      return "Lbr";
    case JPLEphemerisItem::Earth:               return "Ea";
+   case JPLEphemerisItem::SSBMoon:             return "Mn";
    default:                                    return IsoString();
    }
 }
@@ -115,6 +116,7 @@ IsoString OriginIdFromJPLEphemerisItem( int item )
       case JPLEphemerisItem::Uranus:
       case JPLEphemerisItem::Neptune:
       case JPLEphemerisItem::Pluto:
+      case JPLEphemerisItem::SSBMoon:
          return "SSB";
 
       case JPLEphemerisItem::Moon:
@@ -149,6 +151,7 @@ IsoString ObjectNameFromJPLEphemerisItem( int item )
       case JPLEphemerisItem::Nutations:           return "Nutations";
       case JPLEphemerisItem::LunarLibration:      return "Lunar librations";
       case JPLEphemerisItem::Earth:               return "Earth";
+      case JPLEphemerisItem::SSBMoon:             return "Moon (SSB)";
       default:                                    return IsoString();
    }
 }
@@ -173,6 +176,7 @@ int InitialExpansionSpanForJPLEphemerisItem( int item )
    case JPLEphemerisItem::Nutations:           return   30;
    case JPLEphemerisItem::LunarLibration:      return   30;
    case JPLEphemerisItem::Earth:               return   30;
+   case JPLEphemerisItem::SSBMoon:             return   30;
    default:                                    return    0;
    }
 }
@@ -185,19 +189,16 @@ double TruncationForJPLEphemerisItem( int item )
    {
    case JPLEphemerisItem::Moon:
       return 5.0e-04; // 50 cm
+   case JPLEphemerisItem::SSBMoon:
+      return 1.5e-03; // 1.5 m
    case JPLEphemerisItem::Nutations:
    case JPLEphemerisItem::LunarLibration:
       return Rad( 0.001/3600 ); // 1 mas;
-//    case JPLEphemerisItem::Mercury:
-//    case JPLEphemerisItem::Venus:
-//    case JPLEphemerisItem::EarthMoonBarycenter:
-//    case JPLEphemerisItem::Sun:
-//    case JPLEphemerisItem::Earth:
-//       return 1.0e-02; // 10 m
-//    case JPLEphemerisItem::Mars:
-//       return 5.0e-02; // 50 m
+   case JPLEphemerisItem::Mercury:
+   case JPLEphemerisItem::Venus:
+      return 2.7e-03; // 2.7 m
    default:
-      return 1.0e-01; // 100 m
+      return 1.0e-03; // 1 m
    }
 }
 
@@ -264,16 +265,18 @@ void MakeObjectData( SerializableEphemerisObjectData& object,
 
    int delta = InitialExpansionSpanForJPLEphemerisItem( item );
 
-   double epsilon = 0.75*TruncationForJPLEphemerisItem( item ); // in km or radians
+   // Required truncation error
+   double truncation = 0.65*TruncationForJPLEphemerisItem( item ); // in km or radians
    if ( item != JPLEphemerisItem::Moon )
       if ( item != JPLEphemerisItem::LunarLibration )
-         epsilon /= ephem.ConstantValue( "AU" );
+         truncation /= ephem.ConstantValue( "AU" );
 
    LogLn( SEPARATOR );
    LogLn( "* Generating ephemeris data for " + ObjectNameFromJPLEphemerisItem( item ) );
    LogLn();
 
-   const int maxLength = 25;
+   // Maximum allowed expansion length
+   const int maxLength = 120;
 
    int minDelta = int32_max;
    int maxDelta = 0;
@@ -283,10 +286,11 @@ void MakeObjectData( SerializableEphemerisObjectData& object,
    for ( int jdi1 = startJDI, count = 0; jdi1 < endJDI; ++count )
    {
       int jdi2;
-      int n;
+      int length = 25;
+      double epsilon = truncation;
       ChebyshevFit T;
 
-      for ( bool reduce = false; ; )
+      for ( bool reduce = false, truncated = false;; )
       {
          jdi2 = jdi1 + delta;
          if ( jdi2 > endJDI )
@@ -308,25 +312,39 @@ void MakeObjectData( SerializableEphemerisObjectData& object,
                               ephem.ComputeState( r, r1, jdi, jdf, item );
                               return r1;
                            },
-                           0, delta, 3, 2*maxLength );
+                           0, delta, 3, 2*length );
+
          T.Truncate( epsilon );
-         n = T.TruncatedLength();
-         bool high = n > maxLength;
-         if ( high )
+         if ( T.TruncatedLength() > length )
+         {
             --delta;
+            reduce = true;
+         }
          else if ( !reduce && jdi2 < endJDI )
             ++delta;
          else
-            break;
-
-         reduce = high;
-
-         if ( delta < 16 )
          {
-            delta = InitialExpansionSpanForJPLEphemerisItem( item );
-            epsilon *= 1.01;
+            if ( truncated )
+               LogLn( String().Format( "** Warning: Increased truncation error to %.3e", epsilon ) );
+            break;
+         }
+
+         if ( delta == 0 )
+         {
+            // Fast movement: try with longer coefficient series.
+            length += 10;
+            if ( length > maxLength )
+            {
+               // Extremely fast movement: try a larger truncation error.
+               // N.B. This should not happen under normal working conditions
+               // with fundamental ephemerides.
+               length = 25;
+               epsilon *= 1.1;
+               truncated = true;
+            }
+
+            delta = 12;
             reduce = false;
-            LogLn( String().Format( "** Warning: Increasing truncation error to %.3e", epsilon ) );
          }
       }
 
@@ -337,10 +355,10 @@ void MakeObjectData( SerializableEphemerisObjectData& object,
 
       object.data[order] << SerializableEphemerisData( TimePoint( jdi1, 0.5 ), T );
 
-      LogLn( String().Format( "%5d : %+10.1f -> %+10.1f (%4d) : %2d %2d %2d %.3e %.3e %.3e",
-                              count, jdi1+0.5, jdi2+0.5, delta,
-                              T.TruncatedLength( 0 ), T.TruncatedLength( 1 ), T.TruncatedLength( 2 ),
-                              T.TruncationError( 0 ), T.TruncationError( 1 ), T.TruncationError( 2 ) ) );
+      LogLn( String().Format( "%5d : %+10.1f -> %+10.1f (%5d) : %3d %3d %3d %.3e %.3e %.3e"
+                              , count, jdi1+0.5, jdi2+0.5, delta
+                              , T.TruncatedLength( 0 ), T.TruncatedLength( 1 ), T.TruncatedLength( 2 )
+                              , T.TruncationError( 0 ), T.TruncationError( 1 ), T.TruncationError( 2 ) ) );
 
       for ( int i = 0; i < 3; ++i )
          if ( T.TruncationError( i ) > maxError[i] )
@@ -349,7 +367,7 @@ void MakeObjectData( SerializableEphemerisObjectData& object,
       totalCoefficients += T.NumberOfTruncatedCoefficients();
 
       if ( delta < minDelta )
-         if ( jdi2 < endJDI )
+         if ( jdi2 < endJDI || count == 0 )
             minDelta = delta;
       if ( delta > maxDelta )
          maxDelta = delta;
@@ -358,13 +376,14 @@ void MakeObjectData( SerializableEphemerisObjectData& object,
    }
 
    LogLn();
-   LogLn( "Item               : " + ObjectNameFromJPLEphemerisItem( item ) );
-   LogLn( "Order              : " + String( order ) );
-   LogLn( "Total expansions   : " + String( object.data[order].Length() ) );
-   LogLn( "Smallest time span : " + String( minDelta ) );
-   LogLn( "Largest time span  : " + String( maxDelta ) );
-   LogLn( "Largest errors     : " + String().Format( "%.3e  %.3e  %.3e", maxError[0], maxError[1], maxError[2] ) );
-   LogLn( "Total coefficients : " + String( totalCoefficients ) );
+   LogLn( "Object ....................... " + ObjectNameFromJPLEphemerisItem( item ) );
+   LogLn( "Derivative order ............. " + String( order ) );
+   LogLn( "Total Chebyshev expansions ... " + String( object.data[order].Length() ) );
+   LogLn( "Smallest time span ........... " + String( minDelta ) + " (days)" );
+   LogLn( "Largest time span ............ " + String( maxDelta ) + " (days)" );
+   LogLn( "Largest truncation errors .... " + String().Format( "%.3e  %.3e  %.3e  (%s)"
+                                                         , maxError[0], maxError[1], maxError[2], order ? "au/day" : "au" ) );
+   LogLn( "Total coefficients ........... " + String( totalCoefficients ) );
    LogLn();
 }
 
@@ -388,7 +407,7 @@ SerializableEphemerisObjectData MakeObject( const JPLEphemeris& ephem,
 
 void TestEphemerisFile( const String filePath, const JPLEphemeris& J, int testsPerDay )
 {
-   const char* objects[] = { "Me", "Ve", "EMB", "Ma", "Ju", "Sa", "Ur", "Ne", "Pl", "Mn", "Sn", "Ea" };
+   const char* objects[] = { "Me", "Ve", "EMB", "Ma", "Ju", "Sa", "Ur", "Ne", "Pl", "Mn", "Sn", "Ea", "Mn" };
    const JPLEphemeris::item_index jplItems[] = {
       JPLEphemerisItem::Mercury,
       JPLEphemerisItem::Venus,
@@ -401,7 +420,8 @@ void TestEphemerisFile( const String filePath, const JPLEphemeris& J, int testsP
       JPLEphemerisItem::Pluto,
       JPLEphemerisItem::Moon,
       JPLEphemerisItem::Sun,
-      JPLEphemerisItem::Earth };
+      JPLEphemerisItem::Earth,
+      JPLEphemerisItem::SSBMoon };
 
    LogLn( SEPARATOR );
    LogLn( "* Testing ephemeris file: " );
@@ -418,7 +438,7 @@ void TestEphemerisFile( const String filePath, const JPLEphemeris& J, int testsP
 
    for ( int i = 0; i < int( ItemsInArray( objects ) ); ++i )
    {
-      LogLn( objects[i] );
+      LogLn( IsoString( objects[i] ) + " (" + OriginIdFromJPLEphemerisItem( jplItems[i] ) + ')' );
 
       EphemerisFile::Handle H( E, objects[i], OriginIdFromJPLEphemerisItem( jplItems[i] ) );
 
@@ -525,6 +545,12 @@ void ShowHelp()
 "\n      specified, the upper bound of the covered time span will be determined by"
 "\n      the specified set of ephemeris data files."
 "\n"
+"\n   --without-ssb-moon"
+"\n"
+"\n      Do not include the Moon with respect to the solar system barycenter."
+"\n      This is useful for numerical integrations; when these are of no interest,"
+"\n      excluding this object can save a significant amount of disk space."
+"\n"
 "\n   --with-nutations"
 "\n"
 "\n      Include nutation angles in the generated XEPH file. Nutations are not"
@@ -588,6 +614,7 @@ int main( int argc, const char* argv[] )
       int        startJDI = int32_min;
       int        endJDI = int32_max;
       int        testsPerDay = 4;
+      bool       withSSBMoon = true;
       bool       withNutations = false;
       bool       withLibrations = false;
       bool       testOnly = false;
@@ -638,6 +665,8 @@ int main( int argc, const char* argv[] )
          {
             if ( arg.Id() == "T" || arg.Id() == "-test-only" )
                testOnly = true;
+            else if ( arg.Id() == "-without-ssb-moon" )
+               withSSBMoon = false;
             else if ( arg.Id() == "-with-nutations" )
                withNutations = true;
             else if ( arg.Id() == "-with-librations" )
@@ -736,15 +765,19 @@ int main( int argc, const char* argv[] )
                  << MakeObject( ephem, startJDI, endJDI, JPLEphemerisItem::Venus, true )
                  << MakeObject( ephem, startJDI, endJDI, JPLEphemerisItem::EarthMoonBarycenter, true )
                  << MakeObject( ephem, startJDI, endJDI, JPLEphemerisItem::Mars, true )
-                 << MakeObject( ephem, startJDI, endJDI, JPLEphemerisItem::Jupiter )
-                 << MakeObject( ephem, startJDI, endJDI, JPLEphemerisItem::Saturn )
-                 << MakeObject( ephem, startJDI, endJDI, JPLEphemerisItem::Uranus )
-                 << MakeObject( ephem, startJDI, endJDI, JPLEphemerisItem::Neptune )
-                 << MakeObject( ephem, startJDI, endJDI, JPLEphemerisItem::Pluto )
+                 << MakeObject( ephem, startJDI, endJDI, JPLEphemerisItem::Jupiter, true )
+                 << MakeObject( ephem, startJDI, endJDI, JPLEphemerisItem::Saturn, true )
+                 << MakeObject( ephem, startJDI, endJDI, JPLEphemerisItem::Uranus, true )
+                 << MakeObject( ephem, startJDI, endJDI, JPLEphemerisItem::Neptune, true )
+                 << MakeObject( ephem, startJDI, endJDI, JPLEphemerisItem::Pluto, true )
                  << MakeObject( ephem, startJDI, endJDI, JPLEphemerisItem::Moon )
                  << MakeObject( ephem, startJDI, endJDI, JPLEphemerisItem::Sun, true )
-                 // Earth is synthesized from EMB and Moon
+                    // Earth is synthesized from EMB and Moon
                  << MakeObject( ephem, startJDI, endJDI, JPLEphemerisItem::Earth, true );
+
+         // Optional Moon with respect to solar system barycenter - useful for numerical integrations
+         if ( withSSBMoon )
+            objects << MakeObject( ephem, startJDI, endJDI, JPLEphemerisItem::SSBMoon, true );
 
          // Optional nutations
          if ( withNutations )
@@ -789,4 +822,4 @@ int main( int argc, const char* argv[] )
 }
 
 // ----------------------------------------------------------------------------
-// EOF pcl/jpl2pcl.cpp - Released 2021-01-09T19:36:56Z
+// EOF pcl/jpl2pcl.cpp - Released 2021-03-28T10:02:51Z

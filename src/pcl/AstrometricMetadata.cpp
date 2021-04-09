@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// pcl/AstrometricMetadata.cpp - Released 2020-12-17T15:46:35Z
+// pcl/AstrometricMetadata.cpp - Released 2021-04-09T19:41:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -101,6 +101,9 @@ void AstrometricMetadata::Build( const PropertyArray& properties, const FITSKeyw
    m_geoLongitude = wcs.longobs;
    m_geoLatitude = wcs.latobs;
    m_geoHeight = wcs.altobs;
+
+   m_refSys = wcs.radesys;
+   m_equinox = wcs.equinox;
 
    m_width = width;
    m_height = height;
@@ -216,7 +219,7 @@ void AstrometricMetadata::Write( ImageWindow& window, bool notify ) const
    {
       view.SetStorablePropertyValue( "Observation:Center:RA", pRD.x, notify );
       view.SetStorablePropertyValue( "Observation:Center:Dec", pRD.y, notify );
-      view.SetStorablePropertyValue( "Observation:CelestialReferenceSystem", "ICRS", notify );
+      view.SetStorablePropertyValue( "Observation:CelestialReferenceSystem", ReferenceSystem(), notify );
       view.SetStorablePropertyValue( "Observation:Equinox", 2000.0, notify );
       // The default reference point is the geometric center of the image.
       view.DeleteProperty( "Observation:Center:X", notify );
@@ -274,7 +277,7 @@ void AstrometricMetadata::Write( XISFWriter& writer ) const
    {
       writer.WriteImageProperty( "Observation:Center:RA", pRD.x );
       writer.WriteImageProperty( "Observation:Center:Dec", pRD.y );
-      writer.WriteImageProperty( "Observation:CelestialReferenceSystem", "ICRS" );
+      writer.WriteImageProperty( "Observation:CelestialReferenceSystem", ReferenceSystem() );
       writer.WriteImageProperty( "Observation:Equinox", 2000.0 );
       // The default reference point is the geometric center of the image.
       writer.RemoveImageProperty( "Observation:Center:X" );
@@ -392,7 +395,8 @@ String AstrometricMetadata::Summary() const
    summary    << "Projection ............... " << m_description->projectionName << '\n'
               << "Projection origin ........ " << m_description->projectionOrigin << '\n'
               << "Resolution ............... " << m_description->resolution << '\n'
-              << "Rotation ................. " << m_description->rotation << '\n';
+              << "Rotation ................. " << m_description->rotation << '\n'
+              << "Reference system ......... " << m_description->referenceSystem << '\n';
 
    if ( !m_description->observationStartTime.IsEmpty() )
       summary << "Observation start time ... " << m_description->observationStartTime << '\n';
@@ -559,31 +563,21 @@ void AstrometricMetadata::UpdateWCSKeywords( FITSKeywordArray& keywords ) const
 
    if ( IsValid() )
    {
-      WCSKeywords wcs = ComputeWCSKeywords();
-
-      if ( wcs.radesys.IsEmpty() )
-      {
-         if ( wcs.equinox.IsDefined() )
-         {
-            keywords << FITSHeaderKeyword( "RADESYS", (wcs.equinox() >= 1984.0) ? "FK5" : "FK4", "Reference system of celestial coordinates" );
-            keywords << FITSHeaderKeyword( "EQUINOX", IsoString( wcs.equinox() ), "Epoch of the mean equator and equinox (years)" );
-         }
-         else
-            keywords << FITSHeaderKeyword( "RADESYS", "ICRS", "Coordinates referred to ICRS / J2000.0" );
-      }
+      IsoString refSys = ReferenceSystem();
+      if ( refSys == "ICRS" )
+         keywords << FITSHeaderKeyword( "RADESYS", "ICRS", "Coordinates referred to ICRS / J2000.0" );
+      else if ( refSys == "GCRS" )
+         keywords << FITSHeaderKeyword( "RADESYS", "GCRS", "Coordinates referred to GCRS / J2000.0" );
+      else if ( refSys == "GAPPT" )
+         keywords << FITSHeaderKeyword( "RADESYS", "GAPPT", "Geocentric apparent coordinates / J2000.0" );
       else
       {
-         if ( wcs.radesys == "ICRS" )
-            keywords << FITSHeaderKeyword( "RADESYS", "ICRS", "Coordinates referred to ICRS / J2000.0" );
-         else if ( wcs.radesys == "GAPPT" )
-            keywords << FITSHeaderKeyword( "RADESYS", "GAPPT", "Geocentric apparent coordinates / J2000.0" );
-         else
-         {
-            keywords << FITSHeaderKeyword( "RADESYS", wcs.radesys, "Reference system of celestial coordinates" );
-            if ( wcs.equinox.IsDefined() )
-               keywords << FITSHeaderKeyword( "EQUINOX", IsoString( wcs.equinox() ), "Epoch of the mean equator and equinox (years)" );
-         }
+         keywords << FITSHeaderKeyword( "RADESYS", refSys, "Reference system of celestial coordinates" );
+         if ( m_equinox.IsDefined() )
+            keywords << FITSHeaderKeyword( "EQUINOX", IsoString( m_equinox() ), "Epoch of the mean equator and equinox (years)" );
       }
+
+      WCSKeywords wcs = ComputeWCSKeywords();
 
       keywords << FITSHeaderKeyword( "CTYPE1", wcs.ctype1, "Axis1 projection: " + m_projection->Name() )
                << FITSHeaderKeyword( "CTYPE2", wcs.ctype2, "Axis2 projection: " + m_projection->Name() )
@@ -629,9 +623,6 @@ void AstrometricMetadata::RemoveKeywords( FITSKeywordArray& keywords, bool remov
       RemoveKeyword( keywords, "OBJCTRA" );
       RemoveKeyword( keywords, "DEC" );
       RemoveKeyword( keywords, "OBJCTDEC" );
-      RemoveKeyword( keywords, "RADESYS" );
-      RemoveKeyword( keywords, "EQUINOX" );
-      RemoveKeyword( keywords, "EPOCH" );
    }
 
    if ( removeScaleKeywords )
@@ -642,6 +633,9 @@ void AstrometricMetadata::RemoveKeywords( FITSKeywordArray& keywords, bool remov
       RemoveKeyword( keywords, "PIXSIZE" );
    }
 
+   RemoveKeyword( keywords, "RADESYS" );
+   RemoveKeyword( keywords, "EQUINOX" );
+   RemoveKeyword( keywords, "EPOCH" );
    RemoveKeyword( keywords, "CTYPE1" );
    RemoveKeyword( keywords, "CTYPE2" );
    RemoveKeyword( keywords, "CRVAL1" );
@@ -733,7 +727,7 @@ void AstrometricMetadata::UpdateProperties( PropertyArray& properties ) const
       {
          ModifyProperty( properties, "Observation:Center:RA", pRD.x );
          ModifyProperty( properties, "Observation:Center:Dec", pRD.y );
-         ModifyProperty( properties, "Observation:CelestialReferenceSystem", "ICRS" );
+         ModifyProperty( properties, "Observation:CelestialReferenceSystem", ReferenceSystem() );
          ModifyProperty( properties, "Observation:Equinox", 2000.0 );
          // The default reference point is the geometric center of the image.
          RemoveProperty( properties, "Observation:Center:X" );
@@ -764,8 +758,6 @@ void AstrometricMetadata::RemoveProperties( PropertyArray& properties, bool remo
       RemoveProperty( properties, "Observation:Center:Dec" );
       RemoveProperty( properties, "Observation:Center:X" );
       RemoveProperty( properties, "Observation:Center:Y" );
-      RemoveProperty( properties, "Observation:CelestialReferenceSystem" );
-      RemoveProperty( properties, "Observation:Equinox" );
    }
 
    if ( removeScaleProperties )
@@ -775,6 +767,8 @@ void AstrometricMetadata::RemoveProperties( PropertyArray& properties, bool remo
       RemoveProperty( properties, "Instrument:Sensor:YPixelSize" );
    }
 
+   RemoveProperty( properties, "Observation:CelestialReferenceSystem" );
+   RemoveProperty( properties, "Observation:Equinox" );
    RemoveProperty( properties, "Transformation_ImageToProjection" );
 }
 
@@ -788,8 +782,6 @@ void AstrometricMetadata::RemoveProperties( ImageWindow& window, bool removeCent
       view.DeletePropertyIfExists( "Observation:Center:Dec" );
       view.DeletePropertyIfExists( "Observation:Center:X" );
       view.DeletePropertyIfExists( "Observation:Center:Y" );
-      view.DeletePropertyIfExists( "Observation:CelestialReferenceSystem" );
-      view.DeletePropertyIfExists( "Observation:Equinox" );
    }
 
    if ( removeScaleProperties )
@@ -799,6 +791,8 @@ void AstrometricMetadata::RemoveProperties( ImageWindow& window, bool removeCent
       view.DeletePropertyIfExists( "Instrument:Sensor:YPixelSize" );
    }
 
+   view.DeletePropertyIfExists( "Observation:CelestialReferenceSystem" );
+   view.DeletePropertyIfExists( "Observation:Equinox" );
    view.DeletePropertyIfExists( "Transformation_ImageToProjection" );
 }
 
@@ -961,6 +955,8 @@ void AstrometricMetadata::UpdateDescription() const
          m_description->resolution = String().Format( "%.3f arcsec/px", m_resolution*3600 );
          m_description->rotation = String().Format( "%.3f deg", rotation ) << (flipped ? " (flipped)" : "");
 
+         m_description->referenceSystem = ReferenceSystem();
+
          if ( m_obsStartTime.IsDefined() )
             m_description->observationStartTime = m_obsStartTime().ToString( "%Y-%M-%D %h:%m:%s0 UTC" );
 
@@ -1023,4 +1019,4 @@ void AstrometricMetadata::UpdateDescription() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AstrometricMetadata.cpp - Released 2020-12-17T15:46:35Z
+// EOF pcl/AstrometricMetadata.cpp - Released 2021-04-09T19:41:11Z

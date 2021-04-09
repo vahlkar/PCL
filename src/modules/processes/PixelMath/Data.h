@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.8.0
+// Standard PixelMath Process Module Version 1.8.1
 // ----------------------------------------------------------------------------
-// Data.h - Released 2021-01-23T18:24:14Z
+// Data.h - Released 2021-04-09T19:41:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -55,8 +55,14 @@
 
 #include "Expression.h"
 
+#include <pcl/AutoPointer.h>
+
 namespace pcl
 {
+
+// ----------------------------------------------------------------------------
+
+class PCL_CLASS ImageWindow;
 
 // ----------------------------------------------------------------------------
 
@@ -152,6 +158,28 @@ public:
 
    virtual bool FindImage();
 
+   bool RequiresAstrometricSolution() const
+   {
+      return m_astrometryRequired;
+   }
+
+   void RequireAstrometricSolution() const
+   {
+      m_astrometryRequired = true;
+   }
+
+   bool HasAstrometricSolution() const;
+
+   bool IsWindow() const
+   {
+      return m_isWindow;
+   }
+
+   const ImageWindow* Window() const
+   {
+      return m_window.Ptr();
+   }
+
    bool ByReference() const
    {
       return m_byReference;
@@ -159,7 +187,7 @@ public:
 
    void SetByReference() const
    {
-      m_byReference = true; // mutable m_byReference
+      m_byReference = true;
    }
 
    bool IsInterpolated() const
@@ -179,15 +207,17 @@ public:
       return new ImageReference( *this );
    }
 
+private:
+
+           bool                     m_isWindow = true;     // true -> this represents an existing image window
+           AutoPointer<ImageWindow> m_window;              // the existing image window if m_isWindow == true
+   mutable void*                    m_interpolators[ 3 ] = {};
+   mutable bool                     m_byReference = false; // true -> will be passed by reference instead of by value
+   mutable bool                     m_astrometryRequired = false; // true -> astrometric solution is required for this image
+
 protected:
 
    ImageVariant* m_image = nullptr;
-
-private:
-
-   mutable void* m_interpolators[ 3 ] = {};
-   mutable bool  m_byReference = false; // true -> will be passed by reference instead of by value
-           bool  m_isWindow = true; // true -> this represents an existing image window
 };
 
 // ----------------------------------------------------------------------------
@@ -394,4 +424,4 @@ public:
 #endif   // __Data_h
 
 // ----------------------------------------------------------------------------
-// EOF Data.h - Released 2021-01-23T18:24:14Z
+// EOF Data.h - Released 2021-04-09T19:41:48Z

@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// StatisticsProcess.cpp - Released 2020-12-17T15:46:55Z
+// StatisticsProcess.cpp - Released 2021-04-09T19:41:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -135,4 +135,4 @@ bool StatisticsProcess::IsAssignable() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF StatisticsProcess.cpp - Released 2020-12-17T15:46:55Z
+// EOF StatisticsProcess.cpp - Released 2021-04-09T19:41:48Z

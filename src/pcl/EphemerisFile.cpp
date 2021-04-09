@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// pcl/EphemerisFile.cpp - Released 2020-12-17T15:46:35Z
+// pcl/EphemerisFile.cpp - Released 2021-04-09T19:41:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -67,6 +67,8 @@ String EphemerisFile::s_ephFilePath;
 String EphemerisFile::s_ephFilePath_s;
 String EphemerisFile::s_astFilePath;
 String EphemerisFile::s_astFilePath_s;
+String EphemerisFile::s_kboFilePath;
+String EphemerisFile::s_kboFilePath_s;
 String EphemerisFile::s_nutFilePath;
 String EphemerisFile::s_nutFilePath_s;
 String EphemerisFile::s_deltaTFilePath;
@@ -79,6 +81,8 @@ static EphemerisFile* s_E = nullptr;
 static EphemerisFile* s_Es = nullptr;
 static EphemerisFile* s_A = nullptr;
 static EphemerisFile* s_As = nullptr;
+static EphemerisFile* s_K = nullptr;
+static EphemerisFile* s_Ks = nullptr;
 static EphemerisFile* s_N = nullptr;
 static EphemerisFile* s_Ns = nullptr;
 
@@ -888,6 +892,72 @@ const EphemerisFile& EphemerisFile::ShortTermAsteroidEphemerides()
 
 // ----------------------------------------------------------------------------
 
+const EphemerisFile& EphemerisFile::KBOEphemerides()
+{
+   volatile AutoLock lock( s_mutex );
+
+   if ( s_K != nullptr )
+      return *s_K;
+
+   String filePath = s_kboFilePath;
+   if ( filePath.IsEmpty() )
+   {
+      filePath = PixInsightSettings::GlobalString( "Application/KBOEphemeridesFilePath" );
+      if ( filePath.IsEmpty() )
+         throw Error( "The KBO ephemerides file has not been defined." );
+   }
+   if ( !File::Exists( filePath ) )
+      throw Error( "The KBO ephemerides file does not exist: " + filePath );
+
+   try
+   {
+      return *(s_K = new EphemerisFile( filePath ));
+   }
+   catch ( const Exception& x )
+   {
+      throw Error( "Loading KBO ephemerides file: " + x.Message() );
+   }
+   catch ( ... )
+   {
+      throw;
+   }
+}
+
+// ----------------------------------------------------------------------------
+
+const EphemerisFile& EphemerisFile::ShortTermKBOEphemerides()
+{
+   volatile AutoLock lock( s_mutex );
+
+   if ( s_Ks != nullptr )
+      return *s_Ks;
+
+   String filePath = s_kboFilePath_s;
+   if ( filePath.IsEmpty() )
+   {
+      filePath = PixInsightSettings::GlobalString( "Application/ShortTermKBOEphemeridesFilePath" );
+      if ( filePath.IsEmpty() )
+         throw Error( "The short-term KBO ephemerides file has not been defined." );
+   }
+   if ( !File::Exists( filePath ) )
+      throw Error( "The short-term KBO ephemerides file does not exist: " + filePath );
+
+   try
+   {
+      return *(s_Ks = new EphemerisFile( filePath ));
+   }
+   catch ( const Exception& x )
+   {
+      throw Error( "Loading short-term KBO ephemerides file: " + x.Message() );
+   }
+   catch ( ... )
+   {
+      throw;
+   }
+}
+
+// ----------------------------------------------------------------------------
+
 const EphemerisFile& EphemerisFile::NutationModel()
 {
    volatile AutoLock lock( s_mutex );
@@ -1082,6 +1152,34 @@ void EphemerisFile::OverrideShortTermAsteroidEphemerides( const String& filePath
 
 // ----------------------------------------------------------------------------
 
+void EphemerisFile::OverrideKBOEphemerides( const String& filePath )
+{
+   volatile AutoLock lock( s_mutex );
+
+   if ( s_K != nullptr )
+   {
+      delete s_K;
+      s_K = nullptr;
+   }
+   s_kboFilePath = filePath.Trimmed();
+}
+
+// ----------------------------------------------------------------------------
+
+void EphemerisFile::OverrideShortTermKBOEphemerides( const String& filePath )
+{
+   volatile AutoLock lock( s_mutex );
+
+   if ( s_Ks != nullptr )
+   {
+      delete s_Ks;
+      s_Ks = nullptr;
+   }
+   s_kboFilePath_s = filePath.Trimmed();
+}
+
+// ----------------------------------------------------------------------------
+
 void EphemerisFile::OverrideNutationModel( const String& filePath )
 {
    volatile AutoLock lock( s_mutex );
@@ -1137,4 +1235,4 @@ void EphemerisFile::OverrideCIP_ITRSDataFilePath( const String& filePath )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/EphemerisFile.cpp - Released 2020-12-17T15:46:35Z
+// EOF pcl/EphemerisFile.cpp - Released 2021-04-09T19:41:11Z

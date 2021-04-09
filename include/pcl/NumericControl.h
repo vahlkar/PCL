@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// pcl/NumericControl.h - Released 2020-12-17T15:46:29Z
+// pcl/NumericControl.h - Released 2021-04-09T19:40:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -250,6 +250,24 @@ public:
 
    /*! #
     */
+   bool IsFixedSign() const
+   {
+      return m_sign;
+   }
+
+   /*! #
+    */
+   void EnableFixedSign( bool enable = true );
+
+   /*! #
+    */
+   void DisableFixedSign( bool disable = true )
+   {
+      EnableFixedSign( !disable );
+   }
+
+   /*! #
+    */
    bool IsAutoAdjustEditWidth() const
    {
       return m_autoEditWidth;
@@ -300,10 +318,11 @@ protected:
    double m_value = 0;            // current value
    double m_lowerBound = 0;       // acceptable range, lower bound
    double m_upperBound = 1;       // acceptable range, upper bound
-   int    m_precision = 6;        // number of decimal digits in non-sci mode, [0,15]
+   int    m_precision = 6;        // number of decimal digits in non-sci mode, [0,16]
    bool   m_real = true;          // whether this is a real or integer parameter
    bool   m_fixed = false;        // precision is literal instead of significant digits?
    bool   m_scientific = false;   // scientific notation enabled?
+   bool   m_sign = false;         // always show a sign character
    bool   m_autoEditWidth = true; // set width of edit control automatically
    int    m_sciTriggerExp = -1;   // exponent (of ten) to trigger sci notation
 
@@ -446,4 +465,4 @@ private:
 #endif   // __PCL_NumericControl_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/NumericControl.h - Released 2020-12-17T15:46:29Z
+// EOF pcl/NumericControl.h - Released 2021-04-09T19:40:59Z

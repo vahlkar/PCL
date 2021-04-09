@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.8.0
+// Standard PixelMath Process Module Version 1.8.1
 // ----------------------------------------------------------------------------
-// PixelMathInstance.cpp - Released 2021-01-23T18:24:14Z
+// PixelMathInstance.cpp - Released 2021-04-09T19:41:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -58,8 +58,6 @@
 
 #include <pcl/AutoLock.h>
 #include <pcl/AutoViewLock.h>
-#include <pcl/AutoPointer.h>
-#include <pcl/ImageWindow.h>
 #include <pcl/PixelInterpolation.h>
 #include <pcl/StandardStatus.h>
 
@@ -501,27 +499,40 @@ private:
                }
 
             /*
-             * Initialize thread-local data.
+             * Initialize thread-local data
              */
             PixelTLS tls;
 
+            /*
+             * For each pixel row
+             */
             for ( int y = m_firstRow, yPos = m_data.y0 + m_firstRow, ch = Max( 0, m_data.channel ); y < m_endRow; ++y, ++yPos )
             {
+               /*
+                * For each pixel
+                */
                for ( int x = 0, xPos = m_data.x0; x < m_data.wt; ++x, ++xPos )
                {
+                  /*
+                   * For each expression
+                   */
                   for ( const Expression::component_list& rpn : m_data.RPN )
                   {
+                     // Current stack pointer
                      pixel_set::iterator sp = tos;
 
                      int rgbCount = 0;
                      bool stackPushed = false;
 
+                     /*
+                      * For each expression component
+                      */
                      for ( Expression::component_list::const_iterator i = rpn.Begin(); i != rpn.End(); ++i )
                      {
                         if ( (*i)->IsData() )
                         {
                            /*
-                            * Data components.
+                            * Data component
                             */
                            switch ( (*i)->Type() )
                            {
@@ -574,7 +585,7 @@ private:
                         else if ( (*i)->IsFunctional() )
                         {
                            /*
-                            * Functional components.
+                            * Functional component
                             */
                            pixel_set::iterator s0 = sp - F->NumberOfArguments();
 
@@ -599,7 +610,7 @@ private:
                         else if ( (*i)->IsBranch() )
                         {
                            /*
-                            * Flow control primitives.
+                            * Flow control primitive
                             */
                            bool pop = false;
                            switch ( B->OpCode() )
@@ -643,6 +654,9 @@ private:
                      }
                   }
 
+                  /*
+                   * Result = TOS
+                   */
                   if ( generate )
                   {
                      const Pixel& px = *tos;
@@ -1261,6 +1275,8 @@ bool PixelMathInstance::ExecuteOn( View& view )
                      I->SetChannelIndex( M->ChannelIndex() );
                      if ( M->ByReference() )
                         I->SetByReference();
+                     if ( M->RequiresAstrometricSolution() )
+                        I->RequireAstrometricSolution();
                      rpn.Delete( i );
                      *i = I;
                   }
@@ -1283,6 +1299,10 @@ bool PixelMathInstance::ExecuteOn( View& view )
                            interpolation = new BicubicPixelInterpolation;
                         I->InitInterpolators( interpolation );
                      }
+
+                     if ( I->RequiresAstrometricSolution() )
+                        if ( !I->HasAstrometricSolution() )
+                           throw ParseError( "The image has no valid astrometric solution", p_expression[c], I->TokenPosition() );
                   }
                }
 
@@ -1677,6 +1697,8 @@ bool PixelMathInstance::ExecuteGlobal()
                      I->SetChannelIndex( M->ChannelIndex() );
                      if ( M->ByReference() )
                         I->SetByReference();
+                     if ( M->RequiresAstrometricSolution() )
+                        I->RequireAstrometricSolution();
                      rpn.Delete( i );
                      *i = I;
                   }
@@ -1696,6 +1718,10 @@ bool PixelMathInstance::ExecuteGlobal()
                            interpolation = new BicubicPixelInterpolation;
                         I->InitInterpolators( interpolation );
                      }
+
+                     if ( I->RequiresAstrometricSolution() )
+                        if ( !I->HasAstrometricSolution() )
+                           throw ParseError( "The image has no valid astrometric solution", p_expression[c], I->TokenPosition() );
                   }
                }
 
@@ -2030,4 +2056,4 @@ size_type PixelMathInstance::ParameterLength( const MetaParameter* p, size_type 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PixelMathInstance.cpp - Released 2021-01-23T18:24:14Z
+// EOF PixelMathInstance.cpp - Released 2021-04-09T19:41:48Z

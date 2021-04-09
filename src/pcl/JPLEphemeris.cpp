@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// pcl/JPLEphemeris.cpp - Released 2020-12-17T15:46:35Z
+// pcl/JPLEphemeris.cpp - Released 2021-04-09T19:41:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -126,7 +126,7 @@ JPLEphemeris::JPLEphemeris( const String& filePath )
                if ( tokens.IsEmpty() )
                   throw Error( "Invalid group 1040: empty group contents." );
                size_type n = tokens[0].ToUInt();
-               if ( tokens.Length() != n+1 )
+               if ( tokens.Length() < n+1 )
                   throw Error( "Invalid group 1040: insufficient constant name tokens." );
                for ( size_type i = 1; i <= n; ++i )
                   m_constants << constant( tokens[i] );
@@ -138,7 +138,7 @@ JPLEphemeris::JPLEphemeris( const String& filePath )
                if ( tokens.IsEmpty() )
                   throw Error( "Invalid group 1041: empty group contents." );
                size_type n = tokens[0].ToUInt();
-               if ( tokens.Length() != n+1 )
+               if ( tokens.Length() < n+1 )
                   throw Error( "Invalid group 1041: insufficient constant value tokens." );
                if ( n != m_constants.Length() )
                   throw Error( "Invalid group 1041: mismatched constant name/value token counts." );
@@ -433,4 +433,4 @@ IsoString JPLEphemeris::Summary() const
 }  // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/JPLEphemeris.cpp - Released 2020-12-17T15:46:35Z
+// EOF pcl/JPLEphemeris.cpp - Released 2021-04-09T19:41:11Z

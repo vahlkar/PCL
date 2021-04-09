@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
 // Standard Debayer Process Module Version 1.8.2
 // ----------------------------------------------------------------------------
-// DebayerInterface.cpp - Released 2020-12-17T15:46:56Z
+// DebayerInterface.cpp - Released 2021-04-09T19:41:49Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -908,4 +908,4 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DebayerInterface.cpp - Released 2020-12-17T15:46:56Z
+// EOF DebayerInterface.cpp - Released 2021-04-09T19:41:49Z

@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// pcl/MetaParameter.h - Released 2020-12-17T15:46:28Z
+// pcl/MetaParameter.h - Released 2021-04-09T19:40:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -1153,12 +1153,12 @@ public:
     * Processing History and ProcessContainer windows in the PixInsight core
     * application.
     *
-    * The returned value should be in the range from -1 to 15. A maximum of 7
+    * The returned value should be in the range from -1 to 16. A maximum of 7
     * decimal digits will be used for 32-bit real process parameters, and a
-    * maximum of 15 decimal digits for 64-bit real process parameters, even
+    * maximum of 16 decimal digits for 64-bit real process parameters, even
     * if this function returns a larger value.
     *
-    * If a value >= 0 is returned, real literal representations are always
+    * If a value &ge; 0 is returned, real literal representations are always
     * rounded to the nearest value with the specified amount of decimal digits.
     * If this function returns zero, output values corresponding to this
     * parameter will always be rounded to the nearest integer.
@@ -1996,4 +1996,4 @@ private:
 #endif   // __PCL_MetaParameter_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MetaParameter.h - Released 2020-12-17T15:46:28Z
+// EOF pcl/MetaParameter.h - Released 2021-04-09T19:40:59Z

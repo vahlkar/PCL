@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// pcl/Vector.h - Released 2020-12-17T15:46:28Z
+// pcl/Vector.h - Released 2021-04-09T19:40:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -250,6 +250,20 @@ public:
       : m_data( x.m_data )
    {
       x.m_data = nullptr;
+   }
+
+   /*!
+    * Constructs a vector and initializes it with component values taken from
+    * an instance \a x of a different vector template instantiation.
+    *
+    * This constructor is equivalent to:
+    *
+    * \code GenericVector( x.Begin(), x.Length() ) \endcode
+    */
+   template <typename T1>
+   GenericVector( const GenericVector<T1>& x )
+      : GenericVector( x.Begin(), x.Length() )
+   {
    }
 
    /*!
@@ -626,16 +640,16 @@ public:
     * vector. If that condition does not hold, this function will invoke
     * undefined behavior.
     */
-   double Dot( const GenericVector& v ) const noexcept
+   scalar Dot( const GenericVector& v ) const noexcept
    {
       PCL_PRECONDITION( v.Length() >= Length() )
-      double r = 0;
+      scalar r = scalar( 0 );
       const_iterator __restrict__ i = m_data->Begin();
       const_iterator __restrict__ j = m_data->End();
       const_iterator __restrict__ k = v.Begin();
       PCL_IVDEP
       for ( ; i < j; ++i, ++k )
-         r += double( *i ) * double( *k );
+         r += scalar( *i ) * scalar( *k );
       return r;
    }
 
@@ -658,6 +672,52 @@ public:
       return GenericVector( y1*z2 - z1*y2,
                             z1*x2 - x1*z2,
                             x1*y2 - y1*x2 );
+   }
+
+   /*!
+    * Unary sign reversal operator: returns a vector with the components of
+    * this vector multiplied by -1.
+    */
+   GenericVector operator -() const
+   {
+      GenericVector R( m_data->Length() );
+      const_iterator __restrict__ i = m_data->Begin();
+      const_iterator __restrict__ j = m_data->End();
+            iterator __restrict__ k = R.Begin();
+      PCL_IVDEP
+      for ( ; i < j; ++i, ++k )
+         *k = -*i;
+      return R;
+   }
+
+   /*!
+    * Reverses the sign of all components of this vector.
+    *
+    * Before performing its task, this function ensures that this instance
+    * uniquely references its vector data, generating a duplicate if necessary.
+    */
+   void ReverseSign()
+   {
+      if ( IsUnique() )
+      {
+               iterator __restrict__ i = m_data->Begin();
+         const_iterator __restrict__ j = m_data->End();
+         PCL_IVDEP
+         for ( ; i < j; ++i )
+            *i = -*i;
+      }
+      else
+      {
+         Data* newData = new Data( m_data->Length() );
+         const_iterator __restrict__ i = m_data->Begin();
+         const_iterator __restrict__ j = m_data->End();
+               iterator __restrict__ k = newData->Begin();
+         PCL_IVDEP
+         for ( ; i < j; ++i, ++k )
+            *k = -*i;
+         DetachFromData();
+         m_data = newData;
+      }
    }
 
    /*!
@@ -810,7 +870,7 @@ public:
     *
     * \sa L1Norm(), L2Norm()
     */
-   double Norm( double p ) const noexcept
+   scalar Norm( double p ) const noexcept
    {
       return pcl::Norm( m_data->Begin(), m_data->End(), p );
    }
@@ -819,7 +879,7 @@ public:
     * Returns the L1 norm (or Manhattan norm) of this vector. The L1 norm is
     * the sum of the absolute values of all vector components.
     */
-   double L1Norm() const noexcept
+   scalar L1Norm() const noexcept
    {
       return pcl::L1Norm( m_data->Begin(), m_data->End() );
    }
@@ -828,7 +888,7 @@ public:
     * Returns the L2 norm (or Euclidean norm) of this vector. The L2 norm is
     * the square root of the sum of squared vector components.
     */
-   double L2Norm() const noexcept
+   scalar L2Norm() const noexcept
    {
       return pcl::L2Norm( m_data->Begin(), m_data->End() );
    }
@@ -837,7 +897,7 @@ public:
     * Returns the L2 norm (or Euclidean norm) of this vector. This function is
     * a synonym for L2Norm().
     */
-   double Norm() const noexcept
+   scalar Norm() const noexcept
    {
       return L2Norm();
    }
@@ -849,8 +909,8 @@ public:
    GenericVector Unit() const
    {
       GenericVector R( *this );
-      double N = L2Norm();
-      if ( 1 + N > 1 )
+      scalar N = L2Norm();
+      if ( scalar( 1 ) + N > scalar( 1 ) )
          R /= N;
       return R;
    }
@@ -861,8 +921,8 @@ public:
     */
    void SetUnit()
    {
-      double N = L2Norm();
-      if ( 1 + N > 1 )
+      scalar N = L2Norm();
+      if ( scalar( 1 ) + N > scalar( 1 ) )
          (void)operator /=( N );
    }
 
@@ -2465,8 +2525,8 @@ GenericVector<T> operator +( GenericVector<T>&& A, GenericVector<T>&& B )
  * Returns the sum of a vector \a A and a scalar \a x.
  * \ingroup vector_operators
  */
-template <typename T> inline
-GenericVector<T> operator +( const GenericVector<T>& A, const T& x )
+template <typename T, typename S> inline
+GenericVector<T> operator +( const GenericVector<T>& A, const S& x )
 {
    GenericVector<T> R( A.Length() );
    typename GenericVector<T>::iterator       __restrict__ r = R.Begin();
@@ -2482,10 +2542,10 @@ GenericVector<T> operator +( const GenericVector<T>& A, const T& x )
  * Returns the sum of a vector \a A (rvalue reference) and a scalar \a x.
  * \ingroup vector_operators
  */
-template <typename T> inline
-GenericVector<T> operator +( GenericVector<T>&& A, const T& x )
+template <typename T, typename S> inline
+GenericVector<T> operator +( GenericVector<T>&& A, const S& x )
 {
-   A += x;
+   A += typename GenericVector<T>::scalar( x );
    return std::move( A );
 }
 
@@ -2496,8 +2556,8 @@ GenericVector<T> operator +( GenericVector<T>&& A, const T& x )
  * scalar-to-vector addition; it is equivalent to A + x.
  * \ingroup vector_operators
  */
-template <typename T> inline
-GenericVector<T> operator +( const T& x, const GenericVector<T>& A )
+template <typename T, typename S> inline
+GenericVector<T> operator +( const S& x, const GenericVector<T>& A )
 {
    return A + x;
 }
@@ -2509,10 +2569,10 @@ GenericVector<T> operator +( const T& x, const GenericVector<T>& A )
  * scalar-to-vector addition; it is equivalent to A + x.
  * \ingroup vector_operators
  */
-template <typename T> inline
-GenericVector<T> operator +( const T& x, GenericVector<T>&& A )
+template <typename T, typename S> inline
+GenericVector<T> operator +( const S& x, GenericVector<T>&& A )
 {
-   A += x;
+   A += typename GenericVector<T>::scalar( x );
    return std::move( A );
 }
 
@@ -2609,8 +2669,8 @@ GenericVector<T> operator -( GenericVector<T>&& A, GenericVector<T>&& B )
  * Returns the subtraction of a scalar \a x from a vector \a A.
  * \ingroup vector_operators
  */
-template <typename T> inline
-GenericVector<T> operator -( const GenericVector<T>& A, const T& x )
+template <typename T, typename S> inline
+GenericVector<T> operator -( const GenericVector<T>& A, const S& x )
 {
    GenericVector<T> R( A.Length() );
    typename GenericVector<T>::iterator       __restrict__ r = R.Begin();
@@ -2627,10 +2687,10 @@ GenericVector<T> operator -( const GenericVector<T>& A, const T& x )
  * reference).
  * \ingroup vector_operators
  */
-template <typename T> inline
-GenericVector<T> operator -( GenericVector<T>&& A, const T& x )
+template <typename T, typename S> inline
+GenericVector<T> operator -( GenericVector<T>&& A, const S& x )
 {
-   A -= x;
+   A -= typename GenericVector<T>::scalar( x );
    return std::move( A );
 }
 
@@ -2642,8 +2702,8 @@ GenericVector<T> operator -( GenericVector<T>&& A, const T& x )
  * components have the same magnitudes but opposite signs).
  * \ingroup vector_operators
  */
-template <typename T> inline
-GenericVector<T> operator -( const T& x, const GenericVector<T>& A )
+template <typename T, typename S> inline
+GenericVector<T> operator -( const S& x, const GenericVector<T>& A )
 {
    GenericVector<T> R( A.Length() );
    typename GenericVector<T>::iterator       __restrict__ r = R.Begin();
@@ -2664,8 +2724,8 @@ GenericVector<T> operator -( const T& x, const GenericVector<T>& A )
  * components have the same magnitudes but opposite signs).
  * \ingroup vector_operators
  */
-template <typename T> inline
-GenericVector<T> operator -( const T& x, GenericVector<T>&& A )
+template <typename T, typename S> inline
+GenericVector<T> operator -( const S& x, GenericVector<T>&& A )
 {
    typename GenericVector<T>::iterator       __restrict__ a = A.Begin();
    typename GenericVector<T>::const_iterator __restrict__ c = A.End();
@@ -2791,8 +2851,8 @@ T operator *( const GenericVector<T>& A, const GenericVector<T>& B ) noexcept
  * Returns the product of a vector \a A by a scalar \a x.
  * \ingroup vector_operators
  */
-template <typename T> inline
-GenericVector<T> operator *( const GenericVector<T>& A, const T& x )
+template <typename T, typename S> inline
+GenericVector<T> operator *( const GenericVector<T>& A, const S& x )
 {
    GenericVector<T> R( A.Length() );
    typename GenericVector<T>::iterator       __restrict__ r = R.Begin();
@@ -2808,10 +2868,10 @@ GenericVector<T> operator *( const GenericVector<T>& A, const T& x )
  * Returns the product of a vector \a A (rvalue reference) by a scalar \a x.
  * \ingroup vector_operators
  */
-template <typename T> inline
-GenericVector<T> operator *( GenericVector<T>&& A, const T& x )
+template <typename T, typename S> inline
+GenericVector<T> operator *( GenericVector<T>&& A, const S& x )
 {
-   A *= x;
+   A *= typename GenericVector<T>::scalar( x );
    return std::move( A );
 }
 
@@ -2822,8 +2882,8 @@ GenericVector<T> operator *( GenericVector<T>&& A, const T& x )
  * scalar-to-vector multiplication. It is equivalent to A * x.
  * \ingroup vector_operators
  */
-template <typename T> inline
-GenericVector<T> operator *( const T& x, const GenericVector<T>& A )
+template <typename T, typename S> inline
+GenericVector<T> operator *( const S& x, const GenericVector<T>& A )
 {
    return A * x;
 }
@@ -2835,10 +2895,10 @@ GenericVector<T> operator *( const T& x, const GenericVector<T>& A )
  * scalar-to-vector multiplication. It is equivalent to A * x.
  * \ingroup vector_operators
  */
-template <typename T> inline
-GenericVector<T> operator *( const T& x, GenericVector<T>&& A )
+template <typename T, typename S> inline
+GenericVector<T> operator *( const S& x, GenericVector<T>&& A )
 {
-   A *= x;
+   A *= typename GenericVector<T>::scalar( x );
    return std::move( A );
 }
 
@@ -2848,8 +2908,8 @@ GenericVector<T> operator *( const T& x, GenericVector<T>&& A )
  * Returns the result of dividing a vector \a A by a scalar \a x.
  * \ingroup vector_operators
  */
-template <typename T> inline
-GenericVector<T> operator /( const GenericVector<T>& A, const T& x )
+template <typename T, typename S> inline
+GenericVector<T> operator /( const GenericVector<T>& A, const S& x )
 {
    GenericVector<T> R( A.Length() );
    typename GenericVector<T>::iterator       __restrict__ r = R.Begin();
@@ -2866,10 +2926,10 @@ GenericVector<T> operator /( const GenericVector<T>& A, const T& x )
  * \a x.
  * \ingroup vector_operators
  */
-template <typename T> inline
-GenericVector<T> operator /( GenericVector<T>&& A, const T& x )
+template <typename T, typename S> inline
+GenericVector<T> operator /( GenericVector<T>&& A, const S& x )
 {
-   A /= x;
+   A /= typename GenericVector<T>::scalar( x );
    return std::move( A );
 }
 
@@ -2880,8 +2940,8 @@ GenericVector<T> operator /( GenericVector<T>&& A, const T& x )
  * commutative operation. A/x is not equal to x/A.
  * \ingroup vector_operators
  */
-template <typename T> inline
-GenericVector<T> operator /( const T& x, const GenericVector<T>& A )
+template <typename T, typename S> inline
+GenericVector<T> operator /( const S& x, const GenericVector<T>& A )
 {
    GenericVector<T> R( A.Length() );
    typename GenericVector<T>::iterator       __restrict__ r = R.Begin();
@@ -2901,8 +2961,8 @@ GenericVector<T> operator /( const T& x, const GenericVector<T>& A )
  * commutative operation. A/x is not equal to x/A.
  * \ingroup vector_operators
  */
-template <typename T> inline
-GenericVector<T> operator /( const T& x, GenericVector<T>&& A )
+template <typename T, typename S> inline
+GenericVector<T> operator /( const S& x, GenericVector<T>&& A )
 {
    typename GenericVector<T>::iterator       __restrict__ a = A.Begin();
    typename GenericVector<T>::const_iterator __restrict__ c = A.End();
@@ -2961,8 +3021,8 @@ GenericVector<T> operator /( GenericVector<T>&& A, const GenericVector<T>& B )
  * Returns the result of raising a vector \a A to a scalar \a x.
  * \ingroup vector_operators
  */
-template <typename T> inline
-GenericVector<T> operator ^( const GenericVector<T>& A, const T& x )
+template <typename T, typename S> inline
+GenericVector<T> operator ^( const GenericVector<T>& A, const S& x )
 {
    GenericVector<T> R( A.Length() );
    typename GenericVector<T>::iterator       __restrict__ r = R.Begin();
@@ -2979,10 +3039,10 @@ GenericVector<T> operator ^( const GenericVector<T>& A, const T& x )
  * \a x.
  * \ingroup vector_operators
  */
-template <typename T> inline
-GenericVector<T> operator ^( GenericVector<T>&& A, const T& x )
+template <typename T, typename S> inline
+GenericVector<T> operator ^( GenericVector<T>&& A, const S& x )
 {
-   A ^= x;
+   A ^= typename GenericVector<T>::scalar( x );
    return std::move( A );
 }
 
@@ -2993,8 +3053,8 @@ GenericVector<T> operator ^( GenericVector<T>&& A, const T& x )
  * commutative operation. A^x is not equal to x^A.
  * \ingroup vector_operators
  */
-template <typename T> inline
-GenericVector<T> operator ^( const T& x, const GenericVector<T>& A )
+template <typename T, typename S> inline
+GenericVector<T> operator ^( const S& x, const GenericVector<T>& A )
 {
    GenericVector<T> R( A.Length() );
    typename GenericVector<T>::iterator       __restrict__ r = R.Begin();
@@ -3014,8 +3074,8 @@ GenericVector<T> operator ^( const T& x, const GenericVector<T>& A )
  * commutative operation. A^x is not equal to x^A.
  * \ingroup vector_operators
  */
-template <typename T> inline
-GenericVector<T> operator ^( const T& x, GenericVector<T>&& A )
+template <typename T, typename S> inline
+GenericVector<T> operator ^( const S& x, GenericVector<T>&& A )
 {
    typename GenericVector<T>::iterator       __restrict__ a = A.Begin();
    typename GenericVector<T>::const_iterator __restrict__ c = A.End();
@@ -3259,4 +3319,4 @@ typedef F80Vector                   LDVector;
 #endif   // __PCL_Vector_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Vector.h - Released 2020-12-17T15:46:28Z
+// EOF pcl/Vector.h - Released 2021-04-09T19:40:59Z

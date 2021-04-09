@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// ConvolutionInterface.cpp - Released 2020-12-17T15:46:55Z
+// ConvolutionInterface.cpp - Released 2021-04-09T19:41:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -1009,4 +1009,4 @@ ConvolutionInterface::GUIData::GUIData( ConvolutionInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ConvolutionInterface.cpp - Released 2020-12-17T15:46:55Z
+// EOF ConvolutionInterface.cpp - Released 2021-04-09T19:41:48Z

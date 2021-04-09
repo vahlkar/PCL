@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// PreferencesProcess.cpp - Released 2020-12-17T15:46:55Z
+// PreferencesProcess.cpp - Released 2021-04-09T19:41:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -95,6 +95,8 @@ PreferencesProcess::PreferencesProcess()
    new METAPARAMETER_ID( Application, shortTermFundamentalEphemeridesFile )( this );
    new METAPARAMETER_ID( Application, asteroidEphemeridesFile )( this );
    new METAPARAMETER_ID( Application, shortTermAsteroidEphemeridesFile )( this );
+   new METAPARAMETER_ID( Application, kboEphemeridesFile )( this );
+   new METAPARAMETER_ID( Application, shortTermKBOEphemeridesFile )( this );
    new METAPARAMETER_ID( Application, nutationModelFile )( this );
    new METAPARAMETER_ID( Application, shortTermNutationModelFile )( this );
    new METAPARAMETER_ID( Application, deltaTDataFile )( this );
@@ -379,4 +381,4 @@ int PreferencesProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesProcess.cpp - Released 2020-12-17T15:46:55Z
+// EOF PreferencesProcess.cpp - Released 2021-04-09T19:41:48Z

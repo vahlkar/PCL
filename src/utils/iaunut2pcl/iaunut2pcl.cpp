@@ -2,12 +2,12 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.08.0895
+// /_/     \____//_____/   PCL 2.4.8
 // ----------------------------------------------------------------------------
 //
 // This file is part of the iaunut2pcl ephemeris generation and testing utility.
 //
-// Copyright (c) 2017-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2017-2021 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -29,7 +29,7 @@
 //    and/or other materials provided with the product:
 //
 //    "This product is based on software from the PixInsight project, developed
-//    by Pleiades Astrophoto and its contributors (http://pixinsight.com/)."
+//    by Pleiades Astrophoto and its contributors (https://pixinsight.com/)."
 //
 //    Alternatively, if that is where third-party acknowledgments normally
 //    appear, this acknowledgment must be reproduced in the product itself.
@@ -2680,4 +2680,4 @@ void iauNut06a( double date1, double date2, double* dpsi, double* deps )
 }
 
 // ----------------------------------------------------------------------------
-// EOF pcl/iaunut2pcl.cpp - Released 2018-09-26T12:29:40Z
+// EOF pcl/iaunut2pcl.cpp - Released 2021-03-28T10:02:21Z

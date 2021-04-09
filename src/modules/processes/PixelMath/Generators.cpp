@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.8.0
+// Standard PixelMath Process Module Version 1.8.1
 // ----------------------------------------------------------------------------
-// Generators.cpp - Released 2021-01-23T18:24:14Z
+// Generators.cpp - Released 2021-04-09T19:41:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -1653,4 +1653,4 @@ void KrnGaussianFunction::operator()( Pixel& r, component_list::const_iterator, 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Generators.cpp - Released 2021-01-23T18:24:14Z
+// EOF Generators.cpp - Released 2021-04-09T19:41:48Z

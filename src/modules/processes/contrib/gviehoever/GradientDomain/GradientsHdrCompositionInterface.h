@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsHdrCompositionInterface.h - Released 2020-12-17T15:46:56Z
+// GradientsHdrCompositionInterface.h - Released 2021-04-09T19:41:49Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
@@ -153,4 +153,4 @@ PCL_END_LOCAL
 #endif
 
 // ----------------------------------------------------------------------------
-// EOF GradientsHdrCompositionInterface.h - Released 2020-12-17T15:46:56Z
+// EOF GradientsHdrCompositionInterface.h - Released 2021-04-09T19:41:49Z

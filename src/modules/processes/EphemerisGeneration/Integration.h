@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
 // Standard EphemerisGeneration Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// Integration.h - Released 2021-03-24T20:01:50Z
+// Integration.h - Released 2021-04-09T19:41:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -226,6 +226,9 @@ public:
       scalar_type m_y[ 6 ] = {};
    };
 
+   /*
+    * Abstract base class of all integration steppers.
+    */
    class Stepper
    {
    public:
@@ -636,7 +639,7 @@ private:
          TimePoint                   m_endTime;    // end time of integration
    const EphemerisGeneratorInstance& m_instance;   // the instance being executed
          scalar_type                 m_eps;        // current integration tolerance (au)
-         IntegrationDenseOutputData  m_outputData; // output times and coordinates
+         IntegrationDenseOutputData  m_outputData; // output times and coordinate expansions
          State                       m_finalState; // the state of integration at the requested end time
          hscalar_type                s_c;          // speed of light (au/day) = (s_c_km_s/s_au_km)*86400
          hscalar_type                s_c2;         // square of the speed of light
@@ -811,7 +814,7 @@ private:
 
                   /*
                    * Transpose of matrix R for transformation from r' to
-                   * body-fixed coordinates (see Moyer 1971).
+                   * body-fixed coordinates (Moyer 1971, Eq. 161 - 164).
                    */
                   hscalar_type db = rij[j];
                   hscalar_type n2 = Sqrt( rb[0]*rb[0] + rb[1]*rb[1] );
@@ -826,15 +829,15 @@ private:
                   /*
                    * Acceleration vector due to oblateness in body-fixed
                    * coordinates. Here we apply the r' to rb transformation
-                   * matrix R in the same expression (see e.g. Moyer 1971).
+                   * matrix R in the same expression.
                    */
                   hvector_type a1( R *
                      ((mj[j]
                        * m_perturbers[j]->J2()
                        * m_perturbers[j]->Re()*m_perturbers[j]->Re()/db/db/db/db)
-                     * hvector_type( (9*sp*sp - 3)/2,
-                                     _0_,
-                                     -3*cp*sp )) );
+                       * hvector_type( (9*sp*sp - 3)/2,
+                                       _0_,
+                                       -3*cp*sp )) );
                   /*
                    * Transformation from body-fixed to barycentric equatorial
                    * coordinates.
@@ -909,7 +912,7 @@ private:
        * Attempt to truncate expansions to the required relative precision.
        */
       T0.Truncate( eps, 4 );
-      if ( T0.TruncatedLength() > n )
+      if ( unlikely( T0.TruncatedLength() > n ) )
          goto __recurse;
 
       if ( m_instance.p_velocityExpansions )
@@ -927,7 +930,7 @@ private:
             0, double( h ), 3, 2*n );
 
          T1.Truncate( eps, 4 );
-         if ( T1.TruncatedLength() > n )
+         if ( unlikely( T1.TruncatedLength() > n ) )
             goto __recurse;
 
          /*
@@ -969,7 +972,7 @@ __recurse:
        * attempts anyway, but don't say we haven't tried.
        */
       if ( h < 0.0001 || nrec == 4 )
-         throw Error( String().Format( "Unable to fit integration dense output - integration aborted: t = %.7f, h = %.7f"
+         throw Error( String().Format( "Unable to fit integration dense output: t = %.7f, h = %.7f"
                                        , double( t ), double( h ) ) );
       FitDenseOutput( t0, (t0 + t1)/2, stepper, nrec+1 );
       FitDenseOutput( (t0 + t1)/2, t1, stepper, nrec+1 );
@@ -1127,4 +1130,4 @@ __recurse:
 #endif   // __Integration_h
 
 // ----------------------------------------------------------------------------
-// EOF Integration.h - Released 2021-03-24T20:01:50Z
+// EOF Integration.h - Released 2021-04-09T19:41:48Z

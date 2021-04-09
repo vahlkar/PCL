@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.121
-# Copyright (C) 2009-2020 Pleiades Astrophoto
+# PixInsight Makefile Generator Script v1.122
+# Copyright (C) 2009-2021 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-12-21T12:28:32.278Z
+# Generated on .... 2021-04-09T20:05:36.289Z
 # Project id ...... GradientDomain
 # Project type .... Module
 # Platform ........ Windows/vc16
@@ -16,10 +16,10 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>4345710a-4d4c-4de5-a09d-886380ef9df4</UniqueIdentifier>
+      <UniqueIdentifier>c28d4aeb-a76a-4296-9ae7-ef46398dd55e</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>32d06b9a-e24b-45ef-87fc-a8db4b204e47</UniqueIdentifier>
+      <UniqueIdentifier>780c1e0e-6dac-4701-88ff-c1b15ef83643</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

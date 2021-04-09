@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// pcl/Position.h - Released 2020-12-17T15:46:29Z
+// pcl/Position.h - Released 2021-04-09T19:40:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -1244,6 +1244,83 @@ public:
    }
 
    /*!
+    * Conversion from rectangular ecliptic to rectangular equatorial
+    * coordinates.
+    *
+    * \param q    Rectangular ecliptic coordinates.
+    *
+    * \param se   Sine of the obliquity of the ecliptic.
+    *
+    * \param ce   Cosine of the obliquity of the ecliptic.
+    *
+    * Returns a vector whose components are the rectangular equatorial
+    * coordinates corresponding to the specified ecliptic position \a q at
+    * the epoch where the specified obliquity has been calculated.
+    */
+   static Vector EclipticToEquatorial( const Vector& q, double se, double ce )
+   {
+      // Rx(eps)*q
+      return Vector( q[0], q[1]*ce - q[2]*se, q[2]*ce + q[1]*se );
+   }
+
+   /*!
+    * Conversion from rectangular ecliptic to rectangular equatorial
+    * coordinates.
+    *
+    * \param q    Rectangular ecliptic coordinates.
+    *
+    * \param eps  Oliquity of the ecliptic in radians.
+    *
+    * Returns a vector whose components are the rectangular equatorial
+    * coordinates corresponding to the specified ecliptic position \a q at
+    * the epoch where the specified obliquity has been calculated.
+    */
+   static Vector EclipticToEquatorial( const Vector& q, double eps )
+   {
+      double se, ce; SinCos( eps, se, ce );
+      return EclipticToEquatorial( q, se, ce );
+   }
+
+   /*!
+    * Conversion from spherical ecliptic to spherical equatorial coordinates.
+    *
+    * \param q    Spherical ecliptic coordinates in radians, where \a q.x is
+    *             the longitude and \a q.y is the latitude.
+    *
+    * \param se   Sine of the obliquity of the ecliptic.
+    *
+    * \param ce   Cosine of the obliquity of the ecliptic.
+    *
+    * Returns the equatorial coordinates in radians as a point \e p, where \e p.x
+    * is the right ascension in the range [0,2pi) and \e p.y is the declination
+    * in [-pi/2,+pi/2].
+    */
+   static DPoint EclipticToEquatorial( const DPoint& q, double se, double ce )
+   {
+      DPoint e;
+      EclipticToEquatorial( Vector::FromSpherical( q.x, q.y ), se, ce ).ToSpherical2Pi( e.x, e.y );
+      return e;
+   }
+
+   /*!
+    * Conversion from spherical ecliptic to spherical equatorial coordinates.
+    *
+    * \param q    Spherical ecliptic coordinates in radians, where \a q.x is
+    *             the longitude and \a q.y is the latitude.
+    *
+    * \param eps  Oliquity of the ecliptic in radians.
+    *
+    * Returns the equatorial coordinates in radians as a point \e p, where \e p.x
+    * is the right ascension in the range [0,2pi) and \e p.y is the declination
+    * in [-pi/2,+pi/2].
+    */
+   static DPoint EclipticToEquatorial( const DPoint& q, double eps )
+   {
+      double se, ce; SinCos( eps, se, ce );
+      return EclipticToEquatorial( q, se, ce );
+   }
+
+   /*!
     * Conversion from ICRS rectangular equatorial to rectangular galactic
     * coordinates.
     *
@@ -1403,4 +1480,4 @@ private:
 #endif  // __PCL_Position_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Position.h - Released 2020-12-17T15:46:29Z
+// EOF pcl/Position.h - Released 2021-04-09T19:40:59Z

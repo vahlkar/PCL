@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.8.0
+// Standard PixelMath Process Module Version 1.8.1
 // ----------------------------------------------------------------------------
-// Function.cpp - Released 2021-01-23T18:24:14Z
+// Function.cpp - Released 2021-04-09T19:41:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -56,7 +56,6 @@
 #include "PixelMathInstance.h"
 
 #include <pcl/HistogramTransformation.h>
-#include <pcl/ImageWindow.h>
 #include <pcl/Math.h>
 
 #define S   (static_cast<Sample*>( *i ))
@@ -114,6 +113,7 @@ void Function::InitializeList( function_set& functions, function_index& index )
              << new ChiSquareFunction
              << new CosFunction
              << new CoshFunction
+             << new DecFunction
              << new DilationFilterFunction
              << new DistToLineFunction
              << new DistToSegmentFunction
@@ -166,6 +166,7 @@ void Function::InitializeList( function_set& functions, function_index& index )
              << new PixelFunction
              << new PoissonFunction
              << new QnFunction
+             << new RAFunction
              << new RDistFunction
              << new RandomFunction
              << new RangeFunction
@@ -3056,6 +3057,166 @@ void YFunction::operator()( Pixel& r, component_list::const_iterator, component_
 
 // ----------------------------------------------------------------------------
 
+bool RAFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
+{
+   if ( !(*i)->IsImageReference() )
+   {
+      info = "ra() argument #1: Must be an image reference";
+      arg = *i;
+      return false;
+   }
+
+   if ( !I->IsWindow() )
+   {
+      info = "ra() argument #1: Must be a reference to an existing image window";
+      arg = *i;
+      return false;
+   }
+
+   if ( I->IsChannelIndex() )
+   {
+      info = "ra() argument #1: Invalid image channel index";
+      arg = *i;
+      return false;
+   }
+
+   I->SetByReference();
+   I->RequireAstrometricSolution();
+
+   component_list::const_iterator x = i; ++x;
+
+   if ( (*x)->IsImageReference() )
+   {
+      info = "ra() argument #2: Image coordinates must be either immediate scalars, variable references, or expressions";
+      arg = *x;
+      return false;
+   }
+
+   component_list::const_iterator y = x; ++y;
+
+   if ( (*y)->IsImageReference() )
+   {
+      info = "ra() argument #3: Image coordinates must be either immediate scalars, variable references, or expressions";
+      arg = *y;
+      return false;
+   }
+
+   return true;
+}
+
+void RAFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+{
+   const ImageReference* ref = static_cast<ImageReference*>( i->Reference() );
+   DPoint pRD = 0.0;
+   DPoint pI;
+   pI.x = (*++i)[0];
+   pI.y = (*++i)[0];
+   ref->Window()->ImageToCelestial( pRD, pI );
+   r.SetSamples( pRD.x );
+}
+
+bool RAFunction::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
+{
+   component_list::const_iterator x = i; ++x;
+   component_list::const_iterator y = x; ++y;
+   return (*x)->IsSample() && (*y)->IsSample();
+}
+
+void RAFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
+{
+   const ImageReference* ref = I;
+   DPoint pRD = 0.0;
+   DPoint pI;
+   ++i;
+   pI.x = S->Value();
+   ++i;
+   pI.y = S->Value();
+   ref->Window()->ImageToCelestial( pRD, pI );
+   r.SetSamples( pRD.x );
+}
+
+// ----------------------------------------------------------------------------
+
+bool DecFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
+{
+   if ( !(*i)->IsImageReference() )
+   {
+      info = "dec() argument #1: Must be an image reference";
+      arg = *i;
+      return false;
+   }
+
+   if ( !I->IsWindow() )
+   {
+      info = "dec() argument #1: Must be a reference to an existing image window";
+      arg = *i;
+      return false;
+   }
+
+   if ( I->IsChannelIndex() )
+   {
+      info = "dec() argument #1: Invalid image channel index";
+      arg = *i;
+      return false;
+   }
+
+   I->SetByReference();
+   I->RequireAstrometricSolution();
+
+   component_list::const_iterator x = i; ++x;
+
+   if ( (*x)->IsImageReference() )
+   {
+      info = "dec() argument #2: Image coordinates must be either immediate scalars, variable references, or expressions";
+      arg = *x;
+      return false;
+   }
+
+   component_list::const_iterator y = x; ++y;
+
+   if ( (*y)->IsImageReference() )
+   {
+      info = "dec() argument #3: Image coordinates must be either immediate scalars, variable references, or expressions";
+      arg = *y;
+      return false;
+   }
+
+   return true;
+}
+
+void DecFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+{
+   const ImageReference* ref = static_cast<ImageReference*>( i->Reference() );
+   DPoint pRD = 0.0;
+   DPoint pI;
+   pI.x = (*++i)[0];
+   pI.y = (*++i)[0];
+   ref->Window()->ImageToCelestial( pRD, pI );
+   r.SetSamples( pRD.y );
+}
+
+bool DecFunction::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
+{
+   component_list::const_iterator x = i; ++x;
+   component_list::const_iterator y = x; ++y;
+   return (*x)->IsSample() && (*y)->IsSample();
+}
+
+void DecFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
+{
+   const ImageReference* ref = I;
+   DPoint pRD = 0.0;
+   DPoint pI;
+   ++i;
+   pI.x = S->Value();
+   ++i;
+   pI.y = S->Value();
+   ref->Window()->ImageToCelestial( pRD, pI );
+   r.SetSamples( pRD.y );
+}
+
+// ----------------------------------------------------------------------------
+
 bool DistToLineFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    if ( Distance( i, j ) != 4 )
@@ -4074,4 +4235,4 @@ Expression::component_list InlineSwitchFunction::Optimized() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Function.cpp - Released 2021-01-23T18:24:14Z
+// EOF Function.cpp - Released 2021-04-09T19:41:48Z

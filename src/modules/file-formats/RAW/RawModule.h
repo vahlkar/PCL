@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
 // Standard RAW File Format Module Version 1.5.6
 // ----------------------------------------------------------------------------
-// RawModule.h - Released 2020-12-17T15:46:44Z
+// RawModule.h - Released 2021-04-09T19:41:31Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RAW PixInsight module.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -84,4 +84,4 @@ public:
 #endif   // __RawModule_h
 
 // ----------------------------------------------------------------------------
-// EOF RawModule.h - Released 2020-12-17T15:46:44Z
+// EOF RawModule.h - Released 2021-04-09T19:41:31Z

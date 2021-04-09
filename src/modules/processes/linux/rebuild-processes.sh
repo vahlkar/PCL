@@ -38,6 +38,10 @@ make -j$(nproc)
 # make clean
 # make -j$(nproc)
 
+cd $BASEDIR/EphemerisGeneration/linux/g++
+make clean
+make -j$(nproc)
+
 cd $BASEDIR/Flux/linux/g++
 make clean
 make -j$(nproc)

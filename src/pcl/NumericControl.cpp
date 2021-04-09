@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// pcl/NumericControl.cpp - Released 2020-12-17T15:46:35Z
+// pcl/NumericControl.cpp - Released 2021-04-09T19:41:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -97,17 +97,27 @@ String NumericEdit::ValueAsString( double v ) const
 {
    v = Range( v, m_lowerBound, m_upperBound );
 
-   if ( m_real )
+   String vs;
+   char sc = 0;
+   if ( m_sign )
    {
-      if ( m_scientific )
-         if ( m_sciTriggerExp < 0 || v != 0 && (Abs( v ) > Pow10I<double>()( +m_sciTriggerExp ) ||
-                                                Abs( v ) < Pow10I<double>()( -m_sciTriggerExp )) )
-            return String().Format( "%.*e", m_precision, v );
-
-      return String().Format( "%.*f", PrecisionForValue( v ), v );
+      sc = SignChar( Round( v, m_precision ) );
+      v = Abs( v );
    }
 
-   return String().Format( "%.0f", v );
+   if ( m_real )
+   {
+      if ( m_scientific &&
+          (m_sciTriggerExp < 0 || v != 0 && (Abs( v ) > Pow10I<double>()( +m_sciTriggerExp ) ||
+                                             Abs( v ) < Pow10I<double>()( -m_sciTriggerExp ))) )
+         vs.Format( "%.*e", m_precision, v );
+      else
+         vs.Format( "%.*f", PrecisionForValue( v ), v );
+   }
+   else
+      vs.Format( "%.0f", v );
+
+   return m_sign ? sc + vs : vs;
 }
 
 // ----------------------------------------------------------------------------
@@ -169,7 +179,7 @@ void NumericEdit::SetRange( double lr, double ur )
 
 void NumericEdit::SetPrecision( int n )
 {
-   m_precision = Range( n, 0, 15 );
+   m_precision = Range( n, 0, 16 );
    if ( m_autoEditWidth )
       AdjustEditWidth();
    UpdateControls();
@@ -200,6 +210,16 @@ void NumericEdit::EnableScientificNotation( bool enable )
 void NumericEdit::SetScientificNotationTriggerExponent( int exp10 )
 {
    m_sciTriggerExp = exp10;
+   if ( m_autoEditWidth )
+      AdjustEditWidth();
+   UpdateControls();
+}
+
+// ----------------------------------------------------------------------------
+
+void NumericEdit::EnableFixedSign( bool enable )
+{
+   m_sign = enable;
    if ( m_autoEditWidth )
       AdjustEditWidth();
    UpdateControls();
@@ -470,4 +490,4 @@ void NumericControl::KeyPressed( Control& sender, int key, unsigned modifiers, b
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/NumericControl.cpp - Released 2020-12-17T15:46:35Z
+// EOF pcl/NumericControl.cpp - Released 2021-04-09T19:41:11Z
