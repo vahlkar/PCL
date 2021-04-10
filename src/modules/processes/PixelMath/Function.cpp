@@ -170,6 +170,7 @@ void Function::InitializeList( function_set& functions, function_index& index )
              << new RDistFunction
              << new RandomFunction
              << new RangeFunction
+             << new RawRAFunction
              << new RescaleFunction
              << new RndSelectFunction
              << new RotationFunction
@@ -3111,7 +3112,7 @@ void RAFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::c
    DPoint pI;
    pI.x = (*++i)[0];
    pI.y = (*++i)[0];
-   ref->Window()->ImageToCelestial( pRD, pI );
+   ref->Window()->ImageToCelestial( pRD, pI, false/*rawRA*/ );
    r.SetSamples( pRD.x );
 }
 
@@ -3131,7 +3132,87 @@ void RAFunction::operator()( Pixel& r, component_list::const_iterator i, compone
    pI.x = S->Value();
    ++i;
    pI.y = S->Value();
-   ref->Window()->ImageToCelestial( pRD, pI );
+   ref->Window()->ImageToCelestial( pRD, pI, false/*rawRA*/ );
+   r.SetSamples( pRD.x );
+}
+
+// ----------------------------------------------------------------------------
+
+bool RawRAFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
+{
+   if ( !(*i)->IsImageReference() )
+   {
+      info = "rra() argument #1: Must be an image reference";
+      arg = *i;
+      return false;
+   }
+
+   if ( !I->IsWindow() )
+   {
+      info = "rra() argument #1: Must be a reference to an existing image window";
+      arg = *i;
+      return false;
+   }
+
+   if ( I->IsChannelIndex() )
+   {
+      info = "rra() argument #1: Invalid image channel index";
+      arg = *i;
+      return false;
+   }
+
+   I->SetByReference();
+   I->RequireAstrometricSolution();
+
+   component_list::const_iterator x = i; ++x;
+
+   if ( (*x)->IsImageReference() )
+   {
+      info = "rra() argument #2: Image coordinates must be either immediate scalars, variable references, or expressions";
+      arg = *x;
+      return false;
+   }
+
+   component_list::const_iterator y = x; ++y;
+
+   if ( (*y)->IsImageReference() )
+   {
+      info = "rra() argument #3: Image coordinates must be either immediate scalars, variable references, or expressions";
+      arg = *y;
+      return false;
+   }
+
+   return true;
+}
+
+void RawRAFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+{
+   const ImageReference* ref = static_cast<ImageReference*>( i->Reference() );
+   DPoint pRD = 0.0;
+   DPoint pI;
+   pI.x = (*++i)[0];
+   pI.y = (*++i)[0];
+   ref->Window()->ImageToCelestial( pRD, pI, true/*rawRA*/ );
+   r.SetSamples( pRD.x );
+}
+
+bool RawRAFunction::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
+{
+   component_list::const_iterator x = i; ++x;
+   component_list::const_iterator y = x; ++y;
+   return (*x)->IsSample() && (*y)->IsSample();
+}
+
+void RawRAFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
+{
+   const ImageReference* ref = I;
+   DPoint pRD = 0.0;
+   DPoint pI;
+   ++i;
+   pI.x = S->Value();
+   ++i;
+   pI.y = S->Value();
+   ref->Window()->ImageToCelestial( pRD, pI, true/*rawRA*/ );
    r.SetSamples( pRD.x );
 }
 

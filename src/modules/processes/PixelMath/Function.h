@@ -2402,9 +2402,50 @@ public:
                                                     "at (<i>x</i>,<i>y</i>) image coordinates. The returned value is expressed "
                                                     "in degrees in the range [0,360).</p>"
                                                     "<p>This function requires a valid astrometric solution available in the "
-                                                    "specified image.</p>"; }
+                                                    "specified image.</p>"
+                                                    "<p><b>Note:</b> Use of this function can lead to poor performance when "
+                                                    "executed on large images with spline-based astrometric solutions (for "
+                                                    "distortion correction) and slow machines with few processor cores.</p>"; }
    String Token() const override           { return "ra"; }
    String Aliases() const override         { return "RA"; }
+   int RequiredArguments() const override  { return 3; }
+   int MaximumArguments() const override   { return 3; }
+
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+
+   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+
+   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
+   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+};
+
+// ----------------------------------------------------------------------------
+
+class RawRAFunction : public Function
+{
+public:
+
+   RawRAFunction( int p = 0, int n = 0 ) : Function( p, n ) {}
+
+   Expression* Clone() const override { return new RawRAFunction( *this ); }
+   Expression* Generate( int p ) const override { return new RawRAFunction( p ); }
+
+   String Meta() const override            { return "rra( image, x, y )"; }
+   String Id() const override              { return "<p>Right ascension equatorial coordinate calculated for the specified image "
+                                                    "at (<i>x</i>,<i>y</i>) image coordinates. The returned value is expressed "
+                                                    "in degrees and <u><i>not constrained</i></u> to a valid range of right ascensions.</p>"
+                                                    "<p>This function is useful for interpolation schemes where discontinuities "
+                                                    "caused by zero crossings in right ascension, i.e. abrupt changes from 360 to 0 "
+                                                    "degrees, are not admissible numerically. Right ascensions returned by this "
+                                                    "function can be larger than 360 degrees or less than zero, ensuring smooth "
+                                                    "transitions.</p>"
+                                                    "<p>This function requires a valid astrometric solution available in the "
+                                                    "specified image.</p>"
+                                                    "<p><b>Note:</b> Use of this function can lead to poor performance when "
+                                                    "executed on large images with spline-based astrometric solutions (for "
+                                                    "distortion correction) and slow machines with few processor cores.</p>"; }
+   String Token() const override           { return "rra"; }
+   String Aliases() const override         { return "RawRA"; }
    int RequiredArguments() const override  { return 3; }
    int MaximumArguments() const override   { return 3; }
 
@@ -2432,7 +2473,10 @@ public:
                                                     "(<i>x</i>,<i>y</i>) image coordinates. The returned value is expressed "
                                                     "in degrees in the range [-90,+90].</p>"
                                                     "<p>This function requires a valid astrometric solution available in the "
-                                                    "specified image.</p>"; }
+                                                    "specified image.</p>"
+                                                    "<p><b>Note:</b> Use of this function can lead to poor performance when "
+                                                    "executed on large images with spline-based astrometric solutions (for "
+                                                    "distortion correction) and slow machines with few processor cores.</p>"; }
    String Token() const override           { return "dec"; }
    String Aliases() const override         { return "Dec"; }
    int RequiredArguments() const override  { return 3; }
