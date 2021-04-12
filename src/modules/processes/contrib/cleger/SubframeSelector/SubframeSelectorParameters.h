@@ -89,6 +89,22 @@ extern SSRoutine* TheSSRoutineParameter;
 
 // ----------------------------------------------------------------------------
 
+class SSNonInteractive : public MetaBoolean
+{
+public:
+
+   SSNonInteractive( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+
+   IsoString Tooltip() const;
+};
+
+extern SSNonInteractive* TheSSNonInteractiveParameter;
+
+// ----------------------------------------------------------------------------
+
 class SSSubframes : public MetaTable
 {
 public:

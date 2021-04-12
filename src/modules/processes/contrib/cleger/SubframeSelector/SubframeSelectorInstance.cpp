@@ -99,6 +99,7 @@ const float s_5x5B3Spline_kj[] =
 SubframeSelectorInstance::SubframeSelectorInstance( const MetaProcess* m )
    : ProcessImplementation( m )
    , p_routine( SSRoutine::Default )
+   , p_nonInteractive( TheSSNonInteractiveParameter->DefaultValue() )
    , p_fileCache( TheSSFileCacheParameter->DefaultValue() )
    , p_subframeScale( TheSSSubframeScaleParameter->DefaultValue() )
    , p_cameraGain( TheSSCameraGainParameter->DefaultValue() )
@@ -151,6 +152,7 @@ void SubframeSelectorInstance::Assign( const ProcessImplementation& p )
    if ( x != nullptr )
    {
       p_routine                    = x->p_routine;
+      p_nonInteractive             = x->p_nonInteractive;
       p_fileCache                  = x->p_fileCache;
       p_subframes                  = x->p_subframes;
       p_subframeScale              = x->p_subframeScale;
@@ -691,6 +693,13 @@ bool SubframeSelectorInstance::CanMeasure( String &whyNot ) const
 bool SubframeSelectorInstance::Measure()
 {
    /*
+    * For all errors generated, we want a report on the console. This is
+    * customary in PixInsight for all batch processes.
+    */
+   Exception::EnableConsoleOutput();
+   Exception::DisableGUIOutput();
+
+   /*
     * Start with a general validation of working parameters.
     */
    {
@@ -744,13 +753,6 @@ bool SubframeSelectorInstance::Measure()
          ERROR_HANDLER;
       }
    }
-
-   /*
-    * For all errors generated, we want a report on the console. This is
-    * customary in PixInsight for all batch processes.
-    */
-   Exception::EnableConsoleOutput();
-   Exception::DisableGUIOutput();
 
    console.EnableAbort();
    Module->ProcessEvents();
@@ -951,11 +953,12 @@ bool SubframeSelectorInstance::Measure()
    if ( TheSubframeSelectorMeasurementsInterface != nullptr )
       TheSubframeSelectorMeasurementsInterface->SetMeasurements( p_measures );
 
-   if ( TheSubframeSelectorInterface != nullptr )
-   {
-      TheSubframeSelectorInterface->ShowExpressionsInterface();
-      TheSubframeSelectorInterface->ShowMeasurementsInterface();
-   }
+   if ( !p_nonInteractive )
+      if ( TheSubframeSelectorInterface != nullptr )
+      {
+         TheSubframeSelectorInterface->ShowExpressionsInterface();
+         TheSubframeSelectorInterface->ShowMeasurementsInterface();
+      }
 
    return true;
 }
@@ -1460,6 +1463,8 @@ void* SubframeSelectorInstance::LockParameter( const MetaParameter* p, size_type
 {
    if ( p == TheSSRoutineParameter )
       return &p_routine;
+   else if ( p == TheSSNonInteractiveParameter )
+      return &p_nonInteractive;
 
    else if ( p == TheSSSubframeEnabledParameter )
       return &p_subframes[tableRow].enabled;

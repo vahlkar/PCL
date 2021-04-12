@@ -69,6 +69,7 @@ SubframeSelectorProcess::SubframeSelectorProcess()
    TheSubframeSelectorProcess = this;
 
    new SSRoutine( this );
+   new SSNonInteractive( this );
 
    new SSSubframes( this );
    new SSSubframeEnabled( TheSSSubframesParameter );

@@ -110,6 +110,7 @@ private:
 
    // Types of run methods.
    pcl_enum           p_routine;
+   pcl_bool           p_nonInteractive;
 
    // The set of subframes to measure.
    pcl_bool           p_fileCache;

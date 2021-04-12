@@ -58,6 +58,7 @@ namespace pcl
 // ----------------------------------------------------------------------------
 
 SSRoutine*                        TheSSRoutineParameter = nullptr;
+SSNonInteractive*                 TheSSNonInteractiveParameter = nullptr;
 
 SSSubframes*                      TheSSSubframesParameter = nullptr;
 SSSubframeEnabled*                TheSSSubframeEnabledParameter = nullptr;
@@ -186,6 +187,23 @@ IsoString SSRoutine::Tooltip() const
           "<p><strong>Star Detection Preview:</strong> Outputs a Structure Map from "
           "the Star Detector for the first subframe. Useful for tweaking Star Detector parameters.</p>";
 };
+
+// ----------------------------------------------------------------------------
+
+SSNonInteractive::SSNonInteractive( MetaProcess* P ) : MetaBoolean( P )
+{
+   TheSSNonInteractiveParameter = this;
+}
+
+IsoString SSNonInteractive::Id() const
+{
+   return "nonInteractive";
+}
+
+bool SSNonInteractive::DefaultValue() const
+{
+   return false;
+}
 
 // ----------------------------------------------------------------------------
 
