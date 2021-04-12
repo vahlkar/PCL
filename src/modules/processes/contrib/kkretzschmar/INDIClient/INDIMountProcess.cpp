@@ -65,10 +65,6 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-//#include "PixInsightINDIIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 INDIMountProcess* TheINDIMountProcess = nullptr;
 
 // ----------------------------------------------------------------------------
@@ -131,9 +127,9 @@ String INDIMountProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** INDIMountProcess::IconImageXPM() const
+String INDIMountProcess::IconImageSVGFile() const
 {
-   return nullptr; // PixInsightINDIIcon_XPM; ---> put a nice icon here
+   return "@module_icons_dir/IndigoMount.svg";
 }
 
 // ----------------------------------------------------------------------------

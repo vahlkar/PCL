@@ -65,10 +65,6 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-//#include "PixInsightINDIIcon.xpm" // ### TODO
-
-// ----------------------------------------------------------------------------
-
 INDIDeviceControllerProcess* TheINDIDeviceControllerProcess = nullptr;
 
 // ----------------------------------------------------------------------------
@@ -135,9 +131,9 @@ String INDIDeviceControllerProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** INDIDeviceControllerProcess::IconImageXPM() const
+String INDIDeviceControllerProcess::IconImageSVGFile() const
 {
-   return nullptr; // PixInsightINDIIcon_XPM; // ### TODO
+   return "@module_icons_dir/IndigoDeviceController.svg";
 }
 
 // ----------------------------------------------------------------------------

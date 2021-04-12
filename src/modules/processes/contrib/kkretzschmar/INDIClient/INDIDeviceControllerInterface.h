@@ -81,7 +81,7 @@ public:
 
    IsoString Id() const override;
    MetaProcess* Process() const override;
-   const char** IconImageXPM() const override;
+   String IconImageSVGFile() const override;
    bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
    ProcessImplementation* NewProcess() const override;
    bool ValidateProcess( const ProcessImplementation&, String& whyNot ) const override;

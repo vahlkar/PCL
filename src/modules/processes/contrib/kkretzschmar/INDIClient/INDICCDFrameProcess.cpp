@@ -65,10 +65,6 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-//#include "INDICCDFrameProcess.xpm" // ### TODO
-
-// ----------------------------------------------------------------------------
-
 INDICCDFrameProcess* TheINDICCDFrameProcess = nullptr;
 
 // ----------------------------------------------------------------------------
@@ -118,13 +114,12 @@ INDICCDFrameProcess::INDICCDFrameProcess()
    new ICFSolverAutoCatalog( this );
    new ICFSolverLimitMagnitude( this );
    new ICFSolverAutoLimitMagnitude( this );
-   new ICFSolverStarSensitivity( this); 
-   new ICFSolverNoiseLayers( this); 
-   new ICFSolverAlignmentDevice( this);
+   new ICFSolverStarSensitivity( this);
+   new ICFSolverNoiseLayers( this );
+   new ICFSolverAlignmentDevice( this );
    new ICFSolverDistortionCorrection( this );
-   new ICFSolverSplineSmoothing( this); 
-   new ICFSolverProjection( this);
-
+   new ICFSolverSplineSmoothing( this );
+   new ICFSolverProjection( this );
 }
 
 // ----------------------------------------------------------------------------
@@ -159,9 +154,9 @@ String INDICCDFrameProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** INDICCDFrameProcess::IconImageXPM() const
+String INDICCDFrameProcess::IconImageSVGFile() const
 {
-   return nullptr; // INDICCDFrameProcess_XPM; // ### TODO
+   return "@module_icons_dir/IndigoCCDFrame.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -176,6 +171,7 @@ ProcessInterface* INDICCDFrameProcess::DefaultInterface() const
 {
    return TheINDICCDFrameInterface;
 }
+
 // ----------------------------------------------------------------------------
 
 ProcessImplementation* INDICCDFrameProcess::Create() const

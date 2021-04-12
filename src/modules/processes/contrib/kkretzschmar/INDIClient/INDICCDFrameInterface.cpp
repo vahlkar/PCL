@@ -116,10 +116,6 @@ INDICCDFrameInterface* TheINDICCDFrameInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-//#include "INDICCDFrameProcess.xpm" // ### TODO
-
-// ----------------------------------------------------------------------------
-
 class SimpleGetStringDialog : public Dialog
 {
 public:
@@ -302,9 +298,9 @@ MetaProcess* INDICCDFrameInterface::Process() const
 
 // ----------------------------------------------------------------------------
 
-const char** INDICCDFrameInterface::IconImageXPM() const
+String INDICCDFrameInterface::IconImageSVGFile() const
 {
-   return nullptr; // INDICCDFrameProcess_XPM; // ### TODO
+   return "@module_icons_dir/IndigoCCDFrame.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -782,10 +778,10 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
 
    CenterTarget_CheckBox.SetText( "Center target" );
    CenterTarget_CheckBox.Uncheck();
-   CenterTarget_CheckBox.SetToolTip( "<p>If enabled, compute the distance of the target coordinates from the actual image center " 
+   CenterTarget_CheckBox.SetToolTip( "<p>If enabled, compute the distance of the target coordinates from the actual image center "
                                       "and apply a correction to compensate this deviation.</p>"
                                       "<p>Requires an astrometric solution of the active image view. </p>" );
-   
+
    CenterTarget_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    CenterTarget_Sizer.Add( CenterTarget_CheckBox );
    CenterTarget_Sizer.AddStretch();
@@ -876,9 +872,9 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
    ClientParameters_Sizer.Add( OpenClientFrames_Sizer );
    ClientParameters_Sizer.Add( ReuseImageWindow_Sizer );
    ClientParameters_Sizer.Add( AutoStretch_Sizer );
-   ClientParameters_Sizer.Add( LinkedAutoStretch_Sizer );   
+   ClientParameters_Sizer.Add( LinkedAutoStretch_Sizer );
    ClientParameters_Sizer.Add( PlateSolving_Sizer );
-   ClientParameters_Sizer.Add( CenterTarget_Sizer ) ; 
+   ClientParameters_Sizer.Add( CenterTarget_Sizer ) ;
    ClientParameters_Sizer.Add( SaveClientFrames_Sizer );
    ClientParameters_Sizer.Add( OverwriteClientFrames_Sizer );
    ClientParameters_Sizer.Add( ClientDownloadDir_HSizer );
@@ -1235,7 +1231,7 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
    StarSensitivity_NumericControl.SetPrecision( TheICFSolverStarSensitivityParameter->Precision() );
    StarSensitivity_NumericControl.SetToolTip( "<p>Logarithm of the star detection sensitivity. Increase this parameter to "
       "detect less stars. The default value of -1 is normally appropriate for most linear images.</p>" );
-   
+
    //
 
    const char* noiseReductionToolTip = "<p>Some images have so much noise that the star detection algorithm can mistake "
@@ -1293,7 +1289,7 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
       "use approximating instead of interpolating surface splines (thin plates). Approximating surface splines are robust to "
       "outliers in the distortion correction model, including uncertainty in star detection, moving asteroids and other varying "
       "image features that can be accidentally interpreted and matched as stars.</p>" );
-   
+
    //
 
    AdvancedPlateSolverParameters_Sizer.SetSpacing( 4 );
@@ -1365,7 +1361,7 @@ void INDICCDFrameInterface::UpdateControls()
       GUI->CCDProperties_Control.Enable();
       GUI->ClientParameters_Control.Enable();
       GUI->FrameAcquisition_Control.Enable();
-      
+
    }
 }
 
@@ -1592,7 +1588,7 @@ void INDICCDFrameInterface::e_Timer( Timer& sender )
          GUI->PlateSolverParameters_SectionBar.Enable();
          GUI->AdvancedPlateSolverParameters_SectionBar.Enable();
          GUI->CenterTarget_CheckBox.Enable();
-      } 
+      }
       else
       {
          GUI->PlateSolverParameters_SectionBar.Disable();
@@ -1600,7 +1596,7 @@ void INDICCDFrameInterface::e_Timer( Timer& sender )
          GUI->CenterTarget_CheckBox.SetChecked(false);
          GUI->CenterTarget_CheckBox.Disable();
       }
-      
+
 
       {
          static const char* indiFrameTypes[] = { CCD_FRAME_TYPE_LIGHT_ITEM_NAME, CCD_FRAME_TYPE_BIAS_ITEM_NAME, CCD_FRAME_TYPE_DARK_ITEM_NAME, CCD_FRAME_TYPE_FLAT_ITEM_NAME };

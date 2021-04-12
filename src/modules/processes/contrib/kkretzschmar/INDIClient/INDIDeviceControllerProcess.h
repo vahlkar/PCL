@@ -70,7 +70,7 @@ public:
    IsoString Category() const override;
    uint32 Version() const override;
    String Description() const override;
-   const char** IconImageXPM() const override;
+   String IconImageSVGFile() const override;
    bool PrefersGlobalExecution() const override;
    ProcessInterface* DefaultInterface() const override;
    ProcessImplementation* Create() const override;

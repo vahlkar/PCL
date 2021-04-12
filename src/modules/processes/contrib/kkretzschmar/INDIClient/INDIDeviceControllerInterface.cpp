@@ -80,10 +80,6 @@ INDIDeviceControllerInterface* TheINDIDeviceControllerInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-//#include "PixInsightINDIIcon.xpm"// ### TODO
-
-// -------------------------------------------------------------------------
-
 /*
  * Device and property tree nodes.
  */
@@ -536,7 +532,7 @@ public:
 
    void Update()
    {
- 
+
       SetText( 0, m_item.Host );
       SetText( 1, m_item.InterfaceName );
       SetText( 2, m_item.IsWireless ? String("x") : String("") );
@@ -551,7 +547,7 @@ public:
    {
       return m_item.InterfaceName;
    }
-   
+
    String Host() const
    {
       return m_item.Host;
@@ -561,7 +557,7 @@ public:
    {
       return m_item.Port;
    }
-   
+
    uint32 InterfaceIndex() const
    {
       return m_item.InterfaceIndex;
@@ -578,7 +574,7 @@ public:
 
    IndigoServicesDialog( bool& isServicesChanged, const ZeroConfServiceBrowser&  zeroConfServiceBrowser, pcl::Font fnt, const String& css) : m_isServicesChanged(isServicesChanged), m_zeroconfServiceBrowser(zeroConfServiceBrowser)
    {
-      
+
       IndigoServices_TreeBox.SetMinHeight( DEVICE_TREE_MINHEIGHT( fnt ) );
       IndigoServices_TreeBox.SetScaledMinWidth( 500 );
       IndigoServices_TreeBox.SetNumberOfColumns( 3 );
@@ -589,7 +585,7 @@ public:
       IndigoServices_TreeBox.EnableAlternateRowColor();
       IndigoServices_TreeBox.DisableMultipleSelections();
       IndigoServices_TreeBox.SetStyleSheet( css );
-       
+
       OK_PushButton.SetText( "Connect" );
       OK_PushButton.SetIcon( ScaledResource( ":/icons/power.png" ) );
       OK_PushButton.SetDefault();
@@ -610,7 +606,7 @@ public:
 
       SetSizer( Global_Sizer );
 
-      
+
       SetWindowTitle( "Indigo Services" );
 
       SetScaledMinWidth( 500 );
@@ -622,15 +618,15 @@ public:
 
       OnShow( (Control::event_handler)&IndigoServicesDialog::e_Show, *this );
       OnHide( (Control::event_handler)&IndigoServicesDialog::e_Hide, *this );
- 
-      
+
+
    }
 
    const IndigoServiceNode* getSelectedServiceNode() const
    {
       return dynamic_cast<const IndigoServiceNode*>(IndigoServices_TreeBox.CurrentNode());
-   }    
-   
+   }
+
 
 protected:
 
@@ -661,21 +657,21 @@ protected:
       else if ( sender == Cancel_PushButton )
          Cancel();
    }
-  
+
   void e_Timer( Timer& sender )
   {
      if (!m_isServicesChanged)
       return;
-     ExclConstZeroConfServicesList services = m_zeroconfServiceBrowser.getClient().ConstZeroConfServicesList(); 
-     const ZeroConfServicesArray& serviceArray(services); 
+     ExclConstZeroConfServicesList services = m_zeroconfServiceBrowser.getClient().ConstZeroConfServicesList();
+     const ZeroConfServicesArray& serviceArray(services);
      for (auto service : serviceArray)
      {
        new IndigoServiceNode(IndigoServices_TreeBox, service);
      }
-    
+
      for ( int i = 0, n = IndigoServices_TreeBox.NumberOfColumns(); i < n; ++i )
        IndigoServices_TreeBox.AdjustColumnWidthToContents( i );
-      
+
      m_isServicesChanged = false;
   }
 
@@ -708,9 +704,9 @@ MetaProcess* INDIDeviceControllerInterface::Process() const
    return TheINDIDeviceControllerProcess;
 }
 
-const char** INDIDeviceControllerInterface::IconImageXPM() const
+String INDIDeviceControllerInterface::IconImageSVGFile() const
 {
-   return nullptr; // PixInsightINDIIcon_XPM; // ### TODO
+   return "@module_icons_dir/IndigoDeviceController.svg";
 }
 
 InterfaceFeatures INDIDeviceControllerInterface::Features() const
@@ -779,10 +775,10 @@ INDIDeviceControllerInterface::GUIData::GUIData( INDIDeviceControllerInterface& 
    pcl::Font fnt = w.Font();
    int editWidth1 = fnt.Width( String( '0', 14 ) );
    int buttonWidth1 = fnt.Width( "Disconnect" ) + w.LogicalPixelsToPhysical( 30 );
-   
+
    int labelWidth1 = w.Font().Width( "Host:" );
    int ui4 = w.LogicalPixelsToPhysical( 4 );
-   
+
 
    String buttonStyle = "QPushButton { text-align: left; min-width: " + String( buttonWidth1 ) + "px; }";
 
@@ -806,7 +802,7 @@ INDIDeviceControllerInterface::GUIData::GUIData( INDIDeviceControllerInterface& 
        <p>Activates automatic detection of Indigo services in the local network.</p>
        <p>The Indigo server exposes a Bonjour (aka Zeroconf/Ahavi) service which enables Indigo clients to detect remote servers automatically. </p>
        )toolTip";
-   
+
    EnableServerDetection_CheckBox.SetText("Enable Indigo service detection");
    EnableServerDetection_CheckBox.SetToolTip(enableServerDetectionToolTipText);
    EnableServerDetection_CheckBox.Uncheck();
@@ -814,7 +810,7 @@ INDIDeviceControllerInterface::GUIData::GUIData( INDIDeviceControllerInterface& 
 #ifndef WITH_ZEROCONF
    EnableServerDetection_CheckBox.Disable();
 #endif
-   
+
    Connect_PushButton.SetText( "Connect" );
    Connect_PushButton.SetIcon( w.ScaledResource( ":/icons/power.png" ) );
    Connect_PushButton.SetStyleSheet( buttonStyle );
@@ -836,15 +832,15 @@ INDIDeviceControllerInterface::GUIData::GUIData( INDIDeviceControllerInterface& 
    ServerName_HSizer.Add( Port_Label );
    ServerName_HSizer.Add( Port_SpinBox );
    ServerName_HSizer.AddSpacing( 8 );
-   
+
    ServerName_VSizer.Add(ServerName_HSizer);
-   
+
    ServiceDetection_HSizer.AddUnscaledSpacing( labelWidth1  + ui4);
    ServiceDetection_HSizer.Add(EnableServerDetection_CheckBox);
-   
+
    ServerName_VSizer.Add(ServerName_VSizer);
    ServerName_VSizer.Add(ServiceDetection_HSizer);
-   
+
    Server_HSizer.Add(ServerName_VSizer);
    Server_HSizer.Add(ServerAction_Sizer);
 
@@ -926,12 +922,12 @@ INDIDeviceControllerInterface::GUIData::GUIData( INDIDeviceControllerInterface& 
    //
 #ifdef WITH_ZEROCONF
    ZeroconfServiceBrowser_Thread.setClient(std::make_unique<ZeroConfClient>());
-   ZeroconfServiceBrowser_Thread.getClient().onServiceAdded = [this](const ZeroConfServiceItem& serviceItem) 
+   ZeroconfServiceBrowser_Thread.getClient().onServiceAdded = [this](const ZeroConfServiceItem& serviceItem)
    {
      this->m_isIndigoServiceChanged = true;
      INDIClient::TheClient()->SetInterfaceChanged(true);
    };
-   ZeroconfServiceBrowser_Thread.getClient().onServiceRemoved = [this](const ZeroConfServiceItem& serviceItem) 
+   ZeroconfServiceBrowser_Thread.getClient().onServiceRemoved = [this](const ZeroConfServiceItem& serviceItem)
    {
      this->m_isIndigoServiceChanged = true;
      INDIClient::TheClient()->SetInterfaceChanged(true);
@@ -1137,7 +1133,7 @@ void INDIDeviceControllerInterface::e_Hide( Control& )
 #ifdef WITH_ZEROCONF
    GUI->ZeroconfServiceBrowser_Thread.Stop();
    GUI->ZeroconfServiceBrowser_Thread.getClient().clear();
-   GUI->EnableServerDetection_CheckBox.Uncheck();   
+   GUI->EnableServerDetection_CheckBox.Uncheck();
    GUI->EnableServerDetection_CheckBox.Enable();
 #endif
    INDIClient::DestroyClients();
@@ -1197,7 +1193,7 @@ void INDIDeviceControllerInterface::e_Click( Button& sender, bool checked )
                      WindowTitle(),
                      StdIcon::Error, StdButton::Ok ).Execute();
       UpdateDeviceLists();
-   } 
+   }
    else if (sender == GUI->EnableServerDetection_CheckBox)
    {
     if (GUI->EnableServerDetection_CheckBox.IsChecked())
@@ -1213,7 +1209,7 @@ void INDIDeviceControllerInterface::e_Click( Button& sender, bool checked )
       GUI->Disconnect_PushButton.Disable();
       GUI->EnableServerDetection_CheckBox.Disable();
     }
-    else 
+    else
     {
       GUI->HostName_Label.Enable();
       GUI->HostName_Edit.Enable();
@@ -1360,24 +1356,24 @@ void INDIDeviceControllerInterface::e_Timer( Timer& sender )
      GUI->ZeroconfServiceBrowser_Thread.FlushConsoleOutputText();
      Console().WriteLn(GUI->ZeroconfServiceBrowser_Thread.ConsoleOutputText());
    }
-   
+
 
    /*
     * Terminology:
-    * A service connection is a network connection to a server that provides the service. There can be several network connections to the same server, leading to different service connections. 
+    * A service connection is a network connection to a server that provides the service. There can be several network connections to the same server, leading to different service connections.
     *
     * Example: Indigo server on local machine with WLAN
     *  - 2 services (loopback, WLAN)
     *  - 3 services (loopback, WLAN, LAN) after plug-in of LAN cable
-    * 
+    *
     * Example: Indigo server on remote machine with WLAN
     *  - 1 service  (WLAN)
     *  - 2 services (LAN) after plug-in of LAN cable
-    * 
+    *
     * Each service connection is managed by an Indigo client object, i.e. if a network connection is interrupted, we keep connection open to be able to reconnect later.
-    * 
+    *
     * Prerequisites: Only one client can be controlled by the user, i.e. exposed through the GUI.
-    * 
+    *
     * Behavior:
     * - If a new service connection has occured, the user must be able to select the service which he want to connect to
     * ---> detach client of old service from bus and connect client of new service if the client was not connected before, otherwise attach
@@ -1388,11 +1384,11 @@ void INDIDeviceControllerInterface::e_Timer( Timer& sender )
     * Events:
     * - a new  service was recognized
     * - an existing service disappeared
-    *    
+    *
     */
    if (GUI->m_isIndigoServiceChanged)
    {
- 
+
        pcl::Font fnt = Font();
        String css = ScaledStyleSheet(
       "QTreeView {"
@@ -1402,13 +1398,13 @@ void INDIDeviceControllerInterface::e_Timer( Timer& sender )
        AutoPointer<IndigoServicesDialog> dialog = new IndigoServicesDialog(GUI->m_isIndigoServiceChanged, GUI->ZeroconfServiceBrowser_Thread, fnt, css );
        if ( dialog->Execute() )
        {
-          const IndigoServiceNode* selectedNode = dialog->getSelectedServiceNode(); 
- 
+          const IndigoServiceNode* selectedNode = dialog->getSelectedServiceNode();
+
          // always detach current IndigoClient
-         INDIClient* currentIndiClient = INDIClient::TheClient();        
+         INDIClient* currentIndiClient = INDIClient::TheClient();
          if (currentIndiClient != nullptr)
             currentIndiClient->detach();
- 
+
          // no node is selected
          if (selectedNode == nullptr)
             return;
@@ -1416,20 +1412,20 @@ void INDIDeviceControllerInterface::e_Timer( Timer& sender )
          // set global interface index
          INDIClient::setInterfaceIndex(selectedNode->InterfaceIndex());
 
-         if (selectedNode != nullptr) 
+         if (selectedNode != nullptr)
          {
             INDIClient* indi = INDIClient::TheClient();
             if (indi == nullptr)
               indi = INDIClient::NewClient(IsoString(selectedNode->Host()), selectedNode->Port());
-   
+
             if (indi == nullptr)
             {
                Console().CriticalLn(String("<p>Cannot create Indigo client:</p>"
                                            "<p>" + IsoString(selectedNode->Host()) + ":" + String( selectedNode->Port())  + "</p>" ));
                return;
-               
+
             }
-   
+
             if (!indi->IsServerConnected())
             {
                // there is no open connection
@@ -1447,7 +1443,7 @@ void INDIDeviceControllerInterface::e_Timer( Timer& sender )
                                               "<p><b>Possible reason: </b></p>" + IsoString( errMesg.str().c_str() )) );
                }
             }
-            else 
+            else
             {
                // connection is already opened
                indi->attach();
