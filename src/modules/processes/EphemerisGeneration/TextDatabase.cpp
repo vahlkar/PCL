@@ -63,6 +63,13 @@
 #include <pcl/StandardStatus.h>
 #include <pcl/XML.h>
 
+/*
+ * ### N.B. Beware of std::regex - it is unstable and poorly implemented, at
+ * least as of g++ 9.3 (2021).
+ *
+ * Here we use Boost.Xpressive, which is fully stable and comprehensive:
+ * https://www.boost.org/doc/libs/1_75_0/doc/html/xpressive.html
+ */
 #include <boost/xpressive/xpressive.hpp>
 
 using namespace boost::xpressive;
@@ -72,7 +79,7 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-// Core asteroid identifiers for optional exclusion.
+// Core asteroid and KBO identifiers for optional exclusion.
 static SortedArray<IsoString> s_excluded;
 
 // ----------------------------------------------------------------------------

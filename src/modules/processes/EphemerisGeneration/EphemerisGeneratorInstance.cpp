@@ -678,6 +678,7 @@ bool EphemerisGeneratorInstance::ExecuteGlobal()
 
       EphemerisMetadata metadata;
       metadata.creatorApplication = PixInsightVersion::AsString();
+      // ### TODO: Allow users define the following metadata items.
 //    metadata.title = ;
 //    metadata.briefDescription = ;
 //    metadata.description = ;
