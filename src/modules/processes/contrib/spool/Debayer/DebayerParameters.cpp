@@ -67,6 +67,7 @@ DebayerCFASourceFilePath*         TheDebayerCFASourceFilePathParameter = nullptr
 DebayerTargetItems*               TheDebayerTargetItemsParameter = nullptr;
 DebayerTargetEnabled*             TheDebayerTargetEnabledParameter = nullptr;
 DebayerTargetImage*               TheDebayerTargetImageParameter = nullptr;
+DebayerAutoMemoryLimit*           TheDebayerAutoMemoryLimitParameter = nullptr;
 DebayerNoGUIMessages*             TheDebayerNoGUIMessagesParameter = nullptr;
 DebayerInputHints*                TheDebayerInputHintsParameter = nullptr;
 DebayerOutputHints*               TheDebayerOutputHintsParameter = nullptr;
@@ -346,6 +347,23 @@ DebayerTargetImage::DebayerTargetImage( MetaTable* T ) : MetaString( T )
 IsoString DebayerTargetImage::Id() const
 {
    return "image";
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerAutoMemoryLimit::DebayerAutoMemoryLimit( MetaProcess* P ) : MetaBoolean( P )
+{
+   TheDebayerAutoMemoryLimitParameter = this;
+}
+
+IsoString DebayerAutoMemoryLimit::Id() const
+{
+   return "autoMemoryLimit";
+}
+
+bool DebayerAutoMemoryLimit::DefaultValue() const
+{
+   return true;
 }
 
 // ----------------------------------------------------------------------------

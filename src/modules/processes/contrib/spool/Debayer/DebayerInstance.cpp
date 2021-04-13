@@ -76,6 +76,10 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
+static size_type s_availableMemory = 0;
+
+// ----------------------------------------------------------------------------
+
 /*
  * 5x5 B3-spline wavelet scaling function used by the noise estimation routine.
  *
@@ -124,6 +128,7 @@ DebayerInstance::DebayerInstance( const MetaProcess* m )
    , p_noiseEvaluationAlgorithm( DebayerNoiseEvaluationAlgorithm::Default )
    , p_showImages( TheDebayerShowImagesParameter->DefaultValue() )
    , p_cfaSourceFilePath( TheDebayerCFASourceFilePathParameter->DefaultValue() )
+   , p_autoMemoryLimit( TheDebayerAutoMemoryLimitParameter->DefaultValue() )
    , p_noGUIMessages( TheDebayerNoGUIMessagesParameter->DefaultValue() ) // ### DEPRECATED
    , p_inputHints( TheDebayerInputHintsParameter->DefaultValue() )
    , p_outputHints( TheDebayerOutputHintsParameter->DefaultValue() )
@@ -166,6 +171,7 @@ void DebayerInstance::Assign( const ProcessImplementation& p )
       p_showImages               = x->p_showImages;
       p_cfaSourceFilePath        = x->p_cfaSourceFilePath;
       p_targets                  = x->p_targets;
+      p_autoMemoryLimit          = x->p_autoMemoryLimit;
       p_noGUIMessages            = x->p_noGUIMessages;
       p_inputHints               = x->p_inputHints;
       p_outputHints              = x->p_outputHints;
@@ -2406,6 +2412,32 @@ private:
          console.Write( " (detected)" );
       console.WriteLn( ": " + m_patternId );
 
+      if ( m_instance.p_autoMemoryLimit )
+         for ( bool messageShown = false; ; )
+         {
+            Module->ProcessEvents();
+
+            size_type availableMemory = Module->AvailablePhysicalMemory();
+            if ( availableMemory == 0 )
+            {
+               console.WarningLn( "<end><cbr><br>** Warning: Unable to estimate the available physical memory." );
+               break;
+            }
+            size_type bytesRequiredForInputImage = images[0].info.NumberOfSamples() * (images[0].options.bitsPerSample >> 3);
+            size_type bytesRequiredForOutputImage = images[0].info.NumberOfSamples() * 4;
+
+            if ( double( bytesRequiredForInputImage + bytesRequiredForOutputImage )/availableMemory < 0.80 )
+               break;
+
+            if ( !messageShown )
+            {
+               console.WriteLn( "<end><cbr>* Waiting for memory resources to become available..." );
+               messageShown = true;
+            }
+
+            Sleep( 250 );
+         }
+
       m_targetImage.CreateSharedImage( images[0].options.ieeefpSampleFormat,
                                        false/*isComplex*/,
                                        images[0].options.bitsPerSample );
@@ -2765,6 +2797,12 @@ bool DebayerInstance::ExecuteGlobal()
    console.EnableAbort();
    console.WriteLn( String().Format( "<end><cbr><br>Demosaicing of %u target files.", p_targets.Length() ) );
 
+   s_availableMemory = Module->AvailablePhysicalMemory();
+   if ( s_availableMemory == 0 )
+      console.WarningLn( "<end><cbr><br>** Warning: Unable to estimate the available physical memory." );
+   else
+      console.NoteLn( String().Format( "<end><cbr><br>* Available physical memory: %.3f GiB", s_availableMemory/1024/1024/1024.0 ) );
+
    int succeeded = 0;
    int failed = 0;
    int skipped = 0;
@@ -2779,13 +2817,12 @@ bool DebayerInstance::ExecuteGlobal()
          ++skipped;
       }
 
-   int numberOfThreadsAvailable = RoundInt( Thread::NumberOfThreads( PCL_MAX_PROCESSORS, 1 ) * p_fileThreadOverload );
-
    if ( p_useFileThreads && pendingItems.Length() > 1 )
    {
+      int numberOfThreadsAvailable = RoundInt( Thread::NumberOfThreads( PCL_MAX_PROCESSORS, 1 ) * p_fileThreadOverload );
       int numberOfThreads = Min( numberOfThreadsAvailable, int( pendingItems.Length() ) );
       thread_list runningThreads( numberOfThreads ); // N.B.: all pointers are set to nullptr by IndirectArray's ctor.
-      console.NoteLn( String().Format( "* Using %d worker threads.", numberOfThreads ) );
+      console.NoteLn( String().Format( "<end><br>* Using %d worker threads.", numberOfThreads ) );
 
       try
       {
@@ -3396,6 +3433,8 @@ void* DebayerInstance::LockParameter( const MetaParameter* p, size_type tableRow
       return &p_showImages;
    if ( p == TheDebayerCFASourceFilePathParameter )
       return p_cfaSourceFilePath.Begin();
+   if ( p == TheDebayerAutoMemoryLimitParameter )
+      return &p_autoMemoryLimit;
    if ( p == TheDebayerTargetEnabledParameter )
       return &p_targets[tableRow].enabled;
    if ( p == TheDebayerTargetImageParameter )

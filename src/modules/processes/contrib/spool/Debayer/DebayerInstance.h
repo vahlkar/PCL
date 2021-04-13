@@ -111,6 +111,7 @@ private:
    pcl_bool   p_showImages;        // optional for view execution only
    String     p_cfaSourceFilePath; // ...
    item_list  p_targets;
+   pcl_bool   p_autoMemoryLimit;
    pcl_bool   p_noGUIMessages; // ### DEPRECATED
 
    // Format hints

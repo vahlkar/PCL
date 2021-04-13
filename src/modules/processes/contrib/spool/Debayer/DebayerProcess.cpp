@@ -83,6 +83,7 @@ DebayerProcess::DebayerProcess()
    new DebayerTargetItems( this );
    new DebayerTargetEnabled( TheDebayerTargetItemsParameter );
    new DebayerTargetImage( TheDebayerTargetItemsParameter );
+   new DebayerAutoMemoryLimit( this );
    new DebayerNoGUIMessages( this );
    new DebayerInputHints( this );
    new DebayerOutputHints( this );

@@ -236,6 +236,20 @@ extern DebayerTargetImage* TheDebayerTargetImageParameter;
 
 // ----------------------------------------------------------------------------
 
+class DebayerAutoMemoryLimit : public MetaBoolean
+{
+public:
+
+   DebayerAutoMemoryLimit( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern DebayerAutoMemoryLimit* TheDebayerAutoMemoryLimitParameter;
+
+// ----------------------------------------------------------------------------
+
 class DebayerNoGUIMessages : public MetaBoolean
 {
 public:
