@@ -950,15 +950,17 @@ bool SubframeSelectorInstance::Measure()
 
    p_measures.Sort( SubframeSortingBinaryPredicate( SSSortingProperty::Index, 0 ) );
 
-   if ( TheSubframeSelectorMeasurementsInterface != nullptr )
-      TheSubframeSelectorMeasurementsInterface->SetMeasurements( p_measures );
-
    if ( !p_nonInteractive )
+   {
+      if ( TheSubframeSelectorMeasurementsInterface != nullptr )
+         TheSubframeSelectorMeasurementsInterface->SetMeasurements( p_measures );
+
       if ( TheSubframeSelectorInterface != nullptr )
       {
          TheSubframeSelectorInterface->ShowExpressionsInterface();
          TheSubframeSelectorInterface->ShowMeasurementsInterface();
       }
+   }
 
    return true;
 }
