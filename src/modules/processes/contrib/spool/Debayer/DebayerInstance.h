@@ -171,7 +171,8 @@ private:
    static FMatrix sRGBConversionMatrixFromTarget( FileFormatInstance& );
    static FMatrix sRGBConversionMatrixFromTargetProperty( const Variant& );
 
-   void EvaluateNoise( FVector& noiseEstimates, FVector& noiseFractions, StringList& noiseAlgorithms, const Image& ) const;
+   void EvaluateNoise( FVector& noiseEstimates, FVector& noiseFractions, StringList& noiseAlgorithms,
+                       const ImageVariant&, const IsoString& cfaPattern ) const;
 
    void ApplyErrorPolicy();
 

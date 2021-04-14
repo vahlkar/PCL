@@ -62,6 +62,7 @@
 #include <pcl/FileFormatInstance.h>
 #include <pcl/GlobalSettings.h>
 #include <pcl/ICCProfile.h>
+#include <pcl/IntegerResample.h>
 #include <pcl/MessageBox.h>
 #include <pcl/MetaModule.h>
 #include <pcl/MuteStatus.h>
@@ -73,10 +74,6 @@
 
 namespace pcl
 {
-
-// ----------------------------------------------------------------------------
-
-static size_type s_availableMemory = 0;
 
 // ----------------------------------------------------------------------------
 
@@ -198,6 +195,53 @@ void DebayerInstance::Assign( const ProcessImplementation& p )
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
+/*
+ * Fast color filter array (CFA) pixel sample selection.
+ */
+class CFAIndex
+{
+public:
+
+   typedef GenericMatrix<bool>   cfa_channel_index;
+
+   CFAIndex() = default;
+   CFAIndex( const CFAIndex& ) = default;
+
+   CFAIndex( const IsoString& pattern )
+   {
+      if ( pattern.IsEmpty() )
+         throw Error( "Internal error: Empty CFA pattern." );
+      m_size = int( Sqrt( pattern.Length() ) );
+      if ( m_size < 2 )
+         throw Error( "Internal error: Invalid CFA pattern '" + pattern + '\'' );
+      if ( m_size*m_size != pattern.Length() )
+         throw Error( "Internal error: Non-square CFA patterns are not supported: '" + pattern + '\'' );
+      for ( int c = 0; c < 3; ++c )
+      {
+         m_index[c] = cfa_channel_index( m_size, m_size );
+         IsoString::const_iterator p = pattern.Begin();
+         for ( int i = 0; i < m_size; ++i )
+            for ( int j = 0; j < m_size; ++j )
+               m_index[c][i][j] = *p++ == "RGB"[c];
+      }
+   }
+
+   int Size() const
+   {
+      return m_size;
+   }
+
+   bool operator ()( int x, int y, int c ) const
+   {
+      return m_index[c][y % m_size][x % m_size];
+   }
+
+private:
+
+   int               m_size = 0;
+   cfa_channel_index m_index[ 3 ]; // RGB
+};
+
 class NoiseEvaluationThread : public Thread
 {
 public:
@@ -206,13 +250,33 @@ public:
    float     noiseFraction = 0;
    IsoString noiseAlgorithm;
 
-   NoiseEvaluationThread( const Image& image, int channel, int algorithm, int numberOfSubthreads )
+   NoiseEvaluationThread( const ImageVariant& image, int channel, const IsoString& cfaPattern, int algorithm, int numberOfSubthreads )
       : m_algorithm( algorithm )
       , m_numberOfSubthreads( numberOfSubthreads )
    {
-      image.SelectChannel( channel );
-      m_image = image;
-      image.ResetSelections();
+      // Extract one CFA component as a single-channel image.
+      CFAIndex index( cfaPattern );
+      int n = index.Size();
+      int w = image.Width();
+      int h = image.Height();
+      int w1 = w / n;
+      int h1 = h / n;
+      m_image.AllocateData( w1, h1, 1 );
+      Image::sample_iterator i( m_image );
+      for ( int y = 0; y < h1; ++y )
+         for ( int x = 0; x < w1; ++x, ++i )
+         {
+            float f = 0;
+            int m = 0;
+            for ( int i = y*n, i1 = i + n; i < i1; ++i )
+               for ( int j = x*n, j1 = j + n; j < j1; ++j )
+                  if ( index( i, j, channel ) )
+                  {
+                     f += image( j, i );
+                     ++m;
+                  }
+            *i = f/m;
+         }
    }
 
    void Run() override
@@ -2412,32 +2476,6 @@ private:
          console.Write( " (detected)" );
       console.WriteLn( ": " + m_patternId );
 
-      if ( m_instance.p_autoMemoryLimit )
-         for ( bool messageShown = false; ; )
-         {
-            Module->ProcessEvents();
-
-            size_type availableMemory = Module->AvailablePhysicalMemory();
-            if ( availableMemory == 0 )
-            {
-               console.WarningLn( "<end><cbr><br>** Warning: Unable to estimate the available physical memory." );
-               break;
-            }
-            size_type bytesRequiredForInputImage = images[0].info.NumberOfSamples() * (images[0].options.bitsPerSample >> 3);
-            size_type bytesRequiredForOutputImage = images[0].info.NumberOfSamples() * 4;
-
-            if ( double( bytesRequiredForInputImage + bytesRequiredForOutputImage )/availableMemory < 0.80 )
-               break;
-
-            if ( !messageShown )
-            {
-               console.WriteLn( "<end><cbr>* Waiting for memory resources to become available..." );
-               messageShown = true;
-            }
-
-            Sleep( 250 );
-         }
-
       m_targetImage.CreateSharedImage( images[0].options.ieeefpSampleFormat,
                                        false/*isComplex*/,
                                        images[0].options.bitsPerSample );
@@ -2465,7 +2503,7 @@ private:
          DebayerEngine( m_outputImage, m_instance, m_bayerPattern ).Debayer( m_targetImage );
 
       if ( m_instance.p_evaluateNoise )
-         m_instance.EvaluateNoise( m_noiseEstimates, m_noiseFractions, m_noiseAlgorithms, m_outputImage );
+         m_instance.EvaluateNoise( m_noiseEstimates, m_noiseFractions, m_noiseAlgorithms, m_targetImage, m_patternId );
    }
 
    // -------------------------------------------------------------------------
@@ -2721,7 +2759,7 @@ bool DebayerInstance::ExecuteOn( View& view )
 
    if ( p_evaluateNoise )
    {
-      EvaluateNoise( o_noiseEstimates, o_noiseFractions, o_noiseAlgorithms, output );
+      EvaluateNoise( o_noiseEstimates, o_noiseFractions, o_noiseAlgorithms, source, patternId );
 
       /*
        * ### NB: Remove other existing NOISExxx keywords.
@@ -2797,12 +2835,6 @@ bool DebayerInstance::ExecuteGlobal()
    console.EnableAbort();
    console.WriteLn( String().Format( "<end><cbr><br>Demosaicing of %u target files.", p_targets.Length() ) );
 
-   s_availableMemory = Module->AvailablePhysicalMemory();
-   if ( s_availableMemory == 0 )
-      console.WarningLn( "<end><cbr><br>** Warning: Unable to estimate the available physical memory." );
-   else
-      console.NoteLn( String().Format( "<end><cbr><br>* Available physical memory: %.3f GiB", s_availableMemory/1024/1024/1024.0 ) );
-
    int succeeded = 0;
    int failed = 0;
    int skipped = 0;
@@ -2819,9 +2851,64 @@ bool DebayerInstance::ExecuteGlobal()
 
    if ( p_useFileThreads && pendingItems.Length() > 1 )
    {
+      size_type availableMemory = Module->AvailablePhysicalMemory();
+      size_type worstCaseBytesPerThread = 1;
+      if ( availableMemory == 0 )
+         console.WarningLn( "<end><cbr><br>** Warning: Unable to estimate the available physical memory." );
+      else
+      {
+         console.NoteLn( String().Format( "<end><cbr><br>* Available physical memory: %.3f GiB", availableMemory/1024/1024/1024.0 ) );
+
+         if ( p_autoMemoryLimit )
+         {
+            console.WriteLn( "<br>Estimating task memory requirements..." );
+
+            size_type totalBytesRequired = 0;
+            for ( size_type i = 0; i < p_targets.Length(); ++i )
+               if ( p_targets[i].enabled )
+               {
+                  FileFormat format( File::ExtractExtension( p_targets[i].path ), true/*read*/, false/*write*/ );
+                  FileFormatInstance file( format );
+
+                  ImageDescriptionArray images;
+                  if ( !file.Open( images, p_targets[i].path, p_inputHints + " verbosity 0" ) )
+                     throw CaughtException();
+
+                  if ( !images.IsEmpty() )
+                  {
+                     size_type bytesRequiredForInputImage = images[0].info.NumberOfSamples() * (images[0].options.bitsPerSample >> 3);
+                     size_type bytesRequiredForOutputImage = images[0].info.NumberOfPixels() * 4 * 3;
+                     size_type bytesRequiredForNoiseEvaluation = 0;
+                     if ( p_evaluateNoise )
+                     {
+                        IsoString cfaPattern = CFAPatternIdFromTarget( file, IsXTransCFAFromTarget( file ) );
+                        bytesRequiredForNoiseEvaluation =
+                           size_type( double( bytesRequiredForOutputImage )/cfaPattern.Length() ) * 6;
+                     }
+                     if ( p_debayerMethod == DebayerMethodParameter::SuperPixel )
+                        bytesRequiredForOutputImage >>= 2;
+                     size_type bytesRequired = bytesRequiredForInputImage + bytesRequiredForOutputImage + bytesRequiredForNoiseEvaluation;
+                     totalBytesRequired += bytesRequired;
+                     if ( bytesRequired > worstCaseBytesPerThread )
+                        worstCaseBytesPerThread = bytesRequired;
+                  }
+
+                  if ( !file.Close() )
+                     throw CaughtException();
+               }
+
+            if ( totalBytesRequired == 0 )
+               console.WarningLn( "<end><cbr>** Warning: Unable to estimate memory requirements: No valid image has been found." );
+            else
+               console.NoteLn( String().Format( "<end><cbr>* Estimated per-thread memory allocation: %.3f GiB", worstCaseBytesPerThread/1024/1024/1024.0 ) );
+         }
+      }
+
       int numberOfThreadsAvailable = RoundInt( Thread::NumberOfThreads( PCL_MAX_PROCESSORS, 1 ) * p_fileThreadOverload );
       int numberOfThreads = Min( numberOfThreadsAvailable, int( pendingItems.Length() ) );
+      numberOfThreads = int( Min( size_type( numberOfThreads ), size_type( double( availableMemory ) / worstCaseBytesPerThread ) ) );
       thread_list runningThreads( numberOfThreads ); // N.B.: all pointers are set to nullptr by IndirectArray's ctor.
+
       console.NoteLn( String().Format( "<end><br>* Using %d worker threads.", numberOfThreads ) );
 
       try
@@ -3365,7 +3452,8 @@ FMatrix DebayerInstance::sRGBConversionMatrixFromTargetProperty( const Variant& 
 
 // ----------------------------------------------------------------------------
 
-void DebayerInstance::EvaluateNoise( FVector& noiseEstimates, FVector& noiseFractions, StringList& noiseAlgorithms, const Image& image ) const
+void DebayerInstance::EvaluateNoise( FVector& noiseEstimates, FVector& noiseFractions, StringList& noiseAlgorithms,
+                                     const ImageVariant& image, const IsoString& cfaPattern ) const
 {
    SpinStatus spin;
    image.SetStatusCallback( &spin );
@@ -3377,11 +3465,11 @@ void DebayerInstance::EvaluateNoise( FVector& noiseEstimates, FVector& noiseFrac
    {
       int numberOfSubthreads = RoundInt( numberOfThreads/3.0 );
       ReferenceArray<NoiseEvaluationThread> threads;
-      threads << new NoiseEvaluationThread( image, 0, p_noiseEvaluationAlgorithm, numberOfSubthreads )
-              << new NoiseEvaluationThread( image, 1, p_noiseEvaluationAlgorithm, numberOfSubthreads )
-              << new NoiseEvaluationThread( image, 2, p_noiseEvaluationAlgorithm, numberOfThreads - 2*numberOfSubthreads );
+      threads << new NoiseEvaluationThread( image, 0, cfaPattern, p_noiseEvaluationAlgorithm, numberOfSubthreads )
+              << new NoiseEvaluationThread( image, 1, cfaPattern, p_noiseEvaluationAlgorithm, numberOfSubthreads )
+              << new NoiseEvaluationThread( image, 2, cfaPattern, p_noiseEvaluationAlgorithm, numberOfThreads - 2*numberOfSubthreads );
 
-      AbstractImage::ThreadData data( image, 0 ); // unbounded
+      AbstractImage::ThreadData data( image.Status(), 0 ); // unbounded
       AbstractImage::RunThreads( threads, data );
 
       for ( int i = 0; i < 3; ++i )
@@ -3397,7 +3485,7 @@ void DebayerInstance::EvaluateNoise( FVector& noiseEstimates, FVector& noiseFrac
    {
       for ( int i = 0; i < 3; ++i )
       {
-         NoiseEvaluationThread thread( image, i, p_noiseEvaluationAlgorithm, 1 );
+         NoiseEvaluationThread thread( image, i, cfaPattern, p_noiseEvaluationAlgorithm, 1 );
          thread.Run();
          noiseEstimates[i] = thread.noiseEstimate;
          noiseFractions[i] = thread.noiseFraction;
