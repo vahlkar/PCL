@@ -93,15 +93,6 @@ static const float g_5x5B3Spline_hv[] = { 0.0625F, 0.25F, 0.375F, 0.25F, 0.0625F
 static const float g_5x5B3Spline_kj[] =
 { 0.8907F, 0.2007F, 0.0856F, 0.0413F, 0.0205F, 0.0103F, 0.0052F, 0.0026F, 0.0013F, 0.0007F };
 
-
-
-
-// Separable filter coefficients
-const float __5x5B3Spline_hv[] = { 0.0625F, 0.25F, 0.375F, 0.25F, 0.0625F };
-// Gaussian noise scaling factors
-const float __5x5B3Spline_kj[] =
-{ 0.8907F, 0.2007F, 0.0856F, 0.0413F, 0.0205F, 0.0103F, 0.0052F, 0.0026F, 0.0013F, 0.0007F };
-
 /*
  * Maximum dark scaling factor to issue a 'no correlation' warning.
  */
@@ -963,7 +954,7 @@ static void EvaluateNoise( FVector& noiseEstimates, FVector& noiseFractions, Str
             ATrousWaveletTransform W( H, 1 );
             W << target;
             size_type N;
-            noiseEstimates[c] = W.NoiseKSigma( 0, 3, 0.01, 10, &N )/__5x5B3Spline_kj[0];
+            noiseEstimates[c] = W.NoiseKSigma( 0, 3, 0.01, 10, &N )/g_5x5B3Spline_kj[0];
             noiseFractions[c] = float( double( N )/target.NumberOfPixels() );
             noiseAlgorithms[c] = String( "K-Sigma" );
          }
@@ -983,10 +974,10 @@ static void EvaluateNoise( FVector& noiseEstimates, FVector& noiseFractions, Str
                size_type N;
                if ( n == 4 )
                {
-                  s0 = W.NoiseKSigma( 0, 3, 0.01, 10, &N )/__5x5B3Spline_kj[0];
+                  s0 = W.NoiseKSigma( 0, 3, 0.01, 10, &N )/g_5x5B3Spline_kj[0];
                   f0 = float( double( N )/target.NumberOfPixels() );
                }
-               noiseEstimates[c] = W.NoiseMRS( ImageVariant( const_cast<Image*>( &target ) ), __5x5B3Spline_kj, s0, 3, &N );
+               noiseEstimates[c] = W.NoiseMRS( ImageVariant( const_cast<Image*>( &target ) ), g_5x5B3Spline_kj, s0, 3, &N );
                noiseFractions[c] = float( double( N )/target.NumberOfPixels() );
 
                if ( noiseEstimates[c] > 0 && noiseFractions[c] >= 0.01F )
