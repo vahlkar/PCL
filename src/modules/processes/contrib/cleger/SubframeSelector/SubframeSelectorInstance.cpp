@@ -215,11 +215,13 @@ public:
    SubframeSelectorMeasureThread( int index,
                                   ImageVariant* subframe,
                                   const String& subframePath,
-                                  MeasureThreadInputData* data )
+                                  MeasureThreadInputData* data,
+                                  bool throwsOnMeasurementError = true )
       : m_index( index )
       , m_subframe( subframe )
       , m_outputData( subframePath )
       , m_data( data )
+      , m_throwsOnMeasurementError( throwsOnMeasurementError )
    {
    }
 
@@ -252,7 +254,8 @@ public:
          // Run the Star Detector
          star_list stars = StarDetector();
          if ( stars.IsEmpty() )
-            throw Error( "No stars detected" );
+            if ( m_throwsOnMeasurementError )
+               throw Error( "No stars detected" );
 
          // Stop if just showing the maps
          if ( m_data->showStarDetectionMaps )
@@ -267,7 +270,8 @@ public:
          // Run the PSF Fitter
          psf_list fits = FitPSFs( stars.Begin(), stars.End() );
          if ( fits.IsEmpty() )
-            throw Error( "No PSF could be fitted" );
+            if ( m_throwsOnMeasurementError )
+               throw Error( "No PSF could be fitted" );
 
          if ( IsAborted() )
             throw Error( "Aborted" );
@@ -327,6 +331,7 @@ private:
    bool                      m_success = false;
    String                    m_errorInfo;
    MeasureThreadInputData*   m_data = nullptr;
+   bool                      m_throwsOnMeasurementError = true;
 
    void EvaluateNoise()
    {
@@ -880,7 +885,8 @@ bool SubframeSelectorInstance::Measure()
                      *i = new SubframeSelectorMeasureThread( pendingItemsTotal-pendingItems.Length()+1,
                                                              LoadSubframe( item.path ),
                                                              item.path,
-                                                             &inputThreadData );
+                                                             &inputThreadData,
+                                                             !p_nonInteractive/*throwsOnMeasurementError*/ );
                      (*i)->Start( ThreadPriority::DefaultMax );
                      ++running;
                   }
