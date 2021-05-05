@@ -118,9 +118,9 @@ For each [module_name] module and third-party or PCL [library_name], makefiles a
 
 The current version of PCL has been built with:
 
-   * Ubuntu 18.04 LTS: GCC C/C++ compiler 9.3.0.
+   * Ubuntu 18.04 and 20.04 LTS: GCC C/C++ compiler 9.3.0.
    * FreeBSD 12.0: Clang C/C++ compiler, default system compiler version.
-   * macOS 10.15.6: Clang C/C++ compiler with Xcode 11.0, as provided by Apple.
+   * macOS 11.3.1: Clang C/C++ compiler with Xcode 12.0.5, as provided by Apple.
    * Windows 10: Microsoft Visual C++ 2019 Community Edition.
 
 This version of PCL requires a compiler with C++17 language support.
@@ -129,7 +129,7 @@ The GCC and Clang C++ compilers provide higher conformance to ISO C++ standards 
 
 On Linux and UNIX platforms we support GNU make exclusively, so you must use 'gmake' on FreeBSD instead of the default make utility.
 
-On Windows, we provide project files for the Microsoft Visual Studio integrated development environment (.vcxproj files). As of PCL version 2.4.0 we support Visual C++ 2017 and 2019 exclusively.
+On Windows, we provide project files for the Microsoft Visual Studio integrated development environment (.vcxproj files). As of PCL version 2.4.9 we support Visual C++ 2019 exclusively.
 
 
 ## Environment Variables
@@ -215,4 +215,4 @@ With the following environment variables correctly defined, you can generate mak
 
 
 ******
-###### Copyright (C) 2003-2020 Pleiades Astrophoto
+###### Copyright (C) 2003-2021 Pleiades Astrophoto
