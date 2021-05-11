@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// pcl/Median.cpp - Released 2021-04-09T19:41:11Z
+// pcl/Median.cpp - Released 2021-05-05T15:37:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -93,6 +93,12 @@ public:
    {
       H = size_type( 0 );
       double range = m_high - m_low;
+// Workaround for clang compiler bug on macOS:
+// https://pixinsight.com/forum/index.php?threads/pi-always-crash-when-stf.15830/
+#ifdef __PCL_MACOSX
+      if ( 1 + range != 1 )
+      {
+#endif
       const T* __restrict__ a = m_A + m_start;
       const T* __restrict__ b = m_A + m_stop;
       do
@@ -102,6 +108,9 @@ public:
                ++H[int( (__PCL_MEDIAN_HISTOGRAM_LENGTH - 1) * (*a - m_low)/range )];
       }
       while ( ++a < b );
+#ifdef __PCL_MACOSX
+      }
+#endif
    }
 
 private:
@@ -1335,6 +1344,12 @@ public:
    {
       H = size_type( 0 );
       double range = m_high - m_low;
+// Workaround for clang compiler bug on macOS:
+// https://pixinsight.com/forum/index.php?threads/pi-always-crash-when-stf.15830/
+#ifdef __PCL_MACOSX
+      if ( 1 + range != 1 )
+      {
+#endif
       const T* __restrict__ a = m_A + m_start;
       const T* __restrict__ b = m_A + m_stop;
       do
@@ -1345,6 +1360,9 @@ public:
                ++H[TruncInt( (__PCL_MEDIAN_HISTOGRAM_LENGTH - 1) * (d - m_low)/range )];
       }
       while ( ++a < b );
+#ifdef __PCL_MACOSX
+      }
+#endif
    }
 
 private:
@@ -1632,6 +1650,12 @@ public:
    {
       H = size_type( 0 );
       double range = m_high - m_low;
+// Workaround for clang compiler bug on macOS:
+// https://pixinsight.com/forum/index.php?threads/pi-always-crash-when-stf.15830/
+#ifdef __PCL_MACOSX
+      if ( 1 + range != 1 )
+      {
+#endif
       const T* __restrict__ a = m_A + m_start;
       const T* __restrict__ b = m_A + m_stop;
       do
@@ -1646,6 +1670,9 @@ public:
          }
       }
       while ( ++a < b );
+#ifdef __PCL_MACOSX
+      }
+#endif
    }
 
 private:
@@ -1984,4 +2011,4 @@ TwoSidedEstimate PCL_FUNC TwoSidedMAD( const long double* __restrict__ i, const 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Median.cpp - Released 2021-04-09T19:41:11Z
+// EOF pcl/Median.cpp - Released 2021-05-05T15:37:45Z

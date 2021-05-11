@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// pcl/Image.h - Released 2021-04-09T19:40:59Z
+// pcl/Image.h - Released 2021-05-05T15:37:37Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -15849,6 +15849,11 @@ private:
       {
          H = size_type( 0 );
          m_range = m_high - m_low;
+// Workaround for clang compiler bug on macOS:
+// https://pixinsight.com/forum/index.php?threads/pi-always-crash-when-stf.15830/
+#ifdef __PCL_MACOSX
+         if ( 1 + m_range != 1 )
+#endif
          this->Execute( [=]( const sample* f )
             {
                if ( *f >= m_low )
@@ -15973,6 +15978,11 @@ private:
       {
          H = size_type( 0 );
          m_range = m_high - m_low;
+// Workaround for clang compiler bug on macOS:
+// https://pixinsight.com/forum/index.php?threads/pi-always-crash-when-stf.15830/
+#ifdef __PCL_MACOSX
+         if ( 1 + m_range != 1 )
+#endif
          this->Execute( [=]( const sample* f )
             {
                double d; P::FromSample( d, *f );
@@ -16014,6 +16024,11 @@ private:
       {
          H = size_type( 0 );
          m_range = m_high - m_low;
+// Workaround for clang compiler bug on macOS:
+// https://pixinsight.com/forum/index.php?threads/pi-always-crash-when-stf.15830/
+#ifdef __PCL_MACOSX
+         if ( 1 + m_range != 1 )
+#endif
          this->Execute( [=]( const sample* f )
             {
                double x; P::FromSample( x, *f );
@@ -17666,4 +17681,4 @@ typedef FComplexImage                     ComplexImage;
 #endif   // __PCL_Image_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Image.h - Released 2021-04-09T19:40:59Z
+// EOF pcl/Image.h - Released 2021-05-05T15:37:37Z
