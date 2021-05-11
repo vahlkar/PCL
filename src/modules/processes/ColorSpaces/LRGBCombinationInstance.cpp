@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.2
 // ----------------------------------------------------------------------------
-// LRGBCombinationInstance.cpp - Released 2021-04-09T19:41:48Z
+// LRGBCombinationInstance.cpp - Released 2021-05-05T15:38:07Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -58,6 +58,7 @@
 #include <pcl/AutoViewLock.h>
 #include <pcl/HistogramTransformation.h>
 #include <pcl/ImageWindow.h>
+#include <pcl/IntegrationMetadata.h>
 #include <pcl/StandardStatus.h>
 #include <pcl/View.h>
 
@@ -797,6 +798,7 @@ bool LRGBCombinationInstance::ExecuteOn( View& view )
 {
    ImageWindow sourceWindow[ 4 ];
    ImageVariant sourceImage[ 4 ];
+   Array<IntegrationMetadata> sourceMetadata;
 
    AutoViewLock lock( view );
 
@@ -855,6 +857,9 @@ bool LRGBCombinationInstance::ExecuteOn( View& view )
          if ( sourceImage[i]->Width() != w0 || sourceImage[i]->Height() != h0 )
             throw Error( "LRGBCombination: Incompatible source image geometry: " + id );
 
+         if ( !view.IsPreview() )
+            sourceMetadata << IntegrationMetadata( sourceWindow[i].MainView().StorableProperties(),
+                                                   sourceWindow[i].Keywords() );
          ++numberOfSources;
       }
 
@@ -939,6 +944,18 @@ bool LRGBCombinationInstance::ExecuteOn( View& view )
          }
    }
 
+   if ( !view.IsPreview() )
+   {
+      PropertyArray properties;
+      FITSKeywordArray keywords = view.Window().Keywords();
+
+      IntegrationMetadata metadata = IntegrationMetadata::Summary( sourceMetadata );
+      metadata.UpdatePropertiesAndKeywords( properties, keywords );
+
+      view.SetStorablePermanentProperties( properties );
+      view.Window().SetKeywords( keywords );
+   }
+
    return true;
 }
 
@@ -953,6 +970,7 @@ bool LRGBCombinationInstance::ExecuteGlobal()
 {
    ImageWindow sourceWindow[ 4 ];
    ImageVariant sourceImage[ 4 ];
+   Array<IntegrationMetadata> sourceMetadata;
 
    int width = 0, height = 0;
    bool floatSample = false;
@@ -997,26 +1015,28 @@ bool LRGBCombinationInstance::ExecuteGlobal()
                throw Error( "LRGBCombination: Incompatible source image geometry: " + channelId[i] );
          }
 
+         sourceMetadata << IntegrationMetadata( sourceWindow[i].MainView().StorableProperties(),
+                                                sourceWindow[i].Keywords() );
          ++numberOfSources;
       }
 
    if ( numberOfSources == 0 )
       throw Error( "LRGBCombination: No source images." );
 
-   ImageWindow w( width, height, 3, bitsPerSample, floatSample, true, true );
-   if ( w.IsNull() )
+   ImageWindow outputWindow( width, height, 3, bitsPerSample, floatSample, true, true );
+   if ( outputWindow.IsNull() )
       throw Error( "LRGBCombination: Unable to create target image." );
 
-   w.SetRGBWS( rgbws );
-   w.SetResolution( xRes, yRes, metric );
+   outputWindow.SetRGBWS( rgbws );
+   outputWindow.SetResolution( xRes, yRes, metric );
 
-   View mainView = w.MainView();
+   View outputView = outputWindow.MainView();
 
-   AutoViewLock lock( mainView );
+   AutoViewLock lock( outputView );
 
    try
    {
-      ImageVariant image = mainView.Image();
+      ImageVariant image = outputView.Image();
 
       Console().EnableAbort();
 
@@ -1102,13 +1122,22 @@ bool LRGBCombinationInstance::ExecuteGlobal()
             }
       }
 
-      w.Show();
+      PropertyArray properties;
+      FITSKeywordArray keywords = outputWindow.Keywords();
+
+      IntegrationMetadata metadata = IntegrationMetadata::Summary( sourceMetadata );
+      metadata.UpdatePropertiesAndKeywords( properties, keywords );
+
+      outputView.SetStorablePermanentProperties( properties );
+      outputWindow.SetKeywords( keywords );
+
+      outputWindow.Show();
 
       return true;
    }
    catch ( ... )
    {
-      w.Close();
+      outputWindow.Close();
       throw;
    }
 }
@@ -1168,4 +1197,4 @@ size_type LRGBCombinationInstance::ParameterLength( const MetaParameter* p, size
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LRGBCombinationInstance.cpp - Released 2021-04-09T19:41:48Z
+// EOF LRGBCombinationInstance.cpp - Released 2021-05-05T15:38:07Z
