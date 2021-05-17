@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.8.1
 // ----------------------------------------------------------------------------
-// Function.cpp - Released 2021-04-09T19:41:48Z
+// Function.cpp - Released 2021-05-05T15:38:07Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -96,8 +96,8 @@ void Function::InitializeList( function_set& functions, function_index& index )
              << new ArcTanFunction
              << new ArcTanhFunction
              << new AvgDevFunction
-             << new BinarizationFunction
              << new BWMVFunction
+             << new BinarizationFunction
              << new BoxConvolutionFunction
              << new CIELFunction
              << new CIEXFunction
@@ -111,6 +111,7 @@ void Function::InitializeList( function_set& functions, function_index& index )
              << new CIEhrFunction
              << new CeilFunction
              << new ChiSquareFunction
+             << new CombinationFunction
              << new CosFunction
              << new CoshFunction
              << new DecFunction
@@ -160,6 +161,26 @@ void Function::InitializeList( function_set& functions, function_index& index )
              << new NormFunction
              << new NormalizationFunction
              << new NumberOfChannelsFunction
+             << new OpAddFunction
+             << new OpColorBurnFunction
+             << new OpColorDodgeFunction
+             << new OpDifFunction
+             << new OpDivFunction
+             << new OpExclusionFunction
+             << new OpHardLightFunction
+             << new OpLinearBurnFunction
+             << new OpLinearLightFunction
+             << new OpMaxFunction
+             << new OpMinFunction
+             << new OpMovFunction
+             << new OpMulFunction
+             << new OpOverlayFunction
+             << new OpPinLightFunction
+             << new OpPowFunction
+             << new OpScreenFunction
+             << new OpSoftLightFunction
+             << new OpSubFunction
+             << new OpVividLightFunction
              << new PAngleFunction
              << new PBMVFunction
              << new PiFunction
@@ -195,8 +216,8 @@ void Function::InitializeList( function_set& functions, function_index& index )
              << new TanFunction
              << new TanhFunction
              << new TranslationFunction
-             << new TruncationFunction
              << new TruncFunction
+             << new TruncationFunction
              << new VFunction
              << new VarFunction
              << new WidthFunction
@@ -4316,4 +4337,4 @@ Expression::component_list InlineSwitchFunction::Optimized() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Function.cpp - Released 2021-04-09T19:41:48Z
+// EOF Function.cpp - Released 2021-05-05T15:38:07Z

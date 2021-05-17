@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.8.1
 // ----------------------------------------------------------------------------
-// Generators.cpp - Released 2021-04-09T19:41:48Z
+// Generators.cpp - Released 2021-05-05T15:38:07Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -1650,7 +1650,530 @@ void KrnGaussianFunction::operator()( Pixel& r, component_list::const_iterator, 
 
 // ----------------------------------------------------------------------------
 
+enum
+{
+   OpMov, OpAdd, OpSub, OpMul, OpDiv, OpPow, OpDif, OpMin, OpMax,
+   OpColorBurn, OpLinearBurn, OpScreen, OpColorDodge, OpOverlay,
+   OpSoftLight, OpHardLight, OpVividLight, OpLinearLight, OpPinLight, OpExclusion,
+   OpCount
+};
+
+// ----------------------------------------------------------------------------
+
+bool CombinationFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
+{
+   // combine( image1, image2, op )
+
+   distance_type n = Distance( i, j );
+   if ( n != 3 )
+   {
+      info = "combine() takes 3 arguments";
+      return false;
+   }
+
+   if ( !(*i)->IsImageReference() )
+      if ( !(*i)->IsFunctional() )
+      {
+         info = "combine() argument #1: Must be an image reference or a functional subexpression evaluating to an image";
+         arg = *i;
+         return false;
+      }
+
+   ++i;
+
+   if ( !(*i)->IsImageReference() )
+      if ( !(*i)->IsFunctional() )
+      {
+         info = "combine() argument #2: Must be an image reference or a functional subexpression evaluating to an image";
+         arg = *i;
+         return false;
+      }
+
+   ++i;
+
+   if ( (*i)->IsImageReference() )
+   {
+      info = "combine() argument #3: The binary operation selector must be an invariant scalar subexpression";
+      arg = *i;
+      return false;
+   }
+
+   if ( (*i)->IsSample() )
+   {
+      if ( Frac( S->Value() ) != 0 )
+      {
+         info = "combine() argument #3: The binary operation selector must be an integer value";
+         arg = *i;
+         return false;
+      }
+      if ( S->Value() < 0 || S->Value() >= OpCount )
+      {
+         info = "combine() argument #3: Unknown or unsupported binary operation '" + String( int( S->Value() ) ) + "'";
+         arg = *i;
+         return false;
+      }
+   }
+
+   return true;
+}
+
+IsoString CombinationFunction::GenerateImage( component_list::const_iterator i, component_list::const_iterator j ) const
+{
+   // combine( image1, image2, op )
+
+   if ( !(*i)->IsImageReference() )
+      throw ParseError( "combine() argument #1: Must be an image reference or a functional subexpression evaluating to an image" );
+
+   const ImageReference* ref1 = dynamic_cast<ImageReference*>( *i );
+
+   ++i;
+
+   if ( !(*i)->IsImageReference() )
+      throw ParseError( "combine() argument #2: Must be an image reference or a functional subexpression evaluating to an image" );
+
+   const ImageReference* ref2 = dynamic_cast<ImageReference*>( *i );
+
+   ++i;
+
+   int op;
+   if ( (*i)->IsSample() )
+      op = int( S->Value() );
+   else if ( (*i)->IsPixel() && P->PixelValue().Length() == 1 )
+      op = int( P->PixelValue()[0] );
+   else
+      throw ParseError( "combine() argument #3: The binary operation selector must be an invariant scalar subexpression" );
+
+   if ( op < 0 || op >= OpCount )
+      throw ParseError( "combine() argument #3: Unknown or unsupported binary operation '" + String( op ) + "'" );
+
+   IsoString key = TheImageCache->MakeKey( ref1->Id() + '_' + ref2->Id(), IsoString().Format( "_combine_%d", op ) );
+
+   if ( !TheImageCache->HasImage( key ) )
+   {
+      ImageVariant result = NewGeneratorResult( ref1 );
+
+      ImageVariant::image_op iop;
+      switch ( op )
+      {
+      default: // ?!
+      case OpMov:
+         iop = ImageOp::Mov;
+         break;
+      case OpAdd:
+         iop = ImageOp::Add;
+         break;
+      case OpSub:
+         iop = ImageOp::Sub;
+         break;
+      case OpMul:
+         iop = ImageOp::Mul;
+         break;
+      case OpDiv:
+         iop = ImageOp::Div;
+         break;
+      case OpPow:
+         iop = ImageOp::Pow;
+         break;
+      case OpDif:
+         iop = ImageOp::Dif;
+         break;
+      case OpMin:
+         iop = ImageOp::Min;
+         break;
+      case OpMax:
+         iop = ImageOp::Max;
+         break;
+      case OpColorBurn:
+         iop = ImageOp::ColorBurn;
+         break;
+      case OpLinearBurn:
+         iop = ImageOp::LinearBurn;
+         break;
+      case OpScreen:
+         iop = ImageOp::Screen;
+         break;
+      case OpColorDodge:
+         iop = ImageOp::ColorDodge;
+         break;
+      case OpOverlay:
+         iop = ImageOp::Overlay;
+         break;
+      case OpSoftLight:
+         iop = ImageOp::SoftLight;
+         break;
+      case OpHardLight:
+         iop = ImageOp::HardLight;
+         break;
+      case OpVividLight:
+         iop = ImageOp::VividLight;
+         break;
+      case OpLinearLight:
+         iop = ImageOp::LinearLight;
+         break;
+      case OpPinLight:
+         iop = ImageOp::PinLight;
+         break;
+      case OpExclusion:
+         iop = ImageOp::Exclusion;
+         break;
+      }
+
+      result.Apply( *ref2->Image(), iop );
+
+      TheImageCache->AddImage( key, result );
+   }
+
+   return key;
+}
+
+void CombinationFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+{
+   throw ParseError( "combine(): Internal execution error" );
+}
+
+// ----------------------------------------------------------------------------
+
+void OpMovFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+{
+   throw Error( "op_mov(): Internal parser error" );
+}
+
+bool OpMovFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+{
+   return true;
+}
+
+void OpMovFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+{
+   r.SetSamples( OpMov );
+}
+
+// ----------------------------------------------------------------------------
+
+void OpAddFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+{
+   throw Error( "op_add(): Internal parser error" );
+}
+
+bool OpAddFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+{
+   return true;
+}
+
+void OpAddFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+{
+   r.SetSamples( OpAdd );
+}
+
+// ----------------------------------------------------------------------------
+
+void OpSubFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+{
+   throw Error( "op_sub(): Internal parser error" );
+}
+
+bool OpSubFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+{
+   return true;
+}
+
+void OpSubFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+{
+   r.SetSamples( OpSub );
+}
+
+// ----------------------------------------------------------------------------
+
+void OpMulFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+{
+   throw Error( "op_mul(): Internal parser error" );
+}
+
+bool OpMulFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+{
+   return true;
+}
+
+void OpMulFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+{
+   r.SetSamples( OpMul );
+}
+
+// ----------------------------------------------------------------------------
+
+void OpDivFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+{
+   throw Error( "op_div(): Internal parser error" );
+}
+
+bool OpDivFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+{
+   return true;
+}
+
+void OpDivFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+{
+   r.SetSamples( OpDiv );
+}
+
+// ----------------------------------------------------------------------------
+
+void OpPowFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+{
+   throw Error( "op_pow(): Internal parser error" );
+}
+
+bool OpPowFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+{
+   return true;
+}
+
+void OpPowFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+{
+   r.SetSamples( OpPow );
+}
+
+// ----------------------------------------------------------------------------
+
+void OpDifFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+{
+   throw Error( "op_dif(): Internal parser error" );
+}
+
+bool OpDifFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+{
+   return true;
+}
+
+void OpDifFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+{
+   r.SetSamples( OpDif );
+}
+
+// ----------------------------------------------------------------------------
+
+void OpMinFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+{
+   throw Error( "op_min(): Internal parser error" );
+}
+
+bool OpMinFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+{
+   return true;
+}
+
+void OpMinFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+{
+   r.SetSamples( OpMin );
+}
+
+// ----------------------------------------------------------------------------
+
+void OpMaxFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+{
+   throw Error( "op_max(): Internal parser error" );
+}
+
+bool OpMaxFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+{
+   return true;
+}
+
+void OpMaxFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+{
+   r.SetSamples( OpMax );
+}
+
+// ----------------------------------------------------------------------------
+
+void OpColorBurnFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+{
+   throw Error( "op_color_burn(): Internal parser error" );
+}
+
+bool OpColorBurnFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+{
+   return true;
+}
+
+void OpColorBurnFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+{
+   r.SetSamples( OpColorBurn );
+}
+
+// ----------------------------------------------------------------------------
+
+void OpLinearBurnFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+{
+   throw Error( "op_linear_burn(): Internal parser error" );
+}
+
+bool OpLinearBurnFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+{
+   return true;
+}
+
+void OpLinearBurnFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+{
+   r.SetSamples( OpLinearBurn );
+}
+
+// ----------------------------------------------------------------------------
+
+void OpScreenFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+{
+   throw Error( "op_screen(): Internal parser error" );
+}
+
+bool OpScreenFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+{
+   return true;
+}
+
+void OpScreenFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+{
+   r.SetSamples( OpScreen );
+}
+
+// ----------------------------------------------------------------------------
+
+void OpColorDodgeFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+{
+   throw Error( "op_color_dodge(): Internal parser error" );
+}
+
+bool OpColorDodgeFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+{
+   return true;
+}
+
+void OpColorDodgeFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+{
+   r.SetSamples( OpColorDodge );
+}
+
+// ----------------------------------------------------------------------------
+
+void OpOverlayFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+{
+   throw Error( "op_overlay(): Internal parser error" );
+}
+
+bool OpOverlayFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+{
+   return true;
+}
+
+void OpOverlayFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+{
+   r.SetSamples( OpOverlay );
+}
+
+// ----------------------------------------------------------------------------
+
+void OpSoftLightFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+{
+   throw Error( "op_soft_light(): Internal parser error" );
+}
+
+bool OpSoftLightFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+{
+   return true;
+}
+
+void OpSoftLightFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+{
+   r.SetSamples( OpSoftLight );
+}
+
+// ----------------------------------------------------------------------------
+
+void OpHardLightFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+{
+   throw Error( "op_hard_light(): Internal parser error" );
+}
+
+bool OpHardLightFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+{
+   return true;
+}
+
+void OpHardLightFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+{
+   r.SetSamples( OpHardLight );
+}
+
+// ----------------------------------------------------------------------------
+
+void OpVividLightFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+{
+   throw Error( "op_vivid_light(): Internal parser error" );
+}
+
+bool OpVividLightFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+{
+   return true;
+}
+
+void OpVividLightFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+{
+   r.SetSamples( OpVividLight );
+}
+
+// ----------------------------------------------------------------------------
+
+void OpLinearLightFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+{
+   throw Error( "op_linear_light(): Internal parser error" );
+}
+
+bool OpLinearLightFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+{
+   return true;
+}
+
+void OpLinearLightFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+{
+   r.SetSamples( OpLinearLight );
+}
+
+// ----------------------------------------------------------------------------
+
+void OpPinLightFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+{
+   throw Error( "op_pin_light(): Internal parser error" );
+}
+
+bool OpPinLightFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+{
+   return true;
+}
+
+void OpPinLightFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+{
+   r.SetSamples( OpPinLight );
+}
+
+// ----------------------------------------------------------------------------
+
+void OpExclusionFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+{
+   throw Error( "op_exclusion(): Internal parser error" );
+}
+
+bool OpExclusionFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+{
+   return true;
+}
+
+void OpExclusionFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+{
+   r.SetSamples( OpExclusion );
+}
+
+// ----------------------------------------------------------------------------
+
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Generators.cpp - Released 2021-04-09T19:41:48Z
+// EOF Generators.cpp - Released 2021-05-05T15:38:07Z

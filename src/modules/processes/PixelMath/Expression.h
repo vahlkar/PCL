@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.8.1
 // ----------------------------------------------------------------------------
-// Expression.h - Released 2021-04-09T19:41:48Z
+// Expression.h - Released 2021-05-05T15:38:07Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -216,4 +216,4 @@ private:
 #endif   // __Expression_h
 
 // ----------------------------------------------------------------------------
-// EOF Expression.h - Released 2021-04-09T19:41:48Z
+// EOF Expression.h - Released 2021-05-05T15:38:07Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.8.1
 // ----------------------------------------------------------------------------
-// Function.h - Released 2021-04-09T19:41:48Z
+// Function.h - Released 2021-05-05T15:38:07Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -2025,7 +2025,7 @@ public:
    Expression* Generate( int p ) const override { return new SumFunction( p ); }
 
    String Meta() const override            { return "sum( a, b[, ...] )"; }
-   String Id() const override              { return "<p>Summatory of a set of two or more arguments.</p>"; }
+   String Id() const override              { return "<p>Summation of a set of two or more arguments.</p>"; }
    String Token() const override           { return "sum"; }
    String Aliases() const override         { return "Sum"; }
    int RequiredArguments() const override  { return 2; }
@@ -3161,7 +3161,7 @@ public:
    String Meta() const override            { return "str_circular()"; }
    String Id() const override              { return "<p>Represents a circular structuring element in a morphological transformation, "
                                                     "such as the medfilt(), erosion() or dilation() generators.</p>"
-                                                    "<p>The standard circular structure of size 7 is defined as follows:</p>"
+                                                    "<p>For example, the standard circular structure of size 7 is defined as follows:</p>"
                                                     "<p style=\"white-space: pre;\">"
                                                     "   . . x x x . .<br/>"
                                                     "   . x x x x x .<br/>"
@@ -3197,7 +3197,7 @@ public:
    String Meta() const override            { return "str_orthogonal()"; }
    String Id() const override              { return "<p>Represents a orthogonal structuring element in a morphological transformation, "
                                                     "such as the medfilt(), erosion() or dilation() generators.</p>"
-                                                    "<p>An orthogonal structure of size 5 is defined as follows:</p>"
+                                                    "<p>For example, an orthogonal structure of size 5 is defined as follows:</p>"
                                                     "<p style=\"white-space: pre;\">"
                                                     "   . . x . .<br/>"
                                                     "   . . x . .<br/>"
@@ -3231,7 +3231,7 @@ public:
    String Meta() const override            { return "str_diagonal()"; }
    String Id() const override              { return "<p>Represents a diagonal structuring element in a morphological transformation, "
                                                     "such as the medfilt(), erosion() or dilation() generators.</p>"
-                                                    "<p>A diagonal structure of size 5 is defined as follows:</p>"
+                                                    "<p>For example, a diagonal structure of size 5 is defined as follows:</p>"
                                                     "<p style=\"white-space: pre;\">"
                                                     "   x . . . x<br/>"
                                                     "   . x . x .<br/>"
@@ -3265,7 +3265,7 @@ public:
    String Meta() const override            { return "str_star()"; }
    String Id() const override              { return "<p>Represents a star structuring element in a morphological transformation, "
                                                     "such as the medfilt(), erosion() or dilation() generators.</p>"
-                                                    "<p>A star structure of size 7 is defined as follows:</p>"
+                                                    "<p>For example, a star structure of size 7 is defined as follows:</p>"
                                                     "<p style=\"white-space: pre;\">"
                                                     "   . . . x . . .<br/>"
                                                     "   . x . x . x .<br/>"
@@ -3673,9 +3673,583 @@ public:
 
 // ----------------------------------------------------------------------------
 
+class CombinationFunction : public Function
+{
+public:
+
+   CombinationFunction( int p = 0, int n = 0 ) : Function( p, n ) {}
+
+   Expression* Clone() const override { return new CombinationFunction( *this ); }
+   Expression* Generate( int p ) const override { return new CombinationFunction( p ); }
+
+   String Meta() const override            { return "combine( image1, image2, op )"; }
+   String Id() const override              { return "<p>Combination of two source operand images <i>image1</i> and <i>image2</i> "
+                                                    "with the specified binary operation <i>op</i>. Returns the result of "
+                                                    "<i>image1</i> <i>op</i> <i>image2</i>, which is a dynamically generated image.</p>"
+                                                    "<p>See the family of op_xxx() symbolic functions for the set of available binary "
+                                                    "image operators.</p>"; }
+   String Token() const override           { return "combine"; }
+   int RequiredArguments() const override  { return 3; }
+   int MaximumArguments() const override   { return 3; }
+
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+
+   bool IsImageGenerator() const override
+   {
+      return true;
+   }
+
+   IsoString GenerateImage( component_list::const_iterator, component_list::const_iterator ) const override;
+
+   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+};
+
+// ----------------------------------------------------------------------------
+
+class OpMovFunction : public Function
+{
+public:
+
+   OpMovFunction( int p = 0, int n = 0 ) : Function( p, n ) {}
+
+   Expression* Clone() const override { return new OpMovFunction( *this ); }
+   Expression* Generate( int p ) const override { return new OpMovFunction( p ); }
+
+   String Meta() const override            { return "op_mov()"; }
+   String Id() const override              { return "<p>Represents a pixel wise assignment operation for the combine() generator.</p>"
+                                                    "<p>Invariant subexpression: always.</p>"; }
+   String Token() const override           { return "op_mov"; }
+   int RequiredArguments() const override  { return 0; }
+   int MaximumArguments() const override   { return 0; }
+
+   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+
+   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
+   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+};
+
+// ----------------------------------------------------------------------------
+
+class OpAddFunction : public Function
+{
+public:
+
+   OpAddFunction( int p = 0, int n = 0 ) : Function( p, n ) {}
+
+   Expression* Clone() const override { return new OpAddFunction( *this ); }
+   Expression* Generate( int p ) const override { return new OpAddFunction( p ); }
+
+   String Meta() const override            { return "op_add()"; }
+   String Id() const override              { return "<p>Represents a pixel wise arithmetic addition operation for the combine() generator.</p>"
+                                                    "<p>Invariant subexpression: always.</p>"; }
+   String Token() const override           { return "op_add"; }
+   int RequiredArguments() const override  { return 0; }
+   int MaximumArguments() const override   { return 0; }
+
+   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+
+   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
+   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+};
+
+// ----------------------------------------------------------------------------
+
+class OpSubFunction : public Function
+{
+public:
+
+   OpSubFunction( int p = 0, int n = 0 ) : Function( p, n ) {}
+
+   Expression* Clone() const override { return new OpSubFunction( *this ); }
+   Expression* Generate( int p ) const override { return new OpSubFunction( p ); }
+
+   String Meta() const override            { return "op_sub()"; }
+   String Id() const override              { return "<p>Represents a pixel wise arithmetic subtraction operation for the combine() generator.</p>"
+                                                    "<p>Invariant subexpression: always.</p>"; }
+   String Token() const override           { return "op_sub"; }
+   int RequiredArguments() const override  { return 0; }
+   int MaximumArguments() const override   { return 0; }
+
+   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+
+   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
+   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+};
+
+// ----------------------------------------------------------------------------
+
+class OpMulFunction : public Function
+{
+public:
+
+   OpMulFunction( int p = 0, int n = 0 ) : Function( p, n ) {}
+
+   Expression* Clone() const override { return new OpMulFunction( *this ); }
+   Expression* Generate( int p ) const override { return new OpMulFunction( p ); }
+
+   String Meta() const override            { return "op_mul()"; }
+   String Id() const override              { return "<p>Represents a pixel wise arithmetic multiplication operation for the combine() generator.</p>"
+                                                    "<p>Invariant subexpression: always.</p>"; }
+   String Token() const override           { return "op_mul"; }
+   int RequiredArguments() const override  { return 0; }
+   int MaximumArguments() const override   { return 0; }
+
+   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+
+   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
+   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+};
+
+// ----------------------------------------------------------------------------
+
+class OpDivFunction : public Function
+{
+public:
+
+   OpDivFunction( int p = 0, int n = 0 ) : Function( p, n ) {}
+
+   Expression* Clone() const override { return new OpDivFunction( *this ); }
+   Expression* Generate( int p ) const override { return new OpDivFunction( p ); }
+
+   String Meta() const override            { return "op_div()"; }
+   String Id() const override              { return "<p>Represents a pixel wise arithmetic division operation for the combine() generator.</p>"
+                                                    "<p>Invariant subexpression: always.</p>"; }
+   String Token() const override           { return "op_div"; }
+   int RequiredArguments() const override  { return 0; }
+   int MaximumArguments() const override   { return 0; }
+
+   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+
+   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
+   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+};
+
+// ----------------------------------------------------------------------------
+
+class OpPowFunction : public Function
+{
+public:
+
+   OpPowFunction( int p = 0, int n = 0 ) : Function( p, n ) {}
+
+   Expression* Clone() const override { return new OpPowFunction( *this ); }
+   Expression* Generate( int p ) const override { return new OpPowFunction( p ); }
+
+   String Meta() const override            { return "op_pow()"; }
+   String Id() const override              { return "<p>Represents a pixel wise arithmetic exponentiation operation for the combine() generator.</p>"
+                                                    "<p>Invariant subexpression: always.</p>"; }
+   String Token() const override           { return "op_pow"; }
+   int RequiredArguments() const override  { return 0; }
+   int MaximumArguments() const override   { return 0; }
+
+   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+
+   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
+   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+};
+
+// ----------------------------------------------------------------------------
+
+class OpDifFunction : public Function
+{
+public:
+
+   OpDifFunction( int p = 0, int n = 0 ) : Function( p, n ) {}
+
+   Expression* Clone() const override { return new OpDifFunction( *this ); }
+   Expression* Generate( int p ) const override { return new OpDifFunction( p ); }
+
+   String Meta() const override            { return "op_dif()"; }
+   String Id() const override              { return "<p>Represents a pixel wise absolute difference operation for the combine() generator.</p>"
+                                                    "<p>Invariant subexpression: always.</p>"; }
+   String Token() const override           { return "op_dif"; }
+   int RequiredArguments() const override  { return 0; }
+   int MaximumArguments() const override   { return 0; }
+
+   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+
+   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
+   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+};
+
+// ----------------------------------------------------------------------------
+
+class OpMinFunction : public Function
+{
+public:
+
+   OpMinFunction( int p = 0, int n = 0 ) : Function( p, n ) {}
+
+   Expression* Clone() const override { return new OpMinFunction( *this ); }
+   Expression* Generate( int p ) const override { return new OpMinFunction( p ); }
+
+   String Meta() const override            { return "op_min()"; }
+   String Id() const override              { return "<p>Represents a pixel wise minimum operation for the combine() generator.</p>"
+                                                    "<p>Invariant subexpression: always.</p>"; }
+   String Token() const override           { return "op_min"; }
+   int RequiredArguments() const override  { return 0; }
+   int MaximumArguments() const override   { return 0; }
+
+   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+
+   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
+   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+};
+
+// ----------------------------------------------------------------------------
+
+class OpMaxFunction : public Function
+{
+public:
+
+   OpMaxFunction( int p = 0, int n = 0 ) : Function( p, n ) {}
+
+   Expression* Clone() const override { return new OpMaxFunction( *this ); }
+   Expression* Generate( int p ) const override { return new OpMaxFunction( p ); }
+
+   String Meta() const override            { return "op_max()"; }
+   String Id() const override              { return "<p>Represents a pixel wise maximum operation for the combine() generator.</p>"
+                                                    "<p>Invariant subexpression: always.</p>"; }
+   String Token() const override           { return "op_max"; }
+   int RequiredArguments() const override  { return 0; }
+   int MaximumArguments() const override   { return 0; }
+
+   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+
+   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
+   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+};
+
+// ----------------------------------------------------------------------------
+
+class OpColorBurnFunction : public Function
+{
+public:
+
+   OpColorBurnFunction( int p = 0, int n = 0 ) : Function( p, n ) {}
+
+   Expression* Clone() const override { return new OpColorBurnFunction( *this ); }
+   Expression* Generate( int p ) const override { return new OpColorBurnFunction( p ); }
+
+   String Meta() const override            { return "op_color_burn()"; }
+   String Id() const override              { return "<p>Represents a pixel wise <i>color burn</i> operation for the combine() generator.</p>"
+                                                    "<p>Given two images <i>a</i> and <i>b</i> with pixel sample values in the [0,1] range, "
+                                                    "the color burn operation is defined by the following expression:</p>"
+                                                    "<p style=\"white-space: pre;\">"
+                                                    "   1 - min( (1 - a)/b, 1 )"
+                                                    "</p>"
+                                                    "<p>Invariant subexpression: always.</p>"; }
+   String Token() const override           { return "op_color_burn"; }
+   int RequiredArguments() const override  { return 0; }
+   int MaximumArguments() const override   { return 0; }
+
+   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+
+   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
+   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+};
+
+// ----------------------------------------------------------------------------
+
+class OpLinearBurnFunction : public Function
+{
+public:
+
+   OpLinearBurnFunction( int p = 0, int n = 0 ) : Function( p, n ) {}
+
+   Expression* Clone() const override { return new OpLinearBurnFunction( *this ); }
+   Expression* Generate( int p ) const override { return new OpLinearBurnFunction( p ); }
+
+   String Meta() const override            { return "op_linear_burn()"; }
+   String Id() const override              { return "<p>Represents a pixel wise <i>linear burn</i> operation for the combine() generator.</p>"
+                                                    "<p>Given two images <i>a</i> and <i>b</i> with pixel sample values in the [0,1] range, "
+                                                    "the linear burn operation is defined by the following expression:</p>"
+                                                    "<p style=\"white-space: pre;\">"
+                                                    "   a + b - 1"
+                                                    "</p>"
+                                                    "<p>Invariant subexpression: always.</p>"; }
+   String Token() const override           { return "op_linear_burn"; }
+   int RequiredArguments() const override  { return 0; }
+   int MaximumArguments() const override   { return 0; }
+
+   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+
+   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
+   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+};
+
+// ----------------------------------------------------------------------------
+
+class OpScreenFunction : public Function
+{
+public:
+
+   OpScreenFunction( int p = 0, int n = 0 ) : Function( p, n ) {}
+
+   Expression* Clone() const override { return new OpScreenFunction( *this ); }
+   Expression* Generate( int p ) const override { return new OpScreenFunction( p ); }
+
+   String Meta() const override            { return "op_screen()"; }
+   String Id() const override              { return "<p>Represents a pixel wise <i>screen</i> operation for the combine() generator.</p>"
+                                                    "<p>Given two images <i>a</i> and <i>b</i> with pixel sample values in the [0,1] range, "
+                                                    "the screen operation is defined by the following expression:</p>"
+                                                    "<p style=\"white-space: pre;\">"
+                                                    "   1 - (1 - a)*(1 - b)"
+                                                    "</p>"
+                                                    "<p>Invariant subexpression: always.</p>"; }
+   String Token() const override           { return "op_screen"; }
+   int RequiredArguments() const override  { return 0; }
+   int MaximumArguments() const override   { return 0; }
+
+   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+
+   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
+   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+};
+
+// ----------------------------------------------------------------------------
+
+class OpColorDodgeFunction : public Function
+{
+public:
+
+   OpColorDodgeFunction( int p = 0, int n = 0 ) : Function( p, n ) {}
+
+   Expression* Clone() const override { return new OpColorDodgeFunction( *this ); }
+   Expression* Generate( int p ) const override { return new OpColorDodgeFunction( p ); }
+
+   String Meta() const override            { return "op_color_dodge()"; }
+   String Id() const override              { return "<p>Represents a pixel wise <i>color dodge</i> operation for the combine() generator.</p>"
+                                                    "<p>Given two images <i>a</i> and <i>b</i> with pixel sample values in the [0,1] range, "
+                                                    "the color dodge operation is defined by the following expression:</p>"
+                                                    "<p style=\"white-space: pre;\">"
+                                                    "   1 - min( (1 - a)/b, 1 )"
+                                                    "</p>"
+                                                    "<p>Invariant subexpression: always.</p>"; }
+   String Token() const override           { return "op_color_dodge"; }
+   int RequiredArguments() const override  { return 0; }
+   int MaximumArguments() const override   { return 0; }
+
+   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+
+   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
+   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+};
+
+// ----------------------------------------------------------------------------
+
+class OpOverlayFunction : public Function
+{
+public:
+
+   OpOverlayFunction( int p = 0, int n = 0 ) : Function( p, n ) {}
+
+   Expression* Clone() const override { return new OpOverlayFunction( *this ); }
+   Expression* Generate( int p ) const override { return new OpOverlayFunction( p ); }
+
+   String Meta() const override            { return "op_overlay()"; }
+   String Id() const override              { return "<p>Represents a pixel wise <i>overlay</i> operation for the combine() generator.</p>"
+                                                    "<p>Given two images <i>a</i> and <i>b</i> with pixel sample values in the [0,1] range, "
+                                                    "the overlay operation is defined by the following expression:</p>"
+                                                    "<p style=\"white-space: pre;\">"
+                                                    "   1 - (1 - 2*(a - 0.5)) * (1 - b)   if a &gt; 0.5<br/>"
+                                                    "   2*a*b                             otherwise"
+                                                    "</p>"
+                                                    "<p>Invariant subexpression: always.</p>"; }
+   String Token() const override           { return "op_overlay"; }
+   int RequiredArguments() const override  { return 0; }
+   int MaximumArguments() const override   { return 0; }
+
+   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+
+   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
+   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+};
+
+// ----------------------------------------------------------------------------
+
+class OpSoftLightFunction : public Function
+{
+public:
+
+   OpSoftLightFunction( int p = 0, int n = 0 ) : Function( p, n ) {}
+
+   Expression* Clone() const override { return new OpSoftLightFunction( *this ); }
+   Expression* Generate( int p ) const override { return new OpSoftLightFunction( p ); }
+
+   String Meta() const override            { return "op_soft_light()"; }
+   String Id() const override              { return "<p>Represents a pixel wise <i>soft light</i> operation for the combine() generator.</p>"
+                                                    "<p>Given two images <i>a</i> and <i>b</i> with pixel sample values in the [0,1] range, "
+                                                    "the soft light operation is defined by the following expression:</p>"
+                                                    "<p style=\"white-space: pre;\">"
+                                                    "   1 - (1 - a)*(1 - b - 0.5)   if b &gt; 0.5<br/>"
+                                                    "   a*(b + 0.5)                 otherwise"
+                                                    "</p>"
+                                                    "<p>Invariant subexpression: always.</p>"; }
+   String Token() const override           { return "op_soft_light"; }
+   int RequiredArguments() const override  { return 0; }
+   int MaximumArguments() const override   { return 0; }
+
+   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+
+   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
+   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+};
+
+// ----------------------------------------------------------------------------
+
+class OpHardLightFunction : public Function
+{
+public:
+
+   OpHardLightFunction( int p = 0, int n = 0 ) : Function( p, n ) {}
+
+   Expression* Clone() const override { return new OpHardLightFunction( *this ); }
+   Expression* Generate( int p ) const override { return new OpHardLightFunction( p ); }
+
+   String Meta() const override            { return "op_hard_light()"; }
+   String Id() const override              { return "<p>Represents a pixel wise <i>hard light</i> operation for the combine() generator.</p>"
+                                                    "<p>Given two images <i>a</i> and <i>b</i> with pixel sample values in the [0,1] range, "
+                                                    "the hard light operation is defined by the following expression:</p>"
+                                                    "<p style=\"white-space: pre;\">"
+                                                    "   1 - (1 - a)*(1 - 2*(b - 0.5))   if b &gt; 0.5<br/>"
+                                                    "   2*a*b                           otherwise"
+                                                    "</p>"
+                                                    "<p>Invariant subexpression: always.</p>"; }
+   String Token() const override           { return "op_hard_light"; }
+   int RequiredArguments() const override  { return 0; }
+   int MaximumArguments() const override   { return 0; }
+
+   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+
+   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
+   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+};
+
+// ----------------------------------------------------------------------------
+
+class OpVividLightFunction : public Function
+{
+public:
+
+   OpVividLightFunction( int p = 0, int n = 0 ) : Function( p, n ) {}
+
+   Expression* Clone() const override { return new OpVividLightFunction( *this ); }
+   Expression* Generate( int p ) const override { return new OpVividLightFunction( p ); }
+
+   String Meta() const override            { return "op_vivid_light()"; }
+   String Id() const override              { return "<p>Represents a pixel wise <i>vivid light</i> operation for the combine() generator.</p>"
+                                                    "<p>Given two images <i>a</i> and <i>b</i> with pixel sample values in the [0,1] range, "
+                                                    "the vivid light operation is defined by the following expression:</p>"
+                                                    "<p style=\"white-space: pre;\">"
+                                                    "   1 - max( (1 - a)/(b - 0.5)/2, 1 )   if b &gt; 0.5<br/>"
+                                                    "   min( a/(1 - 2*b ), 1 )              otherwise"
+                                                    "</p>"
+                                                    "<p>Invariant subexpression: always.</p>"; }
+   String Token() const override           { return "op_vivid_light"; }
+   int RequiredArguments() const override  { return 0; }
+   int MaximumArguments() const override   { return 0; }
+
+   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+
+   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
+   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+};
+
+// ----------------------------------------------------------------------------
+
+class OpLinearLightFunction : public Function
+{
+public:
+
+   OpLinearLightFunction( int p = 0, int n = 0 ) : Function( p, n ) {}
+
+   Expression* Clone() const override { return new OpLinearLightFunction( *this ); }
+   Expression* Generate( int p ) const override { return new OpLinearLightFunction( p ); }
+
+   String Meta() const override            { return "op_linear_light()"; }
+   String Id() const override              { return "<p>Represents a pixel wise <i>linear light</i> operation for the combine() generator.</p>"
+                                                    "<p>Given two images <i>a</i> and <i>b</i> with pixel sample values in the [0,1] range, "
+                                                    "the linear light operation is defined by the following expression:</p>"
+                                                    "<p style=\"white-space: pre;\">"
+                                                    "   max( a + 2*(b - 0.5), 1 )   if b &gt; 0.5<br/>"
+                                                    "   max( a + 2*b - 1, 1 )       otherwise"
+                                                    "</p>"
+                                                    "<p>Invariant subexpression: always.</p>"; }
+   String Token() const override           { return "op_linear_light"; }
+   int RequiredArguments() const override  { return 0; }
+   int MaximumArguments() const override   { return 0; }
+
+   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+
+   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
+   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+};
+
+// ----------------------------------------------------------------------------
+
+class OpPinLightFunction : public Function
+{
+public:
+
+   OpPinLightFunction( int p = 0, int n = 0 ) : Function( p, n ) {}
+
+   Expression* Clone() const override { return new OpPinLightFunction( *this ); }
+   Expression* Generate( int p ) const override { return new OpPinLightFunction( p ); }
+
+   String Meta() const override            { return "op_pin_light()"; }
+   String Id() const override              { return "<p>Represents a pixel wise <i>pin light</i> operation for the combine() generator.</p>"
+                                                    "<p>Given two images <i>a</i> and <i>b</i> with pixel sample values in the [0,1] range, "
+                                                    "the pin light operation is defined by the following expression:</p>"
+                                                    "<p style=\"white-space: pre;\">"
+                                                    "   max( a, 2*(b - 0.5) )   if b &gt; 0.5<br/>"
+                                                    "   min( a, 2*b )           otherwise"
+                                                    "</p>"
+                                                    "<p>Invariant subexpression: always.</p>"; }
+   String Token() const override           { return "op_pin_light"; }
+   int RequiredArguments() const override  { return 0; }
+   int MaximumArguments() const override   { return 0; }
+
+   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+
+   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
+   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+};
+
+// ----------------------------------------------------------------------------
+
+class OpExclusionFunction : public Function
+{
+public:
+
+   OpExclusionFunction( int p = 0, int n = 0 ) : Function( p, n ) {}
+
+   Expression* Clone() const override { return new OpExclusionFunction( *this ); }
+   Expression* Generate( int p ) const override { return new OpExclusionFunction( p ); }
+
+   String Meta() const override            { return "op_exclusion()"; }
+   String Id() const override              { return "<p>Represents a pixel wise <i>exclusion</i> operation for the combine() generator.</p>"
+                                                    "<p>Given two images <i>a</i> and <i>b</i> with pixel sample values in the [0,1] range, "
+                                                    "the exclusion operation is defined by the following expression:</p>"
+                                                    "<p style=\"white-space: pre;\">"
+                                                    "   0.5 - 2*(a - 0.5)*(b - 0.5)"
+                                                    "</p>"
+                                                    "<p>Invariant subexpression: always.</p>"; }
+   String Token() const override           { return "op_exclusion"; }
+   int RequiredArguments() const override  { return 0; }
+   int MaximumArguments() const override   { return 0; }
+
+   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+
+   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
+   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+};
+
+// ----------------------------------------------------------------------------
+
 } // pcl
 
 #endif   // __Function_h
 
 // ----------------------------------------------------------------------------
-// EOF Function.h - Released 2021-04-09T19:41:48Z
+// EOF Function.h - Released 2021-05-05T15:38:07Z

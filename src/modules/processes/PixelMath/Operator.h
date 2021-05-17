@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.8.1
 // ----------------------------------------------------------------------------
-// Operator.h - Released 2021-04-09T19:41:48Z
+// Operator.h - Released 2021-05-05T15:38:07Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -888,7 +888,7 @@ public:
 
    String Meta() const override               { return "var = expr"; }
    String Id() const override                 { return "<p>Assignment operator.</p>"
-                                                       "<p>The expression <i>expr</i> is evaluated, and its "
+                                                       "<p>The expression <i>expr</i> is evaluated, then its "
                                                        "resulting value is assigned to the variable <i>var</i>.</p>"; }
    String Token() const override              { return "="; }
    int    Precedence() const override         { return PRECEDENCE_ASSIGNMENT; }
@@ -963,9 +963,9 @@ public:
 
    String Meta() const override               { return "var *= expr"; }
    String Id() const override                 { return "<p>Assignment / Multiplication operator.</p>"
-                                                       "<p>The expression <i>expr</i> is evaluated, its resulting "
-                                                       "value is then multiplied by the current value of the variable "
-                                                       "<i>var</i>, and the result of the multiplication is assigned to "
+                                                       "<p>The expression <i>expr</i> is evaluated, then the current "
+                                                       "value of the variable <i>var</i> is multiplied by the evaluation "
+                                                       "result, and the result of the multiplication is assigned to "
                                                        "<i>var</i>.</p>"; }
    String Token() const override              { return "*="; }
    int    Precedence() const override         { return PRECEDENCE_ASSIGNMENT; }
@@ -989,9 +989,9 @@ public:
 
    String Meta() const override               { return "var /= expr"; }
    String Id() const override                 { return "<p>Assignment / Division operator.</p>"
-                                                       "<p>The expression <i>expr</i> is evaluated, its resulting "
-                                                       "value is then divided by the current value of the variable "
-                                                       "<i>var</i>, and the result of the division is assigned to "
+                                                       "<p>The expression <i>expr</i> is evaluated, then the current "
+                                                       "value of the variable <i>var</i> is divided by the evaluation "
+                                                       "result, and the result of the division is assigned to "
                                                        "<i>var</i>.</p>"
                                                        "<p>If <i>expr</i> evaluates to zero or to an insignificant "
                                                        "value, <i>var</i> is assigned conventionally with the maximum "
@@ -1019,9 +1019,9 @@ public:
 
    String Meta() const override               { return "var ^= expr"; }
    String Id() const override                 { return "<p>Assignment / Exponentiation operator.</p>"
-                                                       "<p>The expression <i>expr</i> is evaluated, its resulting "
-                                                       "value is then raised to the current value of the variable "
-                                                       "<i>var</i>, and the result of the exponentiation is assigned to "
+                                                       "<p>The expression <i>expr</i> is evaluated, then the current "
+                                                       "value of the variable <i>var</i> is raised to the evaluation "
+                                                       "result, and the result of the exponentiation is assigned to "
                                                        "<i>var</i>.</p>"; }
    String Token() const override              { return "^="; }
    int    Precedence() const override         { return PRECEDENCE_ASSIGNMENT; }
@@ -1044,9 +1044,10 @@ public:
 
    String Meta() const override               { return "var %= expr"; }
    String Id() const override                 { return "<p>Assignment / Modulus operator.</p>"
-                                                       "<p>The expression <i>expr</i> is evaluated, the remainder of its "
-                                                       "resulting value divided by the current value of the variable "
-                                                       "<i>var</i> is then calculated and assigned to <i>var</i>.</p>"
+                                                       "<p>The expression <i>expr</i> is evaluated, then the current "
+                                                       "value of the variable <i>var</i> is divided by the evaluation "
+                                                       "result, and the remainder of the division is assigned to "
+                                                       "<i>var</i>.</p>"
                                                        "<p>If <i>expr</i> evaluates to zero or to an insignificant value, "
                                                        "<i>var</i> is assigned with zero conventionally.</p>"
                                                        "<p>See also the modulus arithmetic operator.</p>"; }
@@ -1291,4 +1292,4 @@ public:
 #endif   // __Operator_h
 
 // ----------------------------------------------------------------------------
-// EOF Operator.h - Released 2021-04-09T19:41:48Z
+// EOF Operator.h - Released 2021-05-05T15:38:07Z
