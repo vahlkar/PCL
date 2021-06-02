@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Gaia Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// GaiaInstance.cpp - Released 2021-04-09T19:41:48Z
+// GaiaInstance.cpp - Released 2021-05-31T09:44:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Gaia PixInsight module.
 //
@@ -741,4 +741,4 @@ int GaiaInstance::OutputDataRelease() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GaiaInstance.cpp - Released 2021-04-09T19:41:48Z
+// EOF GaiaInstance.cpp - Released 2021-05-31T09:44:45Z

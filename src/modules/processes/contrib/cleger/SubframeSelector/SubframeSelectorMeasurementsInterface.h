@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.4.5
+// Standard SubframeSelector Process Module Version 1.4.6
 // ----------------------------------------------------------------------------
-// SubframeSelectorMeasurementsInterface.h - Released 2021-04-09T19:41:49Z
+// SubframeSelectorMeasurementsInterface.h - Released 2021-05-31T09:44:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
-// Copyright (c) 2017-2020 Cameron Leger
+// Copyright (c) 2017-2021 Cameron Leger
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -167,4 +167,4 @@ PCL_END_LOCAL
 #endif   // e_SubframeSelectorMeasurementsInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorMeasurementsInterface.h - Released 2021-04-09T19:41:49Z
+// EOF SubframeSelectorMeasurementsInterface.h - Released 2021-05-31T09:44:46Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Sandbox Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// SandboxParameters.h - Released 2021-04-09T19:41:48Z
+// SandboxParameters.h - Released 2021-05-31T09:44:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Sandbox PixInsight module.
 //
@@ -157,4 +157,4 @@ PCL_END_LOCAL
 #endif   // __SandboxParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF SandboxParameters.h - Released 2021-04-09T19:41:48Z
+// EOF SandboxParameters.h - Released 2021-05-31T09:44:46Z

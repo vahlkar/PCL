@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// INDIClient.cpp - Released 2020-12-17T15:46:56Z
+// INDIClient.cpp - Released 2021-05-31T09:44:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
-// Copyright (c) 2014-2020 Klaus Kretzschmar
+// Copyright (c) 2014-2021 Klaus Kretzschmar
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -471,7 +471,7 @@ void INDIClient::registerNewPropertyCallback()
       [this]( indigo_property* property )
       {
          CHECK_POINTER( property );
-                 
+
          {
             // avoid duplicate entries produced by reconnects
             ExclPropertyList y = PropertyList();
@@ -481,7 +481,7 @@ void INDIClient::registerNewPropertyCallback()
                AutoPointer<IProperty> ip( PropertyFactory::Create( property ) );
                if ( ip->getDeviceName() == propertyItem.Device && ip->getName() == propertyItem.Property )
                   return;
-            }                  
+            }
          }
          ApplyToPropertyList( property, PropertyListGenerator() );
       };
@@ -643,4 +643,4 @@ void INDIClient::ApplyToPropertyList( indigo_property* p, const PropertyListMuta
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDIClient.cpp - Released 2020-12-17T15:46:56Z
+// EOF INDIClient.cpp - Released 2021-05-31T09:44:46Z

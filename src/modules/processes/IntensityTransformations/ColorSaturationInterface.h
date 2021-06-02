@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ColorSaturationInterface.h - Released 2021-04-09T19:41:48Z
+// ColorSaturationInterface.h - Released 2021-05-31T09:44:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -361,4 +361,4 @@ PCL_END_LOCAL
 #endif   // __ColorSaturationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF ColorSaturationInterface.h - Released 2021-04-09T19:41:48Z
+// EOF ColorSaturationInterface.h - Released 2021-05-31T09:44:46Z

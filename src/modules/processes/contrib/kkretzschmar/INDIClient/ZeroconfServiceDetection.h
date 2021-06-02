@@ -1,3 +1,55 @@
+//     ____   ______ __
+//    / __ \ / ____// /
+//   / /_/ // /    / /
+//  / ____// /___ / /___   PixInsight Class Library
+// /_/     \____//_____/   PCL 2.4.9
+// ----------------------------------------------------------------------------
+// Standard INDIClient Process Module Version 1.2.1
+// ----------------------------------------------------------------------------
+// ZeroconfServiceDetection.h - Released 2021-05-31T09:44:46Z
+// ----------------------------------------------------------------------------
+// This file is part of the standard INDIClient PixInsight module.
+//
+// Copyright (c) 2014-2021 Klaus Kretzschmar
+//
+// Redistribution and use in both source and binary forms, with or without
+// modification, is permitted provided that the following conditions are met:
+//
+// 1. All redistributions of source code must retain the above copyright
+//    notice, this list of conditions and the following disclaimer.
+//
+// 2. All redistributions in binary form must reproduce the above copyright
+//    notice, this list of conditions and the following disclaimer in the
+//    documentation and/or other materials provided with the distribution.
+//
+// 3. Neither the names "PixInsight" and "Pleiades Astrophoto", nor the names
+//    of their contributors, may be used to endorse or promote products derived
+//    from this software without specific prior written permission. For written
+//    permission, please contact info@pixinsight.com.
+//
+// 4. All products derived from this software, in any form whatsoever, must
+//    reproduce the following acknowledgment in the end-user documentation
+//    and/or other materials provided with the product:
+//
+//    "This product is based on software from the PixInsight project, developed
+//    by Pleiades Astrophoto and its contributors (https://pixinsight.com/)."
+//
+//    Alternatively, if that is where third-party acknowledgments normally
+//    appear, this acknowledgment must be reproduced in the product itself.
+//
+// THIS SOFTWARE IS PROVIDED BY PLEIADES ASTROPHOTO AND ITS CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+// TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+// PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL PLEIADES ASTROPHOTO OR ITS
+// CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+// EXEMPLARY OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, BUSINESS
+// INTERRUPTION; PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; AND LOSS OF USE,
+// DATA OR PROFITS) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+// CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+// POSSIBILITY OF SUCH DAMAGE.
+// ----------------------------------------------------------------------------
+
 #ifndef ZEROCONFSERVICEDETECTION_H
 #define ZEROCONFSERVICEDETECTION_H
 
@@ -28,11 +80,11 @@ struct ZeroConfServiceItem
    IsoString     Host;
    uint32_t      Port;
    uint32_t      InterfaceIndex = 0; // Representing the network interface of the client host
-   IsoString     InterfaceName; 
+   IsoString     InterfaceName;
    bool          IsWireless = false;
 
    ZeroConfServiceItem(){}
-   
+
    ZeroConfServiceItem(const IsoString& serviceName, const IsoString& serviceType, const IsoString& domain, const IsoString& host, uint32_t port, uint32_t interfaceIndex, const IsoString& interfaceName, bool isWireless):
                        ServiceName(serviceName), ServiceType(serviceType), Domain(domain), Host(host), Port(port), InterfaceIndex(interfaceIndex), InterfaceName(interfaceName), IsWireless(isWireless)
    {
@@ -45,7 +97,7 @@ struct ZeroConfServiceItem
                        ServiceName(serviceName), ServiceType(serviceType), Domain(domain), InterfaceIndex(interfaceIndex)
    {
    }
-   ZeroConfServiceItem(const ZeroConfServiceItem& other):ServiceName(other.ServiceName), ServiceType(other.ServiceType), Domain(other.Domain), Host(other.Host), Port(other.Port), InterfaceIndex(other.InterfaceIndex), InterfaceName(other.InterfaceName), IsWireless(other.IsWireless) 
+   ZeroConfServiceItem(const ZeroConfServiceItem& other):ServiceName(other.ServiceName), ServiceType(other.ServiceType), Domain(other.Domain), Host(other.Host), Port(other.Port), InterfaceIndex(other.InterfaceIndex), InterfaceName(other.InterfaceName), IsWireless(other.IsWireless)
    {
    }
    bool operator ==( const ZeroConfServiceItem& rhs ) const
@@ -124,7 +176,7 @@ public:
 
   std::function<void(const ZeroConfServiceItem&)> onServiceAdded = [] (const ZeroConfServiceItem&) {};
   std::function<void(const ZeroConfServiceItem&)> onServiceRemoved = [] (const ZeroConfServiceItem&) {};
-  
+
 };
 
 #ifdef WITH_ZEROCONF
@@ -161,7 +213,7 @@ protected:
 public:
   ZeroConfServiceBrowser(){}
   virtual ~ZeroConfServiceBrowser(){
-      
+
   }
 
   void setClient(std::unique_ptr<ZeroConfClient> client)
@@ -170,7 +222,7 @@ public:
   }
 
   void Start();
-  
+
   const ZeroConfClient& getClient() const
   {
       return *m_client.get();
@@ -181,7 +233,7 @@ public:
       return *m_client.get();
   }
 
- 
+
 private:
 
   static void onBrowseEvent(DNSServiceRef service,
@@ -212,7 +264,7 @@ class ZeroConfServiceResolver : public ZeroConfServiceHandler {
   const IsoString m_serviceType;
   const IsoString m_serviceDomain;
   uint32_t m_InterfaceIndex = 0;
-  
+
 public:
   ZeroConfServiceResolver(ZeroConfClient& zeroConfClient,  const IsoString& serviceName, const IsoString& serviceType, const IsoString& serviceDomain, uint32_t interfaceIndex):m_resolveContext(this, zeroConfClient), m_serviceName(serviceName), m_serviceType(serviceType), m_serviceDomain(serviceDomain), m_InterfaceIndex(interfaceIndex)  {}
   virtual ~ZeroConfServiceResolver(){
@@ -239,3 +291,6 @@ private:
 #endif // WITH_ZEROCONF
 }
 #endif // ZEROCONFSERVICEDETECTION_H
+
+// ----------------------------------------------------------------------------
+// EOF ZeroconfServiceDetection.h - Released 2021-05-31T09:44:46Z

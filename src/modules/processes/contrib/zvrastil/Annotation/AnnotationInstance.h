@@ -6,12 +6,12 @@
 // ----------------------------------------------------------------------------
 // Standard Annotation Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// AnnotationInstance.h - Released 2021-04-09T19:41:49Z
+// AnnotationInstance.h - Released 2021-05-31T09:44:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Annotation PixInsight module.
 //
-// Copyright (c) 2010-2020 Zbynek Vrastil
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
+// Copyright (c) 2010-2021 Zbynek Vrastil
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -106,4 +106,4 @@ private:
 #endif // __AnnotationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF AnnotationInstance.h - Released 2021-04-09T19:41:49Z
+// EOF AnnotationInstance.h - Released 2021-05-31T09:44:46Z

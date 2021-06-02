@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.2
 // ----------------------------------------------------------------------------
-// ChannelCombinationInterface.cpp - Released 2021-04-09T19:41:48Z
+// ChannelCombinationInterface.cpp - Released 2021-05-31T09:44:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -526,4 +526,4 @@ ChannelCombinationInterface::GUIData::GUIData( ChannelCombinationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ChannelCombinationInterface.cpp - Released 2021-04-09T19:41:48Z
+// EOF ChannelCombinationInterface.cpp - Released 2021-05-31T09:44:45Z

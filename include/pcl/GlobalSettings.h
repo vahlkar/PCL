@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// pcl/GlobalSettings.h - Released 2021-04-09T19:40:59Z
+// pcl/GlobalSettings.h - Released 2021-05-31T09:44:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -177,6 +177,7 @@ namespace GlobalVariableType
  * <tr><td>MainWindow/FadeWindows</td><td></td></tr>
  * <tr><td>MainWindow/FadeWorkspaces</td><td></td></tr>
  * <tr><td>MainWindow/FullScreenAtStartup</td><td></td></tr>
+ * <tr><td>MainWindow/HighQualityWallpapers</td><td></td></tr>
  * <tr><td>MainWindow/HoverableAutoHideWindows</td><td></td></tr>
  * <tr><td>MainWindow/ImplodeIcons</td><td></td></tr>
  * <tr><td>MainWindow/MaximizeAtStartup</td><td></td></tr>
@@ -514,4 +515,4 @@ public:
 #endif   // __PCL_GlobalSettings_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/GlobalSettings.h - Released 2021-04-09T19:40:59Z
+// EOF pcl/GlobalSettings.h - Released 2021-05-31T09:44:18Z

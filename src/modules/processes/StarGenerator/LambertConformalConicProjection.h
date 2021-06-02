@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard StarGenerator Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// LambertConformalConicProjection.h - Released 2021-04-09T19:41:48Z
+// LambertConformalConicProjection.h - Released 2021-05-31T09:44:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarGenerator PixInsight module.
 //
@@ -147,4 +147,4 @@ private:
 #endif   // __LambertConformalConicProjection_h
 
 // ----------------------------------------------------------------------------
-// EOF LambertConformalConicProjection.h - Released 2021-04-09T19:41:48Z
+// EOF LambertConformalConicProjection.h - Released 2021-05-31T09:44:46Z

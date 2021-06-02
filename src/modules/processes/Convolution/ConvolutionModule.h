@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// ConvolutionModule.h - Released 2021-04-09T19:41:48Z
+// ConvolutionModule.h - Released 2021-05-31T09:44:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -84,4 +84,4 @@ public:
 #endif   // __ConvolutionModule_h
 
 // ----------------------------------------------------------------------------
-// EOF ConvolutionModule.h - Released 2021-04-09T19:41:48Z
+// EOF ConvolutionModule.h - Released 2021-05-31T09:44:45Z

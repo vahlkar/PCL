@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard NoOperation Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// NoOperationInstance.cpp - Released 2021-04-09T19:41:48Z
+// NoOperationInstance.cpp - Released 2021-05-31T09:44:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NoOperation PixInsight module.
 //
@@ -109,4 +109,4 @@ bool NoOperationInstance::ExecuteGlobal()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF NoOperationInstance.cpp - Released 2021-04-09T19:41:48Z
+// EOF NoOperationInstance.cpp - Released 2021-05-31T09:44:46Z

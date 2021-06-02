@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// ConvolutionDialog.cpp - Released 2021-04-09T19:41:48Z
+// ConvolutionDialog.cpp - Released 2021-05-31T09:44:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -268,4 +268,4 @@ void ConvolutionFilterCodeDialog::__TextBox_CaretPosition( TextBox& sender, int 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ConvolutionDialog.cpp - Released 2021-04-09T19:41:48Z
+// EOF ConvolutionDialog.cpp - Released 2021-05-31T09:44:45Z

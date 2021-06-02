@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// FITSHeaderProcess.h - Released 2021-04-09T19:41:48Z
+// FITSHeaderProcess.h - Released 2021-05-31T09:44:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -91,4 +91,4 @@ PCL_END_LOCAL
 #endif   // __FITSHeaderProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF FITSHeaderProcess.h - Released 2021-04-09T19:41:48Z
+// EOF FITSHeaderProcess.h - Released 2021-05-31T09:44:46Z

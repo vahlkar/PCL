@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// pcl/ExternalProcess.cpp - Released 2021-04-09T19:41:11Z
+// pcl/ExternalProcess.cpp - Released 2021-05-31T09:44:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -594,4 +594,4 @@ void ExternalProcess::OnError( process_error_event_handler handler, Control& rec
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ExternalProcess.cpp - Released 2021-04-09T19:41:11Z
+// EOF pcl/ExternalProcess.cpp - Released 2021-05-31T09:44:25Z

@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// pcl/UnidimensionalInterpolation.h - Released 2021-04-09T19:40:59Z
+// pcl/UnidimensionalInterpolation.h - Released 2021-05-31T09:44:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -215,4 +215,4 @@ protected:
 #endif  // __PCL_UnidimensionalInterpolation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/UnidimensionalInterpolation.h - Released 2021-04-09T19:40:59Z
+// EOF pcl/UnidimensionalInterpolation.h - Released 2021-05-31T09:44:18Z

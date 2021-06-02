@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.2
 // ----------------------------------------------------------------------------
-// ColorSpacesModule.cpp - Released 2021-04-09T19:41:48Z
+// ColorSpacesModule.cpp - Released 2021-05-31T09:44:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -57,8 +57,8 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2021
-#define MODULE_RELEASE_MONTH     4
-#define MODULE_RELEASE_DAY       9
+#define MODULE_RELEASE_MONTH     5
+#define MODULE_RELEASE_DAY       31
 
 #include "ColorSpacesModule.h"
 #include "GrayscaleRGBProcesses.h"
@@ -126,7 +126,7 @@ String ColorSpacesModule::Author() const
 
 String ColorSpacesModule::Copyright() const
 {
-   return "Copyright (c) 2005-2020 Pleiades Astrophoto";
+   return "Copyright (c) 2005-2021 Pleiades Astrophoto";
 }
 
 // ----------------------------------------------------------------------------
@@ -204,4 +204,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF ColorSpacesModule.cpp - Released 2021-04-09T19:41:48Z
+// EOF ColorSpacesModule.cpp - Released 2021-05-31T09:44:45Z

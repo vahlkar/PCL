@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// Standard Debayer Process Module Version 1.8.2
+// Standard Debayer Process Module Version 1.8.3
 // ----------------------------------------------------------------------------
-// DebayerInstance.h - Released 2021-04-09T19:41:49Z
+// DebayerInstance.h - Released 2021-05-31T09:44:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -111,7 +111,6 @@ private:
    pcl_bool   p_showImages;        // optional for view execution only
    String     p_cfaSourceFilePath; // ...
    item_list  p_targets;
-   pcl_bool   p_autoMemoryLimit;
    pcl_bool   p_noGUIMessages; // ### DEPRECATED
 
    // Format hints
@@ -131,6 +130,8 @@ private:
    float       p_fileThreadOverload;
    int32       p_maxFileReadThreads;
    int32       p_maxFileWriteThreads;
+   pcl_bool    p_memoryLoadControl;
+   float       p_memoryLoadLimit;
    int         m_maxFileReadThreads = 1;
    int         m_maxFileWriteThreads = 1;
 
@@ -190,4 +191,4 @@ private:
 #endif   // __DebayerInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF DebayerInstance.h - Released 2021-04-09T19:41:49Z
+// EOF DebayerInstance.h - Released 2021-05-31T09:44:46Z

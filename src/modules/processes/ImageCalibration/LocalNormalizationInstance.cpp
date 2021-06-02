@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// LocalNormalizationInstance.cpp - Released 2021-04-09T19:41:48Z
+// LocalNormalizationInstance.cpp - Released 2021-05-31T09:44:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -1513,7 +1513,7 @@ bool LocalNormalizationInstance::ExecuteGlobal()
          try
          {
             /*
-             * Thread watching loop.
+             * Thread execution loop.
              */
             for ( ;; )
             {
@@ -1566,7 +1566,7 @@ bool LocalNormalizationInstance::ExecuteGlobal()
                         pendingItems.Remove( pendingItems.Begin() );
                         size_type threadIndex = i - runningThreads.Begin();
                         console.NoteLn( String().Format( "<end><cbr>[%03u] ", threadIndex ) + (*i)->TargetFilePath() );
-                        (*i)->Start( ThreadPriority::DefaultMax/*, threadIndex*/ );
+                        (*i)->Start( ThreadPriority::DefaultMax, threadIndex );
                         ++running;
                         if ( pendingItems.IsEmpty() )
                            console.NoteLn( "<br>* Waiting for running tasks to terminate...<br>" );
@@ -1890,4 +1890,4 @@ size_type LocalNormalizationInstance::ParameterLength( const MetaParameter* p, s
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationInstance.cpp - Released 2021-04-09T19:41:48Z
+// EOF LocalNormalizationInstance.cpp - Released 2021-05-31T09:44:46Z

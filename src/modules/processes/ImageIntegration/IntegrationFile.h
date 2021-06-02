@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.2.33
 // ----------------------------------------------------------------------------
-// IntegrationFile.h - Released 2021-04-09T19:41:48Z
+// IntegrationFile.h - Released 2021-05-31T09:44:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -291,11 +291,6 @@ public:
       return s_bufferRows;
    }
 
-   static size_type AvailableMemory()
-   {
-      return s_availableMemory;
-   }
-
    static size_type TotalBufferSize()
    {
       return s_files.Length()
@@ -454,4 +449,4 @@ private:
 #endif   // __IntegrationFile_h
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationFile.h - Released 2021-04-09T19:41:48Z
+// EOF IntegrationFile.h - Released 2021-05-31T09:44:46Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.2.33
 // ----------------------------------------------------------------------------
-// AdaptiveNormalizationData.cpp - Released 2021-04-09T19:41:48Z
+// AdaptiveNormalizationData.cpp - Released 2021-05-31T09:44:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -250,4 +250,4 @@ int AdaptiveNormalizationData::NumberOfGridElements( int width, int height, int 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF AdaptiveNormalizationData.cpp - Released 2021-04-09T19:41:48Z
+// EOF AdaptiveNormalizationData.cpp - Released 2021-05-31T09:44:46Z

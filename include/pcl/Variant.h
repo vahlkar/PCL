@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// pcl/Variant.h - Released 2021-04-09T19:40:59Z
+// pcl/Variant.h - Released 2021-05-31T09:44:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -1897,4 +1897,4 @@ namespace pcl
 #endif   // __PCL_Variant_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Variant.h - Released 2021-04-09T19:40:59Z
+// EOF pcl/Variant.h - Released 2021-05-31T09:44:18Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG2000 File Format Module Version 1.0.3
 // ----------------------------------------------------------------------------
-// JPEG2000Instance.cpp - Released 2021-04-09T19:41:31Z
+// JPEG2000Instance.cpp - Released 2021-05-31T09:44:36Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG2000 PixInsight module.
 //
@@ -894,4 +894,4 @@ void JP2Instance::WriteICCProfile( const ICCProfile& icc )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF JPEG2000Instance.cpp - Released 2021-04-09T19:41:31Z
+// EOF JPEG2000Instance.cpp - Released 2021-05-31T09:44:36Z

@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// pcl/Defs.h - Released 2021-04-09T19:40:59Z
+// pcl/Defs.h - Released 2021-05-31T09:44:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -65,13 +65,13 @@
  *       Reference Documentation
  *    </h2>
  *    <p>
- *       <strong>Copyright (c) 2003-2020, The PixInsight Development Team.
+ *       <strong>Copyright (c) 2003-2021, The PixInsight Development Team.
  *       All Rights Reserved</strong>
  *    </p>
  * </div>
  * <div style="margin-top: 3em; margin-bottom: 3em;">
  *    <p>
- *       <a href="http://pixinsight.com/">PixInsight</a> is an advanced image
+ *       <a href="https://pixinsight.com/">PixInsight</a> is an advanced image
  *       processing software platform designed specifically for astronomical
  *       applications and other technical imaging fields. PixInsight is a
  *       modular, open-architecture system where the entire processing and file
@@ -81,7 +81,7 @@
  *       The PixInsight core application provides the infrastructure on top of
  *       which external modules can implement processes, image file formats,
  *       and their associated user interfaces. The
- *       <a href="http://pixinsight.com/developer/pcl/">PixInsight Class
+ *       <a href="https://pixinsight.com/developer/pcl/">PixInsight Class
  *       Library</a> (PCL) is a C++ development framework to build PixInsight
  *       modules.
  *    </p>
@@ -112,7 +112,7 @@
  *    <p>
  *       Starting from version 2.0, which was published in December of 2012,
  *       PCL is an open-source library released under the
- *       <a href="http://pixinsight.com/license/PCL_PJSR_1.0.html">PixInsight
+ *       <a href="https://pixinsight.com/license/PCL_PJSR_1.0.html">PixInsight
  *       Class Library License</a> (PCLL). In essence, PCLL is a liberal
  *       BSD-like license that allows you to develop open-source and
  *       closed-source, free and commercial PixInsight modules without
@@ -127,7 +127,7 @@
  *       repositories at GitLab</a>. Open-source modules are a good starting
  *       point for developing new PixInsight modules. PixInsight and PCL are
  *       supported by a vibrant community on
- *       <a href="http://forum.pixinsight.com">PixInsight Forum</a>, which also
+ *       <a href="https://pixinsight.com/forum">PixInsight Forum</a>, which also
  *       includes a software development section.
  *    </p>
  * </div>
@@ -1197,4 +1197,4 @@ typedef int64                 fsize_type;
 #endif   // __PCL_Defs_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Defs.h - Released 2021-04-09T19:40:59Z
+// EOF pcl/Defs.h - Released 2021-05-31T09:44:18Z

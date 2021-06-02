@@ -6,11 +6,11 @@
 // ----------------------------------------------------------------------------
 // Standard StarNet Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// StarNetInterface.h - Released 2021-04-09T19:41:49Z
+// StarNetInterface.h - Released 2021-05-31T09:44:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarNet PixInsight module.
 //
-// Copyright (c) 2018-2020 Nikita Misiura
+// Copyright (c) 2018-2021 Nikita Misiura
 //
 // This software is available under Attribution-NonCommercial-ShareAlike 4.0
 // International Creative Commons license (CC BY-NC-SA 4.0):
@@ -114,4 +114,4 @@ PCL_END_LOCAL
 #endif   // __StarNetInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF StarNetInterface.h - Released 2021-04-09T19:41:49Z
+// EOF StarNetInterface.h - Released 2021-05-31T09:44:46Z

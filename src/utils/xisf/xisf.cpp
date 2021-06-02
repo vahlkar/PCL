@@ -524,7 +524,7 @@ static IsoString ReadSamplesAsCSVText( XISFReader& reader, int firstRow, int row
    {
       for ( int col = 0; ; )
       {
-         text.AppendFormat( "%.8lg", samples[i++] );
+         text.AppendFormat( "%.8g", samples[i++] );
          if ( ++col == width )
             break;
          text << ',';

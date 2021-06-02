@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.2
 // ----------------------------------------------------------------------------
-// ChannelCombinationProcess.h - Released 2021-04-09T19:41:48Z
+// ChannelCombinationProcess.h - Released 2021-05-31T09:44:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -89,4 +89,4 @@ PCL_END_LOCAL
 #endif   // __ChannelCombinationProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF ChannelCombinationProcess.h - Released 2021-04-09T19:41:48Z
+// EOF ChannelCombinationProcess.h - Released 2021-05-31T09:44:45Z

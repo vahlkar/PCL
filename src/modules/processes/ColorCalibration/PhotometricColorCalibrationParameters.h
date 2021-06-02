@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationParameters.h - Released 2021-04-09T19:41:48Z
+// PhotometricColorCalibrationParameters.h - Released 2021-05-31T09:44:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -916,4 +916,4 @@ PCL_END_LOCAL
 #endif   // __PhotometricColorCalibrationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationParameters.h - Released 2021-04-09T19:41:48Z
+// EOF PhotometricColorCalibrationParameters.h - Released 2021-05-31T09:44:45Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// IntensityTransformationsModule.cpp - Released 2021-04-09T19:41:48Z
+// IntensityTransformationsModule.cpp - Released 2021-05-31T09:44:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -57,8 +57,8 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2021
-#define MODULE_RELEASE_MONTH     4
-#define MODULE_RELEASE_DAY       9
+#define MODULE_RELEASE_MONTH     5
+#define MODULE_RELEASE_DAY       31
 
 #include "AdaptiveStretchCurveGraphInterface.h"
 #include "AdaptiveStretchInterface.h"
@@ -140,7 +140,7 @@ String IntensityTransformationsModule::Author() const
 
 String IntensityTransformationsModule::Copyright() const
 {
-   return "Copyright (c) 2005-2020 Pleiades Astrophoto";
+   return "Copyright (c) 2005-2021 Pleiades Astrophoto";
 }
 
 // ----------------------------------------------------------------------------
@@ -234,4 +234,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF IntensityTransformationsModule.cpp - Released 2021-04-09T19:41:48Z
+// EOF IntensityTransformationsModule.cpp - Released 2021-05-31T09:44:46Z

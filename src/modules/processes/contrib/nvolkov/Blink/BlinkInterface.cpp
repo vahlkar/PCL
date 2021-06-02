@@ -6,12 +6,12 @@
 // ----------------------------------------------------------------------------
 // Standard Blink Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// BlinkInterface.cpp - Released 2021-04-09T19:41:49Z
+// BlinkInterface.cpp - Released 2021-05-31T09:44:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Blink PixInsight module.
 //
-// Copyright (c) 2011-2020 Nikolay Volkov
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
+// Copyright (c) 2011-2021 Nikolay Volkov
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -90,6 +90,11 @@ static int PreviewSize = 202;
  * Blinking speed in seconds
  */
 static const float g_delaySecs[] = { 0.0F, 0.01F, 0.02F, 0.05F, 0.1F, 0.2F, 0.3F, 0.5F, 0.75F, 1.0F, 2.0F, 5.0F };
+
+/*
+ * Maximum physical memory load
+ */
+static double g_memoryLoadLimit = 0.9;
 
 // ----------------------------------------------------------------------------
 
@@ -210,6 +215,15 @@ bool BlinkInterface::BlinkData::Add( const String& filePath )
       if ( !CheckGeomery( images[0] ) )
          throw Error( filePath + ": Mismatched image geometry." );
 
+      size_type bytesRequired = images[0].info.NumberOfSamples()
+                              * size_type( blink_image::BitsPerSample() >> 3 );
+      size_type bytesAvailable = size_type( g_memoryLoadLimit * Module->AvailablePhysicalMemory() );
+      if ( bytesAvailable == 0 )
+         console.WarningLn( "<end><cbr><br>** Warning: Unable to estimate the available physical memory." );
+      else if ( bytesRequired > bytesAvailable )
+         throw Error( String().Format( "Not enough physical memory available. Current memory load is above %.0f%%",
+                                       100*Module->PhysicalMemoryLoad() ) );
+
       AutoPointer<blink_image> image( new blink_image );
 
       if ( !file.ReadImage( *image ) )
@@ -271,12 +285,16 @@ void BlinkInterface::BlinkData::Remove( int row )
 
 void BlinkInterface::BlinkData::Clear()
 {
+   m_screenRect = 0;
+   m_statRect = 0;
    m_filesData.Destroy();
-   m_isBlinkMaster = false;
-   m_blinkMaster = 0;
+   m_info = ImageInfo();
+   m_options = ImageOptions();
    m_currentImage = 0;
+   m_blinkMaster = 0;
+   m_isBlinkMaster = false;
 
-   CheckScreen();
+   CheckScreen(); // closes the m_screen image when m_filesData is empty
 }
 
 // ----------------------------------------------------------------------------
@@ -364,7 +382,11 @@ void BlinkInterface::AutoHTThread::Run()
 
 void BlinkInterface::BlinkData::AutoHT()
 {
-   ProgressBarStatus status( "Blink" );
+   ProgressBarStatus status( "Blink"
+#ifdef __PCL_MACOSX
+   , *TheBlinkInterface
+#endif
+   );
    StatusMonitor monitor;
    monitor.SetCallback( &status );
    monitor.Initialize( "Applying automatic display functions...", m_filesData.Length() );
@@ -406,7 +428,11 @@ void BlinkInterface::BlinkData::ResetHT()
    console.Show();
    console.NoteLn( "<end><cbr><br><br>* Blink: Reloading data..." );
 
-   ProgressBarStatus status( "Blink" );
+   ProgressBarStatus status( "Blink"
+#ifdef __PCL_MACOSX
+   , *TheBlinkInterface
+#endif
+   );
    StatusMonitor monitor;
    monitor.SetCallback( &status );
    monitor.Initialize( "Reloading data...", m_filesData.Length() );
@@ -456,7 +482,7 @@ bool BlinkInterface::BlinkData::CheckScreen()
 
    if ( m_filesData.IsEmpty() ) // close Screen if no files
    {
-      m_screen.Close();
+      m_screen.ForceClose();
       m_screen = ImageWindow::Null();
       return false;
    }
@@ -899,6 +925,7 @@ void BlinkInterface::TranslucentPlanets()
    for ( int i = 0; i < PreviewSize; i += networkFrequency )
       g.DrawLine( i, PreviewSize-1, 0, i );
    g.DrawLine( PreviewSize-1, PreviewSize-1, 0, PreviewSize-1 );
+   g.EndPaint();
 }
 
 // ----------------------------------------------------------------------------
@@ -968,7 +995,11 @@ void BlinkInterface::AddFiles( const StringList& files )
       console.Show();
       console.NoteLn( "<end><cbr><br><br>* Blink: Loading " + String( N ) + " file(s)" );
 
-      ProgressBarStatus status( "Blink" );
+      ProgressBarStatus status( "Blink"
+#ifdef __PCL_MACOSX
+      , *this
+#endif
+      );
       StatusMonitor monitor;
       monitor.SetCallback( &status );
       monitor.Initialize( "Loading data...", N );
@@ -1046,7 +1077,11 @@ void BlinkInterface::FileCopyTo()
    console.Show();
    console.NoteLn( "<end><cbr><br><br>* Blink/Copy: " + String( N ) + " file(s) selected." );
 
-   ProgressBarStatus status( "Blink" );
+   ProgressBarStatus status( "Blink"
+#ifdef __PCL_MACOSX
+   , *this
+#endif
+   );
    StatusMonitor monitor;
    monitor.SetCallback( &status );
    monitor.Initialize( "Copying files...", N );
@@ -1105,7 +1140,11 @@ void BlinkInterface::FileMoveTo()
    console.Show();
    console.NoteLn( "<end><cbr><br><br>* Blink/Move: " + String( N ) + " file(s) selected." );
 
-   ProgressBarStatus status( "Blink" );
+   ProgressBarStatus status( "Blink"
+#ifdef __PCL_MACOSX
+   , *this
+#endif
+   );
    StatusMonitor monitor;
    monitor.SetCallback( &status );
    monitor.Initialize( "Moving files...", N );
@@ -1209,7 +1248,11 @@ void BlinkInterface::FileCropTo()
    console.Show();
    console.NoteLn( "<end><cbr><br><br>Blink/Crop: " + String( N ) + " file(s) selected." );
 
-   ProgressBarStatus status( "Blink" );
+   ProgressBarStatus status( "Blink"
+#ifdef __PCL_MACOSX
+   , *this
+#endif
+   );
    StatusMonitor monitor;
    monitor.SetCallback( &status );
    monitor.Initialize( "Writing cropped files...", N );
@@ -1417,10 +1460,10 @@ void BlinkInterface::Continue()
 
 void BlinkInterface::__Brightness_Click( Button& sender, bool checked )
 {
+   Pause();
+
    if ( sender == GUI->AutoHT_Button )
    {
-      Pause();
-
       if ( checked )
       {
          if ( GUI->AutoSTF_Button.IsChecked() )
@@ -1433,15 +1476,9 @@ void BlinkInterface::__Brightness_Click( Button& sender, bool checked )
 
       if ( m_blink.m_screen.IsNull() )
          m_blink.UpdateScreen();
-
-      GeneratePreview();
-
-      Continue();
    }
    else if ( sender == GUI->AutoSTF_Button )
    {
-      Pause();
-
       if ( checked )
       {
          if ( GUI->AutoHT_Button.IsChecked() )
@@ -1457,29 +1494,20 @@ void BlinkInterface::__Brightness_Click( Button& sender, bool checked )
 
       if ( m_blink.m_screen.IsNull() )
          m_blink.UpdateScreen();
-
-      GeneratePreview();
-
-      Continue();
    }
    else if ( sender == GUI->RGBLinked_Button )
    {
-      Pause();
-
       if ( GUI->AutoSTF_Button.IsChecked() )
-      {
          m_blink.AutoSTF();
-         GeneratePreview();
-      }
       else if ( GUI->AutoHT_Button.IsChecked() )
       {
          m_blink.ResetHT();
          m_blink.AutoHT();
-         GeneratePreview();
       }
-
-      Continue();
    }
+
+   GeneratePreview();
+   Continue();
 }
 
 // ----------------------------------------------------------------------------
@@ -1958,7 +1986,7 @@ BlinkInterface::GUIData::GUIData( BlinkInterface& w )
    RGBLinked_Button.SetCheckable();
    RGBLinked_Button.SetIcon( Bitmap( w.ScaledResource( ":/icons/link.png" ) ) );
    RGBLinked_Button.SetScaledFixedSize( 22, 22 );
-   RGBLinked_Button.SetToolTip( "<p>Link RGB channels. Enabled only for RGB images.</p>" );
+   RGBLinked_Button.SetToolTip( "<p>Link RGB channels. Only available for RGB images.</p>" );
    RGBLinked_Button.OnClick( (Button::click_event_handler)&BlinkInterface::__Brightness_Click, w );
 
    PreviousImage_Button.SetIcon( Bitmap( w.ScaledResource( ":/icons/left.png" ) ) );
@@ -1999,7 +2027,7 @@ BlinkInterface::GUIData::GUIData( BlinkInterface& w )
 
    const char* selectionNoteToolTip =
       "<p>Note: <i>Checked</i> is not the same as <i>selected</i>. "
-         "To select more then one image use Shift or Ctrl/Cmd + arow keys or click.</p>";
+         "To select more then one image use Shift or Ctrl/Cmd + arrow keys or click.</p>";
 
    Files_TreeBox.SetNumberOfColumns( 3 );
    Files_TreeBox.SetScaledMinWidth( 250 );
@@ -2149,4 +2177,4 @@ BlinkInterface::GUIData::GUIData( BlinkInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BlinkInterface.cpp - Released 2021-04-09T19:41:49Z
+// EOF BlinkInterface.cpp - Released 2021-05-31T09:44:46Z

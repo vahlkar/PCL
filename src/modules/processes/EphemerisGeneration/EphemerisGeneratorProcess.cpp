@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard EphemerisGeneration Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// EphemerisGeneratorProcess.cpp - Released 2021-04-09T19:41:48Z
+// EphemerisGeneratorProcess.cpp - Released 2021-05-31T09:44:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -132,7 +132,7 @@ IsoString EphemerisGeneratorProcess::Id() const
 
 IsoString EphemerisGeneratorProcess::Category() const
 {
-   return "Ephemerides";
+   return "Ephemerides,Global";
 }
 
 // ----------------------------------------------------------------------------
@@ -239,4 +239,4 @@ int EphemerisGeneratorProcess::FindDatabaseFormatByName( const String& name )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF EphemerisGeneratorProcess.cpp - Released 2021-04-09T19:41:48Z
+// EOF EphemerisGeneratorProcess.cpp - Released 2021-05-31T09:44:45Z

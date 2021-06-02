@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// pcl/AstrometricMetadata.cpp - Released 2021-04-09T19:41:11Z
+// pcl/AstrometricMetadata.cpp - Released 2021-05-31T09:44:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -143,6 +143,19 @@ void AstrometricMetadata::Build( const PropertyArray& properties, const FITSKeyw
                if ( m_pixelSize() > 0 )
                   m_resolution = ResolutionFromFocal( m_focalLength() );
    }
+}
+
+// ----------------------------------------------------------------------------
+
+IsoString AstrometricMetadata::ReferenceSystemFromMetadata( const PropertyArray& properties, const FITSKeywordArray& keywords )
+{
+   for ( const Property& property : properties )
+      if ( property.Id() == "Observation:CelestialReferenceSystem" )
+         return property.Value().ToIsoString();
+   for ( const FITSHeaderKeyword& keyword : keywords )
+      if ( keyword.name == "RADESYS" )
+         return keyword.StripValueDelimiters().Uppercase();
+   return IsoString();
 }
 
 // ----------------------------------------------------------------------------
@@ -475,7 +488,7 @@ void AstrometricMetadata::UpdateBasicKeywords( FITSKeywordArray& keywords ) cons
       RemoveKeyword( keywords, "PIXSIZE" );
    }
 
-   ModifyKeyword( keywords, "TIMESYS", "UTC", "Time scale: Universal Time, Coordinated" );
+   ModifyKeyword( keywords, "TIMESYS", "\'UTC\'", "Time scale: Universal Time, Coordinated" );
 
    if ( m_obsStartTime.IsDefined() )
    {
@@ -565,14 +578,14 @@ void AstrometricMetadata::UpdateWCSKeywords( FITSKeywordArray& keywords ) const
    {
       IsoString refSys = ReferenceSystem();
       if ( refSys == "ICRS" )
-         keywords << FITSHeaderKeyword( "RADESYS", "ICRS", "Coordinates referred to ICRS / J2000.0" );
+         keywords << FITSHeaderKeyword( "RADESYS", "'ICRS'", "Coordinates referred to ICRS / J2000.0" );
       else if ( refSys == "GCRS" )
-         keywords << FITSHeaderKeyword( "RADESYS", "GCRS", "Coordinates referred to GCRS / J2000.0" );
+         keywords << FITSHeaderKeyword( "RADESYS", "'GCRS'", "Coordinates referred to GCRS / J2000.0" );
       else if ( refSys == "GAPPT" )
-         keywords << FITSHeaderKeyword( "RADESYS", "GAPPT", "Geocentric apparent coordinates / J2000.0" );
+         keywords << FITSHeaderKeyword( "RADESYS", "'GAPPT'", "Geocentric apparent coordinates / J2000.0" );
       else
       {
-         keywords << FITSHeaderKeyword( "RADESYS", refSys, "Reference system of celestial coordinates" );
+         keywords << FITSHeaderKeyword( "RADESYS", refSys.SingleQuoted(), "Reference system of celestial coordinates" );
          if ( m_equinox.IsDefined() )
             keywords << FITSHeaderKeyword( "EQUINOX", IsoString( m_equinox() ), "Epoch of the mean equator and equinox (years)" );
       }
@@ -1019,4 +1032,4 @@ void AstrometricMetadata::UpdateDescription() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AstrometricMetadata.cpp - Released 2021-04-09T19:41:11Z
+// EOF pcl/AstrometricMetadata.cpp - Released 2021-05-31T09:44:25Z

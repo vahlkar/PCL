@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// Standard Debayer Process Module Version 1.8.2
+// Standard Debayer Process Module Version 1.8.3
 // ----------------------------------------------------------------------------
-// DebayerParameters.h - Released 2021-04-09T19:41:49Z
+// DebayerParameters.h - Released 2021-05-31T09:44:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -236,20 +236,6 @@ extern DebayerTargetImage* TheDebayerTargetImageParameter;
 
 // ----------------------------------------------------------------------------
 
-class DebayerAutoMemoryLimit : public MetaBoolean
-{
-public:
-
-   DebayerAutoMemoryLimit( MetaProcess* );
-
-   IsoString Id() const override;
-   bool DefaultValue() const override;
-};
-
-extern DebayerAutoMemoryLimit* TheDebayerAutoMemoryLimitParameter;
-
-// ----------------------------------------------------------------------------
-
 class DebayerNoGUIMessages : public MetaBoolean
 {
 public:
@@ -443,6 +429,37 @@ public:
 };
 
 extern DebayerMaxFileWriteThreads* TheDebayerMaxFileWriteThreadsParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerMemoryLoadControl : public MetaBoolean
+{
+public:
+
+   DebayerMemoryLoadControl( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern DebayerMemoryLoadControl* TheDebayerMemoryLoadControlParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerMemoryLoadLimit : public MetaFloat
+{
+public:
+
+   DebayerMemoryLoadLimit( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern DebayerMemoryLoadLimit* TheDebayerMemoryLoadLimitParameter;
 
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
@@ -767,4 +784,4 @@ PCL_END_LOCAL
 #endif   // __DebayerParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF DebayerParameters.h - Released 2021-04-09T19:41:49Z
+// EOF DebayerParameters.h - Released 2021-05-31T09:44:46Z

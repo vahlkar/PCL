@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.2.33
 // ----------------------------------------------------------------------------
-// IntegrationDataLoaderEngine.cpp - Released 2021-04-09T19:41:48Z
+// IntegrationDataLoaderEngine.cpp - Released 2021-05-31T09:44:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -139,4 +139,4 @@ void IntegrationDataLoaderEngine::DataLoaderThread::Run()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationDataLoaderEngine.cpp - Released 2021-04-09T19:41:48Z
+// EOF IntegrationDataLoaderEngine.cpp - Released 2021-05-31T09:44:46Z

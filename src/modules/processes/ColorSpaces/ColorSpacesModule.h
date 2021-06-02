@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.2
 // ----------------------------------------------------------------------------
-// ColorSpacesModule.h - Released 2021-04-09T19:41:48Z
+// ColorSpacesModule.h - Released 2021-05-31T09:44:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -85,4 +85,4 @@ public:
 #endif   // __ColorSpacesModule_h
 
 // ----------------------------------------------------------------------------
-// EOF ColorSpacesModule.h - Released 2021-04-09T19:41:48Z
+// EOF ColorSpacesModule.h - Released 2021-05-31T09:44:45Z

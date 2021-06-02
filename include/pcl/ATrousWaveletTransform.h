@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// pcl/ATrousWaveletTransform.h - Released 2021-04-09T19:40:59Z
+// pcl/ATrousWaveletTransform.h - Released 2021-05-31T09:44:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -522,8 +522,8 @@ public:
     *
     * \param[out] N  Pointer to a variable that will receive the total number
     *             of pixels tagged as noise during the noise evaluation
-    *             process. This pointer can legally be zero, which is also
-    *             the default value of this argument.
+    *             process. This pointer can legally be \c nullptr, which is
+    *             also the default value of this parameter.
     *
     * Returns the estimated standard deviation of the noise in the specified
     * scale \a j of the wavelet transform after a relative \a eps accuracy has
@@ -540,7 +540,7 @@ public:
     * routine throws an Error exception.
     */
    double NoiseKSigma( int j = 0, float k = 3,
-                       float eps = 0.01, int n = 10, size_type* N = 0 ) const;
+                       float eps = 0.01, int n = 10, size_type* N = nullptr ) const;
 
    /*!
     * Estimation of the standard deviation of the noise, assuming a Gaussian
@@ -572,7 +572,7 @@ public:
     */
    double NoiseKSigma( int j, const ImageVariant& image,
                        float low = 0.00002F, float high = 0.99998F,
-                       float k = 3, float eps = 0.01, int n = 10, size_type* N = 0 ) const;
+                       float k = 3, float eps = 0.01, int n = 10, size_type* N = nullptr ) const;
 
    /*!
     * Estimation of the standard deviation of the Gaussian noise from the
@@ -602,8 +602,8 @@ public:
     *
     * \param[out] N  Pointer to a variable that will receive the total number
     *                of pixels tagged as noise during the noise evaluation
-    *                process. This pointer can legally be zero, which is also
-    *                the default value of this argument.
+    *                process. This pointer can legally be \c nullptr, which is
+    *                also the default value of this parameter.
     *
     * \param low     Lower bound of the sampling range in the normalized [0,1]
     *                range. Pixel sample values less than or equal to \a low
@@ -635,7 +635,7 @@ public:
     * transform, this routine throws an Error exception.
     */
    double NoiseMRS( const ImageVariant& image, const float sj[],
-                    double sigma = 0, float k = 3, size_type* N = 0,
+                    double sigma = 0, float k = 3, size_type* N = nullptr,
                     float low = 0.00002F, float high = 0.99998F ) const;
 
 private:
@@ -683,4 +683,4 @@ typedef ATrousWaveletTransform   StarletTransform;
 #endif   // __PCL_ATrousWaveletTransform_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ATrousWaveletTransform.h - Released 2021-04-09T19:40:59Z
+// EOF pcl/ATrousWaveletTransform.h - Released 2021-05-31T09:44:18Z

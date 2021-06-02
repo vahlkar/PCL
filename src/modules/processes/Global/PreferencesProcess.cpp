@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.3.0
+// Standard Global Process Module Version 1.3.1
 // ----------------------------------------------------------------------------
-// PreferencesProcess.cpp - Released 2021-04-09T19:41:48Z
+// PreferencesProcess.cpp - Released 2021-05-31T09:44:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -155,6 +155,7 @@ PreferencesProcess::PreferencesProcess()
    new METAPARAMETER_ID( MainWindow,  wallpaperFile09 )( this );
    new METAPARAMETER_ID( MainWindow,  wallpaperFile10 )( this );
    new METAPARAMETER_ID( MainWindow,  useWallpapers )( this );
+   new METAPARAMETER_ID( MainWindow,  highQualityWallpapers )( this );
 
    // -------------------------------------------------------------------------
 
@@ -381,4 +382,4 @@ int PreferencesProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesProcess.cpp - Released 2021-04-09T19:41:48Z
+// EOF PreferencesProcess.cpp - Released 2021-05-31T09:44:45Z

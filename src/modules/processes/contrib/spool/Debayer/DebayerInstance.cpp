@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// Standard Debayer Process Module Version 1.8.2
+// Standard Debayer Process Module Version 1.8.3
 // ----------------------------------------------------------------------------
-// DebayerInstance.cpp - Released 2021-04-09T19:41:49Z
+// DebayerInstance.cpp - Released 2021-05-31T09:44:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -125,7 +125,6 @@ DebayerInstance::DebayerInstance( const MetaProcess* m )
    , p_noiseEvaluationAlgorithm( DebayerNoiseEvaluationAlgorithm::Default )
    , p_showImages( TheDebayerShowImagesParameter->DefaultValue() )
    , p_cfaSourceFilePath( TheDebayerCFASourceFilePathParameter->DefaultValue() )
-   , p_autoMemoryLimit( TheDebayerAutoMemoryLimitParameter->DefaultValue() )
    , p_noGUIMessages( TheDebayerNoGUIMessagesParameter->DefaultValue() ) // ### DEPRECATED
    , p_inputHints( TheDebayerInputHintsParameter->DefaultValue() )
    , p_outputHints( TheDebayerOutputHintsParameter->DefaultValue() )
@@ -139,6 +138,8 @@ DebayerInstance::DebayerInstance( const MetaProcess* m )
    , p_fileThreadOverload( TheDebayerFileThreadOverloadParameter->DefaultValue() )
    , p_maxFileReadThreads( int32( TheDebayerMaxFileReadThreadsParameter->DefaultValue() ) )
    , p_maxFileWriteThreads( int32( TheDebayerMaxFileWriteThreadsParameter->DefaultValue() ) )
+   , p_memoryLoadControl( TheDebayerMemoryLoadControlParameter->DefaultValue() )
+   , p_memoryLoadLimit( TheDebayerMemoryLoadLimitParameter->DefaultValue() )
    , o_noiseEstimates( 0.0F, 3 )
    , o_noiseFractions( 0.0F, 3 )
    , o_noiseAlgorithms( 3 )
@@ -168,7 +169,6 @@ void DebayerInstance::Assign( const ProcessImplementation& p )
       p_showImages               = x->p_showImages;
       p_cfaSourceFilePath        = x->p_cfaSourceFilePath;
       p_targets                  = x->p_targets;
-      p_autoMemoryLimit          = x->p_autoMemoryLimit;
       p_noGUIMessages            = x->p_noGUIMessages;
       p_inputHints               = x->p_inputHints;
       p_outputHints              = x->p_outputHints;
@@ -182,6 +182,8 @@ void DebayerInstance::Assign( const ProcessImplementation& p )
       p_fileThreadOverload       = x->p_fileThreadOverload;
       p_maxFileReadThreads       = x->p_maxFileReadThreads;
       p_maxFileWriteThreads      = x->p_maxFileWriteThreads;
+      p_memoryLoadControl        = x->p_memoryLoadControl;
+      p_memoryLoadLimit          = x->p_memoryLoadLimit;
 
       o_imageId                  = x->o_imageId;
       o_noiseEstimates           = x->o_noiseEstimates;
@@ -259,14 +261,14 @@ public:
       int n = index.Size();
       int w = image.Width();
       int h = image.Height();
-      int w1 = w / n;
-      int h1 = h / n;
-      m_image.AllocateData( w1, h1, 1 );
+      int wn = w / n;
+      int hn = h / n;
+      m_image.AllocateData( wn, hn, 1 );
       Image::sample_iterator i( m_image );
-      for ( int y = 0; y < h1; ++y )
-         for ( int x = 0; x < w1; ++x, ++i )
+      for ( int y = 0; y < hn; ++y )
+         for ( int x = 0; x < wn; ++x, ++i )
          {
-            float f = 0;
+            double f = 0;
             int m = 0;
             for ( int i = y*n, i1 = i + n; i < i1; ++i )
                for ( int j = x*n, j1 = j + n; j < j1; ++j )
@@ -2851,70 +2853,93 @@ bool DebayerInstance::ExecuteGlobal()
 
    if ( p_useFileThreads && pendingItems.Length() > 1 )
    {
-      size_type availableMemory = Module->AvailablePhysicalMemory();
-      size_type worstCaseBytesPerThread = 1;
-      if ( availableMemory == 0 )
+      if ( p_memoryLoadControl )
+      {
+         float memLoad = Module->PhysicalMemoryLoad();
+         if ( memLoad > p_memoryLoadLimit )
+            console.WarningLn( String().Format( "<end><cbr><br>** Warning: physical memory load is above %.0f%%", 100*memLoad ) );
+      }
+
+      size_type bytesAvailable = Module->AvailablePhysicalMemory();
+      if ( bytesAvailable == 0 )
          console.WarningLn( "<end><cbr><br>** Warning: Unable to estimate the available physical memory." );
       else
-      {
-         console.NoteLn( String().Format( "<end><cbr><br>* Available physical memory: %.3f GiB", availableMemory/1024/1024/1024.0 ) );
-
-         if ( p_autoMemoryLimit )
-         {
-            console.WriteLn( "<br>Estimating task memory requirements..." );
-
-            size_type totalBytesRequired = 0;
-            for ( size_type i = 0; i < p_targets.Length(); ++i )
-               if ( p_targets[i].enabled )
-               {
-                  FileFormat format( File::ExtractExtension( p_targets[i].path ), true/*read*/, false/*write*/ );
-                  FileFormatInstance file( format );
-
-                  ImageDescriptionArray images;
-                  if ( !file.Open( images, p_targets[i].path, p_inputHints + " verbosity 0" ) )
-                     throw CaughtException();
-
-                  if ( !images.IsEmpty() )
-                  {
-                     size_type bytesRequiredForInputImage = images[0].info.NumberOfSamples() * (images[0].options.bitsPerSample >> 3);
-                     size_type bytesRequiredForOutputImage = images[0].info.NumberOfPixels() * 4 * 3;
-                     size_type bytesRequiredForNoiseEvaluation = 0;
-                     if ( p_evaluateNoise )
-                     {
-                        IsoString cfaPattern = CFAPatternIdFromTarget( file, IsXTransCFAFromTarget( file ) );
-                        bytesRequiredForNoiseEvaluation =
-                           size_type( double( bytesRequiredForOutputImage )/cfaPattern.Length() ) * 6;
-                     }
-                     if ( p_debayerMethod == DebayerMethodParameter::SuperPixel )
-                        bytesRequiredForOutputImage >>= 2;
-                     size_type bytesRequired = bytesRequiredForInputImage + bytesRequiredForOutputImage + bytesRequiredForNoiseEvaluation;
-                     totalBytesRequired += bytesRequired;
-                     if ( bytesRequired > worstCaseBytesPerThread )
-                        worstCaseBytesPerThread = bytesRequired;
-                  }
-
-                  if ( !file.Close() )
-                     throw CaughtException();
-               }
-
-            if ( totalBytesRequired == 0 )
-               console.WarningLn( "<end><cbr>** Warning: Unable to estimate memory requirements: No valid image has been found." );
-            else
-               console.NoteLn( String().Format( "<end><cbr>* Estimated per-thread memory allocation: %.3f GiB", worstCaseBytesPerThread/1024/1024/1024.0 ) );
-         }
-      }
+         console.NoteLn( String().Format( "<end><cbr><br>* Available physical memory: %.3f GiB", bytesAvailable/1024/1024/1024.0 ) );
 
       int numberOfThreadsAvailable = RoundInt( Thread::NumberOfThreads( PCL_MAX_PROCESSORS, 1 ) * p_fileThreadOverload );
       int numberOfThreads = Min( numberOfThreadsAvailable, int( pendingItems.Length() ) );
-      numberOfThreads = int( Min( size_type( numberOfThreads ), size_type( double( availableMemory ) / worstCaseBytesPerThread ) ) );
-      thread_list runningThreads( numberOfThreads ); // N.B.: all pointers are set to nullptr by IndirectArray's ctor.
+      bool memoryLimited = false;
 
-      console.NoteLn( String().Format( "<end><br>* Using %d worker threads.", numberOfThreads ) );
+      if ( p_memoryLoadControl && bytesAvailable > 0 )
+      {
+         console.WriteLn( "<br>Estimating task memory requirements..." );
+         console.Flush();
+
+         Array<size_type> bytesForThreads;
+         for ( size_type i : pendingItems )
+         {
+            Module->ProcessEvents();
+            if ( console.AbortRequested() )
+               throw ProcessAborted();
+
+            FileFormat format( File::ExtractExtension( p_targets[i].path ), true/*read*/, false/*write*/ );
+            FileFormatInstance file( format );
+            ImageDescriptionArray images;
+            if ( !file.Open( images, p_targets[i].path, p_inputHints + " verbosity 0" ) )
+               throw CaughtException();
+            bool xtrans = IsXTransCFAFromTarget( file );
+            if ( !file.Close() )
+               throw CaughtException();
+            if ( images.IsEmpty() )
+               continue;
+
+            size_type bytesForTargetImage = images[0].info.NumberOfSamples() * (images[0].options.bitsPerSample >> 3);
+
+            if ( xtrans )
+               bytesForTargetImage += images[0].info.NumberOfPixels() * sizeof( uint16 );
+
+            size_type bytesForNoiseEvaluation = 0;
+            if ( p_evaluateNoise )
+            {
+               int n = xtrans ? 6 : 2;
+               bytesForNoiseEvaluation = 6 * images[0].info.NumberOfPixels()/n/n * sizeof( float );
+            }
+
+            size_type bytesForOutputImage = images[0].info.NumberOfPixels() * 3 * sizeof( float );
+            if ( p_debayerMethod == DebayerMethodParameter::SuperPixel )
+               bytesForOutputImage >>= 2;
+
+            bytesForThreads << bytesForTargetImage + bytesForNoiseEvaluation + bytesForOutputImage;
+         }
+
+         if ( bytesForThreads.IsEmpty() )
+            console.WarningLn( "<end><cbr>** Warning: Unable to estimate memory requirements: No valid image has been found." );
+         else
+         {
+            size_type bytesPerThread = Median( bytesForThreads.Begin(), bytesForThreads.End() );
+            console.NoteLn( String().Format( "<end><cbr>* Estimated per-thread memory allocation: %.3f GiB", bytesPerThread/1024/1024/1024.0 ) );
+
+            bytesAvailable = size_type( double( p_memoryLoadLimit ) * Module->AvailablePhysicalMemory() );
+            if ( bytesAvailable == 0 )
+               console.WarningLn( "<end><cbr><br>** Warning: Unable to estimate the available physical memory." );
+            else
+            {
+               int limitedNumberOfThreads = Min( numberOfThreads, Max( 1, int( bytesAvailable / bytesPerThread ) ) );
+               memoryLimited = limitedNumberOfThreads < numberOfThreads;
+               numberOfThreads = limitedNumberOfThreads;
+            }
+         }
+      }
+
+      thread_list runningThreads( numberOfThreads ); // N.B.: all pointers are set to nullptr by IndirectArray's ctor.
+      console.NoteLn( String().Format( "<end><br>* Using %d worker threads%s.",
+                                       numberOfThreads, memoryLimited ? " (memory-limited)" : "" ) );
+      console.Flush();
 
       try
       {
          /*
-          * Thread watching loop.
+          * Thread execution loop.
           */
          for ( ;; )
          {
@@ -2929,6 +2954,9 @@ bool DebayerInstance::ExecuteGlobal()
 
                   if ( *i != nullptr )
                   {
+                     /*
+                      * Check for a running thread
+                      */
                      if ( !(*i)->Wait( 150 ) )
                      {
                         ++running;
@@ -2936,7 +2964,7 @@ bool DebayerInstance::ExecuteGlobal()
                      }
 
                      /*
-                      * A thread has just finished.
+                      * A thread has finished execution
                       */
                      (*i)->FlushConsoleOutputText();
                      console.WriteLn();
@@ -2969,8 +2997,8 @@ bool DebayerInstance::ExecuteGlobal()
                   }
 
                   /*
-                   * If there are items pending, create a new thread and fire
-                   * the next one.
+                   * If there are pending items, try to create a new worker
+                   * thread and fire it.
                    */
                   if ( !pendingItems.IsEmpty() )
                   {
@@ -2978,7 +3006,7 @@ bool DebayerInstance::ExecuteGlobal()
                      pendingItems.Remove( pendingItems.Begin() );
                      size_type threadIndex = i - runningThreads.Begin();
                      console.NoteLn( String().Format( "<end><cbr>[%03u] ", threadIndex ) + (*i)->TargetFilePath() );
-                     (*i)->Start( ThreadPriority::DefaultMax/*, threadIndex*/ );
+                     (*i)->Start( ThreadPriority::DefaultMax, threadIndex );
                      ++running;
                      if ( pendingItems.IsEmpty() )
                         console.NoteLn( "<br>* Waiting for running tasks to terminate...<br>" );
@@ -3521,8 +3549,6 @@ void* DebayerInstance::LockParameter( const MetaParameter* p, size_type tableRow
       return &p_showImages;
    if ( p == TheDebayerCFASourceFilePathParameter )
       return p_cfaSourceFilePath.Begin();
-   if ( p == TheDebayerAutoMemoryLimitParameter )
-      return &p_autoMemoryLimit;
    if ( p == TheDebayerTargetEnabledParameter )
       return &p_targets[tableRow].enabled;
    if ( p == TheDebayerTargetImageParameter )
@@ -3553,6 +3579,10 @@ void* DebayerInstance::LockParameter( const MetaParameter* p, size_type tableRow
       return &p_maxFileReadThreads;
    if ( p == TheDebayerMaxFileWriteThreadsParameter )
       return &p_maxFileWriteThreads;
+   if ( p == TheDebayerMemoryLoadControlParameter )
+      return &p_memoryLoadControl;
+   if ( p == TheDebayerMemoryLoadLimitParameter )
+      return &p_memoryLoadLimit;
 
    if ( p == TheDebayerOutputImageParameter )
       return o_imageId.Begin();
@@ -3770,4 +3800,4 @@ size_type DebayerInstance::ParameterLength( const MetaParameter* p, size_type ta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DebayerInstance.cpp - Released 2021-04-09T19:41:49Z
+// EOF DebayerInstance.cpp - Released 2021-05-31T09:44:46Z

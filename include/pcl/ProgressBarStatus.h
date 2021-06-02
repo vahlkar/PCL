@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// pcl/ProgressBarStatus.h - Released 2021-04-09T19:40:59Z
+// pcl/ProgressBarStatus.h - Released 2021-05-31T09:44:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -59,6 +59,7 @@
 #include <pcl/Defs.h>
 
 #include <pcl/AutoPointer.h>
+#include <pcl/Control.h>
 #include <pcl/StatusMonitor.h>
 
 namespace pcl
@@ -66,7 +67,7 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-class ProgressDialog;
+class PCL_CLASS ProgressDialog;
 
 /*!
  * \class ProgressBarStatus
@@ -89,8 +90,12 @@ public:
     * Constructs a %ProgressBarStatus object.
     *
     * \param title   The window title for the modal progress bar dialog box.
+    *
+    * \param parent  The parent control of the modal progress bar dialog box.
+    *                The default value is Control::Null(), which creates a
+    *                child top-level window of the current workspace.
     */
-   ProgressBarStatus( const String& title );
+   ProgressBarStatus( const String& title, Control& parent = Control::Null() );
 
    /*!
     * Virtual destructor.
@@ -135,4 +140,4 @@ private:
 #endif   // __PCL_ProgressBarStatus_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ProgressBarStatus.h - Released 2021-04-09T19:40:59Z
+// EOF pcl/ProgressBarStatus.h - Released 2021-05-31T09:44:18Z

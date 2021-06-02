@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// AdaptiveStretchInstance.h - Released 2021-04-09T19:41:48Z
+// AdaptiveStretchInstance.h - Released 2021-05-31T09:44:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -136,4 +136,4 @@ private:
 #endif   // __AdaptiveStretchInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF AdaptiveStretchInstance.h - Released 2021-04-09T19:41:48Z
+// EOF AdaptiveStretchInstance.h - Released 2021-05-31T09:44:46Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// InvertProcess.cpp - Released 2021-04-09T19:41:48Z
+// InvertProcess.cpp - Released 2021-05-31T09:44:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -129,4 +129,4 @@ ProcessImplementation* InvertProcess::Clone( const ProcessImplementation& p ) co
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF InvertProcess.cpp - Released 2021-04-09T19:41:48Z
+// EOF InvertProcess.cpp - Released 2021-05-31T09:44:46Z

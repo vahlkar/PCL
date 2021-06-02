@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// Standard Debayer Process Module Version 1.8.2
+// Standard Debayer Process Module Version 1.8.3
 // ----------------------------------------------------------------------------
-// DebayerParameters.cpp - Released 2021-04-09T19:41:49Z
+// DebayerParameters.cpp - Released 2021-05-31T09:44:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -67,7 +67,6 @@ DebayerCFASourceFilePath*         TheDebayerCFASourceFilePathParameter = nullptr
 DebayerTargetItems*               TheDebayerTargetItemsParameter = nullptr;
 DebayerTargetEnabled*             TheDebayerTargetEnabledParameter = nullptr;
 DebayerTargetImage*               TheDebayerTargetImageParameter = nullptr;
-DebayerAutoMemoryLimit*           TheDebayerAutoMemoryLimitParameter = nullptr;
 DebayerNoGUIMessages*             TheDebayerNoGUIMessagesParameter = nullptr;
 DebayerInputHints*                TheDebayerInputHintsParameter = nullptr;
 DebayerOutputHints*               TheDebayerOutputHintsParameter = nullptr;
@@ -81,6 +80,8 @@ DebayerUseFileThreads*            TheDebayerUseFileThreadsParameter = nullptr;
 DebayerFileThreadOverload*        TheDebayerFileThreadOverloadParameter = nullptr;
 DebayerMaxFileReadThreads*        TheDebayerMaxFileReadThreadsParameter = nullptr;
 DebayerMaxFileWriteThreads*       TheDebayerMaxFileWriteThreadsParameter = nullptr;
+DebayerMemoryLoadControl*         TheDebayerMemoryLoadControlParameter = nullptr;
+DebayerMemoryLoadLimit*           TheDebayerMemoryLoadLimitParameter = nullptr;
 
 DebayerOutputImage*               TheDebayerOutputImageParameter = nullptr;
 DebayerNoiseEstimateR*            TheDebayerNoiseEstimateRParameter = nullptr;
@@ -351,23 +352,6 @@ IsoString DebayerTargetImage::Id() const
 
 // ----------------------------------------------------------------------------
 
-DebayerAutoMemoryLimit::DebayerAutoMemoryLimit( MetaProcess* P ) : MetaBoolean( P )
-{
-   TheDebayerAutoMemoryLimitParameter = this;
-}
-
-IsoString DebayerAutoMemoryLimit::Id() const
-{
-   return "autoMemoryLimit";
-}
-
-bool DebayerAutoMemoryLimit::DefaultValue() const
-{
-   return true;
-}
-
-// ----------------------------------------------------------------------------
-
 // ### DEPRECATED
 DebayerNoGUIMessages::DebayerNoGUIMessages( MetaProcess* P ) : MetaBoolean( P )
 {
@@ -632,6 +616,55 @@ double DebayerMaxFileWriteThreads::MinimumValue() const
 double DebayerMaxFileWriteThreads::MaximumValue() const
 {
    return 1024;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerMemoryLoadControl::DebayerMemoryLoadControl( MetaProcess* p ) : MetaBoolean( p )
+{
+   TheDebayerMemoryLoadControlParameter = this;
+}
+
+IsoString DebayerMemoryLoadControl::Id() const
+{
+   return "memoryLoadControl";
+}
+
+bool DebayerMemoryLoadControl::DefaultValue() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerMemoryLoadLimit::DebayerMemoryLoadLimit( MetaProcess* p ) : MetaFloat( p )
+{
+   TheDebayerMemoryLoadLimitParameter = this;
+}
+
+IsoString DebayerMemoryLoadLimit::Id() const
+{
+   return "memoryLoadLimit";
+}
+
+int DebayerMemoryLoadLimit::Precision() const
+{
+   return 2;
+}
+
+double DebayerMemoryLoadLimit::DefaultValue() const
+{
+   return 0.85;
+}
+
+double DebayerMemoryLoadLimit::MinimumValue() const
+{
+   return 0.10;
+}
+
+double DebayerMemoryLoadLimit::MaximumValue() const
+{
+   return 1.00;
 }
 
 // ----------------------------------------------------------------------------
@@ -1100,4 +1133,4 @@ bool DebayerOutputFileNoiseAlgorithmB::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DebayerParameters.cpp - Released 2021-04-09T19:41:49Z
+// EOF DebayerParameters.cpp - Released 2021-05-31T09:44:46Z

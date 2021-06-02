@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard EphemerisGeneration Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// Integration.h - Released 2021-04-09T19:41:48Z
+// Integration.h - Released 2021-05-31T09:44:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -374,9 +374,9 @@ public:
       stepper_type* m_stepper = nullptr;
    };
 
-   /*!
-    * The exception that we throw when we detect a potential collision between
-    * the body being integrated an a perturber body.
+   /*
+    * The exception we throw when we detect a potential collision between the
+    * body being integrated and a perturber body.
     */
    class CollisionException : public Error
    {
@@ -584,6 +584,8 @@ public:
                std::pair<time_type, time_type> ts = stepper->DoStep(
                   [this]( const State& y, State& dydt, const time_type& t )
                   {
+                     m_finalState = y;
+                     m_finalTime = m_startTime + double( t );
                      Motion( y, dydt, t );
                   } );
 
@@ -607,6 +609,7 @@ public:
          }
 
          m_finalState = stepper->CurrentState();
+         m_finalTime = m_startTime + double( stepper->CurrentTime() );
       }
       catch ( CollisionException& x )
       {
@@ -614,7 +617,7 @@ public:
          console.WriteLn(    "<end><cbr><br>"
                              "***" );
          console.CriticalLn( "*** " + x.Message() );
-         console.WriteLn(    "*** <br><br>" );
+         console.WriteLn(    "***<br><br><br><br>" );
       }
       catch ( ... )
       {
@@ -625,6 +628,21 @@ public:
    const IntegrationDenseOutputData& OutputData() const
    {
       return m_outputData;
+   }
+
+   TimePoint StartTime() const
+   {
+      return m_startTime;
+   }
+
+   TimePoint EndTime() const
+   {
+      return m_endTime;
+   }
+
+   TimePoint FinalTime() const
+   {
+      return m_finalTime;
    }
 
    const State& FinalState() const
@@ -640,7 +658,8 @@ private:
    const EphemerisGeneratorInstance& m_instance;   // the instance being executed
          scalar_type                 m_eps;        // current integration tolerance (au)
          IntegrationDenseOutputData  m_outputData; // output times and coordinate expansions
-         State                       m_finalState; // the state of integration at the requested end time
+         TimePoint                   m_finalTime;  // the final integration time (can be < m_endTime)
+         State                       m_finalState; // the state of integration at the final time
          hscalar_type                s_c;          // speed of light (au/day) = (s_c_km_s/s_au_km)*86400
          hscalar_type                s_c2;         // square of the speed of light
          hscalar_type                s_2c2;        // 2*s_c2
@@ -1130,4 +1149,4 @@ __recurse:
 #endif   // __Integration_h
 
 // ----------------------------------------------------------------------------
-// EOF Integration.h - Released 2021-04-09T19:41:48Z
+// EOF Integration.h - Released 2021-05-31T09:44:45Z

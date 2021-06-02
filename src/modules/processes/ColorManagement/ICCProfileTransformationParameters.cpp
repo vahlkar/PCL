@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorManagement Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// ICCProfileTransformationParameters.cpp - Released 2021-04-09T19:41:48Z
+// ICCProfileTransformationParameters.cpp - Released 2021-05-31T09:44:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorManagement PixInsight module.
 //
@@ -170,4 +170,4 @@ bool ICCTUseFloatingPointTransformation::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ICCProfileTransformationParameters.cpp - Released 2021-04-09T19:41:48Z
+// EOF ICCProfileTransformationParameters.cpp - Released 2021-05-31T09:44:45Z

@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// pcl/Position.h - Released 2021-04-09T19:40:59Z
+// pcl/Position.h - Released 2021-05-31T09:44:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -98,12 +98,31 @@ struct PCL_CLASS StarPosition
    /*!
     * Copy constructor.
     */
-   StarPosition( const StarPosition& ) = default;
+   StarPosition( const StarPosition& x )
+      : alpha( x.alpha )
+      , delta( x.delta )
+      , muAlpha( x.muAlpha )
+      , muDelta( x.muDelta )
+      , p( x.p )
+      , v( x.v )
+      , t0( x.t0 )
+   {
+   }
 
    /*!
-    * Copy assignment operator.
+    * Copy assignment operator. Returns a reference to this object.
     */
-   StarPosition& operator =( const StarPosition& ) = default;
+   StarPosition& operator =( const StarPosition& x )
+   {
+      alpha = x.alpha;
+      delta = x.delta;
+      muAlpha = x.muAlpha;
+      muDelta = x.muDelta;
+      p = x.p;
+      v = x.v;
+      t0 = x.t0;
+      return *this;
+   }
 
    /*!
     * Memberwise constructor.
@@ -151,6 +170,14 @@ struct PCL_CLASS StarPosition
       , t0( epoch )
    {
    }
+
+private:
+
+   uint64 m_uniqueId = UniqueId();
+
+   static uint64 UniqueId();
+
+   friend class PCL_CLASS Position;
 };
 
 // ----------------------------------------------------------------------------
@@ -1446,9 +1473,6 @@ private:
    // Current observer for calculation of topocentric coordinates.
    AutoPointerCloner<ObserverPosition> m_observer;
 
-   // Opaque pointer to the object whose positions are being calculated.
-   const void* m_object = nullptr;
-
    // Special case flags.
    bool m_isMoon = false, m_isSun = false, m_isStar = false;
 
@@ -1456,7 +1480,22 @@ private:
    // topocentric positions.
    bool m_usePolarMotion = true;
 
-   bool Validate( const void* );
+   // Unique identifier of the object whose positions are being calculated.
+   uint64 m_uniqueObjectId = 0;
+
+   template <class T>
+   bool Validate( const T& obj )
+   {
+      if ( obj.m_uniqueId != m_uniqueObjectId )
+      {
+         m_U0 = m_U = m_ub = m_u1 = m_u2 = m_u3e = m_u3i = Vector();
+         m_tau = 0;
+         m_isMoon = m_isSun = m_isStar = false;
+         m_uniqueObjectId = obj.m_uniqueId;
+         return false;
+      }
+      return true;
+   }
 
    Vector Deflection();
    Vector Aberration();
@@ -1480,4 +1519,4 @@ private:
 #endif  // __PCL_Position_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Position.h - Released 2021-04-09T19:40:59Z
+// EOF pcl/Position.h - Released 2021-05-31T09:44:18Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.2
 // ----------------------------------------------------------------------------
-// GrayscaleRGBActions.cpp - Released 2021-04-09T19:41:48Z
+// GrayscaleRGBActions.cpp - Released 2021-05-31T09:44:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -114,4 +114,4 @@ bool ConvertToRGBColorAction::IsEnabled( ActionInfo info ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GrayscaleRGBActions.cpp - Released 2021-04-09T19:41:48Z
+// EOF GrayscaleRGBActions.cpp - Released 2021-05-31T09:44:45Z

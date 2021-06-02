@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// BinarizeAction.cpp - Released 2021-04-09T19:41:48Z
+// BinarizeAction.cpp - Released 2021-05-31T09:44:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -89,4 +89,4 @@ bool BinarizeAction::IsEnabled( ActionInfo info ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BinarizeAction.cpp - Released 2021-04-09T19:41:48Z
+// EOF BinarizeAction.cpp - Released 2021-05-31T09:44:46Z

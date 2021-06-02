@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// pcl/FFT2D.cpp - Released 2021-04-09T19:41:11Z
+// pcl/FFT2D.cpp - Released 2021-05-31T09:44:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -530,4 +530,4 @@ void FFT2DBase::Transform( int rows, int cols, double* y, const dcomplex* x, Sta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FFT2D.cpp - Released 2021-04-09T19:41:11Z
+// EOF pcl/FFT2D.cpp - Released 2021-05-31T09:44:25Z

@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.3.0
+// Standard Global Process Module Version 1.3.1
 // ----------------------------------------------------------------------------
-// PreferencesInstance.h - Released 2021-04-09T19:41:48Z
+// PreferencesInstance.h - Released 2021-05-31T09:44:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -148,6 +148,7 @@ struct MainWindowPreferences
    String      wallpaperFile09;
    String      wallpaperFile10;
    pcl_bool    useWallpapers;
+   pcl_bool    highQualityWallpapers;
 };
 
 // ----------------------------------------------------------------------------
@@ -299,4 +300,4 @@ private:
 #endif   // __PreferencesInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInstance.h - Released 2021-04-09T19:41:48Z
+// EOF PreferencesInstance.h - Released 2021-05-31T09:44:45Z

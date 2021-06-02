@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// StatisticsInterface.h - Released 2021-04-09T19:41:48Z
+// StatisticsInterface.h - Released 2021-05-31T09:44:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -199,4 +199,4 @@ PCL_END_LOCAL
 #endif   // __StatisticsInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF StatisticsInterface.h - Released 2021-04-09T19:41:48Z
+// EOF StatisticsInterface.h - Released 2021-05-31T09:44:46Z

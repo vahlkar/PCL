@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard EphemerisGeneration Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// EphemerisGeneratorParameters.cpp - Released 2021-04-09T19:41:48Z
+// EphemerisGeneratorParameters.cpp - Released 2021-05-31T09:44:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -969,7 +969,7 @@ IsoString EGUseKBOPerturbers::Id() const
 
 bool EGUseKBOPerturbers::DefaultValue() const
 {
-   return false;
+   return true;
 }
 
 // ----------------------------------------------------------------------------
@@ -1163,4 +1163,4 @@ double EGEphemerisToleranceFactor::MaximumValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF EphemerisGeneratorParameters.cpp - Released 2021-04-09T19:41:48Z
+// EOF EphemerisGeneratorParameters.cpp - Released 2021-05-31T09:44:45Z

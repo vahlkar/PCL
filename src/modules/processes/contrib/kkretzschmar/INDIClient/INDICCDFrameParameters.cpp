@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// INDICCDFrameParameters.cpp - Released 2020-12-17T15:46:56Z
+// INDICCDFrameParameters.cpp - Released 2021-05-31T09:44:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
-// Copyright (c) 2014-2020 Klaus Kretzschmar
+// Copyright (c) 2014-2021 Klaus Kretzschmar
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -98,11 +98,11 @@ REGISTER_MODULE_PARAMETER( ICFSolverCatalogName );
 REGISTER_MODULE_PARAMETER( ICFSolverAutoCatalog );
 REGISTER_MODULE_PARAMETER( ICFSolverLimitMagnitude );
 REGISTER_MODULE_PARAMETER( ICFSolverAutoLimitMagnitude );
-REGISTER_MODULE_PARAMETER( ICFSolverStarSensitivity ); 
-REGISTER_MODULE_PARAMETER( ICFSolverNoiseLayers ); 
+REGISTER_MODULE_PARAMETER( ICFSolverStarSensitivity );
+REGISTER_MODULE_PARAMETER( ICFSolverNoiseLayers );
 REGISTER_MODULE_PARAMETER( ICFSolverAlignmentDevice );
 REGISTER_MODULE_PARAMETER( ICFSolverDistortionCorrection );
-REGISTER_MODULE_PARAMETER( ICFSolverSplineSmoothing ); 
+REGISTER_MODULE_PARAMETER( ICFSolverSplineSmoothing );
 REGISTER_MODULE_PARAMETER( ICFSolverProjection );
 
 // ----------------------------------------------------------------------------
@@ -801,15 +801,15 @@ DEFINE_STRING_PARAMETER_WITH_DEFAULT_CLASS( ICFSolverCatalogName , "solverCatalo
 DEFINE_BOOLEAN_PARAMETER_CLASS( ICFSolverAutoCatalog, "solverAutoCatalog", true );
 DEFINE_INT32_PARAMETER_CLASS( ICFSolverLimitMagnitude, "solverLimitMagnitude", 0, 30, 12 );
 DEFINE_BOOLEAN_PARAMETER_CLASS( ICFSolverAutoLimitMagnitude, "solverAutoLimitMagnitude", true );
-DEFINE_FLOAT_PARAMETER_CLASS(ICFSolverStarSensitivity, "solverStarSensitivity", 2, -3, 3, -1); 
-DEFINE_INT32_PARAMETER_CLASS(ICFSolverNoiseLayers, "solverNoiseLayers", 0, 5, 0); 
+DEFINE_FLOAT_PARAMETER_CLASS(ICFSolverStarSensitivity, "solverStarSensitivity", 2, -3, 3, -1);
+DEFINE_INT32_PARAMETER_CLASS(ICFSolverNoiseLayers, "solverNoiseLayers", 0, 5, 0);
 #undef ENUM_ITEM
 #define ENUM_ITEM( X ) \
    case X:             \
       return "AlignmentDevice_" #X;
 DEFINE_ENUM_PARAMETER_CLASS(ICFSolverAlignmentDevice, "solverAlignmentDevice", ENUM_ITEM(TriangleSimilarity) ENUM_ITEM(PolygonMatching), TriangleSimilarity);
 DEFINE_BOOLEAN_PARAMETER_CLASS( ICFSolverDistortionCorrection, "solverDistortionCorrection", false );
-DEFINE_FLOAT_PARAMETER_CLASS(ICFSolverSplineSmoothing, "solverSplineSmoothing", 3, 0, 0.5, 0.015); 
+DEFINE_FLOAT_PARAMETER_CLASS(ICFSolverSplineSmoothing, "solverSplineSmoothing", 3, 0, 0.5, 0.015);
 #undef ENUM_ITEM
 #define ENUM_ITEM( X ) \
    case X:             \
@@ -819,4 +819,4 @@ DEFINE_ENUM_PARAMETER_CLASS(ICFSolverProjection, "solverProjection", ENUM_ITEM(G
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDICCDFrameParameters.cpp - Released 2020-12-17T15:46:56Z
+// EOF INDICCDFrameParameters.cpp - Released 2021-05-31T09:44:46Z

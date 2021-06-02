@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.2.33
 // ----------------------------------------------------------------------------
-// IntegrationFile.cpp - Released 2021-04-09T19:41:48Z
+// IntegrationFile.cpp - Released 2021-05-31T09:44:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -135,6 +135,12 @@ void IntegrationFile::OpenFiles( const ImageIntegrationInstance& instance )
    for ( size_type i = 0; i < pendingItems.Length(); ++i )
       s_files << new IntegrationFile;
 
+   s_availableMemory = Module->AvailablePhysicalMemory();
+   if ( s_availableMemory == 0 )
+      console.WarningLn( "<end><cbr><br>** Warning: Unable to estimate the available physical memory." );
+   else
+      console.NoteLn( String().Format( "<end><cbr><br>* Available physical memory: %.3f GiB", s_availableMemory/1024/1024/1024.0 ) );
+
    OpenFileThread( *pendingItems, instance, true/*isReference*/ ).Run();
    pendingItems.Remove( pendingItems.Begin() );
 
@@ -143,7 +149,7 @@ void IntegrationFile::OpenFiles( const ImageIntegrationInstance& instance )
       size_type worstCaseBytesPerThread =
                sizeof( float ) * size_type( s_bufferRows ) * size_type( s_width ) // pixel buffer
          + 4 * sizeof( float ) * size_type( s_width ) * size_type( s_height );    // noise evaluation
-      int maxThreads = TruncInt( double( instance.p_autoMemoryLimit )*s_availableMemory / worstCaseBytesPerThread );
+      int maxThreads = Max( 1, TruncInt( double( instance.p_autoMemoryLimit )*s_availableMemory / worstCaseBytesPerThread ) );
       int numberOfThreadsAvailable = RoundInt( Thread::NumberOfThreads( PCL_MAX_PROCESSORS, 1 ) * instance.p_fileThreadOverload );
       int numberOfThreadsShouldUse = Min( numberOfThreadsAvailable, int( pendingItems.Length() ) );
       int numberOfThreads = Min( maxThreads, numberOfThreadsShouldUse );
@@ -151,11 +157,10 @@ void IntegrationFile::OpenFiles( const ImageIntegrationInstance& instance )
       console.NoteLn( String().Format( "<end><br>* Using %d worker threads%s.",
                                        numberOfThreads,
                                        (numberOfThreads < numberOfThreadsShouldUse) ? " (memory-limited)" : "" ) );
-
       try
       {
          /*
-          * Thread watching loop.
+          * Thread execution loop.
           */
          for ( int count = 0; ; )
          {
@@ -209,7 +214,7 @@ void IntegrationFile::OpenFiles( const ImageIntegrationInstance& instance )
                   pendingItems.Remove( pendingItems.Begin() );
                   size_type threadIndex = i - runningThreads.Begin();
                   console.NoteLn( String().Format( "<end><cbr>[%03u] ", threadIndex ) + (*i)->FilePath() );
-                  (*i)->Start( ThreadPriority::DefaultMax/*, threadIndex*/ );
+                  (*i)->Start( ThreadPriority::DefaultMax, threadIndex );
                   ++running;
                   if ( pendingItems.IsEmpty() )
                      console.NoteLn( "<br>* Waiting for running tasks to terminate...<br>" );
@@ -304,8 +309,6 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
 
       s_numberOfChannels = images[0].info.numberOfChannels;
       s_isColor = images[0].info.colorSpace != ColorSpace::Gray;
-
-      s_availableMemory = Module->AvailablePhysicalMemory();
 
       s_incremental = false;
       if ( !format.CanReadIncrementally() )
@@ -1014,4 +1017,4 @@ void IntegrationFile::OpenFileThread::Run()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationFile.cpp - Released 2021-04-09T19:41:48Z
+// EOF IntegrationFile.cpp - Released 2021-05-31T09:44:46Z

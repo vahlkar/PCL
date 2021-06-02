@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.2.33
 // ----------------------------------------------------------------------------
-// ImageIntegrationInstance.cpp - Released 2021-04-09T19:41:48Z
+// ImageIntegrationInstance.cpp - Released 2021-05-31T09:44:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -353,6 +353,8 @@ bool ImageIntegrationInstance::ExecuteGlobal()
 
       int totalStacks;
       {
+         size_type totalAvailable = Module->AvailablePhysicalMemory();
+
          size_type stackSize = size_type( IntegrationFile::Width() ) *
                                  (IntegrationFile::NumberOfFiles()*sizeof( RejectionDataItem )
                                   + sizeof( int )
@@ -361,9 +363,9 @@ bool ImageIntegrationInstance::ExecuteGlobal()
          size_type stackBufferSize = 0;
          if ( p_autoMemorySize )
          {
-            size_type totalAvailable = size_type( double( p_autoMemoryLimit ) * IntegrationFile::AvailableMemory() );
-            if ( totalAvailable > IntegrationFile::TotalBufferSize() )
-               stackBufferSize = totalAvailable - IntegrationFile::TotalBufferSize();
+            size_type maxAvailable = size_type( double( p_autoMemoryLimit ) * totalAvailable );
+            if ( maxAvailable > IntegrationFile::TotalBufferSize() )
+               stackBufferSize = maxAvailable - IntegrationFile::TotalBufferSize();
          }
          else
             stackBufferSize = size_type( p_stackSizeMB )*1024*1024;
@@ -372,11 +374,10 @@ bool ImageIntegrationInstance::ExecuteGlobal()
                                       stackBufferSize/stackSize ),
                                  size_type( IntegrationFile::BufferRows() ) ) );
 
-         if ( IntegrationFile::AvailableMemory() == 0 )
+         if ( totalAvailable == 0 )
             console.WarningLn( "<end><cbr><br>** Warning: Unable to estimate the available physical memory." );
          else
-            console.NoteLn( String().Format( "<end><cbr><br>* Available physical memory: %.3f GiB",
-                                             IntegrationFile::AvailableMemory()/1024/1024/1024.0 ) );
+            console.NoteLn( String().Format( "<end><cbr><br>* Available physical memory: %.3f GiB", totalAvailable/1024/1024/1024.0 ) );
 
          console.NoteLn( String().Format( "* Allocated pixel buffer: %d rows, %.3f GiB",
                                           IntegrationFile::BufferRows(),
@@ -1783,4 +1784,4 @@ ImageWindow ImageIntegrationInstance::CreateImageWindow( const IsoString& id, in
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationInstance.cpp - Released 2021-04-09T19:41:48Z
+// EOF ImageIntegrationInstance.cpp - Released 2021-05-31T09:44:46Z

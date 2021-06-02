@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// UnsharpMaskParameters.cpp - Released 2021-04-09T19:41:48Z
+// UnsharpMaskParameters.cpp - Released 2021-05-31T09:44:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -333,4 +333,4 @@ double USMRangeHigh::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF UnsharpMaskParameters.cpp - Released 2021-04-09T19:41:48Z
+// EOF UnsharpMaskParameters.cpp - Released 2021-05-31T09:44:45Z

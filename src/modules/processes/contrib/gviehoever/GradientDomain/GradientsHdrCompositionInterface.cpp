@@ -6,12 +6,12 @@
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsHdrCompositionInterface.cpp - Released 2021-04-09T19:41:49Z
+// GradientsHdrCompositionInterface.cpp - Released 2021-05-31T09:44:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
 // Copyright (c) Georg Viehoever, 2011-2020. Licensed under LGPL 2.1
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -95,7 +95,7 @@ MetaProcess* GradientsHdrCompositionInterface::Process() const
 
 String GradientsHdrCompositionInterface::IconImageSVGFile() const
 {
-   return String(); //"@module_icons_dir/GradientsHdrComposition.svg";
+   return "@module_icons_dir/GradientHDRComposition.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -627,4 +627,4 @@ GradientsHdrCompositionInterface::GUIData::GUIData( GradientsHdrCompositionInter
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF GradientsHdrCompositionInterface.cpp - Released 2021-04-09T19:41:49Z
+// EOF GradientsHdrCompositionInterface.cpp - Released 2021-05-31T09:44:46Z

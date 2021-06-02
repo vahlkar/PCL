@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// IndigoClient.cpp - Released 2020-12-17T15:46:56Z
+// IndigoClient.cpp - Released 2021-05-31T09:44:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
-// Copyright (c) 2014-2020 Klaus Kretzschmar
+// Copyright (c) 2014-2021 Klaus Kretzschmar
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -126,7 +126,7 @@ bool IndigoClient::serverIsConnected(std::ostream& errMessage , uint32_t interfa
    char errMsg[256];
    bool isConnected = indigo_connection_status(m_serverEntry, errMsg);
    if (!isConnected)
-       errMessage  << errMsg;   
+       errMessage  << errMsg;
    return isConnected;
 }
 
@@ -235,13 +235,13 @@ indigo_result IndigoClient::defineProperty( indigo_client* client, indigo_device
    }
    else if ( property->type == INDIGO_BLOB_VECTOR )
    {
-      if (device->version >= INDIGO_VERSION_2_0) 
+      if (device->version >= INDIGO_VERSION_2_0)
       {
         indigo_enable_blob( client, property, INDIGO_ENABLE_BLOB_URL);
-      } 
+      }
       else
       {
-        indigo_enable_blob(client, property, INDIGO_ENABLE_BLOB_ALSO);  
+        indigo_enable_blob(client, property, INDIGO_ENABLE_BLOB_ALSO);
       }
    }
    return INDIGO_OK;
@@ -327,4 +327,4 @@ bool IndigoClient::disconnectDevice( const std::string& deviceName )
 }
 
 // ----------------------------------------------------------------------------
-// EOF IndigoClient.cpp - Released 2020-12-17T15:46:56Z
+// EOF IndigoClient.cpp - Released 2021-05-31T09:44:46Z

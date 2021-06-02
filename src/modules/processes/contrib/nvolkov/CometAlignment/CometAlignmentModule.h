@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard CometAlignment Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// CometAlignmentModule.h - Released 2021-04-09T19:41:49Z
+// CometAlignmentModule.h - Released 2021-05-31T09:44:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CometAlignment PixInsight module.
 //
@@ -84,4 +84,4 @@ public:
 #endif // __CometAlignmentModule_h
 
 // ----------------------------------------------------------------------------
-// EOF CometAlignmentModule.h - Released 2021-04-09T19:41:49Z
+// EOF CometAlignmentModule.h - Released 2021-05-31T09:44:46Z

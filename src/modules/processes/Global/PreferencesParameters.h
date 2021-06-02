@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.3.0
+// Standard Global Process Module Version 1.3.1
 // ----------------------------------------------------------------------------
-// PreferencesParameters.h - Released 2021-04-09T19:41:48Z
+// PreferencesParameters.h - Released 2021-05-31T09:44:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -311,6 +311,7 @@ DECLARE_STRING_METAPARAMETER  ( MainWindow,  wallpaperFile08,                   
 DECLARE_STRING_METAPARAMETER  ( MainWindow,  wallpaperFile09,                     "ripley-default-09.svg" )
 DECLARE_STRING_METAPARAMETER  ( MainWindow,  wallpaperFile10,                     "ripley-default-10.svg" )
 DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  useWallpapers,                       true )
+DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  highQualityWallpapers,               true )
 
 // ----------------------------------------------------------------------------
 
@@ -408,4 +409,4 @@ PCL_END_LOCAL
 #endif   // __PreferencesParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesParameters.h - Released 2021-04-09T19:41:48Z
+// EOF PreferencesParameters.h - Released 2021-05-31T09:44:45Z

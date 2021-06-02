@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// pcl/ATrousWaveletTransform.cpp - Released 2021-04-09T19:41:11Z
+// pcl/ATrousWaveletTransform.cpp - Released 2021-05-31T09:44:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -205,35 +205,28 @@ void ATrousWaveletTransform::Transform( const pcl::UInt32Image& image )
 
 static double NoiseKSigmaEstimate( Array<float>& A, float K, float eps, int n, size_type* aN )
 {
-   bool isEps = eps > 0;
    double s0 = 0;
-
-   for ( int it = 0; ; )
+   for ( int it = 0;; )
    {
       size_type N = A.Length();
-
-      if ( aN != 0 )
+      if ( aN != nullptr )
          *aN = N;
-
       if ( N < 2 )
          return 0;
 
       double s = pcl::StdDev( A.Begin(), A.End() );
       if ( 1 + s == 1 )
          return 0;
-      if ( ++it == n || isEps && it > 1 && (s0 - s)/s0 < eps )
+      if ( ++it == n || eps > 0 && it > 1 && (s0 - s)/s0 < eps )
          return s;
-
       s0 = s;
-
-      double Ks = K*s;
 
       Array<float> B;
       Swap( A, B );
-      A.Reserve( N );
+      double Ks = K*s;
       for ( float f : B )
          if ( Abs( f ) < Ks )
-            A.Add( f );
+            A << f;
    }
 }
 
@@ -254,7 +247,7 @@ static double NoiseKSigmaEstimate( const Image& wj, const GenericImage<P>& image
    {
       float v; P::FromSample( v, *i );
       if ( v > low && v < high )
-         A.Add( *w );
+         A << *w;
    }
 
    return NoiseKSigmaEstimate( A, k, eps, n, N );
@@ -549,4 +542,4 @@ void ATrousWaveletTransform::ValidateScalingFunction() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ATrousWaveletTransform.cpp - Released 2021-04-09T19:41:11Z
+// EOF pcl/ATrousWaveletTransform.cpp - Released 2021-05-31T09:44:25Z

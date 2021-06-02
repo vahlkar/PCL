@@ -6,11 +6,11 @@
 // ----------------------------------------------------------------------------
 // Standard StarNet Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// StarNetModule.cpp - Released 2021-04-09T19:41:49Z
+// StarNetModule.cpp - Released 2021-05-31T09:44:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarNet PixInsight module.
 //
-// Copyright (c) 2018-2020 Nikita Misiura
+// Copyright (c) 2018-2021 Nikita Misiura
 //
 // This software is available under Attribution-NonCommercial-ShareAlike 4.0
 // International Creative Commons license (CC BY-NC-SA 4.0):
@@ -35,8 +35,8 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2021
-#define MODULE_RELEASE_MONTH     4
-#define MODULE_RELEASE_DAY       9
+#define MODULE_RELEASE_MONTH     5
+#define MODULE_RELEASE_DAY       31
 
 #include "StarNetModule.h"
 #include "StarNetInterface.h"
@@ -94,7 +94,7 @@ String StarNetModule::Author() const
 
 String StarNetModule::Copyright() const
 {
-   return "Copyright (c) 2018-2020 Nikita Misiura";
+   return "Copyright (c) 2018-2021 Nikita Misiura";
 }
 
 // ----------------------------------------------------------------------------
@@ -160,4 +160,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF StarNetModule.cpp - Released 2021-04-09T19:41:49Z
+// EOF StarNetModule.cpp - Released 2021-05-31T09:44:46Z

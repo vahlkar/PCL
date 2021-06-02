@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// FilterLibrary.h - Released 2021-04-09T19:41:48Z
+// FilterLibrary.h - Released 2021-05-31T09:44:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -420,4 +420,4 @@ extern FilterLibrary TheFilterLibrary;
 #endif // __FilterLibrary_h
 
 // ----------------------------------------------------------------------------
-// EOF FilterLibrary.h - Released 2021-04-09T19:41:48Z
+// EOF FilterLibrary.h - Released 2021-05-31T09:44:45Z

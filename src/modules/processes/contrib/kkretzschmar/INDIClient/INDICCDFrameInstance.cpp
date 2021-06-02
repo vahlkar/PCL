@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.7
+// /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// INDICCDFrameInstance.cpp - Released 2020-12-17T15:46:56Z
+// INDICCDFrameInstance.cpp - Released 2021-05-31T09:44:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
-// Copyright (c) 2014-2020 Klaus Kretzschmar
+// Copyright (c) 2014-2021 Klaus Kretzschmar
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -120,7 +120,7 @@ INDICCDFrameInstance::INDICCDFrameInstance( const MetaProcess* m )
    , p_solverAlignmentDevice( TheICFSolverAlignmentDeviceParameter->DefaultValueIndex() )
    , p_solverDistortionCorrection( TheICFSolverDistortionCorrectionParameter->DefaultValue() )
    , p_solverSplineSmoothing( TheICFSolverSplineSmoothingParameter->DefaultValue())
-   , p_solverProjection( TheICFSolverProjectionParameter->DefaultValueIndex()) 
+   , p_solverProjection( TheICFSolverProjectionParameter->DefaultValueIndex())
 {
 }
 
@@ -171,8 +171,8 @@ void INDICCDFrameInstance::Assign( const ProcessImplementation& p )
       p_applyPlateSolver = x->p_applyPlateSolver;
       p_centerTarget = x->p_centerTarget;
       p_serverURL = x->p_serverURL;
-      p_solverCatalogName = x->p_solverCatalogName; 
-      p_solverAutoCatalog = x->p_solverAutoCatalog; 
+      p_solverCatalogName = x->p_solverCatalogName;
+      p_solverAutoCatalog = x->p_solverAutoCatalog;
       p_solverLimitMagnitude = x->p_solverLimitMagnitude;
       p_solverAutoLimitMagnitude = x->p_solverAutoLimitMagnitude;
       p_solverStarSensitivity = x->p_solverStarSensitivity;
@@ -1888,7 +1888,7 @@ void AbstractINDICCDFrameExecution::Perform()
             }
             if ( m_instance.p_applyPlateSolver)
                {
-                  
+
                   String coreSrcDir = PixInsightSettings::GlobalString( "Application/SrcDirectory" );
                   ImageMetadata data = ImageMetadataFromFITSKeywords( keywords );
                   String scriptPath = coreSrcDir + "/scripts/AdP/ImageSolver.js";
@@ -1994,4 +1994,4 @@ int AbstractINDICCDFrameExecution::s_numberOfChannels = 0;
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDICCDFrameInstance.cpp - Released 2020-12-17T15:46:56Z
+// EOF INDICCDFrameInstance.cpp - Released 2021-05-31T09:44:46Z

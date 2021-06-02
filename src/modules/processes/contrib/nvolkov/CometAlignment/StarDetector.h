@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard CometAlignment Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// StarDetector.h - Released 2021-04-09T19:41:49Z
+// StarDetector.h - Released 2021-05-31T09:44:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CometAlignment PixInsight module.
 //
@@ -132,4 +132,4 @@ inline String StarData::StatusText() const
 #endif // __StarDetector_h
 
 // ----------------------------------------------------------------------------
-// EOF StarDetector.h - Released 2021-04-09T19:41:49Z
+// EOF StarDetector.h - Released 2021-05-31T09:44:46Z

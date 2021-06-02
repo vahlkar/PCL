@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.8.1
 // ----------------------------------------------------------------------------
-// PixelMathModule.cpp - Released 2021-05-05T15:38:07Z
+// PixelMathModule.cpp - Released 2021-05-31T09:44:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -58,7 +58,7 @@
 
 #define MODULE_RELEASE_YEAR      2021
 #define MODULE_RELEASE_MONTH     5
-#define MODULE_RELEASE_DAY       5
+#define MODULE_RELEASE_DAY       31
 
 #include "PixelMathInterface.h"
 #include "PixelMathModule.h"
@@ -173,4 +173,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF PixelMathModule.cpp - Released 2021-05-05T15:38:07Z
+// EOF PixelMathModule.cpp - Released 2021-05-31T09:44:46Z

@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.3.0
+// Standard Global Process Module Version 1.3.1
 // ----------------------------------------------------------------------------
-// PreferencesInstance.cpp - Released 2021-04-09T19:41:48Z
+// PreferencesInstance.cpp - Released 2021-05-31T09:44:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -193,6 +193,7 @@ bool PreferencesInstance::ExecuteGlobal()
       PixInsightSettings::SetGlobalString  ( "MainWindow/WallpaperFile09",                      mainWindow.wallpaperFile09 );
       PixInsightSettings::SetGlobalString  ( "MainWindow/WallpaperFile10",                      mainWindow.wallpaperFile10 );
       PixInsightSettings::SetGlobalFlag    ( "MainWindow/UseWallpapers",                        mainWindow.useWallpapers );
+      PixInsightSettings::SetGlobalFlag    ( "MainWindow/HighQualityWallpapers",                mainWindow.highQualityWallpapers );
 
       PixInsightSettings::SetGlobalFlag    ( "ImageWindow/BackupFiles",                         imageWindow.backupFiles );
       PixInsightSettings::SetGlobalFlag    ( "ImageWindow/DefaultMasksShown",                   imageWindow.defaultMasksShown );
@@ -451,6 +452,8 @@ void* PreferencesInstance::LockParameter( const MetaParameter* p, size_type tabl
       return mainWindow.wallpaperFile10.Begin();
    if ( p == METAPARAMETER_INSTANCE_ID( MainWindow, useWallpapers ) )
       return &mainWindow.useWallpapers;
+   if ( p == METAPARAMETER_INSTANCE_ID( MainWindow, highQualityWallpapers ) )
+      return &mainWindow.highQualityWallpapers;
 
    if ( p == METAPARAMETER_INSTANCE_ID( ImageWindow, backupFiles ) )
       return &imageWindow.backupFiles;
@@ -737,6 +740,7 @@ void PreferencesInstance::LoadDefaultSettings()
    mainWindow.wallpaperFile09                   =         METAPARAMETER_INSTANCE_ID( MainWindow, wallpaperFile09                   )->DefaultValue();
    mainWindow.wallpaperFile10                   =         METAPARAMETER_INSTANCE_ID( MainWindow, wallpaperFile10                   )->DefaultValue();
    mainWindow.useWallpapers                     =         METAPARAMETER_INSTANCE_ID( MainWindow, useWallpapers                     )->DefaultValue();
+   mainWindow.highQualityWallpapers             =         METAPARAMETER_INSTANCE_ID( MainWindow, highQualityWallpapers             )->DefaultValue();
 
    imageWindow.backupFiles                      =         METAPARAMETER_INSTANCE_ID( ImageWindow, backupFiles                      )->DefaultValue();
    imageWindow.defaultMasksShown                =         METAPARAMETER_INSTANCE_ID( ImageWindow, defaultMasksShown                )->DefaultValue();
@@ -901,6 +905,7 @@ void PreferencesInstance::LoadCurrentSettings()
    mainWindow.wallpaperFile09                   = PixInsightSettings::GlobalString  ( "MainWindow/WallpaperFile09" );
    mainWindow.wallpaperFile10                   = PixInsightSettings::GlobalString  ( "MainWindow/WallpaperFile10" );
    mainWindow.useWallpapers                     = PixInsightSettings::GlobalFlag    ( "MainWindow/UseWallpapers" );
+   mainWindow.highQualityWallpapers             = PixInsightSettings::GlobalFlag    ( "MainWindow/HighQualityWallpapers" );
 
    imageWindow.backupFiles                      = PixInsightSettings::GlobalFlag    ( "ImageWindow/BackupFiles" );
    imageWindow.defaultMasksShown                = PixInsightSettings::GlobalFlag    ( "ImageWindow/DefaultMasksShown" );
@@ -1098,4 +1103,4 @@ String* PreferencesInstance::StringParameterFromMetaParameter( const MetaParamet
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInstance.cpp - Released 2021-04-09T19:41:48Z
+// EOF PreferencesInstance.cpp - Released 2021-05-31T09:44:45Z

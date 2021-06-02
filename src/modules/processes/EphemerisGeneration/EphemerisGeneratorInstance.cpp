@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard EphemerisGeneration Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// EphemerisGeneratorInstance.cpp - Released 2021-04-09T19:41:48Z
+// EphemerisGeneratorInstance.cpp - Released 2021-05-31T09:44:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -250,16 +250,19 @@ public:
          Integration integrator( m_eph, m_instance, m_object.objectId/*excludeId*/, m_object.objectName/*excludeName*/ );
 
          IntegrationDenseOutputData data;
+         TimePoint t0, t1;
          Vector r0, v0, r1, v1;
          bool rootThread = IsRootThread();
          double hacc = 0;
 
          for ( int forward = 0; forward < 2; ++forward )
          {
-            TimePoint t1 = forward ? endTime : startTime;
-            if ( t1 != m_object.epoch )
+            Vector r = m_object.initialPosition;
+            Vector v = m_object.initialVelocity;
+            TimePoint t = forward ? endTime : startTime;
+            if ( t != m_object.epoch )
             {
-               integrator( m_object.initialPosition, m_object.initialVelocity, m_object.epoch, t1,
+               integrator( r, v, m_object.epoch, t,
                            [&]( size_type step, double h )
                            {
                               hacc += h;
@@ -278,43 +281,34 @@ public:
                if ( m_xeph != nullptr )
                   data << integrator.OutputData();
 
+               t = integrator.FinalTime();
                Integration<>::State s = integrator.FinalState();
-               Vector r( s[0], s[1], s[2] );
-               Vector v( s[3], s[4], s[5] );
-               if ( forward )
-               {
-                  r1 = r;
-                  v1 = v;
-               }
-               else
-               {
-                  r0 = r;
-                  v0 = v;
-               }
+               r = Vector( s[0], s[1], s[2] );
+               v = Vector( s[3], s[4], s[5] );
+            }
+
+            if ( forward )
+            {
+               t1 = t;
+               r1 = r;
+               v1 = v;
             }
             else
             {
-               if ( forward )
-               {
-                  r1 = m_object.initialPosition;
-                  v1 = m_object.initialVelocity;
-               }
-               else
-               {
-                  r0 = m_object.initialPosition;
-                  v0 = m_object.initialVelocity;
-               }
+               t0 = t;
+               r0 = r;
+               v0 = v;
             }
          }
 
          monitor.Complete();
 
          console.WriteLn(    "<end><cbr><br>Integration results:<br>" );
-         console.WriteLn( String().Format( "Start time (TDB) .... %.6f", startTime.JD() ) + " = " + startTime.ToString() );
+         console.WriteLn( String().Format( "Start time (TDB) .... %.6f", t0.JD() ) + " = " + t0.ToString() );
          console.WriteLn( String().Format( "Position (au) ....... %+.10e %+.10e %+.10e<br>"
                                            "Velocity (au/day) ... %+.10e %+.10e %+.10e<br>"
                                            , r0[0], r0[1], r0[2], v0[0], v0[1], v0[2] ) );
-         console.WriteLn( String().Format( "End time (TDB) ...... %.6f", endTime.JD() ) + " = " + endTime.ToString() );
+         console.WriteLn( String().Format( "End time (TDB) ...... %.6f", t1.JD() ) + " = " + t1.ToString() );
          console.WriteLn( String().Format( "Position (au) ....... %+.10e %+.10e %+.10e<br>"
                                            "Velocity (au/day) ... %+.10e %+.10e %+.10e"
                                            , r1[0], r1[1], r1[2], v1[0], v1[1], v1[2] ) );
@@ -322,14 +316,13 @@ public:
          if ( m_xeph != nullptr )
          {
             data.Sort();
-            m_xeph->AddObject( data, startTime, endTime
+            m_xeph->AddObject( data, t0, t1
                              , m_instance.p_ephemerisToleranceFactor
                              , m_object.objectId, m_object.objectName
                              , m_object.H, m_object.G, m_object.B_V, m_object.D );
          }
 
          m_success = true;
-         return;
       }
       catch ( ... )
       {
@@ -354,11 +347,6 @@ public:
       return m_success;
    }
 
-   const IsoString& TextOutput() const
-   {
-      return m_text;
-   }
-
    const String& ErrorInfo() const
    {
       return m_errorInfo;
@@ -377,7 +365,6 @@ private:
    const Ephemerides&                m_eph;
          IntegrationObjectData       m_object;
          XEPHGenerator*              m_xeph;
-         IsoString                   m_text;
          String                      m_errorInfo;
          bool                        m_success = false;
 };
@@ -468,7 +455,7 @@ bool EphemerisGeneratorInstance::ExecuteGlobal()
 
          TextDatabase::FormatDescription format = EphemerisGeneratorProcess::DatabaseFormats()[formatIndex];
          TextDatabase database( format );
-         Array<TextDatabase::ObjectData> objectData = database.Search( *this, 1000/*maxCount*/ );
+         Array<TextDatabase::ObjectData> objectData = database.Search( *this/*, 100000*//*maxCount*/ );
          if ( objectData.IsEmpty() )
             throw Error( "EphemerisGenerator: No objects found." );
 
@@ -519,7 +506,7 @@ bool EphemerisGeneratorInstance::ExecuteGlobal()
 
    int numberOfThreadsAvailable = Thread::NumberOfThreads( PCL_MAX_PROCESSORS, 1 );
 
-   IsoStringList textOutput;
+   IsoStringList textOutput, failedObjects;
 
    if ( pendingItems.Length() > 1 && numberOfThreadsAvailable > 1 )
    {
@@ -531,7 +518,7 @@ bool EphemerisGeneratorInstance::ExecuteGlobal()
       try
       {
          /*
-          * Thread watching loop.
+          * Thread execution loop.
           */
          for ( ;; )
          {
@@ -559,7 +546,10 @@ bool EphemerisGeneratorInstance::ExecuteGlobal()
                      console.WriteLn();
                      String errorInfo;
                      if ( !(*i)->Succeeded() )
+                     {
                         errorInfo = (*i)->ErrorInfo();
+                        failedObjects << (*i)->ObjectIdAndName();
+                     }
 
                      /*
                       * N.B.: IndirectArray<>::Delete() sets to zero the
@@ -661,6 +651,8 @@ bool EphemerisGeneratorInstance::ExecuteGlobal()
 
    if ( succeeded == 0 )
       throw Error( "No object could be successfully integrated." );
+   else if ( !failedObjects.IsEmpty() )
+      console.CriticalLn( "<end><cbr><br>*** The following objects couldn't be successfully integrated:<br>" + String().ToCommaSeparated( failedObjects ) );
 
    if ( p_outputXEPHFile )
    {
@@ -886,4 +878,4 @@ size_type EphemerisGeneratorInstance::ParameterLength( const MetaParameter* p, s
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF EphemerisGeneratorInstance.cpp - Released 2021-04-09T19:41:48Z
+// EOF EphemerisGeneratorInstance.cpp - Released 2021-05-31T09:44:45Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// FastRotationActions.h - Released 2021-04-09T19:41:48Z
+// FastRotationActions.h - Released 2021-05-31T09:44:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -125,4 +125,4 @@ public:
 #endif   // __FastRotationActions_h
 
 // ----------------------------------------------------------------------------
-// EOF FastRotationActions.h - Released 2021-04-09T19:41:48Z
+// EOF FastRotationActions.h - Released 2021-05-31T09:44:45Z

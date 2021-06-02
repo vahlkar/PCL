@@ -6,12 +6,12 @@
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsHdrCompositionProcess.h - Released 2021-04-09T19:41:49Z
+// GradientsHdrCompositionProcess.h - Released 2021-05-31T09:44:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
 // Copyright (c) Georg Viehoever, 2011-2020. Licensed under LGPL 2.1
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -68,4 +68,4 @@ PCL_END_LOCAL
 #endif
 
 // ----------------------------------------------------------------------------
-// EOF GradientsHdrCompositionProcess.h - Released 2021-04-09T19:41:49Z
+// EOF GradientsHdrCompositionProcess.h - Released 2021-05-31T09:44:46Z

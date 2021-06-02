@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard RAW File Format Module Version 1.5.6
 // ----------------------------------------------------------------------------
-// RawFormat.cpp - Released 2021-04-09T19:41:31Z
+// RawFormat.cpp - Released 2021-05-31T09:44:36Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RAW PixInsight module.
 //
@@ -132,10 +132,10 @@ String RawFormat::Implementation() const
    "<html>"
    "<p>PixInsight Standard File Format Support Modules.</p>"
 
-   "<p>This implementation of digital camera raw format decoding uses LibRaw 0.20.2 Release.</p>"
+   "<p>This implementation of digital camera raw format decoding uses LibRaw 0.21.0 (202101 Snapshot).</p>"
 
    "<p><b>LibRaw</b><br/>"
-   "Copyright (C) 2008-2020 LibRaw LLC (https://www.libraw.org, info@libraw.org)</p>"
+   "Copyright (C) 2008-2021 LibRaw LLC (https://www.libraw.org, info@libraw.org)</p>"
 
    "<p>LibRaw uses code from dcraw.c -- Dave Coffin's raw photo decoder,<br/>"
    "dcraw.c is copyright 1997-2018 by Dave Coffin, dcoffin a cybercom o net.<br/>"
@@ -395,4 +395,4 @@ bool RawFormat::EditPreferences() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RawFormat.cpp - Released 2021-04-09T19:41:31Z
+// EOF RawFormat.cpp - Released 2021-05-31T09:44:36Z

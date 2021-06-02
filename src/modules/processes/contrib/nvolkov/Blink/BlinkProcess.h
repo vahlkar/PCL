@@ -6,12 +6,12 @@
 // ----------------------------------------------------------------------------
 // Standard Blink Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// BlinkProcess.h - Released 2021-04-09T19:41:49Z
+// BlinkProcess.h - Released 2021-05-31T09:44:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Blink PixInsight module.
 //
-// Copyright (c) 2011-2020 Nikolay Volkov
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
+// Copyright (c) 2011-2021 Nikolay Volkov
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -90,4 +90,4 @@ PCL_END_LOCAL
 #endif   // __BlinkProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF BlinkProcess.h - Released 2021-04-09T19:41:49Z
+// EOF BlinkProcess.h - Released 2021-05-31T09:44:46Z

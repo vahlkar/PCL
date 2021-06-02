@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// pcl/CharTraits.cpp - Released 2021-04-09T19:41:11Z
+// pcl/CharTraits.cpp - Released 2021-05-31T09:44:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -293,4 +293,4 @@ int CharTraits::Compare( const char16_type* __restrict__ s1, size_type n1,
 } //pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/CharTraits.cpp - Released 2021-04-09T19:41:11Z
+// EOF pcl/CharTraits.cpp - Released 2021-05-31T09:44:25Z

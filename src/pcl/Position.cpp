@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// pcl/Position.cpp - Released 2021-04-09T19:41:11Z
+// pcl/Position.cpp - Released 2021-05-31T09:44:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -50,7 +50,9 @@
 // ----------------------------------------------------------------------------
 
 #include <pcl/AkimaInterpolation.h>
+#include <pcl/AutoLock.h>
 #include <pcl/Position.h>
+#include <pcl/Random.h>
 
 namespace pcl
 {
@@ -70,6 +72,21 @@ constexpr double Position::c_km_s;
 constexpr double Position::c_km_day;
 constexpr double Position::c_au_day;
 constexpr double Position::earth_omega;
+
+// ----------------------------------------------------------------------------
+
+static Mutex s_mutex;
+
+// ----------------------------------------------------------------------------
+
+uint64 StarPosition::UniqueId()
+{
+   static XoRoShiRo1024ss* R = nullptr;
+   volatile AutoLock lock( s_mutex );
+   if ( unlikely( R == nullptr ) )
+      R = new XoRoShiRo1024ss;
+   return R->UI64();
+}
 
 // ----------------------------------------------------------------------------
 
@@ -454,21 +471,6 @@ Vector Position::CIP_ITRS() const
 
 // ----------------------------------------------------------------------------
 
-bool Position::Validate( const void* o )
-{
-   if ( o != m_object )
-   {
-      m_U0 = m_U = m_ub = m_u1 = m_u2 = m_u3e = m_u3i = Vector();
-      m_tau = 0;
-      m_isMoon = m_isSun = m_isStar = false;
-      m_object = o;
-      return false;
-   }
-   return true;
-}
-
-// ----------------------------------------------------------------------------
-
 Vector Position::Deflection()
 {
    /*
@@ -550,7 +552,7 @@ Vector Position::Aberration()
 
 Vector Position::Geometric( EphemerisFile::Handle& H )
 {
-   if ( Validate( &H ) )
+   if ( Validate( H ) )
       if ( !m_U.IsEmpty() )
          return m_U;
 
@@ -619,7 +621,7 @@ Vector Position::Geometric( EphemerisFile::Handle& H )
 
 Vector Position::Geometric( const StarPosition& S )
 {
-   if ( Validate( &S ) )
+   if ( Validate( S ) )
       if ( !m_U.IsEmpty() )
          return m_U;
 
@@ -1195,4 +1197,4 @@ Optional<double> Position::ApparentVisualMagnitude( EphemerisFile::Handle& H )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Position.cpp - Released 2021-04-09T19:41:11Z
+// EOF pcl/Position.cpp - Released 2021-05-31T09:44:25Z

@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.3.0
+// Standard Global Process Module Version 1.3.1
 // ----------------------------------------------------------------------------
-// ColorManagementSetupProcess.cpp - Released 2021-04-09T19:41:48Z
+// ColorManagementSetupProcess.cpp - Released 2021-05-31T09:44:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -102,7 +102,7 @@ IsoString ColorManagementSetupProcess::Id() const
 
 IsoString ColorManagementSetupProcess::Category() const
 {
-   return "Global,ColorManagement";
+   return "ColorManagement,Global";
 }
 
 // ----------------------------------------------------------------------------
@@ -445,4 +445,4 @@ int ColorManagementSetupProcess::ProcessCommandLine( const StringList& argv ) co
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ColorManagementSetupProcess.cpp - Released 2021-04-09T19:41:48Z
+// EOF ColorManagementSetupProcess.cpp - Released 2021-05-31T09:44:45Z

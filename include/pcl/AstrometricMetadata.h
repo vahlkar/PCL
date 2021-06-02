@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// pcl/AstrometricMetadata.h - Released 2021-04-09T19:40:59Z
+// pcl/AstrometricMetadata.h - Released 2021-05-31T09:44:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -355,8 +355,8 @@ public:
    void Write( XISFWriter& writer ) const;
 
    /*!
-    * Returns the coordinate reference system to which this astrometric
-    * solution has been referred.
+    * Returns the name of the coordinate reference system to which this
+    * astrometric solution has been referred.
     *
     * This corresponds to the reference system of the coordinates of the
     * reference point sources (usually stars with data acquired from
@@ -395,6 +395,29 @@ public:
    {
       m_refSys = refSys.Trimmed();
    }
+
+   /*!
+    * Returns the name of the reference system of celestial coordinates
+    * derived from the specified image metadata.
+    *
+    * \param properties       A list of XISF image properties.
+    *
+    * \param keywords         A list of FITS header keywords.
+    *
+    * The reference system will be inferred from the following metadata items:
+    *
+    * \li The standard XISF property 'Observation:CelestialReferenceSystem'
+    *
+    * \li The standard FITS keyword 'RADESYS'.
+    *
+    * In case of metadata duplicity, XISF properties always take precedence
+    * over FITS keywords.
+    *
+    * Typical returned values are "ICRS" and "GCRS". If no valid reference
+    * system can be deduced from the specified metadata, this function returns
+    * an empty string.
+    */
+   static IsoString ReferenceSystemFromMetadata( const PropertyArray& properties, const FITSKeywordArray& keywords );
 
    /*!
     * Returns the width in pixels of the image associated with the astrometric
@@ -749,6 +772,7 @@ public:
     * specified \a properties array, if available:
     *
     * <pre>
+    * Observation:CelestialReferenceSystem
     * Observation:Center:RA
     * Observation:Center:Dec
     * Observation:Equinox
@@ -1094,4 +1118,4 @@ private:
 #endif // __AstrometricMetadata_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AstrometricMetadata.h - Released 2021-04-09T19:40:59Z
+// EOF pcl/AstrometricMetadata.h - Released 2021-05-31T09:44:18Z

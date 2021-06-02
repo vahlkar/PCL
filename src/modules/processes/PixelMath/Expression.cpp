@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.8.1
 // ----------------------------------------------------------------------------
-// Expression.cpp - Released 2021-05-05T15:38:07Z
+// Expression.cpp - Released 2021-05-31T09:44:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -664,4 +664,4 @@ Expression* Expression::Parse( component_list& components )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Expression.cpp - Released 2021-05-05T15:38:07Z
+// EOF Expression.cpp - Released 2021-05-31T09:44:46Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard EphemerisGeneration Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// TextDatabase.cpp - Released 2021-04-09T19:41:48Z
+// TextDatabase.cpp - Released 2021-05-31T09:44:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -276,8 +276,15 @@ public:
 __matched:
             if ( m_exclude )
                if ( !objectId.IsEmpty() )
+               {
                   if ( s_excluded.Contains( objectId ) )
                      continue;
+               }
+               else if ( !objectName.IsEmpty() )
+               {
+                  if ( s_excluded.Contains( objectName.CaseFolded() ) )
+                     continue;
+               }
 
             TextDatabase::ObjectData object;
 
@@ -613,13 +620,28 @@ Array<TextDatabase::ObjectData> TextDatabase::Search( const EphemerisGeneratorIn
       if ( s_excluded.IsEmpty() )
       {
          String filePath = PixInsightSettings::GlobalString( "Application/AsteroidEphemeridesFilePath" );
-         if ( filePath.IsEmpty() )
-            throw Error( "The core asteroid ephemerides file has not been defined." );
-         EphemerisFile ast( filePath );
-         EphemerisObjectList asts = ast.Objects();
-         for ( const EphemerisObject& a : asts )
-            if ( !a.objectId.IsEmpty() )
-               s_excluded << a.objectId;
+         if ( !filePath.IsEmpty() )
+         {
+            EphemerisFile ast( filePath );
+            EphemerisObjectList asts = ast.Objects();
+            for ( const EphemerisObject& o : asts )
+               if ( !o.objectId.IsEmpty() )
+                  s_excluded << o.objectId;
+               else if ( !o.objectName.IsEmpty() )
+                  s_excluded << o.objectName.CaseFolded();
+         }
+
+         filePath = PixInsightSettings::GlobalString( "Application/KBOEphemeridesFilePath" );
+         if ( !filePath.IsEmpty() )
+         {
+            EphemerisFile kbo( filePath );
+            EphemerisObjectList kbos = kbo.Objects();
+            for ( const EphemerisObject& o : kbos )
+               if ( !o.objectId.IsEmpty() )
+                  s_excluded << o.objectId;
+               else if ( !o.objectName.IsEmpty() )
+                  s_excluded << o.objectName.CaseFolded();
+         }
       }
 
    ElapsedTime T;
@@ -1033,4 +1055,4 @@ Array<TextDatabase::FormatDescription> TextDatabase::FormatDescription::Parse( c
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF TextDatabase.cpp - Released 2021-04-09T19:41:48Z
+// EOF TextDatabase.cpp - Released 2021-05-31T09:44:45Z

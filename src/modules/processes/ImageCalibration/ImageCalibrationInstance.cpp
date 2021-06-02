@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// ImageCalibrationInstance.cpp - Released 2021-04-09T19:41:48Z
+// ImageCalibrationInstance.cpp - Released 2021-05-31T09:44:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -2298,7 +2298,7 @@ bool ImageCalibrationInstance::ExecuteGlobal()
          try
          {
             /*
-             * Thread watching loop.
+             * Thread execution loop.
              */
             thread_list::iterator i = nullptr;
             size_type unused = 0;
@@ -2337,7 +2337,7 @@ bool ImageCalibrationInstance::ExecuteGlobal()
 
                /*
                 * If we have a useful free thread slot, or if a thread has just
-                * finished, exit the watching loop and work it out.
+                * finished, exit the execution loop and work it out.
                 */
                i = j;
                break;
@@ -2478,7 +2478,7 @@ bool ImageCalibrationInstance::ExecuteGlobal()
             {
                size_type threadIndex = i - runningThreads.Begin();
                console.NoteLn( String().Format( "<end><cbr><br>[%03u] ", threadIndex ) + (*i)->TargetFilePath() );
-               (*i)->Start( ThreadPriority::DefaultMax/*, i - runningThreads.Begin()*/ );
+               (*i)->Start( ThreadPriority::DefaultMax, threadIndex );
             }
          } // try
          catch ( ProcessAborted& )
@@ -2890,4 +2890,4 @@ size_type ImageCalibrationInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInstance.cpp - Released 2021-04-09T19:41:48Z
+// EOF ImageCalibrationInstance.cpp - Released 2021-05-31T09:44:46Z

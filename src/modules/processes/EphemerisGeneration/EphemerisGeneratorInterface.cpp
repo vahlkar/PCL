@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard EphemerisGeneration Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// EphemerisGeneratorInterface.cpp - Released 2021-04-09T19:41:48Z
+// EphemerisGeneratorInterface.cpp - Released 2021-05-31T09:44:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -686,7 +686,7 @@ void EphemerisGeneratorInterface::e_Click( Button& sender, bool checked )
    else if ( sender == GUI->CheckObjects_Button )
    {
       bool gotElements;
-      Array<TextDatabase::ObjectData> objects = SearchDatabase( gotElements, 100000/*maxCount*/ );
+      Array<TextDatabase::ObjectData> objects = SearchDatabase( gotElements/*, 100000*//*maxCount*/ );
 
       size_type idLength = 10, nameLength = 24;
       for ( const TextDatabase::ObjectData& o : objects )
@@ -891,7 +891,14 @@ EphemerisGeneratorInterface::GUIData::GUIData( EphemerisGeneratorInterface& w )
 
    //
 
-   const char* workingModeToolTip = "<p></p>";
+   const char* workingModeToolTip = "<p>EphemerisGenerator can be used to integrate orbital motion for a single "
+      "object, with initial conditions defined manually, or for a set of objects with parameters and initial "
+      "conditions acquired from a database.</p>"
+      "<p>In the single object case, you specify the initial conditions as either six state vectors (position "
+      "and velocity vectors), or equivalently, as a set of osculating orbital elements (semimajor axis, eccentricity, "
+      "inclination, etc). In both cases the initial conditions must be valid at the specified <i>epoch</i>.</p>"
+      "<p>For integration of orbits for objects defined in a database, you can specify a local database file in "
+      "several standard plain text formats; see the <i>database file</i> parameter for more information.</p>";
 
    WorkingMode_Label.SetText( "Working mode:" );
    WorkingMode_Label.SetFixedWidth( labelWidth1 );
@@ -901,6 +908,7 @@ EphemerisGeneratorInterface::GUIData::GUIData( EphemerisGeneratorInterface& w )
    WorkingMode_ComboBox.AddItem( "State vectors / single object" );
    WorkingMode_ComboBox.AddItem( "Orbital elements / single object" );
    WorkingMode_ComboBox.AddItem( "Database / multiple objects" );
+   WorkingMode_ComboBox.SetToolTip( workingModeToolTip );
    WorkingMode_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&EphemerisGeneratorInterface::e_ItemSelected, w );
 
    WorkingMode_Sizer.SetSpacing( 4 );
@@ -1788,4 +1796,4 @@ EphemerisGeneratorInterface::GUIData::GUIData( EphemerisGeneratorInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF EphemerisGeneratorInterface.cpp - Released 2021-04-09T19:41:48Z
+// EOF EphemerisGeneratorInterface.cpp - Released 2021-05-31T09:44:45Z

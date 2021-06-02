@@ -6,11 +6,11 @@
 // ----------------------------------------------------------------------------
 // Standard ArcsinhStretch Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// ArcsinhStretchModule.h - Released 2021-04-09T19:41:49Z
+// ArcsinhStretchModule.h - Released 2021-05-31T09:44:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ArcsinhStretch PixInsight module.
 //
-// Copyright (c) 2017-2020 Mark Shelley
+// Copyright (c) 2017-2021 Mark Shelley
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -84,4 +84,4 @@ public:
 #endif   // __ArcsinhStretchModule_h
 
 // ----------------------------------------------------------------------------
-// EOF ArcsinhStretchModule.h - Released 2021-04-09T19:41:49Z
+// EOF ArcsinhStretchModule.h - Released 2021-05-31T09:44:46Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Sandbox Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// SandboxModule.cpp - Released 2021-04-09T19:41:48Z
+// SandboxModule.cpp - Released 2021-05-31T09:44:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Sandbox PixInsight module.
 //
@@ -57,8 +57,8 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2021
-#define MODULE_RELEASE_MONTH     4
-#define MODULE_RELEASE_DAY       9
+#define MODULE_RELEASE_MONTH     5
+#define MODULE_RELEASE_DAY       31
 
 #include "SandboxModule.h"
 #include "SandboxProcess.h"
@@ -133,7 +133,7 @@ String SandboxModule::Copyright() const
    /*
     * Replace with the actual copyright information.
     */
-   return "Copyright (c) 2005-2020 Pleiades Astrophoto";
+   return "Copyright (c) 2005-2021 Pleiades Astrophoto";
 }
 
 // ----------------------------------------------------------------------------
@@ -216,4 +216,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF SandboxModule.cpp - Released 2021-04-09T19:41:48Z
+// EOF SandboxModule.cpp - Released 2021-05-31T09:44:46Z

@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// pcl/EphemerisFile.h - Released 2021-04-09T19:40:59Z
+// pcl/EphemerisFile.h - Released 2021-05-31T09:44:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -58,10 +58,12 @@
 
 #include <pcl/Atomic.h>
 #include <pcl/AutoLock.h>
+#include <pcl/AutoPointer.h>
 #include <pcl/ChebyshevFit.h>
 #include <pcl/File.h>
 #include <pcl/Mutex.h>
 #include <pcl/Optional.h>
+#include <pcl/Thread.h>
 #include <pcl/TimePoint.h>
 
 #ifdef __PCL_BUILDING_PIXINSIGHT_APPLICATION
@@ -74,6 +76,10 @@ namespace pi
 
 namespace pcl
 {
+
+// ----------------------------------------------------------------------------
+
+class PCL_CLASS XMLElement;
 
 // ----------------------------------------------------------------------------
 
@@ -2155,6 +2161,9 @@ public:
       const EphemerisFile*        m_parent = nullptr;
       const EphemerisFile::Index* m_index = nullptr;
             NodeInfo              m_node[ 3 ];
+            uint64                m_uniqueId = UniqueId();
+
+      static uint64 UniqueId();
 
       /*!
        * \internal
@@ -2208,6 +2217,8 @@ public:
             }
          }
       }
+
+      friend class PCL_CLASS Position;
    };
 
 private:
@@ -2233,6 +2244,50 @@ private:
 # pragma GCC diagnostic warning "-Wunused-private-field"
 #endif
 
+   class DeserializeObjectThread : public Thread
+   {
+   public:
+
+      DeserializeObjectThread( const Array<const XMLElement*>& elements
+                              , File& file, fsize_type fileSize, fsize_type minPos
+                              , int startIndex, int endIndex )
+         : m_elements( elements )
+         , m_startIndex( startIndex )
+         , m_endIndex( endIndex )
+         , m_file( file )
+         , m_fileSize( fileSize )
+         , m_minPos( minPos )
+      {
+      }
+
+      void Run() override;
+
+      const Array<Index>& Objects() const
+      {
+         return m_index;
+      }
+
+      bool Succeeded() const
+      {
+         return m_success;
+      }
+
+      const Exception* ExceptionThrown() const
+      {
+         return m_exception.Ptr();
+      }
+
+   private:
+
+      const Array<const XMLElement*>& m_elements;
+            int                       m_startIndex, m_endIndex;
+            File&                     m_file;
+            fsize_type                m_fileSize, m_minPos;
+            Array<Index>              m_index;
+            AutoPointer<Exception>    m_exception;
+            bool                      m_success = false;
+   };
+
 #ifdef __PCL_BUILDING_PIXINSIGHT_APPLICATION
    friend class pi::JSEphemerisFileObject;
    friend class pi::JSEphemerisHandleObject;
@@ -2246,4 +2301,4 @@ private:
 #endif  // __PCL_EphemerisFile_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/EphemerisFile.h - Released 2021-04-09T19:40:59Z
+// EOF pcl/EphemerisFile.h - Released 2021-05-31T09:44:18Z

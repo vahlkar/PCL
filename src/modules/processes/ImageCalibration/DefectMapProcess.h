@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// DefectMapProcess.h - Released 2021-04-09T19:41:48Z
+// DefectMapProcess.h - Released 2021-05-31T09:44:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -91,4 +91,4 @@ PCL_END_LOCAL
 #endif   // __DefectMapProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF DefectMapProcess.h - Released 2021-04-09T19:41:48Z
+// EOF DefectMapProcess.h - Released 2021-05-31T09:44:46Z

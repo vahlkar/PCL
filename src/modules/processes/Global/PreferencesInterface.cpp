@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.3.0
+// Standard Global Process Module Version 1.3.1
 // ----------------------------------------------------------------------------
-// PreferencesInterface.cpp - Released 2021-04-09T19:41:48Z
+// PreferencesInterface.cpp - Released 2021-05-31T09:44:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -1432,15 +1432,26 @@ WallpapersPreferencesPage::WallpapersPreferencesPage( PreferencesInstance& insta
 
    UseWallpapers_Flag.checkBox.SetText( "Use workspace wallpapers" );
    UseWallpapers_Flag.item = &instance.mainWindow.useWallpapers;
+   UseWallpapers_Flag.enableControl = &HighQualityWallpapers_Flag;
    UseWallpapers_Flag.SetToolTip(
       "<p>Show workspace wallpapers. True by default because they are very nice, and useful to identify the current "
       "workspace visually.</p>"
       "<p>Trick: Disable this option, apply Preferences, then enable it back and reapply. This will force a reload "
       "of all wallpaper images defined in the list above.</p>"   );
 
+   HighQualityWallpapers_Flag.checkBox.SetText( "High-quality workspace wallpapers" );
+   HighQualityWallpapers_Flag.item = &instance.mainWindow.highQualityWallpapers;
+   HighQualityWallpapers_Flag.SetToolTip(
+      "<p>Generate wallpaper images using high-quality SVG rendering routines with antialiased graphics and diffusion "
+      "dithering applied to gradients. If you disable this feature, wallpapers generated from SVG documents may show "
+      "strong posterization artifacts. This option is enabled by default.</p>"
+      "<p>This option is only applicable to wallpapers generated from SVG files. Raster graphics are always rendered "
+      "directly without manipulation, besides the necessary scaling to fill the primary screen.</p>"   );
+
    Page_Sizer.SetSpacing( 4 );
    Page_Sizer.Add( Wallpapers_FileSet );
    Page_Sizer.Add( UseWallpapers_Flag );
+   Page_Sizer.Add( HighQualityWallpapers_Flag );
    Page_Sizer.AddStretch();
 
    SetSizer( Page_Sizer );
@@ -1459,6 +1470,7 @@ void WallpapersPreferencesPage::TransferSettings( PreferencesInstance& to, const
    to.mainWindow.wallpaperFile09 = from.mainWindow.wallpaperFile09;
    to.mainWindow.wallpaperFile10 = from.mainWindow.wallpaperFile10;
    to.mainWindow.useWallpapers = from.mainWindow.useWallpapers;
+   to.mainWindow.highQualityWallpapers = from.mainWindow.highQualityWallpapers;
 }
 
 // ----------------------------------------------------------------------------
@@ -2305,7 +2317,7 @@ IdentifiersPreferencesPage::IdentifiersPreferencesPage( PreferencesInstance& ins
    ClonePostfix_Id.label.SetText( "Cloned image postfix" );
    ClonePostfix_Id.item = &instance.identifiers.clonePostfix;
    ClonePostfix_Id.SetToolTip(
-      "<p>This suffix is automatically appended to the identifiers of duplicated images.</p>" );
+      "<p>This suffix is automatically appended to the identifiers of duplicate images.</p>" );
 
    Page_Sizer.SetSpacing( 4 );
    Page_Sizer.Add( UseFileNamesAsImageIdentifiers_Flag );
@@ -2855,4 +2867,4 @@ void PreferencesInterface::GUIData::InitializeCategories()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInterface.cpp - Released 2021-04-09T19:41:48Z
+// EOF PreferencesInterface.cpp - Released 2021-05-31T09:44:45Z

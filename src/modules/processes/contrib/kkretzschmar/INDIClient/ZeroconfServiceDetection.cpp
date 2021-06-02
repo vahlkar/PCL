@@ -1,3 +1,55 @@
+//     ____   ______ __
+//    / __ \ / ____// /
+//   / /_/ // /    / /
+//  / ____// /___ / /___   PixInsight Class Library
+// /_/     \____//_____/   PCL 2.4.9
+// ----------------------------------------------------------------------------
+// Standard INDIClient Process Module Version 1.2.1
+// ----------------------------------------------------------------------------
+// ZeroconfServiceDetection.cpp - Released 2021-05-31T09:44:46Z
+// ----------------------------------------------------------------------------
+// This file is part of the standard INDIClient PixInsight module.
+//
+// Copyright (c) 2014-2021 Klaus Kretzschmar
+//
+// Redistribution and use in both source and binary forms, with or without
+// modification, is permitted provided that the following conditions are met:
+//
+// 1. All redistributions of source code must retain the above copyright
+//    notice, this list of conditions and the following disclaimer.
+//
+// 2. All redistributions in binary form must reproduce the above copyright
+//    notice, this list of conditions and the following disclaimer in the
+//    documentation and/or other materials provided with the distribution.
+//
+// 3. Neither the names "PixInsight" and "Pleiades Astrophoto", nor the names
+//    of their contributors, may be used to endorse or promote products derived
+//    from this software without specific prior written permission. For written
+//    permission, please contact info@pixinsight.com.
+//
+// 4. All products derived from this software, in any form whatsoever, must
+//    reproduce the following acknowledgment in the end-user documentation
+//    and/or other materials provided with the product:
+//
+//    "This product is based on software from the PixInsight project, developed
+//    by Pleiades Astrophoto and its contributors (https://pixinsight.com/)."
+//
+//    Alternatively, if that is where third-party acknowledgments normally
+//    appear, this acknowledgment must be reproduced in the product itself.
+//
+// THIS SOFTWARE IS PROVIDED BY PLEIADES ASTROPHOTO AND ITS CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+// TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+// PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL PLEIADES ASTROPHOTO OR ITS
+// CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+// EXEMPLARY OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, BUSINESS
+// INTERRUPTION; PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; AND LOSS OF USE,
+// DATA OR PROFITS) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+// CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+// POSSIBILITY OF SUCH DAMAGE.
+// ----------------------------------------------------------------------------
+
 #include <errno.h>            // For errno, EINTR #include <time.h>
 #ifdef _WIN32
 #include <process.h>
@@ -31,7 +83,7 @@ namespace pcl {
 #ifdef WITH_ZEROCONF
 void ZeroConfServiceHandler::Run()
 {
-  
+
   int dns_sd_fd = DNSServiceRefSockFD(m_serviceRef);
   int nfds = dns_sd_fd + 1;
   fd_set readfds;
@@ -58,7 +110,7 @@ void ZeroConfServiceHandler::Run()
         if (errno != EINTR) m_stop = true;
       }
     }
-  
+
 }
 
 bool ZeroConfServiceHandler::getAddrInfoFromInterfaceIndex(uint32_t interfaceIndex, char* host)
@@ -160,7 +212,7 @@ void ZeroConfServiceBrowser::onBrowseEvent(DNSServiceRef service,
                                            const char * domain,
                                            void * context)
 {
- 
+
   if (errorCode != kDNSServiceErr_NoError)
     Console().WriteLn(String().Format("MyBrowseCallBack returned %d", errorCode));
   else
@@ -168,20 +220,20 @@ void ZeroConfServiceBrowser::onBrowseEvent(DNSServiceRef service,
     char* host = static_cast<char*>(malloc(NI_MAXHOST));
     char* ifNameBuff = static_cast<char*>(malloc(IF_NAMESIZE));
     if_indextoname(interfaceIndex, ifNameBuff);
-    
+
     ZeroConfClient* client = static_cast<ZeroConfClient*>(context);
     if (client == nullptr)
       return;
     bool startResolver = false;
     {
-      
+
       ExclZeroConfServicesList y = client->ZeroConfServicesList();
       ZeroConfServicesArray& services(y);
       ZeroConfServiceItem item(name, type, domain, interfaceIndex);
       if (!services.Contains(item) && (flags & kDNSServiceFlagsAdd))
       {
         client->onServiceAdded(item);
-         
+
         if (!ZeroConfServiceHandler::getAddrInfoFromInterfaceIndex(interfaceIndex, host))
         {
           Console().WarningLn(String().Format("Call of getAddrInfoFromInterfaceIndex failed."));
@@ -191,14 +243,14 @@ void ZeroConfServiceBrowser::onBrowseEvent(DNSServiceRef service,
         services << item;
         Console().WriteLn("");
         Console().WriteLn(String().Format("Indigo service added on network interface '%s' with address '%s'", ifNameBuff, host));
- 
+
         startResolver = true;
-        
-      } 
+
+      }
       else if (services.Contains(item) && !(flags & kDNSServiceFlagsAdd))
       {
         client->onServiceRemoved(item);
-        
+
        // remove service from service list
         services.Remove(item);
         Console().WriteLn("");
@@ -251,10 +303,10 @@ void ZeroConfServiceResolver::onResolveEvent(DNSServiceRef serviceRef,
       newItem.Port = ntohs(port);
       services.Add(newItem);
     }
-    else 
+    else
     {
       Console().WarningLn(String("<p>Service not found:</p>"
-                                 "<p>name: " + resolveContext->m_zeroConfServiceResolver->m_serviceName + ", type: " + resolveContext->m_zeroConfServiceResolver->m_serviceType + ", domain: " + resolveContext->m_zeroConfServiceResolver->m_serviceDomain + ", index: " + resolveContext->m_zeroConfServiceResolver->m_InterfaceIndex + "</p>"));  
+                                 "<p>name: " + resolveContext->m_zeroConfServiceResolver->m_serviceName + ", type: " + resolveContext->m_zeroConfServiceResolver->m_serviceType + ", domain: " + resolveContext->m_zeroConfServiceResolver->m_serviceDomain + ", index: " + resolveContext->m_zeroConfServiceResolver->m_InterfaceIndex + "</p>"));
     }
 
     Console().WriteLn(String().Format("* service name: '%s', service host:  '%s:%d'", fullname, hosttarget, ntohs(port)));
@@ -284,3 +336,6 @@ void ZeroConfServiceResolver::Start()
 }
 #endif // WITH_ZEROCONF
 }
+
+// ----------------------------------------------------------------------------
+// EOF ZeroconfServiceDetection.cpp - Released 2021-05-31T09:44:46Z

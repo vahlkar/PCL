@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// JPEGPreferencesDialog.h - Released 2021-04-09T19:41:31Z
+// JPEGPreferencesDialog.h - Released 2021-05-31T09:44:36Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -81,4 +81,4 @@ private:
 #endif   // __JPEGPreferencesDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF JPEGPreferencesDialog.h - Released 2021-04-09T19:41:31Z
+// EOF JPEGPreferencesDialog.h - Released 2021-05-31T09:44:36Z

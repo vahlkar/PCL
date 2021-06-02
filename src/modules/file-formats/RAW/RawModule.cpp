@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard RAW File Format Module Version 1.5.6
 // ----------------------------------------------------------------------------
-// RawModule.cpp - Released 2021-04-09T19:41:31Z
+// RawModule.cpp - Released 2021-05-31T09:44:36Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RAW PixInsight module.
 //
@@ -57,8 +57,8 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2021
-#define MODULE_RELEASE_MONTH     4
-#define MODULE_RELEASE_DAY       9
+#define MODULE_RELEASE_MONTH     5
+#define MODULE_RELEASE_DAY       31
 
 #include "RawModule.h"
 #include "RawFormat.h"
@@ -109,7 +109,7 @@ String RawModule::Author() const
 
 String RawModule::Copyright() const
 {
-   return "Copyright (c) 2006-2020, Pleiades Astrophoto";
+   return "Copyright (c) 2006-2021, Pleiades Astrophoto";
 }
 
 // ----------------------------------------------------------------------------
@@ -163,4 +163,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF RawModule.cpp - Released 2021-04-09T19:41:31Z
+// EOF RawModule.cpp - Released 2021-05-31T09:44:36Z

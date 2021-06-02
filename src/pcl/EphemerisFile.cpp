@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// pcl/EphemerisFile.cpp - Released 2021-04-09T19:41:11Z
+// pcl/EphemerisFile.cpp - Released 2021-05-31T09:44:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -53,6 +53,7 @@
 #include <pcl/Console.h>
 #include <pcl/EphemerisFile.h>
 #include <pcl/GlobalSettings.h>
+#include <pcl/Random.h>
 #include <pcl/Version.h>
 #include <pcl/XML.h>
 
@@ -87,6 +88,17 @@ static EphemerisFile* s_N = nullptr;
 static EphemerisFile* s_Ns = nullptr;
 
 static Mutex s_mutex;
+
+// ----------------------------------------------------------------------------
+
+uint64 EphemerisFile::Handle::UniqueId()
+{
+   static XoRoShiRo1024ss* R = nullptr;
+   volatile AutoLock lock( s_mutex );
+   if ( unlikely( R == nullptr ) )
+      R = new XoRoShiRo1024ss;
+   return R->UI64();
+}
 
 // ----------------------------------------------------------------------------
 
@@ -138,6 +150,130 @@ static void WarnOnUnknownChildElement( const XMLElement& element, const String& 
    Console().WarningLn( "<end><cbr>** Warning: " + e.Message() );
 }
 
+// ----------------------------------------------------------------------------
+
+void EphemerisFile::DeserializeObjectThread::Run()
+{
+   m_success = false;
+
+   for ( int idx = m_startIndex; idx < m_endIndex; ++idx )
+   {
+      const XMLElement& element = *m_elements[idx];
+
+      try
+      {
+         String id = element.AttributeValue( "id" );
+         String origin = element.AttributeValue( "origin" );
+         String name = element.AttributeValue( "name" );
+
+         if ( id.IsEmpty() )
+            throw Error( "Missing object id attribute." );
+         if ( origin.IsEmpty() )
+            throw Error( "Missing object origin attribute." );
+         if ( origin == id )
+            throw Error( "The object and origin identifiers must be different." );
+
+         Index index( id.ToIsoString(), origin.ToIsoString(), name );
+//          if ( m_index.Contains( index ) )
+//             throw Error( "Duplicate object '" + id + "' with origin '" + origin + '\'' );
+
+         String
+         s = element.AttributeValue( "H" );
+         if ( !s.IsEmpty() )
+            index.H = s.ToDouble();
+         s = element.AttributeValue( "G" );
+         if ( !s.IsEmpty() )
+            index.G = s.ToDouble();
+         s = element.AttributeValue( "B_V" );
+         if ( !s.IsEmpty() )
+            index.B_V = s.ToDouble();
+         s = element.AttributeValue( "D" );
+         if ( !s.IsEmpty() )
+            index.D = s.ToDouble();
+
+         for ( const XMLNode& node : element )
+         {
+            if ( !node.IsElement() )
+            {
+               WarnOnUnexpectedChildNode( node, "Object" );
+               continue;
+            }
+
+            const XMLElement& element = static_cast<const XMLElement&>( node );
+            if ( element.Name() == "Index" )
+            {
+               String sOrder = element.AttributeValue( "order" );
+               String sNumberOfExpansions = element.AttributeValue( "numberOfExpansions" );
+               String sPosition = element.AttributeValue( "position" );
+
+               int order = 0;
+               if ( !sOrder.IsEmpty() )
+               {
+                  order = sOrder.ToInt();
+                  if ( order < 0 || order > 1 )
+                     throw Error( "Invalid or unsupported index order attribute value." );
+               }
+
+               if ( !index.nodes[order].IsEmpty() )
+                  throw Error( "Duplicate index definition for derivative order " + String( order )  + '.' );
+
+               if ( sNumberOfExpansions.IsEmpty() )
+                  throw Error( "Missing index numberOfExpansions attribute." );
+               if ( sPosition.IsEmpty() )
+                  throw Error( "Missing index position attribute." );
+
+               int numberOfExpansions = sNumberOfExpansions.ToInt();
+               if ( numberOfExpansions < 1 )
+                  throw Error( "Invalid index numberOfExpansions attribute value." );
+
+               fpos_type position = sPosition.ToInt64();
+               if ( position < m_minPos || position >= m_fileSize )
+                  throw Error( "Invalid index position attribute value." );
+
+               {
+                  static Mutex mutex;
+                  volatile AutoLock lock( mutex );
+
+                  m_file.SetPosition( position );
+                  for ( int i = 0; i < numberOfExpansions; ++i )
+                  {
+                     IndexNode node;
+                     m_file.Read( node );
+                     index.nodes[order] << node;
+                  }
+               }
+            }
+            else if ( element.Name() == "Description" )
+            {
+               index.objectDescription = element.Text().Trimmed();
+            }
+            else
+               WarnOnUnknownChildElement( element, "Object" );
+         }
+
+         m_index << index;
+      }
+      catch ( Exception& x )
+      {
+         if ( IsRootThread() )
+            throw;
+         m_exception = new XMLParseError( element, "Parsing " + element.Name() + " element", x.Message() );
+         return;
+      }
+      catch ( ... )
+      {
+         if ( IsRootThread() )
+            throw;
+         m_exception = new XMLParseError( element, "Parsing " + element.Name() + " element", "Unknown error" );
+         return;
+      }
+   }
+
+   m_success = true;
+}
+
+// ----------------------------------------------------------------------------
+
 void EphemerisFile::Open( const String& filePath )
 {
    Close();
@@ -168,6 +304,8 @@ void EphemerisFile::Open( const String& filePath )
    if ( xml.RootElement()->Name() != "xeph" || xml.RootElement()->AttributeValue( "version" ) != "1.0" )
       throw Error( "Not an XEPH version 1.0 file." );
 
+   Array<const XMLElement*> objectElements;
+
    for ( const XMLNode& node : *xml.RootElement() )
    {
       if ( !node.IsElement() )
@@ -182,91 +320,7 @@ void EphemerisFile::Open( const String& filePath )
       {
          if ( element.Name() == "Object" )
          {
-            String id = element.AttributeValue( "id" );
-            String origin = element.AttributeValue( "origin" );
-            String name = element.AttributeValue( "name" );
-
-            if ( id.IsEmpty() )
-               throw Error( "Missing object id attribute." );
-            if ( origin.IsEmpty() )
-               throw Error( "Missing object origin attribute." );
-            if ( origin == id )
-               throw Error( "The object and origin identifiers must be different." );
-
-            Index index( id.ToIsoString(), origin.ToIsoString(), name );
-            if ( m_index.Contains( index ) )
-               throw Error( "Duplicate object '" + id + "' with origin '" + origin + '\'' );
-
-            String
-            s = element.AttributeValue( "H" );
-            if ( !s.IsEmpty() )
-               index.H = s.ToDouble();
-            s = element.AttributeValue( "G" );
-            if ( !s.IsEmpty() )
-               index.G = s.ToDouble();
-            s = element.AttributeValue( "B_V" );
-            if ( !s.IsEmpty() )
-               index.B_V = s.ToDouble();
-            s = element.AttributeValue( "D" );
-            if ( !s.IsEmpty() )
-               index.D = s.ToDouble();
-
-            for ( const XMLNode& node : element )
-            {
-               if ( !node.IsElement() )
-               {
-                  WarnOnUnexpectedChildNode( node, "Object" );
-                  continue;
-               }
-
-               const XMLElement& element = static_cast<const XMLElement&>( node );
-               if ( element.Name() == "Index" )
-               {
-                  String sOrder = element.AttributeValue( "order" );
-                  String sNumberOfExpansions = element.AttributeValue( "numberOfExpansions" );
-                  String sPosition = element.AttributeValue( "position" );
-
-                  int order = 0;
-                  if ( !sOrder.IsEmpty() )
-                  {
-                     order = sOrder.ToInt();
-                     if ( order < 0 || order > 1 )
-                        throw Error( "Invalid or unsupported index order attribute value." );
-                  }
-
-                  if ( !index.nodes[order].IsEmpty() )
-                     throw Error( "Duplicate index definition for derivative order " + String( order )  + '.' );
-
-                  if ( sNumberOfExpansions.IsEmpty() )
-                     throw Error( "Missing index numberOfExpansions attribute." );
-                  if ( sPosition.IsEmpty() )
-                     throw Error( "Missing index position attribute." );
-
-                  int numberOfExpansions = sNumberOfExpansions.ToInt();
-                  if ( numberOfExpansions < 1 )
-                     throw Error( "Invalid index numberOfExpansions attribute value." );
-
-                  fpos_type position = sPosition.ToInt64();
-                  if ( position < minPos || position >= fileSize )
-                     throw Error( "Invalid index position attribute value." );
-
-                  m_file.SetPosition( position );
-                  for ( int i = 0; i < numberOfExpansions; ++i )
-                  {
-                     IndexNode node;
-                     m_file.Read( node );
-                     index.nodes[order] << node;
-                  }
-               }
-               else if ( element.Name() == "Description" )
-               {
-                  index.objectDescription = element.Text().Trimmed();
-               }
-               else
-                  WarnOnUnknownChildElement( element, "Object" );
-            }
-
-            m_index << index;
+            objectElements << &element;
          }
          else if ( element.Name() == "TimeSpan" )
          {
@@ -361,6 +415,41 @@ void EphemerisFile::Open( const String& filePath )
 
    if ( !m_startTime.IsValid() || !m_endTime.IsValid() )
       throw Error( "Missing required TimeSpan element." );
+
+   if ( !objectElements.IsEmpty() )
+   {
+      Array<size_type> L = Thread::OptimalThreadLoads( objectElements.Length() );
+      ReferenceArray<DeserializeObjectThread> threads;
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         threads << new DeserializeObjectThread( objectElements, m_file, fileSize, minPos, n, n + int( L[i] ) );
+      if ( threads.Length() > 1 )
+      {
+         for ( int i = 0; i < int( threads.Length() ); ++i )
+            threads[i].Start( ThreadPriority::DefaultMax, i );
+         for ( DeserializeObjectThread& thread : threads )
+            thread.Wait();
+      }
+      else
+         threads[0].Run();
+
+      for ( const DeserializeObjectThread& thread : threads )
+         if ( thread.Succeeded() )
+         {
+            m_index << thread.Objects();
+            if ( threads.Length() > 1 )
+               Console().Write( thread.ConsoleOutputText() );
+         }
+         else
+         {
+            Console().Write( thread.ConsoleOutputText() );
+            const Exception* x = thread.ExceptionThrown();
+            if ( x == nullptr )
+               throw Error( "EphemerisFile::Open(): Internal error." );
+            throw *x;
+         }
+
+      threads.Destroy();
+   }
 
    if ( m_index.IsEmpty() )
       throw Error( "No ephemeris data available." );
@@ -1235,4 +1324,4 @@ void EphemerisFile::OverrideCIP_ITRSDataFilePath( const String& filePath )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/EphemerisFile.cpp - Released 2021-04-09T19:41:11Z
+// EOF pcl/EphemerisFile.cpp - Released 2021-05-31T09:44:25Z

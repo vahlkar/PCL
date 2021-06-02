@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.2
 // ----------------------------------------------------------------------------
-// LRGBCombinationInstance.h - Released 2021-04-09T19:41:48Z
+// LRGBCombinationInstance.h - Released 2021-05-31T09:44:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -105,4 +105,4 @@ private:
 #endif   // __LRGBCombinationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF LRGBCombinationInstance.h - Released 2021-04-09T19:41:48Z
+// EOF LRGBCombinationInstance.h - Released 2021-05-31T09:44:45Z

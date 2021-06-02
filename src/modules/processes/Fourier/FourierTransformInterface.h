@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Fourier Process Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// FourierTransformInterface.h - Released 2021-04-09T19:41:48Z
+// FourierTransformInterface.h - Released 2021-05-31T09:44:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Fourier PixInsight module.
 //
@@ -115,4 +115,4 @@ extern FourierTransformInterface* TheFourierTransformInterface;
 #endif   // __FourierTransformInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF FourierTransformInterface.h - Released 2021-04-09T19:41:48Z
+// EOF FourierTransformInterface.h - Released 2021-05-31T09:44:45Z
