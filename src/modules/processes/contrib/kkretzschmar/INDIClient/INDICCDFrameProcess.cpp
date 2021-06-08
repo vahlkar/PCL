@@ -114,7 +114,7 @@ INDICCDFrameProcess::INDICCDFrameProcess()
    new ICFSolverAutoCatalog( this );
    new ICFSolverLimitMagnitude( this );
    new ICFSolverAutoLimitMagnitude( this );
-   new ICFSolverStarSensitivity( this);
+   new ICFSolverStarSensitivity( this );
    new ICFSolverNoiseLayers( this );
    new ICFSolverAlignmentDevice( this );
    new ICFSolverDistortionCorrection( this );

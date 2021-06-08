@@ -1232,8 +1232,6 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
    StarSensitivity_NumericControl.SetToolTip( "<p>Logarithm of the star detection sensitivity. Increase this parameter to "
       "detect less stars. The default value of -1 is normally appropriate for most linear images.</p>" );
 
-   //
-
    const char* noiseReductionToolTip = "<p>Some images have so much noise that the star detection algorithm can mistake "
       "noise for stars. This parameter removes noise from the image in order to improve star detection. This value is the "
       "number of wavelet layers that will be removed for noise reduction. Use 0 for no noise reduction.</p>";
@@ -1361,7 +1359,6 @@ void INDICCDFrameInterface::UpdateControls()
       GUI->CCDProperties_Control.Enable();
       GUI->ClientParameters_Control.Enable();
       GUI->FrameAcquisition_Control.Enable();
-
    }
 }
 
@@ -1409,7 +1406,7 @@ void INDICCDFrameInterface::e_Timer( Timer& sender )
             for ( auto device : devices )
             {
                INDIPropertyListItem item;
-               if ( indi->HasPropertyItem( device.DeviceName, CCD_FRAME_PROPERTY_NAME, CCD_FRAME_WIDTH_ITEM_NAME ) ) // is this a camera device?
+               if ( indi->HasPropertyItem( device.DeviceName, CCD_INFO_PROPERTY_NAME, CCD_INFO_WIDTH_ITEM_NAME ) ) // is this a camera device?
                   GUI->CCDDevice_Combo.AddItem( device.DeviceName );
             }
 
@@ -1596,8 +1593,6 @@ void INDICCDFrameInterface::e_Timer( Timer& sender )
          GUI->CenterTarget_CheckBox.SetChecked(false);
          GUI->CenterTarget_CheckBox.Disable();
       }
-
-
       {
          static const char* indiFrameTypes[] = { CCD_FRAME_TYPE_LIGHT_ITEM_NAME, CCD_FRAME_TYPE_BIAS_ITEM_NAME, CCD_FRAME_TYPE_DARK_ITEM_NAME, CCD_FRAME_TYPE_FLAT_ITEM_NAME };
          for ( size_type i = 0; i < ItemsInArray( indiFrameTypes ); ++i )

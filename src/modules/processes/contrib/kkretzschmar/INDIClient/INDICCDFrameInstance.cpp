@@ -226,7 +226,7 @@ bool INDICCDFrameInstance::ValidateDevice( bool throwErrors ) const
    for ( auto device : devices )
       if ( device.DeviceName == p_deviceName )
       {
-         if ( !indi->HasPropertyItem( device.DeviceName, CCD_FRAME_PROPERTY_NAME, CCD_FRAME_WIDTH_ITEM_NAME ) ) // is this a camera device?
+         if ( !indi->HasPropertyItem( device.DeviceName, CCD_INFO_PROPERTY_NAME, CCD_INFO_WIDTH_ITEM_NAME ) ) // is this a camera device?
          {
             if ( throwErrors )
                throw Error( '\'' + p_deviceName + "' does not seem to be a valid Indigo CCD device" );
