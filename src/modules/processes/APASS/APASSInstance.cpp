@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// Standard APASS Process Module Version 1.0.0
+// Standard APASS Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// APASSInstance.cpp - Released 2021-05-31T09:44:45Z
+// APASSInstance.cpp - Released 2021-07-08T09:19:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard APASS PixInsight module.
 //
@@ -51,6 +51,7 @@
 // ----------------------------------------------------------------------------
 
 #include "APASSInstance.h"
+#include "APASSInterface.h"
 #include "APASSParameters.h"
 #include "APASSProcess.h"
 
@@ -99,9 +100,9 @@ void APASSInstance::Assign( const ProcessImplementation& p )
       p_textHeaders = x->p_textHeaders;
       p_outputFilePath = x->p_outputFilePath;
       p_searchData = x->p_searchData;
+      p_databaseFilePaths = x->p_databaseFilePaths;
       o_isValid = x->o_isValid;
       o_dataRelease = x->o_dataRelease;
-      o_databaseFilePaths = x->o_databaseFilePaths;
       o_databaseMagnitudeLow = x->o_databaseMagnitudeLow;
       o_databaseMagnitudeHigh = x->o_databaseMagnitudeHigh;
    }
@@ -126,30 +127,27 @@ bool APASSInstance::CanExecuteGlobal( String& whyNot ) const
 
 bool APASSInstance::ExecuteGlobal()
 {
-   /*
-    * Clear output data.
-    */
    p_searchData.ResetSearchResults();
    o_isValid = false;
    o_dataRelease = OutputDataRelease();
-   o_databaseFilePaths.Clear();
    o_databaseMagnitudeLow = o_databaseMagnitudeHigh = 0;
-
-   /*
-    * Install and initialize XPSD files. This will only happen the first time
-    * this function is executed, or if preferences have been changed.
-    */
-   TheAPASSProcess->EnsureDatabasesInitialized( o_dataRelease, p_verbosity );
 
    if ( likely( p_command == "search" ) )
    {
+      // thread-safe
       Search();
       if ( p_generateTextOutput )
          GenerateTextOutput();
    }
    else if ( p_command == "get-info" )
    {
+      // thread-safe
       GetInfo();
+   }
+   else if ( p_command == "configure" )
+   {
+      // ### NB: *not* thread-safe
+      Configure();
    }
    else
    {
@@ -660,10 +658,27 @@ void APASSInstance::GenerateTextOutput() const
 
 void APASSInstance::GetInfo()
 {
+   /*
+    * Install and initialize XPSD files. This will only happen the first time
+    * this function is executed, or if preferences have been changed.
+    */
+   TheAPASSProcess->EnsureDatabasesInitialized( o_dataRelease, p_verbosity );
+
+   p_databaseFilePaths = TheAPASSProcess->DatabaseFilePaths( o_dataRelease );
    o_isValid = TheAPASSProcess->IsValid( o_dataRelease );
-   o_databaseFilePaths = TheAPASSProcess->DatabaseFilePaths( o_dataRelease );
    o_databaseMagnitudeLow = TheAPASSProcess->MagnitudeLow( o_dataRelease );
    o_databaseMagnitudeHigh = TheAPASSProcess->MagnitudeHigh( o_dataRelease );
+}
+
+// ----------------------------------------------------------------------------
+
+void APASSInstance::Configure()
+{
+   TheAPASSProcess->SetDatabaseFilePaths( o_dataRelease, p_databaseFilePaths );
+   if ( TheAPASSInterface != nullptr )
+      TheAPASSInterface->UpdateControls();
+   if ( TheAPASSProcess->HasDatabaseFiles( o_dataRelease ) )
+      GetInfo();
 }
 
 // ----------------------------------------------------------------------------
@@ -749,12 +764,12 @@ void* APASSInstance::LockParameter( const MetaParameter* p, size_type tableRow )
       return &p_searchData.timeUncompress;
    if ( p == TheATimeDecodeParameter )
       return &p_searchData.timeDecode;
+   if ( p == TheADatabaseFilePathParameter )
+      return p_databaseFilePaths[tableRow].Begin();
    if ( p == TheAIsValidParameter )
       return &o_isValid;
    if ( p == TheAOutputDataReleaseParameter )
       return &o_dataRelease;
-   if ( p == TheADatabaseFilePathParameter )
-      return o_databaseFilePaths[tableRow].Begin();
    if ( p == TheADatabaseMagnitudeLowParameter )
       return &o_databaseMagnitudeLow;
    if ( p == TheADatabaseMagnitudeHighParameter )
@@ -787,15 +802,15 @@ bool APASSInstance::AllocateParameter( size_type sizeOrLength, const MetaParamet
    }
    else if ( p == TheADatabaseFilePathsParameter )
    {
-      o_databaseFilePaths.Clear();
+      p_databaseFilePaths.Clear();
       if ( sizeOrLength > 0 )
-         o_databaseFilePaths.Add( String(), sizeOrLength );
+         p_databaseFilePaths.Add( String(), sizeOrLength );
    }
    else if ( p == TheADatabaseFilePathParameter )
    {
-      o_databaseFilePaths[tableRow].Clear();
+      p_databaseFilePaths[tableRow].Clear();
       if ( sizeOrLength > 0 )
-         o_databaseFilePaths[tableRow].SetLength( sizeOrLength );
+         p_databaseFilePaths[tableRow].SetLength( sizeOrLength );
    }
    else
       return false;
@@ -814,9 +829,9 @@ size_type APASSInstance::ParameterLength( const MetaParameter* p, size_type tabl
    if ( p == TheASourcesParameter )
       return p_searchData.stars.Length();
    if ( p == TheADatabaseFilePathsParameter )
-      return o_databaseFilePaths.Length();
+      return p_databaseFilePaths.Length();
    if ( p == TheADatabaseFilePathParameter )
-      return o_databaseFilePaths[tableRow].Length();
+      return p_databaseFilePaths[tableRow].Length();
 
    return 0;
 }
@@ -845,4 +860,4 @@ int APASSInstance::OutputDataRelease() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF APASSInstance.cpp - Released 2021-05-31T09:44:45Z
+// EOF APASSInstance.cpp - Released 2021-07-08T09:19:53Z

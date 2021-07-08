@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// Standard APASS Process Module Version 1.0.0
+// Standard APASS Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// APASSParameters.cpp - Released 2021-05-31T09:44:45Z
+// APASSParameters.cpp - Released 2021-07-08T09:19:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard APASS PixInsight module.
 //
@@ -74,6 +74,8 @@ AGenerateTextOutput*    TheAGenerateTextOutputParameter = nullptr;
 ATextFormat*            TheATextFormatParameter = nullptr;
 ATextHeaders*           TheATextHeadersParameter = nullptr;
 AOutputFilePath*        TheAOutputFilePathParameter = nullptr;
+ADatabaseFilePaths*     TheADatabaseFilePathsParameter = nullptr;
+ADatabaseFilePath*      TheADatabaseFilePathParameter = nullptr;
 
 ASources*               TheASourcesParameter = nullptr;
 ASourceRA*              TheASourceRAParameter = nullptr;
@@ -100,8 +102,6 @@ ATimeUncompress*        TheATimeUncompressParameter = nullptr;
 ATimeDecode*            TheATimeDecodeParameter = nullptr;
 AIsValid*               TheAIsValidParameter = nullptr;
 AOutputDataRelease*     TheAOutputDataReleaseParameter = nullptr;
-ADatabaseFilePaths*     TheADatabaseFilePathsParameter = nullptr;
-ADatabaseFilePath*      TheADatabaseFilePathParameter = nullptr;
 ADatabaseMagnitudeLow*  TheADatabaseMagnitudeLowParameter = nullptr;
 ADatabaseMagnitudeHigh* TheADatabaseMagnitudeHighParameter = nullptr;
 
@@ -520,6 +520,32 @@ AOutputFilePath::AOutputFilePath( MetaProcess* P )
 IsoString AOutputFilePath::Id() const
 {
    return "outputFilePath";
+}
+
+// ----------------------------------------------------------------------------
+
+ADatabaseFilePaths::ADatabaseFilePaths( MetaProcess* P )
+   : MetaTable( P )
+{
+   TheADatabaseFilePathsParameter = this;
+}
+
+IsoString ADatabaseFilePaths::Id() const
+{
+   return "databaseFilePaths";
+}
+
+// ----------------------------------------------------------------------------
+
+ADatabaseFilePath::ADatabaseFilePath( MetaTable* T )
+   : MetaString( T )
+{
+   TheADatabaseFilePathParameter = this;
+}
+
+IsoString ADatabaseFilePath::Id() const
+{
+   return "filePath";
 }
 
 // ----------------------------------------------------------------------------
@@ -1065,42 +1091,6 @@ bool AOutputDataRelease::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ADatabaseFilePaths::ADatabaseFilePaths( MetaProcess* P )
-   : MetaTable( P )
-{
-   TheADatabaseFilePathsParameter = this;
-}
-
-IsoString ADatabaseFilePaths::Id() const
-{
-   return "databaseFilePaths";
-}
-
-bool ADatabaseFilePaths::IsReadOnly() const
-{
-   return true;
-}
-
-// ----------------------------------------------------------------------------
-
-ADatabaseFilePath::ADatabaseFilePath( MetaTable* T )
-   : MetaString( T )
-{
-   TheADatabaseFilePathParameter = this;
-}
-
-IsoString ADatabaseFilePath::Id() const
-{
-   return "filePath";
-}
-
-bool ADatabaseFilePath::IsReadOnly() const
-{
-   return true;
-}
-
-// ----------------------------------------------------------------------------
-
 ADatabaseMagnitudeLow::ADatabaseMagnitudeLow( MetaProcess* P )
    : MetaFloat( P )
 {
@@ -1150,4 +1140,4 @@ bool ADatabaseMagnitudeHigh::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF APASSParameters.cpp - Released 2021-05-31T09:44:45Z
+// EOF APASSParameters.cpp - Released 2021-07-08T09:19:53Z

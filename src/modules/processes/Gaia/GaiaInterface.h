@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// Standard Gaia Process Module Version 1.0.2
+// Standard Gaia Process Module Version 1.0.3
 // ----------------------------------------------------------------------------
-// GaiaInterface.h - Released 2021-05-31T09:44:45Z
+// GaiaInterface.h - Released 2021-07-08T09:19:31Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Gaia PixInsight module.
 //
@@ -183,6 +183,7 @@ private:
 
    friend struct GUIData;
    friend class GaiaPreferencesDialog;
+   friend class GaiaInstance;
 };
 
 // ----------------------------------------------------------------------------
@@ -198,4 +199,4 @@ PCL_END_LOCAL
 #endif   // __GaiaInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF GaiaInterface.h - Released 2021-05-31T09:44:45Z
+// EOF GaiaInterface.h - Released 2021-07-08T09:19:31Z

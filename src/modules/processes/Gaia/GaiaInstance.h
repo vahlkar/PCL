@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// Standard Gaia Process Module Version 1.0.2
+// Standard Gaia Process Module Version 1.0.3
 // ----------------------------------------------------------------------------
-// GaiaInstance.h - Released 2021-05-31T09:44:45Z
+// GaiaInstance.h - Released 2021-07-08T09:19:31Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Gaia PixInsight module.
 //
@@ -90,15 +90,16 @@ private:
    pcl_enum       p_textHeaders;
    String         p_outputFilePath;
    GaiaSearchData p_searchData;
+   StringList     p_databaseFilePaths;
    pcl_bool       o_isValid = false;
    pcl_enum       o_dataRelease = -1; // DR2, EDR3
-   StringList     o_databaseFilePaths;
    float          o_databaseMagnitudeLow = 0;
    float          o_databaseMagnitudeHigh = 0;
 
    void Search();
    void GenerateTextOutput() const;
    void GetInfo();
+   void Configure();
 
    friend class GaiaInterface;
    friend class GaiaPreferencesDialog;
@@ -111,4 +112,4 @@ private:
 #endif   // __GaiaInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF GaiaInstance.h - Released 2021-05-31T09:44:45Z
+// EOF GaiaInstance.h - Released 2021-07-08T09:19:31Z

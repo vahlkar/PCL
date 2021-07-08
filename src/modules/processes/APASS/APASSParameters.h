@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// Standard APASS Process Module Version 1.0.0
+// Standard APASS Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// APASSParameters.h - Released 2021-05-31T09:44:45Z
+// APASSParameters.h - Released 2021-07-08T09:19:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard APASS PixInsight module.
 //
@@ -354,6 +354,32 @@ public:
 };
 
 extern AOutputFilePath* TheAOutputFilePathParameter;
+
+// ----------------------------------------------------------------------------
+
+class ADatabaseFilePaths : public MetaTable
+{
+public:
+
+   ADatabaseFilePaths( MetaProcess* );
+
+   IsoString Id() const override;
+};
+
+extern ADatabaseFilePaths* TheADatabaseFilePathsParameter;
+
+// ----------------------------------------------------------------------------
+
+class ADatabaseFilePath : public MetaString
+{
+public:
+
+   ADatabaseFilePath( MetaTable* );
+
+   IsoString Id() const override;
+};
+
+extern ADatabaseFilePath* TheADatabaseFilePathParameter;
 
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
@@ -726,34 +752,6 @@ extern AOutputDataRelease* TheAOutputDataReleaseParameter;
 
 // ----------------------------------------------------------------------------
 
-class ADatabaseFilePaths : public MetaTable
-{
-public:
-
-   ADatabaseFilePaths( MetaProcess* );
-
-   IsoString Id() const override;
-   bool IsReadOnly() const override;
-};
-
-extern ADatabaseFilePaths* TheADatabaseFilePathsParameter;
-
-// ----------------------------------------------------------------------------
-
-class ADatabaseFilePath : public MetaString
-{
-public:
-
-   ADatabaseFilePath( MetaTable* );
-
-   IsoString Id() const override;
-   bool IsReadOnly() const override;
-};
-
-extern ADatabaseFilePath* TheADatabaseFilePathParameter;
-
-// ----------------------------------------------------------------------------
-
 class ADatabaseMagnitudeLow : public MetaFloat
 {
 public:
@@ -791,4 +789,4 @@ PCL_END_LOCAL
 #endif   // __APASSParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF APASSParameters.h - Released 2021-05-31T09:44:45Z
+// EOF APASSParameters.h - Released 2021-07-08T09:19:53Z

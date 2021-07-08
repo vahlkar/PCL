@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// Standard APASS Process Module Version 1.0.0
+// Standard APASS Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// APASSInstance.h - Released 2021-05-31T09:44:45Z
+// APASSInstance.h - Released 2021-07-08T09:19:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard APASS PixInsight module.
 //
@@ -90,15 +90,16 @@ private:
    pcl_enum        p_textHeaders;
    String          p_outputFilePath;
    APASSSearchData p_searchData;
+   StringList      p_databaseFilePaths;
    pcl_bool        o_isValid = false;
    pcl_enum        o_dataRelease = -1; // DR9, DR10
-   StringList      o_databaseFilePaths;
    float           o_databaseMagnitudeLow = 0;
    float           o_databaseMagnitudeHigh = 0;
 
    void Search();
    void GenerateTextOutput() const;
    void GetInfo();
+   void Configure();
 
    friend class APASSInterface;
    friend class APASSPreferencesDialog;
@@ -111,4 +112,4 @@ private:
 #endif   // __APASSInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF APASSInstance.h - Released 2021-05-31T09:44:45Z
+// EOF APASSInstance.h - Released 2021-07-08T09:19:53Z

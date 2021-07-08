@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// Standard Gaia Process Module Version 1.0.2
+// Standard Gaia Process Module Version 1.0.3
 // ----------------------------------------------------------------------------
-// GaiaParameters.cpp - Released 2021-05-31T09:44:45Z
+// GaiaParameters.cpp - Released 2021-07-08T09:19:31Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Gaia PixInsight module.
 //
@@ -74,6 +74,8 @@ GGenerateTextOutput*    TheGGenerateTextOutputParameter = nullptr;
 GTextFormat*            TheGTextFormatParameter = nullptr;
 GTextHeaders*           TheGTextHeadersParameter = nullptr;
 GOutputFilePath*        TheGOutputFilePathParameter = nullptr;
+GDatabaseFilePaths*     TheGDatabaseFilePathsParameter = nullptr;
+GDatabaseFilePath*      TheGDatabaseFilePathParameter = nullptr;
 
 GSources*               TheGSourcesParameter = nullptr;
 GSourceRA*              TheGSourceRAParameter = nullptr;
@@ -94,8 +96,6 @@ GTimeUncompress*        TheGTimeUncompressParameter = nullptr;
 GTimeDecode*            TheGTimeDecodeParameter = nullptr;
 GIsValid*               TheGIsValidParameter = nullptr;
 GOutputDataRelease*     TheGOutputDataReleaseParameter = nullptr;
-GDatabaseFilePaths*     TheGDatabaseFilePathsParameter = nullptr;
-GDatabaseFilePath*      TheGDatabaseFilePathParameter = nullptr;
 GDatabaseMagnitudeLow*  TheGDatabaseMagnitudeLowParameter = nullptr;
 GDatabaseMagnitudeHigh* TheGDatabaseMagnitudeHighParameter = nullptr;
 
@@ -515,6 +515,32 @@ IsoString GOutputFilePath::Id() const
 }
 
 // ----------------------------------------------------------------------------
+
+GDatabaseFilePaths::GDatabaseFilePaths( MetaProcess* P )
+   : MetaTable( P )
+{
+   TheGDatabaseFilePathsParameter = this;
+}
+
+IsoString GDatabaseFilePaths::Id() const
+{
+   return "databaseFilePaths";
+}
+
+// ----------------------------------------------------------------------------
+
+GDatabaseFilePath::GDatabaseFilePath( MetaTable* T )
+   : MetaString( T )
+{
+   TheGDatabaseFilePathParameter = this;
+}
+
+IsoString GDatabaseFilePath::Id() const
+{
+   return "filePath";
+}
+
+// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 GSources::GSources( MetaProcess* P )
@@ -919,42 +945,6 @@ bool GOutputDataRelease::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-GDatabaseFilePaths::GDatabaseFilePaths( MetaProcess* P )
-   : MetaTable( P )
-{
-   TheGDatabaseFilePathsParameter = this;
-}
-
-IsoString GDatabaseFilePaths::Id() const
-{
-   return "databaseFilePaths";
-}
-
-bool GDatabaseFilePaths::IsReadOnly() const
-{
-   return true;
-}
-
-// ----------------------------------------------------------------------------
-
-GDatabaseFilePath::GDatabaseFilePath( MetaTable* T )
-   : MetaString( T )
-{
-   TheGDatabaseFilePathParameter = this;
-}
-
-IsoString GDatabaseFilePath::Id() const
-{
-   return "filePath";
-}
-
-bool GDatabaseFilePath::IsReadOnly() const
-{
-   return true;
-}
-
-// ----------------------------------------------------------------------------
-
 GDatabaseMagnitudeLow::GDatabaseMagnitudeLow( MetaProcess* P )
    : MetaFloat( P )
 {
@@ -1004,4 +994,4 @@ bool GDatabaseMagnitudeHigh::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GaiaParameters.cpp - Released 2021-05-31T09:44:45Z
+// EOF GaiaParameters.cpp - Released 2021-07-08T09:19:31Z

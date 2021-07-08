@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// Standard APASS Process Module Version 1.0.0
+// Standard APASS Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// APASSInterface.cpp - Released 2021-05-31T09:44:45Z
+// APASSInterface.cpp - Released 2021-07-08T09:19:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard APASS PixInsight module.
 //
@@ -632,50 +632,53 @@ bool APASSInterface::ImportProcess( const ProcessImplementation& p )
 
 void APASSInterface::UpdateControls()
 {
-   GUI->DataRelease_ComboBox.SetCurrentItem( m_instance.OutputDataRelease() );
+   if ( GUI != nullptr )
+   {
+      GUI->DataRelease_ComboBox.SetCurrentItem( m_instance.OutputDataRelease() );
 
-   GUI->CenterRA_Edit.SetText( RAToString( m_instance.p_searchData.centerRA ) );
+      GUI->CenterRA_Edit.SetText( RAToString( m_instance.p_searchData.centerRA ) );
 
-   GUI->CenterDec_Edit.SetText( DecToString( m_instance.p_searchData.centerDec ) );
+      GUI->CenterDec_Edit.SetText( DecToString( m_instance.p_searchData.centerDec ) );
 
-   GUI->Radius_Edit.SetText( DistToString( m_instance.p_searchData.radius ) );
+      GUI->Radius_Edit.SetText( DistToString( m_instance.p_searchData.radius ) );
 
-   GUI->ShowCompoundAngles_CheckBox.SetChecked( m_showCompoundAngles );
+      GUI->ShowCompoundAngles_CheckBox.SetChecked( m_showCompoundAngles );
 
-   GUI->RAInTimeUnits_CheckBox.SetChecked( m_raInTimeUnits );
+      GUI->RAInTimeUnits_CheckBox.SetChecked( m_raInTimeUnits );
 
-   GUI->MagnitudeLow_NumericEdit.SetValue( m_instance.p_searchData.magnitudeLow );
+      GUI->MagnitudeLow_NumericEdit.SetValue( m_instance.p_searchData.magnitudeLow );
 
-   GUI->MagnitudeHigh_NumericEdit.SetValue( m_instance.p_searchData.magnitudeHigh );
+      GUI->MagnitudeHigh_NumericEdit.SetValue( m_instance.p_searchData.magnitudeHigh );
 
-   GUI->RequiredFlags_Edit.SetText( String().Format( "%08x", m_instance.p_searchData.requiredFlags ) );
+      GUI->RequiredFlags_Edit.SetText( String().Format( "%08x", m_instance.p_searchData.requiredFlags ) );
 
-   GUI->InclusionFlags_Edit.SetText( String().Format( "%08x", m_instance.p_searchData.inclusionFlags ) );
+      GUI->InclusionFlags_Edit.SetText( String().Format( "%08x", m_instance.p_searchData.inclusionFlags ) );
 
-   GUI->ExclusionFlags_Edit.SetText( String().Format( "%08x", m_instance.p_searchData.exclusionFlags ) );
+      GUI->ExclusionFlags_Edit.SetText( String().Format( "%08x", m_instance.p_searchData.exclusionFlags ) );
 
-   GUI->SourceLimit_NumericEdit.SetValue( m_instance.p_searchData.sourceLimit );
+      GUI->SourceLimit_NumericEdit.SetValue( m_instance.p_searchData.sourceLimit );
 
-   GUI->SortBy_ComboBox.SetCurrentItem( m_instance.p_sortBy );
+      GUI->SortBy_ComboBox.SetCurrentItem( m_instance.p_sortBy );
 
-   GUI->GenerateTextOutput_CheckBox.SetChecked( m_instance.p_generateTextOutput );
+      GUI->GenerateTextOutput_CheckBox.SetChecked( m_instance.p_generateTextOutput );
 
-   GUI->TextFormat_Label.Enable( m_instance.p_generateTextOutput );
+      GUI->TextFormat_Label.Enable( m_instance.p_generateTextOutput );
 
-   GUI->TextFormat_ComboBox.SetCurrentItem( m_instance.p_textFormat );
-   GUI->TextFormat_ComboBox.Enable( m_instance.p_generateTextOutput );
+      GUI->TextFormat_ComboBox.SetCurrentItem( m_instance.p_textFormat );
+      GUI->TextFormat_ComboBox.Enable( m_instance.p_generateTextOutput );
 
-   GUI->TextHeaders_Label.Enable( m_instance.p_generateTextOutput );
+      GUI->TextHeaders_Label.Enable( m_instance.p_generateTextOutput );
 
-   GUI->TextHeaders_ComboBox.SetCurrentItem( m_instance.p_textHeaders );
-   GUI->TextHeaders_ComboBox.Enable( m_instance.p_generateTextOutput );
+      GUI->TextHeaders_ComboBox.SetCurrentItem( m_instance.p_textHeaders );
+      GUI->TextHeaders_ComboBox.Enable( m_instance.p_generateTextOutput );
 
-   GUI->OutputFilePath_Label.Enable( m_instance.p_generateTextOutput );
+      GUI->OutputFilePath_Label.Enable( m_instance.p_generateTextOutput );
 
-   GUI->OutputFilePath_Edit.SetText( m_instance.p_outputFilePath );
-   GUI->OutputFilePath_Edit.Enable( m_instance.p_generateTextOutput );
+      GUI->OutputFilePath_Edit.SetText( m_instance.p_outputFilePath );
+      GUI->OutputFilePath_Edit.Enable( m_instance.p_generateTextOutput );
 
-   GUI->OutputFilePath_ToolButton.Enable( m_instance.p_generateTextOutput );
+      GUI->OutputFilePath_ToolButton.Enable( m_instance.p_generateTextOutput );
+   }
 }
 
 // ----------------------------------------------------------------------------
@@ -1390,4 +1393,4 @@ APASSInterface::GUIData::GUIData( APASSInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF APASSInterface.cpp - Released 2021-05-31T09:44:45Z
+// EOF APASSInterface.cpp - Released 2021-07-08T09:19:53Z

@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.9
 // ----------------------------------------------------------------------------
-// Standard Gaia Process Module Version 1.0.2
+// Standard Gaia Process Module Version 1.0.3
 // ----------------------------------------------------------------------------
-// GaiaInstance.cpp - Released 2021-05-31T09:44:45Z
+// GaiaInstance.cpp - Released 2021-07-08T09:19:31Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Gaia PixInsight module.
 //
@@ -51,6 +51,7 @@
 // ----------------------------------------------------------------------------
 
 #include "GaiaInstance.h"
+#include "GaiaInterface.h"
 #include "GaiaParameters.h"
 #include "GaiaProcess.h"
 
@@ -99,9 +100,9 @@ void GaiaInstance::Assign( const ProcessImplementation& p )
       p_textHeaders = x->p_textHeaders;
       p_outputFilePath = x->p_outputFilePath;
       p_searchData = x->p_searchData;
+      p_databaseFilePaths = x->p_databaseFilePaths;
       o_isValid = x->o_isValid;
       o_dataRelease = x->o_dataRelease;
-      o_databaseFilePaths = x->o_databaseFilePaths;
       o_databaseMagnitudeLow = x->o_databaseMagnitudeLow;
       o_databaseMagnitudeHigh = x->o_databaseMagnitudeHigh;
    }
@@ -126,30 +127,27 @@ bool GaiaInstance::CanExecuteGlobal( String& whyNot ) const
 
 bool GaiaInstance::ExecuteGlobal()
 {
-   /*
-    * Clear output data.
-    */
    p_searchData.ResetSearchResults();
    o_isValid = false;
    o_dataRelease = OutputDataRelease();
-   o_databaseFilePaths.Clear();
    o_databaseMagnitudeLow = o_databaseMagnitudeHigh = 0;
-
-   /*
-    * Install and initialize XPSD files. This will only happen the first time
-    * this function is executed, or if preferences have been changed.
-    */
-   TheGaiaProcess->EnsureDatabasesInitialized( o_dataRelease, p_verbosity );
 
    if ( likely( p_command == "search" ) )
    {
+      // thread-safe
       Search();
       if ( p_generateTextOutput )
          GenerateTextOutput();
    }
    else if ( p_command == "get-info" )
    {
+      // thread-safe
       GetInfo();
+   }
+   else if ( p_command == "configure" )
+   {
+      // ### NB: *not* thread-safe
+      Configure();
    }
    else
    {
@@ -568,10 +566,27 @@ void GaiaInstance::GenerateTextOutput() const
 
 void GaiaInstance::GetInfo()
 {
+   /*
+    * Install and initialize XPSD files. This will only happen the first time
+    * this function is executed, or if preferences have been changed.
+    */
+   TheGaiaProcess->EnsureDatabasesInitialized( o_dataRelease, p_verbosity );
+
+   p_databaseFilePaths = TheGaiaProcess->DatabaseFilePaths( o_dataRelease );
    o_isValid = TheGaiaProcess->IsValid( o_dataRelease );
-   o_databaseFilePaths = TheGaiaProcess->DatabaseFilePaths( o_dataRelease );
    o_databaseMagnitudeLow = TheGaiaProcess->MagnitudeLow( o_dataRelease );
    o_databaseMagnitudeHigh = TheGaiaProcess->MagnitudeHigh( o_dataRelease );
+}
+
+// ----------------------------------------------------------------------------
+
+void GaiaInstance::Configure()
+{
+   TheGaiaProcess->SetDatabaseFilePaths( o_dataRelease, p_databaseFilePaths );
+   if ( TheGaiaInterface != nullptr )
+      TheGaiaInterface->UpdateControls();
+   if ( TheGaiaProcess->HasDatabaseFiles( o_dataRelease ) )
+      GetInfo();
 }
 
 // ----------------------------------------------------------------------------
@@ -645,12 +660,12 @@ void* GaiaInstance::LockParameter( const MetaParameter* p, size_type tableRow )
       return &p_searchData.timeUncompress;
    if ( p == TheGTimeDecodeParameter )
       return &p_searchData.timeDecode;
+   if ( p == TheGDatabaseFilePathParameter )
+      return p_databaseFilePaths[tableRow].Begin();
    if ( p == TheGIsValidParameter )
       return &o_isValid;
    if ( p == TheGOutputDataReleaseParameter )
       return &o_dataRelease;
-   if ( p == TheGDatabaseFilePathParameter )
-      return o_databaseFilePaths[tableRow].Begin();
    if ( p == TheGDatabaseMagnitudeLowParameter )
       return &o_databaseMagnitudeLow;
    if ( p == TheGDatabaseMagnitudeHighParameter )
@@ -683,15 +698,15 @@ bool GaiaInstance::AllocateParameter( size_type sizeOrLength, const MetaParamete
    }
    else if ( p == TheGDatabaseFilePathsParameter )
    {
-      o_databaseFilePaths.Clear();
+      p_databaseFilePaths.Clear();
       if ( sizeOrLength > 0 )
-         o_databaseFilePaths.Add( String(), sizeOrLength );
+         p_databaseFilePaths.Add( String(), sizeOrLength );
    }
    else if ( p == TheGDatabaseFilePathParameter )
    {
-      o_databaseFilePaths[tableRow].Clear();
+      p_databaseFilePaths[tableRow].Clear();
       if ( sizeOrLength > 0 )
-         o_databaseFilePaths[tableRow].SetLength( sizeOrLength );
+         p_databaseFilePaths[tableRow].SetLength( sizeOrLength );
    }
    else
       return false;
@@ -710,9 +725,9 @@ size_type GaiaInstance::ParameterLength( const MetaParameter* p, size_type table
    if ( p == TheGSourcesParameter )
       return p_searchData.stars.Length();
    if ( p == TheGDatabaseFilePathsParameter )
-      return o_databaseFilePaths.Length();
+      return p_databaseFilePaths.Length();
    if ( p == TheGDatabaseFilePathParameter )
-      return o_databaseFilePaths[tableRow].Length();
+      return p_databaseFilePaths[tableRow].Length();
 
    return 0;
 }
@@ -741,4 +756,4 @@ int GaiaInstance::OutputDataRelease() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GaiaInstance.cpp - Released 2021-05-31T09:44:45Z
+// EOF GaiaInstance.cpp - Released 2021-07-08T09:19:31Z
