@@ -51,14 +51,14 @@
 // ----------------------------------------------------------------------------
 
 #define MODULE_VERSION_MAJOR     1
-#define MODULE_VERSION_MINOR     8
-#define MODULE_VERSION_REVISION  3
+#define MODULE_VERSION_MINOR     9
+#define MODULE_VERSION_REVISION  0
 #define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2021
-#define MODULE_RELEASE_MONTH     5
-#define MODULE_RELEASE_DAY       31
+#define MODULE_RELEASE_MONTH     7
+#define MODULE_RELEASE_DAY       15
 
 #include "DebayerModule.h"
 #include "DebayerProcess.h"
@@ -116,7 +116,7 @@ String DebayerModule::Author() const
 
 String DebayerModule::Copyright() const
 {
-   return "Copyright (c) Sander Pool, 2009 / (c) Zbynek Vrastil, 2011 / (c) Pleiades Astrophoto, 2009-2020";
+   return "Copyright (c) Sander Pool, 2009 / (c) Zbynek Vrastil, 2011 / (c) Pleiades Astrophoto, 2009-2021";
 }
 
 // ----------------------------------------------------------------------------

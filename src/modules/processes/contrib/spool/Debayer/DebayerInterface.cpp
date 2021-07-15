@@ -61,12 +61,6 @@
 
 #define IMAGELIST_MINHEIGHT( fnt )  RoundInt( 8.125*fnt.Height() )
 
-// Settings keys
-#define KEY_BAYERPATTERN   "BayerPattern"
-#define KEY_DEBAYERMETHOD  "DebayerMethod"
-#define KEY_EVALUATENOISE  "DebayerEvaluateNoise"
-#define KEY_NOISEEVALALG   "DebayerNoiseEvaluationAlgorithm"
-
 namespace pcl
 {
 
@@ -141,7 +135,6 @@ bool DebayerInterface::Launch( const MetaProcess& P, const ProcessImplementation
    {
       GUI = new GUIData( *this );
       SetWindowTitle( "Debayer" );
-      LoadSettings();
       UpdateControls();
    }
 
@@ -207,6 +200,14 @@ void DebayerInterface::UpdateGeneralParameterControls()
 
    GUI->NoiseEvaluation_ComboBox.SetCurrentItem( m_instance.p_noiseEvaluationAlgorithm );
    GUI->NoiseEvaluation_ComboBox.Enable( m_instance.p_evaluateNoise );
+
+   if ( m_instance.p_outputRGBImages )
+      if ( m_instance.p_outputSeparateChannels )
+         GUI->OutputMode_ComboBox.SetCurrentItem( 2 );
+      else
+         GUI->OutputMode_ComboBox.SetCurrentItem( 0 );
+   else
+      GUI->OutputMode_ComboBox.SetCurrentItem( 1 );
 }
 
 // ----------------------------------------------------------------------------
@@ -297,26 +298,6 @@ void DebayerInterface::UpdateOutputFilesControls()
 
 // ----------------------------------------------------------------------------
 
-void DebayerInterface::SaveSettings()
-{
-   Settings::Write ( KEY_BAYERPATTERN,  m_instance.p_bayerPattern );
-   Settings::Write ( KEY_DEBAYERMETHOD, m_instance.p_debayerMethod );
-   Settings::WriteI( KEY_EVALUATENOISE, m_instance.p_evaluateNoise );
-   Settings::Write ( KEY_NOISEEVALALG,  m_instance.p_noiseEvaluationAlgorithm );
-}
-
-// ----------------------------------------------------------------------------
-
-void DebayerInterface::LoadSettings()
-{
-   Settings::Read ( KEY_BAYERPATTERN,   m_instance.p_bayerPattern );
-   Settings::Read ( KEY_DEBAYERMETHOD,  m_instance.p_debayerMethod );
-   Settings::ReadI( KEY_EVALUATENOISE,  m_instance.p_evaluateNoise );
-   Settings::Read ( KEY_NOISEEVALALG,   m_instance.p_noiseEvaluationAlgorithm );
-}
-
-// ----------------------------------------------------------------------------
-
 static size_type TreeInsertionIndex( const TreeBox& tree )
 {
    const TreeBox::Node* n = tree.CurrentNode();
@@ -358,6 +339,11 @@ void DebayerInterface::e_ItemSelected( ComboBox& sender, int itemIndex )
       m_instance.p_bayerPattern = itemIndex;
    else if ( sender == GUI->NoiseEvaluation_ComboBox )
       m_instance.p_noiseEvaluationAlgorithm = itemIndex;
+   else if ( sender == GUI->OutputMode_ComboBox )
+   {
+      m_instance.p_outputRGBImages = itemIndex == 0 || itemIndex == 2;
+      m_instance.p_outputSeparateChannels = itemIndex == 1 || itemIndex == 2;
+   }
    else if ( sender == GUI->DebayerMethod_ComboBox )
       m_instance.p_debayerMethod = itemIndex;
    else if ( sender == GUI->OnError_ComboBox )
@@ -371,15 +357,6 @@ void DebayerInterface::e_Click( Button& sender, bool checked )
    if ( sender == GUI->EvaluateNoise_CheckBox )
    {
       m_instance.p_evaluateNoise = checked;
-      UpdateGeneralParameterControls();
-   }
-   else if ( sender == GUI->Save_PushButton )
-   {
-      SaveSettings();
-   }
-   else if ( sender == GUI->Restore_PushButton )
-   {
-      LoadSettings();
       UpdateGeneralParameterControls();
    }
    else if ( sender == GUI->AddFiles_PushButton )
@@ -567,7 +544,7 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
    int editWidth1 = fnt.Width( String( 'M', 5 ) );
    int ui4 = w.LogicalPixelsToPhysical( 4 );
 
-   // color parameters
+   //
 
    const char* patternToolTip =
       "<p>Select the CFA pattern of the camera (DSLR or OSC) used to acquire the target image.</p>"
@@ -661,24 +638,39 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
    NoiseEvaluation_Sizer.Add( NoiseEvaluation_ComboBox );
    NoiseEvaluation_Sizer.AddStretch();
 
-   Save_PushButton.SetText( "Save as Default" );
-   Save_PushButton.SetMinWidth( labelWidth1 );
-   Save_PushButton.OnClick( (ToolButton::click_event_handler)&DebayerInterface::e_Click, w );
+   const char* outputModeToolTip =
+      "<p>Demosaiced/interpolated images can be generated as combined RGB color images, as separate RGB "
+      "channels stored as monochrome images, or applying both options at the same time.</p>"
+      "<p>Generation of single RGB color images is the default option. Separate RGB channel images can be "
+      "useful for correction of non-isotropic channel misalignments, such as those caused by chromatic "
+      "aberration and atmospheric dispersion, by computing image registration transformations with "
+      "distortion correction among all color components of a data set. This procedure is compatible with "
+      "normal image integrations as well as drizzle integrations.</p>"
+      "<p>Separate channel file names will carry the _R, _G and _B suffixes, respectively for the red, "
+      "green and blue components.</p>";
 
-   Restore_PushButton.SetText( "Restore from Default" );
-   Restore_PushButton.OnClick( (ToolButton::click_event_handler)&DebayerInterface::e_Click, w );
+   OutputMode_Label.SetText( "Output mode:" );
+   OutputMode_Label.SetFixedWidth( labelWidth1 );
+   OutputMode_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   OutputMode_Label.SetToolTip( outputModeToolTip );
 
-   Button_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
-   Button_Sizer.Add( Save_PushButton );
-   Button_Sizer.AddSpacing( 8 );
-   Button_Sizer.Add( Restore_PushButton );
+   OutputMode_ComboBox.AddItem( "Combined RGB color" );
+   OutputMode_ComboBox.AddItem( "Separate RGB channels" );
+   OutputMode_ComboBox.AddItem( "RGB color + separate RGB channels" );
+   OutputMode_ComboBox.SetToolTip( outputModeToolTip );
+   OutputMode_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&DebayerInterface::e_ItemSelected, w );
+
+   OutputMode_Sizer.SetSpacing( 4 );
+   OutputMode_Sizer.Add( OutputMode_Label );
+   OutputMode_Sizer.Add( OutputMode_ComboBox );
+   OutputMode_Sizer.AddStretch();
 
    GeneralParameters_Sizer.SetSpacing( 4 );
    GeneralParameters_Sizer.Add( Pattern_Sizer );
    GeneralParameters_Sizer.Add( DebayerMethod_Sizer );
    GeneralParameters_Sizer.Add( EvaluateNoise_Sizer );
    GeneralParameters_Sizer.Add( NoiseEvaluation_Sizer );
-   GeneralParameters_Sizer.Add( Button_Sizer );
+   GeneralParameters_Sizer.Add( OutputMode_Sizer );
 
    //
 

@@ -118,6 +118,8 @@ private:
    String      p_outputHints;
 
    // Output images
+   pcl_bool    p_outputRGBImages;
+   pcl_bool    p_outputSeparateChannels;
    String      p_outputDirectory;
    String      p_outputExtension;
    String      p_outputPrefix;
@@ -137,14 +139,16 @@ private:
 
    // Read-only output properties, view execution.
    String     o_imageId;
-   FVector    o_noiseEstimates;
-   FVector    o_noiseFractions;
-   StringList o_noiseAlgorithms;
+   StringList o_channelIds = StringList( size_type( 3 ) );
+   FVector    o_noiseEstimates = FVector( 0.0F, 3 );
+   FVector    o_noiseFractions = FVector( 0.0F, 3 );
+   StringList o_noiseAlgorithms = StringList( size_type( 3 ) );
 
    // Read-only output properties, batch execution.
    struct OutputFileData
    {
       String     filePath;
+      StringList channelFilePaths = StringList( size_type( 3 ) );
       FVector    noiseEstimates = FVector( 0.0F, 3 );
       FVector    noiseFractions = FVector( 0.0F, 3 );
       StringList noiseAlgorithms = StringList( size_type( 3 ) );

@@ -86,6 +86,8 @@ DebayerProcess::DebayerProcess()
    new DebayerNoGUIMessages( this );
    new DebayerInputHints( this );
    new DebayerOutputHints( this );
+   new DebayerOutputRGBImages( this );
+   new DebayerOutputSeparateChannels( this );
    new DebayerOutputDirectory( this );
    new DebayerOutputExtension( this );
    new DebayerOutputPrefix( this );
@@ -100,6 +102,9 @@ DebayerProcess::DebayerProcess()
    new DebayerMemoryLoadLimit( this );
 
    new DebayerOutputImage( this );
+   new DebayerOutputChannelImageR( this );
+   new DebayerOutputChannelImageG( this );
+   new DebayerOutputChannelImageB( this );
    new DebayerNoiseEstimateR( this );
    new DebayerNoiseEstimateG( this );
    new DebayerNoiseEstimateB( this );
@@ -121,6 +126,9 @@ DebayerProcess::DebayerProcess()
    new DebayerOutputFileNoiseAlgorithmR( TheDebayerOutputFileDataParameter );
    new DebayerOutputFileNoiseAlgorithmG( TheDebayerOutputFileDataParameter );
    new DebayerOutputFileNoiseAlgorithmB( TheDebayerOutputFileDataParameter );
+   new DebayerOutputChannelFilePathR( TheDebayerOutputFileDataParameter );
+   new DebayerOutputChannelFilePathG( TheDebayerOutputFileDataParameter );
+   new DebayerOutputChannelFilePathB( TheDebayerOutputFileDataParameter );
 }
 
 // ----------------------------------------------------------------------------

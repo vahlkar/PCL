@@ -277,6 +277,34 @@ extern DebayerOutputHints* TheDebayerOutputHintsParameter;
 
 // ----------------------------------------------------------------------------
 
+class DebayerOutputRGBImages : public MetaBoolean
+{
+public:
+
+   DebayerOutputRGBImages( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern DebayerOutputRGBImages* TheDebayerOutputRGBImagesParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerOutputSeparateChannels : public MetaBoolean
+{
+public:
+
+   DebayerOutputSeparateChannels( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern DebayerOutputSeparateChannels* TheDebayerOutputSeparateChannelsParameter;
+
+// ----------------------------------------------------------------------------
+
 class DebayerOutputDirectory : public MetaString
 {
 public:
@@ -478,6 +506,48 @@ extern DebayerOutputImage* TheDebayerOutputImageParameter;
 
 // ----------------------------------------------------------------------------
 
+class DebayerOutputChannelImageR : public MetaString
+{
+public:
+
+   DebayerOutputChannelImageR( MetaProcess* );
+
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerOutputChannelImageR* TheDebayerOutputChannelImageRParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerOutputChannelImageG : public MetaString
+{
+public:
+
+   DebayerOutputChannelImageG( MetaProcess* );
+
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerOutputChannelImageG* TheDebayerOutputChannelImageGParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerOutputChannelImageB : public MetaString
+{
+public:
+
+   DebayerOutputChannelImageB( MetaProcess* );
+
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerOutputChannelImageB* TheDebayerOutputChannelImageBParameter;
+
+// ----------------------------------------------------------------------------
+
 class DebayerNoiseEstimateR : public MetaFloat
 {
 public:
@@ -639,6 +709,48 @@ public:
 };
 
 extern DebayerOutputFilePath* TheDebayerOutputFilePathParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerOutputChannelFilePathR : public MetaString
+{
+public:
+
+   DebayerOutputChannelFilePathR( MetaTable* );
+
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerOutputChannelFilePathR* TheDebayerOutputChannelFilePathRParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerOutputChannelFilePathG : public MetaString
+{
+public:
+
+   DebayerOutputChannelFilePathG( MetaTable* );
+
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerOutputChannelFilePathG* TheDebayerOutputChannelFilePathGParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerOutputChannelFilePathB : public MetaString
+{
+public:
+
+   DebayerOutputChannelFilePathB( MetaTable* );
+
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerOutputChannelFilePathB* TheDebayerOutputChannelFilePathBParameter;
 
 // ----------------------------------------------------------------------------
 

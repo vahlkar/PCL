@@ -128,6 +128,8 @@ DebayerInstance::DebayerInstance( const MetaProcess* m )
    , p_noGUIMessages( TheDebayerNoGUIMessagesParameter->DefaultValue() ) // ### DEPRECATED
    , p_inputHints( TheDebayerInputHintsParameter->DefaultValue() )
    , p_outputHints( TheDebayerOutputHintsParameter->DefaultValue() )
+   , p_outputRGBImages( TheDebayerOutputRGBImagesParameter->DefaultValue() )
+   , p_outputSeparateChannels( TheDebayerOutputSeparateChannelsParameter->DefaultValue() )
    , p_outputDirectory( TheDebayerOutputDirectoryParameter->DefaultValue() )
    , p_outputExtension( TheDebayerOutputExtensionParameter->DefaultValue() )
    , p_outputPrefix( TheDebayerOutputPrefixParameter->DefaultValue() )
@@ -140,9 +142,6 @@ DebayerInstance::DebayerInstance( const MetaProcess* m )
    , p_maxFileWriteThreads( int32( TheDebayerMaxFileWriteThreadsParameter->DefaultValue() ) )
    , p_memoryLoadControl( TheDebayerMemoryLoadControlParameter->DefaultValue() )
    , p_memoryLoadLimit( TheDebayerMemoryLoadLimitParameter->DefaultValue() )
-   , o_noiseEstimates( 0.0F, 3 )
-   , o_noiseFractions( 0.0F, 3 )
-   , o_noiseAlgorithms( 3 )
 {
 }
 
@@ -172,6 +171,8 @@ void DebayerInstance::Assign( const ProcessImplementation& p )
       p_noGUIMessages            = x->p_noGUIMessages;
       p_inputHints               = x->p_inputHints;
       p_outputHints              = x->p_outputHints;
+      p_outputRGBImages          = x->p_outputRGBImages;
+      p_outputSeparateChannels   = x->p_outputSeparateChannels;
       p_outputDirectory          = x->p_outputDirectory;
       p_outputExtension          = x->p_outputExtension;
       p_outputPrefix             = x->p_outputPrefix;
@@ -186,6 +187,7 @@ void DebayerInstance::Assign( const ProcessImplementation& p )
       p_memoryLoadLimit          = x->p_memoryLoadLimit;
 
       o_imageId                  = x->o_imageId;
+      o_channelIds               = x->o_channelIds;
       o_noiseEstimates           = x->o_noiseEstimates;
       o_noiseFractions           = x->o_noiseFractions;
       o_noiseAlgorithms          = x->o_noiseAlgorithms;
@@ -2391,6 +2393,11 @@ public:
       return m_outputFilePath;
    }
 
+   const StringList& OutputChannelFilePaths() const
+   {
+      return m_outputChannelFilePaths;
+   }
+
    const FVector& NoiseEstimates() const
    {
       return m_noiseEstimates;
@@ -2433,6 +2440,7 @@ private:
          StringList       m_noiseAlgorithms = StringList( 3 );
          Image            m_outputImage;
          String           m_outputFilePath;
+         StringList       m_outputChannelFilePaths = StringList( 3 );;
          String           m_errorInfo;
          bool             m_success = false;
 
@@ -2534,108 +2542,189 @@ private:
       if ( !fileExtension.StartsWith( '.' ) )
          fileExtension.Prepend( '.' );
 
-      m_outputFilePath = fileDir + m_instance.p_outputPrefix + fileName + m_instance.p_outputPostfix + fileExtension;
-
-      console.WriteLn( "<end><cbr>Writing output file: " + m_outputFilePath );
-
-      if ( File::Exists( m_outputFilePath ) )
-         if ( m_instance.p_overwriteExistingFiles )
-            console.WarningLn( "** Warning: Overwriting existing file" );
-         else
-         {
-            m_outputFilePath = UniqueFilePath( m_outputFilePath );
-            console.NoteLn( "* File already exists, writing to: " + m_outputFilePath );
-         }
+      String outputFilePath = fileDir + m_instance.p_outputPrefix + fileName + m_instance.p_outputPostfix + fileExtension;
 
       FileFormat outputFormat( fileExtension, false/*read*/, true/*write*/ );
-      FileFormatInstance outputFile( outputFormat );
-
-      if ( !outputFile.Create( m_outputFilePath, m_instance.p_outputHints ) )
-         throw CaughtException();
-
-      ImageOptions options = m_fileData.options; // get resolution, etc.
-      options.bitsPerSample = 32;
-      options.ieeefpSampleFormat = true;
-      outputFile.SetOptions( options );
 
       if ( !outputFormat.CanStoreFloat() )
          console.WarningLn( "** Warning: The output format does not support the required sample data format." );
 
-      if ( m_fileData.fsData != nullptr )
-         if ( outputFormat.UsesFormatSpecificData() )
-            if ( outputFormat.ValidateFormatSpecificData( m_fileData.fsData ) )
-               outputFile.SetFormatSpecificData( m_fileData.fsData );
-
-      IsoString methodId = m_xtrans ? "X-Trans" : DebayerEngine::MethodId( m_instance.p_debayerMethod );
-
-      if ( outputFormat.CanStoreImageProperties() && outputFormat.SupportsViewProperties() )
-      {
-         PropertyArray properties = m_fileData.properties;
-         properties << Property( "PCL:CFASourceFilePath", m_targetFilePath )
-                    << Property( "PCL:CFASourcePattern", m_patternId )
-                    << Property( "PCL:CFASourceInterpolation", methodId );
-         outputFile.WriteImageProperties( properties );
-      }
-      else
+      if ( !outputFormat.CanStoreImageProperties() || !outputFormat.SupportsViewProperties() )
          console.WarningLn( "** Warning: The output format cannot store image properties - required properties not embedded." );
 
-      if ( outputFormat.CanStoreKeywords() )
-      {
-         FITSKeywordArray keywords = m_fileData.keywords;
-
-         /*
-          * ### NB: Remove other existing NOISExxx keywords.
-          *         *Only* our NOISExxx keywords must be present in the header.
-          */
-         for ( size_type i = 0; i < keywords.Length(); )
-            if ( keywords[i].name.StartsWithIC( "NOISE" ) )
-               keywords.Remove( keywords.At( i ) );
-            else
-               ++i;
-
-         keywords << FITSHeaderKeyword( "COMMENT", IsoString(), "Demosaicing with "  + PixInsightVersion::AsString() )
-                  << FITSHeaderKeyword( "HISTORY", IsoString(), "Demosaicing with "  + Module->ReadableVersion() )
-                  << FITSHeaderKeyword( "HISTORY", IsoString(), "Demosaicing with Debayer process" )
-                  << FITSHeaderKeyword( "HISTORY", IsoString(), "Debayer.pattern: " + m_patternId )
-                  << FITSHeaderKeyword( "HISTORY", IsoString(), "Debayer.method: "  + methodId );
-
-         if ( m_instance.p_evaluateNoise )
-         {
-            keywords << FITSHeaderKeyword( "HISTORY", IsoString(), "Noise evaluation with " + Module->ReadableVersion() )
-                     << FITSHeaderKeyword( "HISTORY", IsoString(), IsoString().Format( "Debayer.noiseEstimates: %.3e %.3e %.3e",
-                                                         m_noiseEstimates[0], m_noiseEstimates[1], m_noiseEstimates[2] ) );
-            for ( int i = 0; i < 3; ++i )
-               keywords << FITSHeaderKeyword( IsoString().Format( "NOISE%02d", i ),
-                                              IsoString().Format( "%.3e", m_noiseEstimates[i] ),
-                                              IsoString().Format( "Gaussian noise estimate, channel #%d", i ) )
-                        << FITSHeaderKeyword( IsoString().Format( "NOISEF%02d", i ),
-                                              IsoString().Format( "%.3f", m_noiseFractions[i] ),
-                                              IsoString().Format( "Fraction of noise pixels, channel #%d", i ) )
-                        << FITSHeaderKeyword( IsoString().Format( "NOISEA%02d", i ),
-                                              m_noiseAlgorithms[i],
-                                              IsoString().Format( "Noise evaluation algorithm, channel #%d", i ) );
-         }
-
-         outputFile.WriteFITSKeywords( keywords );
-      }
-      else
+      if ( !outputFormat.CanStoreKeywords() )
          console.WarningLn( "** Warning: The output format cannot store FITS keywords - keywords not embedded." );
 
       if ( m_fileData.profile.IsProfile() )
-         if ( outputFormat.CanStoreICCProfiles() )
-            outputFile.WriteICCProfile( m_fileData.profile );
-         else
+         if ( !outputFormat.CanStoreICCProfiles() )
             console.WarningLn( "** Warning: The output format cannot store ICC profiles - existing profile not embedded." );
 
-      Module->ProcessEvents();
+      ImageOptions options = m_fileData.options; // get resolution, etc.
+      options.bitsPerSample = 32;
+      options.ieeefpSampleFormat = true;
 
+      IsoString methodId = m_xtrans ? "X-Trans" : DebayerEngine::MethodId( m_instance.p_debayerMethod );
+
+      FITSKeywordArray keywords = m_fileData.keywords;
+
+      /*
+       * ### NB: Remove other existing NOISExxx keywords.
+       *         *Only* our NOISExxx keywords must be present in the header.
+       */
+      for ( size_type i = 0; i < keywords.Length(); )
+         if ( keywords[i].name.StartsWithIC( "NOISE" ) )
+            keywords.Remove( keywords.At( i ) );
+         else
+            ++i;
+
+      keywords << FITSHeaderKeyword( "COMMENT", IsoString(), "Demosaicing with "  + PixInsightVersion::AsString() )
+               << FITSHeaderKeyword( "HISTORY", IsoString(), "Demosaicing with "  + Module->ReadableVersion() )
+               << FITSHeaderKeyword( "HISTORY", IsoString(), "Demosaicing with Debayer process" )
+               << FITSHeaderKeyword( "HISTORY", IsoString(), "Debayer.pattern: " + m_patternId )
+               << FITSHeaderKeyword( "HISTORY", IsoString(), "Debayer.method: " + methodId );
+
+      PropertyArray properties = m_fileData.properties;
+      properties << Property( "PCL:CFASourceFilePath", m_targetFilePath )
+                 << Property( "PCL:CFASourcePattern", m_patternId )
+                 << Property( "PCL:CFASourceInterpolation", methodId );
+
+      if ( m_instance.p_outputRGBImages )
       {
-         static Mutex mutex;
-         static AtomicInt count;
-         volatile AutoLockCounter lock( mutex, count, m_instance.m_maxFileWriteThreads );
-         if ( !outputFile.WriteImage( m_outputImage ) || !outputFile.Close() )
+         m_outputFilePath = outputFilePath;
+
+         console.WriteLn( "<end><cbr>Writing output file: " + m_outputFilePath );
+
+         if ( File::Exists( m_outputFilePath ) )
+            if ( m_instance.p_overwriteExistingFiles )
+               console.WarningLn( "** Warning: Overwriting existing file" );
+            else
+            {
+               m_outputFilePath = UniqueFilePath( m_outputFilePath );
+               console.NoteLn( "* File already exists, writing to: " + m_outputFilePath );
+            }
+
+         FileFormatInstance outputFile( outputFormat );
+
+         if ( !outputFile.Create( m_outputFilePath, m_instance.p_outputHints ) )
             throw CaughtException();
+
+         outputFile.SetOptions( options );
+
+         if ( m_fileData.fsData != nullptr )
+            if ( outputFormat.UsesFormatSpecificData() )
+               if ( outputFormat.ValidateFormatSpecificData( m_fileData.fsData ) )
+                  outputFile.SetFormatSpecificData( m_fileData.fsData );
+
+         if ( outputFormat.CanStoreImageProperties() )
+            if ( outputFormat.SupportsViewProperties() )
+               outputFile.WriteImageProperties( properties );
+
+         if ( outputFormat.CanStoreKeywords() )
+         {
+            FITSKeywordArray keywordsRGB = keywords;
+            if ( m_instance.p_evaluateNoise )
+            {
+               keywordsRGB << FITSHeaderKeyword( "HISTORY", IsoString(), "Noise evaluation with " + Module->ReadableVersion() )
+                           << FITSHeaderKeyword( "HISTORY", IsoString(), IsoString().Format( "Debayer.noiseEstimates: %.3e %.3e %.3e",
+                                                            m_noiseEstimates[0], m_noiseEstimates[1], m_noiseEstimates[2] ) );
+               for ( int i = 0; i < 3; ++i )
+                  keywordsRGB << FITSHeaderKeyword( IsoString().Format( "NOISE%02d", i ),
+                                                    IsoString().Format( "%.3e", m_noiseEstimates[i] ),
+                                                    IsoString().Format( "Gaussian noise estimate, channel #%d", i ) )
+                              << FITSHeaderKeyword( IsoString().Format( "NOISEF%02d", i ),
+                                                    IsoString().Format( "%.3f", m_noiseFractions[i] ),
+                                                    IsoString().Format( "Fraction of noise pixels, channel #%d", i ) )
+                              << FITSHeaderKeyword( IsoString().Format( "NOISEA%02d", i ),
+                                                    m_noiseAlgorithms[i],
+                                                    IsoString().Format( "Noise evaluation algorithm, channel #%d", i ) );
+            }
+
+            outputFile.WriteFITSKeywords( keywordsRGB );
+         }
+
+         if ( m_fileData.profile.IsProfile() )
+            if ( outputFormat.CanStoreICCProfiles() )
+               outputFile.WriteICCProfile( m_fileData.profile );
+
+         Module->ProcessEvents();
+
+         {
+            static Mutex mutex;
+            static AtomicInt count;
+            volatile AutoLockCounter lock( mutex, count, m_instance.m_maxFileWriteThreads );
+            if ( !outputFile.WriteImage( m_outputImage ) || !outputFile.Close() )
+               throw CaughtException();
+         }
       }
+
+      if ( m_instance.p_outputSeparateChannels )
+         for ( int i = 0; i < 3; ++i )
+         {
+            m_outputChannelFilePaths[i] = File::AppendToName( outputFilePath, String( '_' ) + "RGB"[i] );
+
+            console.WriteLn( "<end><cbr>Writing output file: " + m_outputChannelFilePaths[i] );
+
+            if ( File::Exists( m_outputChannelFilePaths[i] ) )
+               if ( m_instance.p_overwriteExistingFiles )
+                  console.WarningLn( "** Warning: Overwriting existing file" );
+               else
+               {
+                  m_outputChannelFilePaths[i] = UniqueFilePath( m_outputChannelFilePaths[i] );
+                  console.NoteLn( "* File already exists, writing to: " + m_outputChannelFilePaths[i] );
+               }
+
+            FileFormatInstance outputFile( outputFormat );
+
+            if ( !outputFile.Create( m_outputChannelFilePaths[i], m_instance.p_outputHints ) )
+               throw CaughtException();
+
+            outputFile.SetOptions( options );
+
+            if ( m_fileData.fsData != nullptr )
+               if ( outputFormat.UsesFormatSpecificData() )
+                  if ( outputFormat.ValidateFormatSpecificData( m_fileData.fsData ) )
+                     outputFile.SetFormatSpecificData( m_fileData.fsData );
+
+            if ( outputFormat.CanStoreImageProperties() )
+               if ( outputFormat.SupportsViewProperties() )
+               {
+                  outputFile.WriteImageProperties( properties );
+                  outputFile.WriteImageProperty( "PCL:CFASourceChannel", i );
+               }
+
+            if ( outputFormat.CanStoreKeywords() )
+            {
+               FITSKeywordArray keywordsChn = keywords;
+               if ( m_instance.p_evaluateNoise )
+               {
+                  keywordsChn << FITSHeaderKeyword( "HISTORY", IsoString(), "Noise evaluation with " + Module->ReadableVersion() )
+                              << FITSHeaderKeyword( "HISTORY", IsoString(), IsoString().Format( "Debayer.noiseEstimates: %.3e", m_noiseEstimates[i] ) )
+                              << FITSHeaderKeyword( IsoString().Format( "NOISE%02d", i ),
+                                                    IsoString().Format( "%.3e", m_noiseEstimates[i] ),
+                                                    IsoString().Format( "Gaussian noise estimate, channel #%d", i ) )
+                              << FITSHeaderKeyword( IsoString().Format( "NOISEF%02d", i ),
+                                                    IsoString().Format( "%.3f", m_noiseFractions[i] ),
+                                                    IsoString().Format( "Fraction of noise pixels, channel #%d", i ) )
+                              << FITSHeaderKeyword( IsoString().Format( "NOISEA%02d", i ),
+                                                    m_noiseAlgorithms[i],
+                                                    IsoString().Format( "Noise evaluation algorithm, channel #%d", i ) );
+               }
+
+               outputFile.WriteFITSKeywords( keywordsChn );
+            }
+
+            Module->ProcessEvents();
+
+            {
+               static Mutex mutex;
+               static AtomicInt count;
+               volatile AutoLockCounter lock( mutex, count, m_instance.m_maxFileWriteThreads );
+               m_outputImage.SelectChannel( i );
+               if ( !outputFile.WriteImage( m_outputImage ) || !outputFile.Close() )
+                  throw CaughtException();
+               m_outputImage.ResetSelections();
+            }
+         }
 
       m_outputImage.FreeData();
    }
@@ -2666,13 +2755,25 @@ bool DebayerInstance::IsHistoryUpdater( const View& ) const
 bool DebayerInstance::CanExecuteOn( const View& view, String& whyNot ) const
 {
    if ( view.Image().IsComplexSample() )
+   {
       whyNot = "Debayer cannot be executed on complex images.";
-   else if ( view.Image().Width() < 6 || view.Image().Height() < 6 )
-      whyNot = "Debayer needs an image of at least 6 by 6 pixels.";
-   else
-      return true;
+      return false;
+   }
 
-   return false;
+   if ( view.Image().Width() < 6 || view.Image().Height() < 6 )
+   {
+      whyNot = "Debayer needs an image of at least 6 by 6 pixels.";
+      return false;
+   }
+
+   if ( !p_outputRGBImages )
+      if ( !p_outputSeparateChannels )
+      {
+         whyNot = "The instance does not define a valid output mode.";
+         return false;
+      }
+
+   return true;
 }
 
 // ----------------------------------------------------------------------------
@@ -2680,6 +2781,7 @@ bool DebayerInstance::CanExecuteOn( const View& view, String& whyNot ) const
 bool DebayerInstance::ExecuteOn( View& view )
 {
    o_imageId.Clear();
+   o_channelIds = StringList( 3 );
    o_noiseEstimates = FVector( 0.0F, 3 );
    o_noiseFractions = FVector( 0.0F, 3 );
    o_noiseAlgorithms = StringList( 3 );
@@ -2705,22 +2807,7 @@ bool DebayerInstance::ExecuteOn( View& view )
    IsoString patternId = CFAPatternIdFromTarget( view, xtrans );
    IsoString methodId = xtrans ? "X-Trans" : DebayerEngine::MethodId( p_debayerMethod );
 
-   ImageVariant source = view.Image();
-
-   ImageWindow outputWindow(  1,    // width
-                              1,    // height
-                              3,    // numberOfChannels
-                             32,    // bitsPerSample
-                             true,  // floatSample
-                             true,  // color
-                             true,  // initialProcessing
-                             ValidFullId( view.FullId() ) + "_RGB_" + ValidMethodId( methodId ) );  // imageId
-
-   ImageVariant t = outputWindow.MainView().Image();
-   Image& output = static_cast<Image&>( *t );
-
    Console console;
-
    console.EnableAbort();
 
    console.Write( "<end><cbr>CFA pattern" );
@@ -2728,30 +2815,35 @@ bool DebayerInstance::ExecuteOn( View& view )
       console.Write( " (detected)" );
    console.WriteLn( ": " + patternId );
 
+   ImageVariant source = view.Image();
+   Image output;
+
    if ( xtrans )
+   {
       XTransInterpolationEngine( sRGBConversionMatrixFromTarget( view ),
                                  XTransPatternFiltersFromTarget( view ) ).Interpolate( output, source, 2/*passes*/ );
+   }
    else
    {
       int bayerPattern = BayerPatternFromTarget( view );
-      // ### WARNING ### Experimental FBDD support - Do not enable by default.
+      // ### WARNING ### Experimental FBDD support - do not enable by default.
       if ( p_fbddNoiseReduction > 0 )
          FBDDEngine( bayerPattern, p_fbddNoiseReduction > 1 ).Denoise( source );
       DebayerEngine( output, *this, bayerPattern ).Debayer( source );
    }
 
-   outputWindow.MainView().SetStorablePermanentProperties( view.StorablePermanentProperties(), false/*notify*/ );
-
-   String cfaSourceFilePath = p_cfaSourceFilePath.Trimmed();
-   if ( cfaSourceFilePath.IsEmpty() )
-      cfaSourceFilePath = view.Window().FilePath();
-   if ( !cfaSourceFilePath.IsEmpty() )
-      outputWindow.MainView().SetStorablePermanentPropertyValue( "PCL:CFASourceFilePath", cfaSourceFilePath, false/*notify*/ );
-   outputWindow.MainView().SetStorablePermanentPropertyValue( "PCL:CFASourcePattern", patternId, false/*notify*/ );
-   outputWindow.MainView().SetStorablePermanentPropertyValue( "PCL:CFASourceInterpolation", methodId, false/*notify*/ );
-
    FITSKeywordArray keywords;
    view.Window().GetKeywords( keywords );
+
+   /*
+    * ### NB: Remove other existing NOISExxx keywords.
+    *         Only our NOISExxx keywords must be present in the header.
+    */
+   for ( size_type i = 0; i < keywords.Length(); )
+      if ( keywords[i].name.StartsWithIC( "NOISE" ) )
+         keywords.Remove( keywords.At( i ) );
+      else
+         ++i;
 
    keywords << FITSHeaderKeyword( "COMMENT", IsoString(), "Demosaicing with "  + PixInsightVersion::AsString() )
             << FITSHeaderKeyword( "HISTORY", IsoString(), "Demosaicing with "  + Module->ReadableVersion() )
@@ -2759,41 +2851,104 @@ bool DebayerInstance::ExecuteOn( View& view )
             << FITSHeaderKeyword( "HISTORY", IsoString(), "Demosaic.pattern: " + patternId )
             << FITSHeaderKeyword( "HISTORY", IsoString(), "Demosaic.method: "  + methodId );
 
+   PropertyArray properties = view.StorablePermanentProperties();
+
+   String cfaSourceFilePath = p_cfaSourceFilePath.Trimmed();
+   if ( cfaSourceFilePath.IsEmpty() )
+      cfaSourceFilePath = view.Window().FilePath();
+
    if ( p_evaluateNoise )
    {
       EvaluateNoise( o_noiseEstimates, o_noiseFractions, o_noiseAlgorithms, source, patternId );
 
-      /*
-       * ### NB: Remove other existing NOISExxx keywords.
-       *         *Only* our NOISExxx keywords must be present in the header.
-       */
-      for ( size_type i = 0; i < keywords.Length(); )
-         if ( keywords[i].name.StartsWithIC( "NOISE" ) )
-            keywords.Remove( keywords.At( i ) );
-         else
-            ++i;
-
       keywords << FITSHeaderKeyword( "HISTORY", IsoString(), "Noise evaluation with " + Module->ReadableVersion() )
                << FITSHeaderKeyword( "HISTORY", IsoString(), IsoString().Format( "Demosaic.noiseEstimates: %.3e %.3e %.3e",
                                                    o_noiseEstimates[0], o_noiseEstimates[1], o_noiseEstimates[2] ) );
-      for ( int i = 0; i < 3; ++i )
-         keywords << FITSHeaderKeyword( IsoString().Format( "NOISE%02d", i ),
-                                        IsoString().Format( "%.3e", o_noiseEstimates[i] ),
-                                        IsoString().Format( "Gaussian noise estimate, channel #%d", i ) )
-                  << FITSHeaderKeyword( IsoString().Format( "NOISEF%02d", i ),
-                                        IsoString().Format( "%.3f", o_noiseFractions[i] ),
-                                        IsoString().Format( "Fraction of noise pixels, channel #%d", i ) )
-                  << FITSHeaderKeyword( IsoString().Format( "NOISEA%02d", i ),
-                                        IsoString( o_noiseAlgorithms[i] ),
-                                        IsoString().Format( "Noise evaluation algorithm, channel #%d", i ) );
    }
 
-   outputWindow.SetKeywords( keywords );
+   if ( p_outputRGBImages )
+   {
+      ImageWindow outputWindow(  1, // width
+                                 1, // height
+                                 3, // numberOfChannels
+                                32, // bitsPerSample
+                              true, // floatSample
+                              true, // color
+                              true, // initialProcessing
+                              ValidFullId( view.FullId() ) + "_RGB_" + ValidMethodId( methodId ) ); // imageId
 
-   if ( p_showImages )
-      outputWindow.Show();
+      outputWindow.MainView().Image().CopyImage( output );
 
-   o_imageId = outputWindow.MainView().Id();
+      outputWindow.MainView().SetStorablePermanentProperties( properties, false/*notify*/ );
+
+      if ( !cfaSourceFilePath.IsEmpty() )
+         outputWindow.MainView().SetStorablePermanentPropertyValue( "PCL:CFASourceFilePath", cfaSourceFilePath, false/*notify*/ );
+      outputWindow.MainView().SetStorablePermanentPropertyValue( "PCL:CFASourcePattern", patternId, false/*notify*/ );
+      outputWindow.MainView().SetStorablePermanentPropertyValue( "PCL:CFASourceInterpolation", methodId, false/*notify*/ );
+
+      FITSKeywordArray keywordsRGB = keywords;
+      if ( p_evaluateNoise )
+         for ( int i = 0; i < 3; ++i )
+            keywordsRGB << FITSHeaderKeyword( IsoString().Format( "NOISE%02d", i ),
+                                              IsoString().Format( "%.3e", o_noiseEstimates[i] ),
+                                              IsoString().Format( "Gaussian noise estimate, channel #%d", i ) )
+                        << FITSHeaderKeyword( IsoString().Format( "NOISEF%02d", i ),
+                                              IsoString().Format( "%.3f", o_noiseFractions[i] ),
+                                              IsoString().Format( "Fraction of noise pixels, channel #%d", i ) )
+                        << FITSHeaderKeyword( IsoString().Format( "NOISEA%02d", i ),
+                                              IsoString( o_noiseAlgorithms[i] ),
+                                              IsoString().Format( "Noise evaluation algorithm, channel #%d", i ) );
+
+      outputWindow.SetKeywords( keywordsRGB );
+
+      if ( p_showImages )
+         outputWindow.Show();
+
+      o_imageId = outputWindow.MainView().Id();
+   }
+
+   if ( p_outputSeparateChannels )
+      for ( int i = 0; i < 3; ++i )
+      {
+         ImageWindow outputWindow( 1, // width
+                                   1, // height
+                                   1, // numberOfChannels
+                                  32, // bitsPerSample
+                                true, // floatSample
+                               false, // color
+                                true, // initialProcessing
+                               ValidFullId( view.FullId() ) + '_' + "RGB"[i] + '_' + ValidMethodId( methodId ) ); // imageId
+
+         output.SelectChannel( i );
+         outputWindow.MainView().Image().CopyImage( output );
+
+         outputWindow.MainView().SetStorablePermanentProperties( properties, false/*notify*/ );
+
+         if ( !cfaSourceFilePath.IsEmpty() )
+            outputWindow.MainView().SetStorablePermanentPropertyValue( "PCL:CFASourceFilePath", cfaSourceFilePath, false/*notify*/ );
+         outputWindow.MainView().SetStorablePermanentPropertyValue( "PCL:CFASourcePattern", patternId, false/*notify*/ );
+         outputWindow.MainView().SetStorablePermanentPropertyValue( "PCL:CFASourceInterpolation", methodId, false/*notify*/ );
+         outputWindow.MainView().SetStorablePermanentPropertyValue( "PCL:CFASourceChannel", i, false/*notify*/ );
+
+         FITSKeywordArray keywordsChn = keywords;
+         if ( p_evaluateNoise )
+            keywordsChn << FITSHeaderKeyword( IsoString().Format( "NOISE%02d", i ),
+                                              IsoString().Format( "%.3e", o_noiseEstimates[i] ),
+                                              IsoString().Format( "Gaussian noise estimate, channel #%d", i ) )
+                        << FITSHeaderKeyword( IsoString().Format( "NOISEF%02d", i ),
+                                              IsoString().Format( "%.3f", o_noiseFractions[i] ),
+                                              IsoString().Format( "Fraction of noise pixels, channel #%d", i ) )
+                        << FITSHeaderKeyword( IsoString().Format( "NOISEA%02d", i ),
+                                              IsoString( o_noiseAlgorithms[i] ),
+                                              IsoString().Format( "Noise evaluation algorithm, channel #%d", i ) );
+
+         outputWindow.SetKeywords( keywordsChn );
+
+         if ( p_showImages )
+            outputWindow.Show();
+
+         o_channelIds[i] = outputWindow.MainView().Id();
+      }
 
    return true;
 }
@@ -2807,6 +2962,13 @@ bool DebayerInstance::CanExecuteGlobal( String& whyNot ) const
       whyNot = "No target images have been defined.";
       return false;
    }
+
+   if ( !p_outputRGBImages )
+      if ( !p_outputSeparateChannels )
+      {
+         whyNot = "The instance does not define a valid output mode.";
+         return false;
+      }
 
    return true;
 }
@@ -2973,6 +3135,7 @@ bool DebayerInstance::ExecuteGlobal()
                      {
                         OutputFileData& o = o_outputFileData[(*i)->Index()];
                         o.filePath = (*i)->OutputFilePath();
+                        o.channelFilePaths = (*i)->OutputChannelFilePaths();
                         if ( p_evaluateNoise )
                         {
                            o.noiseEstimates = (*i)->NoiseEstimates();
@@ -3559,6 +3722,10 @@ void* DebayerInstance::LockParameter( const MetaParameter* p, size_type tableRow
       return p_inputHints.Begin();
    if ( p == TheDebayerOutputHintsParameter )
       return p_outputHints.Begin();
+   if ( p == TheDebayerOutputRGBImagesParameter )
+      return &p_outputRGBImages;
+   if ( p == TheDebayerOutputSeparateChannelsParameter )
+      return &p_outputSeparateChannels;
    if ( p == TheDebayerOutputDirectoryParameter )
       return p_outputDirectory.Begin();
    if ( p == TheDebayerOutputExtensionParameter )
@@ -3586,6 +3753,12 @@ void* DebayerInstance::LockParameter( const MetaParameter* p, size_type tableRow
 
    if ( p == TheDebayerOutputImageParameter )
       return o_imageId.Begin();
+   if ( p == TheDebayerOutputChannelImageRParameter )
+      return o_channelIds[0].Begin();
+   if ( p == TheDebayerOutputChannelImageGParameter )
+      return o_channelIds[1].Begin();
+   if ( p == TheDebayerOutputChannelImageBParameter )
+      return o_channelIds[2].Begin();
    if ( p == TheDebayerNoiseEstimateRParameter )
       return o_noiseEstimates.At( 0 );
    if ( p == TheDebayerNoiseEstimateGParameter )
@@ -3607,6 +3780,12 @@ void* DebayerInstance::LockParameter( const MetaParameter* p, size_type tableRow
 
    if ( p == TheDebayerOutputFilePathParameter )
       return o_outputFileData[tableRow].filePath.Begin();
+   if ( p == TheDebayerOutputChannelFilePathRParameter )
+      return o_outputFileData[tableRow].channelFilePaths[0].Begin();
+   if ( p == TheDebayerOutputChannelFilePathGParameter )
+      return o_outputFileData[tableRow].channelFilePaths[1].Begin();
+   if ( p == TheDebayerOutputChannelFilePathBParameter )
+      return o_outputFileData[tableRow].channelFilePaths[2].Begin();
    if ( p == TheDebayerOutputFileNoiseEstimateRParameter )
       return o_outputFileData[tableRow].noiseEstimates.At( 0 );
    if ( p == TheDebayerOutputFileNoiseEstimateGParameter )
@@ -3687,12 +3866,29 @@ bool DebayerInstance::AllocateParameter( size_type sizeOrLength, const MetaParam
       if ( sizeOrLength > 0 )
          p_outputPostfix.SetLength( sizeOrLength );
    }
-
    else if ( p == TheDebayerOutputImageParameter )
    {
       o_imageId.Clear();
       if ( sizeOrLength > 0 )
          o_imageId.SetLength( sizeOrLength );
+   }
+   else if ( p == TheDebayerOutputChannelImageRParameter )
+   {
+      o_channelIds[0].Clear();
+      if ( sizeOrLength > 0 )
+         o_channelIds[0].SetLength( sizeOrLength );
+   }
+   else if ( p == TheDebayerOutputChannelImageGParameter )
+   {
+      o_channelIds[1].Clear();
+      if ( sizeOrLength > 0 )
+         o_channelIds[1].SetLength( sizeOrLength );
+   }
+   else if ( p == TheDebayerOutputChannelImageBParameter )
+   {
+      o_channelIds[2].Clear();
+      if ( sizeOrLength > 0 )
+         o_channelIds[2].SetLength( sizeOrLength );
    }
    else if ( p == TheDebayerNoiseAlgorithmRParameter )
    {
@@ -3724,6 +3920,24 @@ bool DebayerInstance::AllocateParameter( size_type sizeOrLength, const MetaParam
       o_outputFileData[tableRow].filePath.Clear();
       if ( sizeOrLength > 0 )
          o_outputFileData[tableRow].filePath.SetLength( sizeOrLength );
+   }
+   else if ( p == TheDebayerOutputChannelFilePathRParameter )
+   {
+      o_outputFileData[tableRow].channelFilePaths[0].Clear();
+      if ( sizeOrLength > 0 )
+         o_outputFileData[tableRow].channelFilePaths[0].SetLength( sizeOrLength );
+   }
+   else if ( p == TheDebayerOutputChannelFilePathGParameter )
+   {
+      o_outputFileData[tableRow].channelFilePaths[1].Clear();
+      if ( sizeOrLength > 0 )
+         o_outputFileData[tableRow].channelFilePaths[1].SetLength( sizeOrLength );
+   }
+   else if ( p == TheDebayerOutputChannelFilePathBParameter )
+   {
+      o_outputFileData[tableRow].channelFilePaths[2].Clear();
+      if ( sizeOrLength > 0 )
+         o_outputFileData[tableRow].channelFilePaths[2].SetLength( sizeOrLength );
    }
    else if ( p == TheDebayerOutputFileNoiseAlgorithmRParameter )
    {
@@ -3774,6 +3988,12 @@ size_type DebayerInstance::ParameterLength( const MetaParameter* p, size_type ta
 
    if ( p == TheDebayerOutputImageParameter )
       return o_imageId.Length();
+   if ( p == TheDebayerOutputChannelImageRParameter )
+      return o_channelIds[0].Length();
+   if ( p == TheDebayerOutputChannelImageGParameter )
+      return o_channelIds[1].Length();
+   if ( p == TheDebayerOutputChannelImageBParameter )
+      return o_channelIds[2].Length();
    if ( p == TheDebayerNoiseAlgorithmRParameter )
       return o_noiseAlgorithms[0].Length();
    if ( p == TheDebayerNoiseAlgorithmGParameter )
@@ -3785,6 +4005,12 @@ size_type DebayerInstance::ParameterLength( const MetaParameter* p, size_type ta
       return o_outputFileData.Length();
    if ( p == TheDebayerOutputFilePathParameter )
       return o_outputFileData[tableRow].filePath.Length();
+   if ( p == TheDebayerOutputChannelFilePathRParameter )
+      return o_outputFileData[tableRow].channelFilePaths[0].Length();
+   if ( p == TheDebayerOutputChannelFilePathGParameter )
+      return o_outputFileData[tableRow].channelFilePaths[1].Length();
+   if ( p == TheDebayerOutputChannelFilePathBParameter )
+      return o_outputFileData[tableRow].channelFilePaths[2].Length();
    if ( p == TheDebayerOutputFileNoiseAlgorithmRParameter )
       return o_outputFileData[tableRow].noiseAlgorithms[0].Length();
    if ( p == TheDebayerOutputFileNoiseAlgorithmGParameter )

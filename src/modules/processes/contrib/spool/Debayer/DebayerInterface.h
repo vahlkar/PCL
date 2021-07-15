@@ -111,9 +111,9 @@ private:
             HorizontalSizer   NoiseEvaluation_Sizer;
                Label             NoiseEvaluation_Label;
                ComboBox          NoiseEvaluation_ComboBox;
-            HorizontalSizer   Button_Sizer;
-               PushButton        Save_PushButton;
-               PushButton        Restore_PushButton;
+            HorizontalSizer   OutputMode_Sizer;
+               Label             OutputMode_Label;
+               ComboBox          OutputMode_ComboBox;
 
          SectionBar        TargetImages_SectionBar;
          Control           TargetImages_Control;
@@ -165,9 +165,6 @@ private:
    void UpdateImageSelectionButtons();
    void UpdateFormatHintsControls();
    void UpdateOutputFilesControls();
-
-   void SaveSettings();
-   void LoadSettings();
 
    void e_EditCompleted( Edit& sender );
    void e_ItemSelected( ComboBox& sender, int itemIndex );

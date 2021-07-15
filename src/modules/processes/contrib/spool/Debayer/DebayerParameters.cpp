@@ -70,6 +70,8 @@ DebayerTargetImage*               TheDebayerTargetImageParameter = nullptr;
 DebayerNoGUIMessages*             TheDebayerNoGUIMessagesParameter = nullptr;
 DebayerInputHints*                TheDebayerInputHintsParameter = nullptr;
 DebayerOutputHints*               TheDebayerOutputHintsParameter = nullptr;
+DebayerOutputRGBImages*           TheDebayerOutputRGBImagesParameter = nullptr;
+DebayerOutputSeparateChannels*    TheDebayerOutputSeparateChannelsParameter = nullptr;
 DebayerOutputDirectory*           TheDebayerOutputDirectoryParameter = nullptr;
 DebayerOutputExtension*           TheDebayerOutputExtensionParameter = nullptr;
 DebayerOutputPrefix*              TheDebayerOutputPrefixParameter = nullptr;
@@ -84,6 +86,9 @@ DebayerMemoryLoadControl*         TheDebayerMemoryLoadControlParameter = nullptr
 DebayerMemoryLoadLimit*           TheDebayerMemoryLoadLimitParameter = nullptr;
 
 DebayerOutputImage*               TheDebayerOutputImageParameter = nullptr;
+DebayerOutputChannelImageR*       TheDebayerOutputChannelImageRParameter = nullptr;
+DebayerOutputChannelImageG*       TheDebayerOutputChannelImageGParameter = nullptr;
+DebayerOutputChannelImageB*       TheDebayerOutputChannelImageBParameter = nullptr;
 DebayerNoiseEstimateR*            TheDebayerNoiseEstimateRParameter = nullptr;
 DebayerNoiseEstimateG*            TheDebayerNoiseEstimateGParameter = nullptr;
 DebayerNoiseEstimateB*            TheDebayerNoiseEstimateBParameter = nullptr;
@@ -96,6 +101,9 @@ DebayerNoiseAlgorithmB*           TheDebayerNoiseAlgorithmBParameter = nullptr;
 
 DebayerOutputFileData*            TheDebayerOutputFileDataParameter = nullptr;
 DebayerOutputFilePath*            TheDebayerOutputFilePathParameter = nullptr;
+DebayerOutputChannelFilePathR*    TheDebayerOutputChannelFilePathRParameter = nullptr;
+DebayerOutputChannelFilePathG*    TheDebayerOutputChannelFilePathGParameter = nullptr;
+DebayerOutputChannelFilePathB*    TheDebayerOutputChannelFilePathBParameter = nullptr;
 DebayerOutputFileNoiseEstimateR*  TheDebayerOutputFileNoiseEstimateRParameter = nullptr;
 DebayerOutputFileNoiseEstimateG*  TheDebayerOutputFileNoiseEstimateGParameter = nullptr;
 DebayerOutputFileNoiseEstimateB*  TheDebayerOutputFileNoiseEstimateBParameter = nullptr;
@@ -399,6 +407,40 @@ IsoString DebayerOutputHints::Id() const
 
 // ----------------------------------------------------------------------------
 
+DebayerOutputRGBImages::DebayerOutputRGBImages( MetaProcess* P ) : MetaBoolean( P )
+{
+   TheDebayerOutputRGBImagesParameter = this;
+}
+
+IsoString DebayerOutputRGBImages::Id() const
+{
+   return "outputRGBImages";
+}
+
+bool DebayerOutputRGBImages::DefaultValue() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerOutputSeparateChannels::DebayerOutputSeparateChannels( MetaProcess* P ) : MetaBoolean( P )
+{
+   TheDebayerOutputSeparateChannelsParameter = this;
+}
+
+IsoString DebayerOutputSeparateChannels::Id() const
+{
+   return "outputSeparateChannels";
+}
+
+bool DebayerOutputSeparateChannels::DefaultValue() const
+{
+   return false;
+}
+
+// ----------------------------------------------------------------------------
+
 DebayerOutputDirectory::DebayerOutputDirectory( MetaProcess* P ) : MetaString( P )
 {
    TheDebayerOutputDirectoryParameter = this;
@@ -686,6 +728,57 @@ bool DebayerOutputImage::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
+DebayerOutputChannelImageR::DebayerOutputChannelImageR( MetaProcess* P ) : MetaString( P )
+{
+   TheDebayerOutputChannelImageRParameter = this;
+}
+
+IsoString DebayerOutputChannelImageR::Id() const
+{
+   return "outputChannelImageR";
+}
+
+bool DebayerOutputChannelImageR::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerOutputChannelImageG::DebayerOutputChannelImageG( MetaProcess* P ) : MetaString( P )
+{
+   TheDebayerOutputChannelImageGParameter = this;
+}
+
+IsoString DebayerOutputChannelImageG::Id() const
+{
+   return "outputChannelImageG";
+}
+
+bool DebayerOutputChannelImageG::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerOutputChannelImageB::DebayerOutputChannelImageB( MetaProcess* P ) : MetaString( P )
+{
+   TheDebayerOutputChannelImageBParameter = this;
+}
+
+IsoString DebayerOutputChannelImageB::Id() const
+{
+   return "outputChannelImageB";
+}
+
+bool DebayerOutputChannelImageB::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
 DebayerNoiseEstimateR::DebayerNoiseEstimateR( MetaProcess* P ) : MetaFloat( P )
 {
    TheDebayerNoiseEstimateRParameter = this;
@@ -912,6 +1005,57 @@ IsoString DebayerOutputFilePath::Id() const
 }
 
 bool DebayerOutputFilePath::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerOutputChannelFilePathR::DebayerOutputChannelFilePathR( MetaTable* T ) : MetaString( T )
+{
+   TheDebayerOutputChannelFilePathRParameter = this;
+}
+
+IsoString DebayerOutputChannelFilePathR::Id() const
+{
+   return "channelFilePathR";
+}
+
+bool DebayerOutputChannelFilePathR::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerOutputChannelFilePathG::DebayerOutputChannelFilePathG( MetaTable* T ) : MetaString( T )
+{
+   TheDebayerOutputChannelFilePathGParameter = this;
+}
+
+IsoString DebayerOutputChannelFilePathG::Id() const
+{
+   return "channelFilePathG";
+}
+
+bool DebayerOutputChannelFilePathG::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerOutputChannelFilePathB::DebayerOutputChannelFilePathB( MetaTable* T ) : MetaString( T )
+{
+   TheDebayerOutputChannelFilePathBParameter = this;
+}
+
+IsoString DebayerOutputChannelFilePathB::Id() const
+{
+   return "channelFilePathB";
+}
+
+bool DebayerOutputChannelFilePathB::IsReadOnly() const
 {
    return true;
 }
