@@ -65,7 +65,7 @@ namespace pcl
 void DrizzleData::Clear()
 {
    m_sourceFilePath = m_cfaSourceFilePath = m_cfaSourcePattern = m_alignTargetFilePath = String();
-   m_referenceWidth = m_referenceHeight = -1;
+   m_referenceWidth = m_referenceHeight = m_cfaSourceChannel = -1;
    m_alignmentOrigin = 0.5;
    m_H = Matrix();
    m_S.Clear();
@@ -133,7 +133,8 @@ XMLDocument* DrizzleData::Serialize() const
 
    if ( !m_cfaSourceFilePath.IsEmpty() )
       *(new XMLElement( *root, "CFASourceImage", XMLAttributeList()
-            << (m_cfaSourcePattern.IsEmpty() ? XMLAttribute() : XMLAttribute( "pattern", m_cfaSourcePattern )) )
+            << (m_cfaSourcePattern.IsEmpty() ? XMLAttribute() : XMLAttribute( "pattern", m_cfaSourcePattern ))
+            << ((m_cfaSourceChannel < 0) ? XMLAttribute() : XMLAttribute( "channel", String( m_cfaSourceChannel ) )) )
        ) << new XMLText( m_cfaSourceFilePath );
 
    if ( !m_alignTargetFilePath.IsEmpty() )
@@ -482,6 +483,9 @@ void DrizzleData::Parse( const XMLElement& root, bool ignoreIntegrationData )
             // optional
             m_cfaSourceFilePath = element.Text().Trimmed();
             m_cfaSourcePattern = element.AttributeValue( "pattern" );
+            String channel = element.AttributeValue( "channel" );
+            if ( !channel.IsEmpty() )
+               m_cfaSourceChannel = Range( channel.ToInt(), -1, int32_max );
          }
          else if ( element.Name() == "AlignmentTargetImage" )
          {

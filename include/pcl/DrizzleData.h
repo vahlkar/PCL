@@ -284,7 +284,7 @@ public:
     * demosaicing task. This file can be used as input for a CFA drizzle
     * integration task.
     *
-    * \sa SetCFASourceFilePath(), CFASourcePattern()
+    * \sa SetCFASourceFilePath(), CFASourcePattern(), CFASourceChannel()
     */
    const String& CFASourceFilePath() const
    {
@@ -295,7 +295,7 @@ public:
     * Sets the path to the mosaiced/unregistered image file corresponding t
     * the drizzle source image represented by this instance.
     *
-    * \sa CFASourceFilePath(), SetCFASourcePattern()
+    * \sa CFASourceFilePath(), SetCFASourcePattern(), SetCFASourceChannel()
     */
    void SetCFASourceFilePath( const String& filePath )
    {
@@ -311,7 +311,7 @@ public:
     * the standard Bayer filters, this function returns "RGGB", "BGGR", "GBRG",
     * and "GRBG".
     *
-    * \sa SetCFASourcePattern(), CFASourceFilePath()
+    * \sa SetCFASourcePattern(), CFASourceChannel(), CFASourceFilePath()
     */
    const String& CFASourcePattern() const
    {
@@ -325,11 +325,53 @@ public:
     *
     * See CFASourcePattern() for more information on CFA representations.
     *
-    * \sa CFASourcePattern(), SetCFASourceFilePath()
+    * \sa CFASourcePattern(), SetCFASourceChannel(), SetCFASourceFilePath()
     */
    void SetCFASourcePattern( const String& cfaPattern )
    {
       m_cfaSourcePattern = cfaPattern;
+   }
+
+   /*!
+    * Returns the channel index selected for the CFA mosaiced/unregistered
+    * image file corresponding to the drizzle source image represented by this
+    * instance.
+    *
+    * The returned value is the zero-based index of an image channel in a color
+    * filter array (CFA) source frame, where typically 0 corresponds to red, 1
+    * to green and 2 to blue. This member function returns a value &lt; 0 if no
+    * channel index has been defined.
+    *
+    * The CFA channel index can be defined for drizzle integration of separate
+    * color components working with color filter array (CFA) images. This is
+    * useful for correction of non-isotropic channel misalignments, such as
+    * those caused by chromatic aberration or atmospheric dispersion, by
+    * computing image registration transformations with distortion corrections
+    * among color components for each source frame. When a channel index has
+    * been defined, the final CFA drizzle integration generates a monochrome
+    * single-channel image instead of an RGB image.
+    *
+    * \sa SetCFASourceChannel(), CFASourceFilePath(), CFASourcePattern()
+    */
+   int CFASourceChannel() const
+   {
+      return m_cfaSourceChannel;
+   }
+
+   /*!
+    * Defines the channel index selected for the CFA mosaiced/unregistered
+    * image file corresponding to the drizzle source image represented by this
+    * instance.
+    *
+    * The specified \a channel can be &lt; 0 to disable the CFA channel index
+    * feature. See CFASourceChannel() for more information on CFA channel
+    * indexes and their role for CFA drizzle integrations.
+    *
+    * \sa CFASourceChannel(), SetCFASourceFilePath(), SetCFASourcePattern()
+    */
+   void SetCFASourceChannel( int channel )
+   {
+      m_cfaSourceChannel = Range( channel, -1, int32_max );
    }
 
    /*!
@@ -1324,6 +1366,7 @@ private:
            String         m_sourceFilePath;
            String         m_cfaSourceFilePath;
            String         m_cfaSourcePattern;
+           int            m_cfaSourceChannel = -1;
            String         m_alignTargetFilePath;
            int            m_referenceWidth  = -1;
            int            m_referenceHeight = -1;
