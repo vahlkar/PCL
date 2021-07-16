@@ -371,7 +371,7 @@ public:
     */
    void SetCFASourceChannel( int channel )
    {
-      m_cfaSourceChannel = Range( channel, -1, int32_max );
+      m_cfaSourceChannel = Range( channel, -1, int( int32_max ) );
    }
 
    /*!

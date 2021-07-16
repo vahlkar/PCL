@@ -485,7 +485,7 @@ void DrizzleData::Parse( const XMLElement& root, bool ignoreIntegrationData )
             m_cfaSourcePattern = element.AttributeValue( "pattern" );
             String channel = element.AttributeValue( "channel" );
             if ( !channel.IsEmpty() )
-               m_cfaSourceChannel = Range( channel.ToInt(), -1, int32_max );
+               m_cfaSourceChannel = Range( int( channel.ToInt() ), -1, int( int32_max ) );
          }
          else if ( element.Name() == "AlignmentTargetImage" )
          {
