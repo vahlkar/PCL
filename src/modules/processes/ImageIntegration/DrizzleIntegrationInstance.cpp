@@ -577,13 +577,15 @@ private:
    struct ThreadData : public AbstractImage::ThreadData
    {
       ThreadData( const DrizzleIntegrationEngine& engine_,
-                  const Image& source_, const CFAIndex& cfaIndex_,
+                  const Image& source_,
+                  const CFAIndex& cfaIndex_, int cfaChannel_,
                   Image& result_, Image& weight_,
                   const StatusMonitor& monitor_, size_type count_ )
          : AbstractImage::ThreadData( monitor_, count_ )
          , engine( engine_ )
          , source( source_ )
          , cfaIndex( cfaIndex_ )
+         , cfaChannel( cfaChannel_ )
          , result( result_ )
          , weight( weight_ )
       {
@@ -592,6 +594,7 @@ private:
       const DrizzleIntegrationEngine& engine;
       const Image&                    source;     // the current source image
       const CFAIndex&                 cfaIndex;   // CFA channel selection
+            int                       cfaChannel; // CFA source channel: 0,1,2 or < 0 if RGB
             Image&                    result;     // output drizzle integrated image
             Image&                    weight;     // output drizzle weights map
             DPoint                    origin;     // alignment origin
@@ -750,7 +753,7 @@ private:
                         for ( int c = (reject ? 1 : 0); c < m_data.engine.m_numberOfChannels; ++c )
                         {
                            if ( m_data.cfaIndex )
-                              if ( !m_data.cfaIndex( p, c ) )
+                              if ( !m_data.cfaIndex( p, (m_data.cfaChannel < 0) ? c : m_data.cfaChannel ) )
                                  continue;
 
                            if ( m_data.rejection )
@@ -1611,6 +1614,7 @@ void DrizzleIntegrationEngine::Perform()
 
             String filePath;
             CFAIndex cfaIndex;
+            int cfaChannel = -1;
             if ( m_instance.p_enableCFA )
             {
                filePath = m_decoder.CFASourceFilePath();
@@ -1631,15 +1635,28 @@ void DrizzleIntegrationEngine::Perform()
                            "we are forcing '" + cfaPattern + "\' as per instance parameters." );
 
                cfaIndex = CFAIndex( cfaPattern );
-
                console.WriteLn( "CFA pattern   : " + cfaPattern );
 
-               if ( m_numberOfChannels < 3 )
-                  throw Error( String( "CFA mosaiced frames imply integration of an RGB color image, but this file " ) +
-                               "corresponds to a monochrome image." );
-               if ( m_numberOfChannels > 3 )
-                  throw Error( String( "CFA mosaiced frames imply integration of an RGB color image, but this file " ) +
-                               "defines additional channels that cannot be retrieved from a CFA." );
+               cfaChannel = m_decoder.CFASourceChannel();
+               if ( cfaChannel > 2 )
+                  throw Error( "The drizzle file specifies an invalid CFA source channel index \'" + String( cfaChannel ) + "\'." );
+
+               if ( cfaChannel < 0 )
+               {
+                  if ( m_numberOfChannels < 3 )
+                     throw Error( String( "CFA mosaiced frames imply integration of an RGB color image, but this file " ) +
+                                  "corresponds to a monochrome image." );
+                  if ( m_numberOfChannels > 3 )
+                     throw Error( String( "CFA mosaiced frames imply integration of an RGB color image, but this file " ) +
+                                  "defines additional channels that cannot be retrieved from a CFA." );
+               }
+               else
+               {
+                  console.WriteLn( "CFA channel   : " + String( cfaChannel ) );
+                  if ( m_numberOfChannels != 1 )
+                     throw Error( "The drizzle file specifies a source CFA channel, which implies integration of a "
+                                  "single-channel monochrome image, but this file corresponds to a color image." );
+               }
             }
             else
                filePath = m_decoder.SourceFilePath();
@@ -1710,6 +1727,7 @@ void DrizzleIntegrationEngine::Perform()
             ThreadData threadData( *this,
                                    sourceImage,
                                    cfaIndex,
+                                   cfaChannel,
                                    static_cast<Image&>( *resultImage ),
                                    static_cast<Image&>( *weightImage ),
                                    monitor, m_height );
