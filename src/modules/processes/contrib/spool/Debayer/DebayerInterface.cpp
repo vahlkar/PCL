@@ -576,7 +576,7 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
    Pattern_Sizer.AddStretch();
 
    const char* methodToolTip =
-      "<p>Select the demosaicing algorithm. SuperPixel creates a half sized image, very fast, good quality. "
+      "<p>Select the demosaicing algorithm. SuperPixel is fast and creates a good quality, half-sized image. "
       "The remaining methods create a full sized image, increasing in quality and computational overhead.</p>"
       "<p>For images acquired with X-Trans sensors this parameter is ignored and a special X-Trans interpolation "
       "algorithm is always applied.</p>";
@@ -601,9 +601,10 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
    EvaluateNoise_CheckBox.SetText( "Evaluate noise" );
    EvaluateNoise_CheckBox.SetToolTip( "<p>If this option is selected, Debayer will compute per-channel noise "
       "estimates for each target image using a wavelet-based algorithm (MRS noise evaluation by default). Noise "
-      "estimates will be computed from demosaiced data and will be stored as NOISExxx FITS header keywords in the "
-      "output files. These estimates can be used later by several processes and scripts, most notably by the "
-      "ImageIntegration tool, which uses them by default for robust image weighting based on relative SNR values.</p>" );
+      "estimates will be computed from raw CFA data before interpolation, and will be stored as NOISExxx FITS "
+      "header keywords in the output files. These estimates can be used later by several processes and scripts, "
+      "most notably by the ImageIntegration tool, which uses them by default for robust image weighting based "
+      "on relative SNR values.</p>" );
    EvaluateNoise_CheckBox.OnClick( (Button::click_event_handler)&DebayerInterface::e_Click, w );
 
    EvaluateNoise_Sizer.SetSpacing( 4 );

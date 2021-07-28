@@ -58,7 +58,7 @@
 
 #define MODULE_RELEASE_YEAR      2021
 #define MODULE_RELEASE_MONTH     7
-#define MODULE_RELEASE_DAY       15
+#define MODULE_RELEASE_DAY       28
 
 #include "DebayerModule.h"
 #include "DebayerProcess.h"
