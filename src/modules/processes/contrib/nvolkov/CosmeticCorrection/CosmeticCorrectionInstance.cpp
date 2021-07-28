@@ -412,7 +412,6 @@ struct CCThreadData
    MorphologicalTransformation* avrMT = nullptr;
    MorphologicalTransformation* medMT = nullptr;
    MorphologicalTransformation* bkgMT = nullptr;
-   int maxProcessors = 1; // maximum number of nested threads allowed
 };
 
 class CCThread : public Thread
@@ -434,33 +433,32 @@ public:
 
    virtual ~CCThread()
    {
-      if ( target != 0 )
-         delete target, target = 0;
-      if ( fileData != 0 )
-         delete fileData, fileData = 0;
+      if ( target != nullptr )
+         delete target, target = nullptr;
+      if ( fileData != nullptr )
+         delete fileData, fileData = nullptr;
    }
 
    void Run() override
    {
       try
       {
-         success = false; /* ### */
+         success = false;
 
-         //Console().Show(); /* ### */ Cannot do this from a running thread!
-
-         // prepare filtered( a,m,b = average, median, background )images according checked methods
-         // AutoHot : a,m,b
-         // AutoCold:  ,m,b
-         // DarkHot : a, ,
-         // DarkCold:  ,m,
+         /*
+          * Prepare filtered images according to selected methods (a, m, b => average, median, background )
+          * AutoHot  : a m b
+          * AutoCold :   m b
+          * DarkHot  : a
+          * DarkCold :   m
+          */
 
          MuteStatus status;
          target->SetStatusCallback( &status );
          target->Status().DisableInitialization();
 
          Image avr, med, bkg;
-         bool needAvr, needMed, needBkg;
-         needAvr = needMed = needBkg = false;
+         bool needAvr = false, needMed = false, needBkg = false;
 
          if ( instance->p_useAutoDetect )
          {
@@ -471,11 +469,11 @@ public:
          }
 
          if ( needAvr )
-            avr.Assign( *target ), ( *data.avrMT ) >> avr; // prepare surrounding neighbors Mean
+            avr.Assign( *target ), (*data.avrMT) >> avr; // prepare surrounding neighbors Mean
          if ( needMed )
-            med.Assign( *target ), ( *data.medMT ) >> med; // prepare surrounding neighbors Median
+            med.Assign( *target ), (*data.medMT) >> med; // prepare surrounding neighbors Median
          if ( needBkg )
-            bkg.Assign( *target ), ( *data.bkgMT ) >> bkg; // prepare background Median
+            bkg.Assign( *target ), (*data.bkgMT) >> bkg; // prepare background Median
 
          const float f0 = instance->p_amount;
          const float f1 = 1 - f0;
@@ -485,63 +483,68 @@ public:
 
          for ( int c = 0; c < target->NumberOfChannels(); ++c )
          {
-            if ( instance->m_mapDarkHot ) // Apply mapDarkHot ----------------------------------------------------
+            if ( instance->m_mapDarkHot )
             {
                const MapImg::sample* map = instance->m_mapDarkHot->PixelData( Min( c, instance->m_mapDarkHot->NumberOfChannels() - 1 ) );
-               for ( int y = 0; y < height; y++ )
+               for ( int y = 0; y < height; ++y )
                {
-                  /* ### */
                   if ( TryIsAborted() )
                      return;
-                  /* ### */
 
-                  for ( int x = 0; x < width; x++ )
-                  {
+                  for ( int x = 0; x < width; ++x, ++map )
                      if ( *map != 0 )
                      {
                         count++;
                         const Image::sample v = GetAverage3x3( target, x, y, c, width, height );
                         target->Pixel( x, y, c ) = v * f0 + target->Pixel( x, y, c ) * f1;
                      }
-                     map++;
-                  }
                }
             }
 
-            if ( instance->m_mapDarkCold ) // Apply mapDarkCold ----------------------------------------------------
+            if ( instance->m_mapDarkCold )
             {
                const MapImg::sample* map = instance->m_mapDarkCold->PixelData( Min( c, instance->m_mapDarkCold->NumberOfChannels() - 1 ) );
-               for ( int y = 0; y < height; y++ )
+               for ( int y = 0; y < height; ++y )
                {
-                  /* ### */
                   if ( TryIsAborted() )
                      return;
-                  /* ### */
 
-                  for ( int x = 0; x < width; x++ )
-                  {
+                  for ( int x = 0; x < width; ++x, ++map )
                      if ( *map != 0 )
                      {
                         count++;
                         const Image::sample v = GetMedian5x5( target, x, y, c, width, height );
                         target->Pixel( x, y, c ) = v * f0 + target->Pixel( x, y, c ) * f1;
                      }
-                     map++;
-                  }
                }
             }
 
-            if ( instance->p_useAutoDetect && ( instance->p_coldAutoCheck || instance->p_hotAutoCheck ) )
+            if ( instance->p_useAutoDetect && (instance->p_coldAutoCheck || instance->p_hotAutoCheck) )
             {
-               double median = target->Median( target->Bounds(), c, c, data.maxProcessors );
-               double avgDev = target->AvgDev( median, target->Bounds(), c, c, data.maxProcessors );
+               target->SelectChannel( c );
 
-               if ( instance->p_hotAutoCheck ) // Processing hotAutoDetect -----------------------------------------------
+               double min, max;
+               target->GetExtremeSampleValues( min, max );
+
+               /*
+                * Reject saturated areas for median calculation.
+                */
+               target->SetRangeClipping( min + 1.0/65535, max - 1.0/65535 );
+               double median = target->Median();
+
+               /*
+                * Robust estimate of scale: trimmed mean deviation from the median.
+                */
+               target->SetRangeClipping( median - 0.9*(median - min),
+                                         median + 0.9*(max - median) );
+               double avgDev = target->AvgDev( median );
+
+               target->ResetSelections();
+
+               if ( instance->p_hotAutoCheck )
                {
-                  /* ### */
                   if ( TryIsAborted() )
                      return;
-                  /* ### */
 
                   Image::sample* t = target->PixelData( c );
                   const Image::sample* end = t + target->NumberOfPixels();
@@ -550,57 +553,53 @@ public:
                   const Image::sample* a = avr.PixelData( c );
 
                   const double k1 = avgDev;
-                  const double k2 = k1 / 2;                        // avrDev / 2
-                  const double k3 = instance->p_hotAutoValue * k1; // avrDev * k
+                  const double k2 = k1 / 2;                        // avgDev / 2
+                  const double k3 = instance->p_hotAutoValue * k1; // avgDev * k
 
                   while ( t < end )
                   {
-                     if ( ( *a < *b + k2 )  //ignore pixel surrounded by other bright pixels at avrDev/2
-                        && ( *t > *b + k1 ) //ignore pixel with brightnes less then (background + avrDev)
-                        && ( *t > *m + k3 ) //ignore pixel with brightnes less then avr of surrounded pixels * k * avrDev
-                     )
+                     if (  ( *a < *b + k2 ) // ignore pixel surrounded by other bright pixels at avgDev/2
+                        && ( *t > *b + k1 ) // ignore pixel with brightnes less then (background + avgDev)
+                        && ( *t > *m + k3 ) // ignore pixel with brightnes less then avg of neighbor pixels * k * avgDev
+                        )
                      {
-                        count++;
+                        ++count;
                         *t = *a * f0 + *t * f1;
                      }
-                     t++, m++, b++, a++;
+                     ++t, ++m, ++b, ++a;
                   }
                }
 
-               if ( instance->p_coldAutoCheck ) // Processing coldAutoDetect -----------------------------------------------
+               if ( instance->p_coldAutoCheck )
                {
-                  /* ### */
                   if ( TryIsAborted() )
                      return;
-                  /* ### */
 
                   Image::sample* t = target->PixelData( c );
                   const Image::sample* end = t + target->NumberOfPixels();
                   const Image::sample* m = med.PixelData( c );
                   const Image::sample* b = bkg.PixelData( c );
 
-                  const double k = avgDev * instance->p_coldAutoValue; // avrDev * how much pixel must be less
+                  const double k = avgDev * instance->p_coldAutoValue; // avgDev * how much pixel must be less
                   while ( t < end )
                   {
                      const double T = *t + k;
-                     if ( ( T < *b ) && ( T < *m ) )
+                     if ( T < *b && T < *m )
                      {
-                        count++;
+                        ++count;
                         *t = *b * f0 + *t * f1;
                      }
-                     t++, m++, b++;
+                     ++t, ++m, ++b;
                   }
                }
             }
 
-            if ( instance->p_useDefectList && !instance->p_defects.IsEmpty() ) // Processing DefectList -----------------------------------------------
+            if ( instance->p_useDefectList && !instance->p_defects.IsEmpty() )
             {
-               for ( size_t i = 0; i < instance->p_defects.Length(); i++ )
+               for ( size_t i = 0; i < instance->p_defects.Length(); ++i )
                {
-                  /* ### */
                   if ( TryIsAborted() )
                      return;
-                  /* ### */
 
                   const CosmeticCorrectionInstance::DefectItem& item = instance->p_defects[i];
                   if ( !item.enabled )
@@ -624,38 +623,34 @@ public:
                      y1 = Min( y1, h );                // cut out of view defective pixels
                   }
 
-                  for ( int y = y0; y <= y1; y++ )
-                  {
+                  for ( int y = y0; y <= y1; ++y )
                      if ( item.isRow )
                      {
                         Image::sample v = GetMedian5x5( target, y, x, c, height, width );
                         target->Pixel( y, x, c ) = v * f0 + target->Pixel( y, x, c ) * f1;
-                        count++;
+                        ++count;
                      }
                      else
                      {
                         Image::sample v = GetMedian5x5( target, x, y, c, width, height );
                         target->Pixel( x, y, c ) = v * f0 + target->Pixel( x, y, c ) * f1;
-                        count++;
+                        ++count;
                      }
-                  }
                }
             }
-         } // for
+         } // for each channel
 
-         success = true; /* ### */
+         success = true;
 
       } // try
       catch ( ... )
       {
-         /* ### */
          ClearConsoleOutputText();
          try
          {
             throw;
          }
          ERROR_HANDLER
-         /* ### */
       }
    }
 
@@ -698,7 +693,7 @@ private:
    String    targetPath;         // File path of this target image
    int       subimageIndex = 0;  // > 0 in case of a multiple image; = 0 otherwise
    size_t    count = 0;          // count of corrected pixels in the image
-   bool      success = false;    // The thread completed execution successfully /* ### */
+   bool      success = false;    // The thread completed execution successfully
 
    const CCThreadData& data;
 
@@ -983,13 +978,12 @@ bool CosmeticCorrectionInstance::ExecuteGlobal()
    m_mapDarkHot = m_mapDarkCold = nullptr;
    m_geometry = 0;
 
-   try //try 1
+   try
    {
       console.EnableAbort();
 
       PrepareMasterDarkMaps();
 
-      //Console().WriteLn( "Prepare thread TargetList." );
       ImageItem item;
 
       size_t succeeded = 0;
@@ -1003,17 +997,13 @@ bool CosmeticCorrectionInstance::ExecuteGlobal()
       threadData.avrMT = AvrMT();
       threadData.medMT = MedMT();
       threadData.bkgMT = BkgMT();
-      threadData.maxProcessors = 1 + ( numberOfThreads - runningThreads.Length() ) / runningThreads.Length();
-      threadData.avrMT->EnableParallelProcessing( threadData.maxProcessors > 1, threadData.maxProcessors );
-      threadData.medMT->EnableParallelProcessing( threadData.maxProcessors > 1, threadData.maxProcessors );
-      threadData.bkgMT->EnableParallelProcessing( threadData.maxProcessors > 1, threadData.maxProcessors );
 
       console.WriteLn( String().Format( "<br>CosmeticCorrection of %u target frames:", p_targetFrames.Length() ) );
       console.WriteLn( String().Format( "* Using %u worker threads", runningThreads.Length() ) );
 
-      try //try 2
+      try
       {
-         int running = 0; // running = Qty sub-images processing now = Qty CPU isActiv now. /* ### */
+         int running = 0;
          do
          {
             // Keep the GUI responsive
@@ -1021,8 +1011,9 @@ bool CosmeticCorrectionInstance::ExecuteGlobal()
             if ( console.AbortRequested() )
                throw ProcessAborted();
 
-            // ------------------------------------------------------------
-            // Open File
+            /*
+             * Open File
+             */
             if ( !targets.IsEmpty() && waitingThreads.IsEmpty() )
             {
                item = *targets;                   // take one from the top of targets list
@@ -1045,46 +1036,47 @@ bool CosmeticCorrectionInstance::ExecuteGlobal()
                }
             }
 
-            // ------------------------------------------------------------
-            // Find idle or free CPU
-            thread_list::iterator i = 0;
-            for ( thread_list::iterator j = runningThreads.Begin(); j != runningThreads.End(); ++j ) //Cycle in CPU units
+            /*
+             * Find idle or free CPU
+             */
+            thread_list::iterator i = nullptr;
+            for ( thread_list::iterator j = runningThreads.Begin(); j != runningThreads.End(); ++j )
             {
-               if ( *j == 0 ) // the CPU is free and empty.
+               if ( *j == nullptr ) // the CPU is free and empty.
                {
                   if ( !waitingThreads.IsEmpty() ) // there are not processed images
                   {
                      i = j;
                      break; // i pointed to CPU which is free now.
                   }
-               }                               // *j != 0 the CPU is non free and maybe idle or active
-               else if ( !( *j )->IsActive() ) // the CPU is idle = the CPU has finished processing
+               }                               // *j != nullptr -> the CPU is not free and maybe idle or active
+               else if ( !(*j)->IsActive() ) // the CPU is idle = the CPU has finished processing
                {
                   i = j;
                   break; // i pointed to CPU thread which ready to save.
                }
             }
 
-            if ( i == 0 ) // all CPU IsActive or no new images
+            if ( i == nullptr ) // all CPUs active or no new images
             {
                pcl::Sleep( 100 );
                continue;
             }
 
-            // ------------------------------------------------------------
-            // Write File
-            if ( *i != 0 ) //the CPU is idle
+            /*
+             * Write File
+             */
+            if ( *i != nullptr ) // the CPU is idle
             {
-               running--;
+               --running;
                try
                {
-                  if ( !( *i )->Success() )
+                  if ( !(*i)->Success() )
                      throw Error( ( *i )->ConsoleOutputText() );
 
-                  console.WriteLn( String().Format( "<br>CPU#%u done. %u pixels corrected.",
-                     i - runningThreads.Begin(), ( *i )->Count() ) );
+                  console.WriteLn( String().Format( "<br>CPU #%u done. %u pixels corrected.", i - runningThreads.Begin(), ( *i )->Count() ) );
                   SaveImage( *i );
-                  runningThreads.Delete( i ); //prepare thread for next image. now (*i == 0) the CPU is free
+                  runningThreads.Delete( i ); // prepare thread for next image. now (*i == nullptr) the CPU is free
                }
                catch ( ... )
                {
@@ -1092,25 +1084,26 @@ bool CosmeticCorrectionInstance::ExecuteGlobal()
                   throw;
                }
                ++succeeded;
-            } //now (*i == 0) the CPU is free
+            }
 
             // Keep the GUI responsive
             Module->ProcessEvents();
             if ( console.AbortRequested() )
                throw ProcessAborted();
 
-            // ------------------------------------------------------------
-            // Put image to empty runningThreads slot and Run()
+            /*
+             * Put image to empty runningThreads slot and Run()
+             */
             if ( !waitingThreads.IsEmpty() )
             {
                *i = *waitingThreads;                            //put one sub-image to runningThreads. so, now (*i != 0)
                waitingThreads.Remove( waitingThreads.Begin() ); //remove one sub-image from waitingThreads
-               console.WriteLn( String().Format( "<br>CPU#%u processing file ", i - runningThreads.Begin() ) + item.path );
-               ( *i )->Start( ThreadPriority::DefaultMax, i - runningThreads.Begin() );
+               console.WriteLn( String().Format( "<br>CPU #%u processing file ", i - runningThreads.Begin() ) + item.path );
+               (*i)->Start( ThreadPriority::DefaultMax, i - runningThreads.Begin() );
                running++;
             }
          } while ( running > 0 || !targets.IsEmpty() );
-      } // try 2
+      }
       catch ( ... )
       {
          try
@@ -1121,20 +1114,20 @@ bool CosmeticCorrectionInstance::ExecuteGlobal()
 
          console.NoteLn( "<end><cbr><br>* Waiting for running tasks to terminate ..." );
          for ( thread_list::iterator i = runningThreads.Begin(); i != runningThreads.End(); ++i )
-            if ( *i != 0 )
-               ( *i )->Abort();
+            if ( *i != nullptr )
+               (*i)->Abort();
          for ( thread_list::iterator i = runningThreads.Begin(); i != runningThreads.End(); ++i )
-            if ( *i != 0 )
-               ( *i )->Wait();
+            if ( *i != nullptr )
+               (*i)->Wait();
          runningThreads.Destroy();
          waitingThreads.Destroy();
          throw;
       }
 
-      if ( m_mapDarkHot != 0 )
-         delete m_mapDarkHot, m_mapDarkHot = 0;
-      if ( m_mapDarkCold != 0 )
-         delete m_mapDarkCold, m_mapDarkCold = 0;
+      if ( m_mapDarkHot != nullptr )
+         delete m_mapDarkHot, m_mapDarkHot = nullptr;
+      if ( m_mapDarkCold != nullptr )
+         delete m_mapDarkCold, m_mapDarkCold = nullptr;
 
       console.NoteLn( String().Format(
          "<br>===== CosmeticCorrection: %u succeeded, %u skipped, %u canceled =====",
@@ -1144,10 +1137,10 @@ bool CosmeticCorrectionInstance::ExecuteGlobal()
    }
    catch ( ... )
    {
-      if ( m_mapDarkHot != 0 )
-         delete m_mapDarkHot, m_mapDarkHot = 0;
-      if ( m_mapDarkCold != 0 )
-         delete m_mapDarkCold, m_mapDarkCold = 0;
+      if ( m_mapDarkHot != nullptr )
+         delete m_mapDarkHot, m_mapDarkHot = nullptr;
+      if ( m_mapDarkCold != nullptr )
+         delete m_mapDarkCold, m_mapDarkCold = nullptr;
 
       console.NoteLn( "<end><cbr><br>* CosmeticCorrection terminated." );
       throw;
