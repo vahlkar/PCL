@@ -162,6 +162,7 @@ void Function::InitializeList( function_set& functions, function_index& index )
              << new NormalizationFunction
              << new NumberOfChannelsFunction
              << new OpAddFunction
+             << new OpAtan2Function
              << new OpColorBurnFunction
              << new OpColorDodgeFunction
              << new OpDifFunction

@@ -1652,7 +1652,7 @@ void KrnGaussianFunction::operator()( Pixel& r, component_list::const_iterator, 
 
 enum
 {
-   OpMov, OpAdd, OpSub, OpMul, OpDiv, OpPow, OpDif, OpMin, OpMax,
+   OpMov, OpAdd, OpSub, OpMul, OpDiv, OpPow, OpDif, OpMin, OpMax, OpAtan2,
    OpColorBurn, OpLinearBurn, OpScreen, OpColorDodge, OpOverlay,
    OpSoftLight, OpHardLight, OpVividLight, OpLinearLight, OpPinLight, OpExclusion,
    OpCount
@@ -1750,77 +1750,101 @@ IsoString CombinationFunction::GenerateImage( component_list::const_iterator i, 
 
    if ( !TheImageCache->HasImage( key ) )
    {
-      ImageVariant result = NewGeneratorResult( ref1 );
-
-      ImageVariant::image_op iop;
-      switch ( op )
+      if ( op == OpAtan2 )
       {
-      default: // ?!
-      case OpMov:
-         iop = ImageOp::Mov;
-         break;
-      case OpAdd:
-         iop = ImageOp::Add;
-         break;
-      case OpSub:
-         iop = ImageOp::Sub;
-         break;
-      case OpMul:
-         iop = ImageOp::Mul;
-         break;
-      case OpDiv:
-         iop = ImageOp::Div;
-         break;
-      case OpPow:
-         iop = ImageOp::Pow;
-         break;
-      case OpDif:
-         iop = ImageOp::Dif;
-         break;
-      case OpMin:
-         iop = ImageOp::Min;
-         break;
-      case OpMax:
-         iop = ImageOp::Max;
-         break;
-      case OpColorBurn:
-         iop = ImageOp::ColorBurn;
-         break;
-      case OpLinearBurn:
-         iop = ImageOp::LinearBurn;
-         break;
-      case OpScreen:
-         iop = ImageOp::Screen;
-         break;
-      case OpColorDodge:
-         iop = ImageOp::ColorDodge;
-         break;
-      case OpOverlay:
-         iop = ImageOp::Overlay;
-         break;
-      case OpSoftLight:
-         iop = ImageOp::SoftLight;
-         break;
-      case OpHardLight:
-         iop = ImageOp::HardLight;
-         break;
-      case OpVividLight:
-         iop = ImageOp::VividLight;
-         break;
-      case OpLinearLight:
-         iop = ImageOp::LinearLight;
-         break;
-      case OpPinLight:
-         iop = ImageOp::PinLight;
-         break;
-      case OpExclusion:
-         iop = ImageOp::Exclusion;
-         break;
+         ImageVariant varY = NewGeneratorResult( ref1, 64 );
+         ImageVariant varX = NewGeneratorResult( ref2, 64 );
+
+         DImage& imgY = static_cast<DImage&>( *varY );
+         DImage& imgX = static_cast<DImage&>( *varX );
+         if (  imgX.Width() != imgY.Width()
+            || imgX.Height() != imgY.Height()
+            || imgX.NumberOfChannels() != imgY.NumberOfChannels() )
+            throw ParseError( "combine(): The atan2 operator requires two images with identical geometries" );
+
+         for ( int c = 0; c < imgY.NumberOfChannels(); ++c )
+         {
+            DImage::sample_iterator y( imgY, c );
+            DImage::const_sample_iterator x( imgX, c );
+            for ( ; y; ++y, ++x )
+               *y = ArcTan( *y, *x );
+         }
+
+         TheImageCache->AddImage( key, varY );
       }
+      else
+      {
+         ImageVariant result = NewGeneratorResult( ref1 );
+         ImageVariant::image_op iop;
+         switch ( op )
+         {
+         default: // ?!
+         case OpMov:
+            iop = ImageOp::Mov;
+            break;
+         case OpAdd:
+            iop = ImageOp::Add;
+            break;
+         case OpSub:
+            iop = ImageOp::Sub;
+            break;
+         case OpMul:
+            iop = ImageOp::Mul;
+            break;
+         case OpDiv:
+            iop = ImageOp::Div;
+            break;
+         case OpPow:
+            iop = ImageOp::Pow;
+            break;
+         case OpDif:
+            iop = ImageOp::Dif;
+            break;
+         case OpMin:
+            iop = ImageOp::Min;
+            break;
+         case OpMax:
+            iop = ImageOp::Max;
+            break;
+         case OpColorBurn:
+            iop = ImageOp::ColorBurn;
+            break;
+         case OpLinearBurn:
+            iop = ImageOp::LinearBurn;
+            break;
+         case OpScreen:
+            iop = ImageOp::Screen;
+            break;
+         case OpColorDodge:
+            iop = ImageOp::ColorDodge;
+            break;
+         case OpOverlay:
+            iop = ImageOp::Overlay;
+            break;
+         case OpSoftLight:
+            iop = ImageOp::SoftLight;
+            break;
+         case OpHardLight:
+            iop = ImageOp::HardLight;
+            break;
+         case OpVividLight:
+            iop = ImageOp::VividLight;
+            break;
+         case OpLinearLight:
+            iop = ImageOp::LinearLight;
+            break;
+         case OpPinLight:
+            iop = ImageOp::PinLight;
+            break;
+         case OpExclusion:
+            iop = ImageOp::Exclusion;
+            break;
+         }
 
-      result.Apply( *ref2->Image(), iop );
+         result.Apply( *ref2->Image(), iop );
 
-      TheImageCache->AddImage( key, result );
+         TheImageCache->AddImage( key, result );
+      }
    }
 
    return key;
@@ -1982,6 +2006,23 @@ bool OpMaxFunction::IsInvariant( component_list::const_iterator, component_list:
 void OpMaxFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
 {
    r.SetSamples( OpMax );
+}
+
+// ----------------------------------------------------------------------------
+
+void OpAtan2Function::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+{
+   throw Error( "op_atan2(): Internal parser error" );
+}
+
+bool OpAtan2Function::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+{
+   return true;
+}
+
+void OpAtan2Function::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+{
+   r.SetSamples( OpAtan2 );
 }
 
 // ----------------------------------------------------------------------------

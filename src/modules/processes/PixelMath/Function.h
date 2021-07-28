@@ -3922,6 +3922,40 @@ public:
 
 // ----------------------------------------------------------------------------
 
+class OpAtan2Function : public Function
+{
+public:
+
+   OpAtan2Function( int p = 0, int n = 0 ) : Function( p, n ) {}
+
+   Expression* Clone() const override { return new OpAtan2Function( *this ); }
+   Expression* Generate( int p ) const override { return new OpAtan2Function( p ); }
+
+   String Meta() const override            { return "op_atan2()"; }
+   String Id() const override              { return "<p>Represents a pixel wise arc tangent operation for the combine() generator.</p>"
+                                                    "<p>Given two images <i>X</i> and <i>Y</i>, the expression:</p>"
+                                                    "<p style=\"white-space: pre;\">"
+                                                    "   combine( Y, X, op_atan2() )"
+                                                    "</p>"
+                                                    "<p>will generate an image where each pixel will be equal to the arc tangent "
+                                                    "of <i>y</i>/<i>x</i> in radians, in the range [&minus;&pi;,+&pi;], where "
+                                                    "<i>y</i> and <i>x</i> are, respectively, the corresponding pixels in the "
+                                                    "<i>Y</i> and <i>X</i> images.</p>"
+                                                    "<p>The signs of the arguments are used to determine the correct quadrant of "
+                                                    "the result. The generated image will be in 64-bit floating point format.</p>"
+                                                    "<p>Invariant subexpression: always.</p>"; }
+   String Token() const override           { return "op_atan2"; }
+   int RequiredArguments() const override  { return 0; }
+   int MaximumArguments() const override   { return 0; }
+
+   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+
+   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
+   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+};
+
+// ----------------------------------------------------------------------------
+
 class OpColorBurnFunction : public Function
 {
 public:
