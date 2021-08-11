@@ -1,24 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="512" height="512" version="1.1" viewBox="0 0 135.47 135.47" xmlns="http://www.w3.org/2000/svg">
+<svg width="512" height="512" version="1.1" viewBox="0 0 135.47 135.47" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <defs>
-<linearGradient id="c" x1="13.985" x2="75.028" y1="72.104" y2="13.329" gradientTransform="matrix(1.9071 0 0 1.9807 58.635 -89.185)" gradientUnits="userSpaceOnUse">
+<linearGradient id="e" x1="13.985" x2="75.028" y1="72.104" y2="13.329" gradientTransform="matrix(1.907 0 0 1.9806 -23.495 -23.224)" gradientUnits="userSpaceOnUse">
 <stop stop-color="#191c7e" offset="0"/>
 <stop stop-color="#7cbdf9" offset="1"/>
 </linearGradient>
-<radialGradient id="a" cx="-76.54" cy="23.912" r="21.167" gradientTransform="matrix(-.024366 2.6121 -2.5525 -.023809 180.11 170.98)" gradientUnits="userSpaceOnUse">
+<radialGradient id="f" cx="-76.54" cy="23.912" r="21.167" gradientTransform="matrix(-.024365 2.612 -2.5524 -.023808 97.976 236.93)" gradientUnits="userSpaceOnUse">
 <stop stop-color="#69f3cf" offset="0"/>
 <stop stop-color="#3276e7" offset="1"/>
 </radialGradient>
-<linearGradient id="b" x1="161.01" x2="145.93" y1="110.56" y2="77.694" gradientTransform="matrix(1.6034 0 0 1.6254 -74.842 -132.76)" gradientUnits="userSpaceOnUse">
-<stop stop-color="#f36e2e" offset="0"/>
-<stop stop-color="#fff6f2" offset="1"/>
+<linearGradient id="d">
+<stop stop-color="#00d800" offset="0"/>
+<stop stop-color="#fff" offset="1"/>
 </linearGradient>
+<linearGradient id="b" x1="23.671" x2=".61894" y1=".66044" y2="23.39" gradientUnits="userSpaceOnUse" xlink:href="#d"/>
 </defs>
-<g transform="translate(-7.3705 61.095)">
-<g transform="translate(-68.411 11.215)">
-<rect x="85.306" y="-62.785" width="116.42" height="116.42" fill="url(#c)" stroke="#1520fe" stroke-width="6.35" style="paint-order:normal"/>
-<circle cx="137.97" cy="-9.7239" r="44.349" fill="url(#a)" style="paint-order:normal"/>
-<path d="m153.71-19.17v65.61l14.909-14.744 9.7878 18.43 9.895-5.3876-9.6706-18.231h19.982z" fill="url(#b)" fill-rule="evenodd"/>
+<g transform="translate(0,12.7)">
+<g transform="translate(6.3499 -6.35)">
+<rect x="3.1749" y="3.1749" width="116.42" height="116.42" fill="url(#e)" stroke="#1520fe" stroke-width="6.3499" style="paint-order:normal"/>
+<ellipse cx="55.837" cy="56.235" rx="44.348" ry="44.348" fill="url(#f)" stroke-width=".99997" style="paint-order:normal"/>
+<g transform="matrix(-2.5163 0 0 2.5163 116.84 56.251)" fill="url(#b)" stroke-width=".10515">
+<path d="m23.261 4.9417-0.1306-0.2585-3.3822 3.3822c-1.0615 1.0615-2.8018 1.0307-3.8239-0.0924-0.9574-1.052-0.8649-2.6903 0.1409-3.6961l3.3295-3.3295-0.2585-0.1306c-2.5177-1.2717-5.2755-0.5618-7.2331 1.3959-1.8476 1.8476-2.6576 4.3269-1.7344 6.7154l-9.3172 9.3172c-0.9112 0.9113-0.9112 2.3887 0 3.2999l1.6811 1.6811c0.9112 0.9113 2.3887 0.9113 3.2999 0l9.3172-9.3172c2.3885 0.9232 4.8677 0.1133 6.7154-1.7344 1.9577-1.9575 2.6676-4.7153 1.3959-7.233zm-19.387 16.477c-0.7178 0-1.2996-0.5819-1.2996-1.2996 0-0.7178 0.5819-1.2997 1.2996-1.2997s1.2996 0.5819 1.2996 1.2997c0 0.7177-0.5819 1.2996-1.2996 1.2996z" fill="url(#b)" stroke-width=".015168"/>
+</g>
 </g>
 </g>
 </svg>
