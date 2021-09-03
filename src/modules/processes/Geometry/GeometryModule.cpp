@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.9
+// /_/     \____//_____/   PCL 2.4.10
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 1.2.3
+// Standard Geometry Process Module Version 1.2.4
 // ----------------------------------------------------------------------------
-// GeometryModule.cpp - Released 2021-05-31T09:44:45Z
+// GeometryModule.cpp - Released 2021-09-02T16:22:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -52,13 +52,13 @@
 
 #define MODULE_VERSION_MAJOR     1
 #define MODULE_VERSION_MINOR     2
-#define MODULE_VERSION_REVISION  3
+#define MODULE_VERSION_REVISION  4
 #define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2021
-#define MODULE_RELEASE_MONTH     5
-#define MODULE_RELEASE_DAY       31
+#define MODULE_RELEASE_MONTH     9
+#define MODULE_RELEASE_DAY       2
 
 #include <pcl/AstrometricMetadata.h>
 #include <pcl/Console.h>
@@ -289,4 +289,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF GeometryModule.cpp - Released 2021-05-31T09:44:45Z
+// EOF GeometryModule.cpp - Released 2021-09-02T16:22:48Z

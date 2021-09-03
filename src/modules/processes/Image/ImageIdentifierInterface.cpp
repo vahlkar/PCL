@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.9
+// /_/     \____//_____/   PCL 2.4.10
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// ImageIdentifierInterface.cpp - Released 2021-05-31T09:44:46Z
+// ImageIdentifierInterface.cpp - Released 2021-09-02T16:22:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -243,4 +243,4 @@ ImageIdentifierInterface::GUIData::GUIData( ImageIdentifierInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIdentifierInterface.cpp - Released 2021-05-31T09:44:46Z
+// EOF ImageIdentifierInterface.cpp - Released 2021-09-02T16:22:48Z

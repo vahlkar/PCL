@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.9
+// /_/     \____//_____/   PCL 2.4.10
 // ----------------------------------------------------------------------------
 // Standard APASS Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// APASSProcess.h - Released 2021-07-08T09:19:53Z
+// APASSProcess.h - Released 2021-09-02T16:22:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard APASS PixInsight module.
 //
@@ -111,4 +111,4 @@ PCL_END_LOCAL
 #endif   // __APASSProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF APASSProcess.h - Released 2021-07-08T09:19:53Z
+// EOF APASSProcess.h - Released 2021-09-02T16:22:48Z

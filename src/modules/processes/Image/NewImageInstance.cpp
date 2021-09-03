@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.9
+// /_/     \____//_____/   PCL 2.4.10
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// NewImageInstance.cpp - Released 2021-05-31T09:44:46Z
+// NewImageInstance.cpp - Released 2021-09-02T16:22:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -385,4 +385,4 @@ size_type NewImageInstance::ParameterLength( const MetaParameter* p, size_type t
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF NewImageInstance.cpp - Released 2021-05-31T09:44:46Z
+// EOF NewImageInstance.cpp - Released 2021-09-02T16:22:48Z

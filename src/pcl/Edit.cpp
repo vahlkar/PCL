@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.9
+// /_/     \____//_____/   PCL 2.4.10
 // ----------------------------------------------------------------------------
-// pcl/Edit.cpp - Released 2021-05-31T09:44:25Z
+// pcl/Edit.cpp - Released 2021-09-02T16:22:38Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -355,4 +355,4 @@ void Edit::OnSelectionUpdated( selection_event_handler f, Control& receiver )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Edit.cpp - Released 2021-05-31T09:44:25Z
+// EOF pcl/Edit.cpp - Released 2021-09-02T16:22:38Z

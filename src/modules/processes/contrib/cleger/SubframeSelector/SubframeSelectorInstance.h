@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.9
+// /_/     \____//_____/   PCL 2.4.10
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.4.6
+// Standard SubframeSelector Process Module Version 1.4.8
 // ----------------------------------------------------------------------------
-// SubframeSelectorInstance.h - Released 2021-05-31T09:44:46Z
+// SubframeSelectorInstance.h - Released 2021-09-02T16:22:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -139,8 +139,12 @@ private:
    float              p_xyStretch;
    pcl_enum           p_psfFit;
    pcl_bool           p_psfFitCircular;
-   uint16             p_pedestal;
    Rect               p_roi = 0;
+
+   // Subtractive pedestal
+   int32              p_pedestal;      // in 16-bit DN
+   pcl_enum           p_pedestalMode;  // literal | default keyword | custom keyword
+   String             p_pedestalKeyword;
 
    // Format hints.
    String             p_inputHints;
@@ -175,11 +179,8 @@ private:
    bool CanOutput( String& whyNot ) const;
    bool Output();
 
-   // Read a subframe file.
-   ImageVariant* LoadSubframe( const String& filePath );
-
-   // Write output file.
-   void WriteMeasuredImage( MeasureItem* measureItem );
+   ImageVariant* LoadSubframe( double& noise, double& noiseRatio, const String& filePath );
+   void WriteMeasuredImage( MeasureItem* );
 
    friend struct MeasureData;
    friend class SubframeSelectorProcess;
@@ -196,4 +197,4 @@ private:
 #endif   // __SubframeSelectorInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInstance.h - Released 2021-05-31T09:44:46Z
+// EOF SubframeSelectorInstance.h - Released 2021-09-02T16:22:48Z

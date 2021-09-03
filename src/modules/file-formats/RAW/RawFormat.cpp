@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.9
+// /_/     \____//_____/   PCL 2.4.10
 // ----------------------------------------------------------------------------
-// Standard RAW File Format Module Version 1.5.6
+// Standard RAW File Format Module Version 1.5.7
 // ----------------------------------------------------------------------------
-// RawFormat.cpp - Released 2021-05-31T09:44:36Z
+// RawFormat.cpp - Released 2021-09-02T16:22:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RAW PixInsight module.
 //
@@ -151,7 +151,7 @@ String RawFormat::Implementation() const
    "Copyright (c) 2005 Adobe Systems Incorporated, licensed under MIT license</p>"
 
    "<p><b>PixInsight Class Library (PCL)</b><br/>"
-   "Copyright (c) 2003-2020 Pleiades Astrophoto</p>"
+   "Copyright (c) 2003-2021 Pleiades Astrophoto</p>"
 
    "<p style=\"white-space:pre;\">"
 "\n-------------------------------------------------------------------------------"
@@ -395,4 +395,4 @@ bool RawFormat::EditPreferences() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RawFormat.cpp - Released 2021-05-31T09:44:36Z
+// EOF RawFormat.cpp - Released 2021-09-02T16:22:57Z

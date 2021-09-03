@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.9
+// /_/     \____//_____/   PCL 2.4.10
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.2.33
+// Standard ImageIntegration Process Module Version 1.2.34
 // ----------------------------------------------------------------------------
-// IntegrationFile.cpp - Released 2021-05-31T09:44:46Z
+// IntegrationFile.cpp - Released 2021-09-02T16:22:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -547,10 +547,19 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
       if ( !instance.p_ignoreNoiseKeywords )
          if ( format.CanStoreKeywords() )
          {
+            int c0 = 0;
+            if ( format.CanStoreImageProperties() )
+               if ( m_file->HasImageProperty( "PCL:CFASourceChannel" ) )
+               {
+                  Variant v = m_file->ReadImageProperty( "PCL:CFASourceChannel" );
+                  if ( v.IsValid() )
+                     c0 = v.ToInt();
+               }
+
             noiseOk = true;
             for ( int c = 0; c < s_numberOfChannels; ++c )
             {
-               m_noiseEstimates[c] = KeywordValue( IsoString().Format( "NOISE%02d", c ) );
+               m_noiseEstimates[c] = KeywordValue( IsoString().Format( "NOISE%02d", c0 + c ) );
                if ( m_noiseEstimates[c] <= 0 )
                {
                   m_noiseEstimates[c] = KeywordValue( "NOISE" );
@@ -1017,4 +1026,4 @@ void IntegrationFile::OpenFileThread::Run()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationFile.cpp - Released 2021-05-31T09:44:46Z
+// EOF IntegrationFile.cpp - Released 2021-09-02T16:22:48Z

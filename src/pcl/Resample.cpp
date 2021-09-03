@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.9
+// /_/     \____//_____/   PCL 2.4.10
 // ----------------------------------------------------------------------------
-// pcl/Resample.cpp - Released 2021-05-31T09:44:25Z
+// pcl/Resample.cpp - Released 2021-09-02T16:22:38Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -150,13 +150,13 @@ public:
    void Apply( GenericImage<P>& image, const Resample& R )
    {
       int width = image.Width();
-      int w0 = width;
+      int srcWidth = width;
       int height = image.Height();
-      int h0 = height;
+      int srcHeight = height;
 
       R.GetNewSizes( width, height );
 
-      if ( width == w0 && height == h0 )
+      if ( width == srcWidth && height == srcHeight )
          return;
 
       if ( width <= 0 || height <= 0 )
@@ -173,8 +173,8 @@ public:
       int n = image.NumberOfChannels();
       typename GenericImage<P>::color_space cs0 = image.ColorSpace();
 
-      double rx = double( w0 )/width;
-      double ry = double( h0 )/height;
+      double rx = double( srcWidth )/width;
+      double ry = double( srcHeight )/height;
 
       StatusMonitor status = image.Status();
 
@@ -197,7 +197,7 @@ public:
             ReferenceArray<Thread<P> > threads;
             for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
                threads.Add( new Thread<P>( data,
-                                           R.Interpolation().NewInterpolator<P>( f0[c], w0, h0, R.UsingUnclippedInterpolation() ),
+                                           R.Interpolation().NewInterpolator<P>( f0[c], srcWidth, srcHeight, R.UsingUnclippedInterpolation() ),
                                            n,
                                            n + int( L[i] ) ) );
 
@@ -319,4 +319,4 @@ void Resample::Apply( pcl::UInt32Image& image ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Resample.cpp - Released 2021-05-31T09:44:25Z
+// EOF pcl/Resample.cpp - Released 2021-09-02T16:22:38Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.9
+// /_/     \____//_____/   PCL 2.4.10
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.4.6
+// Standard SubframeSelector Process Module Version 1.4.8
 // ----------------------------------------------------------------------------
-// SubframeSelectorInterface.h - Released 2021-05-31T09:44:46Z
+// SubframeSelectorInterface.h - Released 2021-09-02T16:22:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -177,10 +177,6 @@ private:
             ComboBox          StarDetectorParameters_PSFFit_Control;
          HorizontalSizer   StarDetectorParameters_PSFFitCircular_Sizer;
             CheckBox          StarDetectorParameters_PSFFitCircular_CheckBox;
-         HorizontalSizer   StarDetectorParameters_Pedestal_Sizer;
-            Label             StarDetectorParameters_Pedestal_Label;
-            SpinBox           StarDetectorParameters_Pedestal_Control;
-            Label             StarDetectorParameters_Pedestal_Unit;
 
       SectionBar        StarDetectorParameters_ROI_SectionBar;
       Control           StarDetectorParameters_ROI_Control;
@@ -196,6 +192,19 @@ private:
             Label             StarDetectorParameters_ROIHeight_Label;
             SpinBox           StarDetectorParameters_ROIHeight_Control;
             PushButton        StarDetectorParameters_ROISelectPreview_Button;
+
+      SectionBar        Pedestal_SectionBar;
+      Control           Pedestal_Control;
+      VerticalSizer     Pedestal_Sizer;
+         HorizontalSizer   PedestalMode_Sizer;
+            Label             PedestalMode_Label;
+            ComboBox          PedestalMode_ComboBox;
+         HorizontalSizer   PedestalValue_Sizer;
+            Label             PedestalValue_Label;
+            SpinBox           PedestalValue_SpinBox;
+         HorizontalSizer   PedestalKeyword_Sizer;
+            Label             PedestalKeyword_Label;
+            Edit              PedestalKeyword_Edit;
 
       SectionBar        FormatHints_SectionBar;
       Control           FormatHints_Control;
@@ -234,8 +243,10 @@ private:
    void UpdateSubframeImageItem( size_type );
    void UpdateSubframeImagesList();
    void UpdateSubframeImageSelectionButtons();
-   void UpdateSystemParameters();
-   void UpdateStarDetectorParameters();
+   void UpdateSystemParametersControls();
+   void UpdateStarDetectorControls();
+   void UpdatePedestalControls();
+   void UpdateFormatHintsControls();
    void UpdateOutputFilesControls();
 
    void ShowExpressionsInterface() const;
@@ -249,8 +260,8 @@ private:
    void e_SubframeImages_NodeSelectionUpdated( TreeBox& sender );
    void e_SubframeImages_Click( Button& sender, bool checked );
    void e_RealValueUpdated( NumericEdit& sender, double value );
-   void e_IntegerValueUpdated( SpinBox& sender, int value );
-   void e_ComboSelected( ComboBox& sender, int itemIndex );
+   void e_SpinValueUpdated( SpinBox& sender, int value );
+   void e_ItemSelected( ComboBox& sender, int itemIndex );
    void e_CheckboxUpdated( Button& sender, Button::check_state state );
    void e_ButtonClick( Button& sender, bool checked );
    void e_EditCompleted( Edit& sender );
@@ -277,4 +288,4 @@ PCL_END_LOCAL
 #endif   // e_SubframeSelectorInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInterface.h - Released 2021-05-31T09:44:46Z
+// EOF SubframeSelectorInterface.h - Released 2021-09-02T16:22:48Z

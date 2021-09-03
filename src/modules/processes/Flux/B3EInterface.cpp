@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.9
+// /_/     \____//_____/   PCL 2.4.10
 // ----------------------------------------------------------------------------
 // Standard Flux Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// B3EInterface.cpp - Released 2021-05-31T09:44:45Z
+// B3EInterface.cpp - Released 2021-09-02T16:22:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Flux PixInsight module.
 //
@@ -1089,4 +1089,4 @@ B3EInterface::GUIData::GUIData( B3EInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF B3EInterface.cpp - Released 2021-05-31T09:44:45Z
+// EOF B3EInterface.cpp - Released 2021-09-02T16:22:48Z

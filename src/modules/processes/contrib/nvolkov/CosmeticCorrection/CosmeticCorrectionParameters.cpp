@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.9
+// /_/     \____//_____/   PCL 2.4.10
 // ----------------------------------------------------------------------------
-// Standard CosmeticCorrection Process Module Version 1.2.5
+// Standard CosmeticCorrection Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// CosmeticCorrectionParameters.cpp - Released 2021-05-31T09:44:46Z
+// CosmeticCorrectionParameters.cpp - Released 2021-09-02T16:22:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CosmeticCorrection PixInsight module.
 //
@@ -640,4 +640,4 @@ IsoString CCDefectEnd::Id() const
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF CosmeticCorrectionParameters.cpp - Released 2021-05-31T09:44:46Z
+// EOF CosmeticCorrectionParameters.cpp - Released 2021-09-02T16:22:48Z

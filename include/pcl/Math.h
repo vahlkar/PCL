@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.9
+// /_/     \____//_____/   PCL 2.4.10
 // ----------------------------------------------------------------------------
-// pcl/Math.h - Released 2021-05-31T09:44:18Z
+// pcl/Math.h - Released 2021-09-02T16:22:30Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -1981,8 +1981,8 @@ inline void Rotate( T& x, T& y, T1 sa, T1 ca, T2 xc, T2 yc ) noexcept
 {
    T1 dx = T1( x ) - T1( xc );
    T1 dy = T1( y ) - T1( yc );
-   x = T( T1( xc ) + ca*dx + sa*dy );
-   y = T( T1( yc ) - sa*dx + ca*dy );
+   x = T( T1( xc ) + ca*dx - sa*dy );
+   y = T( T1( yc ) + sa*dx + ca*dy );
 }
 
 /*!
@@ -2000,8 +2000,8 @@ inline void Rotate( int& x, int& y, T1 sa, T1 ca, T2 xc, T2 yc ) noexcept
 {
    T1 dx = T1( x ) - T1( xc );
    T1 dy = T1( y ) - T1( yc );
-   x = RoundInt( T1( xc ) + ca*dx + sa*dy );
-   y = RoundInt( T1( yc ) - sa*dx + ca*dy );
+   x = RoundInt( T1( xc ) + ca*dx - sa*dy );
+   y = RoundInt( T1( yc ) + sa*dx + ca*dy );
 }
 
 /*!
@@ -2019,8 +2019,8 @@ inline void Rotate( long& x, long& y, T1 sa, T1 ca, T2 xc, T2 yc ) noexcept
 {
    T1 dx = T1( x ) - T1( xc );
    T1 dy = T1( y ) - T1( yc );
-   x = (long)RoundInt( T1( xc ) + ca*dx + sa*dy );
-   y = (long)RoundInt( T1( yc ) - sa*dx + ca*dy );
+   x = (long)RoundInt( T1( xc ) + ca*dx - sa*dy );
+   y = (long)RoundInt( T1( yc ) + sa*dx + ca*dy );
 }
 
 /*!
@@ -2038,8 +2038,8 @@ inline void Rotate( int64& x, int64& y, T1 sa, T1 ca, T2 xc, T2 yc ) noexcept
 {
    T1 dx = T1( x ) - T1( xc );
    T1 dy = T1( y ) - T1( yc );
-   x = RoundInt64( T1( xc ) + ca*dx + sa*dy );
-   y = RoundInt64( T1( yc ) - sa*dx + ca*dy );
+   x = RoundInt64( T1( xc ) + ca*dx - sa*dy );
+   y = RoundInt64( T1( yc ) + sa*dx + ca*dy );
 }
 
 /*!
@@ -4820,4 +4820,4 @@ inline uint32 Hash32( const void* data, size_type size, uint32 seed = 0 ) noexce
 #endif   // __PCL_Math_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Math.h - Released 2021-05-31T09:44:18Z
+// EOF pcl/Math.h - Released 2021-09-02T16:22:30Z

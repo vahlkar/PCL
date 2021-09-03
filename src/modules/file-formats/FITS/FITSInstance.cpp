@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.9
+// /_/     \____//_____/   PCL 2.4.10
 // ----------------------------------------------------------------------------
-// Standard FITS File Format Module Version 1.1.8
+// Standard FITS File Format Module Version 1.1.9
 // ----------------------------------------------------------------------------
-// FITSInstance.cpp - Released 2021-05-31T09:44:36Z
+// FITSInstance.cpp - Released 2021-09-02T16:22:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -888,21 +888,32 @@ void FITSInstance::WriteImageProperty( const IsoString& property, const Variant&
       // Protect us: *Never* allow XISF and reserved properties embedded as
       // BLOBs in FITS files.
       if ( m_writer->FITSOptions().verbosity > 0 )
-         Console().WarningLn( "<end><cbr>Reserved property cannot be embedded as BLOB: \'" + property + "\'" );
+         Console().WarningLn( "<end><cbr>** Warning: Reserved property cannot be embedded as BLOB: \'" + property + "\'" );
    }
    else if ( property.StartsWith( "FITS:" ) )
    {
       // The 'FITS:' namespace has been reserved by the reference XISF
       // implementation to generate image properties from FITS keywords.
       if ( m_writer->FITSOptions().verbosity > 1 )
-         Console().WarningLn( "<end><cbr>Ignoring property created from a FITS keyword: \'" + property + "\'" );
+         Console().WarningLn( "<end><cbr>** Warning: Ignoring property created from a FITS keyword: \'" + property + "\'" );
    }
    else
    {
-      ByteArray data = value.ToByteArray();
-      m_writer->WriteBLOB( data, property );
-      if ( m_writer->FITSOptions().verbosity > 0 )
-         Console().WriteLn( "<end><cbr>BLOB property embedded: \'" + property + "\', " + String( data.Length() ) + " bytes." );
+      if ( value.Type() == VariantType::ByteArray ||
+           value.Type() == VariantType::ByteVector ||
+           value.Type() == VariantType::UI8Matrix )
+      {
+         ByteArray data = value.ToByteArray();
+         m_writer->WriteBLOB( data, property );
+         if ( m_writer->FITSOptions().verbosity > 0 )
+            Console().WriteLn( "<end><cbr>BLOB property embedded: \'" + property + "\', " + String( data.Length() ) + " bytes." );
+      }
+      else
+      {
+         if ( m_writer->FITSOptions().verbosity > 0 )
+            Console().WarningLn( "<end><cbr>** Warning: Cannot embed property \'" + property + "\' "
+                                 "of " + IsoString( Variant::TypeAsString( value.Type() ) ) + " type as a BLOB." );
+      }
    }
 }
 
@@ -995,4 +1006,4 @@ void FITSInstance::CloseImage()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITSInstance.cpp - Released 2021-05-31T09:44:36Z
+// EOF FITSInstance.cpp - Released 2021-09-02T16:22:57Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.9
+// /_/     \____//_____/   PCL 2.4.10
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.4.6
+// Standard SubframeSelector Process Module Version 1.4.8
 // ----------------------------------------------------------------------------
-// SubframeSelectorParameters.cpp - Released 2021-05-31T09:44:46Z
+// SubframeSelectorParameters.cpp - Released 2021-09-02T16:22:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -87,11 +87,14 @@ SSBackgroundExpansion*            TheSSBackgroundExpansionParameter = nullptr;
 SSXYStretch*                      TheSSXYStretchParameter = nullptr;
 SSPSFFit*                         TheSSPSFFitParameter = nullptr;
 SSPSFFitCircular*                 TheSSPSFFitCircularParameter = nullptr;
-SSPedestal*                       TheSSPedestalParameter = nullptr;
 SSROIX0*                          TheSSROIX0Parameter = nullptr;
 SSROIY0*                          TheSSROIY0Parameter = nullptr;
 SSROIX1*                          TheSSROIX1Parameter = nullptr;
 SSROIY1*                          TheSSROIY1Parameter = nullptr;
+
+SSPedestalMode*                   TheSSPedestalModeParameter = nullptr;
+SSPedestal*                       TheSSPedestalParameter = nullptr;
+SSPedestalKeyword*                TheSSPedestalKeywordParameter = nullptr;
 
 SSInputHints*                     TheSSInputHintsParameter = nullptr;
 SSOutputHints*                    TheSSOutputHintsParameter = nullptr;
@@ -1083,40 +1086,6 @@ IsoString SSPSFFitCircular::Tooltip() const
 
 // ----------------------------------------------------------------------------
 
-SSPedestal::SSPedestal( MetaProcess* P ) : MetaUInt16( P )
-{
-   TheSSPedestalParameter = this;
-}
-
-IsoString SSPedestal::Id() const
-{
-   return "pedestal";
-}
-
-double SSPedestal::DefaultValue() const
-{
-   return 0;
-}
-
-double SSPedestal::MinimumValue() const
-{
-   return 0;
-}
-
-double SSPedestal::MaximumValue() const
-{
-   return UINT16_MAX;
-}
-
-IsoString SSPedestal::Tooltip() const
-{
-   return "<p>Pedestal value in the Camera Resolution Data Number range (e.g. 16-bit is from 0 to 65535), "
-          "which will be subtracted from each image before processing. This value is "
-          "divided by the Camera Resolution.</p>";
-}
-
-// ----------------------------------------------------------------------------
-
 SSROIX0::SSROIX0( MetaProcess* P ) : MetaInt32( P )
 {
    TheSSROIX0Parameter = this;
@@ -1221,6 +1190,113 @@ double SSROIY1::MinimumValue() const
 double SSROIY1::MaximumValue() const
 {
    return uint16_max;
+}
+
+// ----------------------------------------------------------------------------
+
+SSPedestalMode::SSPedestalMode( MetaProcess* P ) : MetaEnumeration( P )
+{
+   TheSSPedestalModeParameter = this;
+}
+
+IsoString SSPedestalMode::Id() const
+{
+   return "pedestalMode";
+}
+
+size_type SSPedestalMode::NumberOfElements() const
+{
+   return NumberOfPedestalModes;
+}
+
+IsoString SSPedestalMode::ElementId( size_type i ) const
+{
+   switch ( i )
+   {
+   case Literal:       return "Pedestal_Literal";
+   default:
+   case Keyword:       return "Pedestal_Keyword";
+   case CustomKeyword: return "Pedestal_CustomKeyword";
+   }
+}
+
+int SSPedestalMode::ElementValue( size_type i ) const
+{
+   return int( i );
+}
+
+size_type SSPedestalMode::DefaultValueIndex() const
+{
+   return size_type( Default );
+}
+
+IsoString SSPedestalMode::Tooltip() const
+{
+   return
+   "<p>The <i>pedestal mode</i> option specifies how to retrieve a (usually small) quantity that is subtracted "
+   "from input images as the very first calibration step. This quantity is known as <i>pedestal</i>, and must "
+   "be expressed in the 16-bit unsigned integer range (from 0 to 65535). If present, a pedestal has been added "
+   "by a previous calibration process to ensure positivity of the result.</p>"
+   "<p><b>Literal value</b> lets you specify a pedestal value that will be subtracted from all input frames. "
+   "You usually don't need this option, except in very special cases.</p>"
+   "<p><b>Default FITS keyword</b> is the default mode. When this mode is selected, SubframeSelector will "
+   "retrieve pedestal values from 'PEDESTAL' FITS keywords, when they are present in the input images.</p>"
+   "<p><b>Custom FITS keyword</b> allows you to specify the name of a custom FITS keyword to retrieve "
+   "pedestal values, when the specified keyword is present in the input images.</p>";
+}
+
+// ----------------------------------------------------------------------------
+
+SSPedestal::SSPedestal( MetaProcess* P ) : MetaInt32( P )
+{
+   TheSSPedestalParameter = this;
+}
+
+IsoString SSPedestal::Id() const
+{
+   return "pedestal";
+}
+
+double SSPedestal::DefaultValue() const
+{
+   return 0;
+}
+
+double SSPedestal::MinimumValue() const
+{
+   return 0;
+}
+
+double SSPedestal::MaximumValue() const
+{
+   return 1000;
+}
+
+IsoString SSPedestal::Tooltip() const
+{
+   return
+   "<p>Literal pedestal value in the 16-bit unsigned integer range (from 0 to 65535), when the "
+   "<i>Literal value</i> option has been selected as <i>pedestal mode</i>.</p>";
+}
+
+// ----------------------------------------------------------------------------
+
+SSPedestalKeyword::SSPedestalKeyword( MetaProcess* P ) : MetaString( P )
+{
+   TheSSPedestalKeywordParameter = this;
+}
+
+IsoString SSPedestalKeyword::Id() const
+{
+   return "pedestalKeyword";
+}
+
+IsoString SSPedestalKeyword::Tooltip() const
+{
+   return
+   "<p>Custom FITS keyword to retrieve pedestal values in 16-bit DN.</p>"
+   "<p>This is the name of a FITS keyword that will be used to retrieve input pedestals, if the "
+   "<i>Custom FITS keyword</i> option has been selected as <i>pedestal mode</i>.</p>";
 }
 
 // ----------------------------------------------------------------------------
@@ -2144,4 +2220,4 @@ double SSMeasurementStarResidualMeanDev::MaximumValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorParameters.cpp - Released 2021-05-31T09:44:46Z
+// EOF SubframeSelectorParameters.cpp - Released 2021-09-02T16:22:48Z

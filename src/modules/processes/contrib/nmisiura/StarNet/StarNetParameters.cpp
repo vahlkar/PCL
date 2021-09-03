@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.9
+// /_/     \____//_____/   PCL 2.4.10
 // ----------------------------------------------------------------------------
 // Standard StarNet Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// StarNetParameters.cpp - Released 2021-05-31T09:44:46Z
+// StarNetParameters.cpp - Released 2021-09-02T16:22:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarNet PixInsight module.
 //
@@ -107,4 +107,4 @@ size_type SNStride::DefaultValueIndex() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF StarNetParameters.cpp - Released 2021-05-31T09:44:46Z
+// EOF StarNetParameters.cpp - Released 2021-09-02T16:22:48Z

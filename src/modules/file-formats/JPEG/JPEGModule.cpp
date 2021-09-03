@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.9
+// /_/     \____//_____/   PCL 2.4.10
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// JPEGModule.cpp - Released 2021-05-31T09:44:36Z
+// JPEGModule.cpp - Released 2021-09-02T16:22:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -57,8 +57,8 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2021
-#define MODULE_RELEASE_MONTH     5
-#define MODULE_RELEASE_DAY       31
+#define MODULE_RELEASE_MONTH     9
+#define MODULE_RELEASE_DAY       2
 
 #include "JPEGModule.h"
 #include "JPEGFormat.h"
@@ -115,7 +115,7 @@ String JPEGModule::Author() const
 
 String JPEGModule::Copyright() const
 {
-   return "Copyright (c) 2005-2020 Pleiades Astrophoto";
+   return "Copyright (c) 2005-2021 Pleiades Astrophoto";
 }
 
 // -------------------------------------------------------------------------
@@ -169,4 +169,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF JPEGModule.cpp - Released 2021-05-31T09:44:36Z
+// EOF JPEGModule.cpp - Released 2021-09-02T16:22:57Z

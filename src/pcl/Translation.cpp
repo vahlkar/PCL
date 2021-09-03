@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.9
+// /_/     \____//_____/   PCL 2.4.10
 // ----------------------------------------------------------------------------
-// pcl/Translation.cpp - Released 2021-05-31T09:44:25Z
+// pcl/Translation.cpp - Released 2021-09-02T16:22:38Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -176,7 +176,7 @@ private:
       {
          INIT_THREAD_MONITOR()
 
-         typename P::sample* f = m_data.f + m_firstRow*m_data.width;
+         typename P::sample* __restrict__ f = m_data.f + m_firstRow*m_data.width;
 
          for ( int i = m_firstRow; i < m_endRow; ++i )
          {
@@ -185,7 +185,10 @@ private:
             for ( int j = 0; j < m_data.width; ++j, ++f )
             {
                DPoint p( j - m_data.delta.x, dy );
-               *f = (p.x >= 0 && p.x < m_data.width && p.y >= 0 && p.y < m_data.height) ? (*m_interpolator)( p ) : m_data.fillValue;
+               *f = (p.x >= 0
+                  && p.x < m_data.width
+                  && p.y >= 0
+                  && p.y < m_data.height) ? (*m_interpolator)( p ) : m_data.fillValue;
 
                UPDATE_THREAD_MONITOR( 65536 )
             }
@@ -233,4 +236,4 @@ void Translation::Apply( UInt32Image& img ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Translation.cpp - Released 2021-05-31T09:44:25Z
+// EOF pcl/Translation.cpp - Released 2021-09-02T16:22:38Z

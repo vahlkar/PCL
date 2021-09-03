@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.9
+// /_/     \____//_____/   PCL 2.4.10
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 1.2.3
+// Standard Geometry Process Module Version 1.2.4
 // ----------------------------------------------------------------------------
-// RotationInstance.cpp - Released 2021-05-31T09:44:45Z
+// RotationInstance.cpp - Released 2021-09-02T16:22:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -151,6 +151,7 @@ void RotationInstance::GetNewSizes( int& width, int& height ) const
 {
    BilinearPixelInterpolation I;
    Rotation R( I, p_angle );
+   R.EnableUnclippedRotation();
    R.GetNewSizes( width, height );
 }
 
@@ -186,7 +187,7 @@ bool RotationInstance::ExecuteOn( View& view )
    image.SetStatusCallback( &status );
 
    if ( p_optimizeFast )
-      switch ( TruncI( degrees ) )
+      switch ( TruncInt( degrees ) )
       {
       case 90:
          Rotate90CCW() >> image;
@@ -205,20 +206,21 @@ bool RotationInstance::ExecuteOn( View& view )
    AutoPointer<PixelInterpolation> interpolation( NewInterpolation(
          p_interpolation, 1, 1, 1, 1, true, p_clampingThreshold, p_smoothness, image ) );
 
-   Rotation T( *interpolation, p_angle );
+   Rotation R( *interpolation, p_angle );
+   R.EnableUnclippedRotation();
 
    // On 32-bit systems, make sure the resulting image requires less than 4 GB.
    if ( sizeof( void* ) == sizeof( uint32 ) )
    {
       int width = image.Width(), height = image.Height();
-      T.GetNewSizes( width, height );
+      R.GetNewSizes( width, height );
       uint64 sz = uint64( width )*uint64( height )*image.NumberOfChannels()*image.BytesPerSample();
       if ( sz > uint64( uint32_max-256 ) )
          throw Error( "Rotation: Invalid operation: The resulting image would require more than 4 GiB" );
    }
 
-   T.SetFillValues( p_fillColor );
-   T >> image;
+   R.SetFillValues( p_fillColor );
+   R >> image;
 
    return true;
 }
@@ -255,4 +257,4 @@ void* RotationInstance::LockParameter( const MetaParameter* p, size_type /*table
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RotationInstance.cpp - Released 2021-05-31T09:44:45Z
+// EOF RotationInstance.cpp - Released 2021-09-02T16:22:48Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.9
+// /_/     \____//_____/   PCL 2.4.10
 // ----------------------------------------------------------------------------
 // Standard ColorManagement Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// ICCProfileTransformationProcess.cpp - Released 2021-05-31T09:44:45Z
+// ICCProfileTransformationProcess.cpp - Released 2021-09-02T16:22:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorManagement PixInsight module.
 //
@@ -341,4 +341,4 @@ int ICCProfileTransformationProcess::ProcessCommandLine( const StringList& argv 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ICCProfileTransformationProcess.cpp - Released 2021-05-31T09:44:45Z
+// EOF ICCProfileTransformationProcess.cpp - Released 2021-09-02T16:22:48Z

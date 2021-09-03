@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.9
+// /_/     \____//_____/   PCL 2.4.10
 // ----------------------------------------------------------------------------
-// Standard RAW File Format Module Version 1.5.6
+// Standard RAW File Format Module Version 1.5.7
 // ----------------------------------------------------------------------------
-// RawInstance.cpp - Released 2021-05-31T09:44:36Z
+// RawInstance.cpp - Released 2021-09-02T16:22:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RAW PixInsight module.
 //
@@ -533,13 +533,16 @@ ImageDescriptionArray RawInstance::Open( const String& filePath, const IsoString
 
       m_raw->set_exifparser_handler( LibRawEXIFCallback, this );
 
-      IsoString filePath8 =
+      {
 #ifdef __PCL_WINDOWS
-         File::UnixPathToWindows( filePath ).ToMBS();
+         // NB. wchar_t is the same as char16_t on Windows.
+         String filePathWin = File::UnixPathToWindows( filePath );
+         CheckLibRawReturnCode( m_raw->open_file( reinterpret_cast<const wchar_t*>( filePathWin.c_str() ) ) );
 #else
-         filePath.ToUTF8();
+         IsoString filePath8 = filePath.ToUTF8();
+         CheckLibRawReturnCode( m_raw->open_file( filePath8.c_str() ) );
 #endif
-      CheckLibRawReturnCode( m_raw->open_file( filePath8.c_str() ) );
+      }
 
       /*
       ByteArray data = File::ReadFile( filePath );
@@ -1611,4 +1614,4 @@ UInt8Image RawInstance::ReadThumbnail()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RawInstance.cpp - Released 2021-05-31T09:44:36Z
+// EOF RawInstance.cpp - Released 2021-09-02T16:22:57Z

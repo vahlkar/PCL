@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.9
+// /_/     \____//_____/   PCL 2.4.10
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.8.1
+// Standard PixelMath Process Module Version 1.8.3
 // ----------------------------------------------------------------------------
-// Generators.cpp - Released 2021-05-31T09:44:46Z
+// Generators.cpp - Released 2021-09-02T16:22:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -995,7 +995,7 @@ IsoString RotationFunction::GenerateImage( component_list::const_iterator i, com
    else
       throw ParseError( "rotate() argument #2: The rotation angle must be an invariant scalar subexpression" );
 
-   double cx = 0, cy = 0;
+   double cx, cy;
    if ( ++i < j )
    {
       if ( (*i)->IsSample() )
@@ -1014,7 +1014,15 @@ IsoString RotationFunction::GenerateImage( component_list::const_iterator i, com
          else
             throw ParseError( "rotate() argument #4: The center y coordinate must be an invariant scalar subexpression" );
       }
+      else
+         cy = 0.5*ref->Image()->Height();
    }
+   else
+   {
+      cx = 0.5*ref->Image()->Width();
+      cy = 0.5*ref->Image()->Height();
+   }
+
 
    IsoString key = TheImageCache->MakeKey( ref->Id(), IsoString().Format( "_rotate_%.6f_%.4f_%.4f", angle, cx, cy ) );
 
@@ -1024,12 +1032,6 @@ IsoString RotationFunction::GenerateImage( component_list::const_iterator i, com
 
       BicubicPixelInterpolation interpolation;
       Rotation( interpolation, Rad( angle ), cx, cy ) >> result;
-      int dx0 = (result->Width() - ref->Image()->Width()) >> 1;
-      int dy0 = (result->Height() - ref->Image()->Height()) >> 1;
-      int dx1 = dx0 + (((result->Width() - ref->Image()->Width()) & 1) ? 1 : 0);
-      int dy1 = dy0 + (((result->Height() - ref->Image()->Height()) & 1) ? 1 : 0);
-      result.CropBy( -dx0, -dy0, -dx1, -dy1 );
-
       TheImageCache->AddImage( key, result );
    }
 
@@ -2217,4 +2219,4 @@ void OpExclusionFunction::operator()( Pixel& r, component_list::const_iterator, 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Generators.cpp - Released 2021-05-31T09:44:46Z
+// EOF Generators.cpp - Released 2021-09-02T16:22:48Z

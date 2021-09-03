@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.9
+// /_/     \____//_____/   PCL 2.4.10
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.8.1
+// Standard PixelMath Process Module Version 1.8.3
 // ----------------------------------------------------------------------------
-// Function.h - Released 2021-05-31T09:44:46Z
+// Function.h - Released 2021-09-02T16:22:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -3030,7 +3030,9 @@ public:
 
    String Meta() const override            { return "medfilt( image[, n=3[, str=str_square()]] )"; }
    String Id() const override              { return "<p>Median filter with odd filter size <i>n</i> &ge; 3 and structuring element <i>str</i>, "
-                                                    "applied to the specified image.</p>"; }
+                                                    "applied to the specified image.</p>"
+                                                    "<p>See the family of str_xxx() symbolic functions for the set of available "
+                                                    "structuring elements.</p>"; }
    String Token() const override           { return "medfilt"; }
    String Aliases() const override         { return "medfilter"; }
    int RequiredArguments() const override  { return 1; }
@@ -3062,7 +3064,9 @@ public:
    String Meta() const override            { return "erosion( image[, n=3[, str=str_square()]] )\n"
                                                     "minfilt( image[, n=3[, str=str_square()]] )"; }
    String Id() const override              { return "<p>Erosion filter with odd filter size <i>n</i> &ge; 3 and structuring element <i>str</i>, "
-                                                    "applied to the specified image.</p>"; }
+                                                    "applied to the specified image.</p>"
+                                                    "<p>See the family of str_xxx() symbolic functions for the set of available "
+                                                    "structuring elements.</p>"; }
    String Token() const override           { return "erosion"; }
    String Aliases() const override         { return "minfilt,minfilter"; }
    int RequiredArguments() const override  { return 1; }
@@ -3094,7 +3098,9 @@ public:
    String Meta() const override            { return "dilation( image[, n=3[, str=str_square()]] )\n"
                                                     "maxfilt( image[, n=3[, str=str_square()]] )"; }
    String Id() const override              { return "<p>Dilation filter with odd filter size <i>n</i> &ge; 3 and structuring element <i>str</i>, "
-                                                    "applied to the specified image.</p>"; }
+                                                    "applied to the specified image.</p>"
+                                                    "<p>See the family of str_xxx() symbolic functions for the set of available "
+                                                    "structuring elements.</p>"; }
    String Token() const override           { return "dilation"; }
    String Aliases() const override         { return "maxfilt,maxfilter"; }
    int RequiredArguments() const override  { return 1; }
@@ -3368,12 +3374,11 @@ public:
    Expression* Clone() const override { return new RotationFunction( *this ); }
    Expression* Generate( int p ) const override { return new RotationFunction( p ); }
 
-   String Meta() const override            { return "rotate( image, angle[, dx=0, dy=0] )"; }
+   String Meta() const override            { return "rotate( image, angle[, cx=width()/2, cy=height()/2] )"; }
    String Id() const override              { return "<p>Rotation of an image by the specified <i>angle</i> in degrees, "
-                                                    "with center of rotation located at (<i>dx</i>,<i>dy</i>) coordinates "
-                                                    "measured in pixels from the geometric center of the image.</p>"
-                                                    "<p>If no center coordinates are specified, the default center of rotation is (0,0), "
-                                                    "which corresponds to the geometric center of the image.</p>"; }
+                                                    "with center of rotation located at (<i>cx</i>,<i>cy</i>) image coordinates.</p>"
+                                                    "<p>If no center coordinates are specified, the default center of rotation is "
+                                                    "the geometric center of the image.</p>"; }
    String Token() const override           { return "rotate"; }
    int RequiredArguments() const override  { return 2; }
    int MaximumArguments() const override   { return 4; }
@@ -3568,6 +3573,8 @@ public:
    String Meta() const override            { return "lvar( image[, d=3[, k=krn_flat()]] )"; }
    String Id() const override              { return "<p>Local variance map of the specified image with odd window size <i>d</i> &ge; 3 pixels "
                                                     "and kernel function <i>k</i>.</p>"
+                                                    "<p>See the family of krn_xxx() symbolic functions for the set of available "
+                                                    "local variance kernels.</p>"
                                                     "<p>A local variance map is a sensitive analysis tool to explore the distribution of "
                                                     "pixel intensity variations at small scales. This allows for the implementation of "
                                                     "subtle adaptive procedures with PixelMath. For example, the following expression:</p>"
@@ -4286,4 +4293,4 @@ public:
 #endif   // __Function_h
 
 // ----------------------------------------------------------------------------
-// EOF Function.h - Released 2021-05-31T09:44:46Z
+// EOF Function.h - Released 2021-09-02T16:22:48Z

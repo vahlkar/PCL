@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.9
+// /_/     \____//_____/   PCL 2.4.10
 // ----------------------------------------------------------------------------
 // Standard TIFF File Format Module Version 1.0.8
 // ----------------------------------------------------------------------------
-// TIFFFormat.cpp - Released 2021-05-31T09:44:36Z
+// TIFFFormat.cpp - Released 2021-09-02T16:22:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard TIFF PixInsight module.
 //
@@ -119,7 +119,7 @@ String TIFFFormat::Implementation() const
    "Copyright (c) 1991-1997 Silicon Graphics, Inc.</p>"
 
    "<p>PixInsight Class Library (PCL):<br/>"
-   "Copyright (c) 2003-2020 Pleiades Astrophoto</p>"
+   "Copyright (c) 2003-2021 Pleiades Astrophoto</p>"
 
    "<p style=\"white-space:pre;\">"
 "\n-------------------------------------------------------------------------------"
@@ -400,4 +400,4 @@ TIFFFormat::FormatOptions* TIFFFormat::FormatOptions::FromGenericDataBlock( cons
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF TIFFFormat.cpp - Released 2021-05-31T09:44:36Z
+// EOF TIFFFormat.cpp - Released 2021-09-02T16:22:57Z

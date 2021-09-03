@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.9
+// /_/     \____//_____/   PCL 2.4.10
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.5.1
+// Standard ImageCalibration Process Module Version 1.5.2
 // ----------------------------------------------------------------------------
-// ImageCalibrationInterface.cpp - Released 2021-05-31T09:44:46Z
+// ImageCalibrationInterface.cpp - Released 2021-09-02T16:22:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -351,10 +351,10 @@ void ImageCalibrationInterface::UpdateMasterFrameControls()
    GUI->DarkOptimizationThreshold_NumericControl.SetValue( m_instance.p_darkOptimizationLow );
    GUI->DarkOptimizationThreshold_NumericControl.Enable( m_instance.p_optimizeDarks );
 
-   GUI->DarkOptimizationWindow_Label.Enable( m_instance.p_optimizeDarks );
+//    GUI->DarkOptimizationWindow_Label.Enable( m_instance.p_optimizeDarks );
 
-   GUI->DarkOptimizationWindow_SpinBox.SetValue( m_instance.p_darkOptimizationWindow );
-   GUI->DarkOptimizationWindow_SpinBox.Enable( m_instance.p_optimizeDarks );
+//    GUI->DarkOptimizationWindow_SpinBox.SetValue( m_instance.p_darkOptimizationWindow );
+//    GUI->DarkOptimizationWindow_SpinBox.Enable( m_instance.p_optimizeDarks );
 
    GUI->MasterFlat_SectionBar.SetChecked( m_instance.p_masterFlat.enabled );
 
@@ -753,8 +753,8 @@ void ImageCalibrationInterface::e_SpinValueUpdated( SpinBox& sender, int value )
       m_instance.p_outputPedestal = value;
    else if ( sender == GUI->PedestalValue_SpinBox )
       m_instance.p_pedestal = value;
-   else if ( sender == GUI->DarkOptimizationWindow_SpinBox )
-      m_instance.p_darkOptimizationWindow = value;
+//    else if ( sender == GUI->DarkOptimizationWindow_SpinBox )
+//       m_instance.p_darkOptimizationWindow = value;
 }
 
 // ----------------------------------------------------------------------------
@@ -1945,38 +1945,38 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
       "remove more dark pixels from the optimization set.</p>" );
    DarkOptimizationThreshold_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_ValueUpdated, w );
 
-   const char* darkOptimizationWindowTip = "<p>This parameter is the size in pixels of a square region "
-      "used to compute noise estimates during the dark optimization procedure. The square region is centered "
-      "on each target image. By default, a <i>window</i> of one megapixel (1024x1024 pixels) is used.</p>"
-      "<p>By using a reduced subset of pixels, the dark optimization process can be much faster, and noise "
-      "evaluation on a reduced region is in general as accurate as noise evaluation on the whole image, for "
-      "dark frame scaling purposes.</p>"
-      "<p>To disable this feature, and hence to use the whole image to compute noise estimates, select a "
-      "zero window size. If the selected window size is larger than the dimensions of the target image, then "
-      "it will be ignored and the whole image will be used for noise evaluation.</p>";
-
-   DarkOptimizationWindow_Label.SetText( "Optimization window (px):" );
-   DarkOptimizationWindow_Label.SetFixedWidth( labelWidth1 );
-   DarkOptimizationWindow_Label.SetToolTip( darkOptimizationWindowTip );
-   DarkOptimizationWindow_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
-
-   DarkOptimizationWindow_SpinBox.SetRange( int( TheICDarkOptimizationWindowParameter->MinimumValue() ), int( TheICDarkOptimizationWindowParameter->MaximumValue() ) );
-   DarkOptimizationWindow_SpinBox.SetToolTip( darkOptimizationWindowTip );
-   DarkOptimizationWindow_SpinBox.SetFixedWidth( editWidth2 );
-   DarkOptimizationWindow_SpinBox.SetStepSize( 256 );
-   DarkOptimizationWindow_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&ImageCalibrationInterface::e_SpinValueUpdated, w );
-
-   DarkOptimizationWindow_Sizer.Add( DarkOptimizationWindow_Label );
-   DarkOptimizationWindow_Sizer.AddSpacing( 4 );
-   DarkOptimizationWindow_Sizer.Add( DarkOptimizationWindow_SpinBox );
-   DarkOptimizationWindow_Sizer.AddStretch();
+//    const char* darkOptimizationWindowTip = "<p>This parameter is the size in pixels of a square region "
+//       "used to compute noise estimates during the dark optimization procedure. The square region is centered "
+//       "on each target image. By default, a <i>window</i> of one megapixel (1024x1024 pixels) is used.</p>"
+//       "<p>By using a reduced subset of pixels, the dark optimization process can be much faster, and noise "
+//       "evaluation on a reduced region is in general as accurate as noise evaluation on the whole image, for "
+//       "dark frame scaling purposes.</p>"
+//       "<p>To disable this feature, and hence to use the whole image to compute noise estimates, select a "
+//       "zero window size. If the selected window size is larger than the dimensions of the target image, then "
+//       "it will be ignored and the whole image will be used for noise evaluation.</p>";
+//
+//    DarkOptimizationWindow_Label.SetText( "Optimization window (px):" );
+//    DarkOptimizationWindow_Label.SetFixedWidth( labelWidth1 );
+//    DarkOptimizationWindow_Label.SetToolTip( darkOptimizationWindowTip );
+//    DarkOptimizationWindow_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+//
+//    DarkOptimizationWindow_SpinBox.SetRange( int( TheICDarkOptimizationWindowParameter->MinimumValue() ), int( TheICDarkOptimizationWindowParameter->MaximumValue() ) );
+//    DarkOptimizationWindow_SpinBox.SetToolTip( darkOptimizationWindowTip );
+//    DarkOptimizationWindow_SpinBox.SetFixedWidth( editWidth2 );
+//    DarkOptimizationWindow_SpinBox.SetStepSize( 256 );
+//    DarkOptimizationWindow_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&ImageCalibrationInterface::e_SpinValueUpdated, w );
+//
+//    DarkOptimizationWindow_Sizer.Add( DarkOptimizationWindow_Label );
+//    DarkOptimizationWindow_Sizer.AddSpacing( 4 );
+//    DarkOptimizationWindow_Sizer.Add( DarkOptimizationWindow_SpinBox );
+//    DarkOptimizationWindow_Sizer.AddStretch();
 
    MasterDark_Sizer.SetSpacing( 4 );
    MasterDark_Sizer.Add( MasterDarkPath_Sizer );
    MasterDark_Sizer.Add( CalibrateMasterDark_Sizer );
    MasterDark_Sizer.Add( OptimizeDarks_Sizer );
    MasterDark_Sizer.Add( DarkOptimizationThreshold_NumericControl );
-   MasterDark_Sizer.Add( DarkOptimizationWindow_Sizer );
+//    MasterDark_Sizer.Add( DarkOptimizationWindow_Sizer );
 
    MasterDark_Control.SetSizer( MasterDark_Sizer );
 
@@ -2087,4 +2087,4 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInterface.cpp - Released 2021-05-31T09:44:46Z
+// EOF ImageCalibrationInterface.cpp - Released 2021-09-02T16:22:48Z

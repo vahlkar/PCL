@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.9
+// /_/     \____//_____/   PCL 2.4.10
 // ----------------------------------------------------------------------------
 // Standard Morphology Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// MorphologicalTransformationInterface.h - Released 2021-05-31T09:44:46Z
+// MorphologicalTransformationInterface.h - Released 2021-09-02T16:22:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Morphology PixInsight module.
 //
@@ -535,4 +535,4 @@ PCL_END_LOCAL
 #endif   // __MorphologicalTransformationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF MorphologicalTransformationInterface.h - Released 2021-05-31T09:44:46Z
+// EOF MorphologicalTransformationInterface.h - Released 2021-09-02T16:22:48Z

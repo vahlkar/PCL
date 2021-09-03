@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.9
+// /_/     \____//_____/   PCL 2.4.10
 // ----------------------------------------------------------------------------
 // Standard XISF File Format Module Version 1.0.12
 // ----------------------------------------------------------------------------
-// XISFFormat.cpp - Released 2021-05-31T09:44:36Z
+// XISFFormat.cpp - Released 2021-09-02T16:22:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard XISF PixInsight module.
 //
@@ -122,7 +122,7 @@ String XISFFormat::Implementation() const
    "<p>PixInsight Standard File Format Support Modules.</p>"
 
    "<p>PixInsight Class Library (PCL):<br/>"
-   "Copyright (c) 2003-2020 Pleiades Astrophoto</p>"
+   "Copyright (c) 2003-2021 Pleiades Astrophoto</p>"
 
    "<p style=\"white-space:pre;\">"
 "\n-------------------------------------------------------------------------------"
@@ -558,4 +558,4 @@ XISFFormat::FormatOptions* XISFFormat::FormatOptions::FromGenericDataBlock( cons
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF XISFFormat.cpp - Released 2021-05-31T09:44:36Z
+// EOF XISFFormat.cpp - Released 2021-09-02T16:22:58Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.9
+// /_/     \____//_____/   PCL 2.4.10
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.2
 // ----------------------------------------------------------------------------
-// ChannelCombinationInstance.cpp - Released 2021-05-31T09:44:45Z
+// ChannelCombinationInstance.cpp - Released 2021-09-02T16:22:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -747,4 +747,4 @@ size_type ChannelCombinationInstance::ParameterLength( const MetaParameter* p, s
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ChannelCombinationInstance.cpp - Released 2021-05-31T09:44:45Z
+// EOF ChannelCombinationInstance.cpp - Released 2021-09-02T16:22:48Z

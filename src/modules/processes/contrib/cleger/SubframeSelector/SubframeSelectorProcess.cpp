@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.9
+// /_/     \____//_____/   PCL 2.4.10
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.4.6
+// Standard SubframeSelector Process Module Version 1.4.8
 // ----------------------------------------------------------------------------
-// SubframeSelectorProcess.cpp - Released 2021-05-31T09:44:46Z
+// SubframeSelectorProcess.cpp - Released 2021-09-02T16:22:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -98,11 +98,14 @@ SubframeSelectorProcess::SubframeSelectorProcess()
    new SSXYStretch( this );
    new SSPSFFit( this );
    new SSPSFFitCircular( this );
-   new SSPedestal( this );
    new SSROIX0( this );
    new SSROIY0( this );
    new SSROIX1( this );
    new SSROIY1( this );
+
+   new SSPedestalMode( this );
+   new SSPedestal( this );
+   new SSPedestalKeyword( this );
 
    new SSInputHints( this );
    new SSOutputHints( this );
@@ -211,4 +214,4 @@ ProcessImplementation* SubframeSelectorProcess::Clone( const ProcessImplementati
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorProcess.cpp - Released 2021-05-31T09:44:46Z
+// EOF SubframeSelectorProcess.cpp - Released 2021-09-02T16:22:48Z

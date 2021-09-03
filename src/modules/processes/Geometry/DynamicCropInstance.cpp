@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.9
+// /_/     \____//_____/   PCL 2.4.10
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 1.2.3
+// Standard Geometry Process Module Version 1.2.4
 // ----------------------------------------------------------------------------
-// DynamicCropInstance.cpp - Released 2021-05-31T09:44:45Z
+// DynamicCropInstance.cpp - Released 2021-09-02T16:22:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -231,10 +231,7 @@ public:
       bool interpolate = data.m_scale || data.m_rotateSlow;
 
       if ( data.m_rotateSlow )
-      {
-         data.m_sa = Sin( C.p_angle );
-         data.m_ca = Cos( C.p_angle );
-      }
+         SinCos( -C.p_angle, data.m_sa, data.m_ca ); // NB: Inverse mapping needs clockwise rotations
 
       int numberOfChannels = image.NumberOfChannels();
       int fillChannels = Max( image.NumberOfNominalChannels() + (image.HasAlphaChannels() ? 1 : 0), 4 );
@@ -384,7 +381,7 @@ private:
       bool                      m_rotateSlow;         // rotate arbitrary
       bool                      m_scale;              // scale image
       int                       m_fastDegrees;        // fast rotation angle, degrees
-      double                    m_sa, m_ca;           // sin( angle ), cos( angle )
+      double                    m_sa, m_ca;           // sin( angle ), cos( angle ) (clockwise)
       double                    m_centerX, m_centerY; // center x, center y
       double                    m_scaleX, m_scaleY;   // scale x, scale y
       int                       m_sourceWidth, m_sourceHeight; // original width, height
@@ -579,4 +576,4 @@ void* DynamicCropInstance::LockParameter( const MetaParameter* p, size_type /*ta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DynamicCropInstance.cpp - Released 2021-05-31T09:44:45Z
+// EOF DynamicCropInstance.cpp - Released 2021-09-02T16:22:48Z

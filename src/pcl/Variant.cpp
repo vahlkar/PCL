@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.9
+// /_/     \____//_____/   PCL 2.4.10
 // ----------------------------------------------------------------------------
-// pcl/Variant.cpp - Released 2021-05-31T09:44:25Z
+// pcl/Variant.cpp - Released 2021-09-02T16:22:38Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -204,6 +204,9 @@ int Variant::ToInt() const
    case VariantType::TimePoint: return int32( m_data.timePointValue->JDI() );
    case VariantType::String:    return m_data.stringValue->ToInt();
    case VariantType::IsoString: return m_data.isoStringValue->ToInt();
+   case VariantType::ByteArray:
+      if ( m_data.byteArrayValue->Length() == sizeof( int32 ) )
+         return *reinterpret_cast<const int32*>( m_data.byteArrayValue->Begin() );
    default:
       throw Error( "Variant::ToInt(): Invalid conversion from " + String( TypeAsString( m_type ) ) + " type" );
    }
@@ -229,6 +232,9 @@ int64 Variant::ToInt64() const
    case VariantType::TimePoint: return int64( m_data.timePointValue->JDI() );
    case VariantType::String:    return m_data.stringValue->ToInt64();
    case VariantType::IsoString: return m_data.isoStringValue->ToInt64();
+   case VariantType::ByteArray:
+      if ( m_data.byteArrayValue->Length() == sizeof( int64 ) )
+         return *reinterpret_cast<const int64*>( m_data.byteArrayValue->Begin() );
    default:
       throw Error( "Variant::ToInt64(): Invalid conversion from " + String( TypeAsString( m_type ) ) + " type" );
    }
@@ -254,6 +260,9 @@ unsigned int Variant::ToUInt() const
    case VariantType::TimePoint: return uint32( m_data.timePointValue->JDI() );
    case VariantType::String:    return m_data.stringValue->ToUInt();
    case VariantType::IsoString: return m_data.isoStringValue->ToUInt();
+   case VariantType::ByteArray:
+      if ( m_data.byteArrayValue->Length() == sizeof( uint32 ) )
+         return *reinterpret_cast<const uint32*>( m_data.byteArrayValue->Begin() );
    default:
       throw Error( "Variant::ToUInt(): Invalid conversion from " + String( TypeAsString( m_type ) ) + " type" );
    }
@@ -279,6 +288,9 @@ uint64 Variant::ToUInt64() const
    case VariantType::TimePoint: return uint64( m_data.timePointValue->JDI() );
    case VariantType::String:    return m_data.stringValue->ToUInt64();
    case VariantType::IsoString: return m_data.isoStringValue->ToUInt64();
+   case VariantType::ByteArray:
+      if ( m_data.byteArrayValue->Length() == sizeof( uint64 ) )
+         return *reinterpret_cast<const uint64*>( m_data.byteArrayValue->Begin() );
    default:
       throw Error( "Variant::ToUInt64(): Invalid conversion from " + String( TypeAsString( m_type ) ) + " type" );
    }
@@ -304,6 +316,9 @@ float Variant::ToFloat() const
    case VariantType::TimePoint: return float( m_data.timePointValue->JD() );
    case VariantType::String:    return m_data.stringValue->ToFloat();
    case VariantType::IsoString: return m_data.isoStringValue->ToFloat();
+   case VariantType::ByteArray:
+      if ( m_data.byteArrayValue->Length() == sizeof( float ) )
+         return *reinterpret_cast<const float*>( m_data.byteArrayValue->Begin() );
    default:
       throw Error( "Variant::ToFloat(): Invalid conversion from " + String( TypeAsString( m_type ) ) + " type" );
    }
@@ -329,6 +344,9 @@ double Variant::ToDouble() const
    case VariantType::TimePoint: return double( m_data.timePointValue->JD() );
    case VariantType::String:    return m_data.stringValue->ToDouble();
    case VariantType::IsoString: return m_data.isoStringValue->ToDouble();
+   case VariantType::ByteArray:
+      if ( m_data.byteArrayValue->Length() == sizeof( double ) )
+         return *reinterpret_cast<const double*>( m_data.byteArrayValue->Begin() );
    default:
       throw Error( "Variant::ToDouble(): Invalid conversion from " + String( TypeAsString( m_type ) ) + " type" );
    }
@@ -9304,4 +9322,4 @@ uint64 APIPropertyTypeFromVariantType( Variant::data_type type )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Variant.cpp - Released 2021-05-31T09:44:25Z
+// EOF pcl/Variant.cpp - Released 2021-09-02T16:22:38Z

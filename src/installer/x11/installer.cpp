@@ -5,12 +5,12 @@
 // /_/     /_/  /_/|_| /___/ /_/ /_//____/ /_/  _\__, / /_/ /_/\__/
 //                                              /____/
 // ----------------------------------------------------------------------------
-// PixInsight Core Application Version 1.8.8-8 Ripley
+// This file is part of PixInsight X11 UNIX/Linux Installer
 // ----------------------------------------------------------------------------
-// 2021/05/31 09:45:55 UTC
-// installer/x11/installer.cpp
+// 2021/09/02 16:22:05 UTC
+// installer.cpp
 // ----------------------------------------------------------------------------
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2013-2021 Pleiades Astrophoto S.L.
 // ----------------------------------------------------------------------------
 
 #if !defined( __PCL_FREEBSD ) && !defined( __PCL_LINUX )
@@ -1236,4 +1236,5 @@ int main( int argc, const char** argv )
 }
 
 // ----------------------------------------------------------------------------
-// EOF installer/x11/installer.cpp - Released 2021/05/31 09:45:55 UTC
+// 2021/09/02 16:22:05 UTC
+// installer.cpp

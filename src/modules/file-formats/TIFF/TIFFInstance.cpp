@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.9
+// /_/     \____//_____/   PCL 2.4.10
 // ----------------------------------------------------------------------------
 // Standard TIFF File Format Module Version 1.0.8
 // ----------------------------------------------------------------------------
-// TIFFInstance.cpp - Released 2021-05-31T09:44:36Z
+// TIFFInstance.cpp - Released 2021-09-02T16:22:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard TIFF PixInsight module.
 //
@@ -704,4 +704,4 @@ void TIFFInstance::WriteImage( const UInt32Image& image )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF TIFFInstance.cpp - Released 2021-05-31T09:44:36Z
+// EOF TIFFInstance.cpp - Released 2021-09-02T16:22:57Z

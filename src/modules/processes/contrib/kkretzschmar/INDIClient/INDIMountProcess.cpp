@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.9
+// /_/     \____//_____/   PCL 2.4.10
 // ----------------------------------------------------------------------------
-// Standard INDIClient Process Module Version 1.2.1
+// Standard INDIClient Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// INDIMountProcess.cpp - Released 2021-05-31T09:44:46Z
+// INDIMountProcess.cpp - Released 2021-09-02T16:22:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -121,7 +121,7 @@ uint32 INDIMountProcess::Version() const
 String INDIMountProcess::Description() const
 {
    return "<html>"
-          "<p>Control Indigo Mount devices./p>"
+          "<p>Control Indigo Mount devices.</p>"
           "</html>";
 }
 
@@ -190,4 +190,4 @@ int INDIMountProcess::ProcessCommandLine( const StringList& argv ) const
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDIMountProcess.cpp - Released 2021-05-31T09:44:46Z
+// EOF INDIMountProcess.cpp - Released 2021-09-02T16:22:48Z

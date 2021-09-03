@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.9
+// /_/     \____//_____/   PCL 2.4.10
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.4.6
+// Standard SubframeSelector Process Module Version 1.4.8
 // ----------------------------------------------------------------------------
-// SubframeSelectorInstance.cpp - Released 2021-05-31T09:44:46Z
+// SubframeSelectorInstance.cpp - Released 2021-09-02T16:22:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -122,6 +122,7 @@ SubframeSelectorInstance::SubframeSelectorInstance( const MetaProcess* m )
    , p_psfFit( SSPSFFit::Default )
    , p_psfFitCircular( TheSSPSFFitCircularParameter->DefaultValue() )
    , p_pedestal( TheSSPedestalParameter->DefaultValue() )
+   , p_pedestalMode( SSPedestalMode::Default )
    , p_inputHints( TheSSInputHintsParameter->DefaultValue() )
    , p_outputHints( TheSSOutputHintsParameter->DefaultValue() )
    , p_outputDirectory( TheSSOutputDirectoryParameter->DefaultValue() )
@@ -175,8 +176,10 @@ void SubframeSelectorInstance::Assign( const ProcessImplementation& p )
       p_xyStretch                  = x->p_xyStretch;
       p_psfFit                     = x->p_psfFit;
       p_psfFitCircular             = x->p_psfFitCircular;
-      p_pedestal                   = x->p_pedestal;
       p_roi                        = x->p_roi;
+      p_pedestal                   = x->p_pedestal;
+      p_pedestalMode               = x->p_pedestalMode;
+      p_pedestalKeyword            = x->p_pedestalKeyword;
       p_inputHints                 = x->p_inputHints;
       p_outputHints                = x->p_outputHints;
       p_outputDirectory            = x->p_outputDirectory;
@@ -214,11 +217,15 @@ public:
 
    SubframeSelectorMeasureThread( int index,
                                   ImageVariant* subframe,
+                                  double noise,
+                                  double noiseRatio,
                                   const String& subframePath,
                                   MeasureThreadInputData* data,
                                   bool throwsOnMeasurementError = true )
       : m_index( index )
       , m_subframe( subframe )
+      , m_noise( noise )
+      , m_noiseRatio( noiseRatio )
       , m_outputData( subframePath )
       , m_data( data )
       , m_throwsOnMeasurementError( throwsOnMeasurementError )
@@ -234,15 +241,11 @@ public:
          m_success = false;
          m_errorInfo.Clear();
 
-         ElapsedTime T;
-
          if ( IsAborted() )
             throw Error( "Aborted" );
 
          console.NoteLn( "<end><cbr><br>Measuring: " + m_outputData.path );
          MeasureImage();
-         console.WriteLn( "Image Calculations: " + T.ToString() );
-         T.Reset();
 
          if ( IsAborted() )
             throw Error( "Aborted" );
@@ -276,12 +279,11 @@ public:
          if ( IsAborted() )
             throw Error( "Aborted" );
 
-         // Measure Data
+         // Measure PSF data
          MeasurePSFs( fits );
-         console.WriteLn( "     Star Detector: " + T.ToIsoString() );
 
-         console.WriteLn( String().Format( "%i Star(s) detected", stars.Length() ) );
-         console.WriteLn( String().Format( "%i PSF(s) fitted", fits.Length() ) );
+         console.WriteLn( String().Format( "Stars detected: %6u", stars.Length() ) );
+         console.WriteLn( String().Format( "Valid PSF fits: %6u (%6.2f%%)", fits.Length(), 100.0*fits.Length()/stars.Length() ) );
 
          m_success = true;
       }
@@ -327,6 +329,8 @@ private:
 
    int                       m_index;
    AutoPointer<ImageVariant> m_subframe;
+   double                    m_noise;
+   double                    m_noiseRatio;
    MeasureData               m_outputData;
    bool                      m_success = false;
    String                    m_errorInfo;
@@ -335,12 +339,20 @@ private:
 
    void EvaluateNoise()
    {
+      if ( m_noise > 0 )
+         if ( m_noiseRatio > 0 )
+         {
+            m_outputData.noise = m_noise;
+            m_outputData.noiseRatio = m_noiseRatio;
+            return;
+         }
+
       double noiseEstimate = 0;
       double noiseFraction = 0;
       double noiseEstimateKS = 0;
       double noiseFractionKS = 0;
       SeparableFilter H( s_5x5B3Spline_hv, s_5x5B3Spline_hv, 5 );
-      for ( int n = 4; ; )
+      for ( int n = 4;; )
       {
          ATrousWaveletTransform W( H, n );
          W << *m_subframe;
@@ -354,8 +366,9 @@ private:
          noiseEstimate = W.NoiseMRS( ImageVariant( *m_subframe ), s_5x5B3Spline_kj, noiseEstimateKS, 3, &N );
          noiseFraction = double( N )/m_subframe->NumberOfPixels();
 
-         if ( noiseEstimate > 0 && noiseFraction >= 0.01 )
-            break;
+         if ( noiseEstimate > 0 )
+            if ( noiseFraction >= 0.01 )
+               break;
 
          if ( --n == 1 )
          {
@@ -374,21 +387,39 @@ private:
       double min, max;
       m_subframe->GetExtremeSampleValues( min, max );
 
-      // Robust estimate of location: median.
-      m_subframe->SetRangeClipping( 1.0/65535, 1 - 1.0/65535 ); // reject saturated areas
+      /*
+       * Reject saturated areas for median calculation.
+       *
+       * After pedestal subtraction we may have a statistically significant
+       * amount of negative pixel samples, so the clipping points must be
+       * relative to extreme sample values. This can happen e.g. with very low
+       * SNR calibrated data, where output pedestals have been added with
+       * ImageCalibration.
+       */
+      m_subframe->SetRangeClipping( min + 1.0/65535, max - 1.0/65535 );
+
+      /*
+       * Robust estimate of location: median.
+       */
       m_outputData.median = m_subframe->Median();
 
-      // Robust estimate of scale: trimmed mean deviation from the median.
+      /*
+       * Robust estimate of scale: trimmed mean deviation from the median.
+       */
       m_subframe->SetRangeClipping( m_outputData.median - (1 - m_data->instance->p_trimmingFactor)*(m_outputData.median - min),
                                     m_outputData.median + (1 - m_data->instance->p_trimmingFactor)*(max - m_outputData.median) );
       m_outputData.medianMeanDev = m_subframe->AvgDev( m_outputData.median );
 
       m_subframe->ResetSelections();
 
-      // Robust noise estimate.
+      /*
+       * Robust noise estimate: Multiresolution support algorithm (MRS)
+       */
       EvaluateNoise();
 
-      // SNR weight estimate.
+      /*
+       * SNR weight estimate.
+       */
       m_outputData.snrWeight = (1 + m_outputData.noise != 1) ?
                      m_outputData.medianMeanDev*m_outputData.medianMeanDev/m_outputData.noise/m_outputData.noise : 0;
    }
@@ -491,7 +522,7 @@ private:
 
 // ----------------------------------------------------------------------------
 
-ImageVariant* SubframeSelectorInstance::LoadSubframe( const String& filePath )
+ImageVariant* SubframeSelectorInstance::LoadSubframe( double& noise, double& noiseRatio, const String& filePath )
 {
    Console console;
 
@@ -521,11 +552,17 @@ ImageVariant* SubframeSelectorInstance::LoadSubframe( const String& filePath )
       throw Error( filePath + ": Empty subframe image." );
 
    /*
-    * Subframe files can store multiple images -
-    * this is not supported.
+    * Subframe files can store multiple images - this is not supported.
     */
    if ( images.Length() > 1 )
-      throw Error( filePath + ": Has multiple images; unsupported " );
+      throw Error( filePath + ": Has multiple images - unsupported." );
+
+   /*
+    * Read all FITS keywords.
+    */
+   FITSKeywordArray keywords;
+   if ( format.CanStoreKeywords() )
+      file.ReadFITSKeywords( keywords );
 
    /*
     * Create a shared image, 32-bit floating point.
@@ -541,29 +578,89 @@ ImageVariant* SubframeSelectorInstance::LoadSubframe( const String& filePath )
    /*
     * Optional pedestal subtraction.
     */
-   if ( p_pedestal > 0 )
+   switch ( p_pedestalMode )
    {
-      Console().WriteLn( String().Format( "Subtracting pedestal: %d DN", p_pedestal ) );
-      image->Apply( double( p_pedestal )/TheSSCameraResolutionParameter->ElementData( p_cameraResolution ), ImageOp::Sub );
+   case SSPedestalMode::Literal:
+      if ( p_pedestal != 0 )
+      {
+         console.NoteLn( String().Format( "* Subtracting pedestal: %d DN", p_pedestal ) );
+         image->Apply( p_pedestal/65535.0, ImageOp::Sub );
+      }
+      break;
+   case SSPedestalMode::Keyword:
+   case SSPedestalMode::CustomKeyword:
+      if ( !keywords.IsEmpty() )
+      {
+         IsoString keyName( (p_pedestalMode == SSPedestalMode::Keyword) ? "PEDESTAL" : p_pedestalKeyword );
+         double d = 0;
+         for ( const FITSHeaderKeyword& keyword : keywords )
+            if ( !keyword.name.CompareIC( keyName ) )
+               if ( keyword.IsNumeric() )
+                  if ( keyword.GetNumericValue( d ) ) // GetNumericValue() sets d=0 if keyword cannot be converted
+                     break;
+         if ( d != 0 )
+         {
+            /*
+             * Silently be compatible with acquisition applications that write
+             * negative PEDESTAL keyword values.
+             */
+            if ( p_pedestalMode == SSPedestalMode::Keyword )
+               if ( d < 0 )
+                  d = -d;
+
+            console.NoteLn( String().Format( "* Subtracting pedestal keyword '%s': %.4f DN", keyName.c_str(), d ) );
+            image->Apply( d/65535.0, ImageOp::Sub );
+         }
+      }
+      break;
    }
 
    /*
-    * For grayscale images, return the image just read. For color images,
-    * extract the HSI intensity component.
+    * Get noise estimates from available metadata.
+    */
+   DVector noiseEstimates( 0.0, image->NumberOfNominalChannels() );
+   DVector noiseRatios( 0.0, image->NumberOfNominalChannels() );
+   for ( int c = 0; c < image->NumberOfNominalChannels(); ++c )
+   {
+      IsoString keyName = IsoString().Format( "NOISE%02d", c );
+      for ( const FITSHeaderKeyword& keyword : keywords )
+         if ( !keyword.name.CompareIC( keyName ) )
+         {
+            if ( keyword.IsNumeric() )
+               keyword.GetNumericValue( noiseEstimates[c] ); // GetNumericValue() sets d=0 if keyword cannot be converted
+            break;
+         }
+
+      keyName = IsoString().Format( "NOISEF%02d", c );
+      for ( const FITSHeaderKeyword& keyword : keywords )
+         if ( !keyword.name.CompareIC( keyName ) )
+         {
+            if ( keyword.IsNumeric() )
+               keyword.GetNumericValue( noiseRatios[c] ); // GetNumericValue() sets d=0 if keyword cannot be converted
+            break;
+         }
+   }
+
+   /*
+    * For grayscale images, return the image just read and its noise estimates
+    * if available. For color images, extract the HSI intensity component and
+    * provide coherent noise estimates if available.
     */
    ImageVariant* imageVariant;
-   if ( image->ColorSpace() == ColorSpace::Gray || image->ColorSpace() == ColorSpace::HSI )
+   if ( image->NumberOfNominalChannels() == 1 )
    {
       imageVariant = new ImageVariant( image.Release() );
       imageVariant->SetOwnership( true );
+      noise = noiseEstimates[0];
+      noiseRatio = noiseRatios[0];
    }
    else
    {
       imageVariant = new ImageVariant;
       image->GetIntensity( *imageVariant );
+      noise = 0.5*(noiseEstimates.MinComponent() + noiseEstimates.MaxComponent());
+      noiseRatio = 0.5*(noiseRatios.MinComponent() + noiseRatios.MaxComponent());
    }
-
-   imageVariant->SetMaxProcessors( 1 );
 
    return imageVariant;
 }
@@ -641,8 +738,10 @@ bool SubframeSelectorInstance::TestStarDetector()
       console.WriteLn( String().Format( "<end><cbr><br>Measuring subframe %u of %u", 1, p_subframes.Length() ) );
       Module->ProcessEvents();
 
+      double noise, noiseRatio;
+      ImageVariant* image = LoadSubframe( noise, noiseRatio, item.path );
       SubframeSelectorMeasureThread* thread =
-         new SubframeSelectorMeasureThread( 1, LoadSubframe( item.path ), item.path, &inputThreadData );
+         new SubframeSelectorMeasureThread( 1, image, noise, noiseRatio, item.path, &inputThreadData );
 
       // Keep the GUI responsive, last chance to abort
       Module->ProcessEvents();
@@ -882,8 +981,12 @@ bool SubframeSelectorInstance::Measure()
                       * If not in cache, create a new thread for this subframe
                       * image.
                       */
+                     double noise, noiseRatio;
+                     ImageVariant* image = LoadSubframe( noise, noiseRatio, item.path );
                      *i = new SubframeSelectorMeasureThread( pendingItemsTotal-pendingItems.Length()+1,
-                                                             LoadSubframe( item.path ),
+                                                             image,
+                                                             noise,
+                                                             noiseRatio,
                                                              item.path,
                                                              &inputThreadData,
                                                              !p_nonInteractive/*throwsOnMeasurementError*/ );
@@ -1169,7 +1272,7 @@ void SubframeSelectorInstance::WriteMeasuredImage( MeasureItem* item )
     * Subframe files can store multiple images - we don't support them.
     */
    if ( images.Length() > 1 )
-      throw Error ( item->path + ": Has multiple images; unsupported " );
+      throw Error ( item->path + ": Has multiple images - unsupported." );
 
    /*
     * Create a shared image with the same pixel format as the input image.
@@ -1471,132 +1574,137 @@ void* SubframeSelectorInstance::LockParameter( const MetaParameter* p, size_type
 {
    if ( p == TheSSRoutineParameter )
       return &p_routine;
-   else if ( p == TheSSNonInteractiveParameter )
+   if ( p == TheSSNonInteractiveParameter )
       return &p_nonInteractive;
 
-   else if ( p == TheSSSubframeEnabledParameter )
+   if ( p == TheSSSubframeEnabledParameter )
       return &p_subframes[tableRow].enabled;
-   else if ( p == TheSSSubframePathParameter )
+   if ( p == TheSSSubframePathParameter )
       return p_subframes[tableRow].path.Begin();
 
-   else if ( p == TheSSFileCacheParameter )
+   if ( p == TheSSFileCacheParameter )
       return &p_fileCache;
 
-   else if ( p == TheSSSubframeScaleParameter )
+   if ( p == TheSSSubframeScaleParameter )
       return &p_subframeScale;
-   else if ( p == TheSSCameraGainParameter )
+   if ( p == TheSSCameraGainParameter )
       return &p_cameraGain;
-   else if ( p == TheSSCameraResolutionParameter )
+   if ( p == TheSSCameraResolutionParameter )
       return &p_cameraResolution;
-   else if ( p == TheSSSiteLocalMidnightParameter )
+   if ( p == TheSSSiteLocalMidnightParameter )
       return &p_siteLocalMidnight;
-   else if ( p == TheSSScaleUnitParameter )
+   if ( p == TheSSScaleUnitParameter )
       return &p_scaleUnit;
-   else if ( p == TheSSDataUnitParameter )
+   if ( p == TheSSDataUnitParameter )
       return &p_dataUnit;
-   else if ( p == TheSSTrimmingFactorParameter )
+   if ( p == TheSSTrimmingFactorParameter )
       return &p_trimmingFactor;
 
-   else if ( p == TheSSStructureLayersParameter )
+   if ( p == TheSSStructureLayersParameter )
       return &p_structureLayers;
-   else if ( p == TheSSNoiseLayersParameter )
+   if ( p == TheSSNoiseLayersParameter )
       return &p_noiseLayers;
-   else if ( p == TheSSHotPixelFilterRadiusParameter )
+   if ( p == TheSSHotPixelFilterRadiusParameter )
       return &p_hotPixelFilterRadius;
-   else if ( p == TheSSApplyHotPixelFilterParameter )
+   if ( p == TheSSApplyHotPixelFilterParameter )
       return &p_hotPixelFilter;
-   else if ( p == TheSSNoiseReductionFilterRadiusParameter )
+   if ( p == TheSSNoiseReductionFilterRadiusParameter )
       return &p_noiseReductionFilterRadius;
-   else if ( p == TheSSSensitivityParameter )
+   if ( p == TheSSSensitivityParameter )
       return &p_sensitivity;
-   else if ( p == TheSSPeakResponseParameter )
+   if ( p == TheSSPeakResponseParameter )
       return &p_peakResponse;
-   else if ( p == TheSSMaxDistortionParameter )
+   if ( p == TheSSMaxDistortionParameter )
       return &p_maxDistortion;
-   else if ( p == TheSSUpperLimitParameter )
+   if ( p == TheSSUpperLimitParameter )
       return &p_upperLimit;
-   else if ( p == TheSSBackgroundExpansionParameter )
+   if ( p == TheSSBackgroundExpansionParameter )
       return &p_backgroundExpansion;
-   else if ( p == TheSSXYStretchParameter )
+   if ( p == TheSSXYStretchParameter )
       return &p_xyStretch;
-   else if ( p == TheSSPSFFitParameter )
+   if ( p == TheSSPSFFitParameter )
       return &p_psfFit;
-   else if ( p == TheSSPSFFitCircularParameter )
+   if ( p == TheSSPSFFitCircularParameter )
       return &p_psfFitCircular;
-   else if ( p == TheSSPedestalParameter )
-      return &p_pedestal;
-   else if ( p == TheSSROIX0Parameter )
+   if ( p == TheSSROIX0Parameter )
       return &p_roi.x0;
-   else if ( p == TheSSROIY0Parameter )
+   if ( p == TheSSROIY0Parameter )
       return &p_roi.y0;
-   else if ( p == TheSSROIX1Parameter )
+   if ( p == TheSSROIX1Parameter )
       return &p_roi.x1;
-   else if ( p == TheSSROIY1Parameter )
+   if ( p == TheSSROIY1Parameter )
       return &p_roi.y1;
 
-   else if ( p == TheSSInputHintsParameter )
+   if ( p == TheSSPedestalParameter )
+      return &p_pedestal;
+   if ( p == TheSSPedestalModeParameter )
+      return &p_pedestalMode;
+   if ( p == TheSSPedestalKeywordParameter )
+      return p_pedestalKeyword.Begin();
+
+   if ( p == TheSSInputHintsParameter )
       return p_inputHints.Begin();
-   else if ( p == TheSSOutputHintsParameter )
+   if ( p == TheSSOutputHintsParameter )
       return p_outputHints.Begin();
 
-   else if ( p == TheSSOutputDirectoryParameter )
+   if ( p == TheSSOutputDirectoryParameter )
       return p_outputDirectory.Begin();
-   else if ( p == TheSSOutputExtensionParameter )
+   if ( p == TheSSOutputExtensionParameter )
       return p_outputExtension.Begin();
-   else if ( p == TheSSOutputPrefixParameter )
+   if ( p == TheSSOutputPrefixParameter )
       return p_outputPrefix.Begin();
-   else if ( p == TheSSOutputPostfixParameter )
+   if ( p == TheSSOutputPostfixParameter )
       return p_outputPostfix.Begin();
-   else if ( p == TheSSOutputKeywordParameter )
+   if ( p == TheSSOutputKeywordParameter )
       return p_outputKeyword.Begin();
-   else if ( p == TheSSOverwriteExistingFilesParameter )
+   if ( p == TheSSOverwriteExistingFilesParameter )
       return &p_overwriteExistingFiles;
-   else if ( p == TheSSOnErrorParameter )
+   if ( p == TheSSOnErrorParameter )
       return &p_onError;
 
-   else if ( p == TheSSApprovalExpressionParameter )
+   if ( p == TheSSApprovalExpressionParameter )
       return p_approvalExpression.Begin();
-   else if ( p == TheSSWeightingExpressionParameter )
+   if ( p == TheSSWeightingExpressionParameter )
       return p_weightingExpression.Begin();
 
-   else if ( p == TheSSSortingPropertyParameter )
+   if ( p == TheSSSortingPropertyParameter )
       return &p_sortingProperty;
-   else if ( p == TheSSGraphPropertyParameter )
+   if ( p == TheSSGraphPropertyParameter )
       return &p_graphProperty;
 
-   else if ( p == TheSSMeasurementIndexParameter )
+   if ( p == TheSSMeasurementIndexParameter )
       return &p_measures[tableRow].index;
-   else if ( p == TheSSMeasurementEnabledParameter )
+   if ( p == TheSSMeasurementEnabledParameter )
       return &p_measures[tableRow].enabled;
-   else if ( p == TheSSMeasurementLockedParameter )
+   if ( p == TheSSMeasurementLockedParameter )
       return &p_measures[tableRow].locked;
-   else if ( p == TheSSMeasurementPathParameter )
+   if ( p == TheSSMeasurementPathParameter )
       return p_measures[tableRow].path.Begin();
-   else if ( p == TheSSMeasurementWeightParameter )
+   if ( p == TheSSMeasurementWeightParameter )
       return &p_measures[tableRow].weight;
-   else if ( p == TheSSMeasurementFWHMParameter )
+   if ( p == TheSSMeasurementFWHMParameter )
       return &p_measures[tableRow].fwhm;
-   else if ( p == TheSSMeasurementEccentricityParameter )
+   if ( p == TheSSMeasurementEccentricityParameter )
       return &p_measures[tableRow].eccentricity;
-   else if ( p == TheSSMeasurementSNRWeightParameter )
+   if ( p == TheSSMeasurementSNRWeightParameter )
       return &p_measures[tableRow].snrWeight;
-   else if ( p == TheSSMeasurementMedianParameter )
+   if ( p == TheSSMeasurementMedianParameter )
       return &p_measures[tableRow].median;
-   else if ( p == TheSSMeasurementMedianMeanDevParameter )
+   if ( p == TheSSMeasurementMedianMeanDevParameter )
       return &p_measures[tableRow].medianMeanDev;
-   else if ( p == TheSSMeasurementNoiseParameter )
+   if ( p == TheSSMeasurementNoiseParameter )
       return &p_measures[tableRow].noise;
-   else if ( p == TheSSMeasurementNoiseRatioParameter )
+   if ( p == TheSSMeasurementNoiseRatioParameter )
       return &p_measures[tableRow].noiseRatio;
-   else if ( p == TheSSMeasurementStarsParameter )
+   if ( p == TheSSMeasurementStarsParameter )
       return &p_measures[tableRow].stars;
-   else if ( p == TheSSMeasurementStarResidualParameter )
+   if ( p == TheSSMeasurementStarResidualParameter )
       return &p_measures[tableRow].starResidual;
-   else if ( p == TheSSMeasurementFWHMMeanDevParameter )
+   if ( p == TheSSMeasurementFWHMMeanDevParameter )
       return &p_measures[tableRow].fwhmMeanDev;
-   else if ( p == TheSSMeasurementEccentricityMeanDevParameter )
+   if ( p == TheSSMeasurementEccentricityMeanDevParameter )
       return &p_measures[tableRow].eccentricityMeanDev;
-   else if ( p == TheSSMeasurementStarResidualMeanDevParameter )
+   if ( p == TheSSMeasurementStarResidualMeanDevParameter )
       return &p_measures[tableRow].starResidualMeanDev;
 
    return nullptr;
@@ -1617,6 +1725,12 @@ bool SubframeSelectorInstance::AllocateParameter( size_type sizeOrLength, const 
       p_subframes[tableRow].path.Clear();
       if ( sizeOrLength > 0 )
          p_subframes[tableRow].path.SetLength( sizeOrLength );
+   }
+   else if ( p == TheSSPedestalKeywordParameter )
+   {
+      p_pedestalKeyword.Clear();
+      if ( sizeOrLength > 0 )
+         p_pedestalKeyword.SetLength( sizeOrLength );
    }
    else if ( p == TheSSInputHintsParameter )
    {
@@ -1697,33 +1811,36 @@ size_type SubframeSelectorInstance::ParameterLength( const MetaParameter* p, siz
 {
    if ( p == TheSSSubframesParameter )
       return p_subframes.Length();
-   else if ( p == TheSSSubframePathParameter )
+   if ( p == TheSSSubframePathParameter )
       return p_subframes[tableRow].path.Length();
 
-   else if ( p == TheSSInputHintsParameter )
+   if ( p == TheSSPedestalKeywordParameter )
+      return p_pedestalKeyword.Length();
+
+   if ( p == TheSSInputHintsParameter )
       return p_inputHints.Length();
-   else if ( p == TheSSOutputHintsParameter )
+   if ( p == TheSSOutputHintsParameter )
       return p_outputHints.Length();
 
-   else if ( p == TheSSOutputDirectoryParameter )
+   if ( p == TheSSOutputDirectoryParameter )
       return p_outputDirectory.Length();
-   else if ( p == TheSSOutputExtensionParameter )
+   if ( p == TheSSOutputExtensionParameter )
       return p_outputExtension.Length();
-   else if ( p == TheSSOutputPrefixParameter )
+   if ( p == TheSSOutputPrefixParameter )
       return p_outputPrefix.Length();
-   else if ( p == TheSSOutputPostfixParameter )
+   if ( p == TheSSOutputPostfixParameter )
       return p_outputPostfix.Length();
-   else if ( p == TheSSOutputKeywordParameter )
+   if ( p == TheSSOutputKeywordParameter )
       return p_outputKeyword.Length();
 
-   else if ( p == TheSSApprovalExpressionParameter )
+   if ( p == TheSSApprovalExpressionParameter )
       return p_approvalExpression.Length();
-   else if ( p == TheSSWeightingExpressionParameter )
+   if ( p == TheSSWeightingExpressionParameter )
       return p_weightingExpression.Length();
 
-   else if ( p == TheSSMeasurementsParameter )
+   if ( p == TheSSMeasurementsParameter )
       return p_measures.Length();
-   else if ( p == TheSSMeasurementPathParameter )
+   if ( p == TheSSMeasurementPathParameter )
       return p_measures[tableRow].path.Length();
 
    return 0;
@@ -1734,4 +1851,4 @@ size_type SubframeSelectorInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInstance.cpp - Released 2021-05-31T09:44:46Z
+// EOF SubframeSelectorInstance.cpp - Released 2021-09-02T16:22:48Z

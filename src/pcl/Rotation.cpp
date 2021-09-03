@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.9
+// /_/     \____//_____/   PCL 2.4.10
 // ----------------------------------------------------------------------------
-// pcl/Rotation.cpp - Released 2021-05-31T09:44:25Z
+// pcl/Rotation.cpp - Released 2021-09-02T16:22:38Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -57,32 +57,37 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-static inline
-void GetRotatedBounds( int& width, int& height, double& x0, double& y0, const Rotation& R )
+static void GetUnclippedBounds( int& width, int& height, DPoint& origin, const Rotation& R )
 {
+   DPoint p0( 0.5*width, 0.5*height );
    DPoint p1(       0.5,        0.5 );
    DPoint p2( width-0.5,        0.5 );
    DPoint p3( width-0.5, height-0.5 );
    DPoint p4(       0.5, height-0.5 );
 
    double sa, ca;
-   pcl::SinCos( double( R.Angle() ), sa, ca );
-   p1.Rotate( sa, ca, R.Center() );
-   p2.Rotate( sa, ca, R.Center() );
-   p3.Rotate( sa, ca, R.Center() );
-   p4.Rotate( sa, ca, R.Center() );
+   pcl::SinCos( -R.Angle(), sa, ca );
+   p1.Rotate( sa, ca, p0 );
+   p2.Rotate( sa, ca, p0 );
+   p3.Rotate( sa, ca, p0 );
+   p4.Rotate( sa, ca, p0 );
 
-   x0 = pcl::Min( p1.x, pcl::Min( p2.x, pcl::Min( p3.x, p4.x ) ) );
-   y0 = pcl::Min( p1.y, pcl::Min( p2.y, pcl::Min( p3.y, p4.y ) ) );
+   origin.x = pcl::Min( p1.x, pcl::Min( p2.x, pcl::Min( p3.x, p4.x ) ) );
+   origin.y = pcl::Min( p1.y, pcl::Min( p2.y, pcl::Min( p3.y, p4.y ) ) );
 
-   width = 1 + RoundInt( pcl::Max( p1.x, pcl::Max( p2.x, pcl::Max( p3.x, p4.x ) ) ) - x0 );
-   height = 1 + RoundInt( pcl::Max( p1.y, pcl::Max( p2.y, pcl::Max( p3.y, p4.y ) ) ) - y0 );
+   width = 1 + RoundInt( pcl::Max( p1.x, pcl::Max( p2.x, pcl::Max( p3.x, p4.x ) ) ) - origin.x );
+   height = 1 + RoundInt( pcl::Max( p1.y, pcl::Max( p2.y, pcl::Max( p3.y, p4.y ) ) ) - origin.y );
 }
+
+// ----------------------------------------------------------------------------
 
 void Rotation::GetNewSizes( int& width, int& height ) const
 {
-   double dumx, dumy;
-   GetRotatedBounds( width, height, dumx, dumy, *this );
+   if ( IsUnclipped() )
+   {
+      DPoint dum;
+      GetUnclippedBounds( width, height, dum, *this );
+   }
 }
 
 // ----------------------------------------------------------------------------
@@ -102,10 +107,11 @@ public:
       if ( width == 0 || height == 0 )
          return;
 
-      int w0 = width;
-      int h0 = height;
-      double x0, y0;
-      GetRotatedBounds( width, height, x0, y0, R );
+      int srcWidth = width;
+      int srcHeight = height;
+      DPoint origin = 0.0;
+      if ( R.IsUnclipped() )
+         GetUnclippedBounds( width, height, origin, R );
 
       image.EnsureUnique();
 
@@ -116,9 +122,13 @@ public:
       typename GenericImage<P>::color_space cs0 = image.ColorSpace();
 
       double sa, ca;
-      pcl::SinCos( double( -R.Angle() ), sa, ca );
+      pcl::SinCos( R.Angle(), sa, ca );
 
-      DPoint center = R.Center();
+      DPoint center;
+      if ( R.IsUnclipped() )
+         center = DPoint( 0.5*width, 0.5*height ) + origin;
+      else
+         center = R.Center();
 
       StatusMonitor status = image.Status();
 
@@ -137,15 +147,15 @@ public:
 
          for ( int c = 0; c < n; ++c )
          {
-            ThreadData<P> data( sa, ca, center, DPoint( x0, y0 ) - center, w0, h0, width, status, N );
+            ThreadData<P> data( sa, ca, center, origin, srcWidth, srcHeight, width, status, N );
 
-            data.f = f = image.Allocator().AllocatePixels( size_type( width )*size_type( height ) );
+            data.f = f = image.Allocator().AllocatePixels( N );
             data.fillValue = (c < R.FillValues().Length()) ? P::ToSample( R.FillValues()[c] ) : P::MinSampleValue();
 
             ReferenceArray<Thread<P> > threads;
             for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
                threads.Add( new Thread<P>( data,
-                                           R.Interpolation().NewInterpolator<P>( f0[c], w0, h0, R.UsingUnclippedInterpolation() ),
+                                           R.Interpolation().NewInterpolator<P>( f0[c], srcWidth, srcHeight, R.UsingUnclippedInterpolation() ),
                                            n,
                                            n + int( L[i] ) ) );
 
@@ -182,26 +192,26 @@ private:
    template <class P>
    struct ThreadData : public AbstractImage::ThreadData
    {
-      ThreadData( double sinA, double cosA, const DPoint& a_center, const DPoint& a_origin,
-                  int urWidth, int urHeight, int width, const StatusMonitor& a_status, size_type a_count )
+      ThreadData( double a_sa, double a_ca, const DPoint& a_center, const DPoint& a_origin,
+                  int a_srcWidth, int a_srcHeight, int a_width, const StatusMonitor& a_status, size_type a_count )
          : AbstractImage::ThreadData( a_status, a_count )
-         , sa( sinA )
-         , ca( cosA )
+         , sa( a_sa )
+         , ca( a_ca )
          , center( a_center )
          , origin( a_origin )
-         , w0( urWidth )
-         , h0( urHeight )
-         , width( width )
+         , srcWidth( a_srcWidth )
+         , srcHeight( a_srcHeight )
+         , width( a_width )
       {
       }
 
       typename P::sample* f = nullptr; // target data
       typename P::sample  fillValue = P::MinSampleValue(); // unmapped pixel value
       double              sa, ca;      // sine and cosine of rotation angle
-      DPoint              center;
-      DPoint              origin;
-      int                 w0;          // unrotated width
-      int                 h0;          // unrotated height
+      DPoint              center;      // center of rotation
+      DPoint              origin;      // origin of unclipped bounds
+      int                 srcWidth;    // unrotated width
+      int                 srcHeight;   // unrotated height
       int                 width;       // rotated width
    };
 
@@ -224,7 +234,7 @@ private:
       {
          INIT_THREAD_MONITOR()
 
-         typename P::sample* f = m_data.f + m_firstRow*m_data.width;
+         typename P::sample* __restrict__ f = m_data.f + m_firstRow*m_data.width;
 
          for ( int i = m_firstRow; i < m_endRow; ++i )
          {
@@ -232,9 +242,12 @@ private:
 
             for ( int j = 0; j < m_data.width; ++j, ++f )
             {
-               DPoint p( m_data.origin.x+j, oy );
+               DPoint p( m_data.origin.x + j, oy );
                p.Rotate( m_data.sa, m_data.ca, m_data.center );
-               *f = (p.x >= 0 && p.x < m_data.w0 && p.y >= 0 && p.y < m_data.h0) ? (*m_interpolator)( p ) : m_data.fillValue;
+               *f = (p.x >= 0
+                  && p.x < m_data.srcWidth
+                  && p.y >= 0
+                  && p.y < m_data.srcHeight) ? (*m_interpolator)( p ) : m_data.fillValue;
 
                UPDATE_THREAD_MONITOR( 65536 )
             }
@@ -282,4 +295,4 @@ void Rotation::Apply( pcl::UInt32Image& image ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Rotation.cpp - Released 2021-05-31T09:44:25Z
+// EOF pcl/Rotation.cpp - Released 2021-09-02T16:22:38Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.9
+// /_/     \____//_____/   PCL 2.4.10
 // ----------------------------------------------------------------------------
-// pcl/FFTConvolution.h - Released 2021-05-31T09:44:18Z
+// pcl/FFTConvolution.h - Released 2021-09-02T16:22:30Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -474,4 +474,4 @@ private:
 #endif   // __PCL_FFTConvolution_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FFTConvolution.h - Released 2021-05-31T09:44:18Z
+// EOF pcl/FFTConvolution.h - Released 2021-09-02T16:22:30Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.9
+// /_/     \____//_____/   PCL 2.4.10
 // ----------------------------------------------------------------------------
 // Standard Blink Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// BlinkInterface.cpp - Released 2021-05-31T09:44:46Z
+// BlinkInterface.cpp - Released 2021-09-02T16:22:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Blink PixInsight module.
 //
@@ -2177,4 +2177,4 @@ BlinkInterface::GUIData::GUIData( BlinkInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BlinkInterface.cpp - Released 2021-05-31T09:44:46Z
+// EOF BlinkInterface.cpp - Released 2021-09-02T16:22:48Z

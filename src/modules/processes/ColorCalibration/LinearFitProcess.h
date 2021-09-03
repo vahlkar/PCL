@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.9
+// /_/     \____//_____/   PCL 2.4.10
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// LinearFitProcess.h - Released 2021-05-31T09:44:45Z
+// LinearFitProcess.h - Released 2021-09-02T16:22:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -91,4 +91,4 @@ PCL_END_LOCAL
 #endif   // __LinearFitProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF LinearFitProcess.h - Released 2021-05-31T09:44:45Z
+// EOF LinearFitProcess.h - Released 2021-09-02T16:22:48Z

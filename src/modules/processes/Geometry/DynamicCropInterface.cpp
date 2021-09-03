@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.9
+// /_/     \____//_____/   PCL 2.4.10
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 1.2.3
+// Standard Geometry Process Module Version 1.2.4
 // ----------------------------------------------------------------------------
-// DynamicCropInterface.cpp - Released 2021-05-31T09:44:45Z
+// DynamicCropInterface.cpp - Released 2021-09-02T16:22:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -647,7 +647,7 @@ void DynamicCropInterface::GetRotatedRect( DPoint& topLeft, DPoint& topRight, DP
    if ( m_instance.p_angle != 0 )
    {
       double sa, ca;
-      SinCos( m_instance.p_angle, sa, ca );
+      SinCos( -m_instance.p_angle, sa, ca ); // NB: Inverse mapping needs clockwise rotations
       Rotate( topLeft, sa, ca, m_center );
       Rotate( topRight, sa, ca, m_center );
       Rotate( bottomLeft, sa, ca, m_center );
@@ -791,7 +791,7 @@ void DynamicCropInterface::UpdateRotation( DPoint& p, unsigned /*modifiers*/ )
 
    double da = RotationAngle( p ) - RotationAngle( m_dragOrigin );
 
-   Rotate( m_center, da, m_rotationCenter );
+   Rotate( m_center, -da, m_rotationCenter ); // NB: Inverse mapping needs clockwise rotations
 
    double a = m_instance.p_angle + da;
    m_instance.p_angle = ArcTan( Sin( a ), Cos( a ) );
@@ -846,7 +846,7 @@ void DynamicCropInterface::UpdateResize( DPoint& p, unsigned modifiers )
    DPoint p0 = m_dragOrigin;
    DPoint p1 = p;
    double sa, ca;
-   SinCos( -m_instance.p_angle, sa, ca );
+   SinCos( m_instance.p_angle, sa, ca );
    Rotate( p0, sa, ca, m_center );
    Rotate( p1, sa, ca, m_center );
 
@@ -1009,7 +1009,7 @@ void DynamicCropInterface::UpdateResize( DPoint& p, unsigned modifiers )
       m_center.y = (int( m_height ) & 1) ? int( m_center.y ) + 0.5 : Round( m_center.y );
    }
 
-   Rotate( m_center, m_instance.p_angle, c );
+   Rotate( m_center, -m_instance.p_angle, c ); // NB: Inverse mapping needs clockwise rotations
 
    if ( !m_rotationFixed )
       m_rotationCenter = m_center;
@@ -1108,7 +1108,7 @@ void DynamicCropInterface::ResizeBy( double dL, double dT, double dR, double dB 
 
    DPoint c = m_center;
    m_center = r.Center();
-   Rotate( m_center, m_instance.p_angle, c );
+   Rotate( m_center, -m_instance.p_angle, c ); // NB: Inverse mapping needs clockwise rotations
 
    if ( !m_rotationFixed )
       m_rotationCenter = m_center;
@@ -1189,7 +1189,7 @@ void DynamicCropInterface::UpdateInstance()
 bool DynamicCropInterface::IsPointInsideRect( const DPoint& p ) const
 {
    DPoint d = p;
-   Rotate( d, -m_instance.p_angle, m_center );
+   Rotate( d, m_instance.p_angle, m_center );
    d -= m_center;
    return Abs( d.x ) <= 0.5*m_width && Abs( d.y ) <= 0.5*m_height;
 }
@@ -1199,7 +1199,7 @@ bool DynamicCropInterface::IsPointInsideRect( const DPoint& p ) const
 bool DynamicCropInterface::IsPointNearRect( const DPoint& p ) const
 {
    DPoint d = p;
-   Rotate( d, -m_instance.p_angle, m_center );
+   Rotate( d, m_instance.p_angle, m_center );
    d -= m_center;
    double t = m_view.Window().ViewportScalarToImage( double( ImageWindow::CursorTolerance() ) );
    return Abs( d.x ) <= 0.5*m_width + t && Abs( d.y ) <= 0.5*m_height + t;
@@ -1210,7 +1210,7 @@ bool DynamicCropInterface::IsPointNearRect( const DPoint& p ) const
 bool DynamicCropInterface::IsPointOnRectEdges( const DPoint& p, bool& left, bool& top, bool& right, bool& bottom ) const
 {
    DPoint d = p;
-   Rotate( d, -m_instance.p_angle, m_center );
+   Rotate( d, m_instance.p_angle, m_center );
    d -= m_center;
    double t = m_view.Window().ViewportScalarToImage( double( ImageWindow::CursorTolerance() ) );
    double w2 = 0.5*m_width;
@@ -2380,4 +2380,4 @@ DynamicCropInterface::GUIData::GUIData( DynamicCropInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DynamicCropInterface.cpp - Released 2021-05-31T09:44:45Z
+// EOF DynamicCropInterface.cpp - Released 2021-09-02T16:22:48Z
