@@ -1,0 +1,71 @@
+######################################################################
+# PixInsight Makefile Generator Script v1.122
+# Copyright (C) 2009-2021 Pleiades Astrophoto
+######################################################################
+# Generated on .... 2021-09-16T16:04:33.433Z
+# Project id ...... NetworkService
+# Project type .... Module
+# Platform ........ MacOSX/g++
+# Configuration ... Release/x64
+######################################################################
+
+OBJ_DIR="$(PCLSRCDIR)/modules/processes/NetworkService/macosx/g++/x64/Release"
+
+.PHONY: all
+all: $(OBJ_DIR)/NetworkService-pxm.dylib
+
+#
+# Source files
+#
+
+SRC_FILES= \
+../../NetworkServiceDownloader.cpp \
+../../NetworkServiceInterface.cpp \
+../../NetworkServiceModule.cpp \
+../../NetworkServiceProcess.cpp \
+../../NetworkServiceTask.cpp
+
+#
+# Object files
+#
+
+OBJ_FILES= \
+./x64/Release/NetworkServiceDownloader.o \
+./x64/Release/NetworkServiceInterface.o \
+./x64/Release/NetworkServiceModule.o \
+./x64/Release/NetworkServiceProcess.o \
+./x64/Release/NetworkServiceTask.o
+
+#
+# Dependency files
+#
+
+DEP_FILES= \
+./x64/Release/NetworkServiceDownloader.d \
+./x64/Release/NetworkServiceInterface.d \
+./x64/Release/NetworkServiceModule.d \
+./x64/Release/NetworkServiceProcess.d \
+./x64/Release/NetworkServiceTask.d
+
+#
+# Rules
+#
+
+-include $(DEP_FILES)
+
+$(OBJ_DIR)/NetworkService-pxm.dylib: $(OBJ_FILES)
+	clang++ -arch x86_64 -fPIC -headerpad_max_install_names -Wl,-syslibroot,/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk -mmacosx-version-min=10.13 -stdlib=libc++ -Wl,-dead_strip -dynamiclib -install_name @executable_path/NetworkService-pxm.dylib -L"$(PCLLIBDIR64)" -o $(OBJ_DIR)/NetworkService-pxm.dylib $(OBJ_FILES) -framework CoreFoundation -lpthread -lPCL-pxi -llz4-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi
+	$(MAKE) -f ./makefile-x64 --no-print-directory post-build
+
+.PHONY: clean
+clean:
+	rm -f $(OBJ_FILES) $(DEP_FILES) $(OBJ_DIR)/NetworkService-pxm.dylib
+
+.PHONY: post-build
+post-build:
+	cp $(OBJ_DIR)/NetworkService-pxm.dylib $(PCLBINDIR64)
+
+./x64/Release/%.o: ../../%.cpp
+	clang++ -c -pipe -pthread -arch x86_64 -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk -mmacosx-version-min=10.13 -D_REENTRANT -D__PCL_MACOSX -D__PCL_AVX2 -D__PCL_FMA -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -march=haswell -mtune=skylake -msse4.2 -mavx2 -mfma -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -std=c++17 -stdlib=libc++ -Wall -Wno-parentheses -Wno-extern-c-compat -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	@echo ' '
+
