@@ -72,7 +72,8 @@ class NetworkServiceTaskByType : public NetworkServiceTask
 {
 public:
 
-   NetworkServiceTaskByType( const String& name ) : m_name( name )
+   NetworkServiceTaskByType( const String& name )
+      : m_name( name )
    {
    }
 
@@ -113,6 +114,14 @@ String NetworkServiceTask::TaskVersion() const
 
 void NetworkServiceTask::Perform( const TaskData& data, NetworkServiceLogger& log )
 {
+   /*
+    * This is the default task, which simply sends back a notification to
+    * identify the task for testing purposes.
+    *
+    * You must reimplement this member function in derived classes to implement
+    * actual network services.
+    */
+
    StringList parameters;
    data.parameters.Break( parameters, '\n', true/*trim*/ );
    parameters.Remove( String() );

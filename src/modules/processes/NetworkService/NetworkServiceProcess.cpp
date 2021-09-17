@@ -188,7 +188,8 @@ class FileLogger : public NetworkServiceLogger
 {
 public:
 
-   FileLogger( const String& filePath ) : m_filePath( filePath )
+   FileLogger( const String& filePath )
+      : m_filePath( filePath )
    {
       if ( m_filePath.IsEmpty() )
          m_filePath = File::SystemTempDirectory() + TimePoint::Now().ToString( "/NS%Y%M%D%h%m%s.log" );

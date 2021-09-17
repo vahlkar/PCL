@@ -164,7 +164,8 @@ class UILogger : public NetworkServiceLogger
 {
 public:
 
-   UILogger( NetworkServiceInterface& ui ) : m_ui( ui )
+   UILogger( NetworkServiceInterface& ui )
+      : m_ui( ui )
    {
    }
 
