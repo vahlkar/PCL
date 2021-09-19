@@ -98,12 +98,63 @@ namespace pcl
 // ----------------------------------------------------------------------------
 
 /*!
+ * \namespace pcl::RadialBasisFunction
+ * \brief     Implemented radial basis functions (RBFs) for surface spline
+ *            interpolation.
+ *
+ * The symbols used in the following table are:
+ *
+ *    phi(r)   The radial basis function evaluated at a point (x,y)
+ *    r        Distance to center, r^2 = (x-xc)^2 + (y-yc)^2
+ *    (xc,yc)  Center point
+ *    eps      Shape parameter
+ *
+ * <table border="1" cellpadding="4" cellspacing="0">
+ * <tr><td>RadialBasisFunction::Unknown</td>             <td>Unknown or unsupported function.</td></tr>
+ * <tr><td>RadialBasisFunction::VariableOrder</td>       <td>phi(r) = (r^2)^(m-1) * Ln( r^2 )</td></tr>
+ * <tr><td>RadialBasisFunction::ThinPlateSpline</td>     <td>phi(r) = r^2 * Ln( r )</td></tr>
+ * <tr><td>RadialBasisFunction::Gaussian</td>            <td>phi(r) = Exp( -(eps*r)^2 )</td></tr>
+ * <tr><td>RadialBasisFunction::Multiquadric</td>        <td>phi(r) = Sqrt( 1 + (eps*r)^2 )</td></tr>
+ * <tr><td>RadialBasisFunction::InverseMultiquadric</td> <td>phi(r) = 1/Sqrt( 1 + (eps*r)^2 )</td></tr>
+ * <tr><td>RadialBasisFunction::InverseQuadratic</td>    <td>phi(r) = 1/( 1 + (eps*r)^2 )</td></tr>
+ * </table>
+ */
+namespace RadialBasisFunction
+{
+   enum value_type
+   {
+      Unknown = -1,
+      VariableOrder = 0,   // phi(r) = (r^2)^(m-1) * Ln( r^2 )
+      ThinPlateSpline,     // phi(r) = r^2 * Ln( r )
+      Gaussian,            // phi(r) = Exp( -(eps*r)^2 )
+      Multiquadric,        // phi(r) = Sqrt( 1 + (eps*r)^2 )
+      InverseMultiquadric, // phi(r) = 1/Sqrt( 1 + (eps*r)^2 )
+      InverseQuadratic,    // phi(r) = 1/( 1 + (eps*r)^2 )
+      __number_of_items__,
+      Default = VariableOrder
+   };
+
+   inline static bool Validate( int rbf )
+   {
+      return rbf >= 0 && rbf < __number_of_items__;
+   }
+}
+
+// ----------------------------------------------------------------------------
+
+/*!
  * \class SurfaceSplineBase
  * \brief Base class of two-dimensional surface splines.
  */
 class PCL_CLASS SurfaceSplineBase
 {
 protected:
+
+   /*!
+    * Represents a radial basis function (RBF) supported by this surface spline
+    * implementation.
+    */
+   typedef RadialBasisFunction::value_type   rbf_type;
 
    /*!
     * Default constructor.
@@ -141,6 +192,7 @@ protected:
     * Surface spline generation, 32-bit floating point data.
     */
    static void Generate( float* __restrict__ c,
+                         rbf_type, double e2, bool polynomial,
                          const float* __restrict__ x, const float* __restrict__ y, const float* __restrict__ z,
                          int n, int m, float r, const float* __restrict__ w );
 
@@ -148,6 +200,7 @@ protected:
     * Surface spline generation, 64-bit floating point data.
     */
    static void Generate( double* __restrict__ c,
+                         rbf_type, double e2, bool polynomial,
                          const double* __restrict__ x, const double* __restrict__ y, const double* __restrict__ z,
                          int n, int m, float r, const float* __restrict__ w );
 };
@@ -156,30 +209,47 @@ protected:
 
 /*!
  * \class SurfaceSpline
- * \brief Two-dimensional interpolating/approximating surface spline (thin plate).
+ * \brief Two-dimensional interpolating/approximating surface spline.
  *
- * %SurfaceSpline implements interpolating or smoothing surface splines, also
- * known as <em>thin plate splines</em>, for arbitrarily distributed input
- * nodes in two dimensions.
- *
- * A thin plate spline describes the minimal-energy bending of a thin sheet of
- * metal passing through a set of interpolation points in three-dimensional
- * space. This physical analogy gives thin plate splines accuracy and
- * adaptability properties that we have been applying successfully to many data
- * modeling tasks, including very especially image registration and astrometric
- * applications.
+ * %SurfaceSpline implements interpolating or smoothing surface splines for
+ * arbitrarily distributed input nodes in two dimensions using radial basis
+ * functions (RBFs).
  *
  * The most distinctive property of surface splines is their high adaptability
  * to local variations, which makes them ideal to model complex two dimensional
- * functions with high accuracy. An important advantage of our implementation
- * is the possibility to control adaptability with approximating (or smoothing)
- * surface splines, as opposed to interpolating splines, and the possibility to
- * control adaptability both as a global property of the modeling device, or on
- * a point-by-point basis. The main drawback of surface splines is that they
- * are computationally expensive, especially for large data sets. See the
+ * functions with high accuracy. These interpolation properties largely depend
+ * on the employed radial basis functions. The well-known <em>thin plate
+ * spline</em> function is the default RBF used by this implementation. A thin
+ * plate spline describes the minimal-energy bending of a thin sheet of metal
+ * passing through a set of interpolation points in three-dimensional space.
+ * This physical justification gives thin plate splines accuracy and
+ * adaptability properties that we have been applying successfully to many
+ * critical data modeling tasks, including very especially image registration
+ * and astrometric solutions with arbitrary distortion corrections.
+ *
+ * Other RBFs supported by this class include a variable order function that
+ * allows imposing the derivability order of the interpolation/approximation
+ * spline, as well as less globally dependent functions such as Gaussian and
+ * multiquadric RBFs. See the RadialBasisFunction namespace for the complete
+ * list of supported RBFs.
+ *
+ * An important advantage of our implementation is the possibility to control
+ * adaptability with approximating (or smoothing) surface splines, as opposed
+ * to interpolating splines, and the possibility to control adaptability both
+ * as a global property of the modeling device, or on a point-by-point basis.
+ *
+ * The main drawback of surface splines is that they are computationally
+ * expensive, especially for large data sets. Generation of surface splines
+ * usually requires solving dense linear systems, which involves the use of
+ * algorithms with O(N^3) complexity (such as the Bunch-Kaufman diagonal
+ * pivoting method). This limits the applicability of this implementation to
+ * data sets of no more than about 2000-3000 interpolation nodes using current
+ * hardware. See the RecursivePointSurfaceSpline class for a more efficient
+ * implementation to generate hierarchical subsplines based on quadtrees.
+ *
+ * For fast evaluation of surface splines in massive problems, see the
  * GridInterpolation and PointGridInterpolation classes for highly efficient
- * discretized implementations. See also the RecursivePointSurfaceSpline class
- * for an efficient implementation based on recursive subsplines.
+ * discretized implementations.
  *
  * \sa PointSurfaceSpline, RecursivePointSurfaceSpline, GridInterpolation,
  * PointGridInterpolation, ShepardInterpolation, SurfacePolynomial
@@ -193,24 +263,30 @@ public:
     * The numeric type used to represent coordinates, function values and
     * spline coefficients.
     */
-   typedef T                        scalar;
+   typedef T                           scalar;
 
    /*!
     * Represents a vector of coordinates, function values or spline
     * coefficients.
     */
-   typedef GenericVector<scalar>    vector;
+   typedef GenericVector<scalar>       vector;
 
    /*!
     * The numeric type used to represent the interpolation strength of a
     * surface interpolation node.
     */
-   typedef float                    weight;
+   typedef float                       weight;
 
-   /*
+   /*!
     * Represents a vector of interpolation node weights.
     */
-   typedef GenericVector<weight>    weight_vector;
+   typedef GenericVector<weight>       weight_vector;
+
+   /*!
+    * Represents a radial basis function (RBF) supported by this surface spline
+    * implementation.
+    */
+   typedef SurfaceSplineBase::rbf_type rbf_type;
 
    /*!
     * Default constructor. Constructs an empty, two-dimensional interpolating
@@ -247,11 +323,11 @@ public:
 
    /*!
     * Returns true iff this surface spline is valid. A valid surface spline has
-    * been initialized with three or more nodes.
+    * been initialized with three or more interpolation nodes.
     */
    bool IsValid() const
    {
-      return m_x.Length() == m_y.Length() && m_x.Length() >= 3;
+      return m_x.Length() >= 3 && m_x.Length() == m_y.Length();
    }
 
    /*!
@@ -291,6 +367,63 @@ public:
    }
 
    /*!
+    * Returns the type of radial basis function (RBF) used by this surface
+    * spline. See the RadialBasisFunction namespace for the list of supported
+    * RBFs in the current implementation.
+    */
+   rbf_type RBFType() const
+   {
+      return m_rbf;
+   }
+
+   /*!
+    * Sets the radial basis function that will be used by this surface spline.
+    *
+    * Calling this member function implicitly resets this %SurfaceSpline object
+    * and destroys all internal working structures. If the specified RBF is not
+    * of a variable order type, the derivability order of this surface spline
+    * will be reset to second order.
+    */
+   void SetRBFType( rbf_type rbf )
+   {
+      Clear();
+      m_rbf = rbf;
+      if ( m_rbf != RadialBasisFunction::VariableOrder )
+         m_order = 2;
+   }
+
+   /*!
+    * Returns the shape parameter applied to scale the radial basis function
+    * used by this surface spline.
+    *
+    * The shape parameter is only used by decreasing RBFs, i.e., it is not used
+    * by the variable order and thin plate spline RBFs, which are
+    * parameter-free.
+    */
+   double ShapeParameter() const
+   {
+      return m_eps;
+   }
+
+   /*!
+    * Sets the shape parameter applied to scale the radial basis function used
+    * by this surface spline.
+    *
+    * Calling this member function implicitly resets this %SurfaceSpline object
+    * and destroys all internal working structures.
+    *
+    * The shape parameter is only used by decreasing RBFs, i.e., it is not used
+    * by the variable order and thin plate spline RBFs, which are
+    * parameter-free.
+    */
+   void SetShapeParameter( double eps )
+   {
+      Clear();
+      m_eps = Max( 0.01, Abs( eps ) );
+      m_eps2 = m_eps*m_eps;
+   }
+
+   /*!
     * Returns the derivability order of this surface spline.
     */
    int Order() const
@@ -303,12 +436,18 @@ public:
     *
     * \param order   Derivability order. Must be >= 2.
     *
-    * Calling this member function implicitly resets this %SurfaceSpline
-    * object and destroys all internal working structures.
+    * Calling this member function implicitly resets this %SurfaceSpline object
+    * and destroys all internal working structures.
     *
-    * The surface spline will be continuously differentiable up to the
-    * specified order \a m. If this order is too high, an ill-conditioned
-    * linear system may result.
+    * The derivability order can only be specified for variable order radial
+    * basis functions (RadialBasisFunction::VariableOrder). Other RBFs are
+    * implicitly of second order, so when they are selected the order specified
+    * by calling this function will be ignored.
+    *
+    * Only when a variable order RBF is selected, the surface spline will be
+    * continuously differentiable up to the specified \a order after a
+    * subsequent initialization. If the order is too high, an ill-conditioned
+    * linear system may result even for a set of valid interpolation nodes.
     *
     * The default order is 2. Recommended values are 2 and 3.
     */
@@ -316,7 +455,45 @@ public:
    {
       PCL_PRECONDITION( order > 1 )
       Clear();
-      m_order = pcl::Max( 2, order );
+      m_order = (m_rbf == RadialBasisFunction::VariableOrder) ? pcl::Max( 2, order ) : 2;
+   }
+
+   /*!
+    * Returns true iff this surface spline adds a stabilizing first-degree
+    * polynomial to the RBF interpolation/approximation function.
+    *
+    * A polynomial part is always enabled by default. Disabling it can generate
+    * some stability issues, especially for data sets with highly varying node
+    * values.
+    */
+   bool IsPolynomialEnabled() const
+   {
+      return m_havePolynomial;
+   }
+
+   /*!
+    * Enables the use of a stabilizing first-degree polynomial added to the RBF
+    * interpolation/approximation function.
+    *
+    * Calling this member function implicitly resets this %SurfaceSpline object
+    * and destroys all internal working structures.
+    */
+   void EnablePolynomial( bool enable = true )
+   {
+      Clear();
+      m_havePolynomial = enable;
+   }
+
+   /*!
+    * Disables the use of a stabilizing first-degree polynomial added to the
+    * RBF interpolation/approximation function.
+    *
+    * Calling this member function implicitly resets this %SurfaceSpline object
+    * and destroys all internal working structures.
+    */
+   void DisablePolynomial( bool disable = true )
+   {
+      EnablePolynomial( !disable );
    }
 
    /*!
@@ -333,12 +510,12 @@ public:
     *
     * \param s    Smoothing factor. Must be >= 0.
     *
-    * For \a s = 0, an interpolating spline will be generated: all node values
-    * will be reproduced exactly at their respective coordinates.
+    * For \a s = 0, an interpolating surface spline will be generated: all node
+    * values will be reproduced exactly at their respective coordinates.
     *
-    * For \a s > 0, a smoothing (or approximating) spline will be generated:
-    * increasing \a s values will generate splines closer to the reference
-    * plane of the input node set.
+    * For \a s > 0, a smoothing (or approximating) surface spline will be
+    * generated: increasing \a s values will generate splines closer to the
+    * reference plane of the input node set.
     */
    void SetSmoothing( float s )
    {
@@ -377,9 +554,10 @@ public:
     * considered equal if their coordinates don't differ more than the machine
     * epsilon for the floating point type T.
     *
-    * For an interpolating surface spline (smoothness = 0), all node values
-    * will be reproduced exactly at their respective coordinates. In this case
-    * the vector \a w of node weights will be ignored.
+    * For an interpolating surface spline (when smoothness = 0), all node
+    * function values will be reproduced exactly at their respective
+    * coordinates. In this case the vector \a w of node weights will be
+    * ignored.
     *
     * For an approximating surface spline (smoothness > 0), if a vector \a w of
     * node weights is specified, it will be used to assign a different
@@ -449,8 +627,8 @@ public:
 
          /*
           * Find duplicate input nodes. Two nodes are considered equal if their
-          * coordinates don't differ more than the machine epsilon for the
-          * floating point type T.
+          * (normalized) coordinates don't differ more than the machine epsilon
+          * for the floating point type T.
           */
          P.Sort();
          Array<int> remove;
@@ -492,9 +670,11 @@ public:
                m_weights[k] = P[i].w;
          }
 
-         m_spline = vector( scalar( 0 ), N + ((m_order*(m_order + 1)) >> 1) );
+         m_spline = vector( scalar( 0 ), N + (m_havePolynomial ? ((m_order*(m_order + 1)) >> 1) : 0) );
 
-         Generate( m_spline.Begin(), m_x.Begin(), m_y.Begin(), fz.Begin(), N, m_order, m_smoothing, m_weights.Begin() );
+         Generate( m_spline.Begin(), m_rbf, m_eps2, m_havePolynomial,
+                   m_x.Begin(), m_y.Begin(), fz.Begin(), N, m_order,
+                   m_smoothing, m_weights.Begin() );
       }
       catch ( ... )
       {
@@ -530,48 +710,110 @@ public:
       PCL_CHECK( m_order >= 2 )
       PCL_CHECK( !m_spline.IsEmpty() )
 
+      /*
+       * Normalized interpolation coordinates.
+       */
       x = m_r0*(x - m_x0);
       y = m_r0*(y - m_y0);
 
+      /*
+       * Add polynomial part of the surface spline.
+       */
       int n = m_x.Length();
-      double z = m_spline[n];
-      switch ( m_order )
+      double z = 0;
+      if ( m_havePolynomial )
       {
-      case 2:
-         z += m_spline[n+1]*x + m_spline[n+2]*y;
-         break;
-      case 3:
-         z += (m_spline[n+1] + m_spline[n+3]*x + m_spline[n+4]*y)*x + (m_spline[n+2] + m_spline[n+5]*y)*y;
-         break;
-      default:
-         for ( int i = 1, j = n+1, i1 = (m_order*(m_order + 1))>>1, ix = 0, iy = 0; i < i1; ++i, ++j )
-            if ( ix == 0 )
-            {
-               ix = iy + 1;
-               iy = 0;
-               z += m_spline[j] * PowI( x, ix );
-            }
-            else
-            {
-               --ix;
-               ++iy;
-               z += m_spline[j] * PowI( x, ix ) * PowI( y, iy );
-            }
-         break;
+         z += m_spline[n];
+         switch ( m_order )
+         {
+         case 2:
+            z += m_spline[n+1]*x + m_spline[n+2]*y;
+            break;
+         case 3:
+            z += (m_spline[n+1] + m_spline[n+3]*x + m_spline[n+4]*y)*x + (m_spline[n+2] + m_spline[n+5]*y)*y;
+            break;
+         default:
+            for ( int i = 1, j = n+1, i1 = (m_order*(m_order + 1))>>1, ix = 0, iy = 0; i < i1; ++i, ++j )
+               if ( ix == 0 )
+               {
+                  ix = iy + 1;
+                  iy = 0;
+                  z += m_spline[j] * PowI( x, ix );
+               }
+               else
+               {
+                  --ix;
+                  ++iy;
+                  z += m_spline[j] * PowI( x, ix ) * PowI( y, iy );
+               }
+            break;
+         }
       }
 
-      for ( int i = 0; i < n; ++i )
+      /*
+       * Add radial basis functions.
+       */
+      switch ( m_rbf )
       {
-         double dx = m_x[i] - x;
-         double dy = m_y[i] - y;
-         double r2 = dx*dx + dy*dy;
-         if ( r2 != 0 )
+      case RadialBasisFunction::VariableOrder:
+         for ( int i = 0; i < n; ++i )
          {
-            double r2m1 = r2;
-            for ( int j = m_order; --j > 1; )
-               r2m1 *= r2;
-            z += m_spline[i] * pcl::Ln( r2 ) * r2m1;
+            double dx = m_x[i] - x;
+            double dy = m_y[i] - y;
+            double r2 = dx*dx + dy*dy;
+            if ( r2 != 0 )
+            {
+               double r2m1 = r2;
+               for ( int j = m_order; --j > 1; )
+                  r2m1 *= r2;
+               z += m_spline[i] * r2m1 * pcl::Ln( r2 );
+            }
          }
+         break;
+      case RadialBasisFunction::ThinPlateSpline:
+         for ( int i = 0; i < n; ++i )
+         {
+            double dx = m_x[i] - x;
+            double dy = m_y[i] - y;
+            double r2 = dx*dx + dy*dy;
+            if ( r2 != 0 )
+               z += m_spline[i] * r2 * pcl::Ln( Sqrt( r2 ) );
+         }
+         break;
+      case RadialBasisFunction::Gaussian:
+         for ( int i = 0; i < n; ++i )
+         {
+            double dx = m_x[i] - x;
+            double dy = m_y[i] - y;
+            z += m_spline[i] * pcl::Exp( -m_eps2 * (dx*dx + dy*dy) );
+         }
+         break;
+      case RadialBasisFunction::Multiquadric:
+         for ( int i = 0; i < n; ++i )
+         {
+            double dx = m_x[i] - x;
+            double dy = m_y[i] - y;
+            z += m_spline[i] * pcl::Sqrt( 1 + m_eps2 * (dx*dx + dy*dy) );
+         }
+         break;
+      case RadialBasisFunction::InverseMultiquadric:
+         for ( int i = 0; i < n; ++i )
+         {
+            double dx = m_x[i] - x;
+            double dy = m_y[i] - y;
+            z += m_spline[i] / pcl::Sqrt( 1 + m_eps2 * (dx*dx + dy*dy) );
+         }
+         break;
+      case RadialBasisFunction::InverseQuadratic:
+         for ( int i = 0; i < n; ++i )
+         {
+            double dx = m_x[i] - x;
+            double dy = m_y[i] - y;
+            z += m_spline[i] / (1 + m_eps2 * (dx*dx + dy*dy));
+         }
+         break;
+      default:
+         break;
       }
 
       return scalar( z );
@@ -590,15 +832,19 @@ public:
 
 protected:
 
+   rbf_type      m_rbf = RadialBasisFunction::Default;
+   bool          m_havePolynomial = true; // use 1st order polynomial for stabilization
+   double        m_eps = 1;       // shape parameter
+   double        m_eps2 = 1;      // squared shape parameter
    vector        m_x;             // vector of normalized X node coordinates
    vector        m_y;             // vector of normalized Y node coordinates
    double        m_r0 = 1;        // scaling factor for normalization of node coordinates
    double        m_x0 = 0;        // zero offset for normalization of X node coordinates
    double        m_y0 = 0;        // zero offset for normalization of Y node coordinates
-   int           m_order = 2;     // derivative order > 1
-   float         m_smoothing = 0; // smoothing factor, or interpolating 2-D spline if m_smoothing == 0
+   int           m_order = 2;     // derivative order >= 2
+   float         m_smoothing = 0; // <= 0 -> interpolating spline, > 0 -> smoothing factor of approximating spline
    weight_vector m_weights;       // optional node weights for approximating spline
-   vector        m_spline;        // coefficients of the 2-D surface spline
+   vector        m_spline;        // coefficients of the 2-D surface spline, polynomial coeffs. at tail
 
    /*!
     * \struct NodeData
@@ -783,8 +1029,18 @@ public:
            !W.IsEmpty() && P1.Length() > size_type( W.Length() ) )
          throw Error( "PointSurfaceSpline::Initialize(): Insufficient data." );
 
-      m_Sx.SetOrder( order );
-      m_Sy.SetOrder( order );
+      if ( order > 2 )
+      {
+         m_Sx.SetRBFType( RadialBasisFunction::VariableOrder );
+         m_Sx.SetOrder( order );
+         m_Sy.SetRBFType( RadialBasisFunction::VariableOrder );
+         m_Sy.SetOrder( order );
+      }
+      else
+      {
+         m_Sx.SetRBFType( RadialBasisFunction::ThinPlateSpline );
+         m_Sy.SetRBFType( RadialBasisFunction::ThinPlateSpline );
+      }
 
       m_Sx.SetSmoothing( smoothness );
       m_Sy.SetSmoothing( smoothness );

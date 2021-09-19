@@ -436,7 +436,8 @@ PCL_HOT_FUNCTION void Solve( const T* __restrict__ ap, int n, const int* __restr
  *       begins at index 0.
  */
 template <typename T> static
-PCL_HOT_FUNCTION void KernelPart( int n, int m, const T* __restrict__ x, const T* __restrict__ y,
+PCL_HOT_FUNCTION void KernelPart( SurfaceSplineBase::rbf_type rbf, double e2,
+                                  int n, int m, const T* __restrict__ x, const T* __restrict__ y,
                                   float r, const float* __restrict__ w, T* __restrict__ a )
 {
    --x; --y; --a;
@@ -451,19 +452,51 @@ PCL_HOT_FUNCTION void KernelPart( int n, int m, const T* __restrict__ x, const T
          double dx = x[k] - x[i];
          double dy = y[k] - y[i];
          double r2 = dx*dx + dy*dy;
-         if ( likely( r2 != 0 ) )
+
+         switch ( rbf )
          {
-            double E = pcl::Ln( r2 );
-            for ( int j = m; --j > 0; )
-               E *= r2;
-            a[l] = E;
+         case RadialBasisFunction::VariableOrder:
+            if ( likely( r2 != 0 ) )
+            {
+               double E = pcl::Ln( r2 );
+               for ( int j = m; --j > 0; )
+                  E *= r2;
+               a[l] = E;
+            }
+            else
+               a[l] = 0;
+            break;
+         case RadialBasisFunction::ThinPlateSpline:
+            a[l] = likely( r2 != 0 ) ? r2 * pcl::Ln( Sqrt( r2 ) ) : 0.0;
+            break;
+         case RadialBasisFunction::Gaussian:
+            a[l] = pcl::Exp( -e2 * r2 );
+            break;
+         case RadialBasisFunction::Multiquadric:
+            a[l] = pcl::Sqrt( 1 + e2 * r2 );
+            break;
+         case RadialBasisFunction::InverseMultiquadric:
+            a[l] = 1 / pcl::Sqrt( 1 + e2 * r2 );
+            break;
+         case RadialBasisFunction::InverseQuadratic:
+            a[l] = 1 / (1 + e2 * r2);
+            break;
+         default:
+            break;
          }
-         else
-            a[l] = 0;
       }
 
-      // Main diagonal.
-      a[l] = (r > 0) ? ((w == nullptr) ? r : r/w[i]) : 0;
+      // Main diagonal
+      switch ( rbf )
+      {
+      case RadialBasisFunction::VariableOrder:
+      case RadialBasisFunction::ThinPlateSpline:
+         a[l] = (r > 0) ? ((w == nullptr) ? r : r/w[i]) : 0;
+         break;
+      default:
+         a[l] = (r > 0) ? ((w == nullptr) ? 1/r : w[i]/r) : 1;
+         break;
+      }
    }
 }
 
@@ -598,34 +631,38 @@ PCL_HOT_FUNCTION void PolynomialPart( int n, int m, const T* __restrict__ x, con
  *
  * where G is an n*n matrix of kernel components, P is an n*m matrix of
  * polynomial components, cv1 are [0,...,n-1] surface spline coefficients, cv2
- * are [n,...,n + (m*(m + 1))/2 - 1] surface spline coefficients, and z is the
+ * are [n,...,n + (m*(m + 1))/2 - 1] polynomial coefficients, and z is the
  * vector of n functional values.
  */
 template <typename T> static
 void GenerateSpline( T* __restrict__ cv,
+                     SurfaceSplineBase::rbf_type rbf, double e2, bool polynomial,
                      const T* __restrict__ x, const T* __restrict__ y, const T* __restrict__ z,
                      int n, int m, float r, const float* __restrict__ w )
 {
    // Size of the system matrix.
-   int nm = n + (m*(m + 1))/2;
+   int nm = n;
+   if ( polynomial )
+      nm += (m*(m + 1))/2;
 
-   // Vector for storage of a symmetric matrix in column packed form.
+   // Vector for storage of the system symmetric matrix in column packed form.
    GenericVector<T> A( nm*(nm + 1)/2 );
 
    // Pivot vector for matrix factorization.
    IVector pvt( nm );
 
-   // Put the polynomial part P into the upper right corner.
-   PolynomialPart( n, m, x, y, *A );
+   // Put the polynomial part P into the upper right / bottom left corners.
+   if ( polynomial )
+      PolynomialPart( n, m, x, y, *A );
 
    // The kernel part G goes to the upper left corner.
-   KernelPart( n, m, x, y, r, w, *A );
+   KernelPart( rbf, e2, n, m, x, y, r, w, *A );
 
    /*
     * Compute matrix factorization: A = U*D*U^T
     *
     * N.B.: Factorize() is the bottleneck of this task. Example of execution
-    * times measured for 1933 interpolation nodes:
+    * times measured for 1933 interpolation nodes, thin plate spline RBF:
     *
     * PolynomialPart(): 15.700 us
     * KernelPart():     51.536 ms
@@ -653,17 +690,19 @@ void GenerateSpline( T* __restrict__ cv,
 // ----------------------------------------------------------------------------
 
 void SurfaceSplineBase::Generate( float* __restrict__ cv,
+                                  rbf_type rbf, double e2, bool polynomial,
                                   const float* __restrict__ x, const float* __restrict__ y, const float* __restrict__ z,
                                   int n, int m, float r, const float* __restrict__ w )
 {
-   GenerateSpline( cv, x, y, z, n, m, r, w );
+   GenerateSpline( cv, rbf, e2, polynomial, x, y, z, n, m, r, w );
 }
 
 void SurfaceSplineBase::Generate( double* __restrict__ cv,
+                                  rbf_type rbf, double e2, bool polynomial,
                                   const double* __restrict__ x, const double* __restrict__ y, const double* __restrict__ z,
                                   int n, int m, float r, const float* __restrict__ w )
 {
-   GenerateSpline( cv, x, y, z, n, m, r, w );
+   GenerateSpline( cv, rbf, e2, polynomial, x, y, z, n, m, r, w );
 }
 
 // ----------------------------------------------------------------------------
