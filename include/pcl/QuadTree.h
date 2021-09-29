@@ -65,6 +65,18 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
+/*
+ * Default bucket capacity for point region quadtree generation.
+ */
+#define __PCL_QUADTREE_DEFAULT_BUCKET_CAPACITY  40
+
+/*
+ * Default minimum allowed dimension of a quadtree node region.
+ */
+#define __PCL_QUADTREE_DEFAULT_EPSILON          1.0e-08
+
+// ----------------------------------------------------------------------------
+
 /*!
  * \class QuadTree
  * \brief Bucket PR quadtree for two-dimensional point data.
@@ -321,14 +333,21 @@ public:
     *                         quadtree.
     *
     * \param bucketCapacity   The maximum number of points in a leaf tree node.
-    *                         Must be >= 1. The default value is 40.
+    *                         Must be &ge; 1. The default value is 40.
+    *
+    * \param epsilon          The minimum allowed dimension of a quadtree node
+    *                         region. Must be larger than or equal to twice the
+    *                         machine epsilon for the \c coordinate type. The
+    *                         default value is 1e-8.
     *
     * If the specified list of \a points is empty, this constructor yields an
     * empty quadtree.
     */
-   QuadTree( const point_list& points, int bucketCapacity = 40 )
+   QuadTree( const point_list& points,
+             int bucketCapacity = __PCL_QUADTREE_DEFAULT_BUCKET_CAPACITY,
+             double epsilon = __PCL_QUADTREE_DEFAULT_EPSILON )
    {
-      Build( points, bucketCapacity );
+      Build( points, bucketCapacity, epsilon );
    }
 
    /*!
@@ -341,14 +360,21 @@ public:
     *                         quadtree.
     *
     * \param bucketCapacity   The maximum number of points in a leaf tree node.
-    *                         Must be >= 1. The default value is 40.
+    *                         Must be &ge; 1. The default value is 40.
+    *
+    * \param epsilon          The minimum allowed dimension of a quadtree node
+    *                         region. Must be larger than or equal to twice the
+    *                         machine epsilon for the \c coordinate type. The
+    *                         default value is 1e-8.
     *
     * If the specified list of \a points is empty, or if no points lie within
     * the \a rect region, this constructor yields an empty quadtree.
     */
-   QuadTree( const rectangle& rect, const point_list& points, int bucketCapacity = 40 )
+   QuadTree( const rectangle& rect, const point_list& points,
+             int bucketCapacity = __PCL_QUADTREE_DEFAULT_BUCKET_CAPACITY,
+             double epsilon = __PCL_QUADTREE_DEFAULT_EPSILON )
    {
-      Build( rect, points, bucketCapacity );
+      Build( rect, points, bucketCapacity, epsilon );
    }
 
    /*!
@@ -371,6 +397,7 @@ public:
    QuadTree( QuadTree&& x )
       : m_root( x.m_root )
       , m_bucketCapacity( x.m_bucketCapacity )
+      , m_epsilon( x.m_epsilon )
       , m_length( x.m_length )
    {
       x.m_root = nullptr;
@@ -387,6 +414,7 @@ public:
          DestroyTree( m_root );
          m_root = x.m_root;
          m_bucketCapacity = x.m_bucketCapacity;
+         m_epsilon = x.m_epsilon;
          m_length = x.m_length;
          x.m_root = nullptr;
          x.m_length = 0;
@@ -419,7 +447,12 @@ public:
     *                         quadtree.
     *
     * \param bucketCapacity   The maximum number of points in a leaf tree node.
-    *                         Must be >= 1. The default value is 40.
+    *                         Must be &ge; 1. The default value is 40.
+    *
+    * \param epsilon          The minimum allowed dimension of a quadtree node
+    *                         region. Must be larger than or equal to twice the
+    *                         machine epsilon for the \c coordinate type. The
+    *                         default value is 1e-8.
     *
     * If the tree stores point objects before calling this function, they are
     * destroyed and removed before building a new tree.
@@ -427,10 +460,13 @@ public:
     * If the specified list of \a points is empty, this member function yields
     * an empty quadtree.
     */
-   void Build( const point_list& points, int bucketCapacity = 40 )
+   void Build( const point_list& points,
+               int bucketCapacity = __PCL_QUADTREE_DEFAULT_BUCKET_CAPACITY,
+               double epsilon = __PCL_QUADTREE_DEFAULT_EPSILON )
    {
       Clear();
       m_bucketCapacity = Max( 1, bucketCapacity );
+      m_epsilon = Max( 2*std::numeric_limits<coordinate>::epsilon(), epsilon );
 
       if ( !points.IsEmpty() )
       {
@@ -466,7 +502,12 @@ public:
     *                         All points outside \a rect will be ignored.
     *
     * \param bucketCapacity   The maximum number of points in a leaf tree node.
-    *                         Must be >= 1. The default value is 40.
+    *                         Must be &ge; 1. The default value is 40.
+    *
+    * \param epsilon          The minimum allowed dimension of a quadtree node
+    *                         region. Must be larger than or equal to twice the
+    *                         machine epsilon for the \c coordinate type. The
+    *                         default value is 1e-8.
     *
     * If the tree stores point objects before calling this function, they are
     * destroyed and removed before building a new tree.
@@ -474,10 +515,13 @@ public:
     * If the specified list of \a points is empty, or if no points lie within
     * the \a rect region, this member function yields an empty quadtree.
     */
-   void Build( const rectangle& rect, const point_list& points, int bucketCapacity = 40 )
+   void Build( const rectangle& rect, const point_list& points,
+               int bucketCapacity = __PCL_QUADTREE_DEFAULT_BUCKET_CAPACITY,
+               double epsilon = __PCL_QUADTREE_DEFAULT_EPSILON )
    {
       Clear();
       m_bucketCapacity = Max( 1, bucketCapacity );
+      m_epsilon = Max( 2*std::numeric_limits<coordinate>::epsilon(), epsilon );
       if ( !points.IsEmpty() )
          m_root = BuildTree( rect.Ordered(), points );
    }
@@ -849,6 +893,7 @@ public:
    {
       pcl::Swap( x1.m_root,           x2.m_root );
       pcl::Swap( x1.m_bucketCapacity, x2.m_bucketCapacity );
+      pcl::Swap( x1.m_epsilon,        x2.m_epsilon );
       pcl::Swap( x1.m_length,         x2.m_length );
    }
 
@@ -856,6 +901,7 @@ private:
 
    Node*     m_root = nullptr;
    int       m_bucketCapacity = 0;
+   double    m_epsilon = 0;
    size_type m_length = 0;
 
    Node* NewLeafNode( const rectangle& rect, const point_list& points )
@@ -958,10 +1004,8 @@ private:
       // Prevent geometrically degenerate subtrees. For safety, we enforce
       // minimum region dimensions larger than twice the machine epsilon for
       // the rectangle coordinate type.
-      if ( x2 - rect.x0 < 2*std::numeric_limits<coordinate>::epsilon() ||
-           rect.x1 - x2 < 2*std::numeric_limits<coordinate>::epsilon() ||
-           y2 - rect.y0 < 2*std::numeric_limits<coordinate>::epsilon() ||
-           rect.y1 - y2 < 2*std::numeric_limits<coordinate>::epsilon() )
+      if ( x2 - rect.x0 < m_epsilon || rect.x1 - x2 < m_epsilon ||
+           y2 - rect.y0 < m_epsilon || rect.y1 - y2 < m_epsilon )
       {
          return NewLeafNode( rect, points );
       }
@@ -1014,10 +1058,8 @@ private:
       // Prevent geometrically degenerate subtrees. For safety, we enforce
       // minimum region dimensions larger than twice the machine epsilon for
       // the rectangle coordinate type.
-      if ( x2 - node->rect.x0 < 2*std::numeric_limits<coordinate>::epsilon() ||
-           node->rect.x1 - x2 < 2*std::numeric_limits<coordinate>::epsilon() ||
-           y2 - node->rect.y0 < 2*std::numeric_limits<coordinate>::epsilon() ||
-           node->rect.y1 - y2 < 2*std::numeric_limits<coordinate>::epsilon() )
+      if ( x2 - node->rect.x0 < m_epsilon || node->rect.x1 - x2 < m_epsilon ||
+           y2 - node->rect.y0 < m_epsilon || node->rect.y1 - y2 < m_epsilon )
       {
          return nullptr;
       }
@@ -1152,10 +1194,8 @@ private:
             // Prevent geometrically degenerate subtrees. For safety, we
             // enforce minimum region dimensions larger than twice the
             // machine epsilon for the rectangle coordinate type.
-            if ( x2 - rect.x0 < 2*std::numeric_limits<coordinate>::epsilon() ||
-                 rect.x1 - x2 < 2*std::numeric_limits<coordinate>::epsilon() ||
-                 y2 - rect.y0 < 2*std::numeric_limits<coordinate>::epsilon() ||
-                 rect.y1 - y2 < 2*std::numeric_limits<coordinate>::epsilon() )
+            if ( x2 - rect.x0 < m_epsilon || rect.x1 - x2 < m_epsilon ||
+                 y2 - rect.y0 < m_epsilon || rect.y1 - y2 < m_epsilon )
             {
                leaf->points << pt;
             }
