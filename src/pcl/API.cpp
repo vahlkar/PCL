@@ -161,11 +161,12 @@ public:
 
 #ifdef __PCL_WINDOWS
          /*
-          * Win32 specific: Set the maximum possible number of simultaneously
-          * open files at the "stdio level":
-          * https://msdn.microsoft.com/en-us/library/6e3b887c.aspx
+          * Win32 specific: Set a maximum for the number of simultaneously open
+          * files at the stream I/O level:
+          * https://docs.microsoft.com/en-us/cpp/c-runtime-library/reference/setmaxstdio?view=msvc-160
           */
-         (void)_setmaxstdio( 2048 );
+         if ( _setmaxstdio( 8192 ) == -1 )
+            (void)_setmaxstdio( 2048 ); // try to fallback to a 'fail-safe' maximum
 #endif
          return 0; // ok
       }
