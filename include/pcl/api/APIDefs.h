@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.10
+// /_/     \____//_____/   PCL 2.4.11
 // ----------------------------------------------------------------------------
-// pcl/APIDefs.h - Released 2021-09-02T16:22:30Z
+// pcl/APIDefs.h - Released 2021-10-04T16:19:32Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -955,4 +955,4 @@ void PCL_FUNC PCLImageOptionsToAPI( api_image_options&, const ImageOptions& );
 #endif   // __PCL_API_APIDefs_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/APIDefs.h - Released 2021-09-02T16:22:30Z
+// EOF pcl/APIDefs.h - Released 2021-10-04T16:19:32Z

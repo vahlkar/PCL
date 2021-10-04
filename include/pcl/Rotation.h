@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.10
+// /_/     \____//_____/   PCL 2.4.11
 // ----------------------------------------------------------------------------
-// pcl/Rotation.h - Released 2021-09-02T16:22:30Z
+// pcl/Rotation.h - Released 2021-10-04T16:19:32Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -187,10 +187,10 @@ public:
     *
     * An unclipped rotation ignores the specified rotation center coordinates
     * (see CenterX() and CenterY(), as well as the class constructor) and
-    * rotates images with respect to their geometric centers. To accomodate all
-    * rotated pixels in the result, the unclipped rotated image will always be
-    * bigger than the original except for the trivial cases of rotations by 0
-    * and 180 degrees.
+    * rotates images with respect to their geometric centers. To accommodate
+    * all rotated pixels in the result, the unclipped rotated image will always
+    * be bigger than the original, except for the trivial cases of rotations by
+    * 0 and 180 degrees.
     */
    bool IsUnclipped() const
    {
@@ -269,4 +269,4 @@ protected:
 #endif   // __PCL_Rotation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Rotation.h - Released 2021-09-02T16:22:30Z
+// EOF pcl/Rotation.h - Released 2021-10-04T16:19:32Z

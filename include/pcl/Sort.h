@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.10
+// /_/     \____//_____/   PCL 2.4.11
 // ----------------------------------------------------------------------------
-// pcl/Sort.h - Released 2021-09-02T16:22:30Z
+// pcl/Sort.h - Released 2021-10-04T16:19:32Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -87,21 +87,14 @@ template <class BI, class T> inline
 void __pcl_insertion_sort__( BI i, BI j, const T* )
 {
    if ( i != j )
-   {
-      BI x = j, k = j;
-      for ( --k; --x != i; )
-         if ( *x < *--k )
-            Swap( *x, *k );
-      if ( ++x != j )
-         for ( ; ++x != j; )
-         {
-            BI y = x;
-            T v = *x;
-            for ( k = y; v < *--k; y = k )
-               *y = *k;
-            *y = v;
-         }
-   }
+      for ( BI k = i; ++k != j; )
+      {
+         T v = *k;
+         BI y = k;
+         for ( BI x = y; y != i && v < *--x; --y )
+            *y = *x;
+         *y = v;
+      }
 }
 
 /*!
@@ -125,21 +118,14 @@ template <class BI, class BP, class T> inline
 void __pcl_insertion_sort__( BI i, BI j, BP p, const T* )
 {
    if ( i != j )
-   {
-      BI x = j, k = j;
-      for ( --k; --x != i; )
-         if ( p( *x, *--k ) )
-            Swap( *x, *k );
-      if ( ++x != j )
-         for ( ; ++x != j; )
-         {
-            BI y = x;
-            T v = *x;
-            for ( k = y; p( v, *--k ); y = k )
-               *y = *k;
-            *y = v;
-         }
-   }
+      for ( BI k = i; ++k != j; )
+      {
+         T v = *k;
+         BI y = k;
+         for ( BI x = y; y != i && p( v, *--x ); --y )
+            *y = *x;
+         *y = v;
+      }
 }
 
 /*!
@@ -584,4 +570,4 @@ void Sort( BI i, BI j, BP p )
 #endif  // __PCL_Sort_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Sort.h - Released 2021-09-02T16:22:30Z
+// EOF pcl/Sort.h - Released 2021-10-04T16:19:32Z

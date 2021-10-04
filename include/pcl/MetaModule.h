@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.10
+// /_/     \____//_____/   PCL 2.4.11
 // ----------------------------------------------------------------------------
-// pcl/MetaModule.h - Released 2021-09-02T16:22:30Z
+// pcl/MetaModule.h - Released 2021-10-04T16:19:32Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -717,9 +717,6 @@ namespace InstallMode
  * \defgroup metamodule_utility_macros MetaModule Utility Macros
  */
 
-// Stringification of macro-expanded arguments needs two levels of macros.
-#define PCL_STRINGIFY( x ) #x
-
 /*!
  * \def        PCL_MODULE_UNIQUE_ID
  * \deprecated This macro has been deprecated. It is kept as part of PCL for
@@ -1020,4 +1017,4 @@ namespace InstallMode
 #endif   // __PCL_MetaModule_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MetaModule.h - Released 2021-09-02T16:22:30Z
+// EOF pcl/MetaModule.h - Released 2021-10-04T16:19:32Z
