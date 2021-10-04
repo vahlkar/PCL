@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.10
+// /_/     \____//_____/   PCL 2.4.11
 // ----------------------------------------------------------------------------
 // Standard XISF File Format Module Version 1.0.12
 // ----------------------------------------------------------------------------
-// XISFModule.cpp - Released 2021-09-02T16:22:57Z
+// XISFModule.cpp - Released 2021-10-04T16:20:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard XISF PixInsight module.
 //
@@ -57,8 +57,8 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2021
-#define MODULE_RELEASE_MONTH     9
-#define MODULE_RELEASE_DAY       2
+#define MODULE_RELEASE_MONTH     10
+#define MODULE_RELEASE_DAY       4
 
 #include "XISFModule.h"
 #include "XISFFormat.h"
@@ -169,4 +169,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF XISFModule.cpp - Released 2021-09-02T16:22:57Z
+// EOF XISFModule.cpp - Released 2021-10-04T16:20:05Z

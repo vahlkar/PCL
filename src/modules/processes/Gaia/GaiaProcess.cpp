@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.10
+// /_/     \____//_____/   PCL 2.4.11
 // ----------------------------------------------------------------------------
-// Standard Gaia Process Module Version 1.0.3
+// Standard Gaia Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// GaiaProcess.cpp - Released 2021-09-02T16:22:48Z
+// GaiaProcess.cpp - Released 2021-10-04T16:21:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Gaia PixInsight module.
 //
@@ -291,6 +291,205 @@ int GaiaProcess::ProcessCommandLine( const StringList& argv ) const
 }
 
 // ----------------------------------------------------------------------------
+
+bool GaiaProcess::CanProcessIPCMessages() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+void GaiaProcess::IPCStart( int instance, const IsoString& messageUID, const String& parameters ) const
+{
+   m_ipcWorker.Start( parameters );
+}
+
+// ----------------------------------------------------------------------------
+
+void GaiaProcess::IPCStop( int instance, const IsoString& messageUID ) const
+{
+   m_ipcWorker.Stop();
+}
+
+// ----------------------------------------------------------------------------
+
+void GaiaProcess::IPCSetParameters( int instance, const IsoString& messageUID, const String& parameters ) const
+{
+   m_ipcWorker.Stop();
+   m_ipcWorker.Start( parameters );
+}
+
+// ----------------------------------------------------------------------------
+
+int GaiaProcess::IPCStatus( int instance, const IsoString& messageUID ) const
+{
+   return m_ipcWorker.Status();
+}
+
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+
+void GaiaProcess::IPCWorker::Start( const String& parameters )
+{
+   if ( IsRunning() )
+      return;
+
+   SetRunning();
+   ClearData();
+   ClearStatus();
+
+   try
+   {
+      GetParameters( parameters );
+
+      if ( m_task == "configure" )
+      {
+         TheGaiaProcess->SetDatabaseFilePaths( m_dataRelease, m_xpsdFilePaths );
+         TheGaiaProcess->EnsureDatabasesInitialized( m_dataRelease, m_verbosity );
+
+         if ( !TheGaiaProcess->IsValid( m_dataRelease ) )
+            SetError();
+         if ( TheGaiaInterface != nullptr )
+            TheGaiaInterface->UpdateControls();
+      }
+   }
+   catch ( ... )
+   {
+      SetError();
+
+      try
+      {
+         throw;
+      }
+      ERROR_HANDLER
+   }
+
+   ClearData();
+   SetNotRunning();
+}
+
+// ----------------------------------------------------------------------------
+
+void GaiaProcess::IPCWorker::Stop()
+{
+   // All tasks are atomic
+}
+
+// ----------------------------------------------------------------------------
+
+int GaiaProcess::IPCWorker::Status() const
+{
+   volatile AutoLock lock( m_mutex );
+   return m_running ? 1 : (m_error ? -1 : 0);
+}
+
+// ----------------------------------------------------------------------------
+
+bool GaiaProcess::IPCWorker::IsRunning() const
+{
+   volatile AutoLock lock( m_mutex );
+   return m_running;
+}
+
+// ----------------------------------------------------------------------------
+
+bool GaiaProcess::IPCWorker::IsError() const
+{
+   volatile AutoLock lock( m_mutex );
+   return m_error;
+}
+
+// ----------------------------------------------------------------------------
+
+void GaiaProcess::IPCWorker::GetParameters( const String& parameters )
+{
+   StringList items;
+   parameters.Break( items, ',', true/*trim*/ );
+
+   String xpsdBaseDir;
+   for ( const String& item : items )
+   {
+      StringList tokens;
+      item.Break( tokens, '=', true/*trim*/ );
+      if ( tokens.Length() != 2 )
+         continue;
+
+      if ( tokens[0] == "task" )
+         m_task = tokens[1];
+      else if ( tokens[0] == "dataRelease" )
+      {
+         if ( tokens[1].CompareIC( "DR2" ) == 0 )
+            m_dataRelease = GDataRelease::DR2;
+         else if ( tokens[1].CompareIC( "EDR3" ) == 0 )
+            m_dataRelease = GDataRelease::EDR3;
+      }
+      else if ( tokens[0] == "xpsdBaseDir" )
+         xpsdBaseDir = tokens[1];
+      else if ( tokens[0] == "verbosity" )
+         tokens[1].TryToInt( m_verbosity );
+   }
+
+   if ( !xpsdBaseDir.IsEmpty() )
+   {
+      if ( !xpsdBaseDir.EndsWith( '/' ) )
+         xpsdBaseDir << '/';
+      if ( !File::DirectoryExists( xpsdBaseDir ) )
+         throw Error( String( "Failure to configure the Gaia XPSD server: " ) + "Nonexistent directory specified: " + xpsdBaseDir );
+
+      pcl::FindFileInfo info;
+      for ( File::Find f( xpsdBaseDir + "*.xpsd" ); f.NextItem( info ); )
+         if ( !info.IsDirectory() && !info.attributes.IsFlagSet( FileAttribute::SymbolicLink ) )
+            m_xpsdFilePaths << File::FullPath( xpsdBaseDir + info.name );
+
+      if ( m_xpsdFilePaths.IsEmpty() )
+         throw Error( String( "Failure to configure the Gaia XPSD server: " ) + "No XPSD database files found: " + xpsdBaseDir );
+   }
+}
+
+// ----------------------------------------------------------------------------
+
+void GaiaProcess::IPCWorker::SetRunning()
+{
+   volatile AutoLock lock( m_mutex );
+   m_running = true;
+}
+
+// ----------------------------------------------------------------------------
+
+void GaiaProcess::IPCWorker::SetNotRunning()
+{
+   volatile AutoLock lock( m_mutex );
+   m_running = false;
+}
+
+// ----------------------------------------------------------------------------
+
+void GaiaProcess::IPCWorker::SetError()
+{
+   volatile AutoLock lock( m_mutex );
+   m_error = true;
+}
+
+// ----------------------------------------------------------------------------
+
+void GaiaProcess::IPCWorker::ClearData()
+{
+   volatile AutoLock lock( m_mutex );
+   m_task.Clear();
+   m_dataRelease = GDataRelease::EDR3;
+   m_xpsdFilePaths.Clear();
+   m_verbosity = 2; // full
+}
+
+// ----------------------------------------------------------------------------
+
+void GaiaProcess::IPCWorker::ClearStatus()
+{
+   volatile AutoLock lock( m_mutex );
+   m_running = m_error = false;
+}
+
+// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 void GaiaProcess::SetDatabaseFilePaths( int dr, const StringList& paths )
@@ -494,4 +693,4 @@ void GaiaProcess::SavePreferences( int dr )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GaiaProcess.cpp - Released 2021-09-02T16:22:48Z
+// EOF GaiaProcess.cpp - Released 2021-10-04T16:21:12Z

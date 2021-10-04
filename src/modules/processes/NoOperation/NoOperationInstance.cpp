@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.10
+// /_/     \____//_____/   PCL 2.4.11
 // ----------------------------------------------------------------------------
 // Standard NoOperation Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// NoOperationInstance.cpp - Released 2021-09-02T16:22:48Z
+// NoOperationInstance.cpp - Released 2021-10-04T16:21:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NoOperation PixInsight module.
 //
@@ -109,4 +109,4 @@ bool NoOperationInstance::ExecuteGlobal()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF NoOperationInstance.cpp - Released 2021-09-02T16:22:48Z
+// EOF NoOperationInstance.cpp - Released 2021-10-04T16:21:12Z

@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.122
+# PixInsight Makefile Generator Script v1.123
 # Copyright (C) 2009-2021 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2021-09-16T16:04:33.368Z
+# Generated on .... 2021-10-04T16:24:02.718Z
 # Project id ...... NetworkService
 # Project type .... Module
 # Platform ........ Linux/g++

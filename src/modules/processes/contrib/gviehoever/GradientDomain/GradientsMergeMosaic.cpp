@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.10
+// /_/     \____//_____/   PCL 2.4.11
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsMergeMosaic.cpp - Released 2021-09-02T16:22:48Z
+// GradientsMergeMosaic.cpp - Released 2021-10-04T16:21:13Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
@@ -586,4 +586,4 @@ void GradientsMergeMosaic::mergeMosaic( imageListType_t const& rImageList_p,
 }; // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF GradientsMergeMosaic.cpp - Released 2021-09-02T16:22:48Z
+// EOF GradientsMergeMosaic.cpp - Released 2021-10-04T16:21:13Z

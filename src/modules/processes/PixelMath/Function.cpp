@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.10
+// /_/     \____//_____/   PCL 2.4.11
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.8.3
+// Standard PixelMath Process Module Version 1.8.4
 // ----------------------------------------------------------------------------
-// Function.cpp - Released 2021-09-02T16:22:48Z
+// Function.cpp - Released 2021-10-04T16:21:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -219,6 +219,7 @@ void Function::InitializeList( function_set& functions, function_index& index )
              << new TranslationFunction
              << new TruncFunction
              << new TruncationFunction
+             << new UnclippedRotationFunction
              << new VFunction
              << new VarFunction
              << new WidthFunction
@@ -4338,4 +4339,4 @@ Expression::component_list InlineSwitchFunction::Optimized() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Function.cpp - Released 2021-09-02T16:22:48Z
+// EOF Function.cpp - Released 2021-10-04T16:21:12Z

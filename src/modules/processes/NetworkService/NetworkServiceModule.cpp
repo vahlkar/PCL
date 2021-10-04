@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.10
+// /_/     \____//_____/   PCL 2.4.11
 // ----------------------------------------------------------------------------
-// Standard NetworkService Process Module Version 1.1.0
+// Standard NetworkService Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// NetworkServiceModule.cpp - Released 2021-09-16T15:45:48Z
+// NetworkServiceModule.cpp - Released 2021-10-04T16:21:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NetworkService PixInsight module.
 //
@@ -51,14 +51,14 @@
 // ----------------------------------------------------------------------------
 
 #define MODULE_VERSION_MAJOR     1
-#define MODULE_VERSION_MINOR     1
+#define MODULE_VERSION_MINOR     2
 #define MODULE_VERSION_REVISION  0
 #define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2021
-#define MODULE_RELEASE_MONTH     9
-#define MODULE_RELEASE_DAY       16
+#define MODULE_RELEASE_MONTH     10
+#define MODULE_RELEASE_DAY       4
 
 #include "NetworkServiceInterface.h"
 #include "NetworkServiceModule.h"
@@ -156,6 +156,19 @@ void NetworkServiceModule::GetReleaseDate( int& year, int& month, int& day ) con
 
 // ----------------------------------------------------------------------------
 
+void NetworkServiceModule::OnUnload()
+{
+   if ( TheNetworkServiceProcess != nullptr )
+      while ( TheNetworkServiceProcess->IsRunning() )
+      {
+         ProcessEvents();
+         TheNetworkServiceProcess->Stop();
+         Sleep( 150 );
+      }
+}
+
+// ----------------------------------------------------------------------------
+
 } // pcl
 
 // ----------------------------------------------------------------------------
@@ -181,4 +194,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF NetworkServiceModule.cpp - Released 2021-09-16T15:45:48Z
+// EOF NetworkServiceModule.cpp - Released 2021-10-04T16:21:12Z

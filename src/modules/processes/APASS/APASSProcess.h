@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.10
+// /_/     \____//_____/   PCL 2.4.11
 // ----------------------------------------------------------------------------
-// Standard APASS Process Module Version 1.0.1
+// Standard APASS Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// APASSProcess.h - Released 2021-09-02T16:22:48Z
+// APASSProcess.h - Released 2021-10-04T16:21:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard APASS PixInsight module.
 //
@@ -81,6 +81,12 @@ public:
    bool CanProcessCommandLines() const override;
    int ProcessCommandLine( const StringList& ) const override;
 
+   bool CanProcessIPCMessages() const override;
+   void IPCStart( int instance, const IsoString& messageUID, const String& parameters ) const override;
+   void IPCStop( int instance, const IsoString& messageUID ) const override;
+   void IPCSetParameters( int instance, const IsoString& messageUID, const String& parameters ) const override;
+   int IPCStatus( int instance, const IsoString& messageUID ) const override;
+
    void SetDatabaseFilePaths( int dr, const StringList& );
    const StringList& DatabaseFilePaths( int dr ) const;
 
@@ -96,6 +102,41 @@ public:
    bool PreferencesLoaded( int dr ) const;
    void LoadPreferences( int dr );
    void SavePreferences( int dr );
+
+private:
+
+   class IPCWorker
+   {
+   public:
+
+      IPCWorker() = default;
+      IPCWorker( const IPCWorker& ) = delete;
+
+      void Start( const String& parameters );
+      void Stop();
+      int Status() const;
+      bool IsRunning() const;
+      bool IsError() const;
+
+   private:
+
+      String        m_task;
+      pcl_enum      m_dataRelease;
+      StringList    m_xpsdFilePaths;
+      int           m_verbosity; // 0=silent 1=minimal 2=full
+      bool          m_running = false;
+      bool          m_error = false;
+      mutable Mutex m_mutex;
+
+      void GetParameters( const String& );
+      void SetRunning();
+      void SetNotRunning();
+      void SetError();
+      void ClearData();
+      void ClearStatus();
+   };
+
+   mutable IPCWorker m_ipcWorker;
 };
 
 // ----------------------------------------------------------------------------
@@ -111,4 +152,4 @@ PCL_END_LOCAL
 #endif   // __APASSProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF APASSProcess.h - Released 2021-09-02T16:22:48Z
+// EOF APASSProcess.h - Released 2021-10-04T16:21:12Z

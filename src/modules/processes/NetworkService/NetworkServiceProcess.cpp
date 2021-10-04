@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.10
+// /_/     \____//_____/   PCL 2.4.11
 // ----------------------------------------------------------------------------
-// Standard NetworkService Process Module Version 1.1.0
+// Standard NetworkService Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// NetworkServiceProcess.cpp - Released 2021-09-16T15:45:48Z
+// NetworkServiceProcess.cpp - Released 2021-10-04T16:21:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NetworkService PixInsight module.
 //
@@ -235,7 +235,7 @@ public:
          if ( m_file.IsOpen() )
          {
             m_file.OutTextLn();
-            m_file.OutTextLn( Timestamp() + text.ToUTF8() );
+            m_file.OutTextLn( TimestampPrefix() + text.ToUTF8() );
          }
       }
       catch ( ... )
@@ -248,7 +248,7 @@ public:
       try
       {
          if ( m_file.IsOpen() )
-            m_file.OutTextLn( Timestamp() + text.ToUTF8() );
+            m_file.OutTextLn( TimestampPrefix() + text.ToUTF8() );
       }
       catch ( ... )
       {
@@ -260,7 +260,7 @@ public:
       try
       {
          if ( m_file.IsOpen() )
-            m_file.OutTextLn( Timestamp() + "** Warning: " + text.ToUTF8() );
+            m_file.OutTextLn( TimestampPrefix() + "** Warning: " + text.ToUTF8() );
       }
       catch ( ... )
       {
@@ -272,7 +272,7 @@ public:
       try
       {
          if ( m_file.IsOpen() )
-            m_file.OutTextLn( Timestamp() + "*** Error: " + text.ToUTF8() );
+            m_file.OutTextLn( TimestampPrefix() + "*** Error: " + text.ToUTF8() );
       }
       catch ( ... )
       {
@@ -588,4 +588,4 @@ void NetworkServiceProcess::Worker::Wait()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF NetworkServiceProcess.cpp - Released 2021-09-16T15:45:48Z
+// EOF NetworkServiceProcess.cpp - Released 2021-10-04T16:21:12Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.10
+// /_/     \____//_____/   PCL 2.4.11
 // ----------------------------------------------------------------------------
 // Standard Morphology Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// MorphologyModule.cpp - Released 2021-09-02T16:22:48Z
+// MorphologyModule.cpp - Released 2021-10-04T16:21:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Morphology PixInsight module.
 //
@@ -57,8 +57,8 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2021
-#define MODULE_RELEASE_MONTH     9
-#define MODULE_RELEASE_DAY       2
+#define MODULE_RELEASE_MONTH     10
+#define MODULE_RELEASE_DAY       4
 
 #include "MorphologyModule.h"
 #include "MorphologicalTransformationProcess.h"
@@ -173,4 +173,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF MorphologyModule.cpp - Released 2021-09-02T16:22:48Z
+// EOF MorphologyModule.cpp - Released 2021-10-04T16:21:12Z

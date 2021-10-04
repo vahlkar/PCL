@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.10
+// /_/     \____//_____/   PCL 2.4.11
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.8.3
+// Standard PixelMath Process Module Version 1.8.4
 // ----------------------------------------------------------------------------
-// Generators.cpp - Released 2021-09-02T16:22:48Z
+// Generators.cpp - Released 2021-10-04T16:21:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -1041,6 +1041,76 @@ IsoString RotationFunction::GenerateImage( component_list::const_iterator i, com
 void RotationFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
 {
    throw ParseError( "rotate(): Internal execution error" );
+}
+
+// ----------------------------------------------------------------------------
+
+bool UnclippedRotationFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
+{
+   // urotate( image, angle )
+
+   distance_type n = Distance( i, j );
+   if ( n != 2 )
+   {
+      info = "urotate() takes 2 arguments";
+      return false;
+   }
+
+   if ( !(*i)->IsImageReference() )
+      if ( !(*i)->IsFunctional() )
+      {
+         info = "urotate() argument #1: Must be an image reference or a functional subexpression evaluating to an image";
+         arg = *i;
+         return false;
+      }
+
+   ++i;
+   if ( (*i)->IsImageReference() )
+   {
+      info = "urotate() argument #2: The rotation angle must be an invariant scalar subexpression";
+      arg = *i;
+      return false;
+   }
+
+   return true;
+}
+
+IsoString UnclippedRotationFunction::GenerateImage( component_list::const_iterator i, component_list::const_iterator j ) const
+{
+   // urotate( image, angle )
+
+   if ( !(*i)->IsImageReference() )
+      throw ParseError( "urotate() argument #1: Must be an image reference or a functional subexpression evaluating to an image" );
+
+   const ImageReference* ref = dynamic_cast<ImageReference*>( *i );
+
+   double angle;
+   if ( (*++i)->IsSample() )
+      angle = S->Value();
+   else if ( (*i)->IsPixel() && P->PixelValue().Length() == 1 )
+      angle = P->PixelValue()[0];
+   else
+      throw ParseError( "urotate() argument #2: The rotation angle must be an invariant scalar subexpression" );
+
+   IsoString key = TheImageCache->MakeKey( ref->Id(), IsoString().Format( "_urotate_%.6f", angle ) );
+
+   if ( !TheImageCache->HasImage( key ) )
+   {
+      ImageVariant result = NewGeneratorResult( ref );
+
+      BicubicPixelInterpolation interpolation;
+      Rotation R( interpolation, Rad( angle ) );
+      R.EnableUnclippedRotation();
+      R >> result;
+      TheImageCache->AddImage( key, result );
+   }
+
+   return key;
+}
+
+void UnclippedRotationFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+{
+   throw ParseError( "urotate(): Internal execution error" );
 }
 
 // ----------------------------------------------------------------------------
@@ -2219,4 +2289,4 @@ void OpExclusionFunction::operator()( Pixel& r, component_list::const_iterator, 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Generators.cpp - Released 2021-09-02T16:22:48Z
+// EOF Generators.cpp - Released 2021-10-04T16:21:12Z

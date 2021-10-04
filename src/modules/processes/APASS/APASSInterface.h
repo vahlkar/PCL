@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.10
+// /_/     \____//_____/   PCL 2.4.11
 // ----------------------------------------------------------------------------
-// Standard APASS Process Module Version 1.0.1
+// Standard APASS Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// APASSInterface.h - Released 2021-09-02T16:22:48Z
+// APASSInterface.h - Released 2021-10-04T16:21:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard APASS PixInsight module.
 //
@@ -184,6 +184,7 @@ private:
    friend struct GUIData;
    friend class APASSPreferencesDialog;
    friend class APASSInstance;
+   friend class APASSProcess;
 };
 
 // ----------------------------------------------------------------------------
@@ -199,4 +200,4 @@ PCL_END_LOCAL
 #endif   // __APASSInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF APASSInterface.h - Released 2021-09-02T16:22:48Z
+// EOF APASSInterface.h - Released 2021-10-04T16:21:12Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.10
+// /_/     \____//_____/   PCL 2.4.11
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.8.3
+// Standard PixelMath Process Module Version 1.8.4
 // ----------------------------------------------------------------------------
-// Function.h - Released 2021-09-02T16:22:48Z
+// Function.h - Released 2021-10-04T16:21:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -3397,6 +3397,40 @@ public:
 
 // ----------------------------------------------------------------------------
 
+class UnclippedRotationFunction : public Function
+{
+public:
+
+   UnclippedRotationFunction( int p = 0, int n = 0 ) : Function( p, n ) {}
+
+   Expression* Clone() const override { return new UnclippedRotationFunction( *this ); }
+   Expression* Generate( int p ) const override { return new UnclippedRotationFunction( p ); }
+
+   String Meta() const override            { return "urotate( image, angle )"; }
+   String Id() const override              { return "<p>Unclipped rotation of an image by the specified <i>angle</i> in degrees.</p>"
+                                                    "<p>An unclipped rotation preserves the entire image without clipping any pixels. "
+                                                    "Unclipped rotations always rotate images with respect to their geometric centers. "
+                                                    "To accommodate all rotated pixels in the generated image, the unclipped rotated "
+                                                    "image can be smaller than the original one in PixelMath, except for the trivial "
+                                                    "cases of rotations by 0 and 180 degrees.</p>"; }
+   String Token() const override           { return "urotate"; }
+   int RequiredArguments() const override  { return 2; }
+   int MaximumArguments() const override   { return 2; }
+
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+
+   bool IsImageGenerator() const override
+   {
+      return true;
+   }
+
+   IsoString GenerateImage( component_list::const_iterator, component_list::const_iterator ) const override;
+
+   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+};
+
+// ----------------------------------------------------------------------------
+
 class MirrorHorzFunction : public Function
 {
 public:
@@ -4293,4 +4327,4 @@ public:
 #endif   // __Function_h
 
 // ----------------------------------------------------------------------------
-// EOF Function.h - Released 2021-09-02T16:22:48Z
+// EOF Function.h - Released 2021-10-04T16:21:12Z

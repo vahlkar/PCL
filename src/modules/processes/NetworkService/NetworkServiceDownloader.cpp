@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.10
+// /_/     \____//_____/   PCL 2.4.11
 // ----------------------------------------------------------------------------
-// Standard NetworkService Process Module Version 1.1.0
+// Standard NetworkService Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// NetworkServiceDownloader.cpp - Released 2021-09-16T15:45:48Z
+// NetworkServiceDownloader.cpp - Released 2021-10-04T16:21:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NetworkService PixInsight module.
 //
@@ -85,4 +85,4 @@ bool NetworkServiceDownloader::e_DataAvailable( NetworkTransfer& sender, const v
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF NetworkServiceDownloader.cpp - Released 2021-09-16T15:45:48Z
+// EOF NetworkServiceDownloader.cpp - Released 2021-10-04T16:21:12Z

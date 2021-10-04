@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.10
+// /_/     \____//_____/   PCL 2.4.11
 // ----------------------------------------------------------------------------
-// Standard APASS Process Module Version 1.0.1
+// Standard APASS Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// APASSProcess.cpp - Released 2021-09-02T16:22:48Z
+// APASSProcess.cpp - Released 2021-10-04T16:21:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard APASS PixInsight module.
 //
@@ -297,6 +297,206 @@ int APASSProcess::ProcessCommandLine( const StringList& argv ) const
 }
 
 // ----------------------------------------------------------------------------
+
+bool APASSProcess::CanProcessIPCMessages() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+void APASSProcess::IPCStart( int instance, const IsoString& messageUID, const String& parameters ) const
+{
+   m_ipcWorker.Start( parameters );
+}
+
+// ----------------------------------------------------------------------------
+
+void APASSProcess::IPCStop( int instance, const IsoString& messageUID ) const
+{
+   m_ipcWorker.Stop();
+}
+
+// ----------------------------------------------------------------------------
+
+void APASSProcess::IPCSetParameters( int instance, const IsoString& messageUID, const String& parameters ) const
+{
+   m_ipcWorker.Stop();
+   m_ipcWorker.Start( parameters );
+}
+
+// ----------------------------------------------------------------------------
+
+int APASSProcess::IPCStatus( int instance, const IsoString& messageUID ) const
+{
+   return m_ipcWorker.Status();
+}
+
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+
+void APASSProcess::IPCWorker::Start( const String& parameters )
+{
+   if ( IsRunning() )
+      return;
+
+   SetRunning();
+   ClearData();
+   ClearStatus();
+
+   try
+   {
+      GetParameters( parameters );
+
+      if ( m_task == "configure" )
+      {
+         TheAPASSProcess->SetDatabaseFilePaths( m_dataRelease, m_xpsdFilePaths );
+         TheAPASSProcess->EnsureDatabasesInitialized( m_dataRelease, m_verbosity );
+
+         if ( !TheAPASSProcess->IsValid( m_dataRelease ) )
+            SetError();
+         if ( TheAPASSInterface != nullptr )
+            TheAPASSInterface->UpdateControls();
+      }
+   }
+   catch ( ... )
+   {
+      SetError();
+
+      try
+      {
+         throw;
+      }
+      ERROR_HANDLER
+   }
+
+   ClearData();
+   SetNotRunning();
+}
+
+// ----------------------------------------------------------------------------
+
+void APASSProcess::IPCWorker::Stop()
+{
+   // All tasks are atomic
+}
+
+// ----------------------------------------------------------------------------
+
+int APASSProcess::IPCWorker::Status() const
+{
+   volatile AutoLock lock( m_mutex );
+   return m_running ? 1 : (m_error ? -1 : 0);
+}
+
+// ----------------------------------------------------------------------------
+
+bool APASSProcess::IPCWorker::IsRunning() const
+{
+   volatile AutoLock lock( m_mutex );
+   return m_running;
+}
+
+// ----------------------------------------------------------------------------
+
+bool APASSProcess::IPCWorker::IsError() const
+{
+   volatile AutoLock lock( m_mutex );
+   return m_error;
+}
+
+// ----------------------------------------------------------------------------
+
+void APASSProcess::IPCWorker::GetParameters( const String& parameters )
+{
+   StringList items;
+   parameters.Break( items, ',', true/*trim*/ );
+
+   String xpsdBaseDir;
+   for ( const String& item : items )
+   {
+      StringList tokens;
+      item.Break( tokens, '=', true/*trim*/ );
+      if ( tokens.Length() != 2 )
+         continue;
+
+      if ( tokens[0] == "task" )
+         m_task = tokens[1];
+      else if ( tokens[0] == "dataRelease" )
+      {
+         if ( tokens[1].CompareIC( "DR9" ) == 0 )
+            m_dataRelease = ADataRelease::DR9;
+         else if ( tokens[1].CompareIC( "DR10" ) == 0 )
+            m_dataRelease = ADataRelease::DR10;
+      }
+      else if ( tokens[0] == "xpsdBaseDir" )
+         xpsdBaseDir = tokens[1];
+      else if ( tokens[0] == "verbosity" )
+         tokens[1].TryToInt( m_verbosity );
+   }
+
+   if ( !xpsdBaseDir.IsEmpty() )
+   {
+      if ( !xpsdBaseDir.EndsWith( '/' ) )
+         xpsdBaseDir << '/';
+      if ( !File::DirectoryExists( xpsdBaseDir ) )
+         throw Error( String( "Failure to configure the APASS XPSD server: " ) + "Nonexistent directory specified: " + xpsdBaseDir );
+
+      pcl::FindFileInfo info;
+      for ( File::Find f( xpsdBaseDir + "*.xpsd" ); f.NextItem( info ); )
+         if ( !info.IsDirectory() && !info.attributes.IsFlagSet( FileAttribute::SymbolicLink ) )
+            m_xpsdFilePaths << File::FullPath( xpsdBaseDir + info.name );
+
+      if ( m_xpsdFilePaths.IsEmpty() )
+         throw Error( String( "Failure to configure the APASS XPSD server: " ) + "No XPSD database files found: " + xpsdBaseDir );
+   }
+}
+
+// ----------------------------------------------------------------------------
+
+void APASSProcess::IPCWorker::SetRunning()
+{
+   volatile AutoLock lock( m_mutex );
+   m_running = true;
+}
+
+// ----------------------------------------------------------------------------
+
+void APASSProcess::IPCWorker::SetNotRunning()
+{
+   volatile AutoLock lock( m_mutex );
+   m_running = false;
+}
+
+// ----------------------------------------------------------------------------
+
+void APASSProcess::IPCWorker::SetError()
+{
+   volatile AutoLock lock( m_mutex );
+   m_error = true;
+}
+
+// ----------------------------------------------------------------------------
+
+void APASSProcess::IPCWorker::ClearData()
+{
+   volatile AutoLock lock( m_mutex );
+   m_task.Clear();
+   m_dataRelease = ADataRelease::DR10;
+   m_xpsdFilePaths.Clear();
+   m_verbosity = 2; // full
+}
+
+// ----------------------------------------------------------------------------
+
+void APASSProcess::IPCWorker::ClearStatus()
+{
+   volatile AutoLock lock( m_mutex );
+   m_running = m_error = false;
+}
+
+
+// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 void APASSProcess::SetDatabaseFilePaths( int dr, const StringList& paths )
@@ -501,4 +701,4 @@ void APASSProcess::SavePreferences( int dr )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF APASSProcess.cpp - Released 2021-09-02T16:22:48Z
+// EOF APASSProcess.cpp - Released 2021-10-04T16:21:12Z

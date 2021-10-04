@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.10
+// /_/     \____//_____/   PCL 2.4.11
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// FITSHeaderInterface.cpp - Released 2021-09-02T16:22:48Z
+// FITSHeaderInterface.cpp - Released 2021-10-04T16:21:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -690,4 +690,4 @@ FITSHeaderInterface::GUIData::GUIData( FITSHeaderInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITSHeaderInterface.cpp - Released 2021-09-02T16:22:48Z
+// EOF FITSHeaderInterface.cpp - Released 2021-10-04T16:21:12Z

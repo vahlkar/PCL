@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.10
+// /_/     \____//_____/   PCL 2.4.11
 // ----------------------------------------------------------------------------
-// Standard NetworkService Process Module Version 1.1.0
+// Standard NetworkService Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// NetworkServiceModule.h - Released 2021-09-16T15:45:48Z
+// NetworkServiceModule.h - Released 2021-10-04T16:21:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NetworkService PixInsight module.
 //
@@ -75,6 +75,7 @@ public:
    String TradeMarks() const override;
    String OriginalFileName() const override;
    void GetReleaseDate( int& year, int& month, int& day ) const override;
+   void OnUnload() override;
 };
 
 // ----------------------------------------------------------------------------
@@ -84,4 +85,4 @@ public:
 #endif   // __NetworkServiceModule_h
 
 // ----------------------------------------------------------------------------
-// EOF NetworkServiceModule.h - Released 2021-09-16T15:45:48Z
+// EOF NetworkServiceModule.h - Released 2021-10-04T16:21:12Z
