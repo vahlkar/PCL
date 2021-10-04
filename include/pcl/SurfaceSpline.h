@@ -148,13 +148,15 @@ namespace RadialBasisFunction
  */
 class PCL_CLASS SurfaceSplineBase
 {
-protected:
+public:
 
    /*!
     * Represents a radial basis function (RBF) supported by this surface spline
     * implementation.
     */
    typedef RadialBasisFunction::value_type   rbf_type;
+
+protected:
 
    /*!
     * Default constructor.
