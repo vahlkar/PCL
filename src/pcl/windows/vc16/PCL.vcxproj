@@ -4,7 +4,7 @@
 # PixInsight Makefile Generator Script v1.123
 # Copyright (C) 2009-2021 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2021-10-04T16:23:23.744Z
+# Generated on .... 2021-10-18T19:17:37.360Z
 # Project id ...... PCL
 # Project type .... StaticLibrary
 # Platform ........ Windows/vc16
@@ -30,7 +30,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{1E598374-E4A9-4D6A-94DC-58524F15F222}</ProjectGuid>
+    <ProjectGuid>{0EEC0040-F2B7-41FB-8C09-3673FC4E3CAB}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -294,6 +294,7 @@
     <ClCompile Include="..\..\OnlineObjectSearchDialog.cpp"/>
     <ClCompile Include="..\..\OrthographicProjection.cpp"/>
     <ClCompile Include="..\..\PSFFit.cpp"/>
+    <ClCompile Include="..\..\PSFSignalEstimator.cpp"/>
     <ClCompile Include="..\..\Pen.cpp"/>
     <ClCompile Include="..\..\PolarTransform.cpp"/>
     <ClCompile Include="..\..\Position.cpp"/>
@@ -338,6 +339,7 @@
     <ClCompile Include="..\..\SpinStatus.cpp"/>
     <ClCompile Include="..\..\StandardStatus.cpp"/>
     <ClCompile Include="..\..\StarDatabaseFile.cpp"/>
+    <ClCompile Include="..\..\StarDetector.cpp"/>
     <ClCompile Include="..\..\StatusMonitor.cpp"/>
     <ClCompile Include="..\..\String.cpp"/>
     <ClCompile Include="..\..\SurfaceSimplifier.cpp"/>

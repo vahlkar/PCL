@@ -2,7 +2,7 @@
 # PixInsight Makefile Generator Script v1.123
 # Copyright (C) 2009-2021 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2021-10-04T16:23:23.464Z
+# Generated on .... 2021-10-18T19:17:37.064Z
 # Project id ...... PCL
 # Project type .... StaticLibrary
 # Platform ........ Linux/g++
@@ -122,6 +122,7 @@ SRC_FILES= \
 ../../OnlineObjectSearchDialog.cpp \
 ../../OrthographicProjection.cpp \
 ../../PSFFit.cpp \
+../../PSFSignalEstimator.cpp \
 ../../Pen.cpp \
 ../../PolarTransform.cpp \
 ../../Position.cpp \
@@ -166,6 +167,7 @@ SRC_FILES= \
 ../../SpinStatus.cpp \
 ../../StandardStatus.cpp \
 ../../StarDatabaseFile.cpp \
+../../StarDetector.cpp \
 ../../StatusMonitor.cpp \
 ../../String.cpp \
 ../../SurfaceSimplifier.cpp \
@@ -307,6 +309,7 @@ OBJ_FILES= \
 ./x64/Release/OnlineObjectSearchDialog.o \
 ./x64/Release/OrthographicProjection.o \
 ./x64/Release/PSFFit.o \
+./x64/Release/PSFSignalEstimator.o \
 ./x64/Release/Pen.o \
 ./x64/Release/PolarTransform.o \
 ./x64/Release/Position.o \
@@ -351,6 +354,7 @@ OBJ_FILES= \
 ./x64/Release/SpinStatus.o \
 ./x64/Release/StandardStatus.o \
 ./x64/Release/StarDatabaseFile.o \
+./x64/Release/StarDetector.o \
 ./x64/Release/StatusMonitor.o \
 ./x64/Release/String.o \
 ./x64/Release/SurfaceSimplifier.o \
@@ -492,6 +496,7 @@ DEP_FILES= \
 ./x64/Release/OnlineObjectSearchDialog.d \
 ./x64/Release/OrthographicProjection.d \
 ./x64/Release/PSFFit.d \
+./x64/Release/PSFSignalEstimator.d \
 ./x64/Release/Pen.d \
 ./x64/Release/PolarTransform.d \
 ./x64/Release/Position.d \
@@ -536,6 +541,7 @@ DEP_FILES= \
 ./x64/Release/SpinStatus.d \
 ./x64/Release/StandardStatus.d \
 ./x64/Release/StarDatabaseFile.d \
+./x64/Release/StarDetector.d \
 ./x64/Release/StatusMonitor.d \
 ./x64/Release/String.d \
 ./x64/Release/SurfaceSimplifier.d \

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
-// pcl/SurfaceSpline.h - Released 2021-10-04T16:19:32Z
+// pcl/SurfaceSpline.h - Released 2021-10-20T18:03:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -77,13 +77,13 @@ namespace pcl
 // ----------------------------------------------------------------------------
 
 /*
- * Default bucket capacity for recursive surface spline quadtree generation.
+ * Default quadtree bucket capacity for recursive surface subspline generation.
  */
 #define __PCL_RSSPLINE_DEFAULT_TREE_BUCKET_CAPACITY   64
 
 /*
- * Default maximum spline length for a non-recursive spline in a recursive
- * spline quadtree node.
+ * Default maximum spline length for a non-recursive quadtree node in a
+ * recursive surface spline.
  */
 #define __PCL_RSSPLINE_DEFAULT_SPLINE_MAX_LENGTH      1600
 
@@ -390,8 +390,6 @@ public:
    {
       Clear();
       m_rbf = rbf;
-      if ( m_rbf != RadialBasisFunction::VariableOrder )
-         m_order = 2;
    }
 
    /*!
@@ -440,15 +438,16 @@ public:
    /*!
     * Sets the derivability order of this surface spline.
     *
-    * \param order   Derivability order. Must be >= 2.
+    * \param order   Derivability order. Must be &ge; 2.
     *
     * Calling this member function implicitly resets this %SurfaceSpline object
     * and destroys all internal working structures.
     *
-    * The derivability order can only be specified for variable order radial
-    * basis functions (RadialBasisFunction::VariableOrder). Other RBFs are
-    * implicitly of second order, so when they are selected the order specified
-    * by calling this function will be ignored.
+    * Specifying a derivability order &ge; 2 is really useful for variable
+    * order radial basis functions (RadialBasisFunction::VariableOrder). Other
+    * RBFs are implicitly of second order, so when they are selected the order
+    * specified by calling this function will only change the polynomial part
+    * of the surface spline.
     *
     * Only when a variable order RBF is selected, the surface spline will be
     * continuously differentiable up to the specified \a order after a
@@ -461,7 +460,7 @@ public:
    {
       PCL_PRECONDITION( order > 1 )
       Clear();
-      m_order = (m_rbf == RadialBasisFunction::VariableOrder) ? pcl::Max( 2, order ) : 2;
+      m_order = pcl::Max( 2, order );
    }
 
    /*!
@@ -514,7 +513,7 @@ public:
    /*!
     * Sets the <em>smoothing factor</em> of this surface spline.
     *
-    * \param s    Smoothing factor. Must be >= 0.
+    * \param s    Smoothing factor. Must be &ge; 0.
     *
     * For \a s = 0, an interpolating surface spline will be generated: all node
     * values will be reproduced exactly at their respective coordinates.
@@ -522,6 +521,11 @@ public:
     * For \a s > 0, a smoothing (or approximating) surface spline will be
     * generated: increasing \a s values will generate splines closer to the
     * reference plane of the input node set.
+    *
+    * \note This parameter is only used for the thin plate spline and variable
+    * order spline radial basis functions. For other RBFs only interpolation
+    * surface splines can be generated with this implementation, and hence this
+    * parameter is always ignored.
     */
    void SetSmoothing( float s )
    {
@@ -574,6 +578,11 @@ public:
     * give more prominence to the corresponding data point. A node weight of
     * one will apply the current surface smoothness at its node position. A
     * node weight smaller than one will increase the interpolation smoothness.
+    *
+    * \note The smoothing factor and the \a w parameter are only used for the
+    * thin plate spline and variable order spline radial basis functions. For
+    * other RBFs only interpolation surface splines can be generated with this
+    * implementation, and hence the \a w parameter is always ignored.
     */
    void Initialize( const scalar* x, const scalar* y, const scalar* z, int n, const weight* w = nullptr )
    {
@@ -1066,6 +1075,11 @@ public:
     * interpolation devices, which should always be used with care. For the
     * rest of RBFs the \a order parameter is ignored and second order functions
     * are always used.
+    *
+    * \note The \a smoothness and \a W parameters are only used for the thin
+    * plate spline and variable order spline radial basis functions. For other
+    * RBFs only interpolation surface splines can be generated with this
+    * implementation, and hence these parameters are always ignored.
     */
    template <class weight_vector = FVector>
    void Initialize( const point_list& P1, const point_list& P2,
@@ -1424,7 +1438,7 @@ public:
     *                   \a P2 will be used as the interpolation node values in
     *                   the X and Y directions.
     *
-    * \param smoothness Smoothing factor. Must be >= 0. The default value is 0.
+    * \param smoothness Smoothing factor. Must be &ge; 0 (default = 0).
     *
     * \param W          Reference to a vector of positive node \e weights > 0,
     *                   when the smoothing factor is > 1. For an interpolating
@@ -1432,32 +1446,38 @@ public:
     *                   argument must be a reference to a vector or array of
     *                   \c float values.
     *
-    * \param order      Derivative order. Must be >= 2. The default value is 2.
+    * \param order      Derivative order. Must be &ge; 2 (default = 2).
     *
     * \param allowExtrapolation  Whether to allow extrapolation on points
     *                   exterior to the region defined by the specified set of
     *                   interpolation node points \a P1. Extrapolation is not
-    *                   allowed by default, since recursively generated
-    *                   subsplines are more prone to oscillation than normal
-    *                   surface splines.
+    *                   allowed by default because recursively generated
+    *                   subsplines are slightly more prone to oscillation than
+    *                   normal surface splines.
     *
     * \param maxSplineLength  Maximum length of a point surface spline in a
     *                   non-recursive %RecursivePointSurfaceSpline instance.
     *                   The default value is 1600 points. Be aware that surface
     *                   spline generation has O(n^3) time complexity (that's
-    *                   why this class exists after all). The default value is
-    *                   a reasonable compromise for balanced efficiency in most
-    *                   practical cases.
+    *                   why this class exists after all), and the number of
+    *                   generated quadtree nodes grows exponentially with the
+    *                   total number of interpolation points. The default value
+    *                   is a reasonable compromise for balanced efficiency in
+    *                   most practical cases.
     *
     * \param bucketCapacity   Bucket capacity for quadtree generation. The
-    *                   default value is 64 points.
+    *                   default value is 64 points. By decreasing this value
+    *                   the recursive surface spline initialization process
+    *                   will be faster, but the generated subsplines will be
+    *                   less accurate, leading to more border artifacts between
+    *                   contiguous quadtree node regions.
     *
     * \param verbose    If true, this function will write information to the
     *                   standard PixInsight console to provide some feedback to
     *                   the user during the (potentially long) initialization
     *                   process. If false, no feedback will be provided.
     *
-    * For \a smoothness <= 0, interpolating subsplines will be generated: all
+    * For \a smoothness &le; 0, interpolating subsplines will be generated: all
     * node values will be reproduced exactly at their respective coordinates.
     * In this case the \a W parameter will be ignored.
     *
@@ -1545,7 +1565,7 @@ public:
       else
       {
          /*
-          * Find the square total interpolation region.
+          * Find the total interpolation region.
           */
          search_rectangle rect = search_coordinate( 0 );
          node_list data;
@@ -1563,6 +1583,7 @@ public:
             else if ( p1.y > rect.y1 )
                rect.y1 = p1.y;
          }
+         // Force a square interpolation region for optimal quadtree behavior.
          if ( rect.Width() < rect.Height() )
             rect.InflateBy( (rect.Height() - rect.Width())/2, search_coordinate( 0 ) );
          else
@@ -1581,28 +1602,32 @@ public:
             [&]( const search_rectangle& rect, const node_list& points, void*& D )
             {
                /*
-                * Get all nodes on a redundant region of 25 times the area of
-                * this quadtree node.
+                * Ensure redundancy for all subsplines by gathering a set of
+                * interpolation points in an extended rectangular region around
+                * each quadtree node.
                 */
-               search_rectangle r = rect.InflatedBy( 2*Max( rect.Width(), rect.Height() ) );
+               search_rectangle r = rect.InflatedBy( 1.5*Max( rect.Width(), rect.Height() ) );
                node_list N = m_tree.Search( r );
 
                /*
-                * Sort the cloud of interpolation nodes by proximity to a
-                * circle centered at the minimum RBF value.
+                * Sort the cloud of interpolation points by proximity to a
+                * circle centered at the argument of the minimum RBF value
+                * (approximately 0.61 in normalized coordinates).
                 */
-               point c = rect.Center();
-               double d = 0.61 * (Max( r.Width(), r.Height() )/2 + Max( rect.Width(), rect.Height() )/4);
-               N.Sort(
-                  [&]( const auto& a, const auto& b )
-                  {
-                     return Abs( a.position.DistanceTo( c ) - d ) < Abs( b.position.DistanceTo( c ) - d );
-//                   return a.position.SquaredDistanceTo( c ) < b.position.SquaredDistanceTo( c );
-                  } );
+               if ( N.Length() > size_type( maxSplineLength ) )
+               {
+                  point c = rect.Center();
+                  double d = 0.61 * (Max( r.Width(), r.Height() )/2 + Max( rect.Width(), rect.Height() )/4);
+                  N.Sort(
+                     [&]( const auto& a, const auto& b )
+                     {
+                        return Abs( a.position.DistanceTo( c ) - d ) < Abs( b.position.DistanceTo( c ) - d );
+                     } );
+               }
 
                /*
                 * Get the optimal subset of at most maxSplineLength redundant
-                * nodes for this quadtree node.
+                * interpolation points for this quadtree node.
                 */
                point_list P1, P2;
                Array<float> PW;
@@ -1983,4 +2008,4 @@ private:
 #endif   // __PCL_SurfaceSpline_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SurfaceSpline.h - Released 2021-10-04T16:19:32Z
+// EOF pcl/SurfaceSpline.h - Released 2021-10-20T18:03:58Z

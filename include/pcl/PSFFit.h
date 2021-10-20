@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
-// pcl/PSFFit.h - Released 2021-10-04T16:19:32Z
+// pcl/PSFFit.h - Released 2021-10-20T18:03:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -170,6 +170,7 @@ struct PSFData
    double         beta = 0;   //!< Moffat beta or shape parameter (dimensionless).
    double         flux = 0;   //!< Total flux above the local background, measured on source image pixels.
    double         meanSignal = 0; //!< Estimated mean signal over the fitting region.
+   double         meanSignalSqr = 0; //!< Estimated mean squared signal over the fitting region.
    double         mad = 0;    /*!< Goodness of fit estimate. A robust, normalized mean absolute difference between
                                    the estimated PSF and the sample of source image pixels over the fitting region. */
 
@@ -321,6 +322,7 @@ struct PSFData
 /*!
  * \class PSFFit
  * \brief Numerical Point Spread Function (PSF) fit to a source in an image.
+ * \sa StarDetector, PSFSignalEstimator
  */
 class PSFFit
 {
@@ -438,4 +440,4 @@ private:
 #endif   // __PCL_PSFFit_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFFit.h - Released 2021-10-04T16:19:32Z
+// EOF pcl/PSFFit.h - Released 2021-10-20T18:03:58Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
-// pcl/Math.h - Released 2021-10-04T16:19:32Z
+// pcl/Math.h - Released 2021-10-20T18:03:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -3543,11 +3543,18 @@ struct TwoSidedEstimate
    }
 
    /*!
-    * Conversion to scalar. Returns the arithmetic mean of the low and high
-    * estimates if both are nonzero. Returns the nonzero estimate otherwise if
-    * it exists, zero otherwise.
+    * Returns the sum of the low and high estimate components.
     */
-   explicit operator double() const noexcept
+   double Total() const noexcept
+   {
+      return low + high;
+   }
+
+   /*!
+    * Returns the arithmetic mean of the low and high estimate components if
+    * both are nonzero. Otherwise returns the maximum component.
+    */
+   double Mean() const noexcept
    {
       if ( low != 0 )
       {
@@ -3556,6 +3563,14 @@ struct TwoSidedEstimate
          return low;
       }
       return high;
+   }
+
+   /*!
+    * Conversion to scalar. Equivalent to Mean().
+    */
+   explicit operator double() const noexcept
+   {
+      return Mean();
    }
 
    /*!
@@ -4820,4 +4835,4 @@ inline uint32 Hash32( const void* data, size_type size, uint32 seed = 0 ) noexce
 #endif   // __PCL_Math_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Math.h - Released 2021-10-04T16:19:32Z
+// EOF pcl/Math.h - Released 2021-10-20T18:03:58Z

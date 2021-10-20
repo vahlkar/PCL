@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
-// pcl/PSFFit.cpp - Released 2021-10-04T16:19:41Z
+// pcl/PSFFit.cpp - Released 2021-10-20T18:04:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -879,6 +879,7 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
          Vector r = GoodnessOfFit( function, true/*circular*/ );
          psf.flux = r[2];
          psf.meanSignal = r[3];
+         psf.meanSignalSqr = r[4];
          psf.mad = r[0];
       }
       else
@@ -895,6 +896,7 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
             Vector r = GoodnessOfFit( function, false/*circular*/ );
             psf.flux = r[2];
             psf.meanSignal = r[3];
+            psf.meanSignalSqr= r[4];
             psf.mad = r[0];
          }
          else
@@ -942,6 +944,7 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
             psf.theta = Deg( a[imin] );
             psf.flux = r0[2];
             psf.meanSignal = r0[3];
+            psf.meanSignalSqr = r0[4];
             psf.mad = r0[0];
          }
       }
@@ -963,8 +966,8 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
 // ----------------------------------------------------------------------------
 
 /*
- * Robust estimates of mean absolute difference and total flux, measured from
- * sampled pixel data and the fitted PSF model.
+ * Robust estimates of mean absolute difference, total flux and mean signal,
+ * measured from sampled pixel data and the fitted PSF model.
  */
 Vector PSFFit::GoodnessOfFit( psf_function function, bool circular ) const
 {
@@ -982,7 +985,24 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular ) const
 
    Vector adev( w*h );
    double flux = 0;
+   double signal = 0;
+   double signal2 = 0;
    double zsum = 0;
+   double b = (1 + B != 1) ? B : 1.0e-08;
+
+#define GET_DATA()               \
+   {                             \
+      double d = *s - B;         \
+      adev[i] = Abs( d - A*z );  \
+      if ( d > 0 )               \
+      {                          \
+         flux += d;              \
+         double f = d/b;         \
+         signal += z*f;          \
+         signal2 += z*f*f;       \
+         zsum += z;              \
+      }                          \
+   }
 
    if ( circular )
    {
@@ -1001,12 +1021,7 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular ) const
                {
                   double dx = x - w2x0;
                   double z = Exp( -(dx*dx + dy2)/twosx2 );
-                  adev[i] = Abs( *s - B - A*z );
-                  if ( *s > B )
-                  {
-                     flux += (*s - B)*z;
-                     zsum += z;
-                  }
+                  GET_DATA()
                }
             }
          }
@@ -1030,12 +1045,7 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular ) const
                {
                   double dx = x - w2x0;
                   double z = 1/Pow( 1 + (dx*dx + dy2)/sx2, beta );
-                  adev[i] = Abs( *s - B - A*z );
-                  if ( *s > B )
-                  {
-                     flux += (*s - B)*z;
-                     zsum += z;
-                  }
+                  GET_DATA()
                }
             }
          }
@@ -1050,12 +1060,7 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular ) const
                for ( int x = 0; x < w; ++x, ++i, ++s )
                {
                   double z = Exp( -(Pow( Abs( x - w2x0 ), beta ) + dyk)/ksxk );
-                  adev[i] = Abs( *s - B - A*z );
-                  if ( *s > B )
-                  {
-                     flux += (*s - B)*z;
-                     zsum += z;
-                  }
+                  GET_DATA()
                }
             }
          }
@@ -1063,7 +1068,7 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular ) const
       }
 #undef beta
    }
-   else
+   else // !circular
    {
 #define sy     P[5]
 #define theta  P[6]
@@ -1092,12 +1097,7 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular ) const
                {
                   double dx = x - w2x0;
                   double z = Exp( -(p1*dx*dx + twop2dy*dx + p3dy2) );
-                  adev[i] = Abs( *s - B - A*z );
-                  if ( *s > B )
-                  {
-                     flux += (*s - B)*z;
-                     zsum += z;
-                  }
+                  GET_DATA()
                }
             }
          }
@@ -1131,12 +1131,7 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular ) const
                {
                   double dx = x - w2x0;
                   double z = 1/Pow( 1 + p1*dx*dx + twop2dy*dx + p3dy2, beta );
-                  adev[i] = Abs( *s - B - A*z );
-                  if ( *s > B )
-                  {
-                     flux += (*s - B)*z;
-                     zsum += z;
-                  }
+                  GET_DATA()
                }
             }
          }
@@ -1159,12 +1154,7 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular ) const
                   double dy = dx*st + dyct;
                   dx = dx*ct - dyst;
                   double z = Exp( -(Pow( Abs( dx ), beta )/ksxk + Pow( Abs( dy ), beta )/ksyk) );
-                  adev[i] = Abs( *s - B - A*z );
-                  if ( *s > B )
-                  {
-                     flux += (*s - B)*z;
-                     zsum += z;
-                  }
+                  GET_DATA()
                }
             }
          }
@@ -1175,19 +1165,27 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular ) const
 #undef beta
    }
 
+#undef GET_DATA
+
 #undef B
 #undef A
 #undef x0
 #undef y0
 #undef sx
 
-   Vector R( 4 );
+   Vector R( 5 );
+
+   /*
+    * The fifth component of the returned vector is the estimated mean squared
+    * signal relative to the local background.
+    */
+   R[4] = (1 + zsum != 1) ? signal2/zsum : 0.0;
 
    /*
     * The fourth component of the returned vector is the estimated mean signal
-    * value.
+    * relative to the local background.
     */
-   R[3] = (1 + zsum != 1) ? flux/zsum : 0.0;
+   R[3] = (1 + zsum != 1) ? signal/zsum : 0.0;
 
    /*
     * The third component of the returned vector is the total flux above the
@@ -1205,9 +1203,8 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular ) const
    /*
     * The first returned component is a robust estimate of fitting quality.
     * Here we need an estimator of location with a good balance between
-    * robustness and efficiency/sufficiency for the vector of absolute
-    * differences. We use a mean with median replacement for a 10% of the
-    * sample tails.
+    * robustness and efficiency for the vector of absolute differences. We use
+    * a mean with median replacement for a 10% of the sample tails.
     */
    int n = adev.Length();
    int i0 = TruncInt( 0.1*n );
@@ -1263,4 +1260,4 @@ String PSFData::StatusText() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFFit.cpp - Released 2021-10-04T16:19:41Z
+// EOF pcl/PSFFit.cpp - Released 2021-10-20T18:04:06Z
