@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.4.8
+// Standard SubframeSelector Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// GraphWebView.cpp - Released 2021-10-04T16:21:12Z
+// GraphWebView.cpp - Released 2021-10-20T18:10:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -326,20 +326,20 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector* da
 <div id="histograph"></div>
 <script type="text/javascript">
 
-   // Store the graphs later globally for access
+   // Store the graphs later globally for access.
    graph = null;
    histograph = null;
 
-   // Some items are stored in Objects (hashmap-like) for quick lookup
+   // Some items are stored in Objects (hashmap-like) for quick lookup.
    approvals = )DELIM" + indexedApprovals + R"DELIM(;
    locks = )DELIM" + indexedLocks + R"DELIM(;
    sigmas = )DELIM" + indexedSigmas + R"DELIM(;
 
-   // This is the Array of data that will be graphed
+   // This is the Array of data that will be graphed.
    datasetValues = )DELIM" + graphingArray + R"DELIM(;
    datasetHistogram = )DELIM" + histographingArray + R"DELIM(;
 
-   // Helpful information for the legend
+   // Helpful information for the legend.
    datasetMin = )DELIM" + String().Format( "%.8f", min ) + R"DELIM(;
    datasetMax = )DELIM" + String().Format( "%.8f", max ) + R"DELIM(;
    datasetRange = )DELIM" + String().Format( "%.8f", range ) + R"DELIM(;
@@ -348,7 +348,7 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector* da
 
    // For the parent controls to communicate with us, we'll
    // store the indices that have been selected with this interface
-   // and return them with this function call
+   // and return them with this function call.
    approvalQueue = [];
    lockQueue = [];
    function getApprovalIndex() {
@@ -360,8 +360,8 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector* da
       return 'U:' + lockQueue.shift();
    }
 
-   // When points are clicked, put them in the Queues
-   // Update the graph too for more immediate feedback
+   // When points are clicked, put them in the Queues.
+   // Update the graph too for more immediate feedback.
    function pointClickCallback(event, point) {
       if (event.shiftKey) {
          if (locks.hasOwnProperty(point.xval) && locks[point.xval] === true) {
@@ -378,7 +378,7 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector* da
       graph.updateOptions({}); // force redraw
    }
 
-   // Custom Legend Formatting to lookup attributes and hide some series
+   // Custom Legend Formatting to lookup attributes and hide some series.
    function legendFormatter(data) {
       let html = '<table>';
       data.series.forEach(function(series) {
@@ -417,7 +417,7 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector* da
       return html;
    }
 
-   // The main series can be drawn to indicate approved and locked frames
+   // The main series can be drawn to indicate approved and locked frames.
    function drawApprovedPoint(g, series, ctx, cx, cy, color, radius, idx) {
       ctx.save();
 
@@ -454,13 +454,13 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector* da
       ctx.restore()
    }
 
-   // Custom Plotter to show bars instead of a line
+   // Custom Plotter to show bars instead of a line.
    function barChartPlotter(e) {
       var ctx = e.drawingContext;
       var points = e.points;
       var y_bottom = e.dygraph.toDomYCoord(0);  // see http://dygraphs.com/jsdoc/symbols/Dygraph.html#toDomYCoord
 
-      // Find the bar width from only points that have values
+      // Find the bar width from only points that have values.
       var point1 = undefined;
       var point2 = undefined;
       for (var i = 0; i < points.length; i++) {
@@ -534,6 +534,7 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector* da
          axes: {
             y: {
                independentTicks: true,
+               digitsAfterDecimal: 2,
             },
             y2: {
                independentTicks: true,
@@ -542,6 +543,7 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector* da
          },
 
          digitsAfterDecimal: 4,
+         maxNumberWidth: 3,
 
          // Need to know which points were clicked
          pointClickCallback: pointClickCallback,
@@ -593,6 +595,9 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector* da
 
          // Separate the Axes' Grids
          axes: {
+            x: {
+               digitsAfterDecimal: 2,
+            },
             y: {
                independentTicks: true,
                valueRange: [0, datasetMaxValue*1.1],
@@ -605,6 +610,7 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector* da
          },
 
          digitsAfterDecimal: 6,
+         maxNumberWidth: 3,
 
          // Legend acts more like a tooltip
          legend: "follow",
@@ -617,7 +623,8 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector* da
       }
    );
 
-   // Dygraphs replaces the div content, but we want our own labels, so add them afterwards
+   // Dygraphs replaces the div content, but we want our own labels,
+   // so add them afterwards.
    var node = document.createElement("div");
    var nodeClass = document.createAttribute("class");
    nodeClass.value = "label-y1";
@@ -695,7 +702,7 @@ String GraphWebView::Header() const
    #graph {
       position: fixed;
       top: 1vh;
-      left: -15px;
+      left: 0px;
       height: 98vh;
       width: 67vw;
    }
@@ -711,7 +718,8 @@ String GraphWebView::Header() const
    .label-y1, .label-y2 {
       position: absolute;
       top: 0px;
-      font-size: 12px;
+      width: auto;
+      font-size: 11px;
       font-weight: bold;
    }
    .label-y1 {
@@ -723,11 +731,12 @@ String GraphWebView::Header() const
 
    /* Override the ugly legend for something more like a PI Tooltip */
    .dygraph-legend {
-      font-size: 13px;
+      font-size: 10px;
       width: auto;
       padding: 1px;
       background-color: black;
       color: white;
+      opacity: 0.7;
       border: 1px solid gray;
       border-radius: 2px;
    }
@@ -747,7 +756,7 @@ String GraphWebView::Header() const
 
    /* Shrink the axis labels a little to prevent overlap */
    .dygraph-axis-label {
-      font-size: 11px;
+      font-size: 10px;
    }
 </style>
 </head>
@@ -789,4 +798,4 @@ void GraphWebView::Cleanup()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GraphWebView.cpp - Released 2021-10-04T16:21:12Z
+// EOF GraphWebView.cpp - Released 2021-10-20T18:10:09Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.2.34
+// Standard ImageIntegration Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// ImageIntegrationParameters.h - Released 2021-10-04T16:21:12Z
+// ImageIntegrationParameters.h - Released 2021-10-20T18:10:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -170,21 +170,24 @@ class IIWeightMode : public MetaEnumeration
 {
 public:
 
-   enum { DontCare,              // weight = 1
-          ExposureTimeWeight,    // EXPTIME keyword or ImageOptions::exposure
-          NoiseEvaluationWeight, // MRS Gaussian noise estimates
-          SignalWeight,          // mean - median distance
-          MedianWeight,          // median
-          AverageWeight,         // mean
-          KeywordWeight,         // user-specified keyword
+   enum { DontCare,           // weight = 1
+          ExposureTimeWeight, // EXPTIME keyword or ImageOptions::exposure
+          SNREstimate,        // Scaled inverse noise variance with MRS noise estimates
+          SignalWeight,       // mean - median distance
+          MedianWeight,       // median
+          AverageWeight,      // mean
+          KeywordWeight,      // user-specified keyword
+          PSFSignalWeight,    // SNR with PSF mean signal estimates
+          PSFPowerWeight,     // SNR with PSF signal power estimates
           NumberOfWeightModes,
-          Default = NoiseEvaluationWeight };
+          Default = PSFSignalWeight };
 
    IIWeightMode( MetaProcess* );
 
    IsoString Id() const override;
    size_type NumberOfElements() const override;
    IsoString ElementId( size_type ) const override;
+   IsoString ElementAliases() const override;
    int ElementValue( size_type ) const override;
    size_type DefaultValueIndex() const override;
 };
@@ -1460,6 +1463,102 @@ extern IIFinalNoiseEstimateB* TheIIFinalNoiseEstimateBParameter;
 
 // ----------------------------------------------------------------------------
 
+class IIFinalNoiseScaleEstimateLowRK : public MetaDouble
+{
+public:
+
+   IIFinalNoiseScaleEstimateLowRK( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern IIFinalNoiseScaleEstimateLowRK* TheIIFinalNoiseScaleEstimateLowRKParameter;
+
+// ----------------------------------------------------------------------------
+
+class IIFinalNoiseScaleEstimateLowG : public MetaDouble
+{
+public:
+
+   IIFinalNoiseScaleEstimateLowG( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern IIFinalNoiseScaleEstimateLowG* TheIIFinalNoiseScaleEstimateLowGParameter;
+
+// ----------------------------------------------------------------------------
+
+class IIFinalNoiseScaleEstimateLowB : public MetaDouble
+{
+public:
+
+   IIFinalNoiseScaleEstimateLowB( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern IIFinalNoiseScaleEstimateLowB* TheIIFinalNoiseScaleEstimateLowBParameter;
+
+// ----------------------------------------------------------------------------
+
+class IIFinalNoiseScaleEstimateHighRK : public MetaDouble
+{
+public:
+
+   IIFinalNoiseScaleEstimateHighRK( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern IIFinalNoiseScaleEstimateHighRK* TheIIFinalNoiseScaleEstimateHighRKParameter;
+
+// ----------------------------------------------------------------------------
+
+class IIFinalNoiseScaleEstimateHighG : public MetaDouble
+{
+public:
+
+   IIFinalNoiseScaleEstimateHighG( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern IIFinalNoiseScaleEstimateHighG* TheIIFinalNoiseScaleEstimateHighGParameter;
+
+// ----------------------------------------------------------------------------
+
+class IIFinalNoiseScaleEstimateHighB : public MetaDouble
+{
+public:
+
+   IIFinalNoiseScaleEstimateHighB( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern IIFinalNoiseScaleEstimateHighB* TheIIFinalNoiseScaleEstimateHighBParameter;
+
+// ----------------------------------------------------------------------------
+
 class IIFinalScaleEstimateRK : public MetaDouble
 {
 public:
@@ -1886,4 +1985,4 @@ PCL_END_LOCAL
 #endif   // __ImageIntegrationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationParameters.h - Released 2021-10-04T16:21:12Z
+// EOF ImageIntegrationParameters.h - Released 2021-10-20T18:10:09Z

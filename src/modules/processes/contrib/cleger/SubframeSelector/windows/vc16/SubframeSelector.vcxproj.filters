@@ -4,7 +4,7 @@
 # PixInsight Makefile Generator Script v1.123
 # Copyright (C) 2009-2021 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2021-10-04T16:24:10.825Z
+# Generated on .... 2021-10-20T18:11:42.801Z
 # Project id ...... SubframeSelector
 # Project type .... Module
 # Platform ........ Windows/vc16
@@ -17,13 +17,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>d39d5203-c39f-400b-a4a5-ce169bccc915</UniqueIdentifier>
+      <UniqueIdentifier>e5b17f70-255e-42df-b64f-cc14eeba3c4d</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>5b8304fc-4c99-40c9-9314-46ffe1e7ed74</UniqueIdentifier>
+      <UniqueIdentifier>884fe2ba-c97d-4712-bc5d-d4f56fe6debf</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>bc476714-587d-450f-846c-edfabf9c2397</UniqueIdentifier>
+      <UniqueIdentifier>3c5b6ee4-d7d8-447b-be9b-35d769ebdec0</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -57,9 +57,6 @@
     <ClCompile Include="..\..\SubframeSelectorProcess.cpp">
         <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\SubframeSelectorStarDetector.cpp">
-        <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\GraphWebView.h">
@@ -90,9 +87,6 @@
         <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\SubframeSelectorProcess.h">
-        <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\SubframeSelectorStarDetector.h">
         <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

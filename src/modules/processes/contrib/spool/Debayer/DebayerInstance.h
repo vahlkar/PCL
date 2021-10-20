@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
-// Standard Debayer Process Module Version 1.9.0
+// Standard Debayer Process Module Version 1.9.4
 // ----------------------------------------------------------------------------
-// DebayerInstance.h - Released 2021-10-04T16:21:13Z
+// DebayerInstance.h - Released 2021-10-20T18:10:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -140,8 +140,13 @@ private:
    // Read-only output properties, view execution.
    String     o_imageId;
    StringList o_channelIds = StringList( size_type( 3 ) );
-   FVector    o_noiseEstimates = FVector( 0.0F, 3 );
-   FVector    o_noiseFractions = FVector( 0.0F, 3 );
+   Vector     o_psfSignalEstimates = Vector( 0.0, 3 );
+   Vector     o_psfPowerEstimates = Vector( 0.0, 3 );
+   IVector    o_psfCounts = IVector( 0, 3 );
+   Vector     o_noiseEstimates = Vector( 0.0, 3 );
+   Vector     o_noiseFractions = Vector( 0.0, 3 );
+   Vector     o_noiseScaleLow = Vector( 0.0, 3 );
+   Vector     o_noiseScaleHigh = Vector( 0.0, 3 );
    StringList o_noiseAlgorithms = StringList( size_type( 3 ) );
 
    // Read-only output properties, batch execution.
@@ -149,8 +154,13 @@ private:
    {
       String     filePath;
       StringList channelFilePaths = StringList( size_type( 3 ) );
-      FVector    noiseEstimates = FVector( 0.0F, 3 );
-      FVector    noiseFractions = FVector( 0.0F, 3 );
+      Vector     psfSignalEstimates = Vector( 0.0, 3 );
+      Vector     psfPowerEstimates = Vector( 0.0, 3 );
+      IVector    psfCounts = IVector( 0, 3 );
+      Vector     noiseEstimates = Vector( 0.0, 3 );
+      Vector     noiseFractions = Vector( 0.0, 3 );
+      Vector     noiseScaleLow = Vector( 0.0, 3 );
+      Vector     noiseScaleHigh = Vector( 0.0, 3 );
       StringList noiseAlgorithms = StringList( size_type( 3 ) );
    };
    Array<OutputFileData> o_outputFileData;
@@ -176,8 +186,10 @@ private:
    static FMatrix sRGBConversionMatrixFromTarget( FileFormatInstance& );
    static FMatrix sRGBConversionMatrixFromTargetProperty( const Variant& );
 
-   void EvaluateNoise( FVector& noiseEstimates, FVector& noiseFractions, StringList& noiseAlgorithms,
-                       const ImageVariant&, const IsoString& cfaPattern ) const;
+   void EvaluateSignalAndNoise( Vector& psfSignalEstimates, Vector& psfPowerEstimates, IVector& psfCounts,
+                                Vector& noiseEstimates, Vector& noiseFractions,
+                                Vector& noiseScaleLow, Vector& noiseScaleHigh, StringList& noiseAlgorithms,
+                                const ImageVariant&, const IsoString& cfaPattern ) const;
 
    void ApplyErrorPolicy();
 
@@ -195,4 +207,4 @@ private:
 #endif   // __DebayerInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF DebayerInstance.h - Released 2021-10-04T16:21:13Z
+// EOF DebayerInstance.h - Released 2021-10-20T18:10:09Z

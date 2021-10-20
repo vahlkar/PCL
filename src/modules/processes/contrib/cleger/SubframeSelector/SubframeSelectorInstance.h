@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.4.8
+// Standard SubframeSelector Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// SubframeSelectorInstance.h - Released 2021-10-04T16:21:12Z
+// SubframeSelectorInstance.h - Released 2021-10-20T18:10:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -129,14 +129,14 @@ private:
    int32              p_structureLayers;
    int32              p_noiseLayers;
    int32              p_hotPixelFilterRadius;
-   pcl_bool           p_hotPixelFilter;
+   pcl_bool           p_hotPixelFilter;      // ### DEPRECATED
    int32              p_noiseReductionFilterRadius;
    float              p_sensitivity;
    float              p_peakResponse;
    float              p_maxDistortion;
    float              p_upperLimit;
-   int32              p_backgroundExpansion;
-   float              p_xyStretch;
+   int32              p_backgroundExpansion; // ### DEPRECATED
+   float              p_xyStretch;           // ### DEPRECATED
    pcl_enum           p_psfFit;
    pcl_bool           p_psfFitCircular;
    Rect               p_roi = 0;
@@ -179,7 +179,9 @@ private:
    bool CanOutput( String& whyNot ) const;
    bool Output();
 
-   ImageVariant* LoadSubframe( double& noise, double& noiseRatio, const String& filePath );
+   ImageVariant* LoadSubframe( double& noise, double& noiseRatio,
+                               double& psfSignalWeight, double& psfPowerWeight, double& snrWeight,
+                               const String& filePath );
    void WriteMeasuredImage( MeasureItem* );
 
    friend struct MeasureData;
@@ -197,4 +199,4 @@ private:
 #endif   // __SubframeSelectorInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInstance.h - Released 2021-10-04T16:21:12Z
+// EOF SubframeSelectorInstance.h - Released 2021-10-20T18:10:09Z

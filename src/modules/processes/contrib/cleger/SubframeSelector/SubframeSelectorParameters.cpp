@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.4.8
+// Standard SubframeSelector Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// SubframeSelectorParameters.cpp - Released 2021-10-04T16:21:12Z
+// SubframeSelectorParameters.cpp - Released 2021-10-20T18:10:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -57,80 +57,82 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-SSRoutine*                        TheSSRoutineParameter = nullptr;
-SSNonInteractive*                 TheSSNonInteractiveParameter = nullptr;
+SSRoutine*                         TheSSRoutineParameter = nullptr;
+SSNonInteractive*                  TheSSNonInteractiveParameter = nullptr;
 
-SSSubframes*                      TheSSSubframesParameter = nullptr;
-SSSubframeEnabled*                TheSSSubframeEnabledParameter = nullptr;
-SSSubframePath*                   TheSSSubframePathParameter = nullptr;
+SSSubframes*                       TheSSSubframesParameter = nullptr;
+SSSubframeEnabled*                 TheSSSubframeEnabledParameter = nullptr;
+SSSubframePath*                    TheSSSubframePathParameter = nullptr;
 
-SSFileCache*                      TheSSFileCacheParameter = nullptr;
+SSFileCache*                       TheSSFileCacheParameter = nullptr;
 
-SSSubframeScale*                  TheSSSubframeScaleParameter = nullptr;
-SSCameraGain*                     TheSSCameraGainParameter = nullptr;
-SSCameraResolution*               TheSSCameraResolutionParameter = nullptr;
-SSSiteLocalMidnight*              TheSSSiteLocalMidnightParameter = nullptr;
-SSScaleUnit*                      TheSSScaleUnitParameter = nullptr;
-SSDataUnit*                       TheSSDataUnitParameter = nullptr;
-SSTrimmingFactor*                 TheSSTrimmingFactorParameter = nullptr;
+SSSubframeScale*                   TheSSSubframeScaleParameter = nullptr;
+SSCameraGain*                      TheSSCameraGainParameter = nullptr;
+SSCameraResolution*                TheSSCameraResolutionParameter = nullptr;
+SSSiteLocalMidnight*               TheSSSiteLocalMidnightParameter = nullptr;
+SSScaleUnit*                       TheSSScaleUnitParameter = nullptr;
+SSDataUnit*                        TheSSDataUnitParameter = nullptr;
+SSTrimmingFactor*                  TheSSTrimmingFactorParameter = nullptr;
 
-SSStructureLayers*                TheSSStructureLayersParameter = nullptr;
-SSNoiseLayers*                    TheSSNoiseLayersParameter = nullptr;
-SSHotPixelFilterRadius*           TheSSHotPixelFilterRadiusParameter = nullptr;
-SSApplyHotPixelFilter*            TheSSApplyHotPixelFilterParameter = nullptr;
-SSNoiseReductionFilterRadius*     TheSSNoiseReductionFilterRadiusParameter = nullptr;
-SSSensitivity*                    TheSSSensitivityParameter = nullptr;
-SSPeakResponse*                   TheSSPeakResponseParameter = nullptr;
-SSMaxDistortion*                  TheSSMaxDistortionParameter = nullptr;
-SSUpperLimit*                     TheSSUpperLimitParameter = nullptr;
-SSBackgroundExpansion*            TheSSBackgroundExpansionParameter = nullptr;
-SSXYStretch*                      TheSSXYStretchParameter = nullptr;
-SSPSFFit*                         TheSSPSFFitParameter = nullptr;
-SSPSFFitCircular*                 TheSSPSFFitCircularParameter = nullptr;
-SSROIX0*                          TheSSROIX0Parameter = nullptr;
-SSROIY0*                          TheSSROIY0Parameter = nullptr;
-SSROIX1*                          TheSSROIX1Parameter = nullptr;
-SSROIY1*                          TheSSROIY1Parameter = nullptr;
+SSStructureLayers*                 TheSSStructureLayersParameter = nullptr;
+SSNoiseLayers*                     TheSSNoiseLayersParameter = nullptr;
+SSHotPixelFilterRadius*            TheSSHotPixelFilterRadiusParameter = nullptr;
+SSApplyHotPixelFilter*             TheSSApplyHotPixelFilterParameter = nullptr;
+SSNoiseReductionFilterRadius*      TheSSNoiseReductionFilterRadiusParameter = nullptr;
+SSSensitivity*                     TheSSSensitivityParameter = nullptr;
+SSPeakResponse*                    TheSSPeakResponseParameter = nullptr;
+SSMaxDistortion*                   TheSSMaxDistortionParameter = nullptr;
+SSUpperLimit*                      TheSSUpperLimitParameter = nullptr;
+SSBackgroundExpansion*             TheSSBackgroundExpansionParameter = nullptr;
+SSXYStretch*                       TheSSXYStretchParameter = nullptr;
+SSPSFFit*                          TheSSPSFFitParameter = nullptr;
+SSPSFFitCircular*                  TheSSPSFFitCircularParameter = nullptr;
+SSROIX0*                           TheSSROIX0Parameter = nullptr;
+SSROIY0*                           TheSSROIY0Parameter = nullptr;
+SSROIX1*                           TheSSROIX1Parameter = nullptr;
+SSROIY1*                           TheSSROIY1Parameter = nullptr;
 
-SSPedestalMode*                   TheSSPedestalModeParameter = nullptr;
-SSPedestal*                       TheSSPedestalParameter = nullptr;
-SSPedestalKeyword*                TheSSPedestalKeywordParameter = nullptr;
+SSPedestalMode*                    TheSSPedestalModeParameter = nullptr;
+SSPedestal*                        TheSSPedestalParameter = nullptr;
+SSPedestalKeyword*                 TheSSPedestalKeywordParameter = nullptr;
 
-SSInputHints*                     TheSSInputHintsParameter = nullptr;
-SSOutputHints*                    TheSSOutputHintsParameter = nullptr;
+SSInputHints*                      TheSSInputHintsParameter = nullptr;
+SSOutputHints*                     TheSSOutputHintsParameter = nullptr;
 
-SSOutputDirectory*                TheSSOutputDirectoryParameter = nullptr;
-SSOutputExtension*                TheSSOutputExtensionParameter = nullptr;
-SSOutputPrefix*                   TheSSOutputPrefixParameter = nullptr;
-SSOutputPostfix*                  TheSSOutputPostfixParameter = nullptr;
-SSOutputKeyword*                  TheSSOutputKeywordParameter = nullptr;
-SSOverwriteExistingFiles*         TheSSOverwriteExistingFilesParameter = nullptr;
-SSOnError*                        TheSSOnErrorParameter = nullptr;
+SSOutputDirectory*                 TheSSOutputDirectoryParameter = nullptr;
+SSOutputExtension*                 TheSSOutputExtensionParameter = nullptr;
+SSOutputPrefix*                    TheSSOutputPrefixParameter = nullptr;
+SSOutputPostfix*                   TheSSOutputPostfixParameter = nullptr;
+SSOutputKeyword*                   TheSSOutputKeywordParameter = nullptr;
+SSOverwriteExistingFiles*          TheSSOverwriteExistingFilesParameter = nullptr;
+SSOnError*                         TheSSOnErrorParameter = nullptr;
 
-SSApprovalExpression*             TheSSApprovalExpressionParameter = nullptr;
-SSWeightingExpression*            TheSSWeightingExpressionParameter = nullptr;
+SSApprovalExpression*              TheSSApprovalExpressionParameter = nullptr;
+SSWeightingExpression*             TheSSWeightingExpressionParameter = nullptr;
 
-SSSortingProperty*                TheSSSortingPropertyParameter = nullptr;
-SSGraphProperty*                  TheSSGraphPropertyParameter = nullptr;
+SSSortingProperty*                 TheSSSortingPropertyParameter = nullptr;
+SSGraphProperty*                   TheSSGraphPropertyParameter = nullptr;
 
-SSMeasurements*                   TheSSMeasurementsParameter = nullptr;
-SSMeasurementIndex*               TheSSMeasurementIndexParameter = nullptr;
-SSMeasurementEnabled*             TheSSMeasurementEnabledParameter = nullptr;
-SSMeasurementLocked*              TheSSMeasurementLockedParameter = nullptr;
-SSMeasurementPath*                TheSSMeasurementPathParameter = nullptr;
-SSMeasurementWeight*              TheSSMeasurementWeightParameter = nullptr;
-SSMeasurementFWHM*                TheSSMeasurementFWHMParameter = nullptr;
-SSMeasurementEccentricity*        TheSSMeasurementEccentricityParameter = nullptr;
-SSMeasurementSNRWeight*           TheSSMeasurementSNRWeightParameter = nullptr;
-SSMeasurementMedian*              TheSSMeasurementMedianParameter = nullptr;
-SSMeasurementMedianMeanDev*       TheSSMeasurementMedianMeanDevParameter = nullptr;
-SSMeasurementNoise*               TheSSMeasurementNoiseParameter = nullptr;
-SSMeasurementNoiseRatio*          TheSSMeasurementNoiseRatioParameter = nullptr;
-SSMeasurementStars*               TheSSMeasurementStarsParameter = nullptr;
-SSMeasurementStarResidual*        TheSSMeasurementStarResidualParameter = nullptr;
-SSMeasurementFWHMMeanDev*         TheSSMeasurementFWHMMeanDevParameter = nullptr;
-SSMeasurementEccentricityMeanDev* TheSSMeasurementEccentricityMeanDevParameter = nullptr;
-SSMeasurementStarResidualMeanDev* TheSSMeasurementStarResidualMeanDevParameter = nullptr;
+SSMeasurements*                    TheSSMeasurementsParameter = nullptr;
+SSMeasurementIndex*                TheSSMeasurementIndexParameter = nullptr;
+SSMeasurementEnabled*              TheSSMeasurementEnabledParameter = nullptr;
+SSMeasurementLocked*               TheSSMeasurementLockedParameter = nullptr;
+SSMeasurementPath*                 TheSSMeasurementPathParameter = nullptr;
+SSMeasurementWeight*               TheSSMeasurementWeightParameter = nullptr;
+SSMeasurementFWHM*                 TheSSMeasurementFWHMParameter = nullptr;
+SSMeasurementEccentricity*         TheSSMeasurementEccentricityParameter = nullptr;
+SSMeasurementPSFSignalWeight*      TheSSMeasurementPSFSignalWeightParameter = nullptr;
+SSMeasurementPSFPowerWeight* TheSSMeasurementPSFPowerWeightParameter = nullptr;
+SSMeasurementSNRWeight*            TheSSMeasurementSNRWeightParameter = nullptr;
+SSMeasurementMedian*               TheSSMeasurementMedianParameter = nullptr;
+SSMeasurementMedianMeanDev*        TheSSMeasurementMedianMeanDevParameter = nullptr;
+SSMeasurementNoise*                TheSSMeasurementNoiseParameter = nullptr;
+SSMeasurementNoiseRatio*           TheSSMeasurementNoiseRatioParameter = nullptr;
+SSMeasurementStars*                TheSSMeasurementStarsParameter = nullptr;
+SSMeasurementStarResidual*         TheSSMeasurementStarResidualParameter = nullptr;
+SSMeasurementFWHMMeanDev*          TheSSMeasurementFWHMMeanDevParameter = nullptr;
+SSMeasurementEccentricityMeanDev*  TheSSMeasurementEccentricityMeanDevParameter = nullptr;
+SSMeasurementStarResidualMeanDev*  TheSSMeasurementStarResidualMeanDevParameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -1540,9 +1542,9 @@ IsoString SSApprovalExpression::Tooltip() const
           "some characters are limited to prevent misuse, many things are possible such as "
           "<i>Math.abs(FWHMSigma)</i> or using <i>//</i> to comment the end of the line. "
           "Please see the documentation for more information.</p>"
-          "<p><i>property</i> = [ Index | Weight | FWHM | Eccentricity | SNRWeight | Median | "
-          "MedianMeanDev | Noise | Stars | StarResidual | NoiseRatio | FWHMMeanDev | EccentricityMeanDev | "
-          "StarResidualMeanDev]</p>"
+          "<p><i>property</i> = [Index | Weight | PSFSignalWeight | PSFPowerWeight | SNRWeight | "
+          "FWHM | Eccentricity | Median | MedianMeanDev | Noise | NoiseRatio | Stars | StarResidual | "
+          "FWHMMeanDev | EccentricityMeanDev | StarResidualMeanDev]</p>"
           "<p>Each <i>property</i> (excluding <i>Index</i>) also has a Median, Min, and Max version, "
           "e.g. <i>FWHMMin</i>, which are computed across all subframes.</p>"
           "<p>Each <i>property</i> (excluding <i>Index</i>) also has a Sigma version, "
@@ -1569,9 +1571,9 @@ IsoString SSWeightingExpression::Tooltip() const
           "and although some characters are limited to prevent misuse, many things are possible such as "
           "<i>Math.abs(FWHMSigma)</i> or using <i>//</i> to comment the end of the line. "
           "Please see the documentation for more information.</p>"
-          "<p><i>property</i> = [ Index | FWHM | Eccentricity | SNRWeight | Median | MedianMeanDev | "
-          "Noise | Stars | StarResidual | NoiseRatio | FWHMMeanDev | EccentricityMeanDev | "
-          "StarResidualMeanDev ]</p>"
+          "<p><i>property</i> = [Index | PSFSignalWeight | PSFPowerWeight | SNRWeight | "
+          "FWHM | Eccentricity | Median | MedianMeanDev | Noise | NoiseRatio | Stars | StarResidual | "
+          "FWHMMeanDev | EccentricityMeanDev | StarResidualMeanDev]</p>"
           "<p>Each <i>property</i> (excluding <i>Index</i>) also has a Median, Min, and Max version, "
           "e.g. <i>FWHMMin</i>, which are computed across all subframes.</p>"
           "<p>Each <i>property</i> (excluding <i>Index</i>) also has a Sigma version, "
@@ -1605,6 +1607,8 @@ IsoString SSSortingProperty::ElementId( size_type i ) const
    case Weight:              return "Weight";
    case FWHM:                return "FWHM";
    case Eccentricity:        return "Eccentricity";
+   case PSFSignalWeight:     return "PSFSignalWeight";
+   case PSFPowerWeight:      return "PSFPowerWeight";
    case SNRWeight:           return "SNRWeight";
    case Median:              return "Median";
    case MedianMeanDev:       return "MedianMeanDev";
@@ -1632,6 +1636,8 @@ IsoString SSSortingProperty::ElementLabel( size_type i ) const
    case Weight:              return "Weight";
    case FWHM:                return "FWHM";
    case Eccentricity:        return "Eccentricity";
+   case PSFSignalWeight:     return "PSF Signal Weight";
+   case PSFPowerWeight:      return "PSF Power Weight";
    case SNRWeight:           return "SNR Weight";
    case Median:              return "Median";
    case MedianMeanDev:       return "Median Mean Dev.";
@@ -1675,6 +1681,8 @@ IsoString SSGraphProperty::ElementId( size_type i ) const
    case Weight:              return "Weight";
    case FWHM:                return "FWHM";
    case Eccentricity:        return "Eccentricity";
+   case PSFSignalWeight:     return "PSFSignalWeight";
+   case PSFPowerWeight:      return "PSFPowerWeight";
    case SNRWeight:           return "SNRWeight";
    case Median:              return "Median";
    case MedianMeanDev:       return "MedianMeanDev";
@@ -1701,6 +1709,8 @@ IsoString SSGraphProperty::ElementLabel( size_type i ) const
    case Weight:              return "Weight";
    case FWHM:                return "FWHM";
    case Eccentricity:        return "Eccentricity";
+   case PSFSignalWeight:     return "PSF Signal Weight";
+   case PSFPowerWeight:      return "PSF Power Weight";
    case SNRWeight:           return "SNR Weight";
    case Median:              return "Median";
    case MedianMeanDev:       return "Median Mean Dev.";
@@ -1806,7 +1816,7 @@ IsoString SSMeasurementPath::Id() const
 
 // ----------------------------------------------------------------------------
 
-SSMeasurementWeight::SSMeasurementWeight( MetaTable* T ) : MetaFloat( T )
+SSMeasurementWeight::SSMeasurementWeight( MetaTable* T ) : MetaDouble( T )
 {
    TheSSMeasurementWeightParameter = this;
 }
@@ -1838,7 +1848,7 @@ double SSMeasurementWeight::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-SSMeasurementFWHM::SSMeasurementFWHM( MetaTable* T ) : MetaFloat( T )
+SSMeasurementFWHM::SSMeasurementFWHM( MetaTable* T ) : MetaDouble( T )
 {
    TheSSMeasurementFWHMParameter = this;
 }
@@ -1870,7 +1880,7 @@ double SSMeasurementFWHM::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-SSMeasurementEccentricity::SSMeasurementEccentricity( MetaTable* T ) : MetaFloat( T )
+SSMeasurementEccentricity::SSMeasurementEccentricity( MetaTable* T ) : MetaDouble( T )
 {
    TheSSMeasurementEccentricityParameter = this;
 }
@@ -1902,7 +1912,61 @@ double SSMeasurementEccentricity::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-SSMeasurementSNRWeight::SSMeasurementSNRWeight( MetaTable* T ) : MetaFloat( T )
+SSMeasurementPSFSignalWeight::SSMeasurementPSFSignalWeight( MetaTable* T ) : MetaDouble( T )
+{
+   TheSSMeasurementPSFSignalWeightParameter = this;
+}
+
+IsoString SSMeasurementPSFSignalWeight::Id() const
+{
+   return "measurementPSFSignalWeight";
+}
+
+int SSMeasurementPSFSignalWeight::Precision() const
+{
+   return 4;
+}
+
+bool SSMeasurementPSFSignalWeight::ScientificNotation() const
+{
+   return true;
+}
+
+double SSMeasurementPSFSignalWeight::DefaultValue() const
+{
+   return 0.0;
+}
+
+// ----------------------------------------------------------------------------
+
+SSMeasurementPSFPowerWeight::SSMeasurementPSFPowerWeight( MetaTable* T ) : MetaDouble( T )
+{
+   TheSSMeasurementPSFPowerWeightParameter = this;
+}
+
+IsoString SSMeasurementPSFPowerWeight::Id() const
+{
+   return "measurementPSFPowerWeight";
+}
+
+int SSMeasurementPSFPowerWeight::Precision() const
+{
+   return 4;
+}
+
+bool SSMeasurementPSFPowerWeight::ScientificNotation() const
+{
+   return true;
+}
+
+double SSMeasurementPSFPowerWeight::DefaultValue() const
+{
+   return 0.0;
+}
+
+// ----------------------------------------------------------------------------
+
+SSMeasurementSNRWeight::SSMeasurementSNRWeight( MetaTable* T ) : MetaDouble( T )
 {
    TheSSMeasurementSNRWeightParameter = this;
 }
@@ -1917,24 +1981,19 @@ int SSMeasurementSNRWeight::Precision() const
    return 4;
 }
 
+bool SSMeasurementSNRWeight::ScientificNotation() const
+{
+   return true;
+}
+
 double SSMeasurementSNRWeight::DefaultValue() const
 {
    return 0.0;
 }
 
-double SSMeasurementSNRWeight::MinimumValue() const
-{
-   return 0.0;
-}
-
-double SSMeasurementSNRWeight::MaximumValue() const
-{
-   return DBL_MAX;
-}
-
 // ----------------------------------------------------------------------------
 
-SSMeasurementMedian::SSMeasurementMedian( MetaTable* T ) : MetaFloat( T )
+SSMeasurementMedian::SSMeasurementMedian( MetaTable* T ) : MetaDouble( T )
 {
    TheSSMeasurementMedianParameter = this;
 }
@@ -1966,7 +2025,7 @@ double SSMeasurementMedian::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-SSMeasurementMedianMeanDev::SSMeasurementMedianMeanDev( MetaTable* T ) : MetaFloat( T )
+SSMeasurementMedianMeanDev::SSMeasurementMedianMeanDev( MetaTable* T ) : MetaDouble( T )
 {
    TheSSMeasurementMedianMeanDevParameter = this;
 }
@@ -1998,7 +2057,7 @@ double SSMeasurementMedianMeanDev::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-SSMeasurementNoise::SSMeasurementNoise( MetaTable* T ) : MetaFloat( T )
+SSMeasurementNoise::SSMeasurementNoise( MetaTable* T ) : MetaDouble( T )
 {
    TheSSMeasurementNoiseParameter = this;
 }
@@ -2030,7 +2089,7 @@ double SSMeasurementNoise::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-SSMeasurementNoiseRatio::SSMeasurementNoiseRatio( MetaTable* T ) : MetaFloat( T )
+SSMeasurementNoiseRatio::SSMeasurementNoiseRatio( MetaTable* T ) : MetaDouble( T )
 {
    TheSSMeasurementNoiseRatioParameter = this;
 }
@@ -2089,7 +2148,7 @@ double SSMeasurementStars::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-SSMeasurementStarResidual::SSMeasurementStarResidual( MetaTable* T ) : MetaFloat( T )
+SSMeasurementStarResidual::SSMeasurementStarResidual( MetaTable* T ) : MetaDouble( T )
 {
    TheSSMeasurementStarResidualParameter = this;
 }
@@ -2121,7 +2180,7 @@ double SSMeasurementStarResidual::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-SSMeasurementFWHMMeanDev::SSMeasurementFWHMMeanDev( MetaTable* T ) : MetaFloat( T )
+SSMeasurementFWHMMeanDev::SSMeasurementFWHMMeanDev( MetaTable* T ) : MetaDouble( T )
 {
    TheSSMeasurementFWHMMeanDevParameter = this;
 }
@@ -2153,7 +2212,7 @@ double SSMeasurementFWHMMeanDev::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-SSMeasurementEccentricityMeanDev::SSMeasurementEccentricityMeanDev( MetaTable* T ) : MetaFloat( T )
+SSMeasurementEccentricityMeanDev::SSMeasurementEccentricityMeanDev( MetaTable* T ) : MetaDouble( T )
 {
    TheSSMeasurementEccentricityMeanDevParameter = this;
 }
@@ -2185,7 +2244,7 @@ double SSMeasurementEccentricityMeanDev::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-SSMeasurementStarResidualMeanDev::SSMeasurementStarResidualMeanDev( MetaTable* T ) : MetaFloat( T )
+SSMeasurementStarResidualMeanDev::SSMeasurementStarResidualMeanDev( MetaTable* T ) : MetaDouble( T )
 {
    TheSSMeasurementStarResidualMeanDevParameter = this;
 }
@@ -2220,4 +2279,4 @@ double SSMeasurementStarResidualMeanDev::MaximumValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorParameters.cpp - Released 2021-10-04T16:21:12Z
+// EOF SubframeSelectorParameters.cpp - Released 2021-10-20T18:10:09Z

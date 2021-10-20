@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.2.34
+// Standard ImageIntegration Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// ImageIntegrationInterface.cpp - Released 2021-10-04T16:21:12Z
+// ImageIntegrationInterface.cpp - Released 2021-10-20T18:10:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -1374,7 +1374,8 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
 
    const char* combinationToolTip = "<p>Select a pixel combination operation.</p>"
       "<p><b>Average</b> combination provides the best signal-to-noise ratio in the integrated result.</p>"
-      "<p><b>Median</b> combination provides implicit robust rejection of outliers, but at the cost of more noise.</p>";
+      "<p><b>Median</b> combination provides implicit robust rejection of outliers at the cost of a smaller "
+      "SNR improvement (approximately a 20% less compared to average combination).</p>";
 
    Combination_Label.SetText( "Combination:" );
    Combination_Label.SetFixedWidth( labelWidth1 );
@@ -1486,16 +1487,28 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    AdaptiveNoScale_Sizer.Add( AdaptiveNoScale_CheckBox );
    AdaptiveNoScale_Sizer.AddStretch();
 
-   const char* weightModeToolTip = "<p>Image weighting criterion.</p>"
+   const char* weightModeToolTip = "<p>Image weighting method.</p>"
+
+      "<p>The <b>PSF signal</b> and <b>PSF power</b> algorithms are based on robust estimates of mean and squared "
+      "signal computed by PSF photometry, as well as noise estimates computed using multiscale analysis techniques. "
+      "These methods are robust and accurate. The PSF signal method is the default option."
+
+      "<p>The <b>SNR estimate</b> option uses multiscale noise evaluation techniques to compute noise "
+      "estimates and their corresponding noise scaling factors. These estimates are applied to minimize mean "
+      "squared error in the integrated result. This method can lead to optimal results in terms of SNR maximization, "
+      "but has potential robustness problems that can also generate wrong results, so it must be used with care by "
+      "analyzing the data prior to integration, for example with the SubframeSelector tool.</p>"
+
+      "<p>Noise estimates and scaling factors, as well as PSF signal estimates, are obtained either from cached data, "
+      "when available, of from XISF properties. If no XISF properties are available, the estimates are obtained from "
+      "NOISExx, NOISELxx, NOISEHxx, PSFSGLxx and PSFSGPxx FITS keywords, if they are present in the images. If the data "
+      "being integrated has been correctly calibrated (and demosaiced when applicable) with our preprocessing tools, "
+      "these properties and keywords should always be included in each input frame. Otherwise ImageIntegration will "
+      "have to compute these estimates from the data being integrated, which is a potentially wrong procedure because "
+      "input frames have been interpolated during the image demosaicing (when applicable) and registration tasks, "
+      "destroying the original statistics of the raw data. Appropriate warning messages will be shown in these cases.</p>"
+
       "<p>Exposure times will be retrieved from standard EXPTIME and EXPOSURE FITS keywords (in that order).</p>"
-
-      "<p>The <b>noise evaluation</b> option uses multiscale noise evaluation techniques to compute relative "
-      "SNR values that tend to minimize mean squared error in the integrated image. This is usually the most "
-      "robust approach for automatic image weighting, and therefore the default option.</p>"
-
-      "<p>Noise estimates are obtained either from cached data, if available, or from NOISExx FITS keywords, if "
-      "they are present in the images. Otherwise ImageIntegration will compute Gaussian noise estimates using the "
-      "multiresolution support (MRS) noise evaluation algorithm.</p>"
 
       "<p>The <b>average signal strength</b> option attempts to derive relative exposures directly from statistical "
       "properties of the data. This option is less robust and may not work if some images have additive "
@@ -1512,11 +1525,13 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
 
    WeightMode_ComboBox.AddItem( "Don't care (all weights = 1)" );
    WeightMode_ComboBox.AddItem( "Exposure time" );
-   WeightMode_ComboBox.AddItem( "Noise evaluation" );
+   WeightMode_ComboBox.AddItem( "SNR estimate" );
    WeightMode_ComboBox.AddItem( "Average signal strength" );
    WeightMode_ComboBox.AddItem( "Median value" );
    WeightMode_ComboBox.AddItem( "Average value" );
    WeightMode_ComboBox.AddItem( "FITS keyword" );
+   WeightMode_ComboBox.AddItem( "PSF signal" );
+   WeightMode_ComboBox.AddItem( "PSF power" );
    WeightMode_ComboBox.SetToolTip( weightModeToolTip );
    WeightMode_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ImageIntegrationInterface::e_Integration_ItemSelected, w );
 
@@ -1543,10 +1558,10 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    WeightKeyword_Sizer.Add( WeightKeyword_Edit );
    WeightKeyword_Sizer.AddStretch();
 
-   const char* weightScaleToolTip = "<p>Estimator of scale used for image weighting and normalization.</p>"
-      "<p>Statistical estimates of scale, or dispersion, are necessary for most image weighting, output and "
-      "rejection normalization/scaling algorithms. Robust and efficient scale estimators are crucial to make the data "
-      "from different images statistically compatible.</p>"
+   const char* weightScaleToolTip = "<p>Estimator of scale used for image normalization.</p>"
+      "<p>Statistical estimates of scale, or dispersion, are necessary for output and rejection normalization/scaling "
+      "algorithms. Robust and efficient scale estimators are crucial to make the data from different images statistically "
+      "compatible.</p>"
 
       "<p>The <b>average absolute deviation from the median</b> is robustified by trimming all pixel samples outside "
       "the [0.00002,0.99998] range, which excludes cold and hot pixels, as well as saturated pixels and bright spurious "
@@ -1585,9 +1600,13 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    WeightScale_Sizer.AddStretch();
 
    IgnoreNoiseKeywords_CheckBox.SetText( "Ignore noise keywords" );
-   IgnoreNoiseKeywords_CheckBox.SetToolTip( "<p>Ignore NOISExx keywords. Always compute new noise estimates for "
-      "input images, or retrieve them from the cache (if the cache is enabled and valid cached noise estimates are "
-      "available).</p>" );
+   IgnoreNoiseKeywords_CheckBox.SetToolTip( "<p>Ignore NOISExx and NOISELxx/NOISEHxx keywords. Always compute new "
+      "noise estimates and noise scaling factors from the input images, or retrieve them from the cache (if the "
+      "cache is enabled and valid cached noise metadata are available).</p>"
+      "<p>This option can be useful for testing purposes, but should never be enabled for production images. "
+      "Under normal working conditions, the existing noise estimates and noise scaling factors stored in the metadata "
+      "of the input images have been calculated from the calibrated raw data, which is the only valid option to "
+      "achieve optimal results.</p>" );
    IgnoreNoiseKeywords_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Integration_Click, w );
 
    IgnoreNoiseKeywords_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
@@ -1663,12 +1682,13 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    TruncateOnOutOfRange_Sizer.AddStretch();
 
    EvaluateNoise_CheckBox.SetText( "Evaluate noise" );
-   EvaluateNoise_CheckBox.SetToolTip( "<p>Evaluate the standard deviation of Gaussian noise for the final "
-      "integrated image.</p>"
-      "<p>Noise evaluation uses wavelet-based techniques and provides estimates to within 1% accuracy. "
-      "This option is useful to compare the results of different integration procedures. For example, by "
-      "comparing noise estimates you can know which image normalization and weighting criteria lead to the "
-      "best result in terms of signal-to-noise ratio improvement.</p>" );
+   EvaluateNoise_CheckBox.SetToolTip( "<p>Generate noise and SNR estimates for the final integrated image.</p>"
+      "<p>When this option is enabled, the multiresolution support noise evaluation algorithm (MRS) will be "
+      "used to compute the standard deviation of the noise in the integrated result, assuming a normal noise "
+      "distribution. These estimates are typically to within 1% accuracy.</p>"
+      "<p>This option is useful to compare the results of different integration procedures. For example, by "
+      "comparing SNR estimates you can know which image normalization and weighting criteria lead to the best "
+      "results in terms of noise reduction and SNR increment.</p>" );
    EvaluateNoise_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Integration_Click, w );
 
    EvaluateNoise_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
@@ -2527,4 +2547,4 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationInterface.cpp - Released 2021-10-04T16:21:12Z
+// EOF ImageIntegrationInterface.cpp - Released 2021-10-20T18:10:09Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.2.34
+// Standard ImageIntegration Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// IntegrationCache.h - Released 2021-10-04T16:21:12Z
+// IntegrationCache.h - Released 2021-10-20T18:10:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -67,23 +67,26 @@ class IntegrationCacheItem : public FileDataCacheItem
 public:
 
    typedef IntegrationFile::scale_estimates  scale_estimates;
+   typedef IntegrationFile::signal_estimates signal_estimates;
 
-   DVector         mean;        // mean pixel values
-   DVector         median;      // location estimates
-   scale_estimates avgDev;      // two-sided AvgDev scale estimates
-   scale_estimates mad;         // two-sided MAD scale estimates
-   scale_estimates bwmv;        // two-sided BWMV scale estimates
-   DVector         noise;       // noise stdDev estimates
-   DVector         ax;          // adaptive normalization: sample X-coordinates
-   DVector         ay;          // adaptive normalization: sample Y-coordinates
-   DMultiVector    am;          // adaptive normalization: location estimates
-   DMultiVector    as0_avgDev;  // adaptive normalization: low scale estimates (AvgDev)
-   DMultiVector    as1_avgDev;  // adaptive normalization: high scale estimates (AvgDev)
-   DMultiVector    as0_mad;     // adaptive normalization: low scale estimates (MAD)
-   DMultiVector    as1_mad;     // adaptive normalization: high scale estimates (MAD)
-   DMultiVector    as0_bwmv;    // adaptive normalization: low scale estimates (BWMV)
-   DMultiVector    as1_bwmv;    // adaptive normalization: high scale estimates (BWMV)
-   String          metadata;    // image metadata
+   DVector          mean;        // mean pixel values
+   DVector          median;      // location estimates
+   scale_estimates  avgDev;      // two-sided AvgDev scale estimates
+   scale_estimates  mad;         // two-sided MAD scale estimates
+   scale_estimates  bwmv;        // two-sided BWMV scale estimates
+   signal_estimates psfSignal;   // PSF signal and signal power estimates
+   DVector          noise;       // noise stdDev estimates
+   scale_estimates  noiseScale;  // two-sided noise scale estimates
+   DVector          ax;          // adaptive normalization: sample X-coordinates
+   DVector          ay;          // adaptive normalization: sample Y-coordinates
+   DMultiVector     am;          // adaptive normalization: location estimates
+   DMultiVector     as0_avgDev;  // adaptive normalization: low scale estimates (AvgDev)
+   DMultiVector     as1_avgDev;  // adaptive normalization: high scale estimates (AvgDev)
+   DMultiVector     as0_mad;     // adaptive normalization: low scale estimates (MAD)
+   DMultiVector     as1_mad;     // adaptive normalization: high scale estimates (MAD)
+   DMultiVector     as0_bwmv;    // adaptive normalization: low scale estimates (BWMV)
+   DMultiVector     as1_bwmv;    // adaptive normalization: high scale estimates (BWMV)
+   String           metadata;    // image metadata
 
    IntegrationCacheItem( const String& path = String() )
       : FileDataCacheItem( path )
@@ -117,12 +120,12 @@ public:
 
    int Version() const override
    {
-      return 2;
+      return 3;
    }
 
    int MinSupportedVersion() const override
    {
-      return 2;
+      return 3;
    }
 
 private:
@@ -142,4 +145,4 @@ extern IntegrationCache* TheIntegrationCache;
 #endif   // __IntegrationCache_h
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationCache.h - Released 2021-10-04T16:21:12Z
+// EOF IntegrationCache.h - Released 2021-10-20T18:10:09Z

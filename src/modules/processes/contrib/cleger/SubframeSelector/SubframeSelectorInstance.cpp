@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.4.8
+// Standard SubframeSelector Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// SubframeSelectorInstance.cpp - Released 2021-10-04T16:21:12Z
+// SubframeSelectorInstance.cpp - Released 2021-10-20T18:10:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -61,13 +61,13 @@
 #include <pcl/MetaModule.h>
 #include <pcl/ProcessInstance.h>
 #include <pcl/PSFFit.h>
+#include <pcl/PSFSignalEstimator.h>
 #include <pcl/Version.h>
 
 #include "SubframeSelectorCache.h"
 #include "SubframeSelectorInstance.h"
 #include "SubframeSelectorInterface.h"
 #include "SubframeSelectorMeasurementsInterface.h"
-#include "SubframeSelectorStarDetector.h"
 
 namespace pcl
 {
@@ -208,7 +208,6 @@ struct MeasureThreadInputData
 
 // ----------------------------------------------------------------------------
 
-typedef Array<Star> star_list;
 typedef Array<PSFData> psf_list;
 
 class SubframeSelectorMeasureThread : public Thread
@@ -219,6 +218,9 @@ public:
                                   ImageVariant* subframe,
                                   double noise,
                                   double noiseRatio,
+                                  double psfSignalWeight,
+                                  double psfPowerWeight,
+                                  double snrWeight,
                                   const String& subframePath,
                                   MeasureThreadInputData* data,
                                   bool throwsOnMeasurementError = true )
@@ -226,6 +228,9 @@ public:
       , m_subframe( subframe )
       , m_noise( noise )
       , m_noiseRatio( noiseRatio )
+      , m_psfSignalWeight( psfSignalWeight )
+      , m_psfPowerWeight( psfPowerWeight )
+      , m_snrWeight( snrWeight )
       , m_outputData( subframePath )
       , m_data( data )
       , m_throwsOnMeasurementError( throwsOnMeasurementError )
@@ -255,7 +260,7 @@ public:
             m_subframe->CropTo( m_data->instance->p_roi );
 
          // Run the Star Detector
-         star_list stars = StarDetector();
+         StarDetector::star_list stars = DetectStars();
          if ( stars.IsEmpty() )
             if ( m_throwsOnMeasurementError )
                throw Error( "No stars detected" );
@@ -331,6 +336,9 @@ private:
    AutoPointer<ImageVariant> m_subframe;
    double                    m_noise;
    double                    m_noiseRatio;
+   double                    m_psfSignalWeight;
+   double                    m_psfPowerWeight;
+   double                    m_snrWeight;
    MeasureData               m_outputData;
    bool                      m_success = false;
    String                    m_errorInfo;
@@ -339,47 +347,95 @@ private:
 
    void EvaluateNoise()
    {
-      if ( m_noise > 0 )
-         if ( m_noiseRatio > 0 )
-         {
-            m_outputData.noise = m_noise;
-            m_outputData.noiseRatio = m_noiseRatio;
-            return;
-         }
-
-      double noiseEstimate = 0;
-      double noiseFraction = 0;
-      double noiseEstimateKS = 0;
-      double noiseFractionKS = 0;
-      SeparableFilter H( s_5x5B3Spline_hv, s_5x5B3Spline_hv, 5 );
-      for ( int n = 4;; )
+      if ( m_noise > 0 && m_noiseRatio > 0 )
       {
-         ATrousWaveletTransform W( H, n );
-         W << *m_subframe;
-
-         size_type N;
-         if ( n == 4 )
+         m_outputData.noise = m_noise;
+         m_outputData.noiseRatio = m_noiseRatio;
+      }
+      else
+      {
+         double noiseEstimate = 0;
+         double noiseFraction = 0;
+         double noiseEstimateKS = 0;
+         double noiseFractionKS = 0;
+         SeparableFilter H( s_5x5B3Spline_hv, s_5x5B3Spline_hv, 5 );
+         for ( int n = 4;; )
          {
-            noiseEstimateKS = W.NoiseKSigma( 0, 3, 0.01, 10, &N )/s_5x5B3Spline_kj[0];
-            noiseFractionKS = double( N )/m_subframe->NumberOfPixels();
-         }
-         noiseEstimate = W.NoiseMRS( ImageVariant( *m_subframe ), s_5x5B3Spline_kj, noiseEstimateKS, 3, &N );
-         noiseFraction = double( N )/m_subframe->NumberOfPixels();
+            ATrousWaveletTransform W( H, n );
+            W << *m_subframe;
 
-         if ( noiseEstimate > 0 )
-            if ( noiseFraction >= 0.01 )
+            size_type N;
+            if ( n == 4 )
+            {
+               noiseEstimateKS = W.NoiseKSigma( 0, 3, 0.01, 10, &N )/s_5x5B3Spline_kj[0];
+               noiseFractionKS = double( N )/m_subframe->NumberOfPixels();
+            }
+            noiseEstimate = W.NoiseMRS( ImageVariant( *m_subframe ), s_5x5B3Spline_kj, noiseEstimateKS, 3, &N );
+            noiseFraction = double( N )/m_subframe->NumberOfPixels();
+
+            if ( noiseEstimate > 0 )
+               if ( noiseFraction >= 0.01 )
+                  break;
+
+            if ( --n == 1 )
+            {
+               noiseEstimate = noiseEstimateKS;
+               noiseFraction = noiseFractionKS;
                break;
-
-         if ( --n == 1 )
-         {
-            noiseEstimate = noiseEstimateKS;
-            noiseFraction = noiseFractionKS;
-            break;
+            }
          }
+
+         m_outputData.noise = noiseEstimate;
+         m_outputData.noiseRatio = noiseFraction;
       }
 
-      m_outputData.noise = noiseEstimate;
-      m_outputData.noiseRatio = noiseFraction;
+      if ( m_psfSignalWeight > 0 && m_psfPowerWeight )
+      {
+         m_outputData.psfSignalWeight = m_psfSignalWeight;
+         m_outputData.psfPowerWeight = m_psfPowerWeight;
+      }
+      else
+      {
+         PSFSignalEstimator E;
+         PSFSignalEstimator::Estimates e = E( *m_subframe );
+         m_outputData.psfSignalWeight = e.mean/m_outputData.noise;
+         m_outputData.psfPowerWeight = e.power/m_outputData.noise/m_outputData.noise;
+      }
+
+      if ( m_snrWeight > 0 )
+      {
+         m_outputData.snrWeight = m_snrWeight;
+      }
+      else
+      {
+         /*
+          * Noise scaling factors
+          */
+         const double clipLow = 2.0/65535;
+         const double clipHigh = 1.0 - 2.0/65535;
+
+         m_subframe->SetRangeClipping( clipLow, clipHigh );
+         double center = m_subframe->Median();
+
+         m_subframe->SetRangeClipping( clipLow, center );
+         m_subframe->SetRangeClipping( Max( clipLow, center - 4*m_subframe->StdDev() ), center );
+         m_subframe->SetRangeClipping( Max( clipLow, center - 4*m_subframe->StdDev() ), center );
+         double noiseScaleLow = m_subframe->StdDev();
+
+         m_subframe->SetRangeClipping( center, clipHigh );
+         m_subframe->SetRangeClipping( center, Min( center + 4*m_subframe->StdDev(), clipHigh ) );
+         m_subframe->SetRangeClipping( center, Min( center + 4*m_subframe->StdDev(), clipHigh ) );
+         double noiseScaleHigh = m_subframe->StdDev();
+
+         m_subframe->ResetRangeClipping();
+
+         /*
+          * SNR estimate
+          */
+         double e = (noiseScaleLow + noiseScaleHigh)/m_outputData.noise;
+         if ( IsFinite( e ) && 1 + e*e != 1 )
+            m_outputData.snrWeight = e*e;
+      }
    }
 
    void MeasureImage()
@@ -410,49 +466,49 @@ private:
                                     m_outputData.median + (1 - m_data->instance->p_trimmingFactor)*(max - m_outputData.median) );
       m_outputData.medianMeanDev = m_subframe->AvgDev( m_outputData.median );
 
-      m_subframe->ResetSelections();
+      m_subframe->ResetRangeClipping();
 
       /*
        * Robust noise estimate: Multiresolution support algorithm (MRS)
        */
       EvaluateNoise();
-
-      /*
-       * SNR weight estimate.
-       */
-      m_outputData.snrWeight = (1 + m_outputData.noise != 1) ?
-                     m_outputData.medianMeanDev*m_outputData.medianMeanDev/m_outputData.noise/m_outputData.noise : 0;
    }
 
-   star_list StarDetector()
+   StarDetector::star_list DetectStars() const
    {
       // Setup StarDetector parameters and find the list of stars
-      SubframeSelectorStarDetector starDetector;
-      starDetector.showStarDetectionMaps      = m_data->showStarDetectionMaps;
-      starDetector.structureLayers            = m_data->instance->p_structureLayers;
-      starDetector.noiseLayers                = m_data->instance->p_noiseLayers;
-      starDetector.hotPixelFilterRadius       = m_data->instance->p_hotPixelFilterRadius;
-      starDetector.noiseReductionFilterRadius = m_data->instance->p_noiseReductionFilterRadius;
-      starDetector.hotPixelFilter             = m_data->instance->p_hotPixelFilter;
-      starDetector.sensitivity                = m_data->instance->p_sensitivity;
-      starDetector.peakResponse               = m_data->instance->p_peakResponse;
-      starDetector.maxDistortion              = m_data->instance->p_maxDistortion;
-      starDetector.upperLimit                 = m_data->instance->p_upperLimit;
-      starDetector.backgroundExpansion        = m_data->instance->p_backgroundExpansion;
-      starDetector.xyStretch                  = m_data->instance->p_xyStretch;
-      return starDetector.GetStars( m_subframe );
+      StarDetector S;
+      S.SetStructureLayers( m_data->instance->p_structureLayers );
+      S.SetNoiseLayers( m_data->instance->p_noiseLayers );
+      S.SetHotPixelFilterRadius( m_data->instance->p_hotPixelFilterRadius );
+      S.SetNoiseReductionFilterRadius( m_data->instance->p_noiseReductionFilterRadius );
+//       S.SetMinStructureSize( m_data->instance->p_minStructureSize );
+      S.SetSensitivity( m_data->instance->p_sensitivity );
+      S.SetPeakResponse( m_data->instance->p_peakResponse );
+      S.SetMaxDistortion( m_data->instance->p_maxDistortion );
+      S.SetUpperLimit( m_data->instance->p_upperLimit );
+
+      return S.DetectStars( *m_subframe );
    }
 
-   psf_list FitPSFs( star_list::const_iterator begin, star_list::const_iterator end )
+   psf_list FitPSFs( StarDetector::star_list::const_iterator begin, StarDetector::star_list::const_iterator end )
    {
       psf_list PSFs;
-      for ( star_list::const_iterator i = begin; i != end; ++i )
+      for ( StarDetector::star_list::const_iterator i = begin; i != end; ++i )
       {
-         int radius = Max( 3, Ceil( Sqrt( i->size ) ) );
-         Rect rect( Point( i->position.x - radius, i->position.y - radius ),
-                    Point( i->position.x + radius, i->position.y + radius ) );
+         // Adaptive PSF sampling region
+         int size = Max( i->rect.Width(), i->rect.Height() );
+         Rect rect = DRect( i->pos + (0.5-size), i->pos + (0.5+size) ).TruncatedToInt();
+         for ( double m0 = 1; ; )
+         {
+            double m = FMatrix::FromImage( *m_subframe, rect ).Median();
+            if ( m0 <= m || (m0 - m)/m0 < 0.01 )
+               break;
+            m0 = m;
+            rect.InflateBy( 1, 1 );
+         }
 
-         PSFFit fit( *m_subframe, i->position, rect, PSFFunction(), m_data->instance->p_psfFitCircular );
+         PSFFit fit( *m_subframe, i->pos, rect, PSFFunction(), m_data->instance->p_psfFitCircular );
          if ( fit )
             PSFs << fit.psf;
       }
@@ -502,7 +558,7 @@ private:
          sumWeight += weight;
          fwhmSumSigma += weight * fwhm;
          eccentricitySumSigma += weight * eccentricity;
-         residualSumSigma += weight * fit.mad;
+         residualSumSigma += weight;
       }
 
       // Average each star parameter against the total weight
@@ -522,8 +578,12 @@ private:
 
 // ----------------------------------------------------------------------------
 
-ImageVariant* SubframeSelectorInstance::LoadSubframe( double& noise, double& noiseRatio, const String& filePath )
+ImageVariant* SubframeSelectorInstance::LoadSubframe( double& noise, double& noiseRatio,
+                                                      double& psfSignalWeight, double& psfPowerWeight, double& snrWeight,
+                                                      const String& filePath )
 {
+   noise = noiseRatio = psfSignalWeight = psfPowerWeight = snrWeight = 0;
+
    Console console;
 
    /*
@@ -563,6 +623,15 @@ ImageVariant* SubframeSelectorInstance::LoadSubframe( double& noise, double& noi
    FITSKeywordArray keywords;
    if ( format.CanStoreKeywords() )
       file.ReadFITSKeywords( keywords );
+
+   int cfaSourceChannel = 0;
+   if ( format.CanStoreImageProperties() )
+      if ( file.HasImageProperty( "PCL:CFASourceChannel" ) )
+      {
+         Variant v = file.ReadImageProperty( "PCL:CFASourceChannel" );
+         if ( v.IsValid() )
+            cfaSourceChannel = v.ToInt();
+      }
 
    /*
     * Create a shared image, 32-bit floating point.
@@ -616,13 +685,17 @@ ImageVariant* SubframeSelectorInstance::LoadSubframe( double& noise, double& noi
    }
 
    /*
-    * Get noise estimates from available metadata.
+    * Get noise and signal estimates from available metadata.
     */
    DVector noiseEstimates( 0.0, image->NumberOfNominalChannels() );
    DVector noiseRatios( 0.0, image->NumberOfNominalChannels() );
+   DVector noiseScaleLows( 0.0, image->NumberOfNominalChannels() );
+   DVector noiseScaleHighs( 0.0, image->NumberOfNominalChannels() );
+   DVector psfSignalEstimates( 0.0, image->NumberOfNominalChannels() );
+   DVector psfPowerEstimates( 0.0, image->NumberOfNominalChannels() );
    for ( int c = 0; c < image->NumberOfNominalChannels(); ++c )
    {
-      IsoString keyName = IsoString().Format( "NOISE%02d", c );
+      IsoString keyName = IsoString().Format( "NOISE%02d", c + cfaSourceChannel );
       for ( const FITSHeaderKeyword& keyword : keywords )
          if ( !keyword.name.CompareIC( keyName ) )
          {
@@ -631,28 +704,69 @@ ImageVariant* SubframeSelectorInstance::LoadSubframe( double& noise, double& noi
             break;
          }
 
-      keyName = IsoString().Format( "NOISEF%02d", c );
+      keyName = IsoString().Format( "NOISEF%02d", c + cfaSourceChannel );
       for ( const FITSHeaderKeyword& keyword : keywords )
          if ( !keyword.name.CompareIC( keyName ) )
          {
             if ( keyword.IsNumeric() )
-               keyword.GetNumericValue( noiseRatios[c] ); // GetNumericValue() sets d=0 if keyword cannot be converted
+               keyword.GetNumericValue( noiseRatios[c] );
+            break;
+         }
+
+      keyName = IsoString().Format( "NOISEL%02d", c + cfaSourceChannel );
+      for ( const FITSHeaderKeyword& keyword : keywords )
+         if ( !keyword.name.CompareIC( keyName ) )
+         {
+            if ( keyword.IsNumeric() )
+               keyword.GetNumericValue( noiseScaleLows[c] );
+            break;
+         }
+
+      keyName = IsoString().Format( "NOISEH%02d", c + cfaSourceChannel );
+      for ( const FITSHeaderKeyword& keyword : keywords )
+         if ( !keyword.name.CompareIC( keyName ) )
+         {
+            if ( keyword.IsNumeric() )
+               keyword.GetNumericValue( noiseScaleHighs[c] );
+            break;
+         }
+
+      keyName = IsoString().Format( "PSFSGL%02d", c + cfaSourceChannel );
+      for ( const FITSHeaderKeyword& keyword : keywords )
+         if ( !keyword.name.CompareIC( keyName ) )
+         {
+            if ( keyword.IsNumeric() )
+               keyword.GetNumericValue( psfSignalEstimates[c] );
+            break;
+         }
+
+      keyName = IsoString().Format( "PSFSGP%02d", c + cfaSourceChannel );
+      for ( const FITSHeaderKeyword& keyword : keywords )
+         if ( !keyword.name.CompareIC( keyName ) )
+         {
+            if ( keyword.IsNumeric() )
+               keyword.GetNumericValue( psfPowerEstimates[c] );
             break;
          }
    }
 
    /*
-    * For grayscale images, return the image just read and its noise estimates
-    * if available. For color images, extract the HSI intensity component and
-    * provide coherent noise estimates if available.
+    * For grayscale images, return the image just read and its signal and noise
+    * estimates if available. For color images, extract the HSI intensity
+    * component and provide coherent estimates if available.
     */
    ImageVariant* imageVariant;
+   double psfSignal, psfPower, noiseScaleLow, noiseScaleHigh;
    if ( image->NumberOfNominalChannels() == 1 )
    {
       imageVariant = new ImageVariant( image.Release() );
       imageVariant->SetOwnership( true );
       noise = noiseEstimates[0];
       noiseRatio = noiseRatios[0];
+      noiseScaleLow = noiseScaleLows[0];
+      noiseScaleHigh = noiseScaleHighs[0];
+      psfSignal = psfSignalEstimates[0];
+      psfPower = psfPowerEstimates[0];
    }
    else
    {
@@ -660,6 +774,58 @@ ImageVariant* SubframeSelectorInstance::LoadSubframe( double& noise, double& noi
       image->GetIntensity( *imageVariant );
       noise = 0.5*(noiseEstimates.MinComponent() + noiseEstimates.MaxComponent());
       noiseRatio = 0.5*(noiseRatios.MinComponent() + noiseRatios.MaxComponent());
+      noiseScaleLow = 0.5*(noiseScaleLows.MinComponent() + noiseScaleLows.MaxComponent());
+      noiseScaleHigh = 0.5*(noiseScaleHighs.MinComponent() + noiseScaleHighs.MaxComponent());
+      psfSignal = 0.5*(psfSignalEstimates.MinComponent() + psfSignalEstimates.MaxComponent());
+      psfPower = 0.5*(psfPowerEstimates.MinComponent() + psfPowerEstimates.MaxComponent());
+   }
+
+   if ( 1 + noise != 1 )
+   {
+      /*
+       * Compute PSF signal estimates if not available.
+       */
+      if ( psfSignal == 0 || psfPower == 0 )
+      {
+         PSFSignalEstimator E;
+         PSFSignalEstimator::Estimates e = E( *imageVariant );
+         psfSignal = e.mean;
+         psfPower = e.power;
+      }
+
+      psfSignalWeight = psfSignal/noise;
+      psfPowerWeight = psfPower/noise/noise;
+
+      /*
+       * Compute noise scaling factors if not available.
+       */
+      if ( noiseScaleLow == 0 || noiseScaleHigh == 0 )
+      {
+         const double clipLow = 2.0/65535;
+         const double clipHigh = 1.0 - 2.0/65535;
+
+         imageVariant->SetRangeClipping( clipLow, clipHigh );
+         double center = imageVariant->Median();
+
+         imageVariant->SetRangeClipping( clipLow, center );
+         imageVariant->SetRangeClipping( Max( clipLow, center - 4*imageVariant->StdDev() ), center );
+         imageVariant->SetRangeClipping( Max( clipLow, center - 4*imageVariant->StdDev() ), center );
+         noiseScaleLow = imageVariant->StdDev();
+
+         imageVariant->SetRangeClipping( center, clipHigh );
+         imageVariant->SetRangeClipping( center, Min( center + 4*imageVariant->StdDev(), clipHigh ) );
+         imageVariant->SetRangeClipping( center, Min( center + 4*imageVariant->StdDev(), clipHigh ) );
+         noiseScaleHigh = imageVariant->StdDev();
+
+         imageVariant->ResetRangeClipping();
+      }
+
+      /*
+       * SNR estimate
+       */
+      double e = (noiseScaleLow + noiseScaleHigh)/noise;
+      if ( IsFinite( e ) && 1 + e*e != 1 )
+         snrWeight = e*e;
    }
 
    return imageVariant;
@@ -738,10 +904,12 @@ bool SubframeSelectorInstance::TestStarDetector()
       console.WriteLn( String().Format( "<end><cbr><br>Measuring subframe %u of %u", 1, p_subframes.Length() ) );
       Module->ProcessEvents();
 
-      double noise, noiseRatio;
-      ImageVariant* image = LoadSubframe( noise, noiseRatio, item.path );
+      double noise, noiseRatio, psfSignalWeight, psfPowerWeight, snrWeight;
+      ImageVariant* image = LoadSubframe( noise, noiseRatio, psfSignalWeight, psfPowerWeight, snrWeight, item.path );
       SubframeSelectorMeasureThread* thread =
-         new SubframeSelectorMeasureThread( 1, image, noise, noiseRatio, item.path, &inputThreadData );
+         new SubframeSelectorMeasureThread( 1, image, noise, noiseRatio,
+                                            psfSignalWeight, psfPowerWeight, snrWeight,
+                                            item.path, &inputThreadData );
 
       // Keep the GUI responsive, last chance to abort
       Module->ProcessEvents();
@@ -969,7 +1137,7 @@ bool SubframeSelectorInstance::Measure()
                   if ( p_fileCache && cacheData.GetFromCache( *this ) )
                   {
                      console.NoteLn( "<end><cbr>* Retrieved data from file cache." );
-                     MeasureItem m( pendingItemsTotal-pendingItems.Length()+1, item.path );
+                     MeasureItem m( pendingItemsTotal - pendingItems.Length() + 1, item.path );
                      m.Input( cacheData );
                      p_measures << m;
                      ++succeeded;
@@ -981,12 +1149,15 @@ bool SubframeSelectorInstance::Measure()
                       * If not in cache, create a new thread for this subframe
                       * image.
                       */
-                     double noise, noiseRatio;
-                     ImageVariant* image = LoadSubframe( noise, noiseRatio, item.path );
+                     double noise, noiseRatio, psfSignalWeight, psfPowerWeight, snrWeight;
+                     ImageVariant* image = LoadSubframe( noise, noiseRatio, psfSignalWeight, psfPowerWeight, snrWeight, item.path );
                      *i = new SubframeSelectorMeasureThread( pendingItemsTotal-pendingItems.Length()+1,
                                                              image,
                                                              noise,
                                                              noiseRatio,
+                                                             psfSignalWeight,
+                                                             psfPowerWeight,
+                                                             snrWeight,
                                                              item.path,
                                                              &inputThreadData,
                                                              !p_nonInteractive/*throwsOnMeasurementError*/ );
@@ -1686,6 +1857,10 @@ void* SubframeSelectorInstance::LockParameter( const MetaParameter* p, size_type
       return &p_measures[tableRow].fwhm;
    if ( p == TheSSMeasurementEccentricityParameter )
       return &p_measures[tableRow].eccentricity;
+   if ( p == TheSSMeasurementPSFSignalWeightParameter )
+      return &p_measures[tableRow].psfSignalWeight;
+   if ( p == TheSSMeasurementPSFPowerWeightParameter )
+      return &p_measures[tableRow].psfPowerWeight;
    if ( p == TheSSMeasurementSNRWeightParameter )
       return &p_measures[tableRow].snrWeight;
    if ( p == TheSSMeasurementMedianParameter )
@@ -1851,4 +2026,4 @@ size_type SubframeSelectorInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInstance.cpp - Released 2021-10-04T16:21:12Z
+// EOF SubframeSelectorInstance.cpp - Released 2021-10-20T18:10:09Z

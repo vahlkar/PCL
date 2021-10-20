@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.4.8
+// Standard SubframeSelector Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// SubframeSelectorParameters.h - Released 2021-10-04T16:21:12Z
+// SubframeSelectorParameters.h - Released 2021-10-20T18:10:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -876,6 +876,8 @@ public:
           FWHMMeanDev,
           EccentricityMeanDev,
           StarResidualMeanDev,
+          PSFSignalWeight,
+          PSFPowerWeight,
           NumberOfItems,
           Default = Index };
 
@@ -911,8 +913,10 @@ public:
           FWHMMeanDev,
           EccentricityMeanDev,
           StarResidualMeanDev,
+          PSFSignalWeight,
+          PSFPowerWeight,
           NumberOfItems,
-          Default = FWHM };
+          Default = PSFSignalWeight };
 
    SSGraphProperty( MetaProcess* );
 
@@ -999,7 +1003,7 @@ extern SSMeasurementPath* TheSSMeasurementPathParameter;
 
 // ----------------------------------------------------------------------------
 
-class SSMeasurementWeight : public MetaFloat
+class SSMeasurementWeight : public MetaDouble
 {
 public:
 
@@ -1016,7 +1020,7 @@ extern SSMeasurementWeight* TheSSMeasurementWeightParameter;
 
 // ----------------------------------------------------------------------------
 
-class SSMeasurementFWHM : public MetaFloat
+class SSMeasurementFWHM : public MetaDouble
 {
 public:
 
@@ -1033,7 +1037,7 @@ extern SSMeasurementFWHM* TheSSMeasurementFWHMParameter;
 
 // ----------------------------------------------------------------------------
 
-class SSMeasurementEccentricity : public MetaFloat
+class SSMeasurementEccentricity : public MetaDouble
 {
 public:
 
@@ -1050,7 +1054,39 @@ extern SSMeasurementEccentricity* TheSSMeasurementEccentricityParameter;
 
 // ----------------------------------------------------------------------------
 
-class SSMeasurementSNRWeight : public MetaFloat
+class SSMeasurementPSFSignalWeight : public MetaDouble
+{
+public:
+
+   SSMeasurementPSFSignalWeight( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   double DefaultValue() const override;
+};
+
+extern SSMeasurementPSFSignalWeight* TheSSMeasurementPSFSignalWeightParameter;
+
+// ----------------------------------------------------------------------------
+
+class SSMeasurementPSFPowerWeight : public MetaDouble
+{
+public:
+
+   SSMeasurementPSFPowerWeight( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   double DefaultValue() const override;
+};
+
+extern SSMeasurementPSFPowerWeight* TheSSMeasurementPSFPowerWeightParameter;
+
+// ----------------------------------------------------------------------------
+
+class SSMeasurementSNRWeight : public MetaDouble
 {
 public:
 
@@ -1058,16 +1094,15 @@ public:
 
    IsoString Id() const override;
    int Precision() const override;
+   bool ScientificNotation() const override;
    double DefaultValue() const override;
-   double MinimumValue() const override;
-   double MaximumValue() const override;
 };
 
 extern SSMeasurementSNRWeight* TheSSMeasurementSNRWeightParameter;
 
 // ----------------------------------------------------------------------------
 
-class SSMeasurementMedian : public MetaFloat
+class SSMeasurementMedian : public MetaDouble
 {
 public:
 
@@ -1084,7 +1119,7 @@ extern SSMeasurementMedian* TheSSMeasurementMedianParameter;
 
 // ----------------------------------------------------------------------------
 
-class SSMeasurementMedianMeanDev : public MetaFloat
+class SSMeasurementMedianMeanDev : public MetaDouble
 {
 public:
 
@@ -1101,7 +1136,7 @@ extern SSMeasurementMedianMeanDev* TheSSMeasurementMedianMeanDevParameter;
 
 // ----------------------------------------------------------------------------
 
-class SSMeasurementNoise : public MetaFloat
+class SSMeasurementNoise : public MetaDouble
 {
 public:
 
@@ -1118,7 +1153,7 @@ extern SSMeasurementNoise* TheSSMeasurementNoiseParameter;
 
 // ----------------------------------------------------------------------------
 
-class SSMeasurementNoiseRatio : public MetaFloat
+class SSMeasurementNoiseRatio : public MetaDouble
 {
 public:
 
@@ -1151,7 +1186,7 @@ extern SSMeasurementStars* TheSSMeasurementStarsParameter;
 
 // ----------------------------------------------------------------------------
 
-class SSMeasurementStarResidual : public MetaFloat
+class SSMeasurementStarResidual : public MetaDouble
 {
 public:
 
@@ -1168,7 +1203,7 @@ extern SSMeasurementStarResidual* TheSSMeasurementStarResidualParameter;
 
 // ----------------------------------------------------------------------------
 
-class SSMeasurementFWHMMeanDev : public MetaFloat
+class SSMeasurementFWHMMeanDev : public MetaDouble
 {
 public:
 
@@ -1185,7 +1220,7 @@ extern SSMeasurementFWHMMeanDev* TheSSMeasurementFWHMMeanDevParameter;
 
 // ----------------------------------------------------------------------------
 
-class SSMeasurementEccentricityMeanDev : public MetaFloat
+class SSMeasurementEccentricityMeanDev : public MetaDouble
 {
 public:
 
@@ -1202,7 +1237,7 @@ extern SSMeasurementEccentricityMeanDev* TheSSMeasurementEccentricityMeanDevPara
 
 // ----------------------------------------------------------------------------
 
-class SSMeasurementStarResidualMeanDev : public MetaFloat
+class SSMeasurementStarResidualMeanDev : public MetaDouble
 {
 public:
 
@@ -1226,4 +1261,4 @@ PCL_END_LOCAL
 #endif   // __SubframeSelectorParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorParameters.h - Released 2021-10-04T16:21:12Z
+// EOF SubframeSelectorParameters.h - Released 2021-10-20T18:10:09Z

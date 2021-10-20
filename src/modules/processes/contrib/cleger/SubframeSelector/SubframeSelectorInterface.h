@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.4.8
+// Standard SubframeSelector Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// SubframeSelectorInterface.h - Released 2021-10-04T16:21:12Z
+// SubframeSelectorInterface.h - Released 2021-10-20T18:10:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -159,8 +159,6 @@ private:
          HorizontalSizer   StarDetectorParameters_HotPixelFilterRadius_Sizer;
             Label             StarDetectorParameters_HotPixelFilterRadius_Label;
             SpinBox           StarDetectorParameters_HotPixelFilterRadius_Control;
-         HorizontalSizer   StarDetectorParameters_ApplyHotPixelFilter_Sizer;
-            CheckBox          StarDetectorParameters_ApplyHotPixelFilter_CheckBox;
          HorizontalSizer   StarDetectorParameters_NoiseReductionFilterRadius_Sizer;
             Label             StarDetectorParameters_NoiseReductionFilterRadius_Label;
             SpinBox           StarDetectorParameters_NoiseReductionFilterRadius_Control;
@@ -168,10 +166,6 @@ private:
          NumericControl    StarDetectorParameters_PeakResponse_Control;
          NumericControl    StarDetectorParameters_MaxDistortion_Control;
          NumericControl    StarDetectorParameters_UpperLimit_Control;
-         HorizontalSizer   StarDetectorParameters_BackgroundExpansion_Sizer;
-            Label             StarDetectorParameters_BackgroundExpansion_Label;
-            SpinBox           StarDetectorParameters_BackgroundExpansion_Control;
-         NumericControl    StarDetectorParameters_XYStretch_Control;
          HorizontalSizer   StarDetectorParameters_PSFFit_Sizer;
             Label             StarDetectorParameters_PSFFit_Label;
             ComboBox          StarDetectorParameters_PSFFit_Control;
@@ -288,4 +282,4 @@ PCL_END_LOCAL
 #endif   // e_SubframeSelectorInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInterface.h - Released 2021-10-04T16:21:12Z
+// EOF SubframeSelectorInterface.h - Released 2021-10-20T18:10:09Z

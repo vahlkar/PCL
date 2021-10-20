@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.2.34
+// Standard ImageIntegration Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// IntegrationCache.cpp - Released 2021-10-04T16:21:12Z
+// IntegrationCache.cpp - Released 2021-10-20T18:10:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -93,6 +93,39 @@ static String TwoSidedEstimatesToString( const IntegrationFile::scale_estimates&
 
 // ----------------------------------------------------------------------------
 
+static bool GetSignalEstimates( IntegrationFile::signal_estimates& v,
+                                StringList::const_iterator& i, const StringList& s )
+{
+   if ( i == s.End() )
+      return false;
+   int n = i->ToInt();
+   if ( n < 0 || s.End() - i <= n )
+      return false;
+   ++i;
+   v = IntegrationFile::signal_estimates( n );
+   for ( int j = 0; j < n; ++j, ++i )
+   {
+      StringList tokens;
+      i->Break( tokens, ',' );
+      if ( tokens.Length() != 3 )
+         throw ParseError( "Parsing signal estimate: wrong number of components" );
+      v[j].mean = tokens[0].ToDouble();
+      v[j].power = tokens[1].ToDouble();
+      v[j].count = Max( 0, int( tokens[2].ToInt() ) );
+   }
+   return true;
+}
+
+static String SignalEstimatesToString( const IntegrationFile::signal_estimates& v )
+{
+   String s = String().Format( "\n%d", v.Length() );
+   for ( int i = 0; i < v.Length(); ++i )
+      s.AppendFormat( "\n%.8e,%.8e,%d", v[i].mean, v[i].power, v[i].count );
+   return s;
+}
+
+// ----------------------------------------------------------------------------
+
 void IntegrationCacheItem::AssignData( const FileDataCacheItem& item )
 {
 #define src static_cast<const IntegrationCacheItem&>( item )
@@ -101,7 +134,9 @@ void IntegrationCacheItem::AssignData( const FileDataCacheItem& item )
    avgDev     = src.avgDev;
    mad        = src.mad;
    bwmv       = src.bwmv;
+   psfSignal  = src.psfSignal;
    noise      = src.noise;
+   noiseScale = src.noiseScale;
    ax         = src.ax;
    ay         = src.ay;
    am         = src.am;
@@ -130,8 +165,12 @@ String IntegrationCacheItem::DataToString() const
       tokens.Append( "mad" + TwoSidedEstimatesToString( mad ) );
    if ( !bwmv.IsEmpty() )
       tokens.Append( "bwmv" + TwoSidedEstimatesToString( bwmv ) );
+   if ( !psfSignal.IsEmpty() )
+      tokens.Append( "psfSignal" + SignalEstimatesToString( psfSignal ) );
    if ( !noise.IsEmpty() )
       tokens.Append( "noise" + VectorToString( noise ) );
+   if ( !noiseScale.IsEmpty() )
+      tokens.Append( "noiseScale" + TwoSidedEstimatesToString( noiseScale ) );
    if ( !ax.IsEmpty() )
       tokens.Append( "ax" + VectorToString( ax ) );
    if ( !ay.IsEmpty() )
@@ -188,9 +227,19 @@ bool IntegrationCacheItem::GetDataFromTokens( const StringList& tokens )
          if ( !GetTwoSidedEstimates( bwmv, ++i, tokens ) )
             return false;
       }
+      else if ( *i == "psfSignal" )
+      {
+         if ( !GetSignalEstimates( psfSignal, ++i, tokens ) )
+            return false;
+      }
       else if ( *i == "noise" )
       {
          if ( !GetVector( noise, ++i, tokens ) )
+            return false;
+      }
+      else if ( *i == "noiseScale" )
+      {
+         if ( !GetTwoSidedEstimates( noiseScale, ++i, tokens ) )
             return false;
       }
       else if ( *i == "ax" )
@@ -274,4 +323,4 @@ IntegrationCache::~IntegrationCache()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationCache.cpp - Released 2021-10-04T16:21:12Z
+// EOF IntegrationCache.cpp - Released 2021-10-20T18:10:09Z

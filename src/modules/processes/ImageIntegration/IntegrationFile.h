@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.2.34
+// Standard ImageIntegration Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// IntegrationFile.h - Released 2021-10-04T16:21:12Z
+// IntegrationFile.h - Released 2021-10-20T18:10:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -83,6 +83,8 @@ public:
 
    typedef ImageIntegrationInstance::scale_estimates  scale_estimates;
 
+   typedef ImageIntegrationInstance::signal_estimates signal_estimates;
+
    static void OpenFiles( const ImageIntegrationInstance& );
 
    String Path() const
@@ -127,6 +129,26 @@ public:
       return m_scaleEstimates[c];
    }
 
+   bool HasPSFSignalEstimates() const
+   {
+      return !m_psfSignalEstimates.IsEmpty();
+   }
+
+   double PSFSignalEstimate( int c ) const
+   {
+      return m_psfSignalEstimates[c].mean;
+   }
+
+   double PSFPowerEstimate( int c ) const
+   {
+      return m_psfSignalEstimates[c].power;
+   }
+
+   double PSFCount( int c ) const
+   {
+      return m_psfSignalEstimates[c].count;
+   }
+
    bool HasNoiseEstimates() const
    {
       return !m_noiseEstimates.IsEmpty();
@@ -135,6 +157,16 @@ public:
    double NoiseEstimate( int c ) const
    {
       return m_noiseEstimates[c];
+   }
+
+   bool HasNoiseScaleEstimates() const
+   {
+      return !m_noiseScaleEstimates.IsEmpty();
+   }
+
+   const TwoSidedEstimate& NoiseScaleEstimates( int c ) const
+   {
+      return m_noiseScaleEstimates[c];
    }
 
    bool HasScaleFactors() const
@@ -184,6 +216,8 @@ public:
    {
       return m_weights[c] / s_files[0]->m_weights[c];
    }
+
+   static void NormalizeImageWeights();
 
    double Mean( int c ) const
    {
@@ -322,7 +356,9 @@ private:
    scale_estimates                 m_bwmv;
    DVector                         m_locationEstimates;
    scale_estimates                 m_scaleEstimates;
+   signal_estimates                m_psfSignalEstimates;
    DVector                         m_noiseEstimates;
+   scale_estimates                 m_noiseScaleEstimates;
    DVector                         m_weights;
    LocalNormalizationData          m_localNormalization;
    bool                            m_hasLocalNormalization = false;
@@ -449,4 +485,4 @@ private:
 #endif   // __IntegrationFile_h
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationFile.h - Released 2021-10-04T16:21:12Z
+// EOF IntegrationFile.h - Released 2021-10-20T18:10:09Z

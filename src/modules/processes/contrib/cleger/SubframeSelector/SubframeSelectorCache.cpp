@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.4.8
+// Standard SubframeSelector Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// SubframeSelectorCache.cpp - Released 2021-10-04T16:21:12Z
+// SubframeSelectorCache.cpp - Released 2021-10-20T18:10:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -64,19 +64,21 @@ SubframeSelectorCache* TheSubframeSelectorCache = nullptr;
 void SubframeSelectorCacheItem::AssignData( const FileDataCacheItem& item )
 {
 #define src static_cast<const SubframeSelectorCacheItem&>( item )
-   fwhm                = src.fwhm;
-   fwhmMeanDev         = src.fwhmMeanDev;
-   eccentricity        = src.eccentricity;
-   eccentricityMeanDev = src.eccentricityMeanDev;
-   snrWeight           = src.snrWeight;
-   median              = src.median;
-   medianMeanDev       = src.medianMeanDev;
-   trimmingFactor      = src.trimmingFactor;
-   noise               = src.noise;
-   noiseRatio          = src.noiseRatio;
-   stars               = src.stars;
-   starResidual        = src.starResidual;
-   starResidualMeanDev = src.starResidualMeanDev;
+   fwhm                 = src.fwhm;
+   fwhmMeanDev          = src.fwhmMeanDev;
+   eccentricity         = src.eccentricity;
+   eccentricityMeanDev  = src.eccentricityMeanDev;
+   psfSignalWeight      = src.psfSignalWeight;
+   psfPowerWeight = src.psfPowerWeight;
+   snrWeight            = src.snrWeight;
+   median               = src.median;
+   medianMeanDev        = src.medianMeanDev;
+   trimmingFactor       = src.trimmingFactor;
+   noise                = src.noise;
+   noiseRatio           = src.noiseRatio;
+   stars                = src.stars;
+   starResidual         = src.starResidual;
+   starResidualMeanDev  = src.starResidualMeanDev;
 #undef src
 }
 
@@ -85,19 +87,21 @@ void SubframeSelectorCacheItem::AssignData( const FileDataCacheItem& item )
 String SubframeSelectorCacheItem::DataToString() const
 {
    StringList tokens = StringList()
-      << String().Format( "fwhm\n%.8f", fwhm )
-      << String().Format( "fwhmMeanDev\n%.8f", fwhmMeanDev )
-      << String().Format( "eccentricity\n%.8f", eccentricity )
-      << String().Format( "eccentricityMeanDev\n%.8f", eccentricityMeanDev )
-      << String().Format( "snrWeight\n%.8f", snrWeight )
-      << String().Format( "median\n%.8f", median )
-      << String().Format( "medianMeanDev\n%.8f", medianMeanDev )
+      << String().Format( "fwhm\n%.8e", fwhm )
+      << String().Format( "fwhmMeanDev\n%.8e", fwhmMeanDev )
+      << String().Format( "eccentricity\n%.8e", eccentricity )
+      << String().Format( "eccentricityMeanDev\n%.8e", eccentricityMeanDev )
+      << String().Format( "psfSignalWeight\n%.8e", psfSignalWeight )
+      << String().Format( "psfPowerWeight\n%.8e", psfPowerWeight )
+      << String().Format( "snrWeight\n%.8e", snrWeight )
+      << String().Format( "median\n%.8e", median )
+      << String().Format( "medianMeanDev\n%.8e", medianMeanDev )
       << String().Format( "trimmingFactor\n%.2f", trimmingFactor )
-      << String().Format( "noise\n%.8f", noise )
-      << String().Format( "noiseRatio\n%.8f", noiseRatio )
+      << String().Format( "noise\n%.8e", noise )
+      << String().Format( "noiseRatio\n%.8e", noiseRatio )
       << String().Format( "stars\n%u", stars )
-      << String().Format( "starResidual\n%.8f", starResidual )
-      << String().Format( "starResidualMeanDev\n%.8f", starResidualMeanDev );
+      << String().Format( "starResidual\n%.8e", starResidual )
+      << String().Format( "starResidualMeanDev\n%.8e", starResidualMeanDev );
    return String().ToNewLineSeparated( tokens );
 }
 
@@ -126,6 +130,16 @@ bool SubframeSelectorCacheItem::GetDataFromTokens( const StringList& tokens )
       else if ( *i == "eccentricityMeanDev" )
       {
          if ( !(++i)->TryToDouble( eccentricityMeanDev ) )
+            return false;
+      }
+      else if ( *i == "psfSignalWeight" )
+      {
+         if ( !(++i)->TryToDouble( psfSignalWeight ) )
+            return false;
+      }
+      else if ( *i == "psfPowerWeight" )
+      {
+         if ( !(++i)->TryToDouble( psfPowerWeight ) )
             return false;
       }
       else if ( *i == "snrWeight" )
@@ -205,4 +219,4 @@ SubframeSelectorCache::~SubframeSelectorCache()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorCache.cpp - Released 2021-10-04T16:21:12Z
+// EOF SubframeSelectorCache.cpp - Released 2021-10-20T18:10:09Z

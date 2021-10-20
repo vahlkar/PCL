@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.4.8
+// Standard SubframeSelector Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// SubframeSelectorMeasurementsInterface.h - Released 2021-10-04T16:21:12Z
+// SubframeSelectorMeasurementsInterface.h - Released 2021-10-20T18:10:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -101,8 +101,8 @@ private:
       Control           MeasurementTable_Control;
       VerticalSizer     MeasurementTable_Sizer;
          HorizontalSizer   MeasurementsTable_Top1_Sizer;
-            ComboBox          MeasurementsTable_SortingProperty_Control;
-            ComboBox          MeasurementsTable_SortingMode_Control;
+            ComboBox          MeasurementsTable_SortingProperty_ComboBox;
+            ComboBox          MeasurementsTable_SortingMode_ComboBox;
             PushButton        MeasurementsTable_ToggleApproved_PushButton;
             PushButton        MeasurementsTable_ToggleLocked_PushButton;
             PushButton        MeasurementsTable_Invert_PushButton;
@@ -117,11 +117,11 @@ private:
       Control           MeasurementGraph_Control;
       VerticalSizer     MeasurementGraph_Sizer;
          HorizontalSizer   MeasurementGraph_Top_Sizer;
-            ComboBox          MeasurementGraph_GraphProperty_Control;
+            ComboBox          MeasurementGraph_WebViewProperty_ComboBox;
             PushButton        MeasurementGraph_ExportPDF_PushButton;
          HorizontalSizer   MeasurementGraph_Bottom_Sizer;
-            GraphWebView      MeasurementGraph_Graph;
-            GraphWebView      MeasurementDistribution_Graph;
+            GraphWebView      MeasurementGraph_WebView;
+            GraphWebView      MeasurementDistributionGraph_WebView;
    };
 
    GUIData* GUI = nullptr;
@@ -167,4 +167,4 @@ PCL_END_LOCAL
 #endif   // e_SubframeSelectorMeasurementsInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorMeasurementsInterface.h - Released 2021-10-04T16:21:12Z
+// EOF SubframeSelectorMeasurementsInterface.h - Released 2021-10-20T18:10:09Z

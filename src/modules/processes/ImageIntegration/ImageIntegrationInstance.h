@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.2.34
+// Standard ImageIntegration Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// ImageIntegrationInstance.h - Released 2021-10-04T16:21:12Z
+// ImageIntegrationInstance.h - Released 2021-10-20T18:10:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -55,6 +55,7 @@
 
 #include <pcl/Matrix.h>
 #include <pcl/ProcessImplementation.h>
+#include <pcl/PSFSignalEstimator.h>
 #include <pcl/Vector.h>
 
 #include "ImageIntegrationParameters.h"
@@ -202,31 +203,37 @@ private:
     * Read-only output properties
     */
 
+   typedef GenericVector<TwoSidedEstimate>               scale_estimates;
+   typedef GenericVector<PSFSignalEstimator::Estimates>  signal_estimates;
+
    struct OutputData
    {
       // General integration data
 
-      String     integrationImageId;       // identifier of the output integrated image
-      String     lowRejectionMapImageId;   // identifier of the output low rejection map image
-      String     highRejectionMapImageId;  // identifier of the output high rejection map image
-      String     slopeMapImageId;          // identifier of the output slope map image
-      int32      numberOfChannels          = 0; // number of nominal channels (1 or 3)
-      uint64     numberOfPixels            = 0u; // area of the integrated image in pixels
-      uint64     totalPixels               = 0u; // total integrated pixels (area*numberOfFiles)
+      String          integrationImageId;      // identifier of the output integrated image
+      String          lowRejectionMapImageId;  // identifier of the output low rejection map image
+      String          highRejectionMapImageId; // identifier of the output high rejection map image
+      String          slopeMapImageId;         // identifier of the output slope map image
+      int32           numberOfChannels         = 0; // number of nominal channels (1 or 3)
+      uint64          numberOfPixels           = 0u; // area of the integrated image in pixels
+      uint64          totalPixels              = 0u; // total integrated pixels (area*numberOfFiles)
 
       // Per-channel data for the final integrated image
 
-      double     outputRangeLow            = 0; // output range, lower bound
-      double     outputRangeHigh           = 0; // output range, upper bound
-      UI64Vector totalRejectedLow          = UI64Vector( 0, 3 ); // low rejected pixels
-      UI64Vector totalRejectedHigh         = UI64Vector( 0, 3 ); // high rejected pixels
-      DVector    finalNoiseEstimates       = DVector( 0, 3 );    // noise estimates for the integrated image
-      DVector    finalScaleEstimates       = DVector( 0, 3 );    // scale estimates for the integrated image
-      DVector    finalLocationEstimates    = DVector( 0, 3 );    // location estimates for the integrated image
-      FVector    referenceNoiseReductions  = FVector( 0, 3 );    // noise reduction w.r.t. the reference image
-      FVector    medianNoiseReductions     = FVector( 0, 3 );    // median noise reduction
-      FVector    referenceSNRIncrements    = FVector( 0, 3 );    // SNR increment w.r.t. the reference image
-      FVector    averageSNRIncrements      = FVector( 0, 3 );    // average SNR increment
+      double          outputRangeLow           = 0; // output range, lower bound
+      double          outputRangeHigh          = 0; // output range, upper bound
+      UI64Vector      totalRejectedLow         = UI64Vector( 0, 3 ); // low rejected pixels
+      UI64Vector      totalRejectedHigh        = UI64Vector( 0, 3 ); // high rejected pixels
+      DVector         finalNoiseEstimates      = DVector( 0, 3 );    // noise estimates for the integrated image
+      scale_estimates finalNoiseScaleEstimates = scale_estimates( 0, 3 ); // noise scale estimates for the integrated image
+      DVector         finalScaleEstimates      = DVector( 0, 3 );    // scale estimates for the integrated image
+      DVector         finalLocationEstimates   = DVector( 0, 3 );    // location estimates for the integrated image
+
+      // ### DEPRECATED ###
+      FVector         referenceNoiseReductions = FVector( 0, 3 );    // noise reduction w.r.t. the reference image
+      FVector         medianNoiseReductions    = FVector( 0, 3 );    // median noise reduction
+      FVector         referenceSNRIncrements   = FVector( 0, 3 );    // SNR increment w.r.t. the reference image
+      FVector         averageSNRIncrements     = FVector( 0, 3 );    // average SNR increment
 
       // Per-channel data for each integrated image
 
@@ -303,10 +310,9 @@ private:
     * Auxiliary integration data and functions
     */
 
-   typedef GenericVector<TwoSidedEstimate>   scale_estimates;
-
    DVector EvaluateNoise( const ImageVariant& ) const;
-   DVector EvaluateSNR( const ImageVariant&, const DVector& noise ) const;
+   scale_estimates EvaluateNoiseScale( const ImageVariant&, double k = 4 ) const;
+   signal_estimates EvaluatePSFSignal( const ImageVariant& ) const;
 
    ImageWindow CreateImageWindow( const IsoString& id, int bitsPerSample ) const;
 
@@ -348,4 +354,4 @@ private:
 #endif   // __ImageIntegrationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationInstance.h - Released 2021-10-04T16:21:12Z
+// EOF ImageIntegrationInstance.h - Released 2021-10-20T18:10:09Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.5.2
+// Standard ImageCalibration Process Module Version 1.6.6
 // ----------------------------------------------------------------------------
-// ImageCalibrationParameters.h - Released 2021-10-04T16:21:12Z
+// ImageCalibrationParameters.h - Released 2021-10-20T18:10:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -947,7 +947,146 @@ extern ICDarkScalingFactorB* TheICDarkScalingFactorBParameter;
 
 // ----------------------------------------------------------------------------
 
-class ICNoiseEstimateRK : public MetaFloat
+class ICPSFSignalEstimateRK : public MetaDouble
+{
+public:
+
+   ICPSFSignalEstimateRK( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern ICPSFSignalEstimateRK* TheICPSFSignalEstimateRKParameter;
+
+
+// ----------------------------------------------------------------------------
+
+class ICPSFSignalEstimateG : public MetaDouble
+{
+public:
+
+   ICPSFSignalEstimateG( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern ICPSFSignalEstimateG* TheICPSFSignalEstimateGParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICPSFSignalEstimateB : public MetaDouble
+{
+public:
+
+   ICPSFSignalEstimateB( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern ICPSFSignalEstimateB* TheICPSFSignalEstimateBParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICPSFPowerEstimateRK : public MetaDouble
+{
+public:
+
+   ICPSFPowerEstimateRK( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern ICPSFPowerEstimateRK* TheICPSFPowerEstimateRKParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICPSFPowerEstimateG : public MetaDouble
+{
+public:
+
+   ICPSFPowerEstimateG( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern ICPSFPowerEstimateG* TheICPSFPowerEstimateGParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICPSFPowerEstimateB : public MetaDouble
+{
+public:
+
+   ICPSFPowerEstimateB( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern ICPSFPowerEstimateB* TheICPSFPowerEstimateBParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICPSFCountRK : public MetaInt32
+{
+public:
+
+   ICPSFCountRK( MetaTable* );
+
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
+};
+
+extern ICPSFCountRK* TheICPSFCountRKParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICPSFCountG : public MetaInt32
+{
+public:
+
+   ICPSFCountG( MetaTable* );
+
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
+};
+
+extern ICPSFCountG* TheICPSFCountGParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICPSFCountB : public MetaInt32
+{
+public:
+
+   ICPSFCountB( MetaTable* );
+
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
+};
+
+extern ICPSFCountB* TheICPSFCountBParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICNoiseEstimateRK : public MetaDouble
 {
 public:
 
@@ -963,7 +1102,7 @@ extern ICNoiseEstimateRK* TheICNoiseEstimateRKParameter;
 
 // ----------------------------------------------------------------------------
 
-class ICNoiseEstimateG : public MetaFloat
+class ICNoiseEstimateG : public MetaDouble
 {
 public:
 
@@ -979,7 +1118,7 @@ extern ICNoiseEstimateG* TheICNoiseEstimateGParameter;
 
 // ----------------------------------------------------------------------------
 
-class ICNoiseEstimateB : public MetaFloat
+class ICNoiseEstimateB : public MetaDouble
 {
 public:
 
@@ -995,7 +1134,7 @@ extern ICNoiseEstimateB* TheICNoiseEstimateBParameter;
 
 // ----------------------------------------------------------------------------
 
-class ICNoiseFractionRK : public MetaFloat
+class ICNoiseFractionRK : public MetaDouble
 {
 public:
 
@@ -1010,7 +1149,7 @@ extern ICNoiseFractionRK* TheICNoiseFractionRKParameter;
 
 // ----------------------------------------------------------------------------
 
-class ICNoiseFractionG : public MetaFloat
+class ICNoiseFractionG : public MetaDouble
 {
 public:
 
@@ -1025,7 +1164,7 @@ extern ICNoiseFractionG* TheICNoiseFractionGParameter;
 
 // ----------------------------------------------------------------------------
 
-class ICNoiseFractionB : public MetaFloat
+class ICNoiseFractionB : public MetaDouble
 {
 public:
 
@@ -1037,6 +1176,102 @@ public:
 };
 
 extern ICNoiseFractionB* TheICNoiseFractionBParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICNoiseScaleLowRK : public MetaDouble
+{
+public:
+
+   ICNoiseScaleLowRK( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern ICNoiseScaleLowRK* TheICNoiseScaleLowRKParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICNoiseScaleLowG : public MetaDouble
+{
+public:
+
+   ICNoiseScaleLowG( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern ICNoiseScaleLowG* TheICNoiseScaleLowGParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICNoiseScaleLowB : public MetaDouble
+{
+public:
+
+   ICNoiseScaleLowB( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern ICNoiseScaleLowB* TheICNoiseScaleLowBParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICNoiseScaleHighRK : public MetaDouble
+{
+public:
+
+   ICNoiseScaleHighRK( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern ICNoiseScaleHighRK* TheICNoiseScaleHighRKParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICNoiseScaleHighG : public MetaDouble
+{
+public:
+
+   ICNoiseScaleHighG( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern ICNoiseScaleHighG* TheICNoiseScaleHighGParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICNoiseScaleHighB : public MetaDouble
+{
+public:
+
+   ICNoiseScaleHighB( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern ICNoiseScaleHighB* TheICNoiseScaleHighBParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -1089,4 +1324,4 @@ PCL_END_LOCAL
 #endif   // __ImageCalibrationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationParameters.h - Released 2021-10-04T16:21:12Z
+// EOF ImageCalibrationParameters.h - Released 2021-10-20T18:10:09Z

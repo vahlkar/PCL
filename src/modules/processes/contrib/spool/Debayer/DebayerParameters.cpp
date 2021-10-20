@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
-// Standard Debayer Process Module Version 1.9.0
+// Standard Debayer Process Module Version 1.9.4
 // ----------------------------------------------------------------------------
-// DebayerParameters.cpp - Released 2021-10-04T16:21:13Z
+// DebayerParameters.cpp - Released 2021-10-20T18:10:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -57,62 +57,92 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-DebayerBayerPatternParameter*	    TheDebayerBayerPatternParameter = nullptr;
-DebayerMethodParameter*           TheDebayerMethodParameter = nullptr;
-DebayerFBDDNoiseReduction*        TheDebayerFBDDNoiseReductionParameter = nullptr;
-DebayerEvaluateNoise*             TheDebayerEvaluateNoiseParameter = nullptr;
-DebayerNoiseEvaluationAlgorithm*  TheDebayerNoiseEvaluationAlgorithmParameter = nullptr;
-DebayerShowImages*                TheDebayerShowImagesParameter = nullptr;
-DebayerCFASourceFilePath*         TheDebayerCFASourceFilePathParameter = nullptr;
-DebayerTargetItems*               TheDebayerTargetItemsParameter = nullptr;
-DebayerTargetEnabled*             TheDebayerTargetEnabledParameter = nullptr;
-DebayerTargetImage*               TheDebayerTargetImageParameter = nullptr;
-DebayerNoGUIMessages*             TheDebayerNoGUIMessagesParameter = nullptr;
-DebayerInputHints*                TheDebayerInputHintsParameter = nullptr;
-DebayerOutputHints*               TheDebayerOutputHintsParameter = nullptr;
-DebayerOutputRGBImages*           TheDebayerOutputRGBImagesParameter = nullptr;
-DebayerOutputSeparateChannels*    TheDebayerOutputSeparateChannelsParameter = nullptr;
-DebayerOutputDirectory*           TheDebayerOutputDirectoryParameter = nullptr;
-DebayerOutputExtension*           TheDebayerOutputExtensionParameter = nullptr;
-DebayerOutputPrefix*              TheDebayerOutputPrefixParameter = nullptr;
-DebayerOutputPostfix*             TheDebayerOutputPostfixParameter = nullptr;
-DebayerOverwriteExistingFiles*    TheDebayerOverwriteExistingFilesParameter = nullptr;
-DebayerOnError*                   TheDebayerOnErrorParameter = nullptr;
-DebayerUseFileThreads*            TheDebayerUseFileThreadsParameter = nullptr;
-DebayerFileThreadOverload*        TheDebayerFileThreadOverloadParameter = nullptr;
-DebayerMaxFileReadThreads*        TheDebayerMaxFileReadThreadsParameter = nullptr;
-DebayerMaxFileWriteThreads*       TheDebayerMaxFileWriteThreadsParameter = nullptr;
-DebayerMemoryLoadControl*         TheDebayerMemoryLoadControlParameter = nullptr;
-DebayerMemoryLoadLimit*           TheDebayerMemoryLoadLimitParameter = nullptr;
+DebayerBayerPatternParameter*	            TheDebayerBayerPatternParameter = nullptr;
+DebayerMethodParameter*                   TheDebayerMethodParameter = nullptr;
+DebayerFBDDNoiseReduction*                TheDebayerFBDDNoiseReductionParameter = nullptr;
+DebayerEvaluateNoise*                     TheDebayerEvaluateNoiseParameter = nullptr;
+DebayerNoiseEvaluationAlgorithm*          TheDebayerNoiseEvaluationAlgorithmParameter = nullptr;
+DebayerShowImages*                        TheDebayerShowImagesParameter = nullptr;
+DebayerCFASourceFilePath*                 TheDebayerCFASourceFilePathParameter = nullptr;
+DebayerTargetItems*                       TheDebayerTargetItemsParameter = nullptr;
+DebayerTargetEnabled*                     TheDebayerTargetEnabledParameter = nullptr;
+DebayerTargetImage*                       TheDebayerTargetImageParameter = nullptr;
+DebayerNoGUIMessages*                     TheDebayerNoGUIMessagesParameter = nullptr;
+DebayerInputHints*                        TheDebayerInputHintsParameter = nullptr;
+DebayerOutputHints*                       TheDebayerOutputHintsParameter = nullptr;
+DebayerOutputRGBImages*                   TheDebayerOutputRGBImagesParameter = nullptr;
+DebayerOutputSeparateChannels*            TheDebayerOutputSeparateChannelsParameter = nullptr;
+DebayerOutputDirectory*                   TheDebayerOutputDirectoryParameter = nullptr;
+DebayerOutputExtension*                   TheDebayerOutputExtensionParameter = nullptr;
+DebayerOutputPrefix*                      TheDebayerOutputPrefixParameter = nullptr;
+DebayerOutputPostfix*                     TheDebayerOutputPostfixParameter = nullptr;
+DebayerOverwriteExistingFiles*            TheDebayerOverwriteExistingFilesParameter = nullptr;
+DebayerOnError*                           TheDebayerOnErrorParameter = nullptr;
+DebayerUseFileThreads*                    TheDebayerUseFileThreadsParameter = nullptr;
+DebayerFileThreadOverload*                TheDebayerFileThreadOverloadParameter = nullptr;
+DebayerMaxFileReadThreads*                TheDebayerMaxFileReadThreadsParameter = nullptr;
+DebayerMaxFileWriteThreads*               TheDebayerMaxFileWriteThreadsParameter = nullptr;
+DebayerMemoryLoadControl*                 TheDebayerMemoryLoadControlParameter = nullptr;
+DebayerMemoryLoadLimit*                   TheDebayerMemoryLoadLimitParameter = nullptr;
 
-DebayerOutputImage*               TheDebayerOutputImageParameter = nullptr;
-DebayerOutputChannelImageR*       TheDebayerOutputChannelImageRParameter = nullptr;
-DebayerOutputChannelImageG*       TheDebayerOutputChannelImageGParameter = nullptr;
-DebayerOutputChannelImageB*       TheDebayerOutputChannelImageBParameter = nullptr;
-DebayerNoiseEstimateR*            TheDebayerNoiseEstimateRParameter = nullptr;
-DebayerNoiseEstimateG*            TheDebayerNoiseEstimateGParameter = nullptr;
-DebayerNoiseEstimateB*            TheDebayerNoiseEstimateBParameter = nullptr;
-DebayerNoiseFractionR*            TheDebayerNoiseFractionRParameter = nullptr;
-DebayerNoiseFractionG*            TheDebayerNoiseFractionGParameter = nullptr;
-DebayerNoiseFractionB*            TheDebayerNoiseFractionBParameter = nullptr;
-DebayerNoiseAlgorithmR*           TheDebayerNoiseAlgorithmRParameter = nullptr;
-DebayerNoiseAlgorithmG*           TheDebayerNoiseAlgorithmGParameter = nullptr;
-DebayerNoiseAlgorithmB*           TheDebayerNoiseAlgorithmBParameter = nullptr;
+DebayerOutputImage*                       TheDebayerOutputImageParameter = nullptr;
+DebayerOutputChannelImageR*               TheDebayerOutputChannelImageRParameter = nullptr;
+DebayerOutputChannelImageG*               TheDebayerOutputChannelImageGParameter = nullptr;
+DebayerOutputChannelImageB*               TheDebayerOutputChannelImageBParameter = nullptr;
+DebayerPSFSignalEstimateR*                TheDebayerPSFSignalEstimateRParameter = nullptr;
+DebayerPSFSignalEstimateG*                TheDebayerPSFSignalEstimateGParameter = nullptr;
+DebayerPSFSignalEstimateB*                TheDebayerPSFSignalEstimateBParameter = nullptr;
+DebayerPSFPowerEstimateR*           TheDebayerPSFPowerEstimateRParameter = nullptr;
+DebayerPSFPowerEstimateG*           TheDebayerPSFPowerEstimateGParameter = nullptr;
+DebayerPSFPowerEstimateB*           TheDebayerPSFPowerEstimateBParameter = nullptr;
+DebayerPSFCountR*                   TheDebayerPSFCountRParameter = nullptr;
+DebayerPSFCountG*                   TheDebayerPSFCountGParameter = nullptr;
+DebayerPSFCountB*                   TheDebayerPSFCountBParameter = nullptr;
+DebayerNoiseEstimateR*                    TheDebayerNoiseEstimateRParameter = nullptr;
+DebayerNoiseEstimateG*                    TheDebayerNoiseEstimateGParameter = nullptr;
+DebayerNoiseEstimateB*                    TheDebayerNoiseEstimateBParameter = nullptr;
+DebayerNoiseFractionR*                    TheDebayerNoiseFractionRParameter = nullptr;
+DebayerNoiseFractionG*                    TheDebayerNoiseFractionGParameter = nullptr;
+DebayerNoiseFractionB*                    TheDebayerNoiseFractionBParameter = nullptr;
+DebayerNoiseScaleLowR*                    TheDebayerNoiseScaleLowRParameter = nullptr;
+DebayerNoiseScaleLowG*                    TheDebayerNoiseScaleLowGParameter = nullptr;
+DebayerNoiseScaleLowB*                    TheDebayerNoiseScaleLowBParameter = nullptr;
+DebayerNoiseScaleHighR*                   TheDebayerNoiseScaleHighRParameter = nullptr;
+DebayerNoiseScaleHighG*                   TheDebayerNoiseScaleHighGParameter = nullptr;
+DebayerNoiseScaleHighB*                   TheDebayerNoiseScaleHighBParameter = nullptr;
+DebayerNoiseAlgorithmR*                   TheDebayerNoiseAlgorithmRParameter = nullptr;
+DebayerNoiseAlgorithmG*                   TheDebayerNoiseAlgorithmGParameter = nullptr;
+DebayerNoiseAlgorithmB*                   TheDebayerNoiseAlgorithmBParameter = nullptr;
 
-DebayerOutputFileData*            TheDebayerOutputFileDataParameter = nullptr;
-DebayerOutputFilePath*            TheDebayerOutputFilePathParameter = nullptr;
-DebayerOutputChannelFilePathR*    TheDebayerOutputChannelFilePathRParameter = nullptr;
-DebayerOutputChannelFilePathG*    TheDebayerOutputChannelFilePathGParameter = nullptr;
-DebayerOutputChannelFilePathB*    TheDebayerOutputChannelFilePathBParameter = nullptr;
-DebayerOutputFileNoiseEstimateR*  TheDebayerOutputFileNoiseEstimateRParameter = nullptr;
-DebayerOutputFileNoiseEstimateG*  TheDebayerOutputFileNoiseEstimateGParameter = nullptr;
-DebayerOutputFileNoiseEstimateB*  TheDebayerOutputFileNoiseEstimateBParameter = nullptr;
-DebayerOutputFileNoiseFractionR*  TheDebayerOutputFileNoiseFractionRParameter = nullptr;
-DebayerOutputFileNoiseFractionG*  TheDebayerOutputFileNoiseFractionGParameter = nullptr;
-DebayerOutputFileNoiseFractionB*  TheDebayerOutputFileNoiseFractionBParameter = nullptr;
-DebayerOutputFileNoiseAlgorithmR* TheDebayerOutputFileNoiseAlgorithmRParameter = nullptr;
-DebayerOutputFileNoiseAlgorithmG* TheDebayerOutputFileNoiseAlgorithmGParameter = nullptr;
-DebayerOutputFileNoiseAlgorithmB* TheDebayerOutputFileNoiseAlgorithmBParameter = nullptr;
+DebayerOutputFileData*                    TheDebayerOutputFileDataParameter = nullptr;
+DebayerOutputFilePath*                    TheDebayerOutputFilePathParameter = nullptr;
+DebayerOutputChannelFilePathR*            TheDebayerOutputChannelFilePathRParameter = nullptr;
+DebayerOutputChannelFilePathG*            TheDebayerOutputChannelFilePathGParameter = nullptr;
+DebayerOutputChannelFilePathB*            TheDebayerOutputChannelFilePathBParameter = nullptr;
+DebayerOutputFilePSFSignalEstimateR*      TheDebayerOutputFilePSFSignalEstimateRParameter = nullptr;
+DebayerOutputFilePSFSignalEstimateG*      TheDebayerOutputFilePSFSignalEstimateGParameter = nullptr;
+DebayerOutputFilePSFSignalEstimateB*      TheDebayerOutputFilePSFSignalEstimateBParameter = nullptr;
+DebayerOutputFilePSFPowerEstimateR* TheDebayerOutputFilePSFPowerEstimateRParameter = nullptr;
+DebayerOutputFilePSFPowerEstimateG* TheDebayerOutputFilePSFPowerEstimateGParameter = nullptr;
+DebayerOutputFilePSFPowerEstimateB* TheDebayerOutputFilePSFPowerEstimateBParameter = nullptr;
+DebayerOutputFilePSFCountR*         TheDebayerOutputFilePSFCountRParameter = nullptr;
+DebayerOutputFilePSFCountG*         TheDebayerOutputFilePSFCountGParameter = nullptr;
+DebayerOutputFilePSFCountB*         TheDebayerOutputFilePSFCountBParameter = nullptr;
+DebayerOutputFileNoiseEstimateR*          TheDebayerOutputFileNoiseEstimateRParameter = nullptr;
+DebayerOutputFileNoiseEstimateG*          TheDebayerOutputFileNoiseEstimateGParameter = nullptr;
+DebayerOutputFileNoiseEstimateB*          TheDebayerOutputFileNoiseEstimateBParameter = nullptr;
+DebayerOutputFileNoiseFractionR*          TheDebayerOutputFileNoiseFractionRParameter = nullptr;
+DebayerOutputFileNoiseFractionG*          TheDebayerOutputFileNoiseFractionGParameter = nullptr;
+DebayerOutputFileNoiseFractionB*          TheDebayerOutputFileNoiseFractionBParameter = nullptr;
+DebayerOutputFileNoiseScaleLowR*          TheDebayerOutputFileNoiseScaleLowRParameter = nullptr;
+DebayerOutputFileNoiseScaleLowG*          TheDebayerOutputFileNoiseScaleLowGParameter = nullptr;
+DebayerOutputFileNoiseScaleLowB*          TheDebayerOutputFileNoiseScaleLowBParameter = nullptr;
+DebayerOutputFileNoiseScaleHighR*         TheDebayerOutputFileNoiseScaleHighRParameter = nullptr;
+DebayerOutputFileNoiseScaleHighG*         TheDebayerOutputFileNoiseScaleHighGParameter = nullptr;
+DebayerOutputFileNoiseScaleHighB*         TheDebayerOutputFileNoiseScaleHighBParameter = nullptr;
+DebayerOutputFileNoiseAlgorithmR*         TheDebayerOutputFileNoiseAlgorithmRParameter = nullptr;
+DebayerOutputFileNoiseAlgorithmG*         TheDebayerOutputFileNoiseAlgorithmGParameter = nullptr;
+DebayerOutputFileNoiseAlgorithmB*         TheDebayerOutputFileNoiseAlgorithmBParameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -779,7 +809,220 @@ bool DebayerOutputChannelImageB::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-DebayerNoiseEstimateR::DebayerNoiseEstimateR( MetaProcess* P ) : MetaFloat( P )
+DebayerPSFSignalEstimateR::DebayerPSFSignalEstimateR( MetaProcess* P ) : MetaDouble( P )
+{
+   TheDebayerPSFSignalEstimateRParameter = this;
+}
+
+IsoString DebayerPSFSignalEstimateR::Id() const
+{
+   return "psfSignalEstimateR";
+}
+
+int DebayerPSFSignalEstimateR::Precision() const
+{
+   return 4;
+}
+
+bool DebayerPSFSignalEstimateR::ScientificNotation() const
+{
+   return true;
+}
+
+bool DebayerPSFSignalEstimateR::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerPSFSignalEstimateG::DebayerPSFSignalEstimateG( MetaProcess* P ) : MetaDouble( P )
+{
+   TheDebayerPSFSignalEstimateGParameter = this;
+}
+
+IsoString DebayerPSFSignalEstimateG::Id() const
+{
+   return "psfSignalEstimateG";
+}
+
+int DebayerPSFSignalEstimateG::Precision() const
+{
+   return 4;
+}
+
+bool DebayerPSFSignalEstimateG::ScientificNotation() const
+{
+   return true;
+}
+
+bool DebayerPSFSignalEstimateG::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerPSFSignalEstimateB::DebayerPSFSignalEstimateB( MetaProcess* P ) : MetaDouble( P )
+{
+   TheDebayerPSFSignalEstimateBParameter = this;
+}
+
+IsoString DebayerPSFSignalEstimateB::Id() const
+{
+   return "psfSignalEstimateB";
+}
+
+int DebayerPSFSignalEstimateB::Precision() const
+{
+   return 4;
+}
+
+bool DebayerPSFSignalEstimateB::ScientificNotation() const
+{
+   return true;
+}
+
+bool DebayerPSFSignalEstimateB::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerPSFPowerEstimateR::DebayerPSFPowerEstimateR( MetaProcess* P ) : MetaDouble( P )
+{
+   TheDebayerPSFPowerEstimateRParameter = this;
+}
+
+IsoString DebayerPSFPowerEstimateR::Id() const
+{
+   return "psfPowerEstimateR";
+}
+
+int DebayerPSFPowerEstimateR::Precision() const
+{
+   return 4;
+}
+
+bool DebayerPSFPowerEstimateR::ScientificNotation() const
+{
+   return true;
+}
+
+bool DebayerPSFPowerEstimateR::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerPSFPowerEstimateG::DebayerPSFPowerEstimateG( MetaProcess* P ) : MetaDouble( P )
+{
+   TheDebayerPSFPowerEstimateGParameter = this;
+}
+
+IsoString DebayerPSFPowerEstimateG::Id() const
+{
+   return "psfPowerEstimateG";
+}
+
+int DebayerPSFPowerEstimateG::Precision() const
+{
+   return 4;
+}
+
+bool DebayerPSFPowerEstimateG::ScientificNotation() const
+{
+   return true;
+}
+
+bool DebayerPSFPowerEstimateG::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerPSFPowerEstimateB::DebayerPSFPowerEstimateB( MetaProcess* P ) : MetaDouble( P )
+{
+   TheDebayerPSFPowerEstimateBParameter = this;
+}
+
+IsoString DebayerPSFPowerEstimateB::Id() const
+{
+   return "psfPowerEstimateB";
+}
+
+int DebayerPSFPowerEstimateB::Precision() const
+{
+   return 4;
+}
+
+bool DebayerPSFPowerEstimateB::ScientificNotation() const
+{
+   return true;
+}
+
+bool DebayerPSFPowerEstimateB::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerPSFCountR::DebayerPSFCountR( MetaProcess* P ) : MetaInt32( P )
+{
+   TheDebayerPSFCountRParameter = this;
+}
+
+IsoString DebayerPSFCountR::Id() const
+{
+   return "psfCountR";
+}
+
+bool DebayerPSFCountR::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerPSFCountG::DebayerPSFCountG( MetaProcess* P ) : MetaInt32( P )
+{
+   TheDebayerPSFCountGParameter = this;
+}
+
+IsoString DebayerPSFCountG::Id() const
+{
+   return "psfCountG";
+}
+
+bool DebayerPSFCountG::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerPSFCountB::DebayerPSFCountB( MetaProcess* P ) : MetaInt32( P )
+{
+   TheDebayerPSFCountBParameter = this;
+}
+
+IsoString DebayerPSFCountB::Id() const
+{
+   return "psfCountB";
+}
+
+bool DebayerPSFCountB::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerNoiseEstimateR::DebayerNoiseEstimateR( MetaProcess* P ) : MetaDouble( P )
 {
    TheDebayerNoiseEstimateRParameter = this;
 }
@@ -806,7 +1049,7 @@ bool DebayerNoiseEstimateR::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-DebayerNoiseEstimateG::DebayerNoiseEstimateG( MetaProcess* P ) : MetaFloat( P )
+DebayerNoiseEstimateG::DebayerNoiseEstimateG( MetaProcess* P ) : MetaDouble( P )
 {
    TheDebayerNoiseEstimateGParameter = this;
 }
@@ -833,7 +1076,7 @@ bool DebayerNoiseEstimateG::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-DebayerNoiseEstimateB::DebayerNoiseEstimateB( MetaProcess* P ) : MetaFloat( P )
+DebayerNoiseEstimateB::DebayerNoiseEstimateB( MetaProcess* P ) : MetaDouble( P )
 {
    TheDebayerNoiseEstimateBParameter = this;
 }
@@ -860,7 +1103,7 @@ bool DebayerNoiseEstimateB::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-DebayerNoiseFractionR::DebayerNoiseFractionR( MetaProcess* P ) : MetaFloat( P )
+DebayerNoiseFractionR::DebayerNoiseFractionR( MetaProcess* P ) : MetaDouble( P )
 {
    TheDebayerNoiseFractionRParameter = this;
 }
@@ -882,7 +1125,7 @@ bool DebayerNoiseFractionR::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-DebayerNoiseFractionG::DebayerNoiseFractionG( MetaProcess* P ) : MetaFloat( P )
+DebayerNoiseFractionG::DebayerNoiseFractionG( MetaProcess* P ) : MetaDouble( P )
 {
    TheDebayerNoiseFractionGParameter = this;
 }
@@ -904,7 +1147,7 @@ bool DebayerNoiseFractionG::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-DebayerNoiseFractionB::DebayerNoiseFractionB( MetaProcess* P ) : MetaFloat( P )
+DebayerNoiseFractionB::DebayerNoiseFractionB( MetaProcess* P ) : MetaDouble( P )
 {
    TheDebayerNoiseFractionBParameter = this;
 }
@@ -920,6 +1163,168 @@ int DebayerNoiseFractionB::Precision() const
 }
 
 bool DebayerNoiseFractionB::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerNoiseScaleLowR::DebayerNoiseScaleLowR( MetaProcess* P ) : MetaDouble( P )
+{
+   TheDebayerNoiseScaleLowRParameter = this;
+}
+
+IsoString DebayerNoiseScaleLowR::Id() const
+{
+   return "noiseScaleLowR";
+}
+
+int DebayerNoiseScaleLowR::Precision() const
+{
+   return 6;
+}
+
+bool DebayerNoiseScaleLowR::ScientificNotation() const
+{
+   return true;
+}
+
+bool DebayerNoiseScaleLowR::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerNoiseScaleLowG::DebayerNoiseScaleLowG( MetaProcess* P ) : MetaDouble( P )
+{
+   TheDebayerNoiseScaleLowGParameter = this;
+}
+
+IsoString DebayerNoiseScaleLowG::Id() const
+{
+   return "noiseScaleLowG";
+}
+
+int DebayerNoiseScaleLowG::Precision() const
+{
+   return 6;
+}
+
+bool DebayerNoiseScaleLowG::ScientificNotation() const
+{
+   return true;
+}
+
+bool DebayerNoiseScaleLowG::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerNoiseScaleLowB::DebayerNoiseScaleLowB( MetaProcess* P ) : MetaDouble( P )
+{
+   TheDebayerNoiseScaleLowBParameter = this;
+}
+
+IsoString DebayerNoiseScaleLowB::Id() const
+{
+   return "noiseScaleLowB";
+}
+
+int DebayerNoiseScaleLowB::Precision() const
+{
+   return 6;
+}
+
+bool DebayerNoiseScaleLowB::ScientificNotation() const
+{
+   return true;
+}
+
+bool DebayerNoiseScaleLowB::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerNoiseScaleHighR::DebayerNoiseScaleHighR( MetaProcess* P ) : MetaDouble( P )
+{
+   TheDebayerNoiseScaleHighRParameter = this;
+}
+
+IsoString DebayerNoiseScaleHighR::Id() const
+{
+   return "noiseScaleHighR";
+}
+
+int DebayerNoiseScaleHighR::Precision() const
+{
+   return 6;
+}
+
+bool DebayerNoiseScaleHighR::ScientificNotation() const
+{
+   return true;
+}
+
+bool DebayerNoiseScaleHighR::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerNoiseScaleHighG::DebayerNoiseScaleHighG( MetaProcess* P ) : MetaDouble( P )
+{
+   TheDebayerNoiseScaleHighGParameter = this;
+}
+
+IsoString DebayerNoiseScaleHighG::Id() const
+{
+   return "noiseScaleHighG";
+}
+
+int DebayerNoiseScaleHighG::Precision() const
+{
+   return 6;
+}
+
+bool DebayerNoiseScaleHighG::ScientificNotation() const
+{
+   return true;
+}
+
+bool DebayerNoiseScaleHighG::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerNoiseScaleHighB::DebayerNoiseScaleHighB( MetaProcess* P ) : MetaDouble( P )
+{
+   TheDebayerNoiseScaleHighBParameter = this;
+}
+
+IsoString DebayerNoiseScaleHighB::Id() const
+{
+   return "noiseScaleHighB";
+}
+
+int DebayerNoiseScaleHighB::Precision() const
+{
+   return 6;
+}
+
+bool DebayerNoiseScaleHighB::ScientificNotation() const
+{
+   return true;
+}
+
+bool DebayerNoiseScaleHighB::IsReadOnly() const
 {
    return true;
 }
@@ -1062,7 +1467,220 @@ bool DebayerOutputChannelFilePathB::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-DebayerOutputFileNoiseEstimateR::DebayerOutputFileNoiseEstimateR( MetaTable* T ) : MetaFloat( T )
+DebayerOutputFilePSFSignalEstimateR::DebayerOutputFilePSFSignalEstimateR( MetaTable* T ) : MetaDouble( T )
+{
+   TheDebayerOutputFilePSFSignalEstimateRParameter = this;
+}
+
+IsoString DebayerOutputFilePSFSignalEstimateR::Id() const
+{
+   return "psfSignalEstimateR";
+}
+
+int DebayerOutputFilePSFSignalEstimateR::Precision() const
+{
+   return 4;
+}
+
+bool DebayerOutputFilePSFSignalEstimateR::ScientificNotation() const
+{
+   return true;
+}
+
+bool DebayerOutputFilePSFSignalEstimateR::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerOutputFilePSFSignalEstimateG::DebayerOutputFilePSFSignalEstimateG( MetaTable* T ) : MetaDouble( T )
+{
+   TheDebayerOutputFilePSFSignalEstimateGParameter = this;
+}
+
+IsoString DebayerOutputFilePSFSignalEstimateG::Id() const
+{
+   return "psfSignalEstimateG";
+}
+
+int DebayerOutputFilePSFSignalEstimateG::Precision() const
+{
+   return 4;
+}
+
+bool DebayerOutputFilePSFSignalEstimateG::ScientificNotation() const
+{
+   return true;
+}
+
+bool DebayerOutputFilePSFSignalEstimateG::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerOutputFilePSFSignalEstimateB::DebayerOutputFilePSFSignalEstimateB( MetaTable* T ) : MetaDouble( T )
+{
+   TheDebayerOutputFilePSFSignalEstimateBParameter = this;
+}
+
+IsoString DebayerOutputFilePSFSignalEstimateB::Id() const
+{
+   return "psfSignalEstimateB";
+}
+
+int DebayerOutputFilePSFSignalEstimateB::Precision() const
+{
+   return 4;
+}
+
+bool DebayerOutputFilePSFSignalEstimateB::ScientificNotation() const
+{
+   return true;
+}
+
+bool DebayerOutputFilePSFSignalEstimateB::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerOutputFilePSFPowerEstimateR::DebayerOutputFilePSFPowerEstimateR( MetaTable* T ) : MetaDouble( T )
+{
+   TheDebayerOutputFilePSFPowerEstimateRParameter = this;
+}
+
+IsoString DebayerOutputFilePSFPowerEstimateR::Id() const
+{
+   return "psfPowerEstimateR";
+}
+
+int DebayerOutputFilePSFPowerEstimateR::Precision() const
+{
+   return 4;
+}
+
+bool DebayerOutputFilePSFPowerEstimateR::ScientificNotation() const
+{
+   return true;
+}
+
+bool DebayerOutputFilePSFPowerEstimateR::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerOutputFilePSFPowerEstimateG::DebayerOutputFilePSFPowerEstimateG( MetaTable* T ) : MetaDouble( T )
+{
+   TheDebayerOutputFilePSFPowerEstimateGParameter = this;
+}
+
+IsoString DebayerOutputFilePSFPowerEstimateG::Id() const
+{
+   return "psfPowerEstimateG";
+}
+
+int DebayerOutputFilePSFPowerEstimateG::Precision() const
+{
+   return 4;
+}
+
+bool DebayerOutputFilePSFPowerEstimateG::ScientificNotation() const
+{
+   return true;
+}
+
+bool DebayerOutputFilePSFPowerEstimateG::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerOutputFilePSFPowerEstimateB::DebayerOutputFilePSFPowerEstimateB( MetaTable* T ) : MetaDouble( T )
+{
+   TheDebayerOutputFilePSFPowerEstimateBParameter = this;
+}
+
+IsoString DebayerOutputFilePSFPowerEstimateB::Id() const
+{
+   return "psfPowerEstimateB";
+}
+
+int DebayerOutputFilePSFPowerEstimateB::Precision() const
+{
+   return 4;
+}
+
+bool DebayerOutputFilePSFPowerEstimateB::ScientificNotation() const
+{
+   return true;
+}
+
+bool DebayerOutputFilePSFPowerEstimateB::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerOutputFilePSFCountR::DebayerOutputFilePSFCountR( MetaTable* T ) : MetaInt32( T )
+{
+   TheDebayerOutputFilePSFCountRParameter = this;
+}
+
+IsoString DebayerOutputFilePSFCountR::Id() const
+{
+   return "psfCountR";
+}
+
+bool DebayerOutputFilePSFCountR::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerOutputFilePSFCountG::DebayerOutputFilePSFCountG( MetaTable* T ) : MetaInt32( T )
+{
+   TheDebayerOutputFilePSFCountGParameter = this;
+}
+
+IsoString DebayerOutputFilePSFCountG::Id() const
+{
+   return "psfCountG";
+}
+
+bool DebayerOutputFilePSFCountG::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerOutputFilePSFCountB::DebayerOutputFilePSFCountB( MetaTable* T ) : MetaInt32( T )
+{
+   TheDebayerOutputFilePSFCountBParameter = this;
+}
+
+IsoString DebayerOutputFilePSFCountB::Id() const
+{
+   return "psfCountB";
+}
+
+bool DebayerOutputFilePSFCountB::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerOutputFileNoiseEstimateR::DebayerOutputFileNoiseEstimateR( MetaTable* T ) : MetaDouble( T )
 {
    TheDebayerOutputFileNoiseEstimateRParameter = this;
 }
@@ -1089,7 +1707,7 @@ bool DebayerOutputFileNoiseEstimateR::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-DebayerOutputFileNoiseEstimateG::DebayerOutputFileNoiseEstimateG( MetaTable* T ) : MetaFloat( T )
+DebayerOutputFileNoiseEstimateG::DebayerOutputFileNoiseEstimateG( MetaTable* T ) : MetaDouble( T )
 {
    TheDebayerOutputFileNoiseEstimateGParameter = this;
 }
@@ -1116,7 +1734,7 @@ bool DebayerOutputFileNoiseEstimateG::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-DebayerOutputFileNoiseEstimateB::DebayerOutputFileNoiseEstimateB( MetaTable* T ) : MetaFloat( T )
+DebayerOutputFileNoiseEstimateB::DebayerOutputFileNoiseEstimateB( MetaTable* T ) : MetaDouble( T )
 {
    TheDebayerOutputFileNoiseEstimateBParameter = this;
 }
@@ -1143,7 +1761,7 @@ bool DebayerOutputFileNoiseEstimateB::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-DebayerOutputFileNoiseFractionR::DebayerOutputFileNoiseFractionR( MetaTable* T ) : MetaFloat( T )
+DebayerOutputFileNoiseFractionR::DebayerOutputFileNoiseFractionR( MetaTable* T ) : MetaDouble( T )
 {
    TheDebayerOutputFileNoiseFractionRParameter = this;
 }
@@ -1165,7 +1783,7 @@ bool DebayerOutputFileNoiseFractionR::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-DebayerOutputFileNoiseFractionG::DebayerOutputFileNoiseFractionG( MetaTable* T ) : MetaFloat( T )
+DebayerOutputFileNoiseFractionG::DebayerOutputFileNoiseFractionG( MetaTable* T ) : MetaDouble( T )
 {
    TheDebayerOutputFileNoiseFractionGParameter = this;
 }
@@ -1187,7 +1805,7 @@ bool DebayerOutputFileNoiseFractionG::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-DebayerOutputFileNoiseFractionB::DebayerOutputFileNoiseFractionB( MetaTable* T ) : MetaFloat( T )
+DebayerOutputFileNoiseFractionB::DebayerOutputFileNoiseFractionB( MetaTable* T ) : MetaDouble( T )
 {
    TheDebayerOutputFileNoiseFractionBParameter = this;
 }
@@ -1203,6 +1821,168 @@ int DebayerOutputFileNoiseFractionB::Precision() const
 }
 
 bool DebayerOutputFileNoiseFractionB::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerOutputFileNoiseScaleLowR::DebayerOutputFileNoiseScaleLowR( MetaTable* T ) : MetaDouble( T )
+{
+   TheDebayerOutputFileNoiseScaleLowRParameter = this;
+}
+
+IsoString DebayerOutputFileNoiseScaleLowR::Id() const
+{
+   return "noiseScaleLowR";
+}
+
+int DebayerOutputFileNoiseScaleLowR::Precision() const
+{
+   return 6;
+}
+
+bool DebayerOutputFileNoiseScaleLowR::ScientificNotation() const
+{
+   return true;
+}
+
+bool DebayerOutputFileNoiseScaleLowR::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerOutputFileNoiseScaleLowG::DebayerOutputFileNoiseScaleLowG( MetaTable* T ) : MetaDouble( T )
+{
+   TheDebayerOutputFileNoiseScaleLowGParameter = this;
+}
+
+IsoString DebayerOutputFileNoiseScaleLowG::Id() const
+{
+   return "noiseScaleLowG";
+}
+
+int DebayerOutputFileNoiseScaleLowG::Precision() const
+{
+   return 6;
+}
+
+bool DebayerOutputFileNoiseScaleLowG::ScientificNotation() const
+{
+   return true;
+}
+
+bool DebayerOutputFileNoiseScaleLowG::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerOutputFileNoiseScaleLowB::DebayerOutputFileNoiseScaleLowB( MetaTable* T ) : MetaDouble( T )
+{
+   TheDebayerOutputFileNoiseScaleLowBParameter = this;
+}
+
+IsoString DebayerOutputFileNoiseScaleLowB::Id() const
+{
+   return "noiseScaleLowB";
+}
+
+int DebayerOutputFileNoiseScaleLowB::Precision() const
+{
+   return 6;
+}
+
+bool DebayerOutputFileNoiseScaleLowB::ScientificNotation() const
+{
+   return true;
+}
+
+bool DebayerOutputFileNoiseScaleLowB::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerOutputFileNoiseScaleHighR::DebayerOutputFileNoiseScaleHighR( MetaTable* T ) : MetaDouble( T )
+{
+   TheDebayerOutputFileNoiseScaleHighRParameter = this;
+}
+
+IsoString DebayerOutputFileNoiseScaleHighR::Id() const
+{
+   return "noiseScaleHighR";
+}
+
+int DebayerOutputFileNoiseScaleHighR::Precision() const
+{
+   return 6;
+}
+
+bool DebayerOutputFileNoiseScaleHighR::ScientificNotation() const
+{
+   return true;
+}
+
+bool DebayerOutputFileNoiseScaleHighR::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerOutputFileNoiseScaleHighG::DebayerOutputFileNoiseScaleHighG( MetaTable* T ) : MetaDouble( T )
+{
+   TheDebayerOutputFileNoiseScaleHighGParameter = this;
+}
+
+IsoString DebayerOutputFileNoiseScaleHighG::Id() const
+{
+   return "noiseScaleHighG";
+}
+
+int DebayerOutputFileNoiseScaleHighG::Precision() const
+{
+   return 6;
+}
+
+bool DebayerOutputFileNoiseScaleHighG::ScientificNotation() const
+{
+   return true;
+}
+
+bool DebayerOutputFileNoiseScaleHighG::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerOutputFileNoiseScaleHighB::DebayerOutputFileNoiseScaleHighB( MetaTable* T ) : MetaDouble( T )
+{
+   TheDebayerOutputFileNoiseScaleHighBParameter = this;
+}
+
+IsoString DebayerOutputFileNoiseScaleHighB::Id() const
+{
+   return "noiseScaleHighB";
+}
+
+int DebayerOutputFileNoiseScaleHighB::Precision() const
+{
+   return 6;
+}
+
+bool DebayerOutputFileNoiseScaleHighB::ScientificNotation() const
+{
+   return true;
+}
+
+bool DebayerOutputFileNoiseScaleHighB::IsReadOnly() const
 {
    return true;
 }
@@ -1258,23 +2038,9 @@ bool DebayerOutputFileNoiseAlgorithmB::IsReadOnly() const
    return true;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // ----------------------------------------------------------------------------
 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DebayerParameters.cpp - Released 2021-10-04T16:21:13Z
+// EOF DebayerParameters.cpp - Released 2021-10-20T18:10:09Z

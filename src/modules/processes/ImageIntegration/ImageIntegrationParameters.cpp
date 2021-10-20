@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.2.34
+// Standard ImageIntegration Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// ImageIntegrationParameters.cpp - Released 2021-10-04T16:21:12Z
+// ImageIntegrationParameters.cpp - Released 2021-10-20T18:10:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -146,6 +146,12 @@ IITotalRejectedHighB*                TheIITotalRejectedHighBParameter = nullptr;
 IIFinalNoiseEstimateRK*              TheIIFinalNoiseEstimateRKParameter = nullptr;
 IIFinalNoiseEstimateG*               TheIIFinalNoiseEstimateGParameter = nullptr;
 IIFinalNoiseEstimateB*               TheIIFinalNoiseEstimateBParameter = nullptr;
+IIFinalNoiseScaleEstimateLowRK*      TheIIFinalNoiseScaleEstimateLowRKParameter = nullptr;
+IIFinalNoiseScaleEstimateLowG*       TheIIFinalNoiseScaleEstimateLowGParameter = nullptr;
+IIFinalNoiseScaleEstimateLowB*       TheIIFinalNoiseScaleEstimateLowBParameter = nullptr;
+IIFinalNoiseScaleEstimateHighRK*     TheIIFinalNoiseScaleEstimateHighRKParameter = nullptr;
+IIFinalNoiseScaleEstimateHighG*      TheIIFinalNoiseScaleEstimateHighGParameter = nullptr;
+IIFinalNoiseScaleEstimateHighB*      TheIIFinalNoiseScaleEstimateHighBParameter = nullptr;
 IIFinalScaleEstimateRK*              TheIIFinalScaleEstimateRKParameter = nullptr;
 IIFinalScaleEstimateG*               TheIIFinalScaleEstimateGParameter = nullptr;
 IIFinalScaleEstimateB*               TheIIFinalScaleEstimateBParameter = nullptr;
@@ -321,15 +327,22 @@ IsoString IIWeightMode::ElementId( size_type i ) const
 {
    switch ( i )
    {
-   case DontCare:              return "DontCare";
-   case ExposureTimeWeight:    return "ExposureTime";
+   case DontCare:           return "DontCare";
+   case ExposureTimeWeight: return "ExposureTime";
    default:
-   case NoiseEvaluationWeight: return "NoiseEvaluation";
-   case SignalWeight:          return "SignalWeight";
-   case MedianWeight:          return "MedianWeight";
-   case AverageWeight:         return "AverageWeight";
-   case KeywordWeight:         return "KeywordWeight";
+   case SNREstimate:        return "SNREstimate";
+   case SignalWeight:       return "SignalWeight";
+   case MedianWeight:       return "MedianWeight";
+   case AverageWeight:      return "AverageWeight";
+   case KeywordWeight:      return "KeywordWeight";
+   case PSFSignalWeight:    return "PSFSignalWeight";
+   case PSFPowerWeight:     return "PSFPowerWeight";
    }
+}
+
+IsoString IIWeightMode::ElementAliases() const
+{
+   return "NoiseEvaluation=SNREstimate";
 }
 
 int IIWeightMode::ElementValue( size_type i ) const
@@ -2256,6 +2269,168 @@ bool IIFinalNoiseEstimateB::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
+IIFinalNoiseScaleEstimateLowRK::IIFinalNoiseScaleEstimateLowRK( MetaProcess* P ) : MetaDouble( P )
+{
+   TheIIFinalNoiseScaleEstimateLowRKParameter = this;
+}
+
+IsoString IIFinalNoiseScaleEstimateLowRK::Id() const
+{
+   return "finalNoiseScaleEstimateLowRK";
+}
+
+int IIFinalNoiseScaleEstimateLowRK::Precision() const
+{
+   return 6;
+}
+
+bool IIFinalNoiseScaleEstimateLowRK::ScientificNotation() const
+{
+   return true;
+}
+
+bool IIFinalNoiseScaleEstimateLowRK::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+IIFinalNoiseScaleEstimateLowG::IIFinalNoiseScaleEstimateLowG( MetaProcess* P ) : MetaDouble( P )
+{
+   TheIIFinalNoiseScaleEstimateLowGParameter = this;
+}
+
+IsoString IIFinalNoiseScaleEstimateLowG::Id() const
+{
+   return "finalNoiseScaleEstimateLowG";
+}
+
+int IIFinalNoiseScaleEstimateLowG::Precision() const
+{
+   return 6;
+}
+
+bool IIFinalNoiseScaleEstimateLowG::ScientificNotation() const
+{
+   return true;
+}
+
+bool IIFinalNoiseScaleEstimateLowG::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+IIFinalNoiseScaleEstimateLowB::IIFinalNoiseScaleEstimateLowB( MetaProcess* P ) : MetaDouble( P )
+{
+   TheIIFinalNoiseScaleEstimateLowBParameter = this;
+}
+
+IsoString IIFinalNoiseScaleEstimateLowB::Id() const
+{
+   return "finalNoiseScaleEstimateLowB";
+}
+
+int IIFinalNoiseScaleEstimateLowB::Precision() const
+{
+   return 6;
+}
+
+bool IIFinalNoiseScaleEstimateLowB::ScientificNotation() const
+{
+   return true;
+}
+
+bool IIFinalNoiseScaleEstimateLowB::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+IIFinalNoiseScaleEstimateHighRK::IIFinalNoiseScaleEstimateHighRK( MetaProcess* P ) : MetaDouble( P )
+{
+   TheIIFinalNoiseScaleEstimateHighRKParameter = this;
+}
+
+IsoString IIFinalNoiseScaleEstimateHighRK::Id() const
+{
+   return "finalNoiseScaleEstimateHighRK";
+}
+
+int IIFinalNoiseScaleEstimateHighRK::Precision() const
+{
+   return 6;
+}
+
+bool IIFinalNoiseScaleEstimateHighRK::ScientificNotation() const
+{
+   return true;
+}
+
+bool IIFinalNoiseScaleEstimateHighRK::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+IIFinalNoiseScaleEstimateHighG::IIFinalNoiseScaleEstimateHighG( MetaProcess* P ) : MetaDouble( P )
+{
+   TheIIFinalNoiseScaleEstimateHighGParameter = this;
+}
+
+IsoString IIFinalNoiseScaleEstimateHighG::Id() const
+{
+   return "finalNoiseScaleEstimateHighG";
+}
+
+int IIFinalNoiseScaleEstimateHighG::Precision() const
+{
+   return 6;
+}
+
+bool IIFinalNoiseScaleEstimateHighG::ScientificNotation() const
+{
+   return true;
+}
+
+bool IIFinalNoiseScaleEstimateHighG::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+IIFinalNoiseScaleEstimateHighB::IIFinalNoiseScaleEstimateHighB( MetaProcess* P ) : MetaDouble( P )
+{
+   TheIIFinalNoiseScaleEstimateHighBParameter = this;
+}
+
+IsoString IIFinalNoiseScaleEstimateHighB::Id() const
+{
+   return "finalNoiseScaleEstimateHighB";
+}
+
+int IIFinalNoiseScaleEstimateHighB::Precision() const
+{
+   return 6;
+}
+
+bool IIFinalNoiseScaleEstimateHighB::ScientificNotation() const
+{
+   return true;
+}
+
+bool IIFinalNoiseScaleEstimateHighB::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
 IIFinalScaleEstimateRK::IIFinalScaleEstimateRK( MetaProcess* P ) : MetaDouble( P )
 {
    TheIIFinalScaleEstimateRKParameter = this;
@@ -2870,4 +3045,4 @@ bool IIImageRejectedHighB::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationParameters.cpp - Released 2021-10-04T16:21:12Z
+// EOF ImageIntegrationParameters.cpp - Released 2021-10-20T18:10:09Z

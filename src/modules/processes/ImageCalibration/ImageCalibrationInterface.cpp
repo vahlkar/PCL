@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.5.2
+// Standard ImageCalibration Process Module Version 1.6.6
 // ----------------------------------------------------------------------------
-// ImageCalibrationInterface.cpp - Released 2021-10-04T16:21:12Z
+// ImageCalibrationInterface.cpp - Released 2021-10-20T18:10:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -1226,10 +1226,13 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
 
    EvaluateNoise_CheckBox.SetText( "Evaluate noise" );
    EvaluateNoise_CheckBox.SetToolTip( "<p>If this option is selected, ImageCalibration will compute per-channel "
-      "noise estimates for each target image using a wavelet-based algorithm (MRS noise evaluation by default). Noise "
-      "estimates will be stored as NOISExxx FITS header keywords in the output files. These estimates can be used "
-      "later by several processes and scripts, most notably by the ImageIntegration tool, which uses them by default "
-      "for robust image weighting based on relative SNR values.</p>" );
+      "noise estimates and noise scaling factors for each target image using a wavelet-based algorithm (MRS noise "
+      "evaluation by default). Noise estimates will be stored as NOISExx FITS header keywords in the output files, "
+      "where 'xx' is a zero-padded decimal representation of the zero-based channel index (typically in the 0 to 2 "
+      "range). Noise scaling factors will be stored as NOISELxx and NOISEHxx keywords, respectively for the low and "
+      "high components of a bilateral statistical scale estimate.</p>"
+      "<p>These estimates can be used later by several processes and scripts, most notably by the ImageIntegration "
+      "tool, which uses them by default for robust image weighting based on inverse noise variance.</p>" );
    EvaluateNoise_CheckBox.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::e_Click, w );
 
    EvaluateNoise_Sizer.SetSpacing( 4 );
@@ -2087,4 +2090,4 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInterface.cpp - Released 2021-10-04T16:21:12Z
+// EOF ImageCalibrationInterface.cpp - Released 2021-10-20T18:10:09Z

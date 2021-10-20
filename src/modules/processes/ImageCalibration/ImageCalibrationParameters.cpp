@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.5.2
+// Standard ImageCalibration Process Module Version 1.6.6
 // ----------------------------------------------------------------------------
-// ImageCalibrationParameters.cpp - Released 2021-10-04T16:21:12Z
+// ImageCalibrationParameters.cpp - Released 2021-10-20T18:10:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -134,12 +134,27 @@ ICOutputFilePath*                TheICOutputFilePathParameter = nullptr;
 ICDarkScalingFactorRK*           TheICDarkScalingFactorRKParameter = nullptr;
 ICDarkScalingFactorG*            TheICDarkScalingFactorGParameter = nullptr;
 ICDarkScalingFactorB*            TheICDarkScalingFactorBParameter = nullptr;
+ICPSFSignalEstimateRK*           TheICPSFSignalEstimateRKParameter = nullptr;
+ICPSFSignalEstimateG*            TheICPSFSignalEstimateGParameter = nullptr;
+ICPSFSignalEstimateB*            TheICPSFSignalEstimateBParameter = nullptr;
+ICPSFPowerEstimateRK*      TheICPSFPowerEstimateRKParameter = nullptr;
+ICPSFPowerEstimateG*       TheICPSFPowerEstimateGParameter = nullptr;
+ICPSFPowerEstimateB*       TheICPSFPowerEstimateBParameter = nullptr;
+ICPSFCountRK*              TheICPSFCountRKParameter = nullptr;
+ICPSFCountG*               TheICPSFCountGParameter = nullptr;
+ICPSFCountB*               TheICPSFCountBParameter = nullptr;
 ICNoiseEstimateRK*               TheICNoiseEstimateRKParameter = nullptr;
 ICNoiseEstimateG*                TheICNoiseEstimateGParameter = nullptr;
 ICNoiseEstimateB*                TheICNoiseEstimateBParameter = nullptr;
 ICNoiseFractionRK*               TheICNoiseFractionRKParameter = nullptr;
 ICNoiseFractionG*                TheICNoiseFractionGParameter = nullptr;
 ICNoiseFractionB*                TheICNoiseFractionBParameter = nullptr;
+ICNoiseScaleLowRK*               TheICNoiseScaleLowRKParameter = nullptr;
+ICNoiseScaleLowG*                TheICNoiseScaleLowGParameter = nullptr;
+ICNoiseScaleLowB*                TheICNoiseScaleLowBParameter = nullptr;
+ICNoiseScaleHighRK*              TheICNoiseScaleHighRKParameter = nullptr;
+ICNoiseScaleHighG*               TheICNoiseScaleHighGParameter = nullptr;
+ICNoiseScaleHighB*               TheICNoiseScaleHighBParameter = nullptr;
 ICNoiseAlgorithmRK*              TheICNoiseAlgorithmRKParameter = nullptr;
 ICNoiseAlgorithmG*               TheICNoiseAlgorithmGParameter = nullptr;
 ICNoiseAlgorithmB*               TheICNoiseAlgorithmBParameter = nullptr;
@@ -1365,7 +1380,220 @@ bool ICDarkScalingFactorB::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICNoiseEstimateRK::ICNoiseEstimateRK( MetaTable* T ) : MetaFloat( T )
+ICPSFSignalEstimateRK::ICPSFSignalEstimateRK( MetaTable* T ) : MetaDouble( T )
+{
+   TheICPSFSignalEstimateRKParameter = this;
+}
+
+IsoString ICPSFSignalEstimateRK::Id() const
+{
+   return "psfSignalEstimateRK";
+}
+
+int ICPSFSignalEstimateRK::Precision() const
+{
+   return 4;
+}
+
+bool ICPSFSignalEstimateRK::ScientificNotation() const
+{
+   return true;
+}
+
+bool ICPSFSignalEstimateRK::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+ICPSFSignalEstimateG::ICPSFSignalEstimateG( MetaTable* T ) : MetaDouble( T )
+{
+   TheICPSFSignalEstimateGParameter = this;
+}
+
+IsoString ICPSFSignalEstimateG::Id() const
+{
+   return "psfSignalEstimateG";
+}
+
+int ICPSFSignalEstimateG::Precision() const
+{
+   return 4;
+}
+
+bool ICPSFSignalEstimateG::ScientificNotation() const
+{
+   return true;
+}
+
+bool ICPSFSignalEstimateG::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+ICPSFSignalEstimateB::ICPSFSignalEstimateB( MetaTable* T ) : MetaDouble( T )
+{
+   TheICPSFSignalEstimateBParameter = this;
+}
+
+IsoString ICPSFSignalEstimateB::Id() const
+{
+   return "psfSignalEstimateB";
+}
+
+int ICPSFSignalEstimateB::Precision() const
+{
+   return 4;
+}
+
+bool ICPSFSignalEstimateB::ScientificNotation() const
+{
+   return true;
+}
+
+bool ICPSFSignalEstimateB::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+ICPSFPowerEstimateRK::ICPSFPowerEstimateRK( MetaTable* T ) : MetaDouble( T )
+{
+   TheICPSFPowerEstimateRKParameter = this;
+}
+
+IsoString ICPSFPowerEstimateRK::Id() const
+{
+   return "psfPowerEstimateRK";
+}
+
+int ICPSFPowerEstimateRK::Precision() const
+{
+   return 4;
+}
+
+bool ICPSFPowerEstimateRK::ScientificNotation() const
+{
+   return true;
+}
+
+bool ICPSFPowerEstimateRK::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+ICPSFPowerEstimateG::ICPSFPowerEstimateG( MetaTable* T ) : MetaDouble( T )
+{
+   TheICPSFPowerEstimateGParameter = this;
+}
+
+IsoString ICPSFPowerEstimateG::Id() const
+{
+   return "psfPowerEstimateG";
+}
+
+int ICPSFPowerEstimateG::Precision() const
+{
+   return 4;
+}
+
+bool ICPSFPowerEstimateG::ScientificNotation() const
+{
+   return true;
+}
+
+bool ICPSFPowerEstimateG::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+ICPSFPowerEstimateB::ICPSFPowerEstimateB( MetaTable* T ) : MetaDouble( T )
+{
+   TheICPSFPowerEstimateBParameter = this;
+}
+
+IsoString ICPSFPowerEstimateB::Id() const
+{
+   return "psfPowerEstimateB";
+}
+
+int ICPSFPowerEstimateB::Precision() const
+{
+   return 4;
+}
+
+bool ICPSFPowerEstimateB::ScientificNotation() const
+{
+   return true;
+}
+
+bool ICPSFPowerEstimateB::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+ICPSFCountRK::ICPSFCountRK( MetaTable* T ) : MetaInt32( T )
+{
+   TheICPSFCountRKParameter = this;
+}
+
+IsoString ICPSFCountRK::Id() const
+{
+   return "psfCountRK";
+}
+
+bool ICPSFCountRK::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+ICPSFCountG::ICPSFCountG( MetaTable* T ) : MetaInt32( T )
+{
+   TheICPSFCountGParameter = this;
+}
+
+IsoString ICPSFCountG::Id() const
+{
+   return "psfCountG";
+}
+
+bool ICPSFCountG::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+ICPSFCountB::ICPSFCountB( MetaTable* T ) : MetaInt32( T )
+{
+   TheICPSFCountBParameter = this;
+}
+
+IsoString ICPSFCountB::Id() const
+{
+   return "psfCountB";
+}
+
+bool ICPSFCountB::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+ICNoiseEstimateRK::ICNoiseEstimateRK( MetaTable* T ) : MetaDouble( T )
 {
    TheICNoiseEstimateRKParameter = this;
 }
@@ -1392,7 +1620,7 @@ bool ICNoiseEstimateRK::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICNoiseEstimateG::ICNoiseEstimateG( MetaTable* T ) : MetaFloat( T )
+ICNoiseEstimateG::ICNoiseEstimateG( MetaTable* T ) : MetaDouble( T )
 {
    TheICNoiseEstimateGParameter = this;
 }
@@ -1419,7 +1647,7 @@ bool ICNoiseEstimateG::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICNoiseEstimateB::ICNoiseEstimateB( MetaTable* T ) : MetaFloat( T )
+ICNoiseEstimateB::ICNoiseEstimateB( MetaTable* T ) : MetaDouble( T )
 {
    TheICNoiseEstimateBParameter = this;
 }
@@ -1446,7 +1674,7 @@ bool ICNoiseEstimateB::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICNoiseFractionRK::ICNoiseFractionRK( MetaTable* T ) : MetaFloat( T )
+ICNoiseFractionRK::ICNoiseFractionRK( MetaTable* T ) : MetaDouble( T )
 {
    TheICNoiseFractionRKParameter = this;
 }
@@ -1468,7 +1696,7 @@ bool ICNoiseFractionRK::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICNoiseFractionG::ICNoiseFractionG( MetaTable* T ) : MetaFloat( T )
+ICNoiseFractionG::ICNoiseFractionG( MetaTable* T ) : MetaDouble( T )
 {
    TheICNoiseFractionGParameter = this;
 }
@@ -1490,7 +1718,7 @@ bool ICNoiseFractionG::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICNoiseFractionB::ICNoiseFractionB( MetaTable* T ) : MetaFloat( T )
+ICNoiseFractionB::ICNoiseFractionB( MetaTable* T ) : MetaDouble( T )
 {
    TheICNoiseFractionBParameter = this;
 }
@@ -1506,6 +1734,168 @@ int ICNoiseFractionB::Precision() const
 }
 
 bool ICNoiseFractionB::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+ICNoiseScaleLowRK::ICNoiseScaleLowRK( MetaTable* T ) : MetaDouble( T )
+{
+   TheICNoiseScaleLowRKParameter = this;
+}
+
+IsoString ICNoiseScaleLowRK::Id() const
+{
+   return "noiseScaleLowRK";
+}
+
+int ICNoiseScaleLowRK::Precision() const
+{
+   return 6;
+}
+
+bool ICNoiseScaleLowRK::ScientificNotation() const
+{
+   return true;
+}
+
+bool ICNoiseScaleLowRK::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+ICNoiseScaleLowG::ICNoiseScaleLowG( MetaTable* T ) : MetaDouble( T )
+{
+   TheICNoiseScaleLowGParameter = this;
+}
+
+IsoString ICNoiseScaleLowG::Id() const
+{
+   return "noiseScaleLowG";
+}
+
+int ICNoiseScaleLowG::Precision() const
+{
+   return 6;
+}
+
+bool ICNoiseScaleLowG::ScientificNotation() const
+{
+   return true;
+}
+
+bool ICNoiseScaleLowG::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+ICNoiseScaleLowB::ICNoiseScaleLowB( MetaTable* T ) : MetaDouble( T )
+{
+   TheICNoiseScaleLowBParameter = this;
+}
+
+IsoString ICNoiseScaleLowB::Id() const
+{
+   return "noiseScaleLowB";
+}
+
+int ICNoiseScaleLowB::Precision() const
+{
+   return 6;
+}
+
+bool ICNoiseScaleLowB::ScientificNotation() const
+{
+   return true;
+}
+
+bool ICNoiseScaleLowB::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+ICNoiseScaleHighRK::ICNoiseScaleHighRK( MetaTable* T ) : MetaDouble( T )
+{
+   TheICNoiseScaleHighRKParameter = this;
+}
+
+IsoString ICNoiseScaleHighRK::Id() const
+{
+   return "noiseScaleHighRK";
+}
+
+int ICNoiseScaleHighRK::Precision() const
+{
+   return 6;
+}
+
+bool ICNoiseScaleHighRK::ScientificNotation() const
+{
+   return true;
+}
+
+bool ICNoiseScaleHighRK::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+ICNoiseScaleHighG::ICNoiseScaleHighG( MetaTable* T ) : MetaDouble( T )
+{
+   TheICNoiseScaleHighGParameter = this;
+}
+
+IsoString ICNoiseScaleHighG::Id() const
+{
+   return "noiseScaleHighG";
+}
+
+int ICNoiseScaleHighG::Precision() const
+{
+   return 6;
+}
+
+bool ICNoiseScaleHighG::ScientificNotation() const
+{
+   return true;
+}
+
+bool ICNoiseScaleHighG::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+ICNoiseScaleHighB::ICNoiseScaleHighB( MetaTable* T ) : MetaDouble( T )
+{
+   TheICNoiseScaleHighBParameter = this;
+}
+
+IsoString ICNoiseScaleHighB::Id() const
+{
+   return "noiseScaleHighB";
+}
+
+int ICNoiseScaleHighB::Precision() const
+{
+   return 6;
+}
+
+bool ICNoiseScaleHighB::ScientificNotation() const
+{
+   return true;
+}
+
+bool ICNoiseScaleHighB::IsReadOnly() const
 {
    return true;
 }
@@ -1566,4 +1956,4 @@ bool ICNoiseAlgorithmB::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationParameters.cpp - Released 2021-10-04T16:21:12Z
+// EOF ImageCalibrationParameters.cpp - Released 2021-10-20T18:10:09Z

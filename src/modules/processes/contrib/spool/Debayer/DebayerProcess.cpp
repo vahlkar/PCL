@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
-// Standard Debayer Process Module Version 1.9.0
+// Standard Debayer Process Module Version 1.9.4
 // ----------------------------------------------------------------------------
-// DebayerProcess.cpp - Released 2021-10-04T16:21:13Z
+// DebayerProcess.cpp - Released 2021-10-20T18:10:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -105,24 +105,54 @@ DebayerProcess::DebayerProcess()
    new DebayerOutputChannelImageR( this );
    new DebayerOutputChannelImageG( this );
    new DebayerOutputChannelImageB( this );
+   new DebayerPSFSignalEstimateR( this );
+   new DebayerPSFSignalEstimateG( this );
+   new DebayerPSFSignalEstimateB( this );
+   new DebayerPSFPowerEstimateR( this );
+   new DebayerPSFPowerEstimateG( this );
+   new DebayerPSFPowerEstimateB( this );
+   new DebayerPSFCountR( this );
+   new DebayerPSFCountG( this );
+   new DebayerPSFCountB( this );
    new DebayerNoiseEstimateR( this );
    new DebayerNoiseEstimateG( this );
    new DebayerNoiseEstimateB( this );
    new DebayerNoiseFractionR( this );
    new DebayerNoiseFractionG( this );
    new DebayerNoiseFractionB( this );
+   new DebayerNoiseScaleLowR( this );
+   new DebayerNoiseScaleLowG( this );
+   new DebayerNoiseScaleLowB( this );
+   new DebayerNoiseScaleHighR( this );
+   new DebayerNoiseScaleHighG( this );
+   new DebayerNoiseScaleHighB( this );
    new DebayerNoiseAlgorithmR( this );
    new DebayerNoiseAlgorithmG( this );
    new DebayerNoiseAlgorithmB( this );
 
    new DebayerOutputFileData( this );
    new DebayerOutputFilePath( TheDebayerOutputFileDataParameter );
+   new DebayerOutputFilePSFSignalEstimateR( TheDebayerOutputFileDataParameter );
+   new DebayerOutputFilePSFSignalEstimateG( TheDebayerOutputFileDataParameter );
+   new DebayerOutputFilePSFSignalEstimateB( TheDebayerOutputFileDataParameter );
+   new DebayerOutputFilePSFPowerEstimateR( TheDebayerOutputFileDataParameter );
+   new DebayerOutputFilePSFPowerEstimateG( TheDebayerOutputFileDataParameter );
+   new DebayerOutputFilePSFPowerEstimateB( TheDebayerOutputFileDataParameter );
+   new DebayerOutputFilePSFCountR( TheDebayerOutputFileDataParameter );
+   new DebayerOutputFilePSFCountG( TheDebayerOutputFileDataParameter );
+   new DebayerOutputFilePSFCountB( TheDebayerOutputFileDataParameter );
    new DebayerOutputFileNoiseEstimateR( TheDebayerOutputFileDataParameter );
    new DebayerOutputFileNoiseEstimateG( TheDebayerOutputFileDataParameter );
    new DebayerOutputFileNoiseEstimateB( TheDebayerOutputFileDataParameter );
    new DebayerOutputFileNoiseFractionR( TheDebayerOutputFileDataParameter );
    new DebayerOutputFileNoiseFractionG( TheDebayerOutputFileDataParameter );
    new DebayerOutputFileNoiseFractionB( TheDebayerOutputFileDataParameter );
+   new DebayerOutputFileNoiseScaleLowR( TheDebayerOutputFileDataParameter );
+   new DebayerOutputFileNoiseScaleLowG( TheDebayerOutputFileDataParameter );
+   new DebayerOutputFileNoiseScaleLowB( TheDebayerOutputFileDataParameter );
+   new DebayerOutputFileNoiseScaleHighR( TheDebayerOutputFileDataParameter );
+   new DebayerOutputFileNoiseScaleHighG( TheDebayerOutputFileDataParameter );
+   new DebayerOutputFileNoiseScaleHighB( TheDebayerOutputFileDataParameter );
    new DebayerOutputFileNoiseAlgorithmR( TheDebayerOutputFileDataParameter );
    new DebayerOutputFileNoiseAlgorithmG( TheDebayerOutputFileDataParameter );
    new DebayerOutputFileNoiseAlgorithmB( TheDebayerOutputFileDataParameter );
@@ -142,7 +172,7 @@ IsoString DebayerProcess::Id() const
 
 IsoString DebayerProcess::Category() const
 {
-   return "ColorSpaces,Preprocessing";
+   return "Preprocessing,ColorSpaces";
 }
 
 // ----------------------------------------------------------------------------
@@ -292,4 +322,4 @@ int DebayerProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DebayerProcess.cpp - Released 2021-10-04T16:21:13Z
+// EOF DebayerProcess.cpp - Released 2021-10-20T18:10:09Z

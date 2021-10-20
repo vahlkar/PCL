@@ -2,7 +2,7 @@
 # PixInsight Makefile Generator Script v1.123
 # Copyright (C) 2009-2021 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2021-10-04T16:24:10.268Z
+# Generated on .... 2021-10-20T18:11:42.386Z
 # Project id ...... SubframeSelector
 # Project type .... Module
 # Platform ........ FreeBSD/g++
@@ -28,8 +28,7 @@ SRC_FILES= \
 ../../SubframeSelectorMeasurementsInterface.cpp \
 ../../SubframeSelectorModule.cpp \
 ../../SubframeSelectorParameters.cpp \
-../../SubframeSelectorProcess.cpp \
-../../SubframeSelectorStarDetector.cpp
+../../SubframeSelectorProcess.cpp
 
 #
 # Object files
@@ -45,8 +44,7 @@ OBJ_FILES= \
 ./x64/Release/SubframeSelectorMeasurementsInterface.o \
 ./x64/Release/SubframeSelectorModule.o \
 ./x64/Release/SubframeSelectorParameters.o \
-./x64/Release/SubframeSelectorProcess.o \
-./x64/Release/SubframeSelectorStarDetector.o
+./x64/Release/SubframeSelectorProcess.o
 
 #
 # Dependency files
@@ -62,8 +60,7 @@ DEP_FILES= \
 ./x64/Release/SubframeSelectorMeasurementsInterface.d \
 ./x64/Release/SubframeSelectorModule.d \
 ./x64/Release/SubframeSelectorParameters.d \
-./x64/Release/SubframeSelectorProcess.d \
-./x64/Release/SubframeSelectorStarDetector.d
+./x64/Release/SubframeSelectorProcess.d
 
 #
 # Rules

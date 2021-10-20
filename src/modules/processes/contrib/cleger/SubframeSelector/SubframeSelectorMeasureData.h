@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.4.8
+// Standard SubframeSelector Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// SubframeSelectorMeasureData.h - Released 2021-10-04T16:21:12Z
+// SubframeSelectorMeasureData.h - Released 2021-10-20T18:10:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -84,6 +84,8 @@ struct MeasureProperties
    MeasureProperty fwhmMeanDev;
    MeasureProperty eccentricity;
    MeasureProperty eccentricityMeanDev;
+   MeasureProperty psfSignalWeight;
+   MeasureProperty psfPowerWeight;
    MeasureProperty snrWeight;
    MeasureProperty median;
    MeasureProperty medianMeanDev;
@@ -105,6 +107,8 @@ struct MeasureData
    double fwhmMeanDev;
    double eccentricity;
    double eccentricityMeanDev;
+   double psfSignalWeight;
+   double psfPowerWeight;
    double snrWeight;
    double median;
    double medianMeanDev;
@@ -135,28 +139,32 @@ struct MeasureItem
    pcl_bool enabled;
    pcl_bool locked;
    String   path;
-   float    weight;
-   float    fwhm;
-   float    eccentricity;
-   float    snrWeight;
-   float    median;
-   float    medianMeanDev;
-   float    noise;
-   float    noiseRatio;
+   double   weight;
+   double   fwhm;
+   double   eccentricity;
+   double   psfSignalWeight;
+   double   psfPowerWeight;
+   double   snrWeight;
+   double   median;
+   double   medianMeanDev;
+   double   noise;
+   double   noiseRatio;
    uint16   stars;
-   float    starResidual;
-   float    fwhmMeanDev;
-   float    eccentricityMeanDev;
-   float    starResidualMeanDev;
+   double   starResidual;
+   double   fwhmMeanDev;
+   double   eccentricityMeanDev;
+   double   starResidualMeanDev;
 
-   MeasureItem( uint16 i, const String& p = String() )
-      : index( i )
+   MeasureItem( uint16 a_index, const String& a_path = String() )
+      : index( a_index )
       , enabled( TheSSMeasurementEnabledParameter->DefaultValue() )
       , locked( TheSSMeasurementLockedParameter->DefaultValue() )
-      , path( p )
+      , path( a_path )
       , weight( TheSSMeasurementWeightParameter->DefaultValue() )
       , fwhm( TheSSMeasurementFWHMParameter->DefaultValue() )
       , eccentricity( TheSSMeasurementEccentricityParameter->DefaultValue() )
+      , psfSignalWeight( TheSSMeasurementPSFSignalWeightParameter->DefaultValue() )
+      , psfPowerWeight( TheSSMeasurementPSFPowerWeightParameter->DefaultValue() )
       , snrWeight( TheSSMeasurementSNRWeightParameter->DefaultValue() )
       , median( TheSSMeasurementMedianParameter->DefaultValue() )
       , medianMeanDev( TheSSMeasurementMedianMeanDevParameter->DefaultValue() )
@@ -177,6 +185,8 @@ struct MeasureItem
       path = measureData.path;
       fwhm = measureData.fwhm;
       eccentricity = measureData.eccentricity;
+      psfSignalWeight = measureData.psfSignalWeight;
+      psfPowerWeight = measureData.psfPowerWeight;
       snrWeight = measureData.snrWeight;
       median = measureData.median;
       medianMeanDev = measureData.medianMeanDev;
@@ -189,7 +199,7 @@ struct MeasureItem
       starResidualMeanDev = measureData.starResidualMeanDev;
    }
 
-   float FWHM( float subframeScale, int scaleUnit ) const
+   double FWHM( double subframeScale, int scaleUnit ) const
    {
       if ( scaleUnit == SSScaleUnit::ArcSeconds )
          return fwhm * subframeScale;
@@ -198,7 +208,7 @@ struct MeasureItem
       return fwhm;
    }
 
-   float Median( float cameraGain, int cameraResolution, int dataUnit ) const
+   double Median( double cameraGain, int cameraResolution, int dataUnit ) const
    {
       if ( dataUnit == SSDataUnit::Electron )
          return median * cameraResolution * cameraGain;
@@ -207,7 +217,7 @@ struct MeasureItem
       return median;
    }
 
-   float MedianMeanDev( float cameraGain, int cameraResolution, int dataUnit ) const
+   double MedianMeanDev( double cameraGain, int cameraResolution, int dataUnit ) const
    {
       if ( dataUnit == SSDataUnit::Electron )
          return medianMeanDev * cameraResolution * cameraGain;
@@ -216,7 +226,7 @@ struct MeasureItem
       return medianMeanDev;
    }
 
-   float Noise( float cameraGain, int cameraResolution, int dataUnit ) const
+   double Noise( double cameraGain, int cameraResolution, int dataUnit ) const
    {
       if ( dataUnit == SSDataUnit::Electron )
          return noise * cameraResolution * cameraGain;
@@ -225,7 +235,7 @@ struct MeasureItem
       return noise;
    }
 
-   float FWHMMeanDeviation( float subframeScale, int scaleUnit ) const
+   double FWHMMeanDeviation( double subframeScale, int scaleUnit ) const
    {
       if ( scaleUnit == SSScaleUnit::ArcSeconds )
          return fwhmMeanDev * subframeScale;
@@ -234,28 +244,30 @@ struct MeasureItem
       return fwhmMeanDev;
    }
 
-   String JavaScriptParameters( float subframeScale, int scaleUnit, float cameraGain,
+   String JavaScriptParameters( double subframeScale, int scaleUnit, double cameraGain,
                                 int cameraResolution, int dataUnit, const MeasureProperties& properties ) const;
 
    double SortingValue( pcl_enum sortBy ) const
    {
       switch ( sortBy )
       {
-      case SSSortingProperty::Index:               return index;
-      case SSSortingProperty::Weight:              return weight;
-      case SSSortingProperty::FWHM:                return fwhm;
-      case SSSortingProperty::Eccentricity:        return eccentricity;
-      case SSSortingProperty::SNRWeight:           return snrWeight;
-      case SSSortingProperty::Median:              return median;
-      case SSSortingProperty::MedianMeanDev:       return medianMeanDev;
-      case SSSortingProperty::Noise:               return noise;
-      case SSSortingProperty::NoiseRatio:          return noiseRatio;
-      case SSSortingProperty::Stars:               return stars;
-      case SSSortingProperty::StarResidual:        return starResidual;
-      case SSSortingProperty::FWHMMeanDev:         return fwhmMeanDev;
-      case SSSortingProperty::EccentricityMeanDev: return eccentricityMeanDev;
-      case SSSortingProperty::StarResidualMeanDev: return starResidualMeanDev;
-      default:                                     return 0; // ?
+      case SSSortingProperty::Index:                return index;
+      case SSSortingProperty::Weight:               return weight;
+      case SSSortingProperty::FWHM:                 return fwhm;
+      case SSSortingProperty::Eccentricity:         return eccentricity;
+      case SSSortingProperty::PSFSignalWeight:      return psfSignalWeight;
+      case SSSortingProperty::PSFPowerWeight: return psfPowerWeight;
+      case SSSortingProperty::SNRWeight:            return snrWeight;
+      case SSSortingProperty::Median:               return median;
+      case SSSortingProperty::MedianMeanDev:        return medianMeanDev;
+      case SSSortingProperty::Noise:                return noise;
+      case SSSortingProperty::NoiseRatio:           return noiseRatio;
+      case SSSortingProperty::Stars:                return stars;
+      case SSSortingProperty::StarResidual:         return starResidual;
+      case SSSortingProperty::FWHMMeanDev:          return fwhmMeanDev;
+      case SSSortingProperty::EccentricityMeanDev:  return eccentricityMeanDev;
+      case SSSortingProperty::StarResidualMeanDev:  return starResidualMeanDev;
+      default:                                      return 0; // ?
       }
    }
 };
@@ -267,8 +279,8 @@ struct MeasureUtils
    // Rudimentary first-line check for a JS Expression
    static bool IsValidExpression( const String& );
 
-   static void MeasureProperties( const Array<MeasureItem>& measures, float subframeScale,
-                                  int scaleUnit, float cameraGain,
+   static void MeasureProperties( const Array<MeasureItem>& measures, double subframeScale,
+                                  int scaleUnit, double cameraGain,
                                   int cameraResolution, int dataUnit,
                                   pcl::MeasureProperties& properties );
 
@@ -323,4 +335,4 @@ private:
 #endif   // __SubframeSelectorMeasureData_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorMeasureData.h - Released 2021-10-04T16:21:12Z
+// EOF SubframeSelectorMeasureData.h - Released 2021-10-20T18:10:09Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.4.8
+// Standard SubframeSelector Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// SubframeSelectorInterface.cpp - Released 2021-10-04T16:21:12Z
+// SubframeSelectorInterface.cpp - Released 2021-10-20T18:10:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -341,14 +341,11 @@ void SubframeSelectorInterface::UpdateStarDetectorControls()
    GUI->StarDetectorParameters_StructureLayers_Control.SetValue( m_instance.p_structureLayers );
    GUI->StarDetectorParameters_NoiseLayers_Control.SetValue( m_instance.p_noiseLayers );
    GUI->StarDetectorParameters_HotPixelFilterRadius_Control.SetValue( m_instance.p_hotPixelFilterRadius );
-   GUI->StarDetectorParameters_ApplyHotPixelFilter_CheckBox.SetChecked( m_instance.p_hotPixelFilter );
    GUI->StarDetectorParameters_NoiseReductionFilterRadius_Control.SetValue( m_instance.p_noiseReductionFilterRadius );
    GUI->StarDetectorParameters_Sensitivity_Control.SetValue( m_instance.p_sensitivity );
    GUI->StarDetectorParameters_PeakResponse_Control.SetValue( m_instance.p_peakResponse );
    GUI->StarDetectorParameters_MaxDistortion_Control.SetValue( m_instance.p_maxDistortion );
    GUI->StarDetectorParameters_UpperLimit_Control.SetValue( m_instance.p_upperLimit );
-   GUI->StarDetectorParameters_BackgroundExpansion_Control.SetValue( m_instance.p_backgroundExpansion );
-   GUI->StarDetectorParameters_XYStretch_Control.SetValue( m_instance.p_xyStretch );
    GUI->StarDetectorParameters_PSFFit_Control.SetCurrentItem( m_instance.p_psfFit );
    GUI->StarDetectorParameters_PSFFitCircular_CheckBox.SetChecked( m_instance.p_psfFitCircular );
    GUI->StarDetectorParameters_ROIX0_Control.SetValue( m_instance.p_roi.x0 );
@@ -536,8 +533,8 @@ void SubframeSelectorInterface::e_RealValueUpdated( NumericEdit& sender, double 
       m_instance.p_maxDistortion = value;
    else if ( sender == GUI->StarDetectorParameters_UpperLimit_Control )
       m_instance.p_upperLimit = value;
-   else if ( sender == GUI->StarDetectorParameters_XYStretch_Control )
-      m_instance.p_xyStretch = value;
+//    else if ( sender == GUI->StarDetectorParameters_XYStretch_Control )
+//       m_instance.p_xyStretch = value;
 }
 
 // ----------------------------------------------------------------------------
@@ -554,8 +551,8 @@ void SubframeSelectorInterface::e_SpinValueUpdated( SpinBox& sender, int value )
       m_instance.p_hotPixelFilterRadius = value;
    else if ( sender == GUI->StarDetectorParameters_NoiseReductionFilterRadius_Control )
       m_instance.p_noiseReductionFilterRadius = value;
-   else if ( sender == GUI->StarDetectorParameters_BackgroundExpansion_Control )
-      m_instance.p_backgroundExpansion = value;
+//    else if ( sender == GUI->StarDetectorParameters_BackgroundExpansion_Control )
+//       m_instance.p_backgroundExpansion = value;
    else if ( sender == GUI->StarDetectorParameters_ROIX0_Control )
       m_instance.p_roi.x0 = value;
    else if ( sender == GUI->StarDetectorParameters_ROIY0_Control )
@@ -606,8 +603,8 @@ void SubframeSelectorInterface::e_CheckboxUpdated( Button& sender, Button::check
 {
    if ( sender == GUI->SubframeImages_FileCache_Control )
       m_instance.p_fileCache = state == CheckState::Checked;
-   else if ( sender == GUI->StarDetectorParameters_ApplyHotPixelFilter_CheckBox )
-      m_instance.p_hotPixelFilter = state == CheckState::Checked;
+//    else if ( sender == GUI->StarDetectorParameters_ApplyHotPixelFilter_CheckBox )
+//       m_instance.p_hotPixelFilter = state == CheckState::Checked;
    else if ( sender == GUI->StarDetectorParameters_PSFFitCircular_CheckBox )
       m_instance.p_psfFitCircular = state == CheckState::Checked;
 }
@@ -1037,14 +1034,14 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
    StarDetectorParameters_HotPixelFilterRadius_Sizer.Add( StarDetectorParameters_HotPixelFilterRadius_Control );
    StarDetectorParameters_HotPixelFilterRadius_Sizer.AddStretch();
 
-   StarDetectorParameters_ApplyHotPixelFilter_CheckBox.SetText( "Apply hot pixel filter to detection image" );
-   StarDetectorParameters_ApplyHotPixelFilter_CheckBox.SetToolTip( TheSSApplyHotPixelFilterParameter->Tooltip() );
-   StarDetectorParameters_ApplyHotPixelFilter_CheckBox.OnCheck( (Button::check_event_handler)
-                                    &SubframeSelectorInterface::e_CheckboxUpdated, w );
-
-   StarDetectorParameters_ApplyHotPixelFilter_Sizer.AddUnscaledSpacing( labelWidth1 + w.LogicalPixelsToPhysical( 4 ) );
-   StarDetectorParameters_ApplyHotPixelFilter_Sizer.Add( StarDetectorParameters_ApplyHotPixelFilter_CheckBox );
-   StarDetectorParameters_ApplyHotPixelFilter_Sizer.AddStretch();
+//    StarDetectorParameters_ApplyHotPixelFilter_CheckBox.SetText( "Apply hot pixel filter to detection image" );
+//    StarDetectorParameters_ApplyHotPixelFilter_CheckBox.SetToolTip( TheSSApplyHotPixelFilterParameter->Tooltip() );
+//    StarDetectorParameters_ApplyHotPixelFilter_CheckBox.OnCheck( (Button::check_event_handler)
+//                                     &SubframeSelectorInterface::e_CheckboxUpdated, w );
+//
+//    StarDetectorParameters_ApplyHotPixelFilter_Sizer.AddUnscaledSpacing( labelWidth1 + w.LogicalPixelsToPhysical( 4 ) );
+//    StarDetectorParameters_ApplyHotPixelFilter_Sizer.Add( StarDetectorParameters_ApplyHotPixelFilter_CheckBox );
+//    StarDetectorParameters_ApplyHotPixelFilter_Sizer.AddStretch();
 
    StarDetectorParameters_NoiseReductionFilterRadius_Label.SetText( "Noise reduction filter:" );
    StarDetectorParameters_NoiseReductionFilterRadius_Label.SetMinWidth( labelWidth1 );
@@ -1106,31 +1103,31 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
    StarDetectorParameters_UpperLimit_Control.OnValueUpdated( (NumericEdit::value_event_handler)
                                     &SubframeSelectorInterface::e_RealValueUpdated, w );
 
-   StarDetectorParameters_BackgroundExpansion_Label.SetText( "Background expansion:" );
-   StarDetectorParameters_BackgroundExpansion_Label.SetMinWidth( labelWidth1 );
-   StarDetectorParameters_BackgroundExpansion_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
-
-   StarDetectorParameters_BackgroundExpansion_Control.SetRange( TheSSBackgroundExpansionParameter->MinimumValue(),
-                                                                TheSSBackgroundExpansionParameter->MaximumValue() );
-   StarDetectorParameters_BackgroundExpansion_Control.SetToolTip( TheSSBackgroundExpansionParameter->Tooltip() );
-   StarDetectorParameters_BackgroundExpansion_Control.OnValueUpdated( (SpinBox::value_event_handler)
-                                    &SubframeSelectorInterface::e_SpinValueUpdated, w );
-
-   StarDetectorParameters_BackgroundExpansion_Sizer.SetSpacing( 4 );
-   StarDetectorParameters_BackgroundExpansion_Sizer.Add( StarDetectorParameters_BackgroundExpansion_Label );
-   StarDetectorParameters_BackgroundExpansion_Sizer.Add( StarDetectorParameters_BackgroundExpansion_Control );
-   StarDetectorParameters_BackgroundExpansion_Sizer.AddStretch();
-
-   StarDetectorParameters_XYStretch_Control.label.SetText( "XY stretch:" );
-   StarDetectorParameters_XYStretch_Control.label.SetMinWidth( labelWidth1 );
-   StarDetectorParameters_XYStretch_Control.label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
-   StarDetectorParameters_XYStretch_Control.SetReal();
-   StarDetectorParameters_XYStretch_Control.SetRange( TheSSXYStretchParameter->MinimumValue(),
-                                                      TheSSXYStretchParameter->MaximumValue() );
-   StarDetectorParameters_XYStretch_Control.SetPrecision( TheSSXYStretchParameter->Precision() );
-   StarDetectorParameters_XYStretch_Control.SetToolTip( TheSSXYStretchParameter->Tooltip() );
-   StarDetectorParameters_XYStretch_Control.OnValueUpdated( (NumericEdit::value_event_handler)
-                                    &SubframeSelectorInterface::e_RealValueUpdated, w );
+//    StarDetectorParameters_BackgroundExpansion_Label.SetText( "Background expansion:" );
+//    StarDetectorParameters_BackgroundExpansion_Label.SetMinWidth( labelWidth1 );
+//    StarDetectorParameters_BackgroundExpansion_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
+//
+//    StarDetectorParameters_BackgroundExpansion_Control.SetRange( TheSSBackgroundExpansionParameter->MinimumValue(),
+//                                                                 TheSSBackgroundExpansionParameter->MaximumValue() );
+//    StarDetectorParameters_BackgroundExpansion_Control.SetToolTip( TheSSBackgroundExpansionParameter->Tooltip() );
+//    StarDetectorParameters_BackgroundExpansion_Control.OnValueUpdated( (SpinBox::value_event_handler)
+//                                     &SubframeSelectorInterface::e_SpinValueUpdated, w );
+//
+//    StarDetectorParameters_BackgroundExpansion_Sizer.SetSpacing( 4 );
+//    StarDetectorParameters_BackgroundExpansion_Sizer.Add( StarDetectorParameters_BackgroundExpansion_Label );
+//    StarDetectorParameters_BackgroundExpansion_Sizer.Add( StarDetectorParameters_BackgroundExpansion_Control );
+//    StarDetectorParameters_BackgroundExpansion_Sizer.AddStretch();
+//
+//    StarDetectorParameters_XYStretch_Control.label.SetText( "XY stretch:" );
+//    StarDetectorParameters_XYStretch_Control.label.SetMinWidth( labelWidth1 );
+//    StarDetectorParameters_XYStretch_Control.label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
+//    StarDetectorParameters_XYStretch_Control.SetReal();
+//    StarDetectorParameters_XYStretch_Control.SetRange( TheSSXYStretchParameter->MinimumValue(),
+//                                                       TheSSXYStretchParameter->MaximumValue() );
+//    StarDetectorParameters_XYStretch_Control.SetPrecision( TheSSXYStretchParameter->Precision() );
+//    StarDetectorParameters_XYStretch_Control.SetToolTip( TheSSXYStretchParameter->Tooltip() );
+//    StarDetectorParameters_XYStretch_Control.OnValueUpdated( (NumericEdit::value_event_handler)
+//                                     &SubframeSelectorInterface::e_RealValueUpdated, w );
 
    StarDetectorParameters_PSFFit_Label.SetText( "PSF fit:" );
    StarDetectorParameters_PSFFit_Label.SetMinWidth( labelWidth1 );
@@ -1161,14 +1158,14 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
    StarDetectorParameters_Sizer.Add( StarDetectorParameters_StructureLayers_Sizer );
    StarDetectorParameters_Sizer.Add( StarDetectorParameters_NoiseLayers_Sizer );
    StarDetectorParameters_Sizer.Add( StarDetectorParameters_HotPixelFilterRadius_Sizer );
-   StarDetectorParameters_Sizer.Add( StarDetectorParameters_ApplyHotPixelFilter_Sizer );
+//    StarDetectorParameters_Sizer.Add( StarDetectorParameters_ApplyHotPixelFilter_Sizer );
    StarDetectorParameters_Sizer.Add( StarDetectorParameters_NoiseReductionFilterRadius_Sizer );
    StarDetectorParameters_Sizer.Add( StarDetectorParameters_Sensitivity_Control );
    StarDetectorParameters_Sizer.Add( StarDetectorParameters_PeakResponse_Control );
    StarDetectorParameters_Sizer.Add( StarDetectorParameters_MaxDistortion_Control );
    StarDetectorParameters_Sizer.Add( StarDetectorParameters_UpperLimit_Control );
-   StarDetectorParameters_Sizer.Add( StarDetectorParameters_BackgroundExpansion_Sizer );
-   StarDetectorParameters_Sizer.Add( StarDetectorParameters_XYStretch_Control );
+//    StarDetectorParameters_Sizer.Add( StarDetectorParameters_BackgroundExpansion_Sizer );
+//    StarDetectorParameters_Sizer.Add( StarDetectorParameters_XYStretch_Control );
    StarDetectorParameters_Sizer.Add( StarDetectorParameters_PSFFit_Sizer );
    StarDetectorParameters_Sizer.Add( StarDetectorParameters_PSFFitCircular_Sizer );
 
@@ -1485,4 +1482,4 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInterface.cpp - Released 2021-10-04T16:21:12Z
+// EOF SubframeSelectorInterface.cpp - Released 2021-10-20T18:10:09Z

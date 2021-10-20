@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
-// Standard Debayer Process Module Version 1.9.0
+// Standard Debayer Process Module Version 1.9.4
 // ----------------------------------------------------------------------------
-// DebayerParameters.h - Released 2021-10-04T16:21:13Z
+// DebayerParameters.h - Released 2021-10-20T18:10:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -548,7 +548,145 @@ extern DebayerOutputChannelImageB* TheDebayerOutputChannelImageBParameter;
 
 // ----------------------------------------------------------------------------
 
-class DebayerNoiseEstimateR : public MetaFloat
+class DebayerPSFSignalEstimateR : public MetaDouble
+{
+public:
+
+   DebayerPSFSignalEstimateR( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerPSFSignalEstimateR* TheDebayerPSFSignalEstimateRParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerPSFSignalEstimateG : public MetaDouble
+{
+public:
+
+   DebayerPSFSignalEstimateG( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerPSFSignalEstimateG* TheDebayerPSFSignalEstimateGParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerPSFSignalEstimateB : public MetaDouble
+{
+public:
+
+   DebayerPSFSignalEstimateB( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerPSFSignalEstimateB* TheDebayerPSFSignalEstimateBParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerPSFPowerEstimateR : public MetaDouble
+{
+public:
+
+   DebayerPSFPowerEstimateR( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerPSFPowerEstimateR* TheDebayerPSFPowerEstimateRParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerPSFPowerEstimateG : public MetaDouble
+{
+public:
+
+   DebayerPSFPowerEstimateG( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerPSFPowerEstimateG* TheDebayerPSFPowerEstimateGParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerPSFPowerEstimateB : public MetaDouble
+{
+public:
+
+   DebayerPSFPowerEstimateB( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerPSFPowerEstimateB* TheDebayerPSFPowerEstimateBParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerPSFCountR : public MetaInt32
+{
+public:
+
+   DebayerPSFCountR( MetaProcess* );
+
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerPSFCountR* TheDebayerPSFCountRParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerPSFCountG : public MetaInt32
+{
+public:
+
+   DebayerPSFCountG( MetaProcess* );
+
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerPSFCountG* TheDebayerPSFCountGParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerPSFCountB : public MetaInt32
+{
+public:
+
+   DebayerPSFCountB( MetaProcess* );
+
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerPSFCountB* TheDebayerPSFCountBParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerNoiseEstimateR : public MetaDouble
 {
 public:
 
@@ -564,7 +702,7 @@ extern DebayerNoiseEstimateR* TheDebayerNoiseEstimateRParameter;
 
 // ----------------------------------------------------------------------------
 
-class DebayerNoiseEstimateG : public MetaFloat
+class DebayerNoiseEstimateG : public MetaDouble
 {
 public:
 
@@ -580,7 +718,7 @@ extern DebayerNoiseEstimateG* TheDebayerNoiseEstimateGParameter;
 
 // ----------------------------------------------------------------------------
 
-class DebayerNoiseEstimateB : public MetaFloat
+class DebayerNoiseEstimateB : public MetaDouble
 {
 public:
 
@@ -596,7 +734,7 @@ extern DebayerNoiseEstimateB* TheDebayerNoiseEstimateBParameter;
 
 // ----------------------------------------------------------------------------
 
-class DebayerNoiseFractionR : public MetaFloat
+class DebayerNoiseFractionR : public MetaDouble
 {
 public:
 
@@ -611,7 +749,7 @@ extern DebayerNoiseFractionR* TheDebayerNoiseFractionRParameter;
 
 // ----------------------------------------------------------------------------
 
-class DebayerNoiseFractionG : public MetaFloat
+class DebayerNoiseFractionG : public MetaDouble
 {
 public:
 
@@ -626,7 +764,7 @@ extern DebayerNoiseFractionG* TheDebayerNoiseFractionGParameter;
 
 // ----------------------------------------------------------------------------
 
-class DebayerNoiseFractionB : public MetaFloat
+class DebayerNoiseFractionB : public MetaDouble
 {
 public:
 
@@ -638,6 +776,102 @@ public:
 };
 
 extern DebayerNoiseFractionB* TheDebayerNoiseFractionBParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerNoiseScaleLowR : public MetaDouble
+{
+public:
+
+   DebayerNoiseScaleLowR( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerNoiseScaleLowR* TheDebayerNoiseScaleLowRParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerNoiseScaleLowG : public MetaDouble
+{
+public:
+
+   DebayerNoiseScaleLowG( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerNoiseScaleLowG* TheDebayerNoiseScaleLowGParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerNoiseScaleLowB : public MetaDouble
+{
+public:
+
+   DebayerNoiseScaleLowB( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerNoiseScaleLowB* TheDebayerNoiseScaleLowBParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerNoiseScaleHighR : public MetaDouble
+{
+public:
+
+   DebayerNoiseScaleHighR( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerNoiseScaleHighR* TheDebayerNoiseScaleHighRParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerNoiseScaleHighG : public MetaDouble
+{
+public:
+
+   DebayerNoiseScaleHighG( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerNoiseScaleHighG* TheDebayerNoiseScaleHighGParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerNoiseScaleHighB : public MetaDouble
+{
+public:
+
+   DebayerNoiseScaleHighB( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerNoiseScaleHighB* TheDebayerNoiseScaleHighBParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -754,7 +988,145 @@ extern DebayerOutputChannelFilePathB* TheDebayerOutputChannelFilePathBParameter;
 
 // ----------------------------------------------------------------------------
 
-class DebayerOutputFileNoiseEstimateR : public MetaFloat
+class DebayerOutputFilePSFSignalEstimateR : public MetaDouble
+{
+public:
+
+   DebayerOutputFilePSFSignalEstimateR( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerOutputFilePSFSignalEstimateR* TheDebayerOutputFilePSFSignalEstimateRParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerOutputFilePSFSignalEstimateG : public MetaDouble
+{
+public:
+
+   DebayerOutputFilePSFSignalEstimateG( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerOutputFilePSFSignalEstimateG* TheDebayerOutputFilePSFSignalEstimateGParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerOutputFilePSFSignalEstimateB : public MetaDouble
+{
+public:
+
+   DebayerOutputFilePSFSignalEstimateB( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerOutputFilePSFSignalEstimateB* TheDebayerOutputFilePSFSignalEstimateBParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerOutputFilePSFPowerEstimateR : public MetaDouble
+{
+public:
+
+   DebayerOutputFilePSFPowerEstimateR( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerOutputFilePSFPowerEstimateR* TheDebayerOutputFilePSFPowerEstimateRParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerOutputFilePSFPowerEstimateG : public MetaDouble
+{
+public:
+
+   DebayerOutputFilePSFPowerEstimateG( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerOutputFilePSFPowerEstimateG* TheDebayerOutputFilePSFPowerEstimateGParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerOutputFilePSFPowerEstimateB : public MetaDouble
+{
+public:
+
+   DebayerOutputFilePSFPowerEstimateB( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerOutputFilePSFPowerEstimateB* TheDebayerOutputFilePSFPowerEstimateBParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerOutputFilePSFCountR : public MetaInt32
+{
+public:
+
+   DebayerOutputFilePSFCountR( MetaTable* );
+
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerOutputFilePSFCountR* TheDebayerOutputFilePSFCountRParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerOutputFilePSFCountG : public MetaInt32
+{
+public:
+
+   DebayerOutputFilePSFCountG( MetaTable* );
+
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerOutputFilePSFCountG* TheDebayerOutputFilePSFCountGParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerOutputFilePSFCountB : public MetaInt32
+{
+public:
+
+   DebayerOutputFilePSFCountB( MetaTable* );
+
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerOutputFilePSFCountB* TheDebayerOutputFilePSFCountBParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerOutputFileNoiseEstimateR : public MetaDouble
 {
 public:
 
@@ -770,7 +1142,7 @@ extern DebayerOutputFileNoiseEstimateR* TheDebayerOutputFileNoiseEstimateRParame
 
 // ----------------------------------------------------------------------------
 
-class DebayerOutputFileNoiseEstimateG : public MetaFloat
+class DebayerOutputFileNoiseEstimateG : public MetaDouble
 {
 public:
 
@@ -786,7 +1158,7 @@ extern DebayerOutputFileNoiseEstimateG* TheDebayerOutputFileNoiseEstimateGParame
 
 // ----------------------------------------------------------------------------
 
-class DebayerOutputFileNoiseEstimateB : public MetaFloat
+class DebayerOutputFileNoiseEstimateB : public MetaDouble
 {
 public:
 
@@ -802,7 +1174,7 @@ extern DebayerOutputFileNoiseEstimateB* TheDebayerOutputFileNoiseEstimateBParame
 
 // ----------------------------------------------------------------------------
 
-class DebayerOutputFileNoiseFractionR : public MetaFloat
+class DebayerOutputFileNoiseFractionR : public MetaDouble
 {
 public:
 
@@ -817,7 +1189,7 @@ extern DebayerOutputFileNoiseFractionR* TheDebayerOutputFileNoiseFractionRParame
 
 // ----------------------------------------------------------------------------
 
-class DebayerOutputFileNoiseFractionG : public MetaFloat
+class DebayerOutputFileNoiseFractionG : public MetaDouble
 {
 public:
 
@@ -832,7 +1204,7 @@ extern DebayerOutputFileNoiseFractionG* TheDebayerOutputFileNoiseFractionGParame
 
 // ----------------------------------------------------------------------------
 
-class DebayerOutputFileNoiseFractionB : public MetaFloat
+class DebayerOutputFileNoiseFractionB : public MetaDouble
 {
 public:
 
@@ -844,6 +1216,102 @@ public:
 };
 
 extern DebayerOutputFileNoiseFractionB* TheDebayerOutputFileNoiseFractionBParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerOutputFileNoiseScaleLowR : public MetaDouble
+{
+public:
+
+   DebayerOutputFileNoiseScaleLowR( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerOutputFileNoiseScaleLowR* TheDebayerOutputFileNoiseScaleLowRParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerOutputFileNoiseScaleLowG : public MetaDouble
+{
+public:
+
+   DebayerOutputFileNoiseScaleLowG( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerOutputFileNoiseScaleLowG* TheDebayerOutputFileNoiseScaleLowGParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerOutputFileNoiseScaleLowB : public MetaDouble
+{
+public:
+
+   DebayerOutputFileNoiseScaleLowB( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerOutputFileNoiseScaleLowB* TheDebayerOutputFileNoiseScaleLowBParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerOutputFileNoiseScaleHighR : public MetaDouble
+{
+public:
+
+   DebayerOutputFileNoiseScaleHighR( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerOutputFileNoiseScaleHighR* TheDebayerOutputFileNoiseScaleHighRParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerOutputFileNoiseScaleHighG : public MetaDouble
+{
+public:
+
+   DebayerOutputFileNoiseScaleHighG( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerOutputFileNoiseScaleHighG* TheDebayerOutputFileNoiseScaleHighGParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerOutputFileNoiseScaleHighB : public MetaDouble
+{
+public:
+
+   DebayerOutputFileNoiseScaleHighB( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerOutputFileNoiseScaleHighB* TheDebayerOutputFileNoiseScaleHighBParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -896,4 +1364,4 @@ PCL_END_LOCAL
 #endif   // __DebayerParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF DebayerParameters.h - Released 2021-10-04T16:21:13Z
+// EOF DebayerParameters.h - Released 2021-10-20T18:10:09Z

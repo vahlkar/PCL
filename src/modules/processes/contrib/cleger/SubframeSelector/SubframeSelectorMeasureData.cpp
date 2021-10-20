@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.4.8
+// Standard SubframeSelector Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// SubframeSelectorMeasureData.cpp - Released 2021-10-04T16:21:12Z
+// SubframeSelectorMeasureData.cpp - Released 2021-10-20T18:10:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -64,6 +64,8 @@ void MeasureData::ResetCacheableData()
    fwhmMeanDev = 0;
    eccentricity = TheSSMeasurementEccentricityParameter->DefaultValue();
    eccentricityMeanDev = 0;
+   psfSignalWeight = TheSSMeasurementPSFSignalWeightParameter->DefaultValue();
+   psfPowerWeight = TheSSMeasurementPSFPowerWeightParameter->DefaultValue();
    snrWeight = TheSSMeasurementSNRWeightParameter->DefaultValue();
    median = TheSSMeasurementMedianParameter->DefaultValue();
    medianMeanDev = 0;
@@ -81,19 +83,21 @@ void MeasureData::AddToCache( const SubframeSelectorInstance& instance ) const
    if ( TheSubframeSelectorCache != nullptr )
    {
       SubframeSelectorCacheItem item( path );
-      item.fwhm                = fwhm;
-      item.fwhmMeanDev         = fwhmMeanDev;
-      item.eccentricity        = eccentricity;
-      item.eccentricityMeanDev = eccentricityMeanDev;
-      item.snrWeight           = snrWeight;
-      item.median              = median;
-      item.medianMeanDev       = medianMeanDev;
-      item.trimmingFactor      = instance.p_trimmingFactor;
-      item.noise               = noise;
-      item.noiseRatio          = noiseRatio;
-      item.stars               = stars;
-      item.starResidual        = starResidual;
-      item.starResidualMeanDev = starResidualMeanDev;
+      item.fwhm                 = fwhm;
+      item.fwhmMeanDev          = fwhmMeanDev;
+      item.eccentricity         = eccentricity;
+      item.eccentricityMeanDev  = eccentricityMeanDev;
+      item.psfSignalWeight      = psfSignalWeight;
+      item.psfPowerWeight = psfPowerWeight;
+      item.snrWeight            = snrWeight;
+      item.median               = median;
+      item.medianMeanDev        = medianMeanDev;
+      item.trimmingFactor       = instance.p_trimmingFactor;
+      item.noise                = noise;
+      item.noiseRatio           = noiseRatio;
+      item.stars                = stars;
+      item.starResidual         = starResidual;
+      item.starResidualMeanDev  = starResidualMeanDev;
       TheSubframeSelectorCache->Add( item );
    }
 }
@@ -109,32 +113,36 @@ bool MeasureData::GetFromCache( const SubframeSelectorInstance& instance )
       SubframeSelectorCacheItem item;
       if ( TheSubframeSelectorCache->Get( item, path ) )
       {
-         fwhm                = item.fwhm;
-         fwhmMeanDev         = item.fwhmMeanDev;
-         eccentricity        = item.eccentricity;
-         eccentricityMeanDev = item.eccentricityMeanDev;
-         snrWeight           = item.snrWeight;
-         median              = item.median;
-         medianMeanDev       = item.medianMeanDev;
-         noise               = item.noise;
-         noiseRatio          = item.noiseRatio;
-         stars               = item.stars;
-         starResidual        = item.starResidual;
-         starResidualMeanDev = item.starResidualMeanDev;
+         fwhm                 = item.fwhm;
+         fwhmMeanDev          = item.fwhmMeanDev;
+         eccentricity         = item.eccentricity;
+         eccentricityMeanDev  = item.eccentricityMeanDev;
+         psfSignalWeight      = item.psfSignalWeight;
+         psfPowerWeight = item.psfPowerWeight;
+         snrWeight            = item.snrWeight;
+         median               = item.median;
+         medianMeanDev        = item.medianMeanDev;
+         noise                = item.noise;
+         noiseRatio           = item.noiseRatio;
+         stars                = item.stars;
+         starResidual         = item.starResidual;
+         starResidualMeanDev  = item.starResidualMeanDev;
 
          return RoundInt( 100*item.trimmingFactor ) == RoundInt( 100*instance.p_trimmingFactor ) &&
-                fwhm                != TheSSMeasurementFWHMParameter->DefaultValue() &&
-                fwhmMeanDev         != 0 &&
-                eccentricity        != TheSSMeasurementEccentricityParameter->DefaultValue() &&
-                eccentricityMeanDev != 0 &&
-                snrWeight           != TheSSMeasurementSNRWeightParameter->DefaultValue() &&
-                median              != TheSSMeasurementMedianParameter->DefaultValue() &&
-                medianMeanDev       != 0 &&
-                noise               != TheSSMeasurementNoiseParameter->DefaultValue() &&
-                noiseRatio          != TheSSMeasurementNoiseRatioParameter->DefaultValue() &&
-                stars               != TheSSMeasurementStarsParameter->DefaultValue() &&
-                starResidual        != TheSSMeasurementStarResidualParameter->DefaultValue() &&
-                starResidualMeanDev != 0;
+                fwhm                 != TheSSMeasurementFWHMParameter->DefaultValue() &&
+                fwhmMeanDev          != 0 &&
+                eccentricity         != TheSSMeasurementEccentricityParameter->DefaultValue() &&
+                eccentricityMeanDev  != 0 &&
+                psfSignalWeight      != TheSSMeasurementPSFSignalWeightParameter->DefaultValue() &&
+                psfPowerWeight != TheSSMeasurementPSFPowerWeightParameter->DefaultValue() &&
+                snrWeight            != TheSSMeasurementSNRWeightParameter->DefaultValue() &&
+                median               != TheSSMeasurementMedianParameter->DefaultValue() &&
+                medianMeanDev        != 0 &&
+                noise                != TheSSMeasurementNoiseParameter->DefaultValue() &&
+                noiseRatio           != TheSSMeasurementNoiseRatioParameter->DefaultValue() &&
+                stars                != TheSSMeasurementStarsParameter->DefaultValue() &&
+                starResidual         != TheSSMeasurementStarResidualParameter->DefaultValue() &&
+                starResidualMeanDev  != 0;
       }
    }
 
@@ -144,120 +152,121 @@ bool MeasureData::GetFromCache( const SubframeSelectorInstance& instance )
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-String MeasureItem::JavaScriptParameters( float subframeScale, int scaleUnit, float cameraGain,
+String MeasureItem::JavaScriptParameters( double subframeScale, int scaleUnit, double cameraGain,
                                           int cameraResolution, int dataUnit, const MeasureProperties& properties ) const
 {
    return
 
    String().Format( "let Index = %i;\n", index ) +
 
-   String().Format( "let Weight = %.4f;\n", weight ) +
-   String().Format( "let WeightMin = %.4f;\n", properties.weight.min ) +
-   String().Format( "let WeightMax = %.4f;\n", properties.weight.max ) +
-   String().Format( "let WeightMedian = %.4f;\n", properties.weight.median ) +
-   String().Format( "let WeightSigma = %.4f;\n", DeviationNormalize(
-            weight, properties.weight.median, properties.weight.deviation
-   ) ) +
+   String().Format( "let Weight = %.8e;\n", weight ) +
+   String().Format( "let WeightMin = %.8e;\n", properties.weight.min ) +
+   String().Format( "let WeightMax = %.8e;\n", properties.weight.max ) +
+   String().Format( "let WeightMedian = %.8e;\n", properties.weight.median ) +
+   String().Format( "let WeightSigma = %.8e;\n", DeviationNormalize(
+      weight, properties.weight.median, properties.weight.deviation ) ) +
 
-   String().Format( "let FWHM = %.4f;\n", FWHM( subframeScale, scaleUnit ) ) +
-   String().Format( "let FWHMMin = %.4f;\n", properties.fwhm.min ) +
-   String().Format( "let FWHMMax = %.4f;\n", properties.fwhm.max ) +
-   String().Format( "let FWHMMedian = %.4f;\n", properties.fwhm.median ) +
-   String().Format( "let FWHMSigma = %.4f;\n", DeviationNormalize(
-            FWHM( subframeScale, scaleUnit ), properties.fwhm.median, properties.fwhm.deviation
-   ) ) +
+   String().Format( "let FWHM = %.8e;\n", FWHM( subframeScale, scaleUnit ) ) +
+   String().Format( "let FWHMMin = %.8e;\n", properties.fwhm.min ) +
+   String().Format( "let FWHMMax = %.8e;\n", properties.fwhm.max ) +
+   String().Format( "let FWHMMedian = %.8e;\n", properties.fwhm.median ) +
+   String().Format( "let FWHMSigma = %.8e;\n", DeviationNormalize( FWHM(
+                  subframeScale, scaleUnit ), properties.fwhm.median, properties.fwhm.deviation ) ) +
 
-   String().Format( "let Eccentricity = %.4f;\n", eccentricity ) +
-   String().Format( "let EccentricityMin = %.4f;\n", properties.eccentricity.min ) +
-   String().Format( "let EccentricityMax = %.4f;\n", properties.eccentricity.max ) +
-   String().Format( "let EccentricityMedian = %.4f;\n", properties.eccentricity.median ) +
-   String().Format( "let EccentricitySigma = %.4f;\n", DeviationNormalize(
-            eccentricity, properties.eccentricity.median, properties.eccentricity.deviation
-   ) ) +
+   String().Format( "let Eccentricity = %.8e;\n", eccentricity ) +
+   String().Format( "let EccentricityMin = %.8e;\n", properties.eccentricity.min ) +
+   String().Format( "let EccentricityMax = %.8e;\n", properties.eccentricity.max ) +
+   String().Format( "let EccentricityMedian = %.8e;\n", properties.eccentricity.median ) +
+   String().Format( "let EccentricitySigma = %.8e;\n", DeviationNormalize(
+                  eccentricity, properties.eccentricity.median, properties.eccentricity.deviation ) ) +
 
-   String().Format( "let SNRWeight = %.4f;\n", snrWeight ) +
-   String().Format( "let SNRWeightMin = %.4f;\n", properties.snrWeight.min ) +
-   String().Format( "let SNRWeightMax = %.4f;\n", properties.snrWeight.max ) +
-   String().Format( "let SNRWeightMedian = %.4f;\n", properties.snrWeight.median ) +
-   String().Format( "let SNRWeightSigma = %.4f;\n", DeviationNormalize(
-            snrWeight, properties.snrWeight.median, properties.snrWeight.deviation
-   ) ) +
+   String().Format( "let PSFSignalWeight = %.8e;\n", psfSignalWeight ) +
+   String().Format( "let PSFSignalWeightMin = %.8e;\n", properties.psfSignalWeight.min ) +
+   String().Format( "let PSFSignalWeightMax = %.8e;\n", properties.psfSignalWeight.max ) +
+   String().Format( "let PSFSignalWeightMedian = %.8e;\n", properties.psfSignalWeight.median ) +
+   String().Format( "let PSFSignalWeightSigma = %.8e;\n", DeviationNormalize(
+                  psfSignalWeight, properties.psfSignalWeight.median, properties.psfSignalWeight.deviation ) ) +
 
-   String().Format( "let Median = %.4f;\n", Median( cameraGain, cameraResolution, dataUnit ) ) +
-   String().Format( "let MedianMin = %.4f;\n", properties.median.min ) +
-   String().Format( "let MedianMax = %.4f;\n", properties.median.max ) +
-   String().Format( "let MedianMedian = %.4f;\n", properties.median.median ) +
-   String().Format( "let MedianSigma = %.4f;\n", DeviationNormalize(
-            Median( cameraGain, cameraResolution, dataUnit ),
-            properties.median.median, properties.median.deviation
-   ) ) +
+   String().Format( "let PSFPowerWeight = %.8e;\n", psfPowerWeight ) +
+   String().Format( "let PSFPowerWeightMin = %.8e;\n", properties.psfPowerWeight.min ) +
+   String().Format( "let PSFPowerWeightMax = %.8e;\n", properties.psfPowerWeight.max ) +
+   String().Format( "let PSFPowerWeightMedian = %.8e;\n", properties.psfPowerWeight.median ) +
+   String().Format( "let PSFPowerWeightSigma = %.8e;\n", DeviationNormalize(
+                  psfPowerWeight, properties.psfPowerWeight.median, properties.psfPowerWeight.deviation ) ) +
 
-   String().Format( "let MedianMeanDev = %.4f;\n", MedianMeanDev( cameraGain, cameraResolution, dataUnit ) ) +
-   String().Format( "let MedianMeanDevMin = %.4f;\n", properties.medianMeanDev.min ) +
-   String().Format( "let MedianMeanDevMax = %.4f;\n", properties.medianMeanDev.max ) +
-   String().Format( "let MedianMeanDevMedian = %.4f;\n", properties.medianMeanDev.median ) +
-   String().Format( "let MedianMeanDevSigma = %.4f;\n", DeviationNormalize(
-            MedianMeanDev( cameraGain, cameraResolution, dataUnit ),
-            properties.medianMeanDev.median, properties.medianMeanDev.deviation
-   ) ) +
+   String().Format( "let SNRWeight = %.8e;\n", snrWeight ) +
+   String().Format( "let SNRWeightMin = %.8e;\n", properties.snrWeight.min ) +
+   String().Format( "let SNRWeightMax = %.8e;\n", properties.snrWeight.max ) +
+   String().Format( "let SNRWeightMedian = %.8e;\n", properties.snrWeight.median ) +
+   String().Format( "let SNRWeightSigma = %.8e;\n", DeviationNormalize(
+                  snrWeight, properties.snrWeight.median, properties.snrWeight.deviation ) ) +
 
-   String().Format( "let Noise = %.4f;\n", Noise( cameraGain, cameraResolution, dataUnit ) ) +
-   String().Format( "let NoiseMin = %.4f;\n", properties.noise.min ) +
-   String().Format( "let NoiseMax = %.4f;\n", properties.noise.max ) +
-   String().Format( "let NoiseMedian = %.4f;\n", properties.noise.median ) +
-   String().Format( "let NoiseSigma = %.4f;\n", DeviationNormalize(
-            Noise( cameraGain, cameraResolution, dataUnit ),
-            properties.noise.median, properties.noise.deviation
-   ) ) +
+   String().Format( "let Median = %.8e;\n", Median( cameraGain, cameraResolution, dataUnit ) ) +
+   String().Format( "let MedianMin = %.8e;\n", properties.median.min ) +
+   String().Format( "let MedianMax = %.8e;\n", properties.median.max ) +
+   String().Format( "let MedianMedian = %.8e;\n", properties.median.median ) +
+   String().Format( "let MedianSigma = %.8e;\n", DeviationNormalize(
+                  Median( cameraGain, cameraResolution, dataUnit ),
+                  properties.median.median, properties.median.deviation ) ) +
 
-   String().Format( "let NoiseRatio = %.4f;\n", noiseRatio ) +
-   String().Format( "let NoiseRatioMin = %.4f;\n", properties.noiseRatio.min ) +
-   String().Format( "let NoiseRatioMax = %.4f;\n", properties.noiseRatio.max ) +
-   String().Format( "let NoiseRatioMedian = %.4f;\n", properties.noiseRatio.median ) +
-   String().Format( "let NoiseRatioSigma = %.4f;\n", DeviationNormalize(
-            noiseRatio, properties.noiseRatio.median, properties.noiseRatio.deviation
-   ) ) +
+   String().Format( "let MedianMeanDev = %.8e;\n", MedianMeanDev( cameraGain, cameraResolution, dataUnit ) ) +
+   String().Format( "let MedianMeanDevMin = %.8e;\n", properties.medianMeanDev.min ) +
+   String().Format( "let MedianMeanDevMax = %.8e;\n", properties.medianMeanDev.max ) +
+   String().Format( "let MedianMeanDevMedian = %.8e;\n", properties.medianMeanDev.median ) +
+   String().Format( "let MedianMeanDevSigma = %.8e;\n", DeviationNormalize(
+                  MedianMeanDev( cameraGain, cameraResolution, dataUnit ),
+                  properties.medianMeanDev.median, properties.medianMeanDev.deviation ) ) +
+
+   String().Format( "let Noise = %.8e;\n", Noise( cameraGain, cameraResolution, dataUnit ) ) +
+   String().Format( "let NoiseMin = %.8e;\n", properties.noise.min ) +
+   String().Format( "let NoiseMax = %.8e;\n", properties.noise.max ) +
+   String().Format( "let NoiseMedian = %.8e;\n", properties.noise.median ) +
+   String().Format( "let NoiseSigma = %.8e;\n", DeviationNormalize(
+                  Noise( cameraGain, cameraResolution, dataUnit ),
+                  properties.noise.median, properties.noise.deviation ) ) +
+
+   String().Format( "let NoiseRatio = %.8e;\n", noiseRatio ) +
+   String().Format( "let NoiseRatioMin = %.8e;\n", properties.noiseRatio.min ) +
+   String().Format( "let NoiseRatioMax = %.8e;\n", properties.noiseRatio.max ) +
+   String().Format( "let NoiseRatioMedian = %.8e;\n", properties.noiseRatio.median ) +
+   String().Format( "let NoiseRatioSigma = %.8e;\n", DeviationNormalize(
+                  noiseRatio, properties.noiseRatio.median, properties.noiseRatio.deviation ) ) +
 
    String().Format( "let Stars = %i;\n", stars ) +
-   String().Format( "let StarsMin = %.4f;\n", properties.stars.min ) +
-   String().Format( "let StarsMax = %.4f;\n", properties.stars.max ) +
-   String().Format( "let StarsMedian = %.4f;\n", properties.stars.median ) +
-   String().Format( "let StarsSigma = %.4f;\n", DeviationNormalize(
-            stars, properties.stars.median, properties.stars.deviation
-   ) ) +
+   String().Format( "let StarsMin = %.8e;\n", properties.stars.min ) +
+   String().Format( "let StarsMax = %.8e;\n", properties.stars.max ) +
+   String().Format( "let StarsMedian = %.8e;\n", properties.stars.median ) +
+   String().Format( "let StarsSigma = %.8e;\n", DeviationNormalize(
+                  stars, properties.stars.median, properties.stars.deviation ) ) +
 
-   String().Format( "let StarResidual = %.4f;\n", starResidual ) +
-   String().Format( "let StarResidualMin = %.4f;\n", properties.starResidual.min ) +
-   String().Format( "let StarResidualMax = %.4f;\n", properties.starResidual.max ) +
-   String().Format( "let StarResidualMedian = %.4f;\n", properties.starResidual.median ) +
-   String().Format( "let StarResidualSigma = %.4f;\n", DeviationNormalize(
-            starResidual, properties.starResidual.median, properties.starResidual.deviation
-   ) ) +
+   String().Format( "let StarResidual = %.8e;\n", starResidual ) +
+   String().Format( "let StarResidualMin = %.8e;\n", properties.starResidual.min ) +
+   String().Format( "let StarResidualMax = %.8e;\n", properties.starResidual.max ) +
+   String().Format( "let StarResidualMedian = %.8e;\n", properties.starResidual.median ) +
+   String().Format( "let StarResidualSigma = %.8e;\n", DeviationNormalize(
+                  starResidual, properties.starResidual.median, properties.starResidual.deviation ) ) +
 
-   String().Format( "let FWHMMeanDev = %.4f;\n", FWHMMeanDeviation( subframeScale, scaleUnit ) ) +
-   String().Format( "let FWHMMeanDevMin = %.4f;\n", properties.fwhmMeanDev.min ) +
-   String().Format( "let FWHMMeanDevMax = %.4f;\n", properties.fwhmMeanDev.max ) +
-   String().Format( "let FWHMMeanDevMedian = %.4f;\n", properties.fwhmMeanDev.median ) +
-   String().Format( "let FWHMMeanDevSigma = %.4f;\n", DeviationNormalize(
-            FWHMMeanDeviation( subframeScale, scaleUnit ),
-            properties.fwhmMeanDev.median, properties.fwhmMeanDev.deviation
-   ) ) +
+   String().Format( "let FWHMMeanDev = %.8e;\n", FWHMMeanDeviation( subframeScale, scaleUnit ) ) +
+   String().Format( "let FWHMMeanDevMin = %.8e;\n", properties.fwhmMeanDev.min ) +
+   String().Format( "let FWHMMeanDevMax = %.8e;\n", properties.fwhmMeanDev.max ) +
+   String().Format( "let FWHMMeanDevMedian = %.8e;\n", properties.fwhmMeanDev.median ) +
+   String().Format( "let FWHMMeanDevSigma = %.8e;\n", DeviationNormalize(
+                  FWHMMeanDeviation( subframeScale, scaleUnit ),
+                  properties.fwhmMeanDev.median, properties.fwhmMeanDev.deviation ) ) +
 
-   String().Format( "let EccentricityMeanDev = %.4f;\n", eccentricityMeanDev ) +
-   String().Format( "let EccentricityMeanDevMin = %.4f;\n", properties.eccentricityMeanDev.min ) +
-   String().Format( "let EccentricityMeanDevMax = %.4f;\n", properties.eccentricityMeanDev.max ) +
-   String().Format( "let EccentricityMeanDevMedian = %.4f;\n", properties.eccentricityMeanDev.median ) +
-   String().Format( "let EccentricityMeanDevSigma = %.4f;\n", DeviationNormalize(
-            eccentricityMeanDev, properties.eccentricityMeanDev.median, properties.eccentricityMeanDev.deviation
-   ) ) +
+   String().Format( "let EccentricityMeanDev = %.8e;\n", eccentricityMeanDev ) +
+   String().Format( "let EccentricityMeanDevMin = %.8e;\n", properties.eccentricityMeanDev.min ) +
+   String().Format( "let EccentricityMeanDevMax = %.8e;\n", properties.eccentricityMeanDev.max ) +
+   String().Format( "let EccentricityMeanDevMedian = %.8e;\n", properties.eccentricityMeanDev.median ) +
+   String().Format( "let EccentricityMeanDevSigma = %.8e;\n", DeviationNormalize(
+                  eccentricityMeanDev, properties.eccentricityMeanDev.median, properties.eccentricityMeanDev.deviation ) ) +
 
-   String().Format( "let StarResidualMeanDev = %.4f;\n", starResidualMeanDev ) +
-   String().Format( "let StarResidualMeanDevMin = %.4f;\n", properties.starResidualMeanDev.min ) +
-   String().Format( "let StarResidualMeanDevMax = %.4f;\n", properties.starResidualMeanDev.max ) +
-   String().Format( "let StarResidualMeanDevMedian = %.4f;\n", properties.starResidualMeanDev.median ) +
-   String().Format( "let StarResidualMeanDevSigma = %.4f;\n", DeviationNormalize(
-            starResidualMeanDev, properties.starResidualMeanDev.median, properties.starResidualMeanDev.deviation
-   ) );
+   String().Format( "let StarResidualMeanDev = %.8e;\n", starResidualMeanDev ) +
+   String().Format( "let StarResidualMeanDevMin = %.8e;\n", properties.starResidualMeanDev.min ) +
+   String().Format( "let StarResidualMeanDevMax = %.8e;\n", properties.starResidualMeanDev.max ) +
+   String().Format( "let StarResidualMeanDevMedian = %.8e;\n", properties.starResidualMeanDev.median ) +
+   String().Format( "let StarResidualMeanDevSigma = %.8e;\n", DeviationNormalize(
+                  starResidualMeanDev, properties.starResidualMeanDev.median, properties.starResidualMeanDev.deviation ) );
 }
 
 // ----------------------------------------------------------------------------
@@ -313,8 +322,8 @@ bool MeasureUtils::IsValidExpression( const String& expression )
 
 // ----------------------------------------------------------------------------
 
-void MeasureUtils::MeasureProperties( const Array<MeasureItem>& measures, float subframeScale,
-                                      int scaleUnit, float cameraGain,
+void MeasureUtils::MeasureProperties( const Array<MeasureItem>& measures, double subframeScale,
+                                      int scaleUnit, double cameraGain,
                                       int cameraResolution, int dataUnit,
                                       pcl::MeasureProperties& properties )
 {
@@ -323,6 +332,8 @@ void MeasureUtils::MeasureProperties( const Array<MeasureItem>& measures, float 
    Array<double> weight( measuresLength );
    Array<double> fwhm( measuresLength );
    Array<double> eccentricity( measuresLength );
+   Array<double> psfSignalWeight( measuresLength );
+   Array<double> psfPowerWeight( measuresLength );
    Array<double> snrWeight( measuresLength );
    Array<double> median( measuresLength );
    Array<double> medianMeanDev( measuresLength );
@@ -339,14 +350,18 @@ void MeasureUtils::MeasureProperties( const Array<MeasureItem>& measures, float 
       weight[i] = measures[i].weight;
       fwhm[i] = measures[i].FWHM( subframeScale, scaleUnit );
       eccentricity[i] = measures[i].eccentricity;
+      psfSignalWeight[i] = measures[i].psfSignalWeight;
+      psfPowerWeight[i] = measures[i].psfPowerWeight;
       snrWeight[i] = measures[i].snrWeight;
       median[i] = measures[i].Median( cameraGain,
-                                       TheSSCameraResolutionParameter->ElementData( cameraResolution ), dataUnit );
+                                      TheSSCameraResolutionParameter->ElementData( cameraResolution ),
+                                      dataUnit );
       medianMeanDev[i] = measures[i].MedianMeanDev( cameraGain,
-                                                      TheSSCameraResolutionParameter->ElementData( cameraResolution ),
-                                                      dataUnit );
+                                                    TheSSCameraResolutionParameter->ElementData( cameraResolution ),
+                                                    dataUnit );
       noise[i] = measures[i].Noise( cameraGain,
-                                    TheSSCameraResolutionParameter->ElementData( cameraResolution ), dataUnit );
+                                    TheSSCameraResolutionParameter->ElementData( cameraResolution ),
+                                    dataUnit );
       noiseRatio[i] = measures[i].noiseRatio;
       stars[i] = measures[i].stars;
       starResidual[i] = measures[i].starResidual;
@@ -358,6 +373,8 @@ void MeasureUtils::MeasureProperties( const Array<MeasureItem>& measures, float 
    MeasureUtils::MeasureProperty( weight, properties.weight );
    MeasureUtils::MeasureProperty( fwhm, properties.fwhm );
    MeasureUtils::MeasureProperty( eccentricity, properties.eccentricity );
+   MeasureUtils::MeasureProperty( psfSignalWeight, properties.psfSignalWeight );
+   MeasureUtils::MeasureProperty( psfPowerWeight, properties.psfPowerWeight );
    MeasureUtils::MeasureProperty( snrWeight, properties.snrWeight );
    MeasureUtils::MeasureProperty( median, properties.median );
    MeasureUtils::MeasureProperty( medianMeanDev, properties.medianMeanDev );
@@ -375,4 +392,4 @@ void MeasureUtils::MeasureProperties( const Array<MeasureItem>& measures, float 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorMeasureData.cpp - Released 2021-10-04T16:21:12Z
+// EOF SubframeSelectorMeasureData.cpp - Released 2021-10-20T18:10:09Z

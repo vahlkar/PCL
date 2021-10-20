@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
-// Standard Debayer Process Module Version 1.9.0
+// Standard Debayer Process Module Version 1.9.4
 // ----------------------------------------------------------------------------
-// DebayerInterface.cpp - Released 2021-10-04T16:21:13Z
+// DebayerInterface.cpp - Released 2021-10-20T18:10:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -600,11 +600,14 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
 
    EvaluateNoise_CheckBox.SetText( "Evaluate noise" );
    EvaluateNoise_CheckBox.SetToolTip( "<p>If this option is selected, Debayer will compute per-channel noise "
-      "estimates for each target image using a wavelet-based algorithm (MRS noise evaluation by default). Noise "
-      "estimates will be computed from raw CFA data before interpolation, and will be stored as NOISExxx FITS "
-      "header keywords in the output files. These estimates can be used later by several processes and scripts, "
-      "most notably by the ImageIntegration tool, which uses them by default for robust image weighting based "
-      "on relative SNR values.</p>" );
+      "estimates and noise scaling factors for each target image using a wavelet-based algorithm (MRS noise "
+      "evaluation by default). Noise estimates will be computed from raw CFA data before interpolation, and "
+      "will be stored as NOISExx FITS header keywords in the output files, where 'xx' is a zero-padded decimal "
+      "representation of the zero-based channel index (typically in the 0 to 2 range). Noise scaling factors "
+      "will be stored as NOISELxx and NOISEHxx keywords, respectively for the low and high components of a "
+      "bilateral statistical scale estimate.</p>"
+      "<p>These estimates can be used later by several processes and scripts, most notably by the ImageIntegration "
+      "tool, which uses them by default for robust image weighting based on inverse noise variance.</p>" );
    EvaluateNoise_CheckBox.OnClick( (Button::click_event_handler)&DebayerInterface::e_Click, w );
 
    EvaluateNoise_Sizer.SetSpacing( 4 );
@@ -901,4 +904,4 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DebayerInterface.cpp - Released 2021-10-04T16:21:13Z
+// EOF DebayerInterface.cpp - Released 2021-10-20T18:10:09Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.5.2
+// Standard ImageCalibration Process Module Version 1.6.6
 // ----------------------------------------------------------------------------
-// ImageCalibrationInstance.h - Released 2021-10-04T16:21:12Z
+// ImageCalibrationInstance.h - Released 2021-10-20T18:10:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -232,8 +232,13 @@ private:
    {
       String     outputFilePath;
       FVector    darkScalingFactors = FVector( 0.0F, 3 );
-      FVector    noiseEstimates = FVector( 0.0F, 3 );
-      FVector    noiseFractions = FVector( 0.0F, 3 );
+      Vector     psfSignalEstimates = Vector( 0.0, 3 );
+      Vector     psfPowerEstimates = Vector( 0.0, 3 );
+      IVector    psfCounts = IVector( 0, 3 );
+      Vector     noiseEstimates = Vector( 0.0, 3 );
+      Vector     noiseFractions = Vector( 0.0, 3 );
+      Vector     noiseScaleLow = Vector( 0.0, 3 );
+      Vector     noiseScaleHigh = Vector( 0.0, 3 );
       StringList noiseAlgorithms = StringList( size_type( 3 ) );
    };
    Array<OutputData> o_output;
@@ -275,4 +280,4 @@ private:
 #endif   // __ImageCalibrationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInstance.h - Released 2021-10-04T16:21:12Z
+// EOF ImageCalibrationInstance.h - Released 2021-10-20T18:10:09Z

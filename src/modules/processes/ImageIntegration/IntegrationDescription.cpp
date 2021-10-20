@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.2.34
+// Standard ImageIntegration Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// IntegrationDescription.cpp - Released 2021-10-04T16:21:12Z
+// IntegrationDescription.cpp - Released 2021-10-20T18:10:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -125,8 +125,8 @@ ImageIntegrationInstance::IntegrationDescriptionItems::IntegrationDescriptionIte
          weightMode = "Exposure time";
          break;
       default:
-      case IIWeightMode::NoiseEvaluationWeight:
-         weightMode = "Noise evaluation";
+      case IIWeightMode::SNREstimate:
+         weightMode = "SNR estimate";
          break;
       case IIWeightMode::SignalWeight:
          weightMode = "Average absolute deviation";
@@ -139,6 +139,12 @@ ImageIntegrationInstance::IntegrationDescriptionItems::IntegrationDescriptionIte
          break;
       case IIWeightMode::KeywordWeight:
          weightMode = "Custom keyword: " + instance.p_weightKeyword;
+         break;
+      case IIWeightMode::PSFSignalWeight:
+         weightMode = "PSF signal";
+         break;
+      case IIWeightMode::PSFPowerWeight:
+         weightMode = "PSF power";
          break;
       }
 
@@ -307,4 +313,4 @@ String ImageIntegrationInstance::IntegrationDescription() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationDescription.cpp - Released 2021-10-04T16:21:12Z
+// EOF IntegrationDescription.cpp - Released 2021-10-20T18:10:09Z

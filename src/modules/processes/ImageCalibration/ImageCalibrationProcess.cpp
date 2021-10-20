@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.5.2
+// Standard ImageCalibration Process Module Version 1.6.6
 // ----------------------------------------------------------------------------
-// ImageCalibrationProcess.cpp - Released 2021-10-04T16:21:12Z
+// ImageCalibrationProcess.cpp - Released 2021-10-20T18:10:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -127,12 +127,27 @@ ImageCalibrationProcess::ImageCalibrationProcess()
    new ICDarkScalingFactorRK( TheICOutputDataParameter );
    new ICDarkScalingFactorG( TheICOutputDataParameter );
    new ICDarkScalingFactorB( TheICOutputDataParameter );
+   new ICPSFSignalEstimateRK( TheICOutputDataParameter );
+   new ICPSFSignalEstimateG( TheICOutputDataParameter );
+   new ICPSFSignalEstimateB( TheICOutputDataParameter );
+   new ICPSFPowerEstimateRK( TheICOutputDataParameter );
+   new ICPSFPowerEstimateG( TheICOutputDataParameter );
+   new ICPSFPowerEstimateB( TheICOutputDataParameter );
+   new ICPSFCountRK( TheICOutputDataParameter );
+   new ICPSFCountG( TheICOutputDataParameter );
+   new ICPSFCountB( TheICOutputDataParameter );
    new ICNoiseEstimateRK( TheICOutputDataParameter );
    new ICNoiseEstimateG( TheICOutputDataParameter );
    new ICNoiseEstimateB( TheICOutputDataParameter );
    new ICNoiseFractionRK( TheICOutputDataParameter );
    new ICNoiseFractionG( TheICOutputDataParameter );
    new ICNoiseFractionB( TheICOutputDataParameter );
+   new ICNoiseScaleLowRK( TheICOutputDataParameter );
+   new ICNoiseScaleLowG( TheICOutputDataParameter );
+   new ICNoiseScaleLowB( TheICOutputDataParameter );
+   new ICNoiseScaleHighRK( TheICOutputDataParameter );
+   new ICNoiseScaleHighG( TheICOutputDataParameter );
+   new ICNoiseScaleHighB( TheICOutputDataParameter );
    new ICNoiseAlgorithmRK( TheICOutputDataParameter );
    new ICNoiseAlgorithmG( TheICOutputDataParameter );
    new ICNoiseAlgorithmB( TheICOutputDataParameter );
@@ -200,4 +215,4 @@ ProcessImplementation* ImageCalibrationProcess::Clone( const ProcessImplementati
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationProcess.cpp - Released 2021-10-04T16:21:12Z
+// EOF ImageCalibrationProcess.cpp - Released 2021-10-20T18:10:09Z
