@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// UnsharpMaskInterface.h - Released 2021-10-04T16:21:12Z
+// UnsharpMaskInterface.h - Released 2021-10-20T18:10:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -186,4 +186,4 @@ PCL_END_LOCAL
 #endif   // __UnsharpMaskInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF UnsharpMaskInterface.h - Released 2021-10-04T16:21:12Z
+// EOF UnsharpMaskInterface.h - Released 2021-10-20T18:10:09Z

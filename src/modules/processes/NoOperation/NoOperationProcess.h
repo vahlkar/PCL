@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
 // Standard NoOperation Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// NoOperationProcess.h - Released 2021-10-04T16:21:12Z
+// NoOperationProcess.h - Released 2021-10-20T18:10:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NoOperation PixInsight module.
 //
@@ -89,4 +89,4 @@ PCL_END_LOCAL
 #endif   // __NoOperationProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF NoOperationProcess.h - Released 2021-10-04T16:21:12Z
+// EOF NoOperationProcess.h - Released 2021-10-20T18:10:09Z

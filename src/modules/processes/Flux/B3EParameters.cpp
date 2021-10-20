@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
 // Standard Flux Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// B3EParameters.cpp - Released 2021-10-04T16:21:12Z
+// B3EParameters.cpp - Released 2021-10-20T18:10:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Flux PixInsight module.
 //
@@ -862,4 +862,4 @@ bool B3EOutputBackgroundReferenceMask2::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF B3EParameters.cpp - Released 2021-10-04T16:21:12Z
+// EOF B3EParameters.cpp - Released 2021-10-20T18:10:09Z

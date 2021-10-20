@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
 // Standard BMP File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// BMPFormat.cpp - Released 2021-10-04T16:20:05Z
+// BMPFormat.cpp - Released 2021-10-20T18:10:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard BMP PixInsight module.
 //
@@ -1345,4 +1345,4 @@ FileFormatImplementation* SVGFormat::Create() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BMPFormat.cpp - Released 2021-10-04T16:20:05Z
+// EOF BMPFormat.cpp - Released 2021-10-20T18:10:18Z

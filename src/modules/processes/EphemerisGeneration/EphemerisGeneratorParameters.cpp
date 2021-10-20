@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
 // Standard EphemerisGeneration Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// EphemerisGeneratorParameters.cpp - Released 2021-10-04T16:21:12Z
+// EphemerisGeneratorParameters.cpp - Released 2021-10-20T18:10:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -1163,4 +1163,4 @@ double EGEphemerisToleranceFactor::MaximumValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF EphemerisGeneratorParameters.cpp - Released 2021-10-04T16:21:12Z
+// EOF EphemerisGeneratorParameters.cpp - Released 2021-10-20T18:10:09Z

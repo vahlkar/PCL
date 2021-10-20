@@ -4,7 +4,7 @@
 # PixInsight Makefile Generator Script v1.123
 # Copyright (C) 2009-2021 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2021-10-04T16:24:02.976Z
+# Generated on .... 2021-10-20T18:11:35.855Z
 # Project id ...... NetworkService
 # Project type .... Module
 # Platform ........ Windows/vc16
@@ -33,7 +33,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{B9BF3DE6-9B10-49AD-A520-135EE1EA862D}</ProjectGuid>
+    <ProjectGuid>{A837420C-6564-4174-AD3D-67A77E56310D}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -245,6 +245,9 @@
     <ClInclude Include="..\..\NetworkServiceModule.h"/>
     <ClInclude Include="..\..\NetworkServiceProcess.h"/>
     <ClInclude Include="..\..\NetworkServiceTask.h"/>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\icons\NetWorkService.svg"/>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets"/>
   <ImportGroup Label="ExtensionTargets">

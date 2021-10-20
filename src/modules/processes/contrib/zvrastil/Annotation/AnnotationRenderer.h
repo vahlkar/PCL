@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
 // Standard Annotation Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// AnnotationRenderer.h - Released 2021-10-04T16:21:13Z
+// AnnotationRenderer.h - Released 2021-10-20T18:10:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Annotation PixInsight module.
 //
@@ -111,4 +111,4 @@ private:
 #endif // __AnnotationRenderer_h
 
 // ----------------------------------------------------------------------------
-// EOF AnnotationRenderer.h - Released 2021-10-04T16:21:13Z
+// EOF AnnotationRenderer.h - Released 2021-10-20T18:10:09Z

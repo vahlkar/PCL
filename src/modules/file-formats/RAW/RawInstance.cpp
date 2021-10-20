@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
 // Standard RAW File Format Module Version 1.5.7
 // ----------------------------------------------------------------------------
-// RawInstance.cpp - Released 2021-10-04T16:20:05Z
+// RawInstance.cpp - Released 2021-10-20T18:10:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RAW PixInsight module.
 //
@@ -1614,4 +1614,4 @@ UInt8Image RawInstance::ReadThumbnail()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RawInstance.cpp - Released 2021-10-04T16:20:05Z
+// EOF RawInstance.cpp - Released 2021-10-20T18:10:18Z

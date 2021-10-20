@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// ExtractAlphaChannelsInstance.cpp - Released 2021-10-04T16:21:12Z
+// ExtractAlphaChannelsInstance.cpp - Released 2021-10-20T18:10:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -622,4 +622,4 @@ void ExtractAlphaChannelsInstance::ParseChannelList( SortedArray<int>& list, con
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ExtractAlphaChannelsInstance.cpp - Released 2021-10-04T16:21:12Z
+// EOF ExtractAlphaChannelsInstance.cpp - Released 2021-10-20T18:10:09Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.8.4
 // ----------------------------------------------------------------------------
-// ExpressionEditorDialog.cpp - Released 2021-10-04T16:21:12Z
+// ExpressionEditorDialog.cpp - Released 2021-10-20T18:10:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -1083,4 +1083,4 @@ void ExpressionEditorDialog::e_MouseMove( Control& sender, const pcl::Point& pos
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ExpressionEditorDialog.cpp - Released 2021-10-04T16:21:12Z
+// EOF ExpressionEditorDialog.cpp - Released 2021-10-20T18:10:09Z

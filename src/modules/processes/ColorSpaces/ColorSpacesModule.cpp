@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.2
 // ----------------------------------------------------------------------------
-// ColorSpacesModule.cpp - Released 2021-10-04T16:21:12Z
+// ColorSpacesModule.cpp - Released 2021-10-20T18:10:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -58,7 +58,7 @@
 
 #define MODULE_RELEASE_YEAR      2021
 #define MODULE_RELEASE_MONTH     10
-#define MODULE_RELEASE_DAY       4
+#define MODULE_RELEASE_DAY       20
 
 #include "ColorSpacesModule.h"
 #include "GrayscaleRGBProcesses.h"
@@ -204,4 +204,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF ColorSpacesModule.cpp - Released 2021-10-04T16:21:12Z
+// EOF ColorSpacesModule.cpp - Released 2021-10-20T18:10:09Z

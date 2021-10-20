@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.11
+// /_/     \____//_____/   PCL 2.4.12
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.8.4
 // ----------------------------------------------------------------------------
-// ImageCache.cpp - Released 2021-10-04T16:21:12Z
+// ImageCache.cpp - Released 2021-10-20T18:10:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -106,4 +106,4 @@ void ImageCache::InvalidateImage( const IsoString& imageId )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCache.cpp - Released 2021-10-04T16:21:12Z
+// EOF ImageCache.cpp - Released 2021-10-20T18:10:09Z
