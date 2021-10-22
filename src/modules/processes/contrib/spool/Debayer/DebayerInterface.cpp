@@ -184,6 +184,7 @@ void DebayerInterface::UpdateControls()
    UpdateImageSelectionButtons();
    UpdateFormatHintsControls();
    UpdateOutputFilesControls();
+   UpdateSignalAndNoiseEvaluationControls();
 }
 
 // ----------------------------------------------------------------------------
@@ -193,13 +194,6 @@ void DebayerInterface::UpdateGeneralParameterControls()
    GUI->Pattern_ComboBox.SetCurrentItem( m_instance.p_bayerPattern );
 
    GUI->DebayerMethod_ComboBox.SetCurrentItem( m_instance.p_debayerMethod );
-
-   GUI->EvaluateNoise_CheckBox.SetChecked( m_instance.p_evaluateNoise );
-
-   GUI->NoiseEvaluation_Label.Enable( m_instance.p_evaluateNoise );
-
-   GUI->NoiseEvaluation_ComboBox.SetCurrentItem( m_instance.p_noiseEvaluationAlgorithm );
-   GUI->NoiseEvaluation_ComboBox.Enable( m_instance.p_evaluateNoise );
 
    if ( m_instance.p_outputRGBImages )
       if ( m_instance.p_outputSeparateChannels )
@@ -298,6 +292,23 @@ void DebayerInterface::UpdateOutputFilesControls()
 
 // ----------------------------------------------------------------------------
 
+void DebayerInterface::UpdateSignalAndNoiseEvaluationControls()
+{
+   GUI->SignalEvaluation_SectionBar.SetChecked( m_instance.p_evaluateSignal );
+
+   GUI->StructureLayers_SpinBox.SetValue( m_instance.p_structureLayers );
+   GUI->MinStructureSize_SpinBox.SetValue( m_instance.p_minStructureSize );
+   GUI->HotPixelFilterRadius_SpinBox.SetValue( m_instance.p_hotPixelFilterRadius );
+   GUI->NoiseReductionFilterRadius_SpinBox.SetValue( m_instance.p_noiseReductionFilterRadius );
+   GUI->PSFType_ComboBox.SetCurrentItem( m_instance.p_psfType );
+
+   GUI->NoiseEvaluation_SectionBar.SetChecked( m_instance.p_evaluateNoise );
+
+   GUI->NoiseEvaluationAlgorithm_ComboBox.SetCurrentItem( m_instance.p_noiseEvaluationAlgorithm );
+}
+
+// ----------------------------------------------------------------------------
+
 static size_type TreeInsertionIndex( const TreeBox& tree )
 {
    const TreeBox::Node* n = tree.CurrentNode();
@@ -337,8 +348,6 @@ void DebayerInterface::e_ItemSelected( ComboBox& sender, int itemIndex )
 {
    if ( sender == GUI->Pattern_ComboBox )
       m_instance.p_bayerPattern = itemIndex;
-   else if ( sender == GUI->NoiseEvaluation_ComboBox )
-      m_instance.p_noiseEvaluationAlgorithm = itemIndex;
    else if ( sender == GUI->OutputMode_ComboBox )
    {
       m_instance.p_outputRGBImages = itemIndex == 0 || itemIndex == 2;
@@ -348,18 +357,17 @@ void DebayerInterface::e_ItemSelected( ComboBox& sender, int itemIndex )
       m_instance.p_debayerMethod = itemIndex;
    else if ( sender == GUI->OnError_ComboBox )
       m_instance.p_onError = itemIndex;
+   else if ( sender == GUI->PSFType_ComboBox )
+      m_instance.p_psfType = itemIndex;
+   else if ( sender == GUI->NoiseEvaluationAlgorithm_ComboBox )
+      m_instance.p_noiseEvaluationAlgorithm = itemIndex;
 }
 
 // ----------------------------------------------------------------------------
 
 void DebayerInterface::e_Click( Button& sender, bool checked )
 {
-   if ( sender == GUI->EvaluateNoise_CheckBox )
-   {
-      m_instance.p_evaluateNoise = checked;
-      UpdateGeneralParameterControls();
-   }
-   else if ( sender == GUI->AddFiles_PushButton )
+   if ( sender == GUI->AddFiles_PushButton )
    {
       OpenFileDialog d;
       d.SetCaption( "Debayer: Select Target Images" );
@@ -479,6 +487,30 @@ void DebayerInterface::e_NodeSelectionUpdated( TreeBox& sender )
 
 // ----------------------------------------------------------------------------
 
+void DebayerInterface::e_SpinValueUpdated( SpinBox& sender, int value )
+{
+   if ( sender == GUI->StructureLayers_SpinBox )
+      m_instance.p_structureLayers = value;
+   else if ( sender == GUI->MinStructureSize_SpinBox )
+      m_instance.p_minStructureSize = value;
+   else if ( sender == GUI->HotPixelFilterRadius_SpinBox )
+      m_instance.p_hotPixelFilterRadius = value;
+   else if ( sender == GUI->NoiseReductionFilterRadius_SpinBox )
+      m_instance.p_noiseReductionFilterRadius = value;
+}
+
+// ----------------------------------------------------------------------------
+
+void DebayerInterface::e_CheckSection( SectionBar& sender, bool checked )
+{
+   if ( sender == GUI->SignalEvaluation_SectionBar )
+      m_instance.p_evaluateSignal = checked;
+   else if ( sender == GUI->NoiseEvaluation_SectionBar )
+      m_instance.p_evaluateNoise = checked;
+}
+
+// ----------------------------------------------------------------------------
+
 void DebayerInterface::e_ToggleSection( SectionBar& sender, Control& section, bool start )
 {
    if ( start )
@@ -542,6 +574,7 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
    pcl::Font fnt = w.Font();
    int labelWidth1 = fnt.Width( String( "Bayer/mosaic pattern:" ) ) + 16; // the longest label text
    int editWidth1 = fnt.Width( String( 'M', 5 ) );
+   int editWidth2 = fnt.Width( String( '0', 10  ) );
    int ui4 = w.LogicalPixelsToPhysical( 4 );
 
    //
@@ -598,50 +631,6 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
    DebayerMethod_Sizer.Add( DebayerMethod_ComboBox );
    DebayerMethod_Sizer.AddStretch();
 
-   EvaluateNoise_CheckBox.SetText( "Evaluate noise" );
-   EvaluateNoise_CheckBox.SetToolTip( "<p>If this option is selected, Debayer will compute per-channel noise "
-      "estimates and noise scaling factors for each target image using a wavelet-based algorithm (MRS noise "
-      "evaluation by default). Noise estimates will be computed from raw CFA data before interpolation, and "
-      "will be stored as NOISExx FITS header keywords in the output files, where 'xx' is a zero-padded decimal "
-      "representation of the zero-based channel index (typically in the 0 to 2 range). Noise scaling factors "
-      "will be stored as NOISELxx and NOISEHxx keywords, respectively for the low and high components of a "
-      "bilateral statistical scale estimate.</p>"
-      "<p>These estimates can be used later by several processes and scripts, most notably by the ImageIntegration "
-      "tool, which uses them by default for robust image weighting based on inverse noise variance.</p>" );
-   EvaluateNoise_CheckBox.OnClick( (Button::click_event_handler)&DebayerInterface::e_Click, w );
-
-   EvaluateNoise_Sizer.SetSpacing( 4 );
-   EvaluateNoise_Sizer.AddUnscaledSpacing( labelWidth1 + w.LogicalPixelsToPhysical( 4 ) );
-   EvaluateNoise_Sizer.Add( EvaluateNoise_CheckBox );
-   EvaluateNoise_Sizer.AddStretch();
-
-   const char* noiseEvaluationToolTip = "<p>Noise evaluation algorithm. This option selects an algorithm for automatic "
-      "estimation of the standard deviation of the noise in the demosaiced images. In all cases noise estimates assume "
-      "a Gaussian distribution of the noise.</p>"
-      "<p>The iterative k-sigma clipping algorithm can be used as a last-resort option in cases where the MRS algorithm "
-      "(see below) does not converge systematically. This can happen for images without detectable small-scale noise; "
-      "for example, images that have been smoothed as a result of bilinear demosaicing interpolation.</p>"
-      "<p>The multiresolution support (MRS) noise estimation routine implements the iterative algorithm described by "
-      "Jean-Luc Starck and Fionn Murtagh in their paper <em>Automatic Noise Estimation from the Multiresolution Support</em> "
-      "(Publications of the Royal Astronomical Society of the Pacific, vol. 110, pp. 193-199). In our implementation, the "
-      "standard deviation of the noise is evaluated on the first four wavelet layers. This is the most accurate algorithm "
-      "available, and hence the default option.</p>";
-
-   NoiseEvaluation_Label.SetText( "Noise evaluation:" );
-   NoiseEvaluation_Label.SetFixedWidth( labelWidth1 );
-   NoiseEvaluation_Label.SetToolTip( noiseEvaluationToolTip );
-   NoiseEvaluation_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
-
-   NoiseEvaluation_ComboBox.AddItem( "Iterative K-Sigma Clipping" );
-   NoiseEvaluation_ComboBox.AddItem( "Multiresolution Support" );
-   NoiseEvaluation_ComboBox.SetToolTip( noiseEvaluationToolTip );
-   NoiseEvaluation_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&DebayerInterface::e_ItemSelected, w );
-
-   NoiseEvaluation_Sizer.SetSpacing( 4 );
-   NoiseEvaluation_Sizer.Add( NoiseEvaluation_Label );
-   NoiseEvaluation_Sizer.Add( NoiseEvaluation_ComboBox );
-   NoiseEvaluation_Sizer.AddStretch();
-
    const char* outputModeToolTip =
       "<p>Demosaiced/interpolated images can be generated as combined RGB color images, as separate RGB "
       "channels stored as monochrome images, or applying both options at the same time.</p>"
@@ -672,8 +661,6 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
    GeneralParameters_Sizer.SetSpacing( 4 );
    GeneralParameters_Sizer.Add( Pattern_Sizer );
    GeneralParameters_Sizer.Add( DebayerMethod_Sizer );
-   GeneralParameters_Sizer.Add( EvaluateNoise_Sizer );
-   GeneralParameters_Sizer.Add( NoiseEvaluation_Sizer );
    GeneralParameters_Sizer.Add( OutputMode_Sizer );
 
    //
@@ -879,6 +866,193 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
 
    //
 
+   SignalEvaluation_SectionBar.SetTitle( "Signal Evaluation" );
+   SignalEvaluation_SectionBar.SetToolTip( "<p>Compute estimates of the mean signal present in source calibrated frames. "
+      "Our current implementation uses PSF photometry to generate accurate and robust estimates of mean signal and mean "
+      "signal power. These estimates, along with estimates of the standard deviation of the noise, can be used for image "
+      "weighting with the SubframeSelector and ImageIntegration processes.</p>"
+      "<p>The signal evaluation result will be stored as PSFSGLxx, PSFSGPxx and PSFSGNxx FITS header keywords, "
+      "respectively for mean signal estimates, mean signal power estimates, and number of valid PSF fits used, where 'xx' "
+      "is a zero-padded decimal representation of the zero-based channel index (typically in the 0 to 2 range). Signal "
+      "estimates will always be computed from uninterpolated, raw calibrated data.</p>"
+      "<p><b>This option should always be enabled for demosaicing of deep-sky raw frames.</b></p>" );
+   SignalEvaluation_SectionBar.SetSection( SignalEvaluation_Control );
+   SignalEvaluation_SectionBar.EnableTitleCheckBox();
+   SignalEvaluation_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&DebayerInterface::e_ToggleSection, w );
+   SignalEvaluation_SectionBar.OnCheck( (SectionBar::check_event_handler)&DebayerInterface::e_CheckSection, w );
+
+   const char* structureLayersToolTip =
+   "<p>Number of wavelet layers used for structure detection.</p>"
+   "<p>With more wavelet layers, larger stars (and perhaps also some nonstellar objects) will be detected.</p>";
+
+   StructureLayers_Label.SetText( "Detection scales:" );
+   StructureLayers_Label.SetFixedWidth( labelWidth1 );
+   StructureLayers_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   StructureLayers_Label.SetToolTip( structureLayersToolTip );
+
+   StructureLayers_SpinBox.SetRange( int( TheDebayerStructureLayersParameter->MinimumValue() ), int( TheDebayerStructureLayersParameter->MaximumValue() ) );
+   StructureLayers_SpinBox.SetToolTip( structureLayersToolTip );
+   StructureLayers_SpinBox.SetFixedWidth( editWidth2 );
+   StructureLayers_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&DebayerInterface::e_SpinValueUpdated, w );
+
+   StructureLayers_Sizer.SetSpacing( 4 );
+   StructureLayers_Sizer.Add( StructureLayers_Label );
+   StructureLayers_Sizer.Add( StructureLayers_SpinBox );
+   StructureLayers_Sizer.AddStretch();
+
+   const char* minStructureSizeToolTip =
+   "<p>Minimum size of a detectable star structure in square pixels.</p>"
+   "<p>This parameter can be used to prevent detection of small and bright image artifacts as stars, when "
+   "such artifacts cannot be removed with a median filter (i.e., the <i>Hot pixel removal</i> parameter).</p>"
+   "<p>Changing the default zero value of this parameter should not be necessary with correctly acquired and "
+   "calibrated data. It may help, however, when working with poor quality data such as poorly tracked, poorly "
+   "focused, wrongly calibrated, low-SNR raw frames, for which our star detection algorithms have not been "
+   "designed specifically.</p>";
+
+   MinStructureSize_Label.SetText( "Minimum structure size:" );
+   MinStructureSize_Label.SetFixedWidth( labelWidth1 );
+   MinStructureSize_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   MinStructureSize_Label.SetToolTip( minStructureSizeToolTip );
+
+   MinStructureSize_SpinBox.SetRange( int( TheDebayerMinStructureSizeParameter->MinimumValue() ), int( TheDebayerMinStructureSizeParameter->MaximumValue() ) );
+   MinStructureSize_SpinBox.SetToolTip( minStructureSizeToolTip );
+   MinStructureSize_SpinBox.SetFixedWidth( editWidth2 );
+   MinStructureSize_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&DebayerInterface::e_SpinValueUpdated, w );
+
+   MinStructureSize_Sizer.SetSpacing( 4 );
+   MinStructureSize_Sizer.Add( MinStructureSize_Label );
+   MinStructureSize_Sizer.Add( MinStructureSize_SpinBox );
+   MinStructureSize_Sizer.AddStretch();
+
+   const char* hotPixelFilterRadiusToolTip =
+   "<p>Size of the hot pixel removal filter.</p>"
+   "<p>This is the radius in pixels of a median filter applied by the star detector before the structure "
+   "detection phase. A median filter is very efficient to remove <i>hot pixels</i>. Hot pixels will be "
+   "identified as false stars, and if present in large amounts, can prevent a valid signal evaluation.</p>"
+   "<p>To disable hot pixel removal, set this parameter to zero.</p>";
+
+   HotPixelFilterRadius_Label.SetText( "Hot pixel removal:" );
+   HotPixelFilterRadius_Label.SetFixedWidth( labelWidth1 );
+   HotPixelFilterRadius_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   HotPixelFilterRadius_Label.SetToolTip( hotPixelFilterRadiusToolTip );
+
+   HotPixelFilterRadius_SpinBox.SetRange( int( TheDebayerHotPixelFilterRadiusParameter->MinimumValue() ), int( TheDebayerHotPixelFilterRadiusParameter->MaximumValue() ) );
+   HotPixelFilterRadius_SpinBox.SetToolTip( hotPixelFilterRadiusToolTip );
+   HotPixelFilterRadius_SpinBox.SetFixedWidth( editWidth2 );
+   HotPixelFilterRadius_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&DebayerInterface::e_SpinValueUpdated, w );
+
+   HotPixelFilterRadius_Sizer.SetSpacing( 4 );
+   HotPixelFilterRadius_Sizer.Add( HotPixelFilterRadius_Label );
+   HotPixelFilterRadius_Sizer.Add( HotPixelFilterRadius_SpinBox );
+   HotPixelFilterRadius_Sizer.AddStretch();
+
+   const char* noiseReductionFilterRadiusToolTip =
+   "<p>Size of the noise reduction filter.</p>"
+   "<p>This is the radius in pixels of a Gaussian convolution filter applied to the working image used for star "
+   "detection. Use it only for very low SNR images, where the star detector cannot find reliable stars with its "
+   "default parameters.</p>"
+   "<p>To disable noise reduction, set this parameter to zero.</p>";
+
+   NoiseReductionFilterRadius_Label.SetText( "Noise reduction:" );
+   NoiseReductionFilterRadius_Label.SetFixedWidth( labelWidth1 );
+   NoiseReductionFilterRadius_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   NoiseReductionFilterRadius_Label.SetToolTip( noiseReductionFilterRadiusToolTip );
+
+   NoiseReductionFilterRadius_SpinBox.SetRange( int( TheDebayerNoiseReductionFilterRadiusParameter->MinimumValue() ), int( TheDebayerNoiseReductionFilterRadiusParameter->MaximumValue() ) );
+   NoiseReductionFilterRadius_SpinBox.SetToolTip( noiseReductionFilterRadiusToolTip );
+   NoiseReductionFilterRadius_SpinBox.SetFixedWidth( editWidth2 );
+   NoiseReductionFilterRadius_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&DebayerInterface::e_SpinValueUpdated, w );
+
+   NoiseReductionFilterRadius_Sizer.SetSpacing( 4 );
+   NoiseReductionFilterRadius_Sizer.Add( NoiseReductionFilterRadius_Label );
+   NoiseReductionFilterRadius_Sizer.Add( NoiseReductionFilterRadius_SpinBox );
+   NoiseReductionFilterRadius_Sizer.AddStretch();
+
+   const char* psfTypeToolTip = "<p>Point spread function type used for PSF fitting and photometry.</p>"
+      "<p>In all cases elliptical functions are fitted to detected star structures, and PSF sampling regions are "
+      "computed adaptively using a median stabilization algorithm.</p>"
+      "<p>Variable shape functions usually lead to optimal PSF fits in terms of minimization of absolute deviation "
+      "between fitted point spread functions and source image pixel samples for each detected star, which improves "
+      "accuracy of PSF photometry. However, fitting variable shape functions is computationally expensive.</p>"
+      "<p>The default option is fitting Gaussian PSFs, which usually works well for signal estimation.</p>";
+
+   PSFType_Label.SetText( "PSF type:" );
+   PSFType_Label.SetFixedWidth( labelWidth1 );
+   PSFType_Label.SetToolTip( psfTypeToolTip );
+   PSFType_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+
+   PSFType_ComboBox.AddItem( "Gaussian" );
+   PSFType_ComboBox.AddItem( "Moffat" );
+   PSFType_ComboBox.AddItem( "VariableShape" );
+   PSFType_ComboBox.SetToolTip( psfTypeToolTip );
+   PSFType_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&DebayerInterface::e_ItemSelected, w );
+
+   PSFType_Sizer.SetSpacing( 4 );
+   PSFType_Sizer.Add( PSFType_Label );
+   PSFType_Sizer.Add( PSFType_ComboBox );
+   PSFType_Sizer.AddStretch();
+
+   SignalEvaluation_Sizer.SetSpacing( 4 );
+   SignalEvaluation_Sizer.Add( StructureLayers_Sizer );
+   SignalEvaluation_Sizer.Add( MinStructureSize_Sizer );
+   SignalEvaluation_Sizer.Add( HotPixelFilterRadius_Sizer );
+   SignalEvaluation_Sizer.Add( NoiseReductionFilterRadius_Sizer );
+   SignalEvaluation_Sizer.Add( PSFType_Sizer );
+
+   SignalEvaluation_Control.SetSizer( SignalEvaluation_Sizer );
+
+   //
+
+   NoiseEvaluation_SectionBar.SetTitle( "Noise Evaluation" );
+   NoiseEvaluation_SectionBar.SetToolTip( "<p>Compute per-channel estimates of the standard deviation of the noise "
+      "and noise scaling factors for each target image using a wavelet-based algorithm (MRS noise evaluation by "
+      "default). Noise estimates will be stored as NOISExx FITS header keywords in the output files, where 'xx' is "
+      "a zero-padded decimal representation of the zero-based channel index (typically in the 0 to 2 range). Noise "
+      "scaling factors will be stored as NOISELxx and NOISEHxx keywords, respectively for the low and high components "
+      "of a bilateral statistical scale estimate.</p>"
+      "<p>These estimates can be used later by several processes and scripts, most notably by the ImageIntegration "
+      "tool, which uses them by default for robust image weighting based on inverse noise variance and robust signal "
+      "evaluation. Noise estimates will always be computed from uninterpolated, raw calibrated data.</p>"
+      "<p><b>This option should always be enabled under normal working conditions.</b></p>" );
+   NoiseEvaluation_SectionBar.SetSection( NoiseEvaluation_Control );
+   NoiseEvaluation_SectionBar.EnableTitleCheckBox();
+   NoiseEvaluation_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&DebayerInterface::e_ToggleSection, w );
+   NoiseEvaluation_SectionBar.OnCheck( (SectionBar::check_event_handler)&DebayerInterface::e_CheckSection, w );
+
+   const char* noiseEvaluationToolTip = "<p>Noise evaluation algorithm. This option selects an algorithm for automatic "
+      "estimation of the standard deviation of the noise in the calibrated images. In all cases noise estimates assume "
+      "a Gaussian distribution of the noise.</p>"
+      "<p>The multiresolution support (MRS) noise estimation routine implements the iterative algorithm described by "
+      "Jean-Luc Starck and Fionn Murtagh in their paper <em>Automatic Noise Estimation from the Multiresolution Support</em> "
+      "(Publications of the Royal Astronomical Society of the Pacific, vol. 110, pp. 193-199). In our implementation, the "
+      "standard deviation of the noise is evaluated on the first four wavelet layers. This is the most accurate algorithm "
+      "available, and hence the default option.</p>"
+      "<p>The iterative k-sigma clipping algorithm can be used as a last-resort option in cases where the MRS algorithm "
+      "does not converge systematically. This can happen on images with no detectable small-scale noise; for example, "
+      "images that have been smoothed as a result of bilinear demosaicing interpolation.</p>";
+
+   NoiseEvaluationAlgorithm_Label.SetText( "Evaluation algorithm:" );
+   NoiseEvaluationAlgorithm_Label.SetFixedWidth( labelWidth1 );
+   NoiseEvaluationAlgorithm_Label.SetToolTip( noiseEvaluationToolTip );
+   NoiseEvaluationAlgorithm_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+
+   NoiseEvaluationAlgorithm_ComboBox.AddItem( "Iterative K-Sigma Clipping" );
+   NoiseEvaluationAlgorithm_ComboBox.AddItem( "Multiresolution Support" );
+   NoiseEvaluationAlgorithm_ComboBox.SetToolTip( noiseEvaluationToolTip );
+   NoiseEvaluationAlgorithm_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&DebayerInterface::e_ItemSelected, w );
+
+   NoiseEvaluationAlgorithm_Sizer.SetSpacing( 4 );
+   NoiseEvaluationAlgorithm_Sizer.Add( NoiseEvaluationAlgorithm_Label );
+   NoiseEvaluationAlgorithm_Sizer.Add( NoiseEvaluationAlgorithm_ComboBox );
+   NoiseEvaluationAlgorithm_Sizer.AddStretch();
+
+   NoiseEvaluation_Sizer.SetSpacing( 4 );
+   NoiseEvaluation_Sizer.Add( NoiseEvaluationAlgorithm_Sizer );
+
+   NoiseEvaluation_Control.SetSizer( NoiseEvaluation_Sizer );
+
+   //
+
    Global_Sizer.SetMargin( 8 );
    Global_Sizer.SetSpacing( 6 );
 
@@ -889,10 +1063,16 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
    Global_Sizer.Add( FormatHints_Control );
    Global_Sizer.Add( OutputFiles_SectionBar );
    Global_Sizer.Add( OutputFiles_Control );
+   Global_Sizer.Add( SignalEvaluation_SectionBar );
+   Global_Sizer.Add( SignalEvaluation_Control );
+   Global_Sizer.Add( NoiseEvaluation_SectionBar );
+   Global_Sizer.Add( NoiseEvaluation_Control );
 
    w.SetSizer( Global_Sizer );
 
    FormatHints_Control.Hide();
+   SignalEvaluation_Control.Hide();
+   NoiseEvaluation_Control.Hide();
 
    w.EnsureLayoutUpdated();
    w.AdjustToContents();

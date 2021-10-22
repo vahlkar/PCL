@@ -148,16 +148,37 @@ private:
          HorizontalSizer   OutputPedestal_Sizer;
             Label             OutputPedestal_Label;
             SpinBox           OutputPedestal_SpinBox;
-         HorizontalSizer   EvaluateNoise_Sizer;
-            CheckBox          EvaluateNoise_CheckBox;
-         HorizontalSizer   NoiseEvaluation_Sizer;
-            Label             NoiseEvaluation_Label;
-            ComboBox          NoiseEvaluation_ComboBox;
          HorizontalSizer   OverwriteExistingFiles_Sizer;
             CheckBox          OverwriteExistingFiles_CheckBox;
          HorizontalSizer   OnError_Sizer;
             Label             OnError_Label;
             ComboBox          OnError_ComboBox;
+
+      SectionBar        SignalEvaluation_SectionBar;
+      Control           SignalEvaluation_Control;
+      VerticalSizer     SignalEvaluation_Sizer;
+         HorizontalSizer   StructureLayers_Sizer;
+            Label             StructureLayers_Label;
+            SpinBox           StructureLayers_SpinBox;
+         HorizontalSizer   MinStructureSize_Sizer;
+            Label             MinStructureSize_Label;
+            SpinBox           MinStructureSize_SpinBox;
+         HorizontalSizer   HotPixelFilterRadius_Sizer;
+            Label             HotPixelFilterRadius_Label;
+            SpinBox           HotPixelFilterRadius_SpinBox;
+         HorizontalSizer   NoiseReductionFilterRadius_Sizer;
+            Label             NoiseReductionFilterRadius_Label;
+            SpinBox           NoiseReductionFilterRadius_SpinBox;
+         HorizontalSizer   PSFType_Sizer;
+            Label             PSFType_Label;
+            ComboBox          PSFType_ComboBox;
+
+      SectionBar        NoiseEvaluation_SectionBar;
+      Control           NoiseEvaluation_Control;
+      VerticalSizer     NoiseEvaluation_Sizer;
+         HorizontalSizer   NoiseEvaluationAlgorithm_Sizer;
+            Label             NoiseEvaluationAlgorithm_Label;
+            ComboBox          NoiseEvaluationAlgorithm_ComboBox;
 
       SectionBar        Pedestal_SectionBar;
       Control           Pedestal_Control;
@@ -287,6 +308,7 @@ private:
    void UpdateCFAControls();
    void UpdateFormatHintsControls();
    void UpdateOutputFilesControls();
+   void UpdateSignalAndNoiseEvaluationControls();
    void UpdatePedestalControls();
    void UpdateMasterFrameControls();
    void UpdateOverscanControls();

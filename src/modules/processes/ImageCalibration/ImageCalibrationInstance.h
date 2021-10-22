@@ -216,6 +216,14 @@ private:
    pcl_bool        p_evaluateNoise;   // perform MRS noise evaluation
    pcl_enum        p_noiseEvaluationAlgorithm;
 
+   // PSF signal estimates
+   pcl_bool        p_evaluateSignal;  // perform signal evaluation with PSF photometry
+   int32           p_structureLayers;
+   int32           p_hotPixelFilterRadius;
+   int32           p_noiseReductionFilterRadius;
+   int32           p_minStructureSize;
+   pcl_enum        p_psfType;
+
    // Output files
    String          p_outputDirectory;
    String          p_outputExtension;
@@ -268,6 +276,12 @@ private:
 
    // CFA pattern identification
    IsoString CFAPatternFromTarget( FileFormatInstance& ) const;
+
+   // Signal and noise estimates
+   void EvaluateSignalAndNoise( Vector& psfSignalEstimates, Vector& psfPowerEstimates, IVector& psfCounts,
+                                Vector& noiseEstimates, Vector& noiseFractions,
+                                Vector& noiseScaleLow, Vector& noiseScaleHigh, StringList& noiseAlgorithms,
+                                const Image& target, const IsoString& cfaPattern = IsoString() ) const;
 
    friend class CalibrationThread;
    friend class ImageCalibrationInterface;

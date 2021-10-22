@@ -60,6 +60,7 @@
 #include <pcl/PushButton.h>
 #include <pcl/SectionBar.h>
 #include <pcl/Sizer.h>
+#include <pcl/SpinBox.h>
 #include <pcl/ToolButton.h>
 #include <pcl/TreeBox.h>
 
@@ -106,27 +107,22 @@ private:
             HorizontalSizer   DebayerMethod_Sizer;
                Label             DebayerMethod_Label;
                ComboBox          DebayerMethod_ComboBox;
-            HorizontalSizer   EvaluateNoise_Sizer;
-               CheckBox          EvaluateNoise_CheckBox;
-            HorizontalSizer   NoiseEvaluation_Sizer;
-               Label             NoiseEvaluation_Label;
-               ComboBox          NoiseEvaluation_ComboBox;
             HorizontalSizer   OutputMode_Sizer;
                Label             OutputMode_Label;
                ComboBox          OutputMode_ComboBox;
 
-         SectionBar        TargetImages_SectionBar;
-         Control           TargetImages_Control;
-         HorizontalSizer   TargetImages_Sizer;
-            TreeBox           TargetImages_TreeBox;
-            VerticalSizer     TargetButtons_Sizer;
-               PushButton        AddFiles_PushButton;
-               PushButton        SelectAll_PushButton;
-               PushButton        InvertSelection_PushButton;
-               PushButton        ToggleSelected_PushButton;
-               PushButton        RemoveSelected_PushButton;
-               PushButton        Clear_PushButton;
-               CheckBox          FullPaths_CheckBox;
+            SectionBar        TargetImages_SectionBar;
+            Control           TargetImages_Control;
+            HorizontalSizer   TargetImages_Sizer;
+               TreeBox           TargetImages_TreeBox;
+               VerticalSizer     TargetButtons_Sizer;
+                  PushButton        AddFiles_PushButton;
+                  PushButton        SelectAll_PushButton;
+                  PushButton        InvertSelection_PushButton;
+                  PushButton        ToggleSelected_PushButton;
+                  PushButton        RemoveSelected_PushButton;
+                  PushButton        Clear_PushButton;
+                  CheckBox          FullPaths_CheckBox;
 
          SectionBar        FormatHints_SectionBar;
          Control           FormatHints_Control;
@@ -154,6 +150,32 @@ private:
                CheckBox          OverwriteExistingFiles_CheckBox;
                Label             OnError_Label;
                ComboBox          OnError_ComboBox;
+
+         SectionBar        SignalEvaluation_SectionBar;
+         Control           SignalEvaluation_Control;
+         VerticalSizer     SignalEvaluation_Sizer;
+            HorizontalSizer   StructureLayers_Sizer;
+               Label             StructureLayers_Label;
+               SpinBox           StructureLayers_SpinBox;
+            HorizontalSizer   MinStructureSize_Sizer;
+               Label             MinStructureSize_Label;
+               SpinBox           MinStructureSize_SpinBox;
+            HorizontalSizer   HotPixelFilterRadius_Sizer;
+               Label             HotPixelFilterRadius_Label;
+               SpinBox           HotPixelFilterRadius_SpinBox;
+            HorizontalSizer   NoiseReductionFilterRadius_Sizer;
+               Label             NoiseReductionFilterRadius_Label;
+               SpinBox           NoiseReductionFilterRadius_SpinBox;
+            HorizontalSizer   PSFType_Sizer;
+               Label             PSFType_Label;
+               ComboBox          PSFType_ComboBox;
+
+         SectionBar        NoiseEvaluation_SectionBar;
+         Control           NoiseEvaluation_Control;
+         VerticalSizer     NoiseEvaluation_Sizer;
+            HorizontalSizer   NoiseEvaluationAlgorithm_Sizer;
+               Label             NoiseEvaluationAlgorithm_Label;
+               ComboBox          NoiseEvaluationAlgorithm_ComboBox;
    };
 
    GUIData* GUI = nullptr;
@@ -165,6 +187,7 @@ private:
    void UpdateImageSelectionButtons();
    void UpdateFormatHintsControls();
    void UpdateOutputFilesControls();
+   void UpdateSignalAndNoiseEvaluationControls();
 
    void e_EditCompleted( Edit& sender );
    void e_ItemSelected( ComboBox& sender, int itemIndex );
@@ -172,6 +195,8 @@ private:
    void e_CurrentNodeUpdated( TreeBox& sender, TreeBox::Node& current, TreeBox::Node& oldCurrent );
    void e_NodeActivated( TreeBox& sender, TreeBox::Node& node, int col );
    void e_NodeSelectionUpdated( TreeBox& sender );
+   void e_SpinValueUpdated( SpinBox& sender, int value );
+   void e_CheckSection( SectionBar& sender, bool checked );
    void e_ToggleSection( SectionBar& sender, Control& section, bool start );
    void e_FileDrag( Control& sender, const Point& pos, const StringList& files, unsigned modifiers, bool& wantsFiles );
    void e_FileDrop( Control& sender, const Point& pos, const StringList& files, unsigned modifiers );

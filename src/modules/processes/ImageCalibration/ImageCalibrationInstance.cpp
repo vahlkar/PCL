@@ -134,6 +134,12 @@ ImageCalibrationInstance::ImageCalibrationInstance( const MetaProcess* m )
    , p_flatScaleClippingFactor( TheICFlatScaleClippingFactorParameter->DefaultValue() )
    , p_evaluateNoise( TheICEvaluateNoiseParameter->DefaultValue() )
    , p_noiseEvaluationAlgorithm( ICNoiseEvaluationAlgorithm::Default )
+   , p_evaluateSignal( TheICEvaluateSignalParameter->DefaultValue() )
+   , p_structureLayers( TheICStructureLayersParameter->DefaultValue() )
+   , p_hotPixelFilterRadius( TheICHotPixelFilterRadiusParameter->DefaultValue() )
+   , p_noiseReductionFilterRadius( TheICNoiseReductionFilterRadiusParameter->DefaultValue() )
+   , p_minStructureSize( TheICMinStructureSizeParameter->DefaultValue() )
+   , p_psfType( ICPSFType::Default )
    , p_outputDirectory( TheICOutputDirectoryParameter->DefaultValue() )
    , p_outputExtension( TheICOutputExtensionParameter->DefaultValue() )
    , p_outputPrefix( TheICOutputPrefixParameter->DefaultValue() )
@@ -185,6 +191,12 @@ void ImageCalibrationInstance::Assign( const ProcessImplementation& p )
       p_flatScaleClippingFactor       = x->p_flatScaleClippingFactor;
       p_evaluateNoise                 = x->p_evaluateNoise;
       p_noiseEvaluationAlgorithm      = x->p_noiseEvaluationAlgorithm;
+      p_evaluateSignal                = x->p_evaluateSignal;
+      p_structureLayers               = x->p_structureLayers;
+      p_hotPixelFilterRadius          = x->p_hotPixelFilterRadius;
+      p_noiseReductionFilterRadius    = x->p_noiseReductionFilterRadius;
+      p_minStructureSize              = x->p_minStructureSize;
+      p_psfType                       = x->p_psfType;
       p_outputDirectory               = x->p_outputDirectory;
       p_outputExtension               = x->p_outputExtension;
       p_outputPrefix                  = x->p_outputPrefix;
@@ -616,6 +628,172 @@ IsoString ImageCalibrationInstance::CFAPatternFromTarget( FileFormatInstance& fi
 // ----------------------------------------------------------------------------
 
 /*
+ * * Signal evaluation by PSF photometry.
+ *
+ * * Estimation of the standard deviation of the noise, assuming a Gaussian
+ *   noise distribution:
+ *
+ * - Use MRS noise evaluation when the algorithm converges for 4 >= J >= 2
+ *
+ * - Use k-sigma noise evaluation when either MRS doesn't converge, or when the
+ *   length of the set of noise pixels is less than a 1% of the image area.
+ *
+ * - Automatically iterate to find the highest wavelet layer where noise can be
+ *   successfully evaluated, in the [1,3] range.
+ */
+void ImageCalibrationInstance::EvaluateSignalAndNoise( Vector& psfSignalEstimates, Vector& psfPowerEstimates, IVector& psfCounts,
+                                                       Vector& noiseEstimates, Vector& noiseFractions,
+                                                       Vector& noiseScaleLow, Vector& noiseScaleHigh, StringList& noiseAlgorithms,
+                                                       const Image& target, const IsoString& cfaPattern ) const
+{
+   MuteStatus status;
+   target.SetStatusCallback( &status );
+   target.Status().DisableInitialization();
+
+   if ( !cfaPattern.IsEmpty() )
+   {
+      Image evaluationTarget( target );
+      IntegerResample( -DownsamplingFactorForCFAPattern( cfaPattern ) ) >> evaluationTarget;
+      EvaluateSignalAndNoise( psfSignalEstimates, psfPowerEstimates, psfCounts,
+                              noiseEstimates, noiseFractions,
+                              noiseScaleLow, noiseScaleHigh, noiseAlgorithms,
+                              evaluationTarget );
+      return;
+   }
+
+   target.ResetSelections();
+
+   /*
+    * Signal estimation by PSF photometry
+    */
+   if ( p_evaluateSignal )
+   {
+      psfSignalEstimates = Vector( 0.0, target.NumberOfChannels() );
+      psfPowerEstimates = Vector( 0.0, target.NumberOfChannels() );
+      psfCounts = IVector( 0, target.NumberOfChannels() );
+
+      PSFSignalEstimator E;
+      E.Detector().SetStructureLayers( p_structureLayers );
+      E.Detector().SetHotPixelFilterRadius( p_hotPixelFilterRadius );
+      E.Detector().SetNoiseReductionFilterRadius( p_noiseReductionFilterRadius );
+      E.Detector().SetMinStructureSize( p_minStructureSize );
+      E.SetPSFType( ICPSFType::ToPSFFunction( p_psfType ) );
+      for ( int c = 0; c < target.NumberOfChannels(); ++c )
+      {
+         target.SelectChannel( c );
+
+         PSFSignalEstimator::Estimates e = E( ImageVariant( const_cast<Image*>( &target ) ) );
+         psfSignalEstimates[c] = e.mean;
+         psfPowerEstimates[c] = e.power;
+         psfCounts[c] = e.count;
+      }
+   }
+
+   /*
+    * Noise evaluation
+    */
+   if ( p_evaluateNoise )
+   {
+      noiseEstimates = Vector( 0.0, target.NumberOfChannels() );
+      noiseFractions = Vector( 0.0, target.NumberOfChannels() );
+      noiseScaleLow = Vector( 0.0, target.NumberOfChannels() );
+      noiseScaleHigh = Vector( 0.0, target.NumberOfChannels() );
+      noiseAlgorithms = StringList( target.NumberOfChannels(), String() );
+
+      ATrousWaveletTransform::WaveletScalingFunction H;
+      if ( SeparableConvolution::FasterThanNonseparableFilterSize( Thread::NumberOfThreads( PCL_MAX_PROCESSORS ) ) > 5 )
+         H.Set( KernelFilter( g_5x5B3Spline, 5 ) );
+      else
+         H.Set( SeparableFilter( g_5x5B3Spline_hv, g_5x5B3Spline_hv, 5 ) );
+
+      for ( int c = 0; c < target.NumberOfChannels(); ++c )
+      {
+         target.SelectChannel( c );
+
+         /*
+         * Noise scaling factors
+         */
+         {
+            const double clipLow = 2.0/65535;
+            const double clipHigh = 1.0 - 2.0/65535;
+
+            target.SetRangeClipping( clipLow, clipHigh );
+            double center = target.Median();
+
+            target.SetRangeClipping( clipLow, center );
+            target.SetRangeClipping( Max( clipLow, center - 4*target.StdDev() ), center );
+            target.SetRangeClipping( Max( clipLow, center - 4*target.StdDev() ), center );
+            noiseScaleLow[c] = target.StdDev();
+
+            target.SetRangeClipping( center, clipHigh );
+            target.SetRangeClipping( center, Min( center + 4*target.StdDev(), clipHigh ) );
+            target.SetRangeClipping( center, Min( center + 4*target.StdDev(), clipHigh ) );
+            noiseScaleHigh[c] = target.StdDev();
+
+            target.ResetRangeClipping();
+         }
+
+         /*
+          * Noise estimates
+          */
+         switch ( p_noiseEvaluationAlgorithm )
+         {
+         case ICNoiseEvaluationAlgorithm::KSigma:
+            {
+               ATrousWaveletTransform W( H, 1 );
+               W << target;
+               size_type N;
+               noiseEstimates[c] = W.NoiseKSigma( 0, 3, 0.01, 10, &N )/g_5x5B3Spline_kj[0];
+               noiseFractions[c] = float( double( N )/target.NumberOfPixels() );
+               noiseAlgorithms[c] = "K-Sigma";
+            }
+            break;
+         default:
+         case ICNoiseEvaluationAlgorithm::MRS:
+            {
+               double s0 = 0, f0 = 0;
+               for ( int n = 4; ; )
+               {
+                  Module->ProcessEvents();
+
+                  ATrousWaveletTransform W( H, n );
+                  W << target;
+
+                  size_type N;
+                  if ( n == 4 )
+                  {
+                     s0 = W.NoiseKSigma( 0, 3, 0.01, 10, &N )/g_5x5B3Spline_kj[0];
+                     f0 = double( N )/target.NumberOfPixels();
+                  }
+                  noiseEstimates[c] = W.NoiseMRS( ImageVariant( const_cast<Image*>( &target ) ), g_5x5B3Spline_kj, s0, 3, &N );
+                  noiseFractions[c] = double( N )/target.NumberOfPixels();
+
+                  if ( noiseEstimates[c] > 0 && noiseFractions[c] >= 0.01 )
+                  {
+                     noiseAlgorithms[c] = "MRS";
+                     break;
+                  }
+
+                  if ( --n == 1 )
+                  {
+                     noiseEstimates[c] = s0;
+                     noiseFractions[c] = f0;
+                     noiseAlgorithms[c] = "K-Sigma";
+                     break;
+                  }
+               }
+            }
+            break;
+         }
+      }
+   }
+
+   target.ResetSelections();
+}
+
+// ----------------------------------------------------------------------------
+
+/*
  * Quick estimation of noise sigma after dark subtraction by the iterative
  * k-sigma method.
  *
@@ -904,162 +1082,6 @@ static FVector OptimizeDark( const Image& target, const Image& optimizingDark, c
 }
 
 // ----------------------------------------------------------------------------
-
-/*
- * * Signal evaluation by PSF photometry.
- *
- * * Estimation of the standard deviation of the noise, assuming a Gaussian
- *   noise distribution:
- *
- * - Use MRS noise evaluation when the algorithm converges for 4 >= J >= 2
- *
- * - Use k-sigma noise evaluation when either MRS doesn't converge, or when the
- *   length of the set of noise pixels is less than a 1% of the image area.
- *
- * - Automatically iterate to find the highest wavelet layer where noise can be
- *   successfully evaluated, in the [1,3] range.
- */
-static void EvaluateSignalAndNoise( Vector& psfSignalEstimates, Vector& psfPowerEstimates, IVector& psfCounts,
-                                    Vector& noiseEstimates, Vector& noiseFractions,
-                                    Vector& noiseScaleLow, Vector& noiseScaleHigh, StringList& noiseAlgorithms,
-                                    const Image& target,
-                                    int algorithm,
-                                    const IsoString& cfaPattern = IsoString() )
-{
-   MuteStatus status;
-   target.SetStatusCallback( &status );
-   target.Status().DisableInitialization();
-
-   if ( !cfaPattern.IsEmpty() )
-   {
-      Image evaluationTarget( target );
-      IntegerResample( -DownsamplingFactorForCFAPattern( cfaPattern ) ) >> evaluationTarget;
-      EvaluateSignalAndNoise( psfSignalEstimates, psfPowerEstimates, psfCounts,
-                              noiseEstimates, noiseFractions,
-                              noiseScaleLow, noiseScaleHigh, noiseAlgorithms, evaluationTarget, algorithm );
-      return;
-   }
-
-   target.ResetSelections();
-
-   /*
-    * Signal estimation by PSF photometry
-    */
-   psfSignalEstimates = Vector( 0.0, target.NumberOfChannels() );
-   psfPowerEstimates = Vector( 0.0, target.NumberOfChannels() );
-   psfCounts = IVector( 0, target.NumberOfChannels() );
-
-   PSFSignalEstimator E;
-   for ( int c = 0; c < target.NumberOfChannels(); ++c )
-   {
-      target.SelectChannel( c );
-
-      PSFSignalEstimator::Estimates e = E( ImageVariant( const_cast<Image*>( &target ) ) );
-      psfSignalEstimates[c] = e.mean;
-      psfPowerEstimates[c] = e.power;
-      psfCounts[c] = e.count;
-   }
-
-   /*
-    * Noise evaluation
-    */
-   noiseEstimates = Vector( 0.0, target.NumberOfChannels() );
-   noiseFractions = Vector( 0.0, target.NumberOfChannels() );
-   noiseScaleLow = Vector( 0.0, target.NumberOfChannels() );
-   noiseScaleHigh = Vector( 0.0, target.NumberOfChannels() );
-   noiseAlgorithms = StringList( target.NumberOfChannels(), String() );
-
-   ATrousWaveletTransform::WaveletScalingFunction H;
-   if ( SeparableConvolution::FasterThanNonseparableFilterSize( Thread::NumberOfThreads( PCL_MAX_PROCESSORS ) ) > 5 )
-      H.Set( KernelFilter( g_5x5B3Spline, 5 ) );
-   else
-      H.Set( SeparableFilter( g_5x5B3Spline_hv, g_5x5B3Spline_hv, 5 ) );
-
-   for ( int c = 0; c < target.NumberOfChannels(); ++c )
-   {
-      target.SelectChannel( c );
-
-      /*
-       * Noise scaling factors
-       */
-      {
-         const double clipLow = 2.0/65535;
-         const double clipHigh = 1.0 - 2.0/65535;
-
-         target.SetRangeClipping( clipLow, clipHigh );
-         double center = target.Median();
-
-         target.SetRangeClipping( clipLow, center );
-         target.SetRangeClipping( Max( clipLow, center - 4*target.StdDev() ), center );
-         target.SetRangeClipping( Max( clipLow, center - 4*target.StdDev() ), center );
-         noiseScaleLow[c] = target.StdDev();
-
-         target.SetRangeClipping( center, clipHigh );
-         target.SetRangeClipping( center, Min( center + 4*target.StdDev(), clipHigh ) );
-         target.SetRangeClipping( center, Min( center + 4*target.StdDev(), clipHigh ) );
-         noiseScaleHigh[c] = target.StdDev();
-
-         target.ResetRangeClipping();
-      }
-
-      /*
-       * Noise estimates
-       */
-      switch ( algorithm )
-      {
-      case ICNoiseEvaluationAlgorithm::KSigma:
-         {
-            ATrousWaveletTransform W( H, 1 );
-            W << target;
-            size_type N;
-            noiseEstimates[c] = W.NoiseKSigma( 0, 3, 0.01, 10, &N )/g_5x5B3Spline_kj[0];
-            noiseFractions[c] = float( double( N )/target.NumberOfPixels() );
-            noiseAlgorithms[c] = "K-Sigma";
-         }
-         break;
-      default:
-      case ICNoiseEvaluationAlgorithm::MRS:
-         {
-            double s0 = 0, f0 = 0;
-            for ( int n = 4; ; )
-            {
-               Module->ProcessEvents();
-
-               ATrousWaveletTransform W( H, n );
-               W << target;
-
-               size_type N;
-               if ( n == 4 )
-               {
-                  s0 = W.NoiseKSigma( 0, 3, 0.01, 10, &N )/g_5x5B3Spline_kj[0];
-                  f0 = double( N )/target.NumberOfPixels();
-               }
-               noiseEstimates[c] = W.NoiseMRS( ImageVariant( const_cast<Image*>( &target ) ), g_5x5B3Spline_kj, s0, 3, &N );
-               noiseFractions[c] = double( N )/target.NumberOfPixels();
-
-               if ( noiseEstimates[c] > 0 && noiseFractions[c] >= 0.01 )
-               {
-                  noiseAlgorithms[c] = "MRS";
-                  break;
-               }
-
-               if ( --n == 1 )
-               {
-                  noiseEstimates[c] = s0;
-                  noiseFractions[c] = f0;
-                  noiseAlgorithms[c] = "K-Sigma";
-                  break;
-               }
-            }
-         }
-         break;
-      }
-   }
-
-   target.ResetSelections();
-}
-
-// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 // File Management Routines
 // ----------------------------------------------------------------------------
@@ -1227,14 +1249,12 @@ public:
           *           routine that we have CFA images (not tied to dark frame
           *           optimization).
           */
-         if ( m_data.instance->p_evaluateNoise )
+         if ( m_data.instance->p_evaluateSignal || m_data.instance->p_evaluateNoise )
          {
             console.WriteLn( "<end><cbr>* Performing signal and noise evaluation." );
-            EvaluateSignalAndNoise( psfSignalEstimates, psfPowerEstimates, psfCounts,
-                                    noiseEstimates, noiseFractions, noiseScaleLow, noiseScaleHigh, noiseAlgorithms,
-                                    *m_target,
-                                    m_data.instance->p_noiseEvaluationAlgorithm,
-                                    m_data.darkCFAPattern );
+            m_data.instance->EvaluateSignalAndNoise( psfSignalEstimates, psfPowerEstimates, psfCounts,
+                                                     noiseEstimates, noiseFractions, noiseScaleLow, noiseScaleHigh, noiseAlgorithms,
+                                                     *m_target, m_data.darkCFAPattern );
          }
 
          m_success = true;
@@ -1705,9 +1725,9 @@ void ImageCalibrationInstance::WriteCalibratedImage( const CalibrationThread* t 
    }
 
    /*
-    * Write signal and noise information to the console.
+    * Write signal evaluation information to the console.
     */
-   if ( p_evaluateNoise )
+   if ( p_evaluateSignal )
    {
       if ( t->psfCounts.Sum() > 0 )
       {
@@ -1721,10 +1741,16 @@ void ImageCalibrationInstance::WriteCalibratedImage( const CalibrationThread* t 
       }
       else
          console.WarningLn( "** Warning: No valid PSF signal samples." );
+   }
 
+   /*
+    * Write noise evaluation information to the console.
+    */
+   if ( p_evaluateNoise )
+   {
       console.WriteLn( "Gaussian noise estimates:" );
       for ( int i = 0; i < t->noiseEstimates.Length(); ++i )
-         console.WriteLn( String().Format( "ch %d : s = %.3e, %.2f%% pixels ", i, t->noiseEstimates[i], t->noiseFractions[i]*100 )
+         console.WriteLn( String().Format( "ch %d : s = %.4e, %.2f%% pixels ", i, t->noiseEstimates[i], t->noiseFractions[i]*100 )
                            + '(' + t->noiseAlgorithms[i] + ')' );
 
       console.WriteLn( "Noise scaling factors:" );
@@ -1951,15 +1977,15 @@ void ImageCalibrationInstance::WriteCalibratedImage( const CalibrationThread* t 
          keywords << FITSHeaderKeyword( "HISTORY", IsoString(), flatScalingFactors );
       }
 
-      if ( p_evaluateNoise )
+      if ( p_evaluateSignal )
       {
          /*
-          * N.B.: If we have computed signal and noise estimates, remove any
-          * previously existing PSFSGLxx, PSFSGNxx and NOISExx keywords. Only
-          * our newly created keywords must be present in the header.
+          * N.B.: If we have computed signal estimates, remove any previously
+          * existing PSFSGLxx, PSFSGPxx and PSFSGNxx keywords. Only our newly
+          * created keywords must be present in the header.
           */
          for ( size_type i = 0; i < keywords.Length(); )
-            if ( keywords[i].name.StartsWithIC( "NOISE" ) || keywords[i].name.StartsWithIC( "PSFSG" ) )
+            if ( keywords[i].name.StartsWithIC( "PSFSG" ) )
                keywords.Remove( keywords.At( i ) );
             else
                ++i;
@@ -1981,11 +2007,36 @@ void ImageCalibrationInstance::WriteCalibratedImage( const CalibrationThread* t 
             psfCounts.AppendFormat( " %d", t->psfCounts[i] );
          keywords << FITSHeaderKeyword( "HISTORY", IsoString(), psfCounts );
 
+         for ( int i = 0; i < t->psfSignalEstimates.Length(); ++i )
+            keywords << FITSHeaderKeyword( IsoString().Format( "PSFSGL%02d", i ),
+                                           IsoString().Format( "%.4e", t->psfSignalEstimates[i] ),
+                                           IsoString().Format( "PSF mean signal estimate, channel #%d", i ) )
+                     << FITSHeaderKeyword( IsoString().Format( "PSFSGP%02d", i ),
+                                           IsoString().Format( "%.4e", t->psfPowerEstimates[i] ),
+                                           IsoString().Format( "PSF mean signal power estimate, channel #%d", i ) )
+                     << FITSHeaderKeyword( IsoString().Format( "PSFSGN%02d", i ),
+                                           IsoString().Format( "%d", t->psfCounts[i] ),
+                                           IsoString().Format( "Number of evaluated PSF fits, channel #%d", i ) );
+      }
+
+      if ( p_evaluateNoise )
+      {
+         /*
+          * N.B.: If we have computed noise estimates, remove any previously
+          * existing NOISExx keywords. Only our newly created keywords must be
+          * present in the header.
+          */
+         for ( size_type i = 0; i < keywords.Length(); )
+            if ( keywords[i].name.StartsWithIC( "NOISE" ) )
+               keywords.Remove( keywords.At( i ) );
+            else
+               ++i;
+
          keywords << FITSHeaderKeyword( "HISTORY", IsoString(), "Noise evaluation with " + Module->ReadableVersion() );
 
          IsoString noiseEstimates = "ImageCalibration.noiseEstimates:";
          for ( int i = 0; i < t->noiseEstimates.Length(); ++i )
-            noiseEstimates.AppendFormat( " %.3e", t->noiseEstimates[i] );
+            noiseEstimates.AppendFormat( " %.4e", t->noiseEstimates[i] );
          keywords << FITSHeaderKeyword( "HISTORY", IsoString(), noiseEstimates );
 
          IsoString noiseScaleLow = "ImageCalibration.noiseScaleLow:";
@@ -1998,20 +2049,9 @@ void ImageCalibrationInstance::WriteCalibratedImage( const CalibrationThread* t 
             noiseScaleHigh.AppendFormat( " %.6e", t->noiseScaleHigh[i] );
          keywords << FITSHeaderKeyword( "HISTORY", IsoString(), noiseScaleHigh );
 
-         for ( int i = 0; i < t->psfSignalEstimates.Length(); ++i )
-            keywords << FITSHeaderKeyword( IsoString().Format( "PSFSGL%02d", i ),
-                                           IsoString().Format( "%.4e", t->psfSignalEstimates[i] ),
-                                           IsoString().Format( "PSF mean signal estimate, channel #%d", i ) )
-                     << FITSHeaderKeyword( IsoString().Format( "PSFSGP%02d", i ),
-                                           IsoString().Format( "%.4e", t->psfPowerEstimates[i] ),
-                                           IsoString().Format( "PSF mean signal power estimate, channel #%d", i ) )
-                     << FITSHeaderKeyword( IsoString().Format( "PSFSGN%02d", i ),
-                                           IsoString().Format( "%d", t->psfCounts[i] ),
-                                           IsoString().Format( "Number of evaluated PSF fits, channel #%d", i ) );
-
          for ( int i = 0; i < t->noiseEstimates.Length(); ++i )
             keywords << FITSHeaderKeyword( IsoString().Format( "NOISE%02d", i ),
-                                           IsoString().Format( "%.3e", t->noiseEstimates[i] ),
+                                           IsoString().Format( "%.4e", t->noiseEstimates[i] ),
                                            IsoString().Format( "Gaussian noise estimate, channel #%d", i ) )
                      << FITSHeaderKeyword( IsoString().Format( "NOISEF%02d", i ),
                                            IsoString().Format( "%.3f", t->noiseFractions[i] ),
@@ -2028,12 +2068,14 @@ void ImageCalibrationInstance::WriteCalibratedImage( const CalibrationThread* t 
       }
 
       if ( p_outputPedestal != 0 )
+      {
          keywords << FITSHeaderKeyword( "HISTORY",
                                     IsoString(),
                                     IsoString().Format( "ImageCalibration.outputPedestal: %d", p_outputPedestal ) )
                   << FITSHeaderKeyword( "PEDESTAL",
                                     IsoString( p_outputPedestal ),
                                     "Value in DN added to enforce positivity" );
+      }
 
       outputFile.WriteFITSKeywords( keywords );
    }
@@ -2067,12 +2109,16 @@ void ImageCalibrationInstance::WriteCalibratedImage( const CalibrationThread* t 
       if ( p_optimizeDarks )
          for ( int i = 0; i < Min( 3, t->K.Length() ); ++i )
             o.darkScalingFactors[i] = t->K[i];
-   if ( p_evaluateNoise )
+   if ( p_evaluateSignal )
       for ( int i = 0; i < Min( 3, t->noiseEstimates.Length() ); ++i )
       {
          o.psfSignalEstimates[i] = t->psfSignalEstimates[i];
          o.psfPowerEstimates[i] = t->psfPowerEstimates[i];
          o.psfCounts[i] = t->psfCounts[i];
+      }
+   if ( p_evaluateNoise )
+      for ( int i = 0; i < Min( 3, t->noiseEstimates.Length() ); ++i )
+      {
          o.noiseEstimates[i] = t->noiseEstimates[i];
          o.noiseFractions[i] = t->noiseFractions[i];
          o.noiseScaleLow[i] = t->noiseScaleLow[i];
@@ -2805,6 +2851,19 @@ void* ImageCalibrationInstance::LockParameter( const MetaParameter* p, size_type
       return &p_evaluateNoise;
    if ( p == TheICNoiseEvaluationAlgorithmParameter )
       return &p_noiseEvaluationAlgorithm;
+
+   if ( p == TheICEvaluateSignalParameter )
+      return &p_evaluateSignal;
+   if ( p == TheICStructureLayersParameter )
+      return &p_structureLayers;
+   if ( p == TheICHotPixelFilterRadiusParameter )
+      return &p_hotPixelFilterRadius;
+   if ( p == TheICNoiseReductionFilterRadiusParameter )
+      return &p_noiseReductionFilterRadius;
+   if ( p == TheICMinStructureSizeParameter )
+      return &p_minStructureSize;
+   if ( p == TheICPSFTypeParameter )
+      return &p_psfType;
 
    if ( p == TheICOutputDirectoryParameter )
       return p_outputDirectory.Begin();

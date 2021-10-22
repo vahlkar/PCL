@@ -119,6 +119,13 @@ ICFlatScaleClippingFactor*       TheICFlatScaleClippingFactorParameter = nullptr
 ICEvaluateNoise*                 TheICEvaluateNoiseParameter = nullptr;
 ICNoiseEvaluationAlgorithm*      TheICNoiseEvaluationAlgorithmParameter = nullptr;
 
+ICEvaluateSignal*                TheICEvaluateSignalParameter = nullptr;
+ICStructureLayers*               TheICStructureLayersParameter = nullptr;
+ICHotPixelFilterRadius*          TheICHotPixelFilterRadiusParameter = nullptr;
+ICNoiseReductionFilterRadius*    TheICNoiseReductionFilterRadiusParameter = nullptr;
+ICMinStructureSize*              TheICMinStructureSizeParameter = nullptr;
+ICPSFType*                       TheICPSFTypeParameter = nullptr;
+
 ICOutputDirectory*               TheICOutputDirectoryParameter = nullptr;
 ICOutputExtension*               TheICOutputExtensionParameter = nullptr;
 ICOutputPrefix*                  TheICOutputPrefixParameter = nullptr;
@@ -342,7 +349,7 @@ IsoString ICPedestalMode::Id() const
 
 size_type ICPedestalMode::NumberOfElements() const
 {
-   return NumberOfPedestalModes;
+   return NumberOfItems;
 }
 
 IsoString ICPedestalMode::ElementId( size_type i ) const
@@ -948,7 +955,7 @@ IsoString ICDarkCFADetectionMode::Id() const
 
 size_type ICDarkCFADetectionMode::NumberOfElements() const
 {
-   return NumberOfDarkCFADetectionModes;
+   return NumberOfItems;
 }
 
 IsoString ICDarkCFADetectionMode::ElementId( size_type i ) const
@@ -1052,7 +1059,7 @@ IsoString ICNoiseEvaluationAlgorithm::Id() const
 
 size_type ICNoiseEvaluationAlgorithm::NumberOfElements() const
 {
-   return NumberOfNoiseEvaluationAlgorithms;
+   return NumberOfItems;
 }
 
 IsoString ICNoiseEvaluationAlgorithm::ElementId( size_type i ) const
@@ -1071,6 +1078,169 @@ int ICNoiseEvaluationAlgorithm::ElementValue( size_type i ) const
 }
 
 size_type ICNoiseEvaluationAlgorithm::DefaultValueIndex() const
+{
+   return size_type( Default );
+}
+
+// ----------------------------------------------------------------------------
+
+ICEvaluateSignal::ICEvaluateSignal( MetaProcess* P ) : MetaBoolean( P )
+{
+   TheICEvaluateSignalParameter = this;
+}
+
+IsoString ICEvaluateSignal::Id() const
+{
+   return "evaluateSignal";
+}
+
+bool ICEvaluateSignal::DefaultValue() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+ICStructureLayers::ICStructureLayers( MetaProcess* p ) : MetaInt32( p )
+{
+   TheICStructureLayersParameter = this;
+}
+
+IsoString ICStructureLayers::Id() const
+{
+   return "structureLayers";
+}
+
+double ICStructureLayers::DefaultValue() const
+{
+   return 5;
+}
+
+double ICStructureLayers::MinimumValue() const
+{
+   return 1;
+}
+
+double ICStructureLayers::MaximumValue() const
+{
+   return 8;
+}
+
+// ----------------------------------------------------------------------------
+
+ICHotPixelFilterRadius::ICHotPixelFilterRadius( MetaProcess* p ) : MetaInt32( p )
+{
+   TheICHotPixelFilterRadiusParameter = this;
+}
+
+IsoString ICHotPixelFilterRadius::Id() const
+{
+   return "hotPixelFilterRadius";
+}
+
+double ICHotPixelFilterRadius::DefaultValue() const
+{
+   return 1;
+}
+
+double ICHotPixelFilterRadius::MinimumValue() const
+{
+   return 0;
+}
+
+double ICHotPixelFilterRadius::MaximumValue() const
+{
+   return 2;
+}
+
+// ----------------------------------------------------------------------------
+
+ICNoiseReductionFilterRadius::ICNoiseReductionFilterRadius( MetaProcess* p ) : MetaInt32( p )
+{
+   TheICNoiseReductionFilterRadiusParameter = this;
+}
+
+IsoString ICNoiseReductionFilterRadius::Id() const
+{
+   return "noiseReductionFilterRadius";
+}
+
+double ICNoiseReductionFilterRadius::DefaultValue() const
+{
+   return 0;
+}
+
+double ICNoiseReductionFilterRadius::MinimumValue() const
+{
+   return 0;
+}
+
+double ICNoiseReductionFilterRadius::MaximumValue() const
+{
+   return 50;
+}
+
+// ----------------------------------------------------------------------------
+
+ICMinStructureSize::ICMinStructureSize( MetaProcess* p ) : MetaInt32( p )
+{
+   TheICMinStructureSizeParameter = this;
+}
+
+IsoString ICMinStructureSize::Id() const
+{
+   return "minStructureSize";
+}
+
+double ICMinStructureSize::DefaultValue() const
+{
+   return 0;
+}
+
+double ICMinStructureSize::MinimumValue() const
+{
+   return 0;
+}
+
+double ICMinStructureSize::MaximumValue() const
+{
+   return 999999;
+}
+
+// ----------------------------------------------------------------------------
+
+ICPSFType::ICPSFType( MetaProcess* P ) : MetaEnumeration( P )
+{
+   TheICPSFTypeParameter = this;
+}
+
+IsoString ICPSFType::Id() const
+{
+   return "psfType";
+}
+
+size_type ICPSFType::NumberOfElements() const
+{
+   return NumberOfItems;
+}
+
+IsoString ICPSFType::ElementId( size_type i ) const
+{
+   switch ( i )
+   {
+   default:
+   case Gaussian:      return "PSFType_Gaussian";
+   case Moffat:        return "PSFType_Moffat";
+   case VariableShape: return "PSFType_VariableShape";
+   }
+}
+
+int ICPSFType::ElementValue( size_type i ) const
+{
+   return int( i );
+}
+
+size_type ICPSFType::DefaultValueIndex() const
 {
    return size_type( Default );
 }
@@ -1152,7 +1322,7 @@ IsoString ICOutputSampleFormat::Id() const
 
 size_type ICOutputSampleFormat::NumberOfElements() const
 {
-   return NumberOfSampleFormats;
+   return NumberOfItems;
 }
 
 IsoString ICOutputSampleFormat::ElementId( size_type i ) const
@@ -1235,7 +1405,7 @@ IsoString ICOnError::Id() const
 
 size_type ICOnError::NumberOfElements() const
 {
-   return NumberOfErrorPolicies;
+   return NumberOfItems;
 }
 
 IsoString ICOnError::ElementId( size_type i ) const

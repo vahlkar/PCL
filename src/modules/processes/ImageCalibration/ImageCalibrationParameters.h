@@ -54,6 +54,7 @@
 #define __ImageCalibrationParameters_h
 
 #include <pcl/MetaParameter.h>
+#include <pcl/PSFSignalEstimator.h>
 
 namespace pcl
 {
@@ -196,7 +197,7 @@ public:
    enum { Literal,
           Keyword,
           CustomKeyword,
-          NumberOfPedestalModes,
+          NumberOfItems,
           Default = Keyword };
 
    ICPedestalMode( MetaProcess* );
@@ -641,7 +642,7 @@ public:
    enum { DetectCFA,
           ForceCFA,
           IgnoreCFA,
-          NumberOfDarkCFADetectionModes,
+          NumberOfItems,
           Default = DetectCFA };
 
    ICDarkCFADetectionMode( MetaProcess* );
@@ -708,7 +709,7 @@ public:
 
    enum { KSigma,
           MRS,
-          NumberOfNoiseEvaluationAlgorithms,
+          NumberOfItems,
           Default = MRS };
 
    ICNoiseEvaluationAlgorithm( MetaProcess* );
@@ -721,6 +722,118 @@ public:
 };
 
 extern ICNoiseEvaluationAlgorithm* TheICNoiseEvaluationAlgorithmParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICEvaluateSignal : public MetaBoolean
+{
+public:
+
+   ICEvaluateSignal( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern ICEvaluateSignal* TheICEvaluateSignalParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICStructureLayers : public MetaInt32
+{
+public:
+
+   ICStructureLayers( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern ICStructureLayers* TheICStructureLayersParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICHotPixelFilterRadius : public MetaInt32
+{
+public:
+
+   ICHotPixelFilterRadius( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern ICHotPixelFilterRadius* TheICHotPixelFilterRadiusParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICNoiseReductionFilterRadius : public MetaInt32
+{
+public:
+
+   ICNoiseReductionFilterRadius( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern ICNoiseReductionFilterRadius* TheICNoiseReductionFilterRadiusParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICMinStructureSize : public MetaInt32
+{
+public:
+
+   ICMinStructureSize( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern ICMinStructureSize* TheICMinStructureSizeParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICPSFType : public MetaEnumeration
+{
+public:
+
+   enum { Gaussian,
+          Moffat,
+          VariableShape,
+          NumberOfItems,
+          Default = Gaussian };
+
+   ICPSFType( MetaProcess* );
+
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
+
+   static PSFSignalEstimator::psf_function ToPSFFunction( pcl_enum x )
+   {
+      switch ( x )
+      {
+      default:
+      case Gaussian:      return PSFunction::Gaussian;
+      case Moffat:        return PSFunction::Moffat8;
+      case VariableShape: return PSFunction::VariableShape;
+      }
+   }
+};
+
+extern ICPSFType* TheICPSFTypeParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -787,7 +900,7 @@ public:
           I32,    // unsigned 32-bit integer
           F32,    // IEEE 32-bit floating point (simple precision)
           F64,    // IEEE 64-bit floating point (double precision)
-          NumberOfSampleFormats,
+          NumberOfItems,
           Default = F32 };
 
    ICOutputSampleFormat( MetaProcess* );
@@ -840,7 +953,7 @@ public:
    enum { Continue,
           Abort,
           AskUser,
-          NumberOfErrorPolicies,
+          NumberOfItems,
           Default = Continue };
 
    ICOnError( MetaProcess* );

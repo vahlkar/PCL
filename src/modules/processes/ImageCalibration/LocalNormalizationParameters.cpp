@@ -640,7 +640,7 @@ IsoString LNOnError::Id() const
 
 size_type LNOnError::NumberOfElements() const
 {
-   return NumberOfErrorPolicies;
+   return NumberOfItems;
 }
 
 IsoString LNOnError::ElementId( size_type i ) const

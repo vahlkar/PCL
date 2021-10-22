@@ -112,6 +112,12 @@ ImageCalibrationProcess::ImageCalibrationProcess()
    new ICFlatScaleClippingFactor( this );
    new ICEvaluateNoise( this );
    new ICNoiseEvaluationAlgorithm( this );
+   new ICEvaluateSignal( this );
+   new ICStructureLayers( this );
+   new ICHotPixelFilterRadius( this );
+   new ICNoiseReductionFilterRadius( this );
+   new ICMinStructureSize( this );
+   new ICPSFType( this );
    new ICOutputDirectory( this );
    new ICOutputExtension( this );
    new ICOutputPrefix( this );

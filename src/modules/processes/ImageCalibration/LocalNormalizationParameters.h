@@ -462,7 +462,7 @@ public:
    enum { Continue,
           Abort,
           AskUser,
-          NumberOfErrorPolicies,
+          NumberOfItems,
           Default = Continue };
 
    LNOnError( MetaProcess* );

@@ -1489,9 +1489,9 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
 
    const char* weightModeToolTip = "<p>Image weighting method.</p>"
 
-      "<p>The <b>PSF signal</b> and <b>PSF power</b> algorithms are based on robust estimates of mean and squared "
-      "signal computed by PSF photometry, as well as noise estimates computed using multiscale analysis techniques. "
-      "These methods are robust and accurate. The PSF signal method is the default option."
+      "<p>The <b>PSF signal</b> and <b>PSF power</b> algorithms are based on robust estimates of mean signal and mean "
+      "squared signal computed by PSF photometry, as well as noise estimates computed using multiscale analysis "
+      "techniques. These methods are robust and accurate. The PSF signal method is currently the default option."
 
       "<p>The <b>SNR estimate</b> option uses multiscale noise evaluation techniques to compute noise "
       "estimates and their corresponding noise scaling factors. These estimates are applied to minimize mean "

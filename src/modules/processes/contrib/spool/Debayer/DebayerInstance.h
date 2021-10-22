@@ -106,12 +106,22 @@ private:
    pcl_enum   p_bayerPattern;
    pcl_enum   p_debayerMethod;
    int32      p_fbddNoiseReduction;
-   pcl_bool   p_evaluateNoise;
-   pcl_enum   p_noiseEvaluationAlgorithm;
    pcl_bool   p_showImages;        // optional for view execution only
    String     p_cfaSourceFilePath; // ...
    item_list  p_targets;
    pcl_bool   p_noGUIMessages; // ### DEPRECATED
+
+   // Noise estimates
+   pcl_bool   p_evaluateNoise;
+   pcl_enum   p_noiseEvaluationAlgorithm;
+
+   // PSF signal estimates
+   pcl_bool   p_evaluateSignal;  // perform signal evaluation with PSF photometry
+   int32      p_structureLayers;
+   int32      p_hotPixelFilterRadius;
+   int32      p_noiseReductionFilterRadius;
+   int32      p_minStructureSize;
+   pcl_enum   p_psfType;
 
    // Format hints
    String      p_inputHints;
@@ -197,6 +207,7 @@ private:
    friend class DebayerInterface;
    friend class DebayerEngine;
    friend class DebayerFileThread;
+   friend class SignalAndNoiseEvaluationThread;
 };
 
 // ----------------------------------------------------------------------------

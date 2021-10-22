@@ -54,6 +54,7 @@
 #define __DebayerParameters_h
 
 #include <pcl/MetaParameter.h>
+#include <pcl/PSFSignalEstimator.h>
 
 namespace pcl
 {
@@ -130,42 +131,6 @@ public:
 };
 
 extern DebayerFBDDNoiseReduction* TheDebayerFBDDNoiseReductionParameter;
-
-// ----------------------------------------------------------------------------
-
-class DebayerEvaluateNoise : public MetaBoolean
-{
-public:
-
-   DebayerEvaluateNoise( MetaProcess* );
-
-   IsoString Id() const override;
-   bool DefaultValue() const override;
-};
-
-extern DebayerEvaluateNoise* TheDebayerEvaluateNoiseParameter;
-
-// ----------------------------------------------------------------------------
-
-class DebayerNoiseEvaluationAlgorithm : public MetaEnumeration
-{
-public:
-
-   enum { KSigma,
-          MRS,
-          NumberOfItems,
-          Default = MRS };
-
-   DebayerNoiseEvaluationAlgorithm( MetaProcess* );
-
-   IsoString Id() const override;
-   size_type NumberOfElements() const override;
-   IsoString ElementId( size_type ) const override;
-   int ElementValue( size_type ) const override;
-   size_type DefaultValueIndex() const override;
-};
-
-extern DebayerNoiseEvaluationAlgorithm* TheDebayerNoiseEvaluationAlgorithmParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -247,6 +212,154 @@ public:
 };
 
 extern DebayerNoGUIMessages* TheDebayerNoGUIMessagesParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerEvaluateNoise : public MetaBoolean
+{
+public:
+
+   DebayerEvaluateNoise( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern DebayerEvaluateNoise* TheDebayerEvaluateNoiseParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerNoiseEvaluationAlgorithm : public MetaEnumeration
+{
+public:
+
+   enum { KSigma,
+          MRS,
+          NumberOfItems,
+          Default = MRS };
+
+   DebayerNoiseEvaluationAlgorithm( MetaProcess* );
+
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
+};
+
+extern DebayerNoiseEvaluationAlgorithm* TheDebayerNoiseEvaluationAlgorithmParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerEvaluateSignal : public MetaBoolean
+{
+public:
+
+   DebayerEvaluateSignal( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern DebayerEvaluateSignal* TheDebayerEvaluateSignalParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerStructureLayers : public MetaInt32
+{
+public:
+
+   DebayerStructureLayers( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern DebayerStructureLayers* TheDebayerStructureLayersParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerHotPixelFilterRadius : public MetaInt32
+{
+public:
+
+   DebayerHotPixelFilterRadius( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern DebayerHotPixelFilterRadius* TheDebayerHotPixelFilterRadiusParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerNoiseReductionFilterRadius : public MetaInt32
+{
+public:
+
+   DebayerNoiseReductionFilterRadius( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern DebayerNoiseReductionFilterRadius* TheDebayerNoiseReductionFilterRadiusParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerMinStructureSize : public MetaInt32
+{
+public:
+
+   DebayerMinStructureSize( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern DebayerMinStructureSize* TheDebayerMinStructureSizeParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerPSFType : public MetaEnumeration
+{
+public:
+
+   enum { Gaussian,
+          Moffat,
+          VariableShape,
+          NumberOfItems,
+          Default = Gaussian };
+
+   DebayerPSFType( MetaProcess* );
+
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
+
+   static PSFSignalEstimator::psf_function ToPSFFunction( pcl_enum x )
+   {
+      switch ( x )
+      {
+      default:
+      case Gaussian:      return PSFunction::Gaussian;
+      case Moffat:        return PSFunction::Moffat8;
+      case VariableShape: return PSFunction::VariableShape;
+      }
+   }
+};
+
+extern DebayerPSFType* TheDebayerPSFTypeParameter;
 
 // ----------------------------------------------------------------------------
 
