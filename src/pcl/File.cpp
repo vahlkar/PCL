@@ -961,7 +961,10 @@ UniqueFileChecks File::EnsureNewUniqueFile( String& filePath, bool canOverwrite 
       {
          if ( File::Exists( filePath ) || File::DirectoryExists( filePath ) )
             throw File::Error( filePath, "Internal error: Inconsistent filesystem behavior detected in File::EnsureNewUniqueFile()" );
-         File::CreateFileForWriting( filePath ).Close();
+         // Make sure that the file is effectively created before we return.
+         File f = File::CreateFileForWriting( filePath );
+         f.Flush();
+         f.Close();
          return { false/*exists*/, false/*overwrite*/ };
       }
 
@@ -977,7 +980,10 @@ UniqueFileChecks File::EnsureNewUniqueFile( String& filePath, bool canOverwrite 
             filePath = tryFilePath;
             if ( File::Exists( filePath ) || File::DirectoryExists( filePath ) )
                throw File::Error( filePath, "Internal error: Inconsistent filesystem behavior detected in File::EnsureNewUniqueFile()" );
-            File::CreateFileForWriting( filePath ).Close();
+            // Make sure that the file is effectively created before we return.
+            File f = File::CreateFileForWriting( filePath );
+            f.Flush();
+            f.Close();
             return { true/*exists*/, false/*overwrite*/ };
          }
    }
