@@ -1609,8 +1609,8 @@ public:
     * or clash with an existing directory.
     *
     * \param[in,out] filePath    Path to the file that must exist with
-    *             guaranteed uniqueness. The value of variable referenced by
-    *             this parameter can be modified on output; see the
+    *             guaranteed uniqueness. The value of the variable referenced
+    *             by this parameter can be modified on output; see the
     *             \a canOverwrite parameter and the description below for
     *             further details.
     *
@@ -1663,9 +1663,9 @@ public:
     * at the specified path already existed when the function was called.
     *
     * \param[in,out] dirPath     Path to the directory that must exist with
-    *             guaranteed uniqueness. The value of variable referenced by
-    *             this parameter can be modified on output; see the description
-    *             below for further details.
+    *             guaranteed uniqueness. The value of the variable referenced
+    *             by this parameter can be modified on output; see the
+    *             description below for further details.
     *
     * After calling this function, a directory at the path specified by the
     * output value of the \a dirPath variable is guaranteed to exist, either
