@@ -490,7 +490,7 @@ typedef Flags<ReadTextOption::mask_type>  ReadTextOptions;
  * \brief A simple POD structure to hold file uniqueness and overwrite
  * verification results.
  * \ingroup file_utilities
- * \sa File::EnsureUniqueFilePath()
+ * \sa File::EnsureNewUniqueFilePath()
  */
 struct UniqueFileChecks
 {
@@ -1604,23 +1604,31 @@ public:
    static bool DirectoryExists( const String& dirPath );
 
    /*!
-    * Verifies existence of a file on the local filesystem, and optionally
-    * provides an alternate path to a nonexistent file on the same directory,
-    * returning information on existence and potential overwriting of the
-    * existing file.
+    * Ensures existence of a file on the local filesystem, guaranteeing that a
+    * newly created file cannot replace or overwrite an already existing file,
+    * or clash with an existing directory.
     *
-    * \param[in,out] filePath    Path to the file whose existence is being
-    *             verified. It can be modified on output - see the
+    * \param[in,out] filePath    Path to the file that must exist with
+    *             guaranteed uniqueness. The value of variable referenced by
+    *             this parameter can be modified on output; see the
     *             \a canOverwrite parameter and the description below for
     *             further details.
     *
     * \param canOverwrite        If this parameter is false and the specified
     *             \a filePath corresponds to an already existing file, the
     *             string referenced by \a filePath will be replaced on output
-    *             with a new path on the same directory where the file name is
-    *             modified to guarantee that no file exists with the same name.
-    *             If this parameter is true the \a filePath string won't be
-    *             modified in any way.
+    *             with a new path on the same directory where the file name has
+    *             been modified to guarantee that no file existed with the same
+    *             name upon calling this function. If this parameter is true
+    *             the \a filePath string won't be modified in any way.
+    *
+    * After calling this function, a file at the path specified by the output
+    * value of the \a filePath variable is guaranteed to exist, either because
+    * such file already existed when the function was called and the
+    * \a canOverwrite parameter was true, or because a new empty file has been
+    * created otherwise. Already existing files are never touched or modified
+    * in any way by this function (beyond the fact that they are accessed to
+    * verify their existence).
     *
     * Returns a UniqueFileChecks structure where the \a exists member indicates
     * whether the specified \a filePath corresponds to an already existing file
@@ -1635,26 +1643,37 @@ public:
     * specified file already exists:
     *
     * \code
-    * String filePath = "/path/to/foo.bar";
-    * EnsureUniqueFile( filePath );
+    * String filePath = "/path/to/foo.bar"; // this file exists
+    * EnsureNewUniqueFile( filePath );
     * \endcode
     *
-    * then the \c filePath variable will be "/path/to/foo_1.bar". Successive
-    * calls after creating the corresponding files would set \c filePath equal
-    * to "/path/to/foo_2.bar", "/path/to/foo_3.bar", and so on.
+    * then the \c filePath variable could have the value "/path/to/foo_1.bar",
+    * and a new, empty file would have been created at that path. Successive
+    * calls would set \c filePath equal to "/path/to/foo_2.bar",
+    * "/path/to/foo_3.bar", and so on, creating the corresponding new files.
     *
     * \note This static member function is thread-safe. It will provide
     * coherent results when invoked from multiple threads running concurrently.
     */
-   static UniqueFileChecks EnsureUniqueFile( String& filePath, bool canOverwrite = false );
+   static UniqueFileChecks EnsureNewUniqueFile( String& filePath, bool canOverwrite = false );
 
    /*!
-    * Verifies existence of a directory on the local filesystem, and in case it
-    * already exists, provides an alternate path to a nonexistent directory on
-    * the same parent directory.
+    * Ensures existence of a directory on the local filesystem, guaranteeing
+    * that a new, empty directory will be created in case a file or directory
+    * at the specified path already existed when the function was called.
     *
-    * \param[in,out] dirPath     Path to the directory whose existence is being
-    *             verified. It can be modified on output, as described below.
+    * \param[in,out] dirPath     Path to the directory that must exist with
+    *             guaranteed uniqueness. The value of variable referenced by
+    *             this parameter can be modified on output; see the description
+    *             below for further details.
+    *
+    * After calling this function, a directory at the path specified by the
+    * output value of the \a dirPath variable is guaranteed to exist, either
+    * because such directory already existed when the function was called, or
+    * because a new empty directory has been created otherwise. Already
+    * existing directories or files are never touched or modified in any way by
+    * this function (beyond the fact that they are accessed to verify their
+    * existence).
     *
     * Returns a UniqueFileChecks structure where the \a exists member indicates
     * whether the specified \a dirPath corresponds to an already existing
@@ -1669,22 +1688,24 @@ public:
     * called as follows when the specified directory already exists:
     *
     * \code
-    * String dirPath = "/path/to/foobar";
-    * EnsureUniqueDirectory( dirPath );
+    * String dirPath = "/path/to/foobar"; // this directory exists
+    * EnsureNewUniqueDirectory( dirPath );
     * \endcode
     *
-    * then the \c dirPath variable will be "/path/to/foobar_1". Successive
-    * calls after creating the corresponding directories would set \c dirPath
-    * equal to "/path/to/foobar_2", "/path/to/foobar_3", and so on.
+    * then the \c dirPath variable could have the value "/path/to/foobar_1" and
+    * a new, empty directory would have been created at that path. Successive
+    * calls would set \c dirPath equal to "/path/to/foobar_2",
+    * "/path/to/foobar_3", and so on, creating the corresponding new
+    * directories.
     *
     * The string referenced by the specified \a dirPath variable can optionally
     * end with a directory separator character, which will be preserved in case
-    *the string is modified.
+    * the string is modified.
     *
     * \note This static member function is thread-safe. It will provide
     * coherent results when invoked from multiple threads running concurrently.
     */
-   static UniqueFileChecks EnsureUniqueDirectory( String& dirPath );
+   static UniqueFileChecks EnsureNewUniqueDirectory( String& dirPath );
 
    /*!
     * Returns true iff the file at \a filePath exists and the current user has

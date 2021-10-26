@@ -947,7 +947,7 @@ bool File::DirectoryExists( const String& dirPath )
 
 // ----------------------------------------------------------------------------
 
-UniqueFileChecks File::EnsureUniqueFile( String& filePath, bool canOverwrite )
+UniqueFileChecks File::EnsureNewUniqueFile( String& filePath, bool canOverwrite )
 {
    static Mutex mutex;
    volatile AutoLock lock( mutex );
@@ -957,7 +957,13 @@ UniqueFileChecks File::EnsureUniqueFile( String& filePath, bool canOverwrite )
       throw File::Error( filePath, "Invalid or empty file name" );
 
    if ( !File::Exists( filePath ) )
-      return { false/*exists*/, false/*overwrite*/ };
+      if ( !File::DirectoryExists( filePath ) )
+      {
+         if ( File::Exists( filePath ) || File::DirectoryExists( filePath ) )
+            throw File::Error( filePath, "Internal error: Inconsistent filesystem behavior detected in File::EnsureNewUniqueFile()" );
+         File::CreateFileForWriting( filePath ).Close();
+         return { false/*exists*/, false/*overwrite*/ };
+      }
 
    if ( canOverwrite )
       return { true/*exists*/, true/*overwrite*/ };
@@ -966,16 +972,20 @@ UniqueFileChecks File::EnsureUniqueFile( String& filePath, bool canOverwrite )
    {
       String tryFilePath = File::AppendToName( filePath, String().Format( "_%lu", u ) );
       if ( !File::Exists( tryFilePath ) )
-      {
-         filePath = tryFilePath;
-         return { true/*exists*/, false/*overwrite*/ };
-      }
+         if ( !File::DirectoryExists( tryFilePath ) )
+         {
+            filePath = tryFilePath;
+            if ( File::Exists( filePath ) || File::DirectoryExists( filePath ) )
+               throw File::Error( filePath, "Internal error: Inconsistent filesystem behavior detected in File::EnsureNewUniqueFile()" );
+            File::CreateFileForWriting( filePath ).Close();
+            return { true/*exists*/, false/*overwrite*/ };
+         }
    }
 }
 
 // ----------------------------------------------------------------------------
 
-UniqueFileChecks File::EnsureUniqueDirectory( String& dirPath )
+UniqueFileChecks File::EnsureNewUniqueDirectory( String& dirPath )
 {
    static Mutex mutex;
    volatile AutoLock lock( mutex );
@@ -985,24 +995,34 @@ UniqueFileChecks File::EnsureUniqueDirectory( String& dirPath )
    if ( path.IsEmpty() )
       throw File::Error( path, "Invalid or empty directory name" );
 
-   if ( !File::DirectoryExists( path ) )
-      return { false/*exists*/, false/*overwrite*/ };
+   if ( !File::Exists( path ) )
+      if ( !File::DirectoryExists( path ) )
+      {
+         if ( File::Exists( path ) || File::DirectoryExists( path ) )
+            throw File::Error( path, "Internal error: Inconsistent filesystem behavior detected in File::EnsureNewUniqueDirectory()" );
+         File::CreateDirectory( path, true/*createIntermediateDirectories*/ );
+         return { false/*exists*/, false/*overwrite*/ };
+      }
 
    for ( unsigned long u = 1u; ; ++u )
    {
       String tryDirPath = File::AppendToName( path, String().Format( "_%lu", u ) );
-      if ( !File::DirectoryExists( tryDirPath ) )
-      {
-         bool addSlash = dirPath.EndsWith( '/' )
+      if ( !File::Exists( tryDirPath ) )
+         if ( !File::DirectoryExists( tryDirPath ) )
+         {
+            if ( File::Exists( tryDirPath ) || File::DirectoryExists( tryDirPath ) )
+               throw File::Error( tryDirPath, "Internal error: Inconsistent filesystem behavior detected in File::EnsureNewUniqueDirectory()" );
+            File::CreateDirectory( tryDirPath, true/*createIntermediateDirectories*/ );
+            bool addSlash = dirPath.EndsWith( '/' )
 #ifdef __PCL_WINDOWS
-                      || dirPath.EndsWith( '\\' )
+                         || dirPath.EndsWith( '\\' )
 #endif
-                                                ;
-         dirPath = tryDirPath;
-         if ( addSlash )
-            dirPath << '/';
-         return { true/*exists*/, false/*overwrite*/ };
-      }
+                                                   ;
+            dirPath = tryDirPath;
+            if ( addSlash )
+               dirPath << '/';
+            return { true/*exists*/, false/*overwrite*/ };
+         }
    }
 }
 
