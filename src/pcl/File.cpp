@@ -71,6 +71,7 @@
 
 #include <time.h>
 
+#include <pcl/AutoLock.h>
 #include <pcl/File.h>
 #include <pcl/FileInfo.h>
 #include <pcl/Arguments.h>
@@ -942,6 +943,67 @@ bool File::DirectoryExists( const String& dirPath )
 //    throw File::Error( path, "File access error" );
 
 #endif
+}
+
+// ----------------------------------------------------------------------------
+
+UniqueFileChecks File::EnsureUniqueFile( String& filePath, bool canOverwrite )
+{
+   static Mutex mutex;
+   volatile AutoLock lock( mutex );
+
+   filePath.Trim();
+   if ( filePath.IsEmpty() )
+      throw File::Error( filePath, "Invalid or empty file name" );
+
+   if ( !File::Exists( filePath ) )
+      return { false/*exists*/, false/*overwrite*/ };
+
+   if ( canOverwrite )
+      return { true/*exists*/, true/*overwrite*/ };
+
+   for ( unsigned long u = 1u; ; ++u )
+   {
+      String tryFilePath = File::AppendToName( filePath, String().Format( "_%lu", u ) );
+      if ( !File::Exists( tryFilePath ) )
+      {
+         filePath = tryFilePath;
+         return { true/*exists*/, false/*overwrite*/ };
+      }
+   }
+}
+
+// ----------------------------------------------------------------------------
+
+UniqueFileChecks File::EnsureUniqueDirectory( String& dirPath )
+{
+   static Mutex mutex;
+   volatile AutoLock lock( mutex );
+
+   dirPath.Trim();
+   String path = TrailingSlashStripped( dirPath );
+   if ( path.IsEmpty() )
+      throw File::Error( path, "Invalid or empty directory name" );
+
+   if ( !File::DirectoryExists( path ) )
+      return { false/*exists*/, false/*overwrite*/ };
+
+   for ( unsigned long u = 1u; ; ++u )
+   {
+      String tryDirPath = File::AppendToName( path, String().Format( "_%lu", u ) );
+      if ( !File::DirectoryExists( tryDirPath ) )
+      {
+         bool addSlash = dirPath.EndsWith( '/' )
+#ifdef __PCL_WINDOWS
+                      || dirPath.EndsWith( '\\' )
+#endif
+                                                ;
+         dirPath = tryDirPath;
+         if ( addSlash )
+            dirPath << '/';
+         return { true/*exists*/, false/*overwrite*/ };
+      }
+   }
 }
 
 // ----------------------------------------------------------------------------
