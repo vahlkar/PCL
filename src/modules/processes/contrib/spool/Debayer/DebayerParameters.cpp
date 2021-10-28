@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.12
+// /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard Debayer Process Module Version 1.9.4
+// Standard Debayer Process Module Version 1.10.1
 // ----------------------------------------------------------------------------
-// DebayerParameters.cpp - Released 2021-10-20T18:10:09Z
+// DebayerParameters.cpp - Released 2021-10-28T16:39:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -72,10 +72,12 @@ DebayerNoiseEvaluationAlgorithm*     TheDebayerNoiseEvaluationAlgorithmParameter
 
 DebayerEvaluateSignal*               TheDebayerEvaluateSignalParameter = nullptr;
 DebayerStructureLayers*              TheDebayerStructureLayersParameter = nullptr;
+DebayerNoiseLayers*                  TheDebayerNoiseLayersParameter = nullptr;
 DebayerHotPixelFilterRadius*         TheDebayerHotPixelFilterRadiusParameter = nullptr;
 DebayerNoiseReductionFilterRadius*   TheDebayerNoiseReductionFilterRadiusParameter = nullptr;
 DebayerMinStructureSize*             TheDebayerMinStructureSizeParameter = nullptr;
 DebayerPSFType*                      TheDebayerPSFTypeParameter = nullptr;
+DebayerPSFRejectionLimit*            TheDebayerPSFRejectionLimitParameter = nullptr;
 
 DebayerInputHints*                   TheDebayerInputHintsParameter = nullptr;
 DebayerOutputHints*                  TheDebayerOutputHintsParameter = nullptr;
@@ -461,6 +463,33 @@ double DebayerStructureLayers::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
+DebayerNoiseLayers::DebayerNoiseLayers( MetaProcess* p ) : MetaInt32( p )
+{
+   TheDebayerNoiseLayersParameter = this;
+}
+
+IsoString DebayerNoiseLayers::Id() const
+{
+   return "noiseLayers";
+}
+
+double DebayerNoiseLayers::DefaultValue() const
+{
+   return 1;
+}
+
+double DebayerNoiseLayers::MinimumValue() const
+{
+   return 0;
+}
+
+double DebayerNoiseLayers::MaximumValue() const
+{
+   return 4;
+}
+
+// ----------------------------------------------------------------------------
+
 DebayerHotPixelFilterRadius::DebayerHotPixelFilterRadius( MetaProcess* p ) : MetaInt32( p )
 {
    TheDebayerHotPixelFilterRadiusParameter = this;
@@ -561,9 +590,11 @@ IsoString DebayerPSFType::ElementId( size_type i ) const
 {
    switch ( i )
    {
-   default:
    case Gaussian:      return "PSFType_Gaussian";
-   case Moffat:        return "PSFType_Moffat";
+   default:
+   case Moffat4:       return "PSFType_Moffat4";
+   case Moffat6:       return "PSFType_Moffat6";
+   case Moffat8:       return "PSFType_Moffat8";
    case VariableShape: return "PSFType_VariableShape";
    }
 }
@@ -576,6 +607,38 @@ int DebayerPSFType::ElementValue( size_type i ) const
 size_type DebayerPSFType::DefaultValueIndex() const
 {
    return size_type( Default );
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerPSFRejectionLimit::DebayerPSFRejectionLimit( MetaProcess* P ) : MetaFloat( P )
+{
+   TheDebayerPSFRejectionLimitParameter = this;
+}
+
+IsoString DebayerPSFRejectionLimit::Id() const
+{
+   return "psfRejectionLimit";
+}
+
+int DebayerPSFRejectionLimit::Precision() const
+{
+   return 2;
+}
+
+double DebayerPSFRejectionLimit::DefaultValue() const
+{
+   return 5.00;
+}
+
+double DebayerPSFRejectionLimit::MinimumValue() const
+{
+   return 0.00;
+}
+
+double DebayerPSFRejectionLimit::MaximumValue() const
+{
+   return 10.0;
 }
 
 // ----------------------------------------------------------------------------
@@ -2215,4 +2278,4 @@ bool DebayerOutputFileNoiseAlgorithmB::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DebayerParameters.cpp - Released 2021-10-20T18:10:09Z
+// EOF DebayerParameters.cpp - Released 2021-10-28T16:39:26Z

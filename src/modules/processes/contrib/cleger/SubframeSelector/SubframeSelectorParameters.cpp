@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.12
+// /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// SubframeSelectorParameters.cpp - Released 2021-10-20T18:10:09Z
+// SubframeSelectorParameters.cpp - Released 2021-10-28T16:39:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -112,6 +112,11 @@ SSWeightingExpression*             TheSSWeightingExpressionParameter = nullptr;
 
 SSSortingProperty*                 TheSSSortingPropertyParameter = nullptr;
 SSGraphProperty*                   TheSSGraphPropertyParameter = nullptr;
+
+SSUseFileThreads*                  TheSSUseFileThreadsParameter = nullptr;
+SSFileThreadOverload*              TheSSFileThreadOverloadParameter = nullptr;
+SSMaxFileReadThreads*              TheSSMaxFileReadThreadsParameter = nullptr;
+SSMaxFileWriteThreads*             TheSSMaxFileWriteThreadsParameter = nullptr;
 
 SSMeasurements*                    TheSSMeasurementsParameter = nullptr;
 SSMeasurementIndex*                TheSSMeasurementIndexParameter = nullptr;
@@ -1731,6 +1736,109 @@ size_type SSGraphProperty::DefaultValueIndex() const
 
 // ----------------------------------------------------------------------------
 
+SSUseFileThreads::SSUseFileThreads( MetaProcess* p ) : MetaBoolean( p )
+{
+   TheSSUseFileThreadsParameter = this;
+}
+
+IsoString SSUseFileThreads::Id() const
+{
+   return "useFileThreads";
+}
+
+bool SSUseFileThreads::DefaultValue() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+SSFileThreadOverload::SSFileThreadOverload( MetaProcess* p ) : MetaFloat( p )
+{
+   TheSSFileThreadOverloadParameter = this;
+}
+
+IsoString SSFileThreadOverload::Id() const
+{
+   return "fileThreadOverload";
+}
+
+int SSFileThreadOverload::Precision() const
+{
+   return 2;
+}
+
+double SSFileThreadOverload::DefaultValue() const
+{
+   return 1.0;
+}
+
+double SSFileThreadOverload::MinimumValue() const
+{
+   return 1;
+}
+
+double SSFileThreadOverload::MaximumValue() const
+{
+   return 10;
+}
+
+// ----------------------------------------------------------------------------
+
+SSMaxFileReadThreads::SSMaxFileReadThreads( MetaProcess* p ) : MetaInt32( p )
+{
+   TheSSMaxFileReadThreadsParameter = this;
+}
+
+IsoString SSMaxFileReadThreads::Id() const
+{
+   return "maxFileReadThreads";
+}
+
+double SSMaxFileReadThreads::DefaultValue() const
+{
+   return 0;
+}
+
+double SSMaxFileReadThreads::MinimumValue() const
+{
+   return 0;
+}
+
+double SSMaxFileReadThreads::MaximumValue() const
+{
+   return 1024;
+}
+
+// ----------------------------------------------------------------------------
+
+SSMaxFileWriteThreads::SSMaxFileWriteThreads( MetaProcess* p ) : MetaInt32( p )
+{
+   TheSSMaxFileWriteThreadsParameter = this;
+}
+
+IsoString SSMaxFileWriteThreads::Id() const
+{
+   return "maxFileWriteThreads";
+}
+
+double SSMaxFileWriteThreads::DefaultValue() const
+{
+   return 0;
+}
+
+double SSMaxFileWriteThreads::MinimumValue() const
+{
+   return 0;
+}
+
+double SSMaxFileWriteThreads::MaximumValue() const
+{
+   return 1024;
+}
+
+// ----------------------------------------------------------------------------
+
 SSMeasurements::SSMeasurements( MetaProcess* P ) : MetaTable( P )
 {
    TheSSMeasurementsParameter = this;
@@ -1739,6 +1847,11 @@ SSMeasurements::SSMeasurements( MetaProcess* P ) : MetaTable( P )
 IsoString SSMeasurements::Id() const
 {
    return "measurements";
+}
+
+bool SSMeasurements::IsReadOnly() const
+{
+   return true;
 }
 
 // ----------------------------------------------------------------------------
@@ -1768,6 +1881,11 @@ double SSMeasurementIndex::MaximumValue() const
    return UINT16_MAX;
 }
 
+bool SSMeasurementIndex::IsReadOnly() const
+{
+   return true;
+}
+
 // ----------------------------------------------------------------------------
 
 SSMeasurementEnabled::SSMeasurementEnabled( MetaTable* T ) : MetaBoolean( T )
@@ -1781,6 +1899,11 @@ IsoString SSMeasurementEnabled::Id() const
 }
 
 bool SSMeasurementEnabled::DefaultValue() const
+{
+   return true;
+}
+
+bool SSMeasurementEnabled::IsReadOnly() const
 {
    return true;
 }
@@ -1802,6 +1925,11 @@ bool SSMeasurementLocked::DefaultValue() const
    return false;
 }
 
+bool SSMeasurementLocked::IsReadOnly() const
+{
+   return true;
+}
+
 // ----------------------------------------------------------------------------
 
 SSMeasurementPath::SSMeasurementPath( MetaTable* T ) : MetaString( T )
@@ -1812,6 +1940,11 @@ SSMeasurementPath::SSMeasurementPath( MetaTable* T ) : MetaString( T )
 IsoString SSMeasurementPath::Id() const
 {
    return "measurementPath";
+}
+
+bool SSMeasurementPath::IsReadOnly() const
+{
+   return true;
 }
 
 // ----------------------------------------------------------------------------
@@ -1846,6 +1979,11 @@ double SSMeasurementWeight::MaximumValue() const
    return 10000.0;
 }
 
+bool SSMeasurementWeight::IsReadOnly() const
+{
+   return true;
+}
+
 // ----------------------------------------------------------------------------
 
 SSMeasurementFWHM::SSMeasurementFWHM( MetaTable* T ) : MetaDouble( T )
@@ -1876,6 +2014,11 @@ double SSMeasurementFWHM::MinimumValue() const
 double SSMeasurementFWHM::MaximumValue() const
 {
    return 100.0;
+}
+
+bool SSMeasurementFWHM::IsReadOnly() const
+{
+   return true;
 }
 
 // ----------------------------------------------------------------------------
@@ -1910,6 +2053,11 @@ double SSMeasurementEccentricity::MaximumValue() const
    return 1.0;
 }
 
+bool SSMeasurementEccentricity::IsReadOnly() const
+{
+   return true;
+}
+
 // ----------------------------------------------------------------------------
 
 SSMeasurementPSFSignalWeight::SSMeasurementPSFSignalWeight( MetaTable* T ) : MetaDouble( T )
@@ -1935,6 +2083,11 @@ bool SSMeasurementPSFSignalWeight::ScientificNotation() const
 double SSMeasurementPSFSignalWeight::DefaultValue() const
 {
    return 0.0;
+}
+
+bool SSMeasurementPSFSignalWeight::IsReadOnly() const
+{
+   return true;
 }
 
 // ----------------------------------------------------------------------------
@@ -1964,6 +2117,11 @@ double SSMeasurementPSFPowerWeight::DefaultValue() const
    return 0.0;
 }
 
+bool SSMeasurementPSFPowerWeight::IsReadOnly() const
+{
+   return true;
+}
+
 // ----------------------------------------------------------------------------
 
 SSMeasurementSNRWeight::SSMeasurementSNRWeight( MetaTable* T ) : MetaDouble( T )
@@ -1989,6 +2147,11 @@ bool SSMeasurementSNRWeight::ScientificNotation() const
 double SSMeasurementSNRWeight::DefaultValue() const
 {
    return 0.0;
+}
+
+bool SSMeasurementSNRWeight::IsReadOnly() const
+{
+   return true;
 }
 
 // ----------------------------------------------------------------------------
@@ -2023,6 +2186,11 @@ double SSMeasurementMedian::MaximumValue() const
    return 1.0;
 }
 
+bool SSMeasurementMedian::IsReadOnly() const
+{
+   return true;
+}
+
 // ----------------------------------------------------------------------------
 
 SSMeasurementMedianMeanDev::SSMeasurementMedianMeanDev( MetaTable* T ) : MetaDouble( T )
@@ -2053,6 +2221,11 @@ double SSMeasurementMedianMeanDev::MinimumValue() const
 double SSMeasurementMedianMeanDev::MaximumValue() const
 {
    return 1.0;
+}
+
+bool SSMeasurementMedianMeanDev::IsReadOnly() const
+{
+   return true;
 }
 
 // ----------------------------------------------------------------------------
@@ -2087,6 +2260,11 @@ double SSMeasurementNoise::MaximumValue() const
    return 1.0;
 }
 
+bool SSMeasurementNoise::IsReadOnly() const
+{
+   return true;
+}
+
 // ----------------------------------------------------------------------------
 
 SSMeasurementNoiseRatio::SSMeasurementNoiseRatio( MetaTable* T ) : MetaDouble( T )
@@ -2119,6 +2297,11 @@ double SSMeasurementNoiseRatio::MaximumValue() const
    return 1.0;
 }
 
+bool SSMeasurementNoiseRatio::IsReadOnly() const
+{
+   return true;
+}
+
 // ----------------------------------------------------------------------------
 
 SSMeasurementStars::SSMeasurementStars( MetaTable* T ) : MetaUInt16( T )
@@ -2144,6 +2327,11 @@ double SSMeasurementStars::MinimumValue() const
 double SSMeasurementStars::MaximumValue() const
 {
    return UINT16_MAX;
+}
+
+bool SSMeasurementStars::IsReadOnly() const
+{
+   return true;
 }
 
 // ----------------------------------------------------------------------------
@@ -2178,6 +2366,11 @@ double SSMeasurementStarResidual::MaximumValue() const
    return DBL_MAX;
 }
 
+bool SSMeasurementStarResidual::IsReadOnly() const
+{
+   return true;
+}
+
 // ----------------------------------------------------------------------------
 
 SSMeasurementFWHMMeanDev::SSMeasurementFWHMMeanDev( MetaTable* T ) : MetaDouble( T )
@@ -2208,6 +2401,11 @@ double SSMeasurementFWHMMeanDev::MinimumValue() const
 double SSMeasurementFWHMMeanDev::MaximumValue() const
 {
    return DBL_MAX;
+}
+
+bool SSMeasurementFWHMMeanDev::IsReadOnly() const
+{
+   return true;
 }
 
 // ----------------------------------------------------------------------------
@@ -2242,6 +2440,11 @@ double SSMeasurementEccentricityMeanDev::MaximumValue() const
    return DBL_MAX;
 }
 
+bool SSMeasurementEccentricityMeanDev::IsReadOnly() const
+{
+   return true;
+}
+
 // ----------------------------------------------------------------------------
 
 SSMeasurementStarResidualMeanDev::SSMeasurementStarResidualMeanDev( MetaTable* T ) : MetaDouble( T )
@@ -2274,9 +2477,14 @@ double SSMeasurementStarResidualMeanDev::MaximumValue() const
    return DBL_MAX;
 }
 
+bool SSMeasurementStarResidualMeanDev::IsReadOnly() const
+{
+   return true;
+}
+
 // ----------------------------------------------------------------------------
 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorParameters.cpp - Released 2021-10-20T18:10:09Z
+// EOF SubframeSelectorParameters.cpp - Released 2021-10-28T16:39:26Z

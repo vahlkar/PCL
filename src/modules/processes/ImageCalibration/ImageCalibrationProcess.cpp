@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.12
+// /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.6.6
+// Standard ImageCalibration Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ImageCalibrationProcess.cpp - Released 2021-10-20T18:10:09Z
+// ImageCalibrationProcess.cpp - Released 2021-10-28T16:39:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -114,10 +114,12 @@ ImageCalibrationProcess::ImageCalibrationProcess()
    new ICNoiseEvaluationAlgorithm( this );
    new ICEvaluateSignal( this );
    new ICStructureLayers( this );
+   new ICNoiseLayers( this );
    new ICHotPixelFilterRadius( this );
    new ICNoiseReductionFilterRadius( this );
    new ICMinStructureSize( this );
    new ICPSFType( this );
+   new ICPSFRejectionLimit( this );
    new ICOutputDirectory( this );
    new ICOutputExtension( this );
    new ICOutputPrefix( this );
@@ -127,6 +129,10 @@ ImageCalibrationProcess::ImageCalibrationProcess()
    new ICOverwriteExistingFiles( this );
    new ICOnError( this );
    new ICNoGUIMessages( this );
+   new ICUseFileThreads( this );
+   new ICFileThreadOverload( this );
+   new ICMaxFileReadThreads( this );
+   new ICMaxFileWriteThreads( this );
 
    new ICOutputData( this );
    new ICOutputFilePath( TheICOutputDataParameter );
@@ -221,4 +227,4 @@ ProcessImplementation* ImageCalibrationProcess::Clone( const ProcessImplementati
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationProcess.cpp - Released 2021-10-20T18:10:09Z
+// EOF ImageCalibrationProcess.cpp - Released 2021-10-28T16:39:26Z

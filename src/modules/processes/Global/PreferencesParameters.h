@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.12
+// /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.3.1
 // ----------------------------------------------------------------------------
-// PreferencesParameters.h - Released 2021-10-20T18:10:09Z
+// PreferencesParameters.h - Released 2021-10-28T16:39:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -387,8 +387,8 @@ DECLARE_BOOLEAN_METAPARAMETER ( Process, enableParallelModuleProcessing,       t
 DECLARE_BOOLEAN_METAPARAMETER ( Process, enableThreadCPUAffinity,              true )
 DECLARE_INT32_METAPARAMETER   ( Process, maxModuleThreadPriority,              ThreadPriority::TimeCritical, ThreadPriority::Lowest, ThreadPriority::TimeCritical ) // ### Warning: DO NOT change these numbers
 DECLARE_INT32_METAPARAMETER   ( Process, maxProcessors,                        int_max, 1, int_max )
-DECLARE_INT32_METAPARAMETER   ( Process, maxFileReadThreads,                   1, 1, 1024 )
-DECLARE_INT32_METAPARAMETER   ( Process, maxFileWriteThreads,                  1, 1, 1024 )
+DECLARE_INT32_METAPARAMETER   ( Process, maxFileReadThreads,                   8, 1, 1024 )
+DECLARE_INT32_METAPARAMETER   ( Process, maxFileWriteThreads,                  8, 1, 1024 )
 DECLARE_BOOLEAN_METAPARAMETER ( Process, enableCUDAAcceleration,               true )
 DECLARE_BOOLEAN_METAPARAMETER ( Process, initCUDARuntimeAtStartup,             true )
 DECLARE_BOOLEAN_METAPARAMETER ( Process, backupFiles,                          false )
@@ -409,4 +409,4 @@ PCL_END_LOCAL
 #endif   // __PreferencesParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesParameters.h - Released 2021-10-20T18:10:09Z
+// EOF PreferencesParameters.h - Released 2021-10-28T16:39:26Z

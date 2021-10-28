@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.12
+// /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// GraphWebView.cpp - Released 2021-10-20T18:10:09Z
+// GraphWebView.cpp - Released 2021-10-28T16:39:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -264,7 +264,7 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector* da
    {
       double dataSigma = DeviationNormalize( p.data, median, meanDev );
       graphingArray += String().Format(
-              "[ %.0f, [%.4f, %.4f, %.4f], [%.4f, %.4f, %.4f], [%.4f, %.4f, %.4f], [%.4f, %.4f, %.4f] ], ",
+              "[%.0f, [%.4f, %.4f, %.4f], [%.4f, %.4f, %.4f], [%.4f, %.4f, %.4f], [%.4f, %.4f, %.4f]], ",
               p.x,
               p.weight, p.weight, p.weight,
               median - meanDev, median, median + meanDev,
@@ -294,7 +294,7 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector* da
 
          if ( edf->x < b.x ) // EDF < Bin, add the EDF and remove it later
          {
-            histographingArray += String().Format( "[ %.8f, null, %.4f ], ", edf->x, edf->data );
+            histographingArray += String().Format( "[%.8f, null, %.4f], ", edf->x, edf->data );
             ++eAdded;
          }
          else if ( edf->x == b.x ) // EDF = Bin, mark the EDF to be merged and remove it later
@@ -308,9 +308,9 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector* da
 
       // If this point aligns with an EDF value, create that joint point
       if ( eMatched >= 0 )
-         histographingArray += String().Format( "[ %.8f, %.0f, %.4f ], ", b.x, b.data, datasetEDF[eMatched].data );
+         histographingArray += String().Format( "[%.8f, %.0f, %.4f], ", b.x, b.data, datasetEDF[eMatched].data );
       else // Add this bin alone
-         histographingArray += String().Format( "[ %.8f, %.0f, null ], ", b.x, b.data );
+         histographingArray += String().Format( "[%.8f, %.0f, null], ", b.x, b.data );
 
       // Remove the EDF values that were already added
       if ( eAdded > 0 )
@@ -318,7 +318,7 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector* da
    }
    // Add any EDF values that weren't already
    for ( const DataPoint& e : datasetEDF )
-      histographingArray += String().Format( "[ %.8f, null, %.4f ], ", e.x, e.data );
+      histographingArray += String().Format( "[%.8f, null, %.4f], ", e.x, e.data );
    histographingArray += "]";
 
    String html = Header() + R"DELIM(
@@ -798,4 +798,4 @@ void GraphWebView::Cleanup()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GraphWebView.cpp - Released 2021-10-20T18:10:09Z
+// EOF GraphWebView.cpp - Released 2021-10-28T16:39:26Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.12
+// /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard Debayer Process Module Version 1.9.4
+// Standard Debayer Process Module Version 1.10.1
 // ----------------------------------------------------------------------------
-// DebayerInstance.h - Released 2021-10-20T18:10:09Z
+// DebayerInstance.h - Released 2021-10-28T16:39:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -118,10 +118,12 @@ private:
    // PSF signal estimates
    pcl_bool   p_evaluateSignal;  // perform signal evaluation with PSF photometry
    int32      p_structureLayers;
+   int32      p_noiseLayers;
    int32      p_hotPixelFilterRadius;
    int32      p_noiseReductionFilterRadius;
    int32      p_minStructureSize;
    pcl_enum   p_psfType;
+   float      p_psfRejectionLimit;
 
    // Format hints
    String      p_inputHints;
@@ -218,4 +220,4 @@ private:
 #endif   // __DebayerInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF DebayerInstance.h - Released 2021-10-20T18:10:09Z
+// EOF DebayerInstance.h - Released 2021-10-28T16:39:26Z

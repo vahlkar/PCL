@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.12
+// /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
 // Standard LocalHistogramEqualization Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// LocalHistogramEqualizationModule.h - Released 2021-10-20T18:10:09Z
+// LocalHistogramEqualizationModule.h - Released 2021-10-28T16:39:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard LocalHistogramEqualization PixInsight module.
 //
@@ -85,4 +85,4 @@ public:
 #endif // __LocalHistogramEqualizationModule_h
 
 // ----------------------------------------------------------------------------
-// EOF LocalHistogramEqualizationModule.h - Released 2021-10-20T18:10:09Z
+// EOF LocalHistogramEqualizationModule.h - Released 2021-10-28T16:39:26Z

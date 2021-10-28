@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.12
+// /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// AdaptiveStretchCurveGraphInterface.h - Released 2021-10-20T18:10:09Z
+// AdaptiveStretchCurveGraphInterface.h - Released 2021-10-28T16:39:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -151,4 +151,4 @@ PCL_END_LOCAL
 #endif   // __AdaptiveStretchCurveGraphInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF AdaptiveStretchCurveGraphInterface.h - Released 2021-10-20T18:10:09Z
+// EOF AdaptiveStretchCurveGraphInterface.h - Released 2021-10-28T16:39:26Z

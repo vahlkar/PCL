@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.12
+// /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard Debayer Process Module Version 1.9.4
+// Standard Debayer Process Module Version 1.10.1
 // ----------------------------------------------------------------------------
-// DebayerInterface.h - Released 2021-10-20T18:10:09Z
+// DebayerInterface.h - Released 2021-10-28T16:39:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -56,6 +56,7 @@
 #include <pcl/CheckBox.h>
 #include <pcl/ComboBox.h>
 #include <pcl/Edit.h>
+#include <pcl/NumericControl.h>
 #include <pcl/ProcessInterface.h>
 #include <pcl/PushButton.h>
 #include <pcl/SectionBar.h>
@@ -157,6 +158,9 @@ private:
             HorizontalSizer   StructureLayers_Sizer;
                Label             StructureLayers_Label;
                SpinBox           StructureLayers_SpinBox;
+            HorizontalSizer   NoiseLayers_Sizer;
+               Label             NoiseLayers_Label;
+               SpinBox           NoiseLayers_SpinBox;
             HorizontalSizer   MinStructureSize_Sizer;
                Label             MinStructureSize_Label;
                SpinBox           MinStructureSize_SpinBox;
@@ -169,6 +173,7 @@ private:
             HorizontalSizer   PSFType_Sizer;
                Label             PSFType_Label;
                ComboBox          PSFType_ComboBox;
+            NumericControl    PSFRejectionLimit_NumericControl;
 
          SectionBar        NoiseEvaluation_SectionBar;
          Control           NoiseEvaluation_Control;
@@ -196,6 +201,7 @@ private:
    void e_NodeActivated( TreeBox& sender, TreeBox::Node& node, int col );
    void e_NodeSelectionUpdated( TreeBox& sender );
    void e_SpinValueUpdated( SpinBox& sender, int value );
+   void e_ValueUpdated( NumericEdit& sender, double value );
    void e_CheckSection( SectionBar& sender, bool checked );
    void e_ToggleSection( SectionBar& sender, Control& section, bool start );
    void e_FileDrag( Control& sender, const Point& pos, const StringList& files, unsigned modifiers, bool& wantsFiles );
@@ -217,4 +223,4 @@ PCL_END_LOCAL
 #endif   // __DebayerInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF DebayerInterface.h - Released 2021-10-20T18:10:09Z
+// EOF DebayerInterface.h - Released 2021-10-28T16:39:26Z

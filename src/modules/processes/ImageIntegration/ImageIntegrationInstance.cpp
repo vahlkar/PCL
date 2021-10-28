@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.12
+// /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.3.0
+// Standard ImageIntegration Process Module Version 1.3.5
 // ----------------------------------------------------------------------------
-// ImageIntegrationInstance.cpp - Released 2021-10-20T18:10:09Z
+// ImageIntegrationInstance.cpp - Released 2021-10-28T16:39:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -942,7 +942,7 @@ bool ImageIntegrationInstance::ExecuteGlobal()
             console.Write( "<br>PSF power weights      :" );
             for ( int c = 0; c < result->NumberOfNominalChannels(); ++c )
             {
-               double e = psfSignal[c].mean/noise[c];
+               double e = psfSignal[c].power/noise[c]/noise[c];
                console.Write( String().Format( " %.4e", e ) );
             }
             console.Write( "<br>PSF fit counts         :" );
@@ -1830,4 +1830,4 @@ ImageWindow ImageIntegrationInstance::CreateImageWindow( const IsoString& id, in
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationInstance.cpp - Released 2021-10-20T18:10:09Z
+// EOF ImageIntegrationInstance.cpp - Released 2021-10-28T16:39:26Z

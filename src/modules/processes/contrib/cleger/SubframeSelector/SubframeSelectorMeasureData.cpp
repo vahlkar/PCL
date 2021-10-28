@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.12
+// /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// SubframeSelectorMeasureData.cpp - Released 2021-10-20T18:10:09Z
+// SubframeSelectorMeasureData.cpp - Released 2021-10-28T16:39:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -83,21 +83,21 @@ void MeasureData::AddToCache( const SubframeSelectorInstance& instance ) const
    if ( TheSubframeSelectorCache != nullptr )
    {
       SubframeSelectorCacheItem item( path );
-      item.fwhm                 = fwhm;
-      item.fwhmMeanDev          = fwhmMeanDev;
-      item.eccentricity         = eccentricity;
-      item.eccentricityMeanDev  = eccentricityMeanDev;
-      item.psfSignalWeight      = psfSignalWeight;
-      item.psfPowerWeight = psfPowerWeight;
-      item.snrWeight            = snrWeight;
-      item.median               = median;
-      item.medianMeanDev        = medianMeanDev;
-      item.trimmingFactor       = instance.p_trimmingFactor;
-      item.noise                = noise;
-      item.noiseRatio           = noiseRatio;
-      item.stars                = stars;
-      item.starResidual         = starResidual;
-      item.starResidualMeanDev  = starResidualMeanDev;
+      item.fwhm                = fwhm;
+      item.fwhmMeanDev         = fwhmMeanDev;
+      item.eccentricity        = eccentricity;
+      item.eccentricityMeanDev = eccentricityMeanDev;
+      item.psfSignalWeight     = psfSignalWeight;
+      item.psfPowerWeight      = psfPowerWeight;
+      item.snrWeight           = snrWeight;
+      item.median              = median;
+      item.medianMeanDev       = medianMeanDev;
+      item.trimmingFactor      = instance.p_trimmingFactor;
+      item.noise               = noise;
+      item.noiseRatio          = noiseRatio;
+      item.stars               = stars;
+      item.starResidual        = starResidual;
+      item.starResidualMeanDev = starResidualMeanDev;
       TheSubframeSelectorCache->Add( item );
    }
 }
@@ -113,36 +113,36 @@ bool MeasureData::GetFromCache( const SubframeSelectorInstance& instance )
       SubframeSelectorCacheItem item;
       if ( TheSubframeSelectorCache->Get( item, path ) )
       {
-         fwhm                 = item.fwhm;
-         fwhmMeanDev          = item.fwhmMeanDev;
-         eccentricity         = item.eccentricity;
-         eccentricityMeanDev  = item.eccentricityMeanDev;
-         psfSignalWeight      = item.psfSignalWeight;
-         psfPowerWeight = item.psfPowerWeight;
-         snrWeight            = item.snrWeight;
-         median               = item.median;
-         medianMeanDev        = item.medianMeanDev;
-         noise                = item.noise;
-         noiseRatio           = item.noiseRatio;
-         stars                = item.stars;
-         starResidual         = item.starResidual;
-         starResidualMeanDev  = item.starResidualMeanDev;
+         fwhm                = item.fwhm;
+         fwhmMeanDev         = item.fwhmMeanDev;
+         eccentricity        = item.eccentricity;
+         eccentricityMeanDev = item.eccentricityMeanDev;
+         psfSignalWeight     = item.psfSignalWeight;
+         psfPowerWeight      = item.psfPowerWeight;
+         snrWeight           = item.snrWeight;
+         median              = item.median;
+         medianMeanDev       = item.medianMeanDev;
+         noise               = item.noise;
+         noiseRatio          = item.noiseRatio;
+         stars               = item.stars;
+         starResidual        = item.starResidual;
+         starResidualMeanDev = item.starResidualMeanDev;
 
          return RoundInt( 100*item.trimmingFactor ) == RoundInt( 100*instance.p_trimmingFactor ) &&
-                fwhm                 != TheSSMeasurementFWHMParameter->DefaultValue() &&
-                fwhmMeanDev          != 0 &&
-                eccentricity         != TheSSMeasurementEccentricityParameter->DefaultValue() &&
-                eccentricityMeanDev  != 0 &&
-                psfSignalWeight      != TheSSMeasurementPSFSignalWeightParameter->DefaultValue() &&
-                psfPowerWeight != TheSSMeasurementPSFPowerWeightParameter->DefaultValue() &&
-                snrWeight            != TheSSMeasurementSNRWeightParameter->DefaultValue() &&
-                median               != TheSSMeasurementMedianParameter->DefaultValue() &&
-                medianMeanDev        != 0 &&
-                noise                != TheSSMeasurementNoiseParameter->DefaultValue() &&
-                noiseRatio           != TheSSMeasurementNoiseRatioParameter->DefaultValue() &&
-                stars                != TheSSMeasurementStarsParameter->DefaultValue() &&
-                starResidual         != TheSSMeasurementStarResidualParameter->DefaultValue() &&
-                starResidualMeanDev  != 0;
+                fwhm                != TheSSMeasurementFWHMParameter->DefaultValue() &&
+                fwhmMeanDev         != 0 &&
+                eccentricity        != TheSSMeasurementEccentricityParameter->DefaultValue() &&
+                eccentricityMeanDev != 0 &&
+                psfSignalWeight     != TheSSMeasurementPSFSignalWeightParameter->DefaultValue() &&
+                psfPowerWeight      != TheSSMeasurementPSFPowerWeightParameter->DefaultValue() &&
+                snrWeight           != TheSSMeasurementSNRWeightParameter->DefaultValue() &&
+                median              != TheSSMeasurementMedianParameter->DefaultValue() &&
+                medianMeanDev       != 0 &&
+                noise               != TheSSMeasurementNoiseParameter->DefaultValue() &&
+                noiseRatio          != TheSSMeasurementNoiseRatioParameter->DefaultValue() &&
+                stars               != TheSSMeasurementStarsParameter->DefaultValue() &&
+                starResidual        != TheSSMeasurementStarResidualParameter->DefaultValue() &&
+                starResidualMeanDev != 0;
       }
    }
 
@@ -392,4 +392,4 @@ void MeasureUtils::MeasureProperties( const Array<MeasureItem>& measures, double
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorMeasureData.cpp - Released 2021-10-20T18:10:09Z
+// EOF SubframeSelectorMeasureData.cpp - Released 2021-10-28T16:39:26Z

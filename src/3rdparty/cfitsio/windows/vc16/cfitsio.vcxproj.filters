@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.123
+# PixInsight Makefile Generator Script v1.124
 # Copyright (C) 2009-2021 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2021-10-20T18:10:56.145Z
+# Generated on .... 2021-10-28T18:11:29.149Z
 # Project id ...... cfitsio
 # Project type .... StaticLibrary
 # Platform ........ Windows/vc16
@@ -19,10 +19,10 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>431f9589-94bc-49f6-abd5-26638818cca8</UniqueIdentifier>
+      <UniqueIdentifier>5ecad56b-821e-40f5-8b68-2cffde74dbd2</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>1c0642c2-3c5b-46a7-aca1-997be19ab44f</UniqueIdentifier>
+      <UniqueIdentifier>cc4cd6a2-8b32-453a-a07b-37754267c95b</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

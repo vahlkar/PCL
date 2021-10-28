@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.12
+// /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.6.6
+// Standard ImageCalibration Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ImageCalibrationInstance.h - Released 2021-10-20T18:10:09Z
+// ImageCalibrationInstance.h - Released 2021-10-28T16:39:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -219,10 +219,12 @@ private:
    // PSF signal estimates
    pcl_bool        p_evaluateSignal;  // perform signal evaluation with PSF photometry
    int32           p_structureLayers;
+   int32           p_noiseLayers;
    int32           p_hotPixelFilterRadius;
    int32           p_noiseReductionFilterRadius;
    int32           p_minStructureSize;
    pcl_enum        p_psfType;
+   float           p_psfRejectionLimit;
 
    // Output files
    String          p_outputDirectory;
@@ -234,6 +236,14 @@ private:
    pcl_bool        p_overwriteExistingFiles;
    pcl_enum        p_onError;
    pcl_bool        p_noGUIMessages;   // ### DEPRECATED
+
+   // High-level parallelism
+   pcl_bool        p_useFileThreads;
+   float           p_fileThreadOverload;
+   int32           p_maxFileReadThreads;
+   int32           p_maxFileWriteThreads;
+   int             m_maxFileReadThreads = 1;
+   int             m_maxFileWriteThreads = 1;
 
    // Read-only output properties
    struct OutputData
@@ -256,32 +266,28 @@ private:
    // Working geometry validation
    Rect m_geometry;             // uncalibrated, including overscan regions
    Rect m_calibratedGeometry;   // calibrated, with overscan regions trimmed
-   void ValidateImageGeometry( const Image*, bool uncalibrated = true );
+   void ValidateImageGeometry( const Image&, bool uncalibrated = true );
 
    // Group source overscan regions with identical target regions
    overscan_table BuildOverscanTable() const;
 
    // Subtract input pedestal if appropriate, depending on instance parameters
    // and file keywords.
-   void SubtractPedestal( Image*, FileFormatInstance& );
+   void SubtractPedestal( Image&, FileFormatInstance& );
 
-   // Read a master calibration frame
-   Image* LoadCalibrationFrame( const String& filePath, bool willCalibrate, IsoString* cfaPattern = nullptr );
+   // Read a master calibration frame.
+   Image* LoadMasterCalibrationFrame( const String& filePath, bool willCalibrate, IsoString* cfaPattern = nullptr );
 
-   // Read a target frame file
-   thread_list LoadTargetFrame( const String& filePath, const CalibrationThreadData& );
-
-   // Write a calibrated image file
-   void WriteCalibratedImage( const CalibrationThread* );
-
-   // CFA pattern identification
+   // CFA pattern identification.
    IsoString CFAPatternFromTarget( FileFormatInstance& ) const;
 
-   // Signal and noise estimates
+   // Signal and noise estimates.
    void EvaluateSignalAndNoise( Vector& psfSignalEstimates, Vector& psfPowerEstimates, IVector& psfCounts,
                                 Vector& noiseEstimates, Vector& noiseFractions,
                                 Vector& noiseScaleLow, Vector& noiseScaleHigh, StringList& noiseAlgorithms,
                                 const Image& target, const IsoString& cfaPattern = IsoString() ) const;
+
+   void ApplyErrorPolicy();
 
    friend class CalibrationThread;
    friend class ImageCalibrationInterface;
@@ -294,4 +300,4 @@ private:
 #endif   // __ImageCalibrationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInstance.h - Released 2021-10-20T18:10:09Z
+// EOF ImageCalibrationInstance.h - Released 2021-10-28T16:39:26Z

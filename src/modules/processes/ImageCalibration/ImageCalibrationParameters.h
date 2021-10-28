@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.12
+// /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.6.6
+// Standard ImageCalibration Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ImageCalibrationParameters.h - Released 2021-10-20T18:10:09Z
+// ImageCalibrationParameters.h - Released 2021-10-28T16:39:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -755,6 +755,22 @@ extern ICStructureLayers* TheICStructureLayersParameter;
 
 // ----------------------------------------------------------------------------
 
+class ICNoiseLayers : public MetaInt32
+{
+public:
+
+   ICNoiseLayers( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern ICNoiseLayers* TheICNoiseLayersParameter;
+
+// ----------------------------------------------------------------------------
+
 class ICHotPixelFilterRadius : public MetaInt32
 {
 public:
@@ -808,10 +824,12 @@ class ICPSFType : public MetaEnumeration
 public:
 
    enum { Gaussian,
-          Moffat,
+          Moffat4,
+          Moffat6,
+          Moffat8,
           VariableShape,
           NumberOfItems,
-          Default = Gaussian };
+          Default = Moffat4 };
 
    ICPSFType( MetaProcess* );
 
@@ -825,15 +843,34 @@ public:
    {
       switch ( x )
       {
-      default:
       case Gaussian:      return PSFunction::Gaussian;
-      case Moffat:        return PSFunction::Moffat8;
+      default:
+      case Moffat4:       return PSFunction::Moffat4;
+      case Moffat6:       return PSFunction::Moffat6;
+      case Moffat8:       return PSFunction::Moffat8;
       case VariableShape: return PSFunction::VariableShape;
       }
    }
 };
 
 extern ICPSFType* TheICPSFTypeParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICPSFRejectionLimit : public MetaFloat
+{
+public:
+
+   ICPSFRejectionLimit( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern ICPSFRejectionLimit* TheICPSFRejectionLimitParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -969,6 +1006,7 @@ extern ICOnError* TheICOnErrorParameter;
 
 // ----------------------------------------------------------------------------
 
+// ### DEPRECATED
 class ICNoGUIMessages : public MetaBoolean
 {
 public:
@@ -980,6 +1018,69 @@ public:
 };
 
 extern ICNoGUIMessages* TheICNoGUIMessagesParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICUseFileThreads : public MetaBoolean
+{
+public:
+
+   ICUseFileThreads( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern ICUseFileThreads* TheICUseFileThreadsParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICFileThreadOverload : public MetaFloat
+{
+public:
+
+   ICFileThreadOverload( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern ICFileThreadOverload* TheICFileThreadOverloadParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICMaxFileReadThreads : public MetaInt32
+{
+public:
+
+   ICMaxFileReadThreads( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern ICMaxFileReadThreads* TheICMaxFileReadThreadsParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICMaxFileWriteThreads : public MetaInt32
+{
+public:
+
+   ICMaxFileWriteThreads( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern ICMaxFileWriteThreads* TheICMaxFileWriteThreadsParameter;
 
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
@@ -1437,4 +1538,4 @@ PCL_END_LOCAL
 #endif   // __ImageCalibrationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationParameters.h - Released 2021-10-20T18:10:09Z
+// EOF ImageCalibrationParameters.h - Released 2021-10-28T16:39:26Z

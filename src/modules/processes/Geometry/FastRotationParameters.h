@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.12
+// /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.4
 // ----------------------------------------------------------------------------
-// FastRotationParameters.h - Released 2021-10-20T18:10:09Z
+// FastRotationParameters.h - Released 2021-10-28T16:39:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -98,4 +98,4 @@ PCL_END_LOCAL
 #endif   // __FastRotationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF FastRotationParameters.h - Released 2021-10-20T18:10:09Z
+// EOF FastRotationParameters.h - Released 2021-10-28T16:39:26Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.12
+// /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.6.6
+// Standard ImageCalibration Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ImageCalibrationParameters.cpp - Released 2021-10-20T18:10:09Z
+// ImageCalibrationParameters.cpp - Released 2021-10-28T16:39:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -121,10 +121,12 @@ ICNoiseEvaluationAlgorithm*      TheICNoiseEvaluationAlgorithmParameter = nullpt
 
 ICEvaluateSignal*                TheICEvaluateSignalParameter = nullptr;
 ICStructureLayers*               TheICStructureLayersParameter = nullptr;
+ICNoiseLayers*                   TheICNoiseLayersParameter = nullptr;
 ICHotPixelFilterRadius*          TheICHotPixelFilterRadiusParameter = nullptr;
 ICNoiseReductionFilterRadius*    TheICNoiseReductionFilterRadiusParameter = nullptr;
 ICMinStructureSize*              TheICMinStructureSizeParameter = nullptr;
 ICPSFType*                       TheICPSFTypeParameter = nullptr;
+ICPSFRejectionLimit*             TheICPSFRejectionLimitParameter = nullptr;
 
 ICOutputDirectory*               TheICOutputDirectoryParameter = nullptr;
 ICOutputExtension*               TheICOutputExtensionParameter = nullptr;
@@ -136,6 +138,11 @@ ICOverwriteExistingFiles*        TheICOverwriteExistingFilesParameter = nullptr;
 ICOnError*                       TheICOnErrorParameter = nullptr;
 ICNoGUIMessages*                 TheICNoGUIMessagesParameter = nullptr;
 
+ICUseFileThreads*                TheICUseFileThreadsParameter = nullptr;
+ICFileThreadOverload*            TheICFileThreadOverloadParameter = nullptr;
+ICMaxFileReadThreads*            TheICMaxFileReadThreadsParameter = nullptr;
+ICMaxFileWriteThreads*           TheICMaxFileWriteThreadsParameter = nullptr;
+
 ICOutputData*                    TheICOutputDataParameter = nullptr;
 ICOutputFilePath*                TheICOutputFilePathParameter = nullptr;
 ICDarkScalingFactorRK*           TheICDarkScalingFactorRKParameter = nullptr;
@@ -144,12 +151,12 @@ ICDarkScalingFactorB*            TheICDarkScalingFactorBParameter = nullptr;
 ICPSFSignalEstimateRK*           TheICPSFSignalEstimateRKParameter = nullptr;
 ICPSFSignalEstimateG*            TheICPSFSignalEstimateGParameter = nullptr;
 ICPSFSignalEstimateB*            TheICPSFSignalEstimateBParameter = nullptr;
-ICPSFPowerEstimateRK*      TheICPSFPowerEstimateRKParameter = nullptr;
-ICPSFPowerEstimateG*       TheICPSFPowerEstimateGParameter = nullptr;
-ICPSFPowerEstimateB*       TheICPSFPowerEstimateBParameter = nullptr;
-ICPSFCountRK*              TheICPSFCountRKParameter = nullptr;
-ICPSFCountG*               TheICPSFCountGParameter = nullptr;
-ICPSFCountB*               TheICPSFCountBParameter = nullptr;
+ICPSFPowerEstimateRK*            TheICPSFPowerEstimateRKParameter = nullptr;
+ICPSFPowerEstimateG*             TheICPSFPowerEstimateGParameter = nullptr;
+ICPSFPowerEstimateB*             TheICPSFPowerEstimateBParameter = nullptr;
+ICPSFCountRK*                    TheICPSFCountRKParameter = nullptr;
+ICPSFCountG*                     TheICPSFCountGParameter = nullptr;
+ICPSFCountB*                     TheICPSFCountBParameter = nullptr;
 ICNoiseEstimateRK*               TheICNoiseEstimateRKParameter = nullptr;
 ICNoiseEstimateG*                TheICNoiseEstimateGParameter = nullptr;
 ICNoiseEstimateB*                TheICNoiseEstimateBParameter = nullptr;
@@ -1128,6 +1135,33 @@ double ICStructureLayers::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
+ICNoiseLayers::ICNoiseLayers( MetaProcess* p ) : MetaInt32( p )
+{
+   TheICNoiseLayersParameter = this;
+}
+
+IsoString ICNoiseLayers::Id() const
+{
+   return "noiseLayers";
+}
+
+double ICNoiseLayers::DefaultValue() const
+{
+   return 1;
+}
+
+double ICNoiseLayers::MinimumValue() const
+{
+   return 0;
+}
+
+double ICNoiseLayers::MaximumValue() const
+{
+   return 4;
+}
+
+// ----------------------------------------------------------------------------
+
 ICHotPixelFilterRadius::ICHotPixelFilterRadius( MetaProcess* p ) : MetaInt32( p )
 {
    TheICHotPixelFilterRadiusParameter = this;
@@ -1228,9 +1262,11 @@ IsoString ICPSFType::ElementId( size_type i ) const
 {
    switch ( i )
    {
-   default:
    case Gaussian:      return "PSFType_Gaussian";
-   case Moffat:        return "PSFType_Moffat";
+   default:
+   case Moffat4:       return "PSFType_Moffat4";
+   case Moffat6:       return "PSFType_Moffat6";
+   case Moffat8:       return "PSFType_Moffat8";
    case VariableShape: return "PSFType_VariableShape";
    }
 }
@@ -1243,6 +1279,38 @@ int ICPSFType::ElementValue( size_type i ) const
 size_type ICPSFType::DefaultValueIndex() const
 {
    return size_type( Default );
+}
+
+// ----------------------------------------------------------------------------
+
+ICPSFRejectionLimit::ICPSFRejectionLimit( MetaProcess* P ) : MetaFloat( P )
+{
+   TheICPSFRejectionLimitParameter = this;
+}
+
+IsoString ICPSFRejectionLimit::Id() const
+{
+   return "psfRejectionLimit";
+}
+
+int ICPSFRejectionLimit::Precision() const
+{
+   return 2;
+}
+
+double ICPSFRejectionLimit::DefaultValue() const
+{
+   return 5.00;
+}
+
+double ICPSFRejectionLimit::MinimumValue() const
+{
+   return 0.00;
+}
+
+double ICPSFRejectionLimit::MaximumValue() const
+{
+   return 10.0;
 }
 
 // ----------------------------------------------------------------------------
@@ -1445,6 +1513,109 @@ IsoString ICNoGUIMessages::Id() const
 bool ICNoGUIMessages::DefaultValue() const
 {
    return true;
+}
+
+// ----------------------------------------------------------------------------
+
+ICUseFileThreads::ICUseFileThreads( MetaProcess* p ) : MetaBoolean( p )
+{
+   TheICUseFileThreadsParameter = this;
+}
+
+IsoString ICUseFileThreads::Id() const
+{
+   return "useFileThreads";
+}
+
+bool ICUseFileThreads::DefaultValue() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+ICFileThreadOverload::ICFileThreadOverload( MetaProcess* p ) : MetaFloat( p )
+{
+   TheICFileThreadOverloadParameter = this;
+}
+
+IsoString ICFileThreadOverload::Id() const
+{
+   return "fileThreadOverload";
+}
+
+int ICFileThreadOverload::Precision() const
+{
+   return 2;
+}
+
+double ICFileThreadOverload::DefaultValue() const
+{
+   return 1.0;
+}
+
+double ICFileThreadOverload::MinimumValue() const
+{
+   return 1;
+}
+
+double ICFileThreadOverload::MaximumValue() const
+{
+   return 10;
+}
+
+// ----------------------------------------------------------------------------
+
+ICMaxFileReadThreads::ICMaxFileReadThreads( MetaProcess* p ) : MetaInt32( p )
+{
+   TheICMaxFileReadThreadsParameter = this;
+}
+
+IsoString ICMaxFileReadThreads::Id() const
+{
+   return "maxFileReadThreads";
+}
+
+double ICMaxFileReadThreads::DefaultValue() const
+{
+   return 0;
+}
+
+double ICMaxFileReadThreads::MinimumValue() const
+{
+   return 0;
+}
+
+double ICMaxFileReadThreads::MaximumValue() const
+{
+   return 1024;
+}
+
+// ----------------------------------------------------------------------------
+
+ICMaxFileWriteThreads::ICMaxFileWriteThreads( MetaProcess* p ) : MetaInt32( p )
+{
+   TheICMaxFileWriteThreadsParameter = this;
+}
+
+IsoString ICMaxFileWriteThreads::Id() const
+{
+   return "maxFileWriteThreads";
+}
+
+double ICMaxFileWriteThreads::DefaultValue() const
+{
+   return 0;
+}
+
+double ICMaxFileWriteThreads::MinimumValue() const
+{
+   return 0;
+}
+
+double ICMaxFileWriteThreads::MaximumValue() const
+{
+   return 1024;
 }
 
 // ----------------------------------------------------------------------------
@@ -2126,4 +2297,4 @@ bool ICNoiseAlgorithmB::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationParameters.cpp - Released 2021-10-20T18:10:09Z
+// EOF ImageCalibrationParameters.cpp - Released 2021-10-28T16:39:26Z

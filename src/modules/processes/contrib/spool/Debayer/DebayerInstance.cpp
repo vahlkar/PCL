@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.12
+// /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard Debayer Process Module Version 1.9.4
+// Standard Debayer Process Module Version 1.10.1
 // ----------------------------------------------------------------------------
-// DebayerInstance.cpp - Released 2021-10-20T18:10:09Z
+// DebayerInstance.cpp - Released 2021-10-28T16:39:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -128,10 +128,12 @@ DebayerInstance::DebayerInstance( const MetaProcess* m )
    , p_noiseEvaluationAlgorithm( DebayerNoiseEvaluationAlgorithm::Default )
    , p_evaluateSignal( TheDebayerEvaluateSignalParameter->DefaultValue() )
    , p_structureLayers( TheDebayerStructureLayersParameter->DefaultValue() )
+   , p_noiseLayers( TheDebayerNoiseLayersParameter->DefaultValue() )
    , p_hotPixelFilterRadius( TheDebayerHotPixelFilterRadiusParameter->DefaultValue() )
    , p_noiseReductionFilterRadius( TheDebayerNoiseReductionFilterRadiusParameter->DefaultValue() )
    , p_minStructureSize( TheDebayerMinStructureSizeParameter->DefaultValue() )
    , p_psfType( DebayerPSFType::Default )
+   , p_psfRejectionLimit( TheDebayerPSFRejectionLimitParameter->DefaultValue() )
    , p_inputHints( TheDebayerInputHintsParameter->DefaultValue() )
    , p_outputHints( TheDebayerOutputHintsParameter->DefaultValue() )
    , p_outputRGBImages( TheDebayerOutputRGBImagesParameter->DefaultValue() )
@@ -177,10 +179,12 @@ void DebayerInstance::Assign( const ProcessImplementation& p )
       p_noiseEvaluationAlgorithm   = x->p_noiseEvaluationAlgorithm;
       p_evaluateSignal             = x->p_evaluateSignal;
       p_structureLayers            = x->p_structureLayers;
+      p_noiseLayers                = x->p_noiseLayers;
       p_hotPixelFilterRadius       = x->p_hotPixelFilterRadius;
       p_noiseReductionFilterRadius = x->p_noiseReductionFilterRadius;
       p_minStructureSize           = x->p_minStructureSize;
       p_psfType                    = x->p_psfType;
+      p_psfRejectionLimit          = x->p_psfRejectionLimit;
       p_inputHints                 = x->p_inputHints;
       p_outputHints                = x->p_outputHints;
       p_outputRGBImages            = x->p_outputRGBImages;
@@ -322,10 +326,12 @@ public:
       {
          PSFSignalEstimator E;
          E.Detector().SetStructureLayers( m_instance.p_structureLayers );
+         E.Detector().SetNoiseLayers( m_instance.p_noiseLayers );
          E.Detector().SetHotPixelFilterRadius( m_instance.p_hotPixelFilterRadius );
          E.Detector().SetNoiseReductionFilterRadius( m_instance.p_noiseReductionFilterRadius );
          E.Detector().SetMinStructureSize( m_instance.p_minStructureSize );
          E.SetPSFType( DebayerPSFType::ToPSFFunction( m_instance.p_psfType ) );
+         E.SetRejectionLimit( m_instance.p_psfRejectionLimit );
          PSFSignalEstimator::Estimates e = E( ImageVariant( &m_image ) );
          psfSignalEstimate = e.mean;
          psfPowerEstimate = e.power;
@@ -2449,6 +2455,26 @@ public:
       }
    }
 
+   void GetOutputData( DebayerInstance::OutputFileData& o ) const
+   {
+      o.filePath = m_outputFilePath;
+      o.channelFilePaths = m_outputChannelFilePaths;
+      if ( m_instance.p_evaluateSignal )
+      {
+         o.psfSignalEstimates = m_psfSignalEstimates;
+         o.psfPowerEstimates = m_psfPowerEstimates;
+         o.psfCounts = m_psfCounts;
+      }
+      if ( m_instance.p_evaluateNoise )
+      {
+         o.noiseEstimates = m_noiseEstimates;
+         o.noiseFractions = m_noiseFractions;
+         o.noiseScaleLow = m_noiseScaleLow;
+         o.noiseScaleHigh = m_noiseScaleHigh;
+         o.noiseAlgorithms = m_noiseAlgorithms;
+      }
+   }
+
    size_type Index() const
    {
       return m_index;
@@ -2457,56 +2483,6 @@ public:
    String TargetFilePath() const
    {
       return m_targetFilePath;
-   }
-
-   String OutputFilePath() const
-   {
-      return m_outputFilePath;
-   }
-
-   const StringList& OutputChannelFilePaths() const
-   {
-      return m_outputChannelFilePaths;
-   }
-
-   const Vector& PSFSignalEstimates() const
-   {
-      return m_psfSignalEstimates;
-   }
-
-   const Vector& PSFPowerEstimates() const
-   {
-      return m_psfPowerEstimates;
-   }
-
-   const IVector& PSFCounts() const
-   {
-      return m_psfCounts;
-   }
-
-   const Vector& NoiseEstimates() const
-   {
-      return m_noiseEstimates;
-   }
-
-   const Vector& NoiseFractions() const
-   {
-      return m_noiseFractions;
-   }
-
-   const Vector& NoiseScaleLow() const
-   {
-      return m_noiseScaleLow;
-   }
-
-   const Vector& NoiseScaleHigh() const
-   {
-      return m_noiseScaleHigh;
-   }
-
-   const StringList& NoiseAlgorithms() const
-   {
-      return m_noiseAlgorithms;
    }
 
    bool Succeeded() const
@@ -2550,8 +2526,7 @@ private:
    bool ReadInputData()
    {
       Console console;
-      console.WriteLn( "<end><cbr>Loading target file:" );
-      console.WriteLn( m_targetFilePath );
+      console.WriteLn( "<end><cbr><br>* Loading target file: <raw>" + m_targetFilePath + "</raw>" );
 
       FileFormat format( File::ExtractExtension( m_targetFilePath ), true/*read*/, false/*write*/ );
       FileFormatInstance file( format );
@@ -2696,16 +2671,13 @@ private:
       {
          m_outputFilePath = outputFilePath;
 
-         console.WriteLn( "<end><cbr>Writing output file: " + m_outputFilePath );
+         console.WriteLn( "<end><cbr>Writing output file: <raw>" + m_outputFilePath + "</raw>" );
 
-         if ( File::Exists( m_outputFilePath ) )
-            if ( m_instance.p_overwriteExistingFiles )
-               console.WarningLn( "** Warning: Overwriting existing file" );
-            else
-            {
-               m_outputFilePath = UniqueFilePath( m_outputFilePath );
-               console.NoteLn( "* File already exists, writing to: " + m_outputFilePath );
-            }
+         UniqueFileChecks checks = File::EnsureNewUniqueFile( m_outputFilePath, m_instance.p_overwriteExistingFiles );
+         if ( checks.overwrite )
+            console.WarningLn( "** Warning: Overwriting existing file." );
+         else if ( checks.exists )
+            console.NoteLn( "* File already exists, writing to: <raw>" + m_outputFilePath + "</raw>" );
 
          FileFormatInstance outputFile( outputFormat );
 
@@ -2798,16 +2770,13 @@ private:
          {
             m_outputChannelFilePaths[i] = File::AppendToName( outputFilePath, String( '_' ) + "RGB"[i] );
 
-            console.WriteLn( "<end><cbr>Writing output file: " + m_outputChannelFilePaths[i] );
+            console.WriteLn( "<end><cbr>Writing output file: <raw>" + m_outputChannelFilePaths[i] + "</raw>" );
 
-            if ( File::Exists( m_outputChannelFilePaths[i] ) )
-               if ( m_instance.p_overwriteExistingFiles )
-                  console.WarningLn( "** Warning: Overwriting existing file" );
-               else
-               {
-                  m_outputChannelFilePaths[i] = UniqueFilePath( m_outputChannelFilePaths[i] );
-                  console.NoteLn( "* File already exists, writing to: " + m_outputChannelFilePaths[i] );
-               }
+            UniqueFileChecks checks = File::EnsureNewUniqueFile( m_outputChannelFilePaths[i], m_instance.p_overwriteExistingFiles );
+            if ( checks.overwrite )
+               console.WarningLn( "** Warning: Overwriting existing file." );
+            else if ( checks.exists )
+               console.NoteLn( "* File already exists, writing to: <raw>" + m_outputChannelFilePaths[i] + "</raw>" );
 
             FileFormatInstance outputFile( outputFormat );
 
@@ -2891,18 +2860,6 @@ private:
          }
 
       m_outputImage.FreeData();
-   }
-
-   // -------------------------------------------------------------------------
-
-   static String UniqueFilePath( const String& filePath )
-   {
-      for ( unsigned u = 1; ; ++u )
-      {
-         String tryFilePath = File::AppendToName( filePath, '_' + String( u ) );
-         if ( !File::Exists( tryFilePath ) )
-            return tryFilePath;
-      }
    }
 };
 
@@ -3202,10 +3159,35 @@ bool DebayerInstance::ExecuteGlobal()
 {
    o_outputFileData = Array<OutputFileData>( p_targets.Length() );
 
+   Console console;
+
    {
       String why;
       if ( !CanExecuteGlobal( why ) )
          throw Error( why );
+
+      if ( !p_outputDirectory.IsEmpty() )
+         if ( !File::DirectoryExists( p_outputDirectory ) )
+            throw Error( "The specified output directory does not exist: " + p_outputDirectory );
+
+      StringList fileNames;
+      for ( const auto& target : p_targets )
+         if ( target.enabled )
+         {
+            if ( !File::Exists( target.path ) )
+               throw Error( "No such file exists on the local filesystem: " + target.path );
+            fileNames << File::ExtractNameAndSuffix( target.path );
+         }
+      fileNames.Sort();
+      for ( size_type i = 1; i < fileNames.Length(); ++i )
+         if ( fileNames[i].CompareIC( fileNames[i-1] ) == 0 )
+         {
+            if ( p_overwriteExistingFiles )
+               throw Error( "The target images list contains duplicate file names (case-insensitive). "
+                            "This is not allowed when the 'Overwrite existing files' option is enabled." );
+            console.WarningLn( "<end><cbr><br>** Warning: The target images list contains duplicate file names (case-insensitive)." );
+            break;
+         }
    }
 
    m_maxFileReadThreads = p_maxFileReadThreads;
@@ -3216,7 +3198,6 @@ bool DebayerInstance::ExecuteGlobal()
    if ( m_maxFileWriteThreads < 1 )
       m_maxFileWriteThreads = Max( 1, PixInsightSettings::GlobalInteger( "Process/MaxFileWriteThreads" ) );
 
-   Console console;
    console.EnableAbort();
    console.WriteLn( String().Format( "<end><cbr><br>Demosaicing of %u target files.", p_targets.Length() ) );
 
@@ -3350,28 +3331,9 @@ bool DebayerInstance::ExecuteGlobal()
                       * A thread has finished execution
                       */
                      (*i)->FlushConsoleOutputText();
-                     console.WriteLn();
                      String errorInfo;
                      if ( (*i)->Succeeded() )
-                     {
-                        OutputFileData& o = o_outputFileData[(*i)->Index()];
-                        o.filePath = (*i)->OutputFilePath();
-                        o.channelFilePaths = (*i)->OutputChannelFilePaths();
-                        if ( p_evaluateSignal )
-                        {
-                           o.psfSignalEstimates = (*i)->PSFSignalEstimates();
-                           o.psfPowerEstimates = (*i)->PSFPowerEstimates();
-                           o.psfCounts = (*i)->PSFCounts();
-                        }
-                        if ( p_evaluateNoise )
-                        {
-                           o.noiseEstimates = (*i)->NoiseEstimates();
-                           o.noiseFractions = (*i)->NoiseFractions();
-                           o.noiseScaleLow = (*i)->NoiseScaleLow();
-                           o.noiseScaleHigh = (*i)->NoiseScaleHigh();
-                           o.noiseAlgorithms = (*i)->NoiseAlgorithms();
-                        }
-                     }
+                        (*i)->GetOutputData( o_outputFileData[(*i)->Index()] );
                      else
                         errorInfo = (*i)->ErrorInfo();
 
@@ -3401,9 +3363,7 @@ bool DebayerInstance::ExecuteGlobal()
                      (*i)->Start( ThreadPriority::DefaultMax, threadIndex );
                      ++running;
                      if ( pendingItems.IsEmpty() )
-                        console.NoteLn( "<br>* Waiting for running tasks to terminate...<br>" );
-                     else if ( succeeded+failed > 0 )
-                        console.WriteLn();
+                        console.NoteLn( "<br>* Waiting for running tasks to terminate..." );
                   }
                }
 
@@ -3449,8 +3409,9 @@ bool DebayerInstance::ExecuteGlobal()
       {
          try
          {
-            console.WriteLn( "<end><cbr><br>" );
-            DebayerFileThread( *this, itemIndex ).Run();
+            DebayerFileThread thread( *this, itemIndex );
+            thread.Run();
+            thread.GetOutputData( o_outputFileData[itemIndex] );
             ++succeeded;
          }
          catch ( ProcessAborted& )
@@ -3982,6 +3943,8 @@ void* DebayerInstance::LockParameter( const MetaParameter* p, size_type tableRow
       return &p_evaluateSignal;
    if ( p == TheDebayerStructureLayersParameter )
       return &p_structureLayers;
+   if ( p == TheDebayerNoiseLayersParameter )
+      return &p_noiseLayers;
    if ( p == TheDebayerHotPixelFilterRadiusParameter )
       return &p_hotPixelFilterRadius;
    if ( p == TheDebayerNoiseReductionFilterRadiusParameter )
@@ -3990,6 +3953,8 @@ void* DebayerInstance::LockParameter( const MetaParameter* p, size_type tableRow
       return &p_minStructureSize;
    if ( p == TheDebayerPSFTypeParameter )
       return &p_psfType;
+   if ( p == TheDebayerPSFRejectionLimitParameter )
+      return &p_psfRejectionLimit;
 
    if ( p == TheDebayerInputHintsParameter )
       return p_inputHints.Begin();
@@ -4377,4 +4342,4 @@ size_type DebayerInstance::ParameterLength( const MetaParameter* p, size_type ta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DebayerInstance.cpp - Released 2021-10-20T18:10:09Z
+// EOF DebayerInstance.cpp - Released 2021-10-28T16:39:26Z

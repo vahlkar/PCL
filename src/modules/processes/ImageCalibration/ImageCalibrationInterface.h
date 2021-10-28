@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.12
+// /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.6.6
+// Standard ImageCalibration Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ImageCalibrationInterface.h - Released 2021-10-20T18:10:09Z
+// ImageCalibrationInterface.h - Released 2021-10-28T16:39:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -53,17 +53,16 @@
 #ifndef __ImageCalibrationInterface_h
 #define __ImageCalibrationInterface_h
 
-#include <pcl/ProcessInterface.h>
-
-#include <pcl/Sizer.h>
-#include <pcl/SectionBar.h>
-#include <pcl/ToolButton.h>
-#include <pcl/PushButton.h>
-#include <pcl/NumericControl.h>
-#include <pcl/TreeBox.h>
-#include <pcl/SpinBox.h>
-#include <pcl/ComboBox.h>
 #include <pcl/CheckBox.h>
+#include <pcl/ComboBox.h>
+#include <pcl/NumericControl.h>
+#include <pcl/ProcessInterface.h>
+#include <pcl/PushButton.h>
+#include <pcl/SectionBar.h>
+#include <pcl/Sizer.h>
+#include <pcl/SpinBox.h>
+#include <pcl/ToolButton.h>
+#include <pcl/TreeBox.h>
 
 #include "ImageCalibrationInstance.h"
 
@@ -160,6 +159,9 @@ private:
          HorizontalSizer   StructureLayers_Sizer;
             Label             StructureLayers_Label;
             SpinBox           StructureLayers_SpinBox;
+         HorizontalSizer   NoiseLayers_Sizer;
+            Label             NoiseLayers_Label;
+            SpinBox           NoiseLayers_SpinBox;
          HorizontalSizer   MinStructureSize_Sizer;
             Label             MinStructureSize_Label;
             SpinBox           MinStructureSize_SpinBox;
@@ -172,6 +174,7 @@ private:
          HorizontalSizer   PSFType_Sizer;
             Label             PSFType_Label;
             ComboBox          PSFType_ComboBox;
+         NumericControl    PSFRejectionLimit_NumericControl;
 
       SectionBar        NoiseEvaluation_SectionBar;
       Control           NoiseEvaluation_Control;
@@ -346,4 +349,4 @@ PCL_END_LOCAL
 #endif   // __ImageCalibrationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInterface.h - Released 2021-10-20T18:10:09Z
+// EOF ImageCalibrationInterface.h - Released 2021-10-28T16:39:26Z

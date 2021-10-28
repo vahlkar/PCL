@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.12
+// /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// SubframeSelectorInstance.cpp - Released 2021-10-20T18:10:09Z
+// SubframeSelectorInstance.cpp - Released 2021-10-28T16:39:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -134,6 +134,10 @@ SubframeSelectorInstance::SubframeSelectorInstance( const MetaProcess* m )
    , p_onError( SSOnError::Default )
    , p_sortingProperty( SSSortingProperty::Default )
    , p_graphProperty( SSGraphProperty::Default )
+   , p_useFileThreads( TheSSUseFileThreadsParameter->DefaultValue() )
+   , p_fileThreadOverload( TheSSFileThreadOverloadParameter->DefaultValue() )
+   , p_maxFileReadThreads( int32( TheSSMaxFileReadThreadsParameter->DefaultValue() ) )
+   , p_maxFileWriteThreads( int32( TheSSMaxFileWriteThreadsParameter->DefaultValue() ) )
 {
 }
 
@@ -193,7 +197,12 @@ void SubframeSelectorInstance::Assign( const ProcessImplementation& p )
       p_weightingExpression        = x->p_weightingExpression;
       p_sortingProperty            = x->p_sortingProperty;
       p_graphProperty              = x->p_graphProperty;
-      p_measures                   = x->p_measures;
+      p_useFileThreads             = x->p_useFileThreads;
+      p_fileThreadOverload         = x->p_fileThreadOverload;
+      p_maxFileReadThreads         = x->p_maxFileReadThreads;
+      p_maxFileWriteThreads        = x->p_maxFileWriteThreads;
+
+      o_measures                   = x->o_measures;
    }
 }
 
@@ -214,81 +223,24 @@ class SubframeSelectorMeasureThread : public Thread
 {
 public:
 
-   SubframeSelectorMeasureThread( int index,
-                                  ImageVariant* subframe,
-                                  double noise,
-                                  double noiseRatio,
-                                  double psfSignalWeight,
-                                  double psfPowerWeight,
-                                  double snrWeight,
-                                  const String& subframePath,
-                                  MeasureThreadInputData* data,
+   SubframeSelectorMeasureThread( const MeasureThreadInputData& data,
+                                  size_type itemIndex,
                                   bool throwsOnMeasurementError = true )
-      : m_index( index )
-      , m_subframe( subframe )
-      , m_noise( noise )
-      , m_noiseRatio( noiseRatio )
-      , m_psfSignalWeight( psfSignalWeight )
-      , m_psfPowerWeight( psfPowerWeight )
-      , m_snrWeight( snrWeight )
-      , m_outputData( subframePath )
-      , m_data( data )
+      : m_data( data )
+      , m_index( itemIndex )
+      , m_filePath( m_data.instance->p_subframes[m_index].path )
       , m_throwsOnMeasurementError( throwsOnMeasurementError )
    {
    }
 
    void Run() override
    {
-      Console console;
-
       try
       {
-         m_success = false;
-         m_errorInfo.Clear();
+         Module->ProcessEvents();
 
-         if ( IsAborted() )
-            throw Error( "Aborted" );
-
-         console.NoteLn( "<end><cbr><br>Measuring: " + m_outputData.path );
-         MeasureImage();
-
-         if ( IsAborted() )
-            throw Error( "Aborted" );
-
-         // Crop if the ROI was set
-         if ( m_data->instance->p_roi.IsRect() )
-            m_subframe->CropTo( m_data->instance->p_roi );
-
-         // Run the Star Detector
-         StarDetector::star_list stars = DetectStars();
-         if ( stars.IsEmpty() )
-            if ( m_throwsOnMeasurementError )
-               throw Error( "No stars detected" );
-
-         // Stop if just showing the maps
-         if ( m_data->showStarDetectionMaps )
-         {
-            m_success = true;
-            return;
-         }
-
-         if ( IsAborted() )
-            throw Error( "Aborted" );
-
-         // Run the PSF Fitter
-         psf_list fits = FitPSFs( stars.Begin(), stars.End() );
-         if ( fits.IsEmpty() )
-            if ( m_throwsOnMeasurementError )
-               throw Error( "No PSF could be fitted" );
-
-         if ( IsAborted() )
-            throw Error( "Aborted" );
-
-         // Measure PSF data
-         MeasurePSFs( fits );
-
-         console.WriteLn( String().Format( "Stars detected: %6u", stars.Length() ) );
-         console.WriteLn( String().Format( "Valid PSF fits: %6u (%6.2f%%)", fits.Length(), 100.0*fits.Length()/stars.Length() ) );
+         ReadInputData();
+         Perform();
 
          m_success = true;
       }
@@ -306,13 +258,18 @@ public:
          ERROR_HANDLER
          m_errorInfo = ConsoleOutputText();
          ClearConsoleOutputText();
-         console.Write( text );
+         Console().Write( text );
       }
    }
 
-   int Index() const
+   size_type Index() const
    {
       return m_index;
+   }
+
+   const String& TargetFilePath() const
+   {
+      return m_filePath;
    }
 
    const MeasureData& OutputData() const
@@ -332,20 +289,296 @@ public:
 
 private:
 
-   int                       m_index;
-   AutoPointer<ImageVariant> m_subframe;
-   double                    m_noise;
-   double                    m_noiseRatio;
-   double                    m_psfSignalWeight;
-   double                    m_psfPowerWeight;
-   double                    m_snrWeight;
-   MeasureData               m_outputData;
-   bool                      m_success = false;
-   String                    m_errorInfo;
-   MeasureThreadInputData*   m_data = nullptr;
-   bool                      m_throwsOnMeasurementError = true;
+   const MeasureThreadInputData& m_data;
+         size_type               m_index;
+         String                  m_filePath;
+         ImageVariant            m_subframe;
+         double                  m_noise = 0;
+         double                  m_noiseRatio = 0;
+         double                  m_psfSignalWeight = 0;
+         double                  m_psfPowerWeight = 0;
+         double                  m_snrWeight = 0;
+         MeasureData             m_outputData;
+         bool                    m_success = false;
+         String                  m_errorInfo;
+         bool                    m_throwsOnMeasurementError = true;
 
-   void EvaluateNoise()
+   void ReadInputData()
+   {
+      Console console;
+      console.WriteLn( "<end><cbr><br>* Loading subframe file: <raw>" + m_filePath + "</raw>" );
+
+      FileFormat format( File::ExtractExtension( m_filePath ), true, false );
+      FileFormatInstance file( format );
+
+      ImageDescriptionArray images;
+      if ( !file.Open( images, m_filePath, m_data.instance->p_inputHints ) )
+         throw CaughtException();
+
+      if ( images.IsEmpty() )
+         throw Error( m_filePath + ": Empty subframe image." );
+
+      if ( images.Length() > 1 )
+         console.NoteLn( String().Format( "* Ignoring %u additional image(s) in target file.", images.Length()-1 ) );
+
+      FITSKeywordArray keywords;
+      if ( format.CanStoreKeywords() )
+         file.ReadFITSKeywords( keywords );
+
+      int cfaSourceChannel = 0;
+      if ( format.CanStoreImageProperties() )
+         if ( file.HasImageProperty( "PCL:CFASourceChannel" ) )
+         {
+            Variant v = file.ReadImageProperty( "PCL:CFASourceChannel" );
+            if ( v.IsValid() )
+               cfaSourceChannel = v.ToInt();
+         }
+
+      m_subframe.CreateSharedFloatImage( 32/*bitsPerSample*/ );
+
+      {
+         static Mutex mutex;
+         static AtomicInt count;
+         volatile AutoLockCounter lock( mutex, count, m_data.instance->m_maxFileReadThreads );
+
+         if ( !file.ReadImage( m_subframe ) || !file.Close() )
+            throw CaughtException();
+      }
+
+      /*
+       * Optional pedestal subtraction.
+       */
+      switch ( m_data.instance->p_pedestalMode )
+      {
+      case SSPedestalMode::Literal:
+         if ( m_data.instance->p_pedestal != 0 )
+         {
+            console.NoteLn( String().Format( "* Subtracting pedestal: %d DN", m_data.instance->p_pedestal ) );
+            m_subframe.Apply( m_data.instance->p_pedestal/65535.0, ImageOp::Sub );
+         }
+         break;
+      case SSPedestalMode::Keyword:
+      case SSPedestalMode::CustomKeyword:
+         if ( !keywords.IsEmpty() )
+         {
+            IsoString keyName( (m_data.instance->p_pedestalMode == SSPedestalMode::Keyword) ?
+                                    "PEDESTAL" : m_data.instance->p_pedestalKeyword );
+            double d = 0;
+            for ( const FITSHeaderKeyword& keyword : keywords )
+               if ( !keyword.name.CompareIC( keyName ) )
+                  if ( keyword.IsNumeric() )
+                     if ( keyword.GetNumericValue( d ) ) // GetNumericValue() sets d=0 if keyword cannot be converted
+                        break;
+            if ( d != 0 )
+            {
+               /*
+                * Silently be compatible with acquisition applications that
+                * write negative PEDESTAL keyword values.
+                */
+               if ( m_data.instance->p_pedestalMode == SSPedestalMode::Keyword )
+                  if ( d < 0 )
+                     d = -d;
+
+               console.NoteLn( String().Format( "* Subtracting pedestal keyword '%s': %.4f DN", keyName.c_str(), d ) );
+               m_subframe.Apply( d/65535.0, ImageOp::Sub );
+            }
+         }
+         break;
+      }
+
+      /*
+       * Get noise and signal estimates from available metadata.
+       */
+      DVector noiseEstimates( 0.0, m_subframe.NumberOfNominalChannels() );
+      DVector noiseRatios( 0.0, m_subframe.NumberOfNominalChannels() );
+      DVector noiseScaleLows( 0.0, m_subframe.NumberOfNominalChannels() );
+      DVector noiseScaleHighs( 0.0, m_subframe.NumberOfNominalChannels() );
+      DVector psfSignalEstimates( 0.0, m_subframe.NumberOfNominalChannels() );
+      DVector psfPowerEstimates( 0.0, m_subframe.NumberOfNominalChannels() );
+      for ( int c = 0; c < m_subframe.NumberOfNominalChannels(); ++c )
+      {
+         IsoString keyName = IsoString().Format( "NOISE%02d", c + cfaSourceChannel );
+         for ( const FITSHeaderKeyword& keyword : keywords )
+            if ( !keyword.name.CompareIC( keyName ) )
+            {
+               if ( keyword.IsNumeric() )
+                  keyword.GetNumericValue( noiseEstimates[c] ); // GetNumericValue() sets d=0 if keyword cannot be converted
+               break;
+            }
+
+         keyName = IsoString().Format( "NOISEF%02d", c + cfaSourceChannel );
+         for ( const FITSHeaderKeyword& keyword : keywords )
+            if ( !keyword.name.CompareIC( keyName ) )
+            {
+               if ( keyword.IsNumeric() )
+                  keyword.GetNumericValue( noiseRatios[c] );
+               break;
+            }
+
+         keyName = IsoString().Format( "NOISEL%02d", c + cfaSourceChannel );
+         for ( const FITSHeaderKeyword& keyword : keywords )
+            if ( !keyword.name.CompareIC( keyName ) )
+            {
+               if ( keyword.IsNumeric() )
+                  keyword.GetNumericValue( noiseScaleLows[c] );
+               break;
+            }
+
+         keyName = IsoString().Format( "NOISEH%02d", c + cfaSourceChannel );
+         for ( const FITSHeaderKeyword& keyword : keywords )
+            if ( !keyword.name.CompareIC( keyName ) )
+            {
+               if ( keyword.IsNumeric() )
+                  keyword.GetNumericValue( noiseScaleHighs[c] );
+               break;
+            }
+
+         keyName = IsoString().Format( "PSFSGL%02d", c + cfaSourceChannel );
+         for ( const FITSHeaderKeyword& keyword : keywords )
+            if ( !keyword.name.CompareIC( keyName ) )
+            {
+               if ( keyword.IsNumeric() )
+                  keyword.GetNumericValue( psfSignalEstimates[c] );
+               break;
+            }
+
+         keyName = IsoString().Format( "PSFSGP%02d", c + cfaSourceChannel );
+         for ( const FITSHeaderKeyword& keyword : keywords )
+            if ( !keyword.name.CompareIC( keyName ) )
+            {
+               if ( keyword.IsNumeric() )
+                  keyword.GetNumericValue( psfPowerEstimates[c] );
+               break;
+            }
+      }
+
+      /*
+       * For grayscale images, return the image just read and its signal and
+       * noise estimates if available. For color images, extract the HSI
+       * intensity component and provide coherent estimates if available.
+       */
+      double psfSignal, psfPower, noiseScaleLow, noiseScaleHigh;
+      if ( m_subframe.NumberOfNominalChannels() == 1 )
+      {
+         m_noise = noiseEstimates[0];
+         m_noiseRatio = noiseRatios[0];
+         noiseScaleLow = noiseScaleLows[0];
+         noiseScaleHigh = noiseScaleHighs[0];
+         psfSignal = psfSignalEstimates[0];
+         psfPower = psfPowerEstimates[0];
+      }
+      else
+      {
+         ImageVariant I;
+         I.CreateSharedFloatImage( 32/*bitsPerSample*/ );
+         m_subframe.GetIntensity( I );
+         m_subframe.Transfer( I );
+         m_noise = 0.5*(noiseEstimates.MinComponent() + noiseEstimates.MaxComponent());
+         m_noiseRatio = 0.5*(noiseRatios.MinComponent() + noiseRatios.MaxComponent());
+         noiseScaleLow = 0.5*(noiseScaleLows.MinComponent() + noiseScaleLows.MaxComponent());
+         noiseScaleHigh = 0.5*(noiseScaleHighs.MinComponent() + noiseScaleHighs.MaxComponent());
+         psfSignal = 0.5*(psfSignalEstimates.MinComponent() + psfSignalEstimates.MaxComponent());
+         psfPower = 0.5*(psfPowerEstimates.MinComponent() + psfPowerEstimates.MaxComponent());
+      }
+
+      if ( 1 + m_noise != 1 )
+      {
+         /*
+          * Compute PSF signal estimates if not available.
+          */
+         if ( psfSignal == 0 || psfPower == 0 )
+         {
+            PSFSignalEstimator E;
+            PSFSignalEstimator::Estimates e = E( m_subframe );
+            psfSignal = e.mean;
+            psfPower = e.power;
+         }
+
+         m_psfSignalWeight = psfSignal/m_noise;
+         m_psfPowerWeight = psfPower/m_noise/m_noise;
+
+         /*
+          * Compute noise scaling factors if not available.
+          */
+         if ( noiseScaleLow == 0 || noiseScaleHigh == 0 )
+         {
+            const double clipLow = 2.0/65535;
+            const double clipHigh = 1.0 - 2.0/65535;
+
+            m_subframe.SetRangeClipping( clipLow, clipHigh );
+            double center = m_subframe.Median();
+
+            m_subframe.SetRangeClipping( clipLow, center );
+            m_subframe.SetRangeClipping( Max( clipLow, center - 4*m_subframe.StdDev() ), center );
+            m_subframe.SetRangeClipping( Max( clipLow, center - 4*m_subframe.StdDev() ), center );
+            noiseScaleLow = m_subframe.StdDev();
+
+            m_subframe.SetRangeClipping( center, clipHigh );
+            m_subframe.SetRangeClipping( center, Min( center + 4*m_subframe.StdDev(), clipHigh ) );
+            m_subframe.SetRangeClipping( center, Min( center + 4*m_subframe.StdDev(), clipHigh ) );
+            noiseScaleHigh = m_subframe.StdDev();
+
+            m_subframe.ResetRangeClipping();
+         }
+
+         /*
+          * SNR estimate
+          */
+         double e = (noiseScaleLow + noiseScaleHigh)/m_noise;
+         if ( IsFinite( e ) && 1 + e*e != 1 )
+            m_snrWeight = e*e;
+      }
+
+      m_outputData.path = m_filePath;
+   }
+
+   void Perform()
+   {
+      Console console;
+      console.NoteLn( "<end><cbr><br>Measuring subframe: " + m_outputData.path );
+
+      if ( IsAborted() )
+         throw ProcessAborted();
+
+      MeasureImage();
+
+      if ( IsAborted() )
+         throw ProcessAborted();
+
+      // Crop if the ROI was set
+      if ( m_data.instance->p_roi.IsRect() )
+         m_subframe.CropTo( m_data.instance->p_roi );
+
+      // Run the star detector
+      StarDetector::star_list stars = DetectStars();
+      if ( stars.IsEmpty() )
+         if ( m_throwsOnMeasurementError )
+            throw Error( "No stars detected" );
+
+      if ( IsAborted() )
+         throw ProcessAborted();
+
+      // Stop if just showing the maps
+      if ( m_data.showStarDetectionMaps )
+         return;
+
+      // Run the PSF Fitter
+      psf_list fits = FitPSFs( stars.Begin(), stars.End() );
+      if ( fits.IsEmpty() )
+         if ( m_throwsOnMeasurementError )
+            throw Error( "No PSF could be fitted" );
+
+      if ( IsAborted() )
+         throw ProcessAborted();
+
+      // Measure PSF data
+      MeasurePSFs( fits );
+
+      console.WriteLn( String().Format( "Stars detected: %6u", stars.Length() ) );
+      console.WriteLn( String().Format( "Valid PSF fits: %6u (%6.2f%%)", fits.Length(), 100.0*fits.Length()/stars.Length() ) );
+   }
+
+   void EvaluateSignalAndNoise()
    {
       if ( m_noise > 0 && m_noiseRatio > 0 )
       {
@@ -362,7 +595,7 @@ private:
          for ( int n = 4;; )
          {
             ATrousWaveletTransform W( H, n );
-            W << *m_subframe;
+            W << m_subframe;
 
             size_type N;
             if ( n == 4 )
@@ -370,7 +603,7 @@ private:
                noiseEstimateKS = W.NoiseKSigma( 0, 3, 0.01, 10, &N )/s_5x5B3Spline_kj[0];
                noiseFractionKS = double( N )/m_subframe->NumberOfPixels();
             }
-            noiseEstimate = W.NoiseMRS( ImageVariant( *m_subframe ), s_5x5B3Spline_kj, noiseEstimateKS, 3, &N );
+            noiseEstimate = W.NoiseMRS( m_subframe, s_5x5B3Spline_kj, noiseEstimateKS, 3, &N );
             noiseFraction = double( N )/m_subframe->NumberOfPixels();
 
             if ( noiseEstimate > 0 )
@@ -397,7 +630,7 @@ private:
       else
       {
          PSFSignalEstimator E;
-         PSFSignalEstimator::Estimates e = E( *m_subframe );
+         PSFSignalEstimator::Estimates e = E( m_subframe );
          m_outputData.psfSignalWeight = e.mean/m_outputData.noise;
          m_outputData.psfPowerWeight = e.power/m_outputData.noise/m_outputData.noise;
       }
@@ -414,20 +647,20 @@ private:
          const double clipLow = 2.0/65535;
          const double clipHigh = 1.0 - 2.0/65535;
 
-         m_subframe->SetRangeClipping( clipLow, clipHigh );
-         double center = m_subframe->Median();
+         m_subframe.SetRangeClipping( clipLow, clipHigh );
+         double center = m_subframe.Median();
 
-         m_subframe->SetRangeClipping( clipLow, center );
-         m_subframe->SetRangeClipping( Max( clipLow, center - 4*m_subframe->StdDev() ), center );
-         m_subframe->SetRangeClipping( Max( clipLow, center - 4*m_subframe->StdDev() ), center );
-         double noiseScaleLow = m_subframe->StdDev();
+         m_subframe.SetRangeClipping( clipLow, center );
+         m_subframe.SetRangeClipping( Max( clipLow, center - 4*m_subframe.StdDev() ), center );
+         m_subframe.SetRangeClipping( Max( clipLow, center - 4*m_subframe.StdDev() ), center );
+         double noiseScaleLow = m_subframe.StdDev();
 
-         m_subframe->SetRangeClipping( center, clipHigh );
-         m_subframe->SetRangeClipping( center, Min( center + 4*m_subframe->StdDev(), clipHigh ) );
-         m_subframe->SetRangeClipping( center, Min( center + 4*m_subframe->StdDev(), clipHigh ) );
-         double noiseScaleHigh = m_subframe->StdDev();
+         m_subframe.SetRangeClipping( center, clipHigh );
+         m_subframe.SetRangeClipping( center, Min( center + 4*m_subframe.StdDev(), clipHigh ) );
+         m_subframe.SetRangeClipping( center, Min( center + 4*m_subframe.StdDev(), clipHigh ) );
+         double noiseScaleHigh = m_subframe.StdDev();
 
-         m_subframe->ResetRangeClipping();
+         m_subframe.ResetRangeClipping();
 
          /*
           * SNR estimate
@@ -441,7 +674,7 @@ private:
    void MeasureImage()
    {
       double min, max;
-      m_subframe->GetExtremeSampleValues( min, max );
+      m_subframe.GetExtremeSampleValues( min, max );
 
       /*
        * Reject saturated areas for median calculation.
@@ -452,43 +685,51 @@ private:
        * SNR calibrated data, where output pedestals have been added with
        * ImageCalibration.
        */
-      m_subframe->SetRangeClipping( min + 1.0/65535, max - 1.0/65535 );
+      m_subframe.SetRangeClipping( min + 1.0/65535, max - 1.0/65535 );
 
       /*
        * Robust estimate of location: median.
        */
-      m_outputData.median = m_subframe->Median();
+      m_outputData.median = m_subframe.Median();
 
       /*
        * Robust estimate of scale: trimmed mean deviation from the median.
        */
-      m_subframe->SetRangeClipping( m_outputData.median - (1 - m_data->instance->p_trimmingFactor)*(m_outputData.median - min),
-                                    m_outputData.median + (1 - m_data->instance->p_trimmingFactor)*(max - m_outputData.median) );
-      m_outputData.medianMeanDev = m_subframe->AvgDev( m_outputData.median );
+      m_subframe.SetRangeClipping( m_outputData.median - (1 - m_data.instance->p_trimmingFactor)*(m_outputData.median - min),
+                                   m_outputData.median + (1 - m_data.instance->p_trimmingFactor)*(max - m_outputData.median) );
+      m_outputData.medianMeanDev = m_subframe.AvgDev( m_outputData.median );
 
-      m_subframe->ResetRangeClipping();
+      m_subframe.ResetRangeClipping();
 
       /*
        * Robust noise estimate: Multiresolution support algorithm (MRS)
        */
-      EvaluateNoise();
+      EvaluateSignalAndNoise();
    }
 
    StarDetector::star_list DetectStars() const
    {
       // Setup StarDetector parameters and find the list of stars
       StarDetector S;
-      S.SetStructureLayers( m_data->instance->p_structureLayers );
-      S.SetNoiseLayers( m_data->instance->p_noiseLayers );
-      S.SetHotPixelFilterRadius( m_data->instance->p_hotPixelFilterRadius );
-      S.SetNoiseReductionFilterRadius( m_data->instance->p_noiseReductionFilterRadius );
-//       S.SetMinStructureSize( m_data->instance->p_minStructureSize );
-      S.SetSensitivity( m_data->instance->p_sensitivity );
-      S.SetPeakResponse( m_data->instance->p_peakResponse );
-      S.SetMaxDistortion( m_data->instance->p_maxDistortion );
-      S.SetUpperLimit( m_data->instance->p_upperLimit );
+      S.SetStructureLayers( m_data.instance->p_structureLayers );
+      S.SetNoiseLayers( m_data.instance->p_noiseLayers );
+      S.SetHotPixelFilterRadius( m_data.instance->p_hotPixelFilterRadius );
+      S.SetNoiseReductionFilterRadius( m_data.instance->p_noiseReductionFilterRadius );
+//       S.SetMinStructureSize( m_data.instance->p_minStructureSize );
+      S.SetSensitivity( m_data.instance->p_sensitivity );
+      S.SetPeakResponse( m_data.instance->p_peakResponse );
+      S.SetMaxDistortion( m_data.instance->p_maxDistortion );
+      S.SetUpperLimit( m_data.instance->p_upperLimit );
 
-      return S.DetectStars( *m_subframe );
+      StarDetector::star_list stars = S.DetectStars( m_subframe );
+
+      if ( m_data.showStarDetectionMaps )
+         if ( IsRootThread() )
+         {
+            // ### TODO
+         }
+
+      return stars;
    }
 
    psf_list FitPSFs( StarDetector::star_list::const_iterator begin, StarDetector::star_list::const_iterator end )
@@ -501,14 +742,14 @@ private:
          Rect rect = DRect( i->pos + (0.5-size), i->pos + (0.5+size) ).TruncatedToInt();
          for ( double m0 = 1; ; )
          {
-            double m = FMatrix::FromImage( *m_subframe, rect ).Median();
+            double m = FMatrix::FromImage( m_subframe, rect ).Median();
             if ( m0 <= m || (m0 - m)/m0 < 0.01 )
                break;
             m0 = m;
             rect.InflateBy( 1, 1 );
          }
 
-         PSFFit fit( *m_subframe, i->pos, rect, PSFFunction(), m_data->instance->p_psfFitCircular );
+         PSFFit fit( m_subframe, i->pos, rect, PSFFunction(), m_data.instance->p_psfFitCircular );
          if ( fit )
             PSFs << fit.psf;
       }
@@ -517,7 +758,7 @@ private:
 
    PSFFit::psf_function PSFFunction()
    {
-      switch ( m_data->instance->p_psfFit )
+      switch ( m_data.instance->p_psfFit )
       {
       default: // ?!
       case SSPSFFit::Gaussian:   return PSFunction::Gaussian;
@@ -578,261 +819,6 @@ private:
 
 // ----------------------------------------------------------------------------
 
-ImageVariant* SubframeSelectorInstance::LoadSubframe( double& noise, double& noiseRatio,
-                                                      double& psfSignalWeight, double& psfPowerWeight, double& snrWeight,
-                                                      const String& filePath )
-{
-   noise = noiseRatio = psfSignalWeight = psfPowerWeight = snrWeight = 0;
-
-   Console console;
-
-   /*
-    * Find out an installed file format that can read image files with the
-    * specified extension ...
-    */
-   FileFormat format( File::ExtractExtension( filePath ), true, false );
-
-   /*
-    * ... and create a format instance (usually a disk file) to access this
-    * subframe image.
-    */
-   FileFormatInstance file( format );
-
-   /*
-    * Open input stream.
-    */
-   ImageDescriptionArray images;
-   if ( !file.Open( images, filePath, p_inputHints ) )
-      throw CaughtException();
-
-   /*
-    * Check for an empty subframe.
-    */
-   if ( images.IsEmpty() )
-      throw Error( filePath + ": Empty subframe image." );
-
-   /*
-    * Subframe files can store multiple images - this is not supported.
-    */
-   if ( images.Length() > 1 )
-      throw Error( filePath + ": Has multiple images - unsupported." );
-
-   /*
-    * Read all FITS keywords.
-    */
-   FITSKeywordArray keywords;
-   if ( format.CanStoreKeywords() )
-      file.ReadFITSKeywords( keywords );
-
-   int cfaSourceChannel = 0;
-   if ( format.CanStoreImageProperties() )
-      if ( file.HasImageProperty( "PCL:CFASourceChannel" ) )
-      {
-         Variant v = file.ReadImageProperty( "PCL:CFASourceChannel" );
-         if ( v.IsValid() )
-            cfaSourceChannel = v.ToInt();
-      }
-
-   /*
-    * Create a shared image, 32-bit floating point.
-    */
-   AutoPointer<Image> image = new Image( (void*)0, 0, 0 );
-
-   /*
-    * Read the image and close the input stream.
-    */
-   if ( !file.ReadImage( *image ) || !file.Close() )
-      throw CaughtException();
-
-   /*
-    * Optional pedestal subtraction.
-    */
-   switch ( p_pedestalMode )
-   {
-   case SSPedestalMode::Literal:
-      if ( p_pedestal != 0 )
-      {
-         console.NoteLn( String().Format( "* Subtracting pedestal: %d DN", p_pedestal ) );
-         image->Apply( p_pedestal/65535.0, ImageOp::Sub );
-      }
-      break;
-   case SSPedestalMode::Keyword:
-   case SSPedestalMode::CustomKeyword:
-      if ( !keywords.IsEmpty() )
-      {
-         IsoString keyName( (p_pedestalMode == SSPedestalMode::Keyword) ? "PEDESTAL" : p_pedestalKeyword );
-         double d = 0;
-         for ( const FITSHeaderKeyword& keyword : keywords )
-            if ( !keyword.name.CompareIC( keyName ) )
-               if ( keyword.IsNumeric() )
-                  if ( keyword.GetNumericValue( d ) ) // GetNumericValue() sets d=0 if keyword cannot be converted
-                     break;
-         if ( d != 0 )
-         {
-            /*
-             * Silently be compatible with acquisition applications that write
-             * negative PEDESTAL keyword values.
-             */
-            if ( p_pedestalMode == SSPedestalMode::Keyword )
-               if ( d < 0 )
-                  d = -d;
-
-            console.NoteLn( String().Format( "* Subtracting pedestal keyword '%s': %.4f DN", keyName.c_str(), d ) );
-            image->Apply( d/65535.0, ImageOp::Sub );
-         }
-      }
-      break;
-   }
-
-   /*
-    * Get noise and signal estimates from available metadata.
-    */
-   DVector noiseEstimates( 0.0, image->NumberOfNominalChannels() );
-   DVector noiseRatios( 0.0, image->NumberOfNominalChannels() );
-   DVector noiseScaleLows( 0.0, image->NumberOfNominalChannels() );
-   DVector noiseScaleHighs( 0.0, image->NumberOfNominalChannels() );
-   DVector psfSignalEstimates( 0.0, image->NumberOfNominalChannels() );
-   DVector psfPowerEstimates( 0.0, image->NumberOfNominalChannels() );
-   for ( int c = 0; c < image->NumberOfNominalChannels(); ++c )
-   {
-      IsoString keyName = IsoString().Format( "NOISE%02d", c + cfaSourceChannel );
-      for ( const FITSHeaderKeyword& keyword : keywords )
-         if ( !keyword.name.CompareIC( keyName ) )
-         {
-            if ( keyword.IsNumeric() )
-               keyword.GetNumericValue( noiseEstimates[c] ); // GetNumericValue() sets d=0 if keyword cannot be converted
-            break;
-         }
-
-      keyName = IsoString().Format( "NOISEF%02d", c + cfaSourceChannel );
-      for ( const FITSHeaderKeyword& keyword : keywords )
-         if ( !keyword.name.CompareIC( keyName ) )
-         {
-            if ( keyword.IsNumeric() )
-               keyword.GetNumericValue( noiseRatios[c] );
-            break;
-         }
-
-      keyName = IsoString().Format( "NOISEL%02d", c + cfaSourceChannel );
-      for ( const FITSHeaderKeyword& keyword : keywords )
-         if ( !keyword.name.CompareIC( keyName ) )
-         {
-            if ( keyword.IsNumeric() )
-               keyword.GetNumericValue( noiseScaleLows[c] );
-            break;
-         }
-
-      keyName = IsoString().Format( "NOISEH%02d", c + cfaSourceChannel );
-      for ( const FITSHeaderKeyword& keyword : keywords )
-         if ( !keyword.name.CompareIC( keyName ) )
-         {
-            if ( keyword.IsNumeric() )
-               keyword.GetNumericValue( noiseScaleHighs[c] );
-            break;
-         }
-
-      keyName = IsoString().Format( "PSFSGL%02d", c + cfaSourceChannel );
-      for ( const FITSHeaderKeyword& keyword : keywords )
-         if ( !keyword.name.CompareIC( keyName ) )
-         {
-            if ( keyword.IsNumeric() )
-               keyword.GetNumericValue( psfSignalEstimates[c] );
-            break;
-         }
-
-      keyName = IsoString().Format( "PSFSGP%02d", c + cfaSourceChannel );
-      for ( const FITSHeaderKeyword& keyword : keywords )
-         if ( !keyword.name.CompareIC( keyName ) )
-         {
-            if ( keyword.IsNumeric() )
-               keyword.GetNumericValue( psfPowerEstimates[c] );
-            break;
-         }
-   }
-
-   /*
-    * For grayscale images, return the image just read and its signal and noise
-    * estimates if available. For color images, extract the HSI intensity
-    * component and provide coherent estimates if available.
-    */
-   ImageVariant* imageVariant;
-   double psfSignal, psfPower, noiseScaleLow, noiseScaleHigh;
-   if ( image->NumberOfNominalChannels() == 1 )
-   {
-      imageVariant = new ImageVariant( image.Release() );
-      imageVariant->SetOwnership( true );
-      noise = noiseEstimates[0];
-      noiseRatio = noiseRatios[0];
-      noiseScaleLow = noiseScaleLows[0];
-      noiseScaleHigh = noiseScaleHighs[0];
-      psfSignal = psfSignalEstimates[0];
-      psfPower = psfPowerEstimates[0];
-   }
-   else
-   {
-      imageVariant = new ImageVariant;
-      image->GetIntensity( *imageVariant );
-      noise = 0.5*(noiseEstimates.MinComponent() + noiseEstimates.MaxComponent());
-      noiseRatio = 0.5*(noiseRatios.MinComponent() + noiseRatios.MaxComponent());
-      noiseScaleLow = 0.5*(noiseScaleLows.MinComponent() + noiseScaleLows.MaxComponent());
-      noiseScaleHigh = 0.5*(noiseScaleHighs.MinComponent() + noiseScaleHighs.MaxComponent());
-      psfSignal = 0.5*(psfSignalEstimates.MinComponent() + psfSignalEstimates.MaxComponent());
-      psfPower = 0.5*(psfPowerEstimates.MinComponent() + psfPowerEstimates.MaxComponent());
-   }
-
-   if ( 1 + noise != 1 )
-   {
-      /*
-       * Compute PSF signal estimates if not available.
-       */
-      if ( psfSignal == 0 || psfPower == 0 )
-      {
-         PSFSignalEstimator E;
-         PSFSignalEstimator::Estimates e = E( *imageVariant );
-         psfSignal = e.mean;
-         psfPower = e.power;
-      }
-
-      psfSignalWeight = psfSignal/noise;
-      psfPowerWeight = psfPower/noise/noise;
-
-      /*
-       * Compute noise scaling factors if not available.
-       */
-      if ( noiseScaleLow == 0 || noiseScaleHigh == 0 )
-      {
-         const double clipLow = 2.0/65535;
-         const double clipHigh = 1.0 - 2.0/65535;
-
-         imageVariant->SetRangeClipping( clipLow, clipHigh );
-         double center = imageVariant->Median();
-
-         imageVariant->SetRangeClipping( clipLow, center );
-         imageVariant->SetRangeClipping( Max( clipLow, center - 4*imageVariant->StdDev() ), center );
-         imageVariant->SetRangeClipping( Max( clipLow, center - 4*imageVariant->StdDev() ), center );
-         noiseScaleLow = imageVariant->StdDev();
-
-         imageVariant->SetRangeClipping( center, clipHigh );
-         imageVariant->SetRangeClipping( center, Min( center + 4*imageVariant->StdDev(), clipHigh ) );
-         imageVariant->SetRangeClipping( center, Min( center + 4*imageVariant->StdDev(), clipHigh ) );
-         noiseScaleHigh = imageVariant->StdDev();
-
-         imageVariant->ResetRangeClipping();
-      }
-
-      /*
-       * SNR estimate
-       */
-      double e = (noiseScaleLow + noiseScaleHigh)/noise;
-      if ( IsFinite( e ) && 1 + e*e != 1 )
-         snrWeight = e*e;
-   }
-
-   return imageVariant;
-}
-
-// ----------------------------------------------------------------------------
-
 bool SubframeSelectorInstance::CanExecuteOn( const View& view, String& whyNot ) const
 {
     whyNot = "SubframeSelector can only be executed in the global context.";
@@ -860,7 +846,7 @@ bool SubframeSelectorInstance::CanTestStarDetector( String &whyNot ) const
 
 // ----------------------------------------------------------------------------
 
-bool SubframeSelectorInstance::TestStarDetector()
+void SubframeSelectorInstance::TestStarDetector()
 {
    /*
     * Start with a general validation of working parameters.
@@ -877,52 +863,26 @@ bool SubframeSelectorInstance::TestStarDetector()
    }
 
    Console console;
-
-   // Setup common data for each thread
-   MeasureThreadInputData inputThreadData;
-   inputThreadData.showStarDetectionMaps = true;
-   inputThreadData.instance = this;
-
-   /*
-    * For all errors generated, we want a report on the console. This is
-    * customary in PixInsight for all batch processes.
-    */
-   Exception::EnableConsoleOutput();
-   Exception::DisableGUIOutput();
-
    console.EnableAbort();
    Module->ProcessEvents();
 
    try
    {
       /*
-       * Extract the first target frame from the targets list, load and
-       * measure it.
+       * Load and measure the first target frame from the targets list.
        */
-      SubframeItem item = *p_subframes;
-
-      console.WriteLn( String().Format( "<end><cbr><br>Measuring subframe %u of %u", 1, p_subframes.Length() ) );
-      Module->ProcessEvents();
-
-      double noise, noiseRatio, psfSignalWeight, psfPowerWeight, snrWeight;
-      ImageVariant* image = LoadSubframe( noise, noiseRatio, psfSignalWeight, psfPowerWeight, snrWeight, item.path );
-      SubframeSelectorMeasureThread* thread =
-         new SubframeSelectorMeasureThread( 1, image, noise, noiseRatio,
-                                            psfSignalWeight, psfPowerWeight, snrWeight,
-                                            item.path, &inputThreadData );
+      MeasureThreadInputData inputThreadData;
+      inputThreadData.showStarDetectionMaps = true;
+      inputThreadData.instance = this;
+      SubframeSelectorMeasureThread thread( inputThreadData, 0/*index*/ );
 
       // Keep the GUI responsive, last chance to abort
       Module->ProcessEvents();
       if ( console.AbortRequested() )
          throw ProcessAborted();
 
-      thread->Run();
-
-      Module->ProcessEvents();
-
-      return true;
-
-   } // try
+      thread.Run();
+   }
    catch ( ProcessAborted& )
    {
       /*
@@ -962,14 +922,12 @@ bool SubframeSelectorInstance::CanMeasure( String &whyNot ) const
 
 // ----------------------------------------------------------------------------
 
-bool SubframeSelectorInstance::Measure()
+void SubframeSelectorInstance::Measure()
 {
    /*
-    * For all errors generated, we want a report on the console. This is
-    * customary in PixInsight for all batch processes.
+    * Reset measured values.
     */
-   Exception::EnableConsoleOutput();
-   Exception::DisableGUIOutput();
+   o_measures.Clear();
 
    /*
     * Start with a general validation of working parameters.
@@ -986,11 +944,20 @@ bool SubframeSelectorInstance::Measure()
    }
 
    /*
-    * Reset measured values.
+    * Setup high-level parallelism.
     */
-   p_measures.Clear();
+   m_maxFileReadThreads = p_maxFileReadThreads;
+   if ( m_maxFileReadThreads < 1 )
+      m_maxFileReadThreads = Max( 1, PixInsightSettings::GlobalInteger( "Process/MaxFileReadThreads" ) );
+   m_maxFileWriteThreads = p_maxFileWriteThreads;
+   if ( m_maxFileWriteThreads < 1 )
+      m_maxFileWriteThreads = Max( 1, PixInsightSettings::GlobalInteger( "Process/MaxFileWriteThreads" ) );
 
+   /*
+    * Allow the user to abort the calibration process.
+    */
    Console console;
+   console.EnableAbort();
 
    /*
     * Setup common data for each thread.
@@ -1026,22 +993,12 @@ bool SubframeSelectorInstance::Measure()
       }
    }
 
-   console.EnableAbort();
-   Module->ProcessEvents();
-
    /*
     * Begin subframe measuring process.
     */
    int succeeded = 0;
    int failed = 0;
    int skipped = 0;
-
-   /*
-    * Running threads list. Note that IndirectArray<> initializes all item
-    * pointers to nullptr.
-    */
-   int numberOfThreads = Thread::NumberOfThreads( PCL_MAX_PROCESSORS, 1 );
-   thread_list runningThreads( Min( int( p_subframes.Length() ), numberOfThreads ) );
 
    /*
     * Pending subframes list. We use this list for temporary storage of indices
@@ -1058,122 +1015,176 @@ bool SubframeSelectorInstance::Measure()
       }
    size_type pendingItemsTotal = pendingItems.Length();
 
-   console.WriteLn( String().Format( "<end><cbr><br>Measuring of %u subframes:", pendingItemsTotal ) );
-   console.WriteLn( String().Format( "* Using %u worker threads", runningThreads.Length() ) );
+   console.WriteLn( String().Format( "<end><cbr><br>Measuring %u subframes.", pendingItemsTotal ) );
 
-   try
+   Module->ProcessEvents();
+
+   if ( p_useFileThreads && pendingItems.Length() > 1 )
    {
       /*
-       * Thread execution loop.
+       * Running threads list. Note that IndirectArray<> initializes all of its
+       * contained pointers to nullptr.
        */
-      for ( ;; )
+      int numberOfThreadsAvailable = RoundInt( Thread::NumberOfThreads( PCL_MAX_PROCESSORS, 1 ) * p_fileThreadOverload );
+      int numberOfThreads = Min( numberOfThreadsAvailable, int( pendingItems.Length() ) );
+      measure_thread_list runningThreads( numberOfThreads );
+
+      console.NoteLn( String().Format( "<end><br>* Using %d worker threads.", numberOfThreads ) );
+      console.Flush();
+
+      try
       {
-         try
+         /*
+          * Thread execution loop.
+          */
+         for ( ;; )
          {
-            int running = 0;
-            for ( thread_list::iterator i = runningThreads.Begin(); i != runningThreads.End(); ++i )
+            try
             {
-               Module->ProcessEvents();
+               int running = 0;
+               for ( measure_thread_list::iterator i = runningThreads.Begin(); i != runningThreads.End(); ++i )
+               {
+                  Module->ProcessEvents();
+                  if ( console.AbortRequested() )
+                     throw ProcessAborted();
+
+                  if ( *i != nullptr )
+                  {
+                     /*
+                      * Check for a running thread
+                      */
+                     if ( !(*i)->Wait( 150 ) )
+                     {
+                        ++running;
+                        continue;
+                     }
+
+                     /*
+                      * A thread has finished execution
+                      */
+                     (*i)->FlushConsoleOutputText();
+                     String errorInfo;
+                     if ( (*i)->Succeeded() )
+                     {
+                        /*
+                         * Store output data.
+                         */
+                        MeasureItem m( (*i)->Index() );
+                        m.Input( (*i)->OutputData() );
+                        o_measures << m;
+                        if ( p_fileCache )
+                           (*i)->OutputData().AddToCache( *this );
+                     }
+                     else
+                        errorInfo = (*i)->ErrorInfo();
+
+                     /*
+                      * N.B.: IndirectArray<>::Delete() sets to zero the
+                      * pointer pointed to by the iterator, but does not remove
+                      * the array element.
+                      */
+                     runningThreads.Delete( i );
+
+                     if ( !errorInfo.IsEmpty() )
+                        throw Error( errorInfo );
+
+                     ++succeeded;
+                  }
+
+                  /*
+                   * If there are pending items, try to create a new worker
+                   * thread and fire it.
+                   */
+                  if ( !pendingItems.IsEmpty() )
+                  {
+                     SubframeItem item = p_subframes[*pendingItems];
+
+                     /*
+                      * Check for the subframe in the cache, and use that if
+                      * possible.
+                      */
+                     MeasureData cacheData( item.path );
+                     if ( p_fileCache && cacheData.GetFromCache( *this ) )
+                     {
+                        console.NoteLn( "<end><cbr>* Retrieved data from file cache: <raw>" + item.path + "</raw>" );
+                        MeasureItem m( pendingItemsTotal - pendingItems.Length()/*index*/, item.path );
+                        m.Input( cacheData );
+                        o_measures << m;
+                        ++succeeded;
+                     }
+                     else
+                     {
+                        /*
+                         * If not in cache, create a new thread for this
+                         * subframe image.
+                         */
+                        *i = new SubframeSelectorMeasureThread( inputThreadData,
+                                                                pendingItemsTotal - pendingItems.Length()/*itemIndex*/,
+                                                                !p_nonInteractive/*throwsOnMeasurementError*/ );
+                        size_type threadIndex = i - runningThreads.Begin();
+                        console.NoteLn( String().Format( "<end><cbr>[%03u] <raw>", threadIndex ) + (*i)->TargetFilePath() + "</raw>" );
+                        (*i)->Start( ThreadPriority::DefaultMax, threadIndex );
+                        ++running;
+                        if ( pendingItems.Length() == 1 )
+                           console.NoteLn( "<br>* Waiting for running tasks to terminate..." );
+                     }
+
+                     pendingItems.Remove( pendingItems.Begin() );
+                  }
+               }
+
+               if ( !running )
+                  break;
+            }
+            catch ( ProcessAborted& )
+            {
+               throw;
+            }
+            catch ( ... )
+            {
                if ( console.AbortRequested() )
                   throw ProcessAborted();
 
-               if ( *i != nullptr )
+               ++failed;
+               try
                {
-                  if ( !(*i)->Wait( 150 ) )
-                  {
-                     ++running;
-                     continue;
-                  }
-
-                  /*
-                   * A thread has just finished.
-                   */
-                  (*i)->FlushConsoleOutputText();
-                  String errorInfo;
-                  if ( !(*i)->Succeeded() )
-                     errorInfo = (*i)->ErrorInfo();
-
-                  /*
-                   * Store output data.
-                   */
-                  MeasureItem m( (*i)->Index() );
-                  m.Input( (*i)->OutputData() );
-                  p_measures << m;
-                  if ( p_fileCache )
-                     (*i)->OutputData().AddToCache( *this );
-
-                  /*
-                   * N.B.: IndirectArray<>::Delete() sets to zero the pointer
-                   * pointed to by the iterator, but does not remove the array
-                   * element.
-                   */
-                  runningThreads.Delete( i );
-
-                  if ( !errorInfo.IsEmpty() )
-                     throw Error( errorInfo );
-
-                  ++succeeded;
+                  throw;
                }
+               ERROR_HANDLER
 
-               /*
-                * If there are items pending, load data from the cache if
-                * available, or create a new thread and fire it.
-                */
-               if ( !pendingItems.IsEmpty() )
-               {
-                  SubframeItem item = p_subframes[*pendingItems];
-
-                  size_type threadIndex = i - runningThreads.Begin();
-                  console.NoteLn( String().Format( "<end><cbr><br>[%03u] Measuring subframe %u of %u",
-                                                   threadIndex,
-                                                   pendingItemsTotal-pendingItems.Length()+1,
-                                                   pendingItemsTotal ) );
-
-                  /*
-                   * Check for the subframe in the cache, and use that if
-                   * possible.
-                   */
-                  MeasureData cacheData( item.path );
-                  if ( p_fileCache && cacheData.GetFromCache( *this ) )
-                  {
-                     console.NoteLn( "<end><cbr>* Retrieved data from file cache." );
-                     MeasureItem m( pendingItemsTotal - pendingItems.Length() + 1, item.path );
-                     m.Input( cacheData );
-                     p_measures << m;
-                     ++succeeded;
-                     ++running;
-                  }
-                  else
-                  {
-                     /*
-                      * If not in cache, create a new thread for this subframe
-                      * image.
-                      */
-                     double noise, noiseRatio, psfSignalWeight, psfPowerWeight, snrWeight;
-                     ImageVariant* image = LoadSubframe( noise, noiseRatio, psfSignalWeight, psfPowerWeight, snrWeight, item.path );
-                     *i = new SubframeSelectorMeasureThread( pendingItemsTotal-pendingItems.Length()+1,
-                                                             image,
-                                                             noise,
-                                                             noiseRatio,
-                                                             psfSignalWeight,
-                                                             psfPowerWeight,
-                                                             snrWeight,
-                                                             item.path,
-                                                             &inputThreadData,
-                                                             !p_nonInteractive/*throwsOnMeasurementError*/ );
-                     (*i)->Start( ThreadPriority::DefaultMax, threadIndex );
-                     ++running;
-                  }
-
-                  pendingItems.Remove( pendingItems.Begin() );
-
-                  if ( pendingItems.IsEmpty() )
-                     console.NoteLn( "<br>* Waiting for running tasks to terminate...<br>" );
-               }
+               ApplyErrorPolicy();
             }
-
-            if ( !running )
-               break;
+         }
+      }
+      catch ( ... )
+      {
+         console.NoteLn( "<end><cbr><br>* Waiting for running tasks to terminate..." );
+         for ( SubframeSelectorMeasureThread* thread : runningThreads )
+            if ( thread != nullptr )
+               thread->Abort();
+         for ( SubframeSelectorMeasureThread* thread : runningThreads )
+            if ( thread != nullptr )
+               thread->Wait();
+         runningThreads.Destroy();
+         throw;
+      }
+   }
+   else // !p_useFileThreads || pendingItems.Length() < 2
+   {
+      for ( size_type itemIndex : pendingItems )
+      {
+         try
+         {
+            SubframeSelectorMeasureThread thread( inputThreadData,
+                                                  itemIndex,
+                                                  !p_nonInteractive/*throwsOnMeasurementError*/ );
+            thread.Run();
+            MeasureItem m( itemIndex );
+            m.Input( thread.OutputData() );
+            o_measures << m;
+            if ( p_fileCache )
+               thread.OutputData().AddToCache( *this );
+            ++succeeded;
          }
          catch ( ProcessAborted& )
          {
@@ -1191,49 +1202,29 @@ bool SubframeSelectorInstance::Measure()
             }
             ERROR_HANDLER
 
-            console.ResetStatus();
-            console.EnableAbort();
-
-            throw ProcessAborted();
+            ApplyErrorPolicy();
          }
       }
    }
-   catch ( ... )
-   {
-      console.NoteLn( "<end><cbr><br>* Waiting for running tasks to terminate..." );
-      for ( SubframeSelectorMeasureThread* thread : runningThreads )
-         if ( thread != nullptr )
-            thread->Abort();
-      for ( SubframeSelectorMeasureThread* thread : runningThreads )
-         if ( thread != nullptr )
-            thread->Wait();
-      runningThreads.Destroy();
-      throw;
-   }
 
-   /*
-    * Fail if no images have been measured.
-    */
+   Module->ProcessEvents();
+
    if ( succeeded == 0 )
    {
       if ( failed == 0 )
-         throw Error( "No images were measured: Empty subframes list? No enabled subframes?" );
+         throw Error( "No images were measured: Empty target frames list? No enabled target frames?" );
       throw Error( "No image could be measured." );
    }
 
-   /*
-    * Write the final report to the console.
-    */
-   console.NoteLn( String().Format(
-      "<end><cbr><br>===== SubframeSelector: %u succeeded, %u failed, %u skipped =====",
-      succeeded, failed, skipped ) );
+   console.NoteLn( String().Format( "<end><cbr><br>===== SubframeSelector: %u succeeded, %u failed, %u skipped =====",
+                                    succeeded, failed, skipped ) );
 
-   p_measures.Sort( SubframeSortingBinaryPredicate( SSSortingProperty::Index, 0 ) );
+   o_measures.Sort( SubframeSortingBinaryPredicate( SSSortingProperty::Index, 0 ) );
 
    if ( !p_nonInteractive )
    {
       if ( TheSubframeSelectorMeasurementsInterface != nullptr )
-         TheSubframeSelectorMeasurementsInterface->SetMeasurements( p_measures );
+         TheSubframeSelectorMeasurementsInterface->SetMeasurements( o_measures );
 
       if ( TheSubframeSelectorInterface != nullptr )
       {
@@ -1241,8 +1232,6 @@ bool SubframeSelectorInstance::Measure()
          TheSubframeSelectorInterface->ShowMeasurementsInterface();
       }
    }
-
-   return true;
 }
 
 // ----------------------------------------------------------------------------
@@ -1251,7 +1240,7 @@ void SubframeSelectorInstance::ApproveMeasurements()
 {
    if ( p_approvalExpression.IsEmpty() )
    {
-      p_measures.Apply( []( MeasureItem& item )
+      o_measures.Apply( []( MeasureItem& item )
                         {
                            if ( !item.locked )
                               item.enabled = true;
@@ -1261,11 +1250,11 @@ void SubframeSelectorInstance::ApproveMeasurements()
    {
       // First, get all Medians and Mean Deviation from Medians for Sigma units
       MeasureProperties properties = MeasureProperties();
-      MeasureUtils::MeasureProperties( p_measures, p_subframeScale, p_scaleUnit,
+      MeasureUtils::MeasureProperties( o_measures, p_subframeScale, p_scaleUnit,
                                        p_cameraGain, p_cameraResolution, p_dataUnit,
                                        properties );
 
-      for ( MeasureItem& item : p_measures )
+      for ( MeasureItem& item : o_measures )
       {
          if ( item.locked )
             continue;
@@ -1297,7 +1286,7 @@ void SubframeSelectorInstance::WeightMeasurements()
 {
    if ( p_weightingExpression.IsEmpty() )
    {
-      p_measures.Apply( []( MeasureItem& item )
+      o_measures.Apply( []( MeasureItem& item )
                         {
                            item.weight = 0;
                         } );
@@ -1306,11 +1295,11 @@ void SubframeSelectorInstance::WeightMeasurements()
    {
       // First, get all Medians and Mean Deviation from Medians for Sigma units
       MeasureProperties properties = MeasureProperties();
-      MeasureUtils::MeasureProperties( p_measures, p_subframeScale, p_scaleUnit,
+      MeasureUtils::MeasureProperties( o_measures, p_subframeScale, p_scaleUnit,
                                        p_cameraGain, p_cameraResolution, p_dataUnit,
                                        properties );
 
-      for ( MeasureItem& item : p_measures )
+      for ( MeasureItem& item : o_measures )
       {
          // The standard parameters for the MeasureItem
          String JSEvaluator = item.JavaScriptParameters( p_subframeScale, p_scaleUnit, p_cameraGain,
@@ -1335,226 +1324,9 @@ void SubframeSelectorInstance::WeightMeasurements()
 
 // ----------------------------------------------------------------------------
 
-static String UniqueFilePath( const String& filePath )
-{
-   for ( unsigned u = 1; ; ++u )
-   {
-      String tryFilePath = File::AppendToName( filePath, '_' + String( u ) );
-      if ( !File::Exists( tryFilePath ) )
-         return tryFilePath;
-   }
-}
-
-// ----------------------------------------------------------------------------
-
-void SubframeSelectorInstance::WriteMeasuredImage( MeasureItem* item )
-{
-   Console console;
-
-   /*
-    * Output directory.
-    */
-   String fileDir = p_outputDirectory.Trimmed();
-   if ( fileDir.IsEmpty() )
-      fileDir = File::ExtractDrive( item->path ) + File::ExtractDirectory( item->path );
-   if ( fileDir.IsEmpty() )
-      throw Error( item->path + ": Unable to determine an output directory." );
-   if ( !fileDir.EndsWith( '/' ) )
-      fileDir.Append( '/' );
-
-   /*
-    * Input file extension, which defines the input file format.
-    */
-   String inputFileExtension = File::ExtractExtension( item->path ).Trimmed();
-   if ( inputFileExtension.IsEmpty() )
-      throw Error( item->path + ": Unable to determine an input file extension." );
-
-   /*
-    * Output file extension, which defines the output file format.
-    */
-   String outputFileExtension = p_outputExtension.Trimmed();
-   if ( outputFileExtension.IsEmpty() )
-      outputFileExtension = inputFileExtension;
-   else if ( !outputFileExtension.StartsWith( '.' ) )
-      outputFileExtension.Prepend( '.' );
-
-   /*
-    * Output file name.
-    */
-   String fileName = File::ExtractName( item->path ).Trimmed();
-   if ( !p_outputPrefix.IsEmpty() )
-      fileName.Prepend( p_outputPrefix );
-   if ( !p_outputPostfix.IsEmpty() )
-      fileName.Append( p_outputPostfix );
-   if ( fileName.IsEmpty() )
-      throw Error( item->path + ": Unable to determine an output file name." );
-
-   /*
-    * Output file path.
-    */
-   String outputFilePath = fileDir + fileName + outputFileExtension;
-
-   console.WriteLn( "<end><cbr><br>Writing output file: " + outputFilePath );
-
-   /*
-    * Check for an already existing file, and either overwrite it (but show a
-    * warning message if that happens), or find a unique file name, depending
-    * on the overwriteExistingFiles parameter.
-    */
-   if ( File::Exists( outputFilePath ) )
-      if ( p_overwriteExistingFiles )
-         console.WarningLn( "** Warning: Overwriting already existing file." );
-      else
-      {
-         outputFilePath = UniqueFilePath( outputFilePath );
-         console.NoteLn( "* File already exists, writing to: " + outputFilePath );
-      }
-
-   /*
-    * Find installed file formats able to perform the requested read/write
-    * operations ...
-    */
-   FileFormat inputFormat( inputFileExtension, true/*read*/, false/*write*/ );
-   FileFormat outputFormat( outputFileExtension, false/*read*/, true/*write*/ );
-
-   if ( outputFormat.IsDeprecated() )
-      console.WarningLn( "** Warning: Deprecated file format: " + outputFormat.Name() );
-
-   /*
-    * ... and create format instances (usually disk files).
-    */
-   FileFormatInstance inputFile( inputFormat );
-   FileFormatInstance outputFile( outputFormat );
-
-   /*
-    * Open the input stream.
-    */
-   ImageDescriptionArray images;
-   if ( !inputFile.Open( images, item->path, p_inputHints ) )
-      throw CaughtException();
-
-   /*
-    * Check for an empty subframe.
-    */
-   if ( images.IsEmpty() )
-      throw Error( item->path + ": Empty subframe image." );
-
-   /*
-    * Subframe files can store multiple images - we don't support them.
-    */
-   if ( images.Length() > 1 )
-      throw Error ( item->path + ": Has multiple images - unsupported." );
-
-   /*
-    * Create a shared image with the same pixel format as the input image.
-    */
-   ImageVariant image;
-   image.CreateSharedImage( images[0].options.ieeefpSampleFormat,
-                            images[0].options.complexSample,
-                            images[0].options.bitsPerSample );
-   /*
-    * Read the image.
-    */
-   if ( !inputFile.ReadImage( image ) )
-      throw CaughtException();
-
-   /*
-    * Create the output stream.
-    */
-   if ( !outputFile.Create( outputFilePath, p_outputHints ) )
-      throw CaughtException();
-
-   /*
-    * Determine the output sample format: bits per sample and whether integer
-    * or real samples.
-    */
-   outputFile.SetOptions( images[0].options );
-
-   /*
-    * File formats often use format-specific data.
-    * Try to keep track of private data structures.
-    */
-   if ( inputFormat.UsesFormatSpecificData() )
-      if ( outputFormat.ValidateFormatSpecificData( inputFile.FormatSpecificData() ) )
-         outputFile.SetFormatSpecificData( inputFile.FormatSpecificData() );
-
-   /*
-    * Set image properties.
-    */
-   if ( !inputFile.ReadImageProperties().IsEmpty() )
-      if ( outputFormat.CanStoreImageProperties() )
-      {
-         outputFile.WriteImageProperties( inputFile.ReadImageProperties() );
-         if ( !outputFormat.SupportsViewProperties() )
-            console.WarningLn( "** Warning: The output format cannot store view properties; existing properties have been stored as BLOB data." );
-      }
-      else
-         console.WarningLn( "** Warning: The output format cannot store image properties; existing properties will be lost." );
-
-   /*
-    * Add FITS header keywords and preserve existing ones, if possible.
-    * N.B.: A COMMENT or HISTORY keyword cannot have a value; these keywords
-    * have only the name and comment components.
-    */
-   if ( outputFormat.CanStoreKeywords() )
-   {
-      FITSKeywordArray keywords;
-      if ( inputFormat.CanStoreKeywords() )
-         inputFile.ReadFITSKeywords( keywords );
-
-      // Remove old weight keywords
-      FITSKeywordArray newKeywords;
-      for ( const FITSHeaderKeyword& keyword : keywords )
-         if ( keyword.name != IsoString( p_outputKeyword ) )
-            newKeywords << keyword;
-
-      newKeywords << FITSHeaderKeyword( "COMMENT", IsoString(), "Measured with " + PixInsightVersion::AsString() )
-                  << FITSHeaderKeyword( "HISTORY", IsoString(), "Measured with " + Module->ReadableVersion() )
-                  << FITSHeaderKeyword( "HISTORY", IsoString(), "Measured with SubframeSelector process" );
-
-      if ( !p_outputKeyword.IsEmpty() )
-         newKeywords << FITSHeaderKeyword( p_outputKeyword,
-                                           String().Format( "%.6f", item->weight ),
-                                           "SubframeSelector.weight" );
-
-      outputFile.WriteFITSKeywords( newKeywords );
-   }
-   else
-   {
-      console.WarningLn( "** Warning: The output format cannot store FITS header keywords - subframe weight metadata not embedded." );
-   }
-
-   /*
-    * Preserve ICC profile, if possible.
-    */
-   if ( inputFormat.CanStoreICCProfiles() )
-   {
-      ICCProfile inputProfile;
-      inputFile.ReadICCProfile( inputProfile );
-      if ( inputProfile.IsProfile() )
-         if ( outputFormat.CanStoreICCProfiles() )
-            outputFile.WriteICCProfile( inputProfile );
-         else
-            console.WarningLn( "** Warning: The output format cannot store color profiles - original ICC profile not embedded." );
-   }
-
-   /*
-    * Close the input stream.
-    */
-   (void)inputFile.Close();
-
-   /*
-    * Write the output image and close the output stream.
-    */
-   if ( !outputFile.WriteImage( image ) || !outputFile.Close() )
-      throw CaughtException();
-}
-
-// ----------------------------------------------------------------------------
-
 bool SubframeSelectorInstance::CanOutput( String &whyNot ) const
 {
-   if ( p_measures.IsEmpty() )
+   if ( o_measures.IsEmpty() )
    {
       whyNot = "No measurements have been made.";
       return false;
@@ -1566,20 +1338,285 @@ bool SubframeSelectorInstance::CanOutput( String &whyNot ) const
       return false;
    }
 
-   if ( !p_outputDirectory.IsEmpty() )
-      if ( !File::DirectoryExists( p_outputDirectory ) )
-      {
-         whyNot = "The specified output directory does not exist.";
-         return false;
-      }
-
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-bool SubframeSelectorInstance::Output()
+class SubframeSelectorOutputThread : public Thread
 {
+public:
+
+   SubframeSelectorOutputThread( const SubframeSelectorInstance& instance, size_type itemIndex )
+      : m_instance( instance )
+      , m_item( m_instance.o_measures[itemIndex] )
+   {
+   }
+
+   void Run() override
+   {
+      try
+      {
+         Module->ProcessEvents();
+         Perform();
+         m_success = true;
+      }
+      catch ( ... )
+      {
+         if ( IsRootThread() )
+            throw;
+
+         String text = ConsoleOutputText();
+         ClearConsoleOutputText();
+         try
+         {
+            throw;
+         }
+         ERROR_HANDLER
+         m_errorInfo = ConsoleOutputText();
+         ClearConsoleOutputText();
+         Console().Write( text );
+      }
+   }
+
+   const String& TargetFilePath() const
+   {
+      return m_item.path;
+   }
+
+   bool Succeeded() const
+   {
+      return m_success;
+   }
+
+   String ErrorInfo() const
+   {
+      return m_errorInfo;
+   }
+
+private:
+
+   const SubframeSelectorInstance& m_instance;
+   const MeasureItem&              m_item;
+         String                    m_errorInfo;       // last error message
+         bool                      m_success = false; // true if the thread completed execution successfully
+
+   void Perform()
+   {
+      Console console;
+
+      /*
+       * Output directory.
+       */
+      String fileDir = m_instance.p_outputDirectory.Trimmed();
+      if ( fileDir.IsEmpty() )
+         fileDir = File::ExtractDrive( m_item.path ) + File::ExtractDirectory( m_item.path );
+      if ( fileDir.IsEmpty() )
+         throw Error( m_item.path + ": Unable to determine an output directory." );
+      if ( !fileDir.EndsWith( '/' ) )
+         fileDir.Append( '/' );
+
+      /*
+       * Input file extension, which defines the input file format.
+       */
+      String inputFileExtension = File::ExtractExtension( m_item.path ).Trimmed();
+      if ( inputFileExtension.IsEmpty() )
+         throw Error( m_item.path + ": Unable to determine an input file extension." );
+
+      /*
+       * Output file extension, which defines the output file format.
+       */
+      String outputFileExtension = m_instance.p_outputExtension.Trimmed();
+      if ( outputFileExtension.IsEmpty() )
+         outputFileExtension = inputFileExtension;
+      else if ( !outputFileExtension.StartsWith( '.' ) )
+         outputFileExtension.Prepend( '.' );
+
+      /*
+       * Output file name.
+       */
+      String fileName = File::ExtractName( m_item.path ).Trimmed();
+      if ( !m_instance.p_outputPrefix.IsEmpty() )
+         fileName.Prepend( m_instance.p_outputPrefix );
+      if ( !m_instance.p_outputPostfix.IsEmpty() )
+         fileName.Append( m_instance.p_outputPostfix );
+      if ( fileName.IsEmpty() )
+         throw Error( m_item.path + ": Unable to determine an output file name." );
+
+      /*
+       * Output file path.
+       */
+      String outputFilePath = fileDir + fileName + outputFileExtension;
+
+      console.WriteLn( "<end><cbr><br>Input  : <raw>" + m_item.path + "</raw>" );
+      console.WriteLn(               "Output : <raw>" + outputFilePath + "</raw>" );
+
+      /*
+       * Check for an already existing file, and either overwrite it (but show
+       * a warning message if that happens), or find a unique file name,
+       * depending on the overwriteExistingFiles parameter.
+       */
+      UniqueFileChecks checks = File::EnsureNewUniqueFile( outputFilePath, m_instance.p_overwriteExistingFiles );
+      if ( checks.overwrite )
+         console.WarningLn( "** Warning: Overwriting existing file." );
+      else if ( checks.exists )
+         console.NoteLn( "* File already exists, writing to: <raw>" + outputFilePath + "</raw>" );
+
+      /*
+       * Find installed file formats able to perform the requested read/write
+       * operations ...
+       */
+      FileFormat inputFormat( inputFileExtension, true/*read*/, false/*write*/ );
+      FileFormat outputFormat( outputFileExtension, false/*read*/, true/*write*/ );
+
+      if ( outputFormat.IsDeprecated() )
+         console.WarningLn( "** Warning: Deprecated file format: " + outputFormat.Name() );
+
+      /*
+       * ... and create format instances (usually disk files).
+       */
+      FileFormatInstance inputFile( inputFormat );
+      FileFormatInstance outputFile( outputFormat );
+
+      /*
+       * Open the input stream.
+       */
+      ImageDescriptionArray images;
+      if ( !inputFile.Open( images, m_item.path, m_instance.p_inputHints ) )
+         throw CaughtException();
+
+      /*
+       * Check for an empty subframe.
+       */
+      if ( images.IsEmpty() )
+         throw Error( m_item.path + ": Empty subframe image." );
+
+      /*
+       * Subframe files can store multiple images - we don't support them.
+       */
+      if ( images.Length() > 1 )
+         throw Error ( m_item.path + ": Has multiple images - unsupported." );
+
+      /*
+       * Create a shared image with the same pixel sample format as the
+       * input image.
+       */
+      ImageVariant image;
+      image.CreateSharedImage( images[0].options.ieeefpSampleFormat,
+                               images[0].options.complexSample,
+                               images[0].options.bitsPerSample );
+      /*
+       * Read the image.
+       */
+      {
+         static Mutex mutex;
+         static AtomicInt count;
+         volatile AutoLockCounter lock( mutex, count, m_instance.m_maxFileReadThreads );
+         if ( !inputFile.ReadImage( image ) )
+            throw CaughtException();
+      }
+
+      /*
+       * Create the output stream.
+       */
+      if ( !outputFile.Create( outputFilePath, m_instance.p_outputHints ) )
+         throw CaughtException();
+
+      /*
+       * Determine the output sample format: bits per sample and whether
+       * integer or real samples.
+       */
+      outputFile.SetOptions( images[0].options );
+
+      /*
+       * File formats often use format-specific data. Try to keep track of
+       * private data structures.
+       */
+      if ( inputFormat.UsesFormatSpecificData() )
+         if ( outputFormat.ValidateFormatSpecificData( inputFile.FormatSpecificData() ) )
+            outputFile.SetFormatSpecificData( inputFile.FormatSpecificData() );
+
+      /*
+       * Set image properties.
+       */
+      if ( !inputFile.ReadImageProperties().IsEmpty() )
+         if ( outputFormat.CanStoreImageProperties() && outputFormat.SupportsViewProperties() )
+            outputFile.WriteImageProperties( inputFile.ReadImageProperties() );
+         else
+            console.WarningLn( "** Warning: The output format cannot store image properties; existing properties will be lost." );
+
+      /*
+       * Add FITS header keywords and preserve existing ones, if possible.
+       * N.B.: A COMMENT or HISTORY keyword cannot have a value; these keywords
+       * only have the name and comment components.
+       */
+      if ( outputFormat.CanStoreKeywords() )
+      {
+         FITSKeywordArray keywords;
+         if ( inputFormat.CanStoreKeywords() )
+            inputFile.ReadFITSKeywords( keywords );
+
+         // Remove old weight keywords
+         FITSKeywordArray newKeywords;
+         for ( const FITSHeaderKeyword& keyword : keywords )
+            if ( keyword.name != IsoString( m_instance.p_outputKeyword ) )
+               newKeywords << keyword;
+
+         newKeywords << FITSHeaderKeyword( "COMMENT", IsoString(), "Measured with " + PixInsightVersion::AsString() )
+                     << FITSHeaderKeyword( "HISTORY", IsoString(), "Measured with " + Module->ReadableVersion() )
+                     << FITSHeaderKeyword( "HISTORY", IsoString(), "Measured with SubframeSelector process" );
+
+         if ( !m_instance.p_outputKeyword.IsEmpty() )
+            newKeywords << FITSHeaderKeyword( m_instance.p_outputKeyword,
+                                             String().Format( "%.6f", m_item.weight ),
+                                             "SubframeSelector.weight" );
+
+         outputFile.WriteFITSKeywords( newKeywords );
+      }
+      else
+      {
+         console.WarningLn( "** Warning: The output format cannot store FITS header keywords - subframe weight metadata not embedded." );
+      }
+
+      /*
+       * Preserve an existing ICC profile if possible.
+       */
+      if ( inputFormat.CanStoreICCProfiles() )
+      {
+         ICCProfile inputProfile;
+         inputFile.ReadICCProfile( inputProfile );
+         if ( inputProfile.IsProfile() )
+            if ( outputFormat.CanStoreICCProfiles() )
+               outputFile.WriteICCProfile( inputProfile );
+            else
+               console.WarningLn( "** Warning: The output format cannot store color profiles - original ICC profile not embedded." );
+      }
+
+      /*
+       * Close the input stream.
+       */
+      (void)inputFile.Close();
+
+      Module->ProcessEvents();
+
+      /*
+       * Write the output image and close the output stream.
+       */
+      {
+         static Mutex mutex;
+         static AtomicInt count;
+         volatile AutoLockCounter lock( mutex, count, m_instance.m_maxFileWriteThreads );
+         image.ResetSelections();
+         if ( !outputFile.WriteImage( image ) || !outputFile.Close() )
+            throw CaughtException();
+      }
+   }
+};
+
+void SubframeSelectorInstance::Output()
+{
+   Console console;
+
    /*
     * Start with a general validation of working parameters.
     */
@@ -1588,75 +1625,250 @@ bool SubframeSelectorInstance::Output()
       if ( !CanOutput( why ) )
          throw Error( why );
 
-      for ( const MeasureItem& item : p_measures )
+      if ( !p_outputDirectory.IsEmpty() )
+         if ( !File::DirectoryExists( p_outputDirectory ) )
+            throw Error( "The specified output directory does not exist: " + p_outputDirectory );
+
+      StringList fileNames;
+      for ( const auto& item : o_measures )
          if ( item.enabled )
+         {
             if ( !File::Exists( item.path ) )
                throw Error( "No such file exists on the local filesystem: " + item.path );
+            fileNames << File::ExtractNameAndSuffix( item.path );
+         }
+      fileNames.Sort();
+      for ( size_type i = 1; i < fileNames.Length(); ++i )
+         if ( fileNames[i].CompareIC( fileNames[i-1] ) == 0 )
+         {
+            if ( p_overwriteExistingFiles )
+               throw Error( "The subframes list contains duplicate file names (case-insensitive). "
+                            "This is not allowed when the 'Overwrite existing files' option is enabled." );
+            console.WarningLn( "<end><cbr><br>** Warning: The subframes list contains duplicate file names (case-insensitive)." );
+            break;
+         }
    }
 
-   size_type o = 0;
-   size_type r = 0;
+   int succeeded = 0;
+   int failed = 0;
+   int skipped = 0;
 
-   for ( size_type i = 0; i < p_measures.Length(); ++i )
+   Array<size_type> pendingItems;
+   for ( size_type i = 0; i < o_measures.Length(); ++i )
+      if ( o_measures[i].enabled )
+         pendingItems << i;
+      else
+      {
+         console.NoteLn( "* Skipping disabled target: <raw>" + o_measures[i].path + "</raw>" );
+         ++skipped;
+      }
+
+   /*
+    * Begin light frame calibration process.
+    */
+   console.NoteLn( String().Format( "<end><cbr><br>* Generation of %u output images.", pendingItems.Length() ) );
+
+   Module->ProcessEvents();
+
+   if ( p_useFileThreads && pendingItems.Length() > 1 )
    {
+      /*
+       * Running threads list. Note that IndirectArray<> initializes all of its
+       * contained pointers to nullptr.
+       */
+      int numberOfThreadsAvailable = RoundInt( Thread::NumberOfThreads( PCL_MAX_PROCESSORS, 1 ) * p_fileThreadOverload );
+      int numberOfThreads = Min( numberOfThreadsAvailable, int( pendingItems.Length() ) );
+      output_thread_list runningThreads( numberOfThreads );
+
+      console.NoteLn( String().Format( "<end><br>* Using %d worker threads.", numberOfThreads ) );
+      console.Flush();
+
       try
       {
-         if ( p_measures[i].enabled )
+         /*
+          * Thread execution loop.
+          */
+         for ( ;; )
          {
-            Console().NoteLn( String().Format( "<end><cbr><br>Outputting subframe %u of %u",
-                                                i+1, p_measures.Length() ) );
-            WriteMeasuredImage( p_measures.At( i ) );
-            ++o;
-         }
-         else
-         {
-            Console().NoteLn( String().Format( "<end><cbr><br>Skipping subframe %u of %u",
-                                                i+1, p_measures.Length() ) );
-            ++r;
+            try
+            {
+               int running = 0;
+               for ( output_thread_list::iterator i = runningThreads.Begin(); i != runningThreads.End(); ++i )
+               {
+                  Module->ProcessEvents();
+                  if ( console.AbortRequested() )
+                     throw ProcessAborted();
+
+                  if ( *i != nullptr )
+                  {
+                     /*
+                      * Check for a running thread
+                      */
+                     if ( !(*i)->Wait( 150 ) )
+                     {
+                        ++running;
+                        continue;
+                     }
+
+                     /*
+                      * A thread has finished execution
+                      */
+                     (*i)->FlushConsoleOutputText();
+                     String errorInfo;
+                     if ( !(*i)->Succeeded() )
+                        errorInfo = (*i)->ErrorInfo();
+
+                     /*
+                      * N.B.: IndirectArray<>::Delete() sets to zero the
+                      * pointer pointed to by the iterator, but does not remove
+                      * the array element.
+                      */
+                     runningThreads.Delete( i );
+
+                     if ( !errorInfo.IsEmpty() )
+                        throw Error( errorInfo );
+
+                     ++succeeded;
+                  }
+
+                  /*
+                   * If there are pending items, try to create a new worker
+                   * thread and fire it.
+                   */
+                  if ( !pendingItems.IsEmpty() )
+                  {
+                     *i = new SubframeSelectorOutputThread( *this, *pendingItems );
+                     size_type threadIndex = i - runningThreads.Begin();
+                     console.NoteLn( String().Format( "<end><cbr>[%03u] <raw>", threadIndex ) + (*i)->TargetFilePath() + "</raw>" );
+                     (*i)->Start( ThreadPriority::DefaultMax, threadIndex );
+                     ++running;
+                     pendingItems.Remove( pendingItems.Begin() );
+                     if ( pendingItems.IsEmpty() )
+                        console.NoteLn( "<br>* Waiting for running tasks to terminate..." );
+                  }
+               }
+
+               if ( !running )
+                  break;
+            }
+            catch ( ProcessAborted& )
+            {
+               throw;
+            }
+            catch ( ... )
+            {
+               if ( console.AbortRequested() )
+                  throw ProcessAborted();
+
+               ++failed;
+               try
+               {
+                  throw;
+               }
+               ERROR_HANDLER
+
+               ApplyErrorPolicy();
+            }
          }
       }
       catch ( ... )
       {
-         Console console;
-         console.Note( "<end><cbr><br>* Applying error policy: " );
-
-         switch ( p_onError )
+         console.NoteLn( "<end><cbr><br>* Waiting for running tasks to terminate..." );
+         for ( SubframeSelectorOutputThread* thread : runningThreads )
+            if ( thread != nullptr )
+               thread->Abort();
+         for ( SubframeSelectorOutputThread* thread : runningThreads )
+            if ( thread != nullptr )
+               thread->Wait();
+         runningThreads.Destroy();
+         throw;
+      }
+   }
+   else // !p_useFileThreads || pendingItems.Length() < 2
+   {
+      for ( size_type itemIndex : pendingItems )
+      {
+         try
          {
-         default: // ?
-         case SSOnError::Continue:
-            console.NoteLn( "Continue on error." );
-            continue;
-
-         case SSOnError::Abort:
-            console.NoteLn( "Abort on error." );
+            SubframeSelectorOutputThread thread( *this, itemIndex );
+            thread.Run();
+            ++succeeded;
+         }
+         catch ( ProcessAborted& )
+         {
             throw;
+         }
+         catch ( ... )
+         {
+            if ( console.AbortRequested() )
+               throw ProcessAborted();
 
-         case SSOnError::AskUser:
+            ++failed;
+            try
             {
-               console.NoteLn( "Ask on error..." );
-
-               int r = MessageBox( "<p style=\"white-space:pre;\">"
-                                   "An error occurred during SubframeSelector Output. What do you want to do?</p>",
-                                   "SubframeSelector",
-                                   StdIcon::Error,
-                                   StdButton::Ignore, StdButton::Abort ).Execute();
-
-               if ( r == StdButton::Abort )
-               {
-                  console.NoteLn( "* Aborting as per user request." );
-                  throw ProcessAborted();
-               }
-
-               console.NoteLn( "* Ignoring error as per user request." );
-               continue;
+               throw;
             }
+            ERROR_HANDLER
+
+            ApplyErrorPolicy();
          }
       }
    }
 
-   Console().NoteLn( String().Format( "<end><cbr><br>%u Output subframes, %u Rejected subframes, %u total",
-                                      o, r, p_measures.Length() ) );
-   return true;
+   Module->ProcessEvents();
+
+   if ( succeeded == 0 )
+   {
+      if ( failed == 0 )
+         throw Error( "No output images were generated: Empty target frames list? No enabled target frames?" );
+      throw Error( "No output image could be generated." );
+   }
+
+   console.NoteLn( String().Format( "<end><cbr><br>===== SubframeSelector: %u succeeded, %u failed, %u skipped =====",
+                                    succeeded, failed, skipped ) );
+}
+
+// ----------------------------------------------------------------------------
+
+void SubframeSelectorInstance::ApplyErrorPolicy()
+{
+   Console console;
+   console.ResetStatus();
+   console.EnableAbort();
+
+   console.Note( "<end><cbr><br>* Applying error policy: " );
+
+   switch ( p_onError )
+   {
+   default: // ?
+   case SSOnError::Continue:
+      console.NoteLn( "Continue on error." );
+      break;
+
+   case SSOnError::Abort:
+      console.NoteLn( "Abort on error." );
+      throw ProcessAborted();
+
+   case SSOnError::AskUser:
+      {
+         console.NoteLn( "Ask on error..." );
+
+         int r = MessageBox( "<p style=\"white-space:pre;\">"
+                             "An error occurred during SubframeSelector execution. What do you want to do?</p>",
+                             "SubframeSelector",
+                             StdIcon::Error,
+                             StdButton::Ignore, StdButton::Abort ).Execute();
+
+         if ( r == StdButton::Abort )
+         {
+            console.NoteLn( "* Aborting as per user request." );
+            throw ProcessAborted();
+         }
+
+         console.NoteLn( "* Error ignored as per user request." );
+      }
+      break;
+   }
 }
 
 // ----------------------------------------------------------------------------
@@ -1680,7 +1892,7 @@ bool SubframeSelectorInstance::CanExecuteGlobal( String &whyNot ) const
       }
       break;
    case SSRoutine::OutputSubframes:
-      if ( p_measures.IsEmpty() )
+      if ( o_measures.IsEmpty() )
       {
          whyNot = "No measurements have been made.";
          return false;
@@ -1729,14 +1941,19 @@ bool SubframeSelectorInstance::ExecuteGlobal()
    switch ( p_routine )
    {
    case SSRoutine::StarDetectionPreview:
-      return TestStarDetector();
+      TestStarDetector();
+      break;
    case SSRoutine::MeasureSubframes:
-      return Measure();
+      Measure();
+      break;
    case SSRoutine::OutputSubframes:
-      return Output();
+      Output();
+      break;
    default:
       throw Error( String().Format( "Internal error: Unknown routine 0x%04X", unsigned( p_routine ) ) );
    }
+
+   return true;
 }
 
 // ----------------------------------------------------------------------------
@@ -1843,44 +2060,53 @@ void* SubframeSelectorInstance::LockParameter( const MetaParameter* p, size_type
    if ( p == TheSSGraphPropertyParameter )
       return &p_graphProperty;
 
+   if ( p == TheSSUseFileThreadsParameter )
+      return &p_useFileThreads;
+   if ( p == TheSSFileThreadOverloadParameter )
+      return &p_fileThreadOverload;
+   if ( p == TheSSMaxFileReadThreadsParameter )
+      return &p_maxFileReadThreads;
+   if ( p == TheSSMaxFileWriteThreadsParameter )
+      return &p_maxFileWriteThreads;
+
    if ( p == TheSSMeasurementIndexParameter )
-      return &p_measures[tableRow].index;
+      return &o_measures[tableRow].index;
    if ( p == TheSSMeasurementEnabledParameter )
-      return &p_measures[tableRow].enabled;
+      return &o_measures[tableRow].enabled;
    if ( p == TheSSMeasurementLockedParameter )
-      return &p_measures[tableRow].locked;
+      return &o_measures[tableRow].locked;
    if ( p == TheSSMeasurementPathParameter )
-      return p_measures[tableRow].path.Begin();
+      return o_measures[tableRow].path.Begin();
    if ( p == TheSSMeasurementWeightParameter )
-      return &p_measures[tableRow].weight;
+      return &o_measures[tableRow].weight;
    if ( p == TheSSMeasurementFWHMParameter )
-      return &p_measures[tableRow].fwhm;
+      return &o_measures[tableRow].fwhm;
    if ( p == TheSSMeasurementEccentricityParameter )
-      return &p_measures[tableRow].eccentricity;
+      return &o_measures[tableRow].eccentricity;
    if ( p == TheSSMeasurementPSFSignalWeightParameter )
-      return &p_measures[tableRow].psfSignalWeight;
+      return &o_measures[tableRow].psfSignalWeight;
    if ( p == TheSSMeasurementPSFPowerWeightParameter )
-      return &p_measures[tableRow].psfPowerWeight;
+      return &o_measures[tableRow].psfPowerWeight;
    if ( p == TheSSMeasurementSNRWeightParameter )
-      return &p_measures[tableRow].snrWeight;
+      return &o_measures[tableRow].snrWeight;
    if ( p == TheSSMeasurementMedianParameter )
-      return &p_measures[tableRow].median;
+      return &o_measures[tableRow].median;
    if ( p == TheSSMeasurementMedianMeanDevParameter )
-      return &p_measures[tableRow].medianMeanDev;
+      return &o_measures[tableRow].medianMeanDev;
    if ( p == TheSSMeasurementNoiseParameter )
-      return &p_measures[tableRow].noise;
+      return &o_measures[tableRow].noise;
    if ( p == TheSSMeasurementNoiseRatioParameter )
-      return &p_measures[tableRow].noiseRatio;
+      return &o_measures[tableRow].noiseRatio;
    if ( p == TheSSMeasurementStarsParameter )
-      return &p_measures[tableRow].stars;
+      return &o_measures[tableRow].stars;
    if ( p == TheSSMeasurementStarResidualParameter )
-      return &p_measures[tableRow].starResidual;
+      return &o_measures[tableRow].starResidual;
    if ( p == TheSSMeasurementFWHMMeanDevParameter )
-      return &p_measures[tableRow].fwhmMeanDev;
+      return &o_measures[tableRow].fwhmMeanDev;
    if ( p == TheSSMeasurementEccentricityMeanDevParameter )
-      return &p_measures[tableRow].eccentricityMeanDev;
+      return &o_measures[tableRow].eccentricityMeanDev;
    if ( p == TheSSMeasurementStarResidualMeanDevParameter )
-      return &p_measures[tableRow].starResidualMeanDev;
+      return &o_measures[tableRow].starResidualMeanDev;
 
    return nullptr;
 }
@@ -1963,16 +2189,16 @@ bool SubframeSelectorInstance::AllocateParameter( size_type sizeOrLength, const 
    }
    else if ( p == TheSSMeasurementsParameter )
    {
-      p_measures.Clear();
+      o_measures.Clear();
       if ( sizeOrLength > 0 )
          for ( size_type i = 0; i < sizeOrLength; ++i )
-            p_measures.Add( MeasureItem( i ) );
+            o_measures.Add( MeasureItem( i ) );
    }
    else if ( p == TheSSMeasurementPathParameter )
    {
-      p_measures[tableRow].path.Clear();
+      o_measures[tableRow].path.Clear();
       if ( sizeOrLength > 0 )
-         p_measures[tableRow].path.SetLength( sizeOrLength );
+         o_measures[tableRow].path.SetLength( sizeOrLength );
    }
    else
       return false;
@@ -2014,9 +2240,9 @@ size_type SubframeSelectorInstance::ParameterLength( const MetaParameter* p, siz
       return p_weightingExpression.Length();
 
    if ( p == TheSSMeasurementsParameter )
-      return p_measures.Length();
+      return o_measures.Length();
    if ( p == TheSSMeasurementPathParameter )
-      return p_measures[tableRow].path.Length();
+      return o_measures[tableRow].path.Length();
 
    return 0;
 }
@@ -2026,4 +2252,4 @@ size_type SubframeSelectorInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInstance.cpp - Released 2021-10-20T18:10:09Z
+// EOF SubframeSelectorInstance.cpp - Released 2021-10-28T16:39:26Z

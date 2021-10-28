@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.12
+// /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard Debayer Process Module Version 1.9.4
+// Standard Debayer Process Module Version 1.10.1
 // ----------------------------------------------------------------------------
-// DebayerParameters.h - Released 2021-10-20T18:10:09Z
+// DebayerParameters.h - Released 2021-10-28T16:39:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -281,6 +281,22 @@ extern DebayerStructureLayers* TheDebayerStructureLayersParameter;
 
 // ----------------------------------------------------------------------------
 
+class DebayerNoiseLayers : public MetaInt32
+{
+public:
+
+   DebayerNoiseLayers( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern DebayerNoiseLayers* TheDebayerNoiseLayersParameter;
+
+// ----------------------------------------------------------------------------
+
 class DebayerHotPixelFilterRadius : public MetaInt32
 {
 public:
@@ -334,10 +350,12 @@ class DebayerPSFType : public MetaEnumeration
 public:
 
    enum { Gaussian,
-          Moffat,
+          Moffat4,
+          Moffat6,
+          Moffat8,
           VariableShape,
           NumberOfItems,
-          Default = Gaussian };
+          Default = Moffat4 };
 
    DebayerPSFType( MetaProcess* );
 
@@ -351,15 +369,34 @@ public:
    {
       switch ( x )
       {
-      default:
       case Gaussian:      return PSFunction::Gaussian;
-      case Moffat:        return PSFunction::Moffat8;
+      default:
+      case Moffat4:       return PSFunction::Moffat4;
+      case Moffat6:       return PSFunction::Moffat6;
+      case Moffat8:       return PSFunction::Moffat8;
       case VariableShape: return PSFunction::VariableShape;
       }
    }
 };
 
 extern DebayerPSFType* TheDebayerPSFTypeParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerPSFRejectionLimit : public MetaFloat
+{
+public:
+
+   DebayerPSFRejectionLimit( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern DebayerPSFRejectionLimit* TheDebayerPSFRejectionLimitParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -1477,4 +1514,4 @@ PCL_END_LOCAL
 #endif   // __DebayerParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF DebayerParameters.h - Released 2021-10-20T18:10:09Z
+// EOF DebayerParameters.h - Released 2021-10-28T16:39:26Z

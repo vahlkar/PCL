@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.12
+// /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard Debayer Process Module Version 1.9.4
+// Standard Debayer Process Module Version 1.10.1
 // ----------------------------------------------------------------------------
-// DebayerInterface.cpp - Released 2021-10-20T18:10:09Z
+// DebayerInterface.cpp - Released 2021-10-28T16:39:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -297,10 +297,12 @@ void DebayerInterface::UpdateSignalAndNoiseEvaluationControls()
    GUI->SignalEvaluation_SectionBar.SetChecked( m_instance.p_evaluateSignal );
 
    GUI->StructureLayers_SpinBox.SetValue( m_instance.p_structureLayers );
+   GUI->NoiseLayers_SpinBox.SetValue( m_instance.p_noiseLayers );
    GUI->MinStructureSize_SpinBox.SetValue( m_instance.p_minStructureSize );
    GUI->HotPixelFilterRadius_SpinBox.SetValue( m_instance.p_hotPixelFilterRadius );
    GUI->NoiseReductionFilterRadius_SpinBox.SetValue( m_instance.p_noiseReductionFilterRadius );
    GUI->PSFType_ComboBox.SetCurrentItem( m_instance.p_psfType );
+   GUI->PSFRejectionLimit_NumericControl.SetValue( m_instance.p_psfRejectionLimit );
 
    GUI->NoiseEvaluation_SectionBar.SetChecked( m_instance.p_evaluateNoise );
 
@@ -491,12 +493,22 @@ void DebayerInterface::e_SpinValueUpdated( SpinBox& sender, int value )
 {
    if ( sender == GUI->StructureLayers_SpinBox )
       m_instance.p_structureLayers = value;
+   else if ( sender == GUI->NoiseLayers_SpinBox )
+      m_instance.p_noiseLayers = value;
    else if ( sender == GUI->MinStructureSize_SpinBox )
       m_instance.p_minStructureSize = value;
    else if ( sender == GUI->HotPixelFilterRadius_SpinBox )
       m_instance.p_hotPixelFilterRadius = value;
    else if ( sender == GUI->NoiseReductionFilterRadius_SpinBox )
       m_instance.p_noiseReductionFilterRadius = value;
+}
+
+// ----------------------------------------------------------------------------
+
+void DebayerInterface::e_ValueUpdated( NumericEdit& sender, double value )
+{
+   if ( sender == GUI->PSFRejectionLimit_NumericControl )
+      m_instance.p_psfRejectionLimit = value;
 }
 
 // ----------------------------------------------------------------------------
@@ -900,6 +912,27 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
    StructureLayers_Sizer.Add( StructureLayers_SpinBox );
    StructureLayers_Sizer.AddStretch();
 
+   const char* noiseLayersToolTip =
+   "<p>Number of wavelet layers used for noise reduction.</p>"
+   "<p>Noise reduction prevents detection of bright noise structures as false stars, including hot pixels and "
+   "cosmic rays. This parameter can also be used to control the sizes of the smallest detected stars (increase "
+   "to exclude more stars), although the <i>minimum structure size</i> parameter can be more efficient for this purpose.</p>";
+
+   NoiseLayers_Label.SetText( "Noise scales:" );
+   NoiseLayers_Label.SetFixedWidth( labelWidth1 );
+   NoiseLayers_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   NoiseLayers_Label.SetToolTip( noiseLayersToolTip );
+
+   NoiseLayers_SpinBox.SetRange( int( TheDebayerNoiseLayersParameter->MinimumValue() ), int( TheDebayerNoiseLayersParameter->MaximumValue() ) );
+   NoiseLayers_SpinBox.SetToolTip( noiseLayersToolTip );
+   NoiseLayers_SpinBox.SetFixedWidth( editWidth2 );
+   NoiseLayers_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&DebayerInterface::e_SpinValueUpdated, w );
+
+   NoiseLayers_Sizer.SetSpacing( 4 );
+   NoiseLayers_Sizer.Add( NoiseLayers_Label );
+   NoiseLayers_Sizer.Add( NoiseLayers_SpinBox );
+   NoiseLayers_Sizer.AddStretch();
+
    const char* minStructureSizeToolTip =
    "<p>Minimum size of a detectable star structure in square pixels.</p>"
    "<p>This parameter can be used to prevent detection of small and bright image artifacts as stars, when "
@@ -971,10 +1004,11 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
    const char* psfTypeToolTip = "<p>Point spread function type used for PSF fitting and photometry.</p>"
       "<p>In all cases elliptical functions are fitted to detected star structures, and PSF sampling regions are "
       "computed adaptively using a median stabilization algorithm.</p>"
-      "<p>Variable shape functions usually lead to optimal PSF fits in terms of minimization of absolute deviation "
+      "<p>Variable shape functions can lead to optimal PSF fits in terms of minimization of absolute deviation "
       "between fitted point spread functions and source image pixel samples for each detected star, which improves "
       "accuracy of PSF photometry. However, fitting variable shape functions is computationally expensive.</p>"
-      "<p>The default option is fitting Gaussian PSFs, which usually works well for signal estimation.</p>";
+      "<p>The default option is a Moffat function with shape parameter beta=4, which usually works well for signal "
+      "estimation on most deep-sky images.</p>";
 
    PSFType_Label.SetText( "PSF type:" );
    PSFType_Label.SetFixedWidth( labelWidth1 );
@@ -982,7 +1016,9 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
    PSFType_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
 
    PSFType_ComboBox.AddItem( "Gaussian" );
-   PSFType_ComboBox.AddItem( "Moffat" );
+   PSFType_ComboBox.AddItem( "Moffat4" );
+   PSFType_ComboBox.AddItem( "Moffat6" );
+   PSFType_ComboBox.AddItem( "Moffat8" );
    PSFType_ComboBox.AddItem( "VariableShape" );
    PSFType_ComboBox.SetToolTip( psfTypeToolTip );
    PSFType_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&DebayerInterface::e_ItemSelected, w );
@@ -992,12 +1028,28 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
    PSFType_Sizer.Add( PSFType_ComboBox );
    PSFType_Sizer.AddStretch();
 
+   PSFRejectionLimit_NumericControl.label.SetText( "Rejection limit:" );
+   PSFRejectionLimit_NumericControl.label.SetFixedWidth( labelWidth1 );
+   PSFRejectionLimit_NumericControl.slider.SetRange( 0, 200 );
+   PSFRejectionLimit_NumericControl.slider.SetScaledMinWidth( 250 );
+   PSFRejectionLimit_NumericControl.SetReal();
+   PSFRejectionLimit_NumericControl.SetRange( TheDebayerPSFRejectionLimitParameter->MinimumValue(), TheDebayerPSFRejectionLimitParameter->MaximumValue() );
+   PSFRejectionLimit_NumericControl.SetPrecision( TheDebayerPSFRejectionLimitParameter->Precision() );
+   PSFRejectionLimit_NumericControl.edit.SetFixedWidth( editWidth2 );
+   PSFRejectionLimit_NumericControl.SetToolTip( "<p>PSF rejection limit in sigma units.</p>"
+      "<p>This rejection limit controls an iterative sigma-clipping algorithm used for robust rejection of outliers "
+      "during the signal estimation process. Larger values favor the inclusion of more photometric PSF measurements, "
+      "which can improve accuracy, but at the risk of including outliers that can degrade the result.</p>" );
+   PSFRejectionLimit_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&DebayerInterface::e_ValueUpdated, w );
+
    SignalEvaluation_Sizer.SetSpacing( 4 );
    SignalEvaluation_Sizer.Add( StructureLayers_Sizer );
+   SignalEvaluation_Sizer.Add( NoiseLayers_Sizer );
    SignalEvaluation_Sizer.Add( MinStructureSize_Sizer );
    SignalEvaluation_Sizer.Add( HotPixelFilterRadius_Sizer );
    SignalEvaluation_Sizer.Add( NoiseReductionFilterRadius_Sizer );
    SignalEvaluation_Sizer.Add( PSFType_Sizer );
+   SignalEvaluation_Sizer.Add( PSFRejectionLimit_NumericControl );
 
    SignalEvaluation_Control.SetSizer( SignalEvaluation_Sizer );
 
@@ -1084,4 +1136,4 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DebayerInterface.cpp - Released 2021-10-20T18:10:09Z
+// EOF DebayerInterface.cpp - Released 2021-10-28T16:39:26Z

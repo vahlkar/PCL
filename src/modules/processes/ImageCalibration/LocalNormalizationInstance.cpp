@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.12
+// /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.6.6
+// Standard ImageCalibration Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// LocalNormalizationInstance.cpp - Released 2021-10-20T18:10:09Z
+// LocalNormalizationInstance.cpp - Released 2021-10-28T16:39:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -1138,15 +1138,13 @@ private:
          Module->ProcessEvents();
 
          String xnmlFilePath = fileDir + fileName + ".xnml";
-         console.WriteLn( "<end><cbr>Writing output file: " + xnmlFilePath );
-         if ( File::Exists( xnmlFilePath ) )
-            if ( m_instance.p_overwriteExistingFiles )
-               console.WarningLn( "** Warning: Overwriting existing file" );
-            else
-            {
-               xnmlFilePath = UniqueFilePath( xnmlFilePath );
-               console.NoteLn( "* File already exists, writing to: " + xnmlFilePath );
-            }
+         console.WriteLn( "<end><cbr>Writing output file: <raw>" + xnmlFilePath + "</raw>" );
+
+         UniqueFileChecks checks = File::EnsureNewUniqueFile( xnmlFilePath, m_instance.p_overwriteExistingFiles );
+         if ( checks.overwrite )
+            console.WarningLn( "** Warning: Overwriting existing file." );
+         else if ( checks.exists )
+            console.NoteLn( "* File already exists, writing to: <raw>" + xnmlFilePath + "</raw>" );
 
          LocalNormalizationData data;
          data.SetReferenceFilePath( m_referenceFilePath );
@@ -1172,16 +1170,13 @@ private:
 
          m_outputFilePath = fileDir + m_instance.p_outputPrefix + fileName + m_instance.p_outputPostfix + fileExtension;
 
-         console.WriteLn( "<end><cbr>Writing output file: " + m_outputFilePath );
+         console.WriteLn( "<end><cbr>Writing output file: <raw>" + m_outputFilePath + "</raw>" );
 
-         if ( File::Exists( m_outputFilePath ) )
-            if ( m_instance.p_overwriteExistingFiles )
-               console.WarningLn( "** Warning: Overwriting existing file" );
-            else
-            {
-               m_outputFilePath = UniqueFilePath( m_outputFilePath );
-               console.NoteLn( "* File already exists, writing to: " + m_outputFilePath );
-            }
+         UniqueFileChecks checks = File::EnsureNewUniqueFile( m_outputFilePath, m_instance.p_overwriteExistingFiles );
+         if ( checks.overwrite )
+            console.WarningLn( "** Warning: Overwriting existing file." );
+         else if ( checks.exists )
+            console.NoteLn( "* File already exists, writing to: <raw>" + m_outputFilePath + "</raw>" );
 
          FileFormat outputFormat( fileExtension, false/*read*/, true/*write*/ );
          FileFormatInstance outputFile( outputFormat );
@@ -1250,18 +1245,6 @@ private:
          }
 
          m_targetImage.Free();
-      }
-   }
-
-   // -------------------------------------------------------------------------
-
-   static String UniqueFilePath( const String& filePath )
-   {
-      for ( unsigned u = 1; ; ++u )
-      {
-         String tryFilePath = File::AppendToName( filePath, '_' + String( u ) );
-         if ( !File::Exists( tryFilePath ) )
-            return tryFilePath;
       }
    }
 };
@@ -1435,10 +1418,35 @@ typedef IndirectArray<LocalNormalizationThread> thread_list;
 
 bool LocalNormalizationInstance::ExecuteGlobal()
 {
+   Console console;
+
    {
       String why;
       if ( !CanExecuteGlobal( why ) )
          throw Error( why );
+
+      if ( !p_outputDirectory.IsEmpty() )
+         if ( !File::DirectoryExists( p_outputDirectory ) )
+            throw Error( "The specified output directory does not exist: " + p_outputDirectory );
+
+      StringList fileNames;
+      for ( const auto& target : p_targets )
+         if ( target.enabled )
+         {
+            if ( !File::Exists( target.path ) )
+               throw Error( "No such file exists on the local filesystem: " + target.path );
+            fileNames << File::ExtractNameAndSuffix( target.path );
+         }
+      fileNames.Sort();
+      for ( size_type i = 1; i < fileNames.Length(); ++i )
+         if ( fileNames[i].CompareIC( fileNames[i-1] ) == 0 )
+         {
+            if ( p_overwriteExistingFiles )
+               throw Error( "The target images list contains duplicate file names (case-insensitive). "
+                            "This is not allowed when the 'Overwrite existing files' option is enabled." );
+            console.WarningLn( "<end><cbr><br>** Warning: The target images list contains duplicate file names (case-insensitive)." );
+            break;
+         }
    }
 
    m_maxFileReadThreads = p_maxFileReadThreads;
@@ -1450,8 +1458,6 @@ bool LocalNormalizationInstance::ExecuteGlobal()
       m_maxFileWriteThreads = Max( 1, PixInsightSettings::GlobalInteger( "Process/MaxFileWriteThreads" ) );
 
 //    o_output = Array<OutputData>( p_targets.Length() );
-
-   Console console;
 
    View referenceView = View::Null();
    if ( p_referenceIsView )
@@ -1890,4 +1896,4 @@ size_type LocalNormalizationInstance::ParameterLength( const MetaParameter* p, s
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationInstance.cpp - Released 2021-10-20T18:10:09Z
+// EOF LocalNormalizationInstance.cpp - Released 2021-10-28T16:39:26Z

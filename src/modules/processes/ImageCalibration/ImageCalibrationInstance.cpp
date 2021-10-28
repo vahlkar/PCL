@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.12
+// /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.6.6
+// Standard ImageCalibration Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ImageCalibrationInstance.cpp - Released 2021-10-20T18:10:09Z
+// ImageCalibrationInstance.cpp - Released 2021-10-28T16:39:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -56,6 +56,7 @@
 #include <pcl/ATrousWaveletTransform.h>
 #include <pcl/AutoPointer.h>
 #include <pcl/ErrorHandler.h>
+#include <pcl/GlobalSettings.h>
 #include <pcl/IntegerResample.h>
 #include <pcl/MessageBox.h>
 #include <pcl/MetaModule.h>
@@ -136,10 +137,12 @@ ImageCalibrationInstance::ImageCalibrationInstance( const MetaProcess* m )
    , p_noiseEvaluationAlgorithm( ICNoiseEvaluationAlgorithm::Default )
    , p_evaluateSignal( TheICEvaluateSignalParameter->DefaultValue() )
    , p_structureLayers( TheICStructureLayersParameter->DefaultValue() )
+   , p_noiseLayers( TheICNoiseLayersParameter->DefaultValue() )
    , p_hotPixelFilterRadius( TheICHotPixelFilterRadiusParameter->DefaultValue() )
    , p_noiseReductionFilterRadius( TheICNoiseReductionFilterRadiusParameter->DefaultValue() )
    , p_minStructureSize( TheICMinStructureSizeParameter->DefaultValue() )
    , p_psfType( ICPSFType::Default )
+   , p_psfRejectionLimit( TheICPSFRejectionLimitParameter->DefaultValue() )
    , p_outputDirectory( TheICOutputDirectoryParameter->DefaultValue() )
    , p_outputExtension( TheICOutputExtensionParameter->DefaultValue() )
    , p_outputPrefix( TheICOutputPrefixParameter->DefaultValue() )
@@ -149,6 +152,10 @@ ImageCalibrationInstance::ImageCalibrationInstance( const MetaProcess* m )
    , p_overwriteExistingFiles( TheICOverwriteExistingFilesParameter->DefaultValue() )
    , p_onError( ICOnError::Default )
    , p_noGUIMessages( TheICNoGUIMessagesParameter->DefaultValue() ) // ### DEPRECATED
+   , p_useFileThreads( TheICUseFileThreadsParameter->DefaultValue() )
+   , p_fileThreadOverload( TheICFileThreadOverloadParameter->DefaultValue() )
+   , p_maxFileReadThreads( int32( TheICMaxFileReadThreadsParameter->DefaultValue() ) )
+   , p_maxFileWriteThreads( int32( TheICMaxFileWriteThreadsParameter->DefaultValue() ) )
 {
 }
 
@@ -193,10 +200,12 @@ void ImageCalibrationInstance::Assign( const ProcessImplementation& p )
       p_noiseEvaluationAlgorithm      = x->p_noiseEvaluationAlgorithm;
       p_evaluateSignal                = x->p_evaluateSignal;
       p_structureLayers               = x->p_structureLayers;
+      p_noiseLayers                   = x->p_noiseLayers;
       p_hotPixelFilterRadius          = x->p_hotPixelFilterRadius;
       p_noiseReductionFilterRadius    = x->p_noiseReductionFilterRadius;
       p_minStructureSize              = x->p_minStructureSize;
       p_psfType                       = x->p_psfType;
+      p_psfRejectionLimit             = x->p_psfRejectionLimit;
       p_outputDirectory               = x->p_outputDirectory;
       p_outputExtension               = x->p_outputExtension;
       p_outputPrefix                  = x->p_outputPrefix;
@@ -206,6 +215,11 @@ void ImageCalibrationInstance::Assign( const ProcessImplementation& p )
       p_overwriteExistingFiles        = x->p_overwriteExistingFiles;
       p_onError                       = x->p_onError;
       p_noGUIMessages                 = x->p_noGUIMessages;
+      p_useFileThreads                = x->p_useFileThreads;
+      p_fileThreadOverload            = x->p_fileThreadOverload;
+      p_maxFileReadThreads            = x->p_maxFileReadThreads;
+      p_maxFileWriteThreads           = x->p_maxFileWriteThreads;
+
       o_output                        = x->o_output;
    }
 }
@@ -674,10 +688,12 @@ void ImageCalibrationInstance::EvaluateSignalAndNoise( Vector& psfSignalEstimate
 
       PSFSignalEstimator E;
       E.Detector().SetStructureLayers( p_structureLayers );
+      E.Detector().SetNoiseLayers( p_noiseLayers );
       E.Detector().SetHotPixelFilterRadius( p_hotPixelFilterRadius );
       E.Detector().SetNoiseReductionFilterRadius( p_noiseReductionFilterRadius );
       E.Detector().SetMinStructureSize( p_minStructureSize );
       E.SetPSFType( ICPSFType::ToPSFFunction( p_psfType ) );
+      E.SetRejectionLimit( p_psfRejectionLimit );
       for ( int c = 0; c < target.NumberOfChannels(); ++c )
       {
          target.SelectChannel( c );
@@ -711,8 +727,8 @@ void ImageCalibrationInstance::EvaluateSignalAndNoise( Vector& psfSignalEstimate
          target.SelectChannel( c );
 
          /*
-         * Noise scaling factors
-         */
+          * Noise scaling factors
+          */
          {
             const double clipLow = 2.0/65535;
             const double clipHigh = 1.0 - 2.0/65535;
@@ -1083,38 +1099,6 @@ static FVector OptimizeDark( const Image& target, const Image& optimizingDark, c
 
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
-// File Management Routines
-// ----------------------------------------------------------------------------
-// ----------------------------------------------------------------------------
-
-static Image* LoadImageFile( FileFormatInstance& file, int index = 0 )
-{
-   // Select the image at the specified index.
-   if ( !file.SelectImage( index ) )
-      throw CaughtException();
-
-   // Create a shared image, 32-bit floating point.
-   Image* image = new Image( (void*)0, 0, 0 );
-
-   // Read the image.
-   if ( !file.ReadImage( *image ) )
-      throw CaughtException();
-
-   return image;
-}
-
-static String UniqueFilePath( const String& filePath )
-{
-   for ( unsigned u = 1; ; ++u )
-   {
-      String tryFilePath = File::AppendToName( filePath, '_' + String( u ) );
-      if ( !File::Exists( tryFilePath ) )
-         return tryFilePath;
-   }
-}
-
-// ----------------------------------------------------------------------------
-// ----------------------------------------------------------------------------
 // Image Calibration Thread
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
@@ -1168,94 +1152,22 @@ class CalibrationThread : public Thread
 {
 public:
 
-   /*
-    * Optimized dark scaling factors
-    */
-   FVector K;
-
-   /*
-    * Signal and noise estimates
-    */
-   Vector     psfSignalEstimates;
-   Vector     psfPowerEstimates;
-   IVector    psfCounts;
-   Vector     noiseEstimates;
-   Vector     noiseFractions;
-   Vector     noiseScaleLow;
-   Vector     noiseScaleHigh;
-   StringList noiseAlgorithms;
-
-   CalibrationThread( Image* target, OutputFileData* outputData, const String& targetPath, int subimageIndex,
-                      const CalibrationThreadData& data )
-      : m_target( target )
-      , m_outputData( outputData )
-      , m_targetPath( targetPath )
-      , m_subimageIndex( subimageIndex )
-      , m_success( false )
-      , m_data( data )
+   CalibrationThread( const CalibrationThreadData& data, size_type index )
+      : m_data( data )
+      , m_index( index )
+      , m_targetPath( m_data.instance->p_targetFrames[m_index].path )
    {
    }
 
    void Run() override
    {
-      Console console;
-      String subimageText = (m_subimageIndex > 0) ? '(' + String( m_subimageIndex ) + ") " : String();
-      console.WriteLn( "<end><cbr><br>* Processing target frame: " + subimageText + "<raw>" + m_targetPath + "</raw>" );
-
       try
       {
          Module->ProcessEvents();
 
-         m_success = false;
-
-         m_target->Status().DisableInitialization();
-
-         /*
-          * Overscan correction.
-          */
-         if ( m_data.instance->p_overscan.enabled )
-         {
-            console.WriteLn( "<end><cbr>* Applying overscan correction." );
-            SubtractOverscan( *m_target, m_data.overscan, m_data.instance->p_overscan.imageRect );
-         }
-
-         /*
-          * Dark frame optimization.
-          */
-         if ( m_data.dark != nullptr && m_data.instance->p_optimizeDarks && m_data.optimizingDark != nullptr )
-         {
-            console.WriteLn( "<end><cbr>* Computing dark frame optimization factors." );
-            K = OptimizeDark( *m_target,
-                              *m_data.optimizingDark,
-                               m_data.darkCFAPattern );
-         }
-         else
-            K = FVector( 1.0F, m_target->NumberOfChannels() );
-
-         /*
-          * Target frame calibration.
-          */
-         console.WriteLn( "<end><cbr>* Performing image calibration." );
-         Calibrate( *m_target,
-                     m_data.bias,
-                     m_data.dark, K,
-                     m_data.flat,
-                     m_data.instance->p_outputPedestal/65535.0 );
-
-         /*
-          * Noise evaluation.
-          *
-          * ### TODO: Implement a different way to tell the noise evaluation
-          *           routine that we have CFA images (not tied to dark frame
-          *           optimization).
-          */
-         if ( m_data.instance->p_evaluateSignal || m_data.instance->p_evaluateNoise )
-         {
-            console.WriteLn( "<end><cbr>* Performing signal and noise evaluation." );
-            m_data.instance->EvaluateSignalAndNoise( psfSignalEstimates, psfPowerEstimates, psfCounts,
-                                                     noiseEstimates, noiseFractions, noiseScaleLow, noiseScaleHigh, noiseAlgorithms,
-                                                     *m_target, m_data.darkCFAPattern );
-         }
+         ReadInputData();
+         Perform();
+         WriteOutputData();
 
          m_success = true;
       }
@@ -1273,33 +1185,43 @@ public:
          ERROR_HANDLER
          m_errorInfo = ConsoleOutputText();
          ClearConsoleOutputText();
-         console.Write( text );
+         Console().Write( text );
       }
    }
 
-   const CalibrationThreadData& CalibrationData() const
+   size_type Index() const
    {
-      return m_data;
+      return m_index;
    }
 
-   const Image* TargetImage() const
+   void GetOutputData( ImageCalibrationInstance::OutputData& o ) const
    {
-      return m_target.Pointer();
+      o.outputFilePath = m_outputFilePath;
+      if ( m_data.instance->p_masterDark.enabled )
+         if ( m_data.instance->p_optimizeDarks )
+            for ( int i = 0; i < Min( 3, m_K.Length() ); ++i )
+               o.darkScalingFactors[i] = m_K[i];
+      if ( m_data.instance->p_evaluateSignal )
+         for ( int i = 0; i < Min( 3, m_noiseEstimates.Length() ); ++i )
+         {
+            o.psfSignalEstimates[i] = m_psfSignalEstimates[i];
+            o.psfPowerEstimates[i] = m_psfPowerEstimates[i];
+            o.psfCounts[i] = m_psfCounts[i];
+         }
+      if ( m_data.instance->p_evaluateNoise )
+         for ( int i = 0; i < Min( 3, m_noiseEstimates.Length() ); ++i )
+         {
+            o.noiseEstimates[i] = m_noiseEstimates[i];
+            o.noiseFractions[i] = m_noiseFractions[i];
+            o.noiseScaleLow[i] = m_noiseScaleLow[i];
+            o.noiseScaleHigh[i] = m_noiseScaleHigh[i];
+            o.noiseAlgorithms[i] = String( m_noiseAlgorithms[i] );
+         }
    }
 
-   String TargetFilePath() const
+   const String& TargetFilePath() const
    {
       return m_targetPath;
-   }
-
-   const OutputFileData& OutputData() const
-   {
-      return *m_outputData;
-   }
-
-   int SubimageIndex() const
-   {
-      return m_subimageIndex;
    }
 
    bool Succeeded() const
@@ -1314,13 +1236,612 @@ public:
 
 private:
 
-   AutoPointer<Image>           m_target;        // The image being calibrated. Owned by this thread.
-   AutoPointer<OutputFileData>  m_outputData;    // Target image parameters and embedded data. Owned by this thread.
-   String                       m_targetPath;    // File path of this target image.
-   int                          m_subimageIndex; // >= 0 in case of a multiple image; = 0 otherwise.
-   String                       m_errorInfo;     // Last error message.
-   bool                         m_success;       // True if the thread completed execution successfully.
-   const CalibrationThreadData& m_data;
+   const CalibrationThreadData& m_data;            // calibration master frames and general parameters
+         size_type              m_index;           // position of this thread in the instance's target list
+         String                 m_targetPath;      // file path of this target image
+         ImageVariant           m_target;          // the image being calibrated
+         OutputFileData         m_outputData;      // target image parameters and embedded data
+         String                 m_errorInfo;       // last error message
+         bool                   m_success = false; // true if the thread completed execution successfully
+
+   const Image& TargetImage() const
+   {
+      return static_cast<const Image&>( *m_target );
+   }
+
+   Image& TargetImage()
+   {
+      return static_cast<Image&>( *m_target );
+   }
+
+   /*
+    * Output data
+    */
+
+   // Full path to the generated output file
+   String m_outputFilePath;
+
+   // Optimized dark scaling factors
+   FVector m_K;
+
+   // Signal estimatesa
+   Vector     m_psfSignalEstimates;
+   Vector     m_psfPowerEstimates;
+   IVector    m_psfCounts;
+
+   // Noise estimates
+   Vector     m_noiseEstimates;
+   Vector     m_noiseFractions;
+   Vector     m_noiseScaleLow;
+   Vector     m_noiseScaleHigh;
+   StringList m_noiseAlgorithms;
+
+   //
+
+   void ReadInputData()
+   {
+      Console console;
+      console.WriteLn( "<end><cbr><br>* Loading target calibration frame: <raw>" + m_targetPath + "</raw>" );
+
+      /*
+       * Find out an installed file format that can read image files with the
+       * specified extension ...
+       */
+      FileFormat format( File::ExtractExtension( m_targetPath ), true/*read*/, false/*write*/ );
+
+      /*
+       * ... and create a format instance (usually a disk file) to access this
+       * target image.
+       */
+      FileFormatInstance file( format );
+
+      /*
+       * Open the image file.
+       */
+      ImageDescriptionArray images;
+      if ( !file.Open( images, m_targetPath, m_data.instance->p_inputHints ) )
+         throw CaughtException();
+
+      if ( images.IsEmpty() )
+         throw Error( m_targetPath + ": Empty image file." );
+
+      /*
+       * Multiple-image files not supported for calibration.
+       */
+      if ( images.Length() > 1 )
+         console.NoteLn( String().Format( "* Ignoring %u additional image(s) in target file.", images.Length()-1 ) );
+
+      /*
+       * Create a shared image, 32-bit floating point format.
+       */
+      m_target.CreateSharedFloatImage( 32/*bitsPerSample*/ );
+
+      /*
+       * Read the image file.
+       */
+      {
+         static Mutex mutex;
+         static AtomicInt count;
+         volatile AutoLockCounter lock( mutex, count, m_data.instance->m_maxFileReadThreads );
+
+         /*
+          * Read the image.
+          */
+         if ( !file.ReadImage( m_target ) )
+            throw CaughtException();
+
+         /*
+          * Enforce consistency of image dimensions.
+          */
+         m_data.instance->ValidateImageGeometry( TargetImage() );
+
+         /*
+          * Optional pedestal subtraction.
+          */
+         m_data.instance->SubtractPedestal( TargetImage(), file );
+
+         /*
+          * Retrieve metadata and auxiliary data structures that must be
+          * preserved in the output image (properties, header keywords, etc).
+          */
+         m_outputData = OutputFileData( file, images[0].options );
+
+         /*
+          * Close the input stream.
+          */
+         if ( !file.Close() )
+            throw CaughtException();
+      }
+   }
+
+   void Perform()
+   {
+      m_target->Status().DisableInitialization();
+
+      Console console;
+
+      /*
+       * Overscan correction.
+       */
+      if ( m_data.instance->p_overscan.enabled )
+      {
+         console.WriteLn( "<end><cbr>* Applying overscan correction." );
+         SubtractOverscan( TargetImage(), m_data.overscan, m_data.instance->p_overscan.imageRect );
+      }
+
+      /*
+       * Dark frame optimization.
+       */
+      if ( m_data.dark != nullptr && m_data.instance->p_optimizeDarks && m_data.optimizingDark != nullptr )
+      {
+         console.WriteLn( "<end><cbr>* Computing dark frame optimization factors." );
+         m_K = OptimizeDark( TargetImage(), *m_data.optimizingDark, m_data.darkCFAPattern );
+      }
+      else
+         m_K = FVector( 1.0F, m_target->NumberOfChannels() );
+
+      /*
+       * Target frame calibration.
+       */
+      console.WriteLn( "<end><cbr>* Performing image calibration." );
+      Calibrate( TargetImage(),
+                 m_data.bias,
+                 m_data.dark, m_K,
+                 m_data.flat,
+                 m_data.instance->p_outputPedestal/65535.0 );
+
+      /*
+       * Noise evaluation.
+       */
+      if ( m_data.instance->p_evaluateSignal || m_data.instance->p_evaluateNoise )
+      {
+         console.WriteLn( "<end><cbr>* Performing signal and noise evaluation." );
+         m_data.instance->EvaluateSignalAndNoise( m_psfSignalEstimates, m_psfPowerEstimates, m_psfCounts,
+                                                  m_noiseEstimates, m_noiseFractions, m_noiseScaleLow, m_noiseScaleHigh, m_noiseAlgorithms,
+                                                  TargetImage(), m_data.darkCFAPattern );
+      }
+   }
+
+   void WriteOutputData()
+   {
+      Console console;
+
+      /*
+       * Output directory.
+       */
+      String fileDir = m_data.instance->p_outputDirectory.Trimmed();
+      if ( fileDir.IsEmpty() )
+         fileDir = File::ExtractDrive( m_targetPath ) + File::ExtractDirectory( m_targetPath );
+      if ( fileDir.IsEmpty() )
+         throw Error( m_targetPath + ": Unable to determine an output directory." );
+      if ( !fileDir.EndsWith( '/' ) )
+         fileDir.Append( '/' );
+
+      /*
+       * Output file extension, which defines the output file format.
+       */
+      String fileExtension = m_data.instance->p_outputExtension.Trimmed();
+      if ( fileExtension.IsEmpty() )
+         fileExtension = File::ExtractExtension( m_targetPath );
+      if ( fileExtension.IsEmpty() )
+         throw Error( m_targetPath + ": Unable to determine an output file extension." );
+      if ( !fileExtension.StartsWith( '.' ) )
+         fileExtension.Prepend( '.' );
+
+      /*
+       * Output file name.
+       */
+      String fileName = File::ExtractName( m_targetPath ).Trimmed();
+      if ( !m_data.instance->p_outputPrefix.IsEmpty() )
+         fileName.Prepend( m_data.instance->p_outputPrefix );
+      if ( !m_data.instance->p_outputPostfix.IsEmpty() )
+         fileName.Append( m_data.instance->p_outputPostfix );
+      if ( fileName.IsEmpty() )
+         throw Error( m_targetPath + ": Unable to determine an output file name." );
+
+      /*
+       * Output file path.
+       */
+      m_outputFilePath = fileDir + fileName + fileExtension;
+
+      console.WriteLn( "<end><cbr>* Writing output file: <raw>" + m_outputFilePath + "</raw>" );
+
+      /*
+       * Write dark optimization factors to the console.
+       */
+      if ( m_data.instance->p_optimizeDarks )
+      {
+         console.WriteLn( "Dark scaling factors:" );
+         for ( int i = 0; i < m_K.Length(); ++i )
+         {
+            console.WriteLn( String().Format( "ch %d : k = %.3f", i, m_K[i] ) );
+            if ( m_K[i] <= NO_DARK_CORRELATION )
+               console.WarningLn( String().Format( "** Warning: No correlation "
+                                  "between the master dark and target frames (channel %d).", i ) );
+         }
+      }
+
+      /*
+       * Write signal evaluation information to the console.
+       */
+      if ( m_data.instance->p_evaluateSignal )
+      {
+         if ( m_psfCounts.Sum() > 0 )
+         {
+            console.WriteLn( "<end><cbr>PSF signal estimates:" );
+            for ( int i = 0; i < m_psfSignalEstimates.Length(); ++i )
+               if ( m_psfCounts[i] > 0 )
+                  console.WriteLn( String().Format( "ch %d : S = %.4e, S2 = %.4e, %d PSF fits",
+                                                    i, m_psfSignalEstimates[i], m_psfPowerEstimates[i], m_psfCounts[i] ) );
+               else
+                  console.WarningLn( String().Format( "** Warning: No valid PSF signal samples (channel %d).", i ) );
+         }
+         else
+            console.WarningLn( "** Warning: No valid PSF signal samples." );
+      }
+
+      /*
+       * Write noise evaluation information to the console.
+       */
+      if ( m_data.instance->p_evaluateNoise )
+      {
+         console.WriteLn( "Gaussian noise estimates:" );
+         for ( int i = 0; i < m_noiseEstimates.Length(); ++i )
+            console.WriteLn( String().Format( "ch %d : s = %.4e, %.2f%% pixels ", i, m_noiseEstimates[i], m_noiseFractions[i]*100 )
+                             + '(' + m_noiseAlgorithms[i] + ')' );
+
+         console.WriteLn( "Noise scaling factors:" );
+         for ( int i = 0; i < m_noiseEstimates.Length(); ++i )
+            console.WriteLn( String().Format( "ch %d : l = %.6e, h = %.6e", i, m_noiseScaleLow[i], m_noiseScaleHigh[i] ) );
+      }
+
+      /*
+       * Check for an already existing file, and either overwrite it (but show
+       * a warning message if that happens), or find a unique file name,
+       * depending on the overwriteExistingFiles parameter.
+       */
+      UniqueFileChecks checks = File::EnsureNewUniqueFile( m_outputFilePath, m_data.instance->p_overwriteExistingFiles );
+      if ( checks.overwrite )
+         console.WarningLn( "** Warning: Overwriting existing file." );
+      else if ( checks.exists )
+         console.NoteLn( "* File already exists, writing to: <raw>" + m_outputFilePath + "</raw>" );
+
+      /*
+       * Find an installed file format able to write files with the specified
+       * extension ...
+       */
+      FileFormat outputFormat( fileExtension, false/*read*/, true/*write*/ );
+
+      if ( outputFormat.IsDeprecated() )
+         console.WarningLn( "** Warning: Deprecated file format: " + outputFormat.Name() );
+
+      /*
+       * ... and build a format instance (usually a disk file).
+       */
+      FileFormatInstance outputFile( outputFormat );
+
+      /*
+       * Create the output stream.
+       */
+      if ( !outputFile.Create( m_outputFilePath, m_data.instance->p_outputHints ) )
+         throw CaughtException();
+
+      /*
+       * Gather relevant image options, including the output sample format
+       * (bits per pixel sample and numeric type).
+       */
+      ImageOptions options = m_outputData.options; // get resolution, sample format, etc.
+
+      /*
+       * Determine the output sample format: bits per sample and whether
+       * integer or real samples.
+       */
+      switch ( m_data.instance->p_outputSampleFormat )
+      {
+      case ICOutputSampleFormat::I16: options.bitsPerSample = 16; options.ieeefpSampleFormat = false; break;
+      case ICOutputSampleFormat::I32: options.bitsPerSample = 32; options.ieeefpSampleFormat = false; break;
+      default:
+      case ICOutputSampleFormat::F32: options.bitsPerSample = 32; options.ieeefpSampleFormat = true;  break;
+      case ICOutputSampleFormat::F64: options.bitsPerSample = 64; options.ieeefpSampleFormat = true;  break;
+      }
+
+      outputFile.SetOptions( options );
+
+      /*
+       * We want to be sure that the selected (or automatically found) output
+       * format is able to store an image with the selected (or automatically
+       * determined) sample format. If it doesn't, then the user should know
+       * what he/she is doing, but we always inform anyway.
+       */
+      bool canStore = true;
+      if ( options.ieeefpSampleFormat )
+         switch ( options.bitsPerSample )
+         {
+         case 32: canStore = outputFormat.CanStoreFloat(); break;
+         case 64: canStore = outputFormat.CanStoreDouble(); break;
+         }
+      else
+         switch ( options.bitsPerSample )
+         {
+         case 16: canStore = outputFormat.CanStore16Bit(); break;
+         case 32: canStore = outputFormat.CanStore32Bit(); break;
+         case 64: canStore = outputFormat.CanStore64Bit(); break;
+         }
+
+      if ( !canStore )
+         console.WarningLn( "** Warning: The output format does not support the required sample data format." );
+
+      /*
+       * File formats often use format-specific data. Keep track of private
+       * data structures.
+       */
+      if ( m_outputData.fsData != nullptr )
+         if ( outputFormat.UsesFormatSpecificData() )
+            if ( outputFormat.ValidateFormatSpecificData( m_outputData.fsData ) )
+               outputFile.SetFormatSpecificData( m_outputData.fsData );
+
+      /*
+       * Set image properties.
+       */
+      if ( !m_outputData.properties.IsEmpty() )
+         if ( outputFormat.CanStoreImageProperties() && outputFormat.SupportsViewProperties() )
+            outputFile.WriteImageProperties( m_outputData.properties );
+         else
+            console.WarningLn( "** Warning: The output format cannot store image properties - existing properties not embedded." );
+
+      /*
+       * Add FITS header keywords and preserve existing ones, if possible.
+       * N.B.: A COMMENT or HISTORY keyword cannot have a value; these keywords
+       * only have the name and comment components.
+       */
+      if ( outputFormat.CanStoreKeywords() )
+      {
+         FITSKeywordArray keywords = m_outputData.keywords;
+
+         /*
+         * Remove previously existing PEDESTAL keywords, since we already have
+         * subtracted the appropriate pedestal value before calibration.
+         */
+         for ( size_type i = 0; i < keywords.Length(); )
+            if ( !keywords[i].name.CompareIC( "PEDESTAL" ) )
+               keywords.Remove( keywords.At( i ) );
+            else
+               ++i;
+
+         keywords << FITSHeaderKeyword( "COMMENT", IsoString(), "Calibration with " + PixInsightVersion::AsString() )
+                  << FITSHeaderKeyword( "HISTORY", IsoString(), "Calibration with " + Module->ReadableVersion() )
+                  << FITSHeaderKeyword( "HISTORY", IsoString(), "Calibration with ImageCalibration process" );
+
+         if ( !m_data.instance->p_inputHints.IsEmpty() )
+            keywords << FITSHeaderKeyword( "HISTORY",
+                                       IsoString(),
+                                       "ImageCalibration.inputHints: " + IsoString( m_data.instance->p_inputHints ) );
+         if ( !m_data.instance->p_outputHints.IsEmpty() )
+            keywords << FITSHeaderKeyword( "HISTORY",
+                                       IsoString(),
+                                       "ImageCalibration.outputHints: " + IsoString( m_data.instance->p_outputHints ) );
+
+         keywords << FITSHeaderKeyword( "HISTORY",
+                                       IsoString(),
+                                       "ImageCalibration.overscan.enabled: " + IsoString( bool( m_data.instance->p_overscan.enabled ) ) );
+         if ( m_data.instance->p_overscan.enabled )
+         {
+            const Rect& r = m_data.instance->p_overscan.imageRect;
+            keywords << FITSHeaderKeyword( "HISTORY",
+                                       IsoString(),
+                                       IsoString().Format( "ImageCalibration.overscan.imageRect: {%d,%d,%d,%d}",
+                                                           r.x0, r.y0, r.x1, r.y1 ) );
+            for ( int i = 0; i < 4; ++i )
+               if ( m_data.instance->p_overscan.overscan[i].enabled )
+               {
+                  const Rect& s = m_data.instance->p_overscan.overscan[i].sourceRect;
+                  const Rect& t = m_data.instance->p_overscan.overscan[i].targetRect;
+                  keywords << FITSHeaderKeyword( "HISTORY",
+                                       IsoString(),
+                                       IsoString().Format( "ImageCalibration.overscan[%d].sourceRect: {%d,%d,%d,%d}",
+                                                           i, s.x0, s.y0, s.x1, s.y1 ) )
+                           << FITSHeaderKeyword( "HISTORY",
+                                       IsoString(),
+                                       IsoString().Format( "ImageCalibration.overscan[%d].targetRect: {%d,%d,%d,%d}",
+                                                           i, t.x0, t.y0, t.x1, t.y1 ) );
+               }
+         }
+
+         keywords << FITSHeaderKeyword( "HISTORY",
+                                       IsoString(),
+                                       "ImageCalibration.masterBias.enabled: " + IsoString( bool( m_data.instance->p_masterBias.enabled ) ) );
+         if ( m_data.instance->p_masterBias.enabled )
+            keywords << FITSHeaderKeyword( "HISTORY",
+                                       IsoString(),
+                                       "ImageCalibration.masterBias.fileName: " +
+                                       File::ExtractNameAndExtension( m_data.instance->p_masterBias.path ).To7BitASCII() )
+                     << FITSHeaderKeyword( "HISTORY",
+                                       IsoString(),
+                                       "ImageCalibration.masterBias.calibrate: " + IsoString( bool( m_data.instance->p_calibrateBias ) ) );
+
+         keywords << FITSHeaderKeyword( "HISTORY",
+                                       IsoString(),
+                                       "ImageCalibration.masterDark.enabled: " + IsoString( bool( m_data.instance->p_masterDark.enabled ) ) );
+         if ( m_data.instance->p_masterDark.enabled )
+         {
+            keywords << FITSHeaderKeyword( "HISTORY",
+                                       IsoString(),
+                                       "ImageCalibration.masterDark.fileName: " +
+                                       File::ExtractNameAndExtension( m_data.instance->p_masterDark.path ).To7BitASCII() )
+                     << FITSHeaderKeyword( "HISTORY",
+                                       IsoString(),
+                                       "ImageCalibration.masterDark.calibrate: " + IsoString( bool( m_data.instance->p_calibrateDark ) ) );
+            if ( m_data.instance->p_optimizeDarks )
+            {
+               IsoString darkScalingFactors = "ImageCalibration.masterDark.scalingFactors:";
+               for ( int i = 0; i < m_K.Length(); ++i )
+                  darkScalingFactors.AppendFormat( " %.3f", m_K[i] );
+               keywords << FITSHeaderKeyword( "HISTORY", IsoString(), darkScalingFactors );
+
+               if ( m_data.instance->p_darkOptimizationThreshold > 0 )
+                  keywords << FITSHeaderKeyword( "HISTORY",
+                                       IsoString(),
+                                       IsoString().Format( "ImageCalibration.masterDark.optimizationThreshold: %.5f", m_data.instance->p_darkOptimizationThreshold ) )
+                           << FITSHeaderKeyword( "HISTORY",
+                                       IsoString(),
+                                       IsoString().Format( "ImageCalibration.masterDark.optimizationLow: %.4f", m_data.instance->p_darkOptimizationLow ) );
+
+               if ( m_data.instance->p_darkOptimizationWindow > 0 )
+                  keywords << FITSHeaderKeyword( "HISTORY",
+                                       IsoString(),
+                                       IsoString().Format( "ImageCalibration.masterDark.optimizationWindow: %d px", m_data.instance->p_darkOptimizationWindow ) );
+            }
+         }
+
+         keywords << FITSHeaderKeyword( "HISTORY",
+                                       IsoString(),
+                                       "ImageCalibration.masterFlat.enabled: " + IsoString( bool( m_data.instance->p_masterFlat.enabled ) ) );
+         if ( m_data.instance->p_masterFlat.enabled )
+         {
+            keywords << FITSHeaderKeyword( "HISTORY",
+                                       IsoString(),
+                                       "ImageCalibration.masterFlat.fileName: " +
+                                       File::ExtractNameAndExtension( m_data.instance->p_masterFlat.path ).To7BitASCII() )
+                     << FITSHeaderKeyword( "HISTORY",
+                                       IsoString(),
+                                       "ImageCalibration.masterFlat.calibrate: " + IsoString( bool( m_data.instance->p_calibrateFlat ) ) );
+
+            IsoString flatScalingFactors = "ImageCalibration.masterFlat.scalingFactors:";
+            for ( int i = 0; i < m_data.flatScalingFactors.Length(); ++i )
+               flatScalingFactors.AppendFormat( " %.6f", m_data.flatScalingFactors[i] );
+            keywords << FITSHeaderKeyword( "HISTORY", IsoString(), flatScalingFactors );
+         }
+
+         if ( m_data.instance->p_evaluateSignal )
+         {
+            /*
+             * N.B.: If we have computed signal estimates, remove any
+             * previously existing PSFSGLxx, PSFSGPxx and PSFSGNxx keywords.
+             * Only our newly created keywords must be present in the header.
+             */
+            for ( size_type i = 0; i < keywords.Length(); )
+               if ( keywords[i].name.StartsWithIC( "PSFSG" ) )
+                  keywords.Remove( keywords.At( i ) );
+               else
+                  ++i;
+
+            keywords << FITSHeaderKeyword( "HISTORY", IsoString(), "PSF signal evaluation with " + Module->ReadableVersion() );
+
+            IsoString psfSignalEstimates = "ImageCalibration.psfSignalEstimates:";
+            for ( int i = 0; i < m_psfSignalEstimates.Length(); ++i )
+               psfSignalEstimates.AppendFormat( " %.4e", m_psfSignalEstimates[i] );
+            keywords << FITSHeaderKeyword( "HISTORY", IsoString(), psfSignalEstimates );
+
+            IsoString psfPowerEstimates = "ImageCalibration.psfPowerEstimates:";
+            for ( int i = 0; i < m_psfPowerEstimates.Length(); ++i )
+               psfPowerEstimates.AppendFormat( " %.4e", m_psfPowerEstimates[i] );
+            keywords << FITSHeaderKeyword( "HISTORY", IsoString(), psfPowerEstimates );
+
+            IsoString psfCounts = "ImageCalibration.psfCounts:";
+            for ( int i = 0; i < m_psfCounts.Length(); ++i )
+               psfCounts.AppendFormat( " %d", m_psfCounts[i] );
+            keywords << FITSHeaderKeyword( "HISTORY", IsoString(), psfCounts );
+
+            for ( int i = 0; i < m_psfSignalEstimates.Length(); ++i )
+               keywords << FITSHeaderKeyword( IsoString().Format( "PSFSGL%02d", i ),
+                                              IsoString().Format( "%.4e", m_psfSignalEstimates[i] ),
+                                              IsoString().Format( "PSF mean signal estimate, channel #%d", i ) )
+                        << FITSHeaderKeyword( IsoString().Format( "PSFSGP%02d", i ),
+                                              IsoString().Format( "%.4e", m_psfPowerEstimates[i] ),
+                                              IsoString().Format( "PSF mean signal power estimate, channel #%d", i ) )
+                        << FITSHeaderKeyword( IsoString().Format( "PSFSGN%02d", i ),
+                                              IsoString().Format( "%d", m_psfCounts[i] ),
+                                              IsoString().Format( "Number of evaluated PSF fits, channel #%d", i ) );
+         }
+
+         if ( m_data.instance->p_evaluateNoise )
+         {
+            /*
+             * N.B.: If we have computed noise estimates, remove any previously
+             * existing NOISExx keywords. Only our newly created keywords must
+             * be present in the header.
+             */
+            for ( size_type i = 0; i < keywords.Length(); )
+               if ( keywords[i].name.StartsWithIC( "NOISE" ) )
+                  keywords.Remove( keywords.At( i ) );
+               else
+                  ++i;
+
+            keywords << FITSHeaderKeyword( "HISTORY", IsoString(), "Noise evaluation with " + Module->ReadableVersion() );
+
+            IsoString noiseEstimates = "ImageCalibration.noiseEstimates:";
+            for ( int i = 0; i < m_noiseEstimates.Length(); ++i )
+               noiseEstimates.AppendFormat( " %.4e", m_noiseEstimates[i] );
+            keywords << FITSHeaderKeyword( "HISTORY", IsoString(), noiseEstimates );
+
+            IsoString noiseScaleLow = "ImageCalibration.noiseScaleLow:";
+            for ( int i = 0; i < m_noiseScaleLow.Length(); ++i )
+               noiseScaleLow.AppendFormat( " %.6e", m_noiseScaleLow[i] );
+            keywords << FITSHeaderKeyword( "HISTORY", IsoString(), noiseScaleLow );
+
+            IsoString noiseScaleHigh = "ImageCalibration.noiseScaleHigh:";
+            for ( int i = 0; i < m_noiseScaleHigh.Length(); ++i )
+               noiseScaleHigh.AppendFormat( " %.6e", m_noiseScaleHigh[i] );
+            keywords << FITSHeaderKeyword( "HISTORY", IsoString(), noiseScaleHigh );
+
+            for ( int i = 0; i < m_noiseEstimates.Length(); ++i )
+               keywords << FITSHeaderKeyword( IsoString().Format( "NOISE%02d", i ),
+                                              IsoString().Format( "%.4e", m_noiseEstimates[i] ),
+                                              IsoString().Format( "Gaussian noise estimate, channel #%d", i ) )
+                        << FITSHeaderKeyword( IsoString().Format( "NOISEF%02d", i ),
+                                              IsoString().Format( "%.3f", m_noiseFractions[i] ),
+                                              IsoString().Format( "Fraction of noise pixels, channel #%d", i ) )
+                        << FITSHeaderKeyword( IsoString().Format( "NOISEL%02d", i ),
+                                              IsoString().Format( "%.6e", m_noiseScaleLow[i] ),
+                                              IsoString().Format( "Noise scaling factor, low pixels, channel #%d", i ) )
+                        << FITSHeaderKeyword( IsoString().Format( "NOISEH%02d", i ),
+                                              IsoString().Format( "%.6e", m_noiseScaleHigh[i] ),
+                                              IsoString().Format( "Noise scaling factor, high pixels, channel #%d", i ) )
+                        << FITSHeaderKeyword( IsoString().Format( "NOISEA%02d", i ),
+                                              IsoString( m_noiseAlgorithms[i] ),
+                                              IsoString().Format( "Noise evaluation algorithm, channel #%d", i ) );
+         }
+
+         if ( m_data.instance->p_outputPedestal != 0 )
+         {
+            keywords << FITSHeaderKeyword( "HISTORY",
+                                           IsoString(),
+                                           IsoString().Format( "ImageCalibration.outputPedestal: %d", m_data.instance->p_outputPedestal ) )
+                     << FITSHeaderKeyword( "PEDESTAL",
+                                           IsoString( m_data.instance->p_outputPedestal ),
+                                           "Value in DN added to enforce positivity" );
+         }
+
+         outputFile.WriteFITSKeywords( keywords );
+      }
+      else
+      {
+         console.WarningLn( "** Warning: The output format cannot store FITS header keywords - calibration metadata not embedded." );
+      }
+
+      /*
+       * Preserve an existing ICC profile if possible.
+       */
+      if ( m_outputData.profile.IsProfile() )
+         if ( outputFormat.CanStoreICCProfiles() )
+            outputFile.WriteICCProfile( m_outputData.profile );
+         else
+            console.WarningLn( "** Warning: The output format cannot store color profiles - original ICC profile not embedded." );
+
+      Module->ProcessEvents();
+
+      /*
+       * Write the output image and close the output stream.
+       */
+      {
+         static Mutex mutex;
+         static AtomicInt count;
+         volatile AutoLockCounter lock( mutex, count, m_data.instance->m_maxFileWriteThreads );
+         m_target->ResetSelections();
+         if ( !outputFile.WriteImage( m_target ) || !outputFile.Close() )
+            throw CaughtException();
+      }
+   }
 };
 
 // ----------------------------------------------------------------------------
@@ -1329,18 +1850,18 @@ private:
 /*
  * Routine to enforce validity of image geometries.
  */
-void ImageCalibrationInstance::ValidateImageGeometry( const Image* image, bool uncalibrated )
+void ImageCalibrationInstance::ValidateImageGeometry( const Image& image, bool uncalibrated )
 {
    if ( uncalibrated )
    {
       if ( m_geometry.IsRect() )
       {
-         if ( image->Bounds() != m_geometry )
+         if ( image.Bounds() != m_geometry )
             throw Error( "Incompatible image geometry" );
       }
       else
       {
-         m_geometry = image->Bounds();
+         m_geometry = image.Bounds();
 
          if ( p_overscan.enabled )
          {
@@ -1369,12 +1890,12 @@ void ImageCalibrationInstance::ValidateImageGeometry( const Image* image, bool u
    {
       if ( m_calibratedGeometry.IsRect() )
       {
-         if ( image->Bounds() != m_calibratedGeometry )
+         if ( image.Bounds() != m_calibratedGeometry )
             throw Error( "Incompatible image geometry" );
       }
       else
       {
-         m_calibratedGeometry = image->Bounds();
+         m_calibratedGeometry = image.Bounds();
 
          if ( p_overscan.enabled )
          {
@@ -1432,7 +1953,7 @@ ImageCalibrationInstance::BuildOverscanTable() const
 /*
  * Subtraction of an input pedestal to get zero-based pixel values.
  */
-void ImageCalibrationInstance::SubtractPedestal( Image* image, FileFormatInstance& file )
+void ImageCalibrationInstance::SubtractPedestal( Image& image, FileFormatInstance& file )
 {
    Console console;
    switch ( p_pedestalMode )
@@ -1441,7 +1962,7 @@ void ImageCalibrationInstance::SubtractPedestal( Image* image, FileFormatInstanc
       if ( p_pedestal != 0 )
       {
          console.NoteLn( String().Format( "* Subtracting pedestal: %d DN", p_pedestal ) );
-         image->Apply( p_pedestal/65535.0, ImageOp::Sub );
+         image.Apply( p_pedestal/65535.0, ImageOp::Sub );
       }
       break;
    case ICPedestalMode::Keyword:
@@ -1469,7 +1990,7 @@ void ImageCalibrationInstance::SubtractPedestal( Image* image, FileFormatInstanc
                   d = -d;
 
             console.NoteLn( String().Format( "* Subtracting pedestal keyword '%s': %.4f DN", keyName.c_str(), d ) );
-            image->Apply( d/65535.0, ImageOp::Sub );
+            image.Apply( d/65535.0, ImageOp::Sub );
          }
       }
       break;
@@ -1481,7 +2002,7 @@ void ImageCalibrationInstance::SubtractPedestal( Image* image, FileFormatInstanc
 /*
  * Read a source calibration frame.
  */
-Image* ImageCalibrationInstance::LoadCalibrationFrame( const String& filePath, bool willCalibrate, IsoString* cfaPattern )
+Image* ImageCalibrationInstance::LoadMasterCalibrationFrame( const String& filePath, bool willCalibrate, IsoString* cfaPattern )
 {
    Console console;
 
@@ -1540,17 +2061,19 @@ Image* ImageCalibrationInstance::LoadCalibrationFrame( const String& filePath, b
    /*
     * Load the master calibration frame.
     */
-   Image* image = LoadImageFile( file );
+   Image* image = new Image( (void*)0, 0, 0 ); // new shared image, 32-bit floating point.
+   if ( !file.ReadImage( *image ) )
+      throw CaughtException();
 
    /*
     * Enforce consistency of frame dimensions.
     */
-   ValidateImageGeometry( image, willCalibrate );
+   ValidateImageGeometry( *image, willCalibrate );
 
    /*
     * Optional pedestal subtraction.
     */
-   SubtractPedestal( image, file );
+   SubtractPedestal( *image, file );
 
    /*
     * Close the input stream.
@@ -1563,575 +2086,15 @@ Image* ImageCalibrationInstance::LoadCalibrationFrame( const String& filePath, b
 
 // ----------------------------------------------------------------------------
 
-/*
- * Read a target frame file. Returns a list of calibration threads ready to
- * calibrate all subimages loaded from the file.
- */
-thread_list
-ImageCalibrationInstance::LoadTargetFrame( const String& filePath, const CalibrationThreadData& threadData )
-{
-   Console console;
-   console.WriteLn( "<end><cbr><br>* Loading target calibration frame(s): <raw>" + filePath + "</raw>" );
-
-   /*
-    * Find out an installed file format that can read image files with the
-    * specified extension ...
-    */
-   FileFormat format( File::ExtractExtension( filePath ), true/*read*/, false/*write*/ );
-
-   /*
-    * ... and create a format instance (usually a disk file) to access this
-    * target image.
-    */
-   FileFormatInstance file( format );
-
-   /*
-    * Open the image file.
-    */
-   ImageDescriptionArray images;
-   if ( !file.Open( images, filePath, p_inputHints ) )
-      throw CaughtException();
-
-   if ( images.IsEmpty() )
-      throw Error( filePath + ": Empty image file." );
-
-   /*
-    * Multiple-image file formats are supported and implemented in PixInsight
-    * (e.g.: XISF, FITS), so when we open a file, what we get is an array of
-    * images, usually consisting of a single image, but we must provide for a
-    * set of subimages.
-    */
-   thread_list threads;
-   try
-   {
-      for ( size_type j = 0; j < images.Length(); ++j )
-      {
-         if ( images.Length() > 1 )
-            console.WriteLn( String().Format( "* Subimage %u of %u", j+1, images.Length() ) );
-
-         AutoPointer<Image> target( LoadImageFile( file, j ) );
-
-         Module->ProcessEvents();
-
-         /*
-          * NB: At this point, LoadImageFile() has already called
-          * file.SelectImage().
-          */
-
-         /*
-          * Enforce consistency of image dimensions.
-          */
-         ValidateImageGeometry( target );
-
-         /*
-          * Optional pedestal subtraction.
-          */
-         SubtractPedestal( target, file );
-
-         /*
-          * Retrieve metadata and auxiliary data structures that must be
-          * preserved in the output image (properties, header keywords, etc).
-          */
-         OutputFileData* outputData = new OutputFileData( file, images[j].options );
-
-         /*
-          * Create a new calibration thread and add it to the thread list.
-          */
-         threads.Add( new CalibrationThread( target,
-                                             outputData,
-                                             filePath,
-                                             (images.Length() > 1) ? j+1 : 0,
-                                             threadData ) );
-         // The thread owns the target image.
-         target.Release();
-      }
-
-      /*
-       * Close the input stream.
-       */
-      if ( !file.Close() )
-         throw CaughtException();
-
-      return threads;
-   }
-   catch ( ... )
-   {
-      threads.Destroy();
-      throw;
-   }
-}
-
-// ----------------------------------------------------------------------------
-
-void ImageCalibrationInstance::WriteCalibratedImage( const CalibrationThread* t )
-{
-   Console console;
-
-   /*
-    * Output directory.
-    */
-   String fileDir = p_outputDirectory.Trimmed();
-   if ( fileDir.IsEmpty() )
-      fileDir = File::ExtractDrive( t->TargetFilePath() ) + File::ExtractDirectory( t->TargetFilePath() );
-   if ( fileDir.IsEmpty() )
-      throw Error( t->TargetFilePath() + ": Unable to determine an output directory." );
-   if ( !fileDir.EndsWith( '/' ) )
-      fileDir.Append( '/' );
-
-   /*
-    * Output file extension, which defines the output file format.
-    */
-   String fileExtension = p_outputExtension.Trimmed();
-   if ( fileExtension.IsEmpty() )
-      fileExtension = File::ExtractExtension( t->TargetFilePath() );
-   if ( fileExtension.IsEmpty() )
-      throw Error( t->TargetFilePath() + ": Unable to determine an output file extension." );
-   if ( !fileExtension.StartsWith( '.' ) )
-      fileExtension.Prepend( '.' );
-
-   /*
-    * Output file name.
-    */
-   String fileName = File::ExtractName( t->TargetFilePath() ).Trimmed();
-   if ( t->SubimageIndex() > 0 )
-      fileName.Append( String().Format( "_%02d", t->SubimageIndex() ) );
-   if ( !p_outputPrefix.IsEmpty() )
-      fileName.Prepend( p_outputPrefix );
-   if ( !p_outputPostfix.IsEmpty() )
-      fileName.Append( p_outputPostfix );
-   if ( fileName.IsEmpty() )
-      throw Error( t->TargetFilePath() + ": Unable to determine an output file name." );
-
-   /*
-    * Output file path.
-    */
-   String outputFilePath = fileDir + fileName + fileExtension;
-
-   console.WriteLn( "<end><cbr><br>* Writing output file: <raw>" + outputFilePath + "</raw>" );
-
-   /*
-    * Write dark optimization factors to the console.
-    */
-   if ( p_optimizeDarks )
-   {
-      console.WriteLn( "Dark scaling factors:" );
-      for ( int i = 0; i < t->K.Length(); ++i )
-      {
-         console.WriteLn( String().Format( "ch %d : k = %.3f", i, t->K[i] ) );
-         if ( t->K[i] <= NO_DARK_CORRELATION )
-            console.WarningLn( String().Format( "** Warning: No correlation "
-                               "between the master dark and target frames (channel %d).", i ) );
-      }
-   }
-
-   /*
-    * Write signal evaluation information to the console.
-    */
-   if ( p_evaluateSignal )
-   {
-      if ( t->psfCounts.Sum() > 0 )
-      {
-         console.WriteLn( "<end><cbr>PSF signal estimates:" );
-         for ( int i = 0; i < t->psfSignalEstimates.Length(); ++i )
-            if ( t->psfCounts[i] > 0 )
-               console.WriteLn( String().Format( "ch %d : S = %.4e, S2 = %.4e, %d PSF fits",
-                                                 i, t->psfSignalEstimates[i], t->psfPowerEstimates[i], t->psfCounts[i] ) );
-            else
-               console.WarningLn( String().Format( "** Warning: No valid PSF signal samples (channel %d).", i ) );
-      }
-      else
-         console.WarningLn( "** Warning: No valid PSF signal samples." );
-   }
-
-   /*
-    * Write noise evaluation information to the console.
-    */
-   if ( p_evaluateNoise )
-   {
-      console.WriteLn( "Gaussian noise estimates:" );
-      for ( int i = 0; i < t->noiseEstimates.Length(); ++i )
-         console.WriteLn( String().Format( "ch %d : s = %.4e, %.2f%% pixels ", i, t->noiseEstimates[i], t->noiseFractions[i]*100 )
-                           + '(' + t->noiseAlgorithms[i] + ')' );
-
-      console.WriteLn( "Noise scaling factors:" );
-      for ( int i = 0; i < t->noiseEstimates.Length(); ++i )
-         console.WriteLn( String().Format( "ch %d : l = %.6e, h = %.6e", i, t->noiseScaleLow[i], t->noiseScaleHigh[i] ) );
-   }
-
-   /*
-    * Check for an already existing file, and either overwrite it (but show a
-    * warning message if that happens), or find a unique file name, depending
-    * on the overwriteExistingFiles parameter.
-    */
-   if ( File::Exists( outputFilePath ) )
-      if ( p_overwriteExistingFiles )
-         console.WarningLn( "** Warning: Overwriting already existing file." );
-      else
-      {
-         outputFilePath = UniqueFilePath( outputFilePath );
-         console.NoteLn( "* File already exists, writing to: " + outputFilePath );
-      }
-
-   /*
-    * Find an installed file format able to write files with the
-    * specified extension ...
-    */
-   FileFormat outputFormat( fileExtension, false/*read*/, true/*write*/ );
-
-   if ( outputFormat.IsDeprecated() )
-      console.WarningLn( "** Warning: Deprecated file format: " + outputFormat.Name() );
-
-   FileFormatInstance outputFile( outputFormat );
-
-   /*
-    * ... and create a format instance (usually a disk file).
-    */
-   if ( !outputFile.Create( outputFilePath, p_outputHints ) )
-      throw CaughtException();
-
-   /*
-    * Gather relevant image options, including the output sample format (bits
-    * per pixel sample and numeric type).
-    */
-   const OutputFileData& data = t->OutputData();
-
-   ImageOptions options = data.options; // get resolution, sample format, etc.
-
-   /*
-    * Determine the output sample format: bits per sample and whether integer
-    * or real samples.
-    */
-   switch ( p_outputSampleFormat )
-   {
-   case ICOutputSampleFormat::I16: options.bitsPerSample = 16; options.ieeefpSampleFormat = false; break;
-   case ICOutputSampleFormat::I32: options.bitsPerSample = 32; options.ieeefpSampleFormat = false; break;
-   default:
-   case ICOutputSampleFormat::F32: options.bitsPerSample = 32; options.ieeefpSampleFormat = true;  break;
-   case ICOutputSampleFormat::F64: options.bitsPerSample = 64; options.ieeefpSampleFormat = true;  break;
-   }
-
-   outputFile.SetOptions( options );
-
-   /*
-    * We want to be sure that the selected (or automatically found) output
-    * format is able to store an image with the selected (or automatically
-    * determined) sample format. If it doesn't, then the user should know what
-    * he/she is doing, but we always inform anyway.
-    */
-   bool canStore = true;
-   if ( options.ieeefpSampleFormat )
-      switch ( options.bitsPerSample )
-      {
-      case 32: canStore = outputFormat.CanStoreFloat(); break;
-      case 64: canStore = outputFormat.CanStoreDouble(); break;
-      }
-   else
-      switch ( options.bitsPerSample )
-      {
-      case 16: canStore = outputFormat.CanStore16Bit(); break;
-      case 32: canStore = outputFormat.CanStore32Bit(); break;
-      case 64: canStore = outputFormat.CanStore64Bit(); break;
-      }
-
-   if ( !canStore )
-      console.WarningLn( "** Warning: The output format does not support the required sample data format." );
-
-   /*
-    * File formats often use format-specific data.
-    * Keep track of private data structures.
-    */
-   if ( data.fsData != nullptr )
-      if ( outputFormat.UsesFormatSpecificData() )
-         if ( outputFormat.ValidateFormatSpecificData( data.fsData ) )
-            outputFile.SetFormatSpecificData( data.fsData );
-
-   /*
-    * Set image properties.
-    */
-   if ( !data.properties.IsEmpty() )
-      if ( outputFormat.CanStoreImageProperties() && outputFormat.SupportsViewProperties() )
-         outputFile.WriteImageProperties( data.properties );
-      else
-         console.WarningLn( "** Warning: The output format cannot store image properties - existing properties not embedded." );
-
-   /*
-    * Add FITS header keywords and preserve existing ones, if possible.
-    * N.B.: A COMMENT or HISTORY keyword cannot have a value; these keywords
-    * only have the name and comment components.
-    */
-   if ( outputFormat.CanStoreKeywords() )
-   {
-      FITSKeywordArray keywords = data.keywords;
-
-      /*
-       * Remove previously existing PEDESTAL keywords, since we already have
-       * subtracted the appropriate pedestal value before calibration.
-       */
-      for ( size_type i = 0; i < keywords.Length(); )
-         if ( !keywords[i].name.CompareIC( "PEDESTAL" ) )
-            keywords.Remove( keywords.At( i ) );
-         else
-            ++i;
-
-      keywords << FITSHeaderKeyword( "COMMENT", IsoString(), "Calibration with " + PixInsightVersion::AsString() )
-               << FITSHeaderKeyword( "HISTORY", IsoString(), "Calibration with " + Module->ReadableVersion() )
-               << FITSHeaderKeyword( "HISTORY", IsoString(), "Calibration with ImageCalibration process" );
-
-      if ( !p_inputHints.IsEmpty() )
-         keywords << FITSHeaderKeyword( "HISTORY",
-                                    IsoString(),
-                                    "ImageCalibration.inputHints: " + IsoString( p_inputHints ) );
-      if ( !p_outputHints.IsEmpty() )
-         keywords << FITSHeaderKeyword( "HISTORY",
-                                    IsoString(),
-                                    "ImageCalibration.outputHints: " + IsoString( p_outputHints ) );
-
-      keywords << FITSHeaderKeyword( "HISTORY",
-                                    IsoString(),
-                                    "ImageCalibration.overscan.enabled: " + IsoString( bool( p_overscan.enabled ) ) );
-      if ( p_overscan.enabled )
-      {
-         const Rect& r = p_overscan.imageRect;
-         keywords << FITSHeaderKeyword( "HISTORY",
-                                    IsoString(),
-                                    IsoString().Format( "ImageCalibration.overscan.imageRect: {%d,%d,%d,%d}",
-                                                        r.x0, r.y0, r.x1, r.y1 ) );
-         for ( int i = 0; i < 4; ++i )
-            if ( p_overscan.overscan[i].enabled )
-            {
-               const Rect& s = p_overscan.overscan[i].sourceRect;
-               const Rect& t = p_overscan.overscan[i].targetRect;
-               keywords << FITSHeaderKeyword( "HISTORY",
-                                    IsoString(),
-                                    IsoString().Format( "ImageCalibration.overscan[%d].sourceRect: {%d,%d,%d,%d}",
-                                                        i, s.x0, s.y0, s.x1, s.y1 ) )
-                        << FITSHeaderKeyword( "HISTORY",
-                                    IsoString(),
-                                    IsoString().Format( "ImageCalibration.overscan[%d].targetRect: {%d,%d,%d,%d}",
-                                                        i, t.x0, t.y0, t.x1, t.y1 ) );
-            }
-      }
-
-      keywords << FITSHeaderKeyword( "HISTORY",
-                                    IsoString(),
-                                    "ImageCalibration.masterBias.enabled: " + IsoString( bool( p_masterBias.enabled ) ) );
-      if ( p_masterBias.enabled )
-         keywords << FITSHeaderKeyword( "HISTORY",
-                                    IsoString(),
-                                    "ImageCalibration.masterBias.fileName: " +
-                                    File::ExtractNameAndExtension( p_masterBias.path ).To7BitASCII() )
-                  << FITSHeaderKeyword( "HISTORY",
-                                    IsoString(),
-                                    "ImageCalibration.masterBias.calibrate: " + IsoString( bool( p_calibrateBias ) ) );
-
-      keywords << FITSHeaderKeyword( "HISTORY",
-                                    IsoString(),
-                                    "ImageCalibration.masterDark.enabled: " + IsoString( bool( p_masterDark.enabled ) ) );
-      if ( p_masterDark.enabled )
-      {
-         keywords << FITSHeaderKeyword( "HISTORY",
-                                    IsoString(),
-                                    "ImageCalibration.masterDark.fileName: " +
-                                    File::ExtractNameAndExtension( p_masterDark.path ).To7BitASCII() )
-                  << FITSHeaderKeyword( "HISTORY",
-                                    IsoString(),
-                                    "ImageCalibration.masterDark.calibrate: " + IsoString( bool( p_calibrateDark ) ) );
-         if ( p_optimizeDarks )
-         {
-            IsoString darkScalingFactors = IsoString().Format( "ImageCalibration.masterDark.scalingFactors: %.3f", t->K[0] );
-            for ( int i = 1; i < t->K.Length(); ++i )
-               darkScalingFactors.AppendFormat( " %.3f", t->K[i] );
-            keywords << FITSHeaderKeyword( "HISTORY", IsoString(), darkScalingFactors );
-
-            if ( p_darkOptimizationThreshold > 0 )
-               keywords << FITSHeaderKeyword( "HISTORY",
-                                    IsoString(),
-                                    IsoString().Format( "ImageCalibration.masterDark.optimizationThreshold: %.5f", p_darkOptimizationThreshold ) )
-                        << FITSHeaderKeyword( "HISTORY",
-                                    IsoString(),
-                                    IsoString().Format( "ImageCalibration.masterDark.optimizationLow: %.4f", p_darkOptimizationLow ) );
-
-            if ( p_darkOptimizationWindow > 0 )
-               keywords << FITSHeaderKeyword( "HISTORY",
-                                    IsoString(),
-                                    IsoString().Format( "ImageCalibration.masterDark.optimizationWindow: %d px", p_darkOptimizationWindow ) );
-         }
-      }
-
-      keywords << FITSHeaderKeyword( "HISTORY",
-                                    IsoString(),
-                                    "ImageCalibration.masterFlat.enabled: " + IsoString( bool( p_masterFlat.enabled ) ) );
-      if ( p_masterFlat.enabled )
-      {
-         keywords << FITSHeaderKeyword( "HISTORY",
-                                    IsoString(),
-                                    "ImageCalibration.masterFlat.fileName: " +
-                                    File::ExtractNameAndExtension( p_masterFlat.path ).To7BitASCII() )
-                  << FITSHeaderKeyword( "HISTORY",
-                                    IsoString(),
-                                    "ImageCalibration.masterFlat.calibrate: " + IsoString( bool( p_calibrateFlat ) ) );
-
-         IsoString flatScalingFactors = IsoString().Format( "ImageCalibration.masterFlat.scalingFactors: %.6f", t->CalibrationData().flatScalingFactors[0] );
-         for ( int i = 1; i < t->CalibrationData().flatScalingFactors.Length(); ++i )
-            flatScalingFactors.AppendFormat( " %.6f", t->CalibrationData().flatScalingFactors[i] );
-         keywords << FITSHeaderKeyword( "HISTORY", IsoString(), flatScalingFactors );
-      }
-
-      if ( p_evaluateSignal )
-      {
-         /*
-          * N.B.: If we have computed signal estimates, remove any previously
-          * existing PSFSGLxx, PSFSGPxx and PSFSGNxx keywords. Only our newly
-          * created keywords must be present in the header.
-          */
-         for ( size_type i = 0; i < keywords.Length(); )
-            if ( keywords[i].name.StartsWithIC( "PSFSG" ) )
-               keywords.Remove( keywords.At( i ) );
-            else
-               ++i;
-
-         keywords << FITSHeaderKeyword( "HISTORY", IsoString(), "PSF signal evaluation with " + Module->ReadableVersion() );
-
-         IsoString psfSignalEstimates = "ImageCalibration.psfSignalEstimates:";
-         for ( int i = 0; i < t->psfSignalEstimates.Length(); ++i )
-            psfSignalEstimates.AppendFormat( " %.4e", t->psfSignalEstimates[i] );
-         keywords << FITSHeaderKeyword( "HISTORY", IsoString(), psfSignalEstimates );
-
-         IsoString psfPowerEstimates = "ImageCalibration.psfPowerEstimates:";
-         for ( int i = 0; i < t->psfPowerEstimates.Length(); ++i )
-            psfPowerEstimates.AppendFormat( " %.4e", t->psfPowerEstimates[i] );
-         keywords << FITSHeaderKeyword( "HISTORY", IsoString(), psfPowerEstimates );
-
-         IsoString psfCounts = "ImageCalibration.psfCounts:";
-         for ( int i = 0; i < t->psfCounts.Length(); ++i )
-            psfCounts.AppendFormat( " %d", t->psfCounts[i] );
-         keywords << FITSHeaderKeyword( "HISTORY", IsoString(), psfCounts );
-
-         for ( int i = 0; i < t->psfSignalEstimates.Length(); ++i )
-            keywords << FITSHeaderKeyword( IsoString().Format( "PSFSGL%02d", i ),
-                                           IsoString().Format( "%.4e", t->psfSignalEstimates[i] ),
-                                           IsoString().Format( "PSF mean signal estimate, channel #%d", i ) )
-                     << FITSHeaderKeyword( IsoString().Format( "PSFSGP%02d", i ),
-                                           IsoString().Format( "%.4e", t->psfPowerEstimates[i] ),
-                                           IsoString().Format( "PSF mean signal power estimate, channel #%d", i ) )
-                     << FITSHeaderKeyword( IsoString().Format( "PSFSGN%02d", i ),
-                                           IsoString().Format( "%d", t->psfCounts[i] ),
-                                           IsoString().Format( "Number of evaluated PSF fits, channel #%d", i ) );
-      }
-
-      if ( p_evaluateNoise )
-      {
-         /*
-          * N.B.: If we have computed noise estimates, remove any previously
-          * existing NOISExx keywords. Only our newly created keywords must be
-          * present in the header.
-          */
-         for ( size_type i = 0; i < keywords.Length(); )
-            if ( keywords[i].name.StartsWithIC( "NOISE" ) )
-               keywords.Remove( keywords.At( i ) );
-            else
-               ++i;
-
-         keywords << FITSHeaderKeyword( "HISTORY", IsoString(), "Noise evaluation with " + Module->ReadableVersion() );
-
-         IsoString noiseEstimates = "ImageCalibration.noiseEstimates:";
-         for ( int i = 0; i < t->noiseEstimates.Length(); ++i )
-            noiseEstimates.AppendFormat( " %.4e", t->noiseEstimates[i] );
-         keywords << FITSHeaderKeyword( "HISTORY", IsoString(), noiseEstimates );
-
-         IsoString noiseScaleLow = "ImageCalibration.noiseScaleLow:";
-         for ( int i = 0; i < t->noiseScaleLow.Length(); ++i )
-            noiseScaleLow.AppendFormat( " %.6e", t->noiseScaleLow[i] );
-         keywords << FITSHeaderKeyword( "HISTORY", IsoString(), noiseScaleLow );
-
-         IsoString noiseScaleHigh = "ImageCalibration.noiseScaleHigh:";
-         for ( int i = 0; i < t->noiseScaleHigh.Length(); ++i )
-            noiseScaleHigh.AppendFormat( " %.6e", t->noiseScaleHigh[i] );
-         keywords << FITSHeaderKeyword( "HISTORY", IsoString(), noiseScaleHigh );
-
-         for ( int i = 0; i < t->noiseEstimates.Length(); ++i )
-            keywords << FITSHeaderKeyword( IsoString().Format( "NOISE%02d", i ),
-                                           IsoString().Format( "%.4e", t->noiseEstimates[i] ),
-                                           IsoString().Format( "Gaussian noise estimate, channel #%d", i ) )
-                     << FITSHeaderKeyword( IsoString().Format( "NOISEF%02d", i ),
-                                           IsoString().Format( "%.3f", t->noiseFractions[i] ),
-                                           IsoString().Format( "Fraction of noise pixels, channel #%d", i ) )
-                     << FITSHeaderKeyword( IsoString().Format( "NOISEL%02d", i ),
-                                           IsoString().Format( "%.6e", t->noiseScaleLow[i] ),
-                                           IsoString().Format( "Noise scaling factor, low pixels, channel #%d", i ) )
-                     << FITSHeaderKeyword( IsoString().Format( "NOISEH%02d", i ),
-                                           IsoString().Format( "%.6e", t->noiseScaleHigh[i] ),
-                                           IsoString().Format( "Noise scaling factor, high pixels, channel #%d", i ) )
-                     << FITSHeaderKeyword( IsoString().Format( "NOISEA%02d", i ),
-                                           IsoString( t->noiseAlgorithms[i] ),
-                                           IsoString().Format( "Noise evaluation algorithm, channel #%d", i ) );
-      }
-
-      if ( p_outputPedestal != 0 )
-      {
-         keywords << FITSHeaderKeyword( "HISTORY",
-                                    IsoString(),
-                                    IsoString().Format( "ImageCalibration.outputPedestal: %d", p_outputPedestal ) )
-                  << FITSHeaderKeyword( "PEDESTAL",
-                                    IsoString( p_outputPedestal ),
-                                    "Value in DN added to enforce positivity" );
-      }
-
-      outputFile.WriteFITSKeywords( keywords );
-   }
-   else
-   {
-      console.WarningLn( "** Warning: The output format cannot store FITS header keywords - calibration metadata not embedded." );
-   }
-
-   /*
-    * Preserve ICC profile, if possible.
-    */
-   if ( data.profile.IsProfile() )
-      if ( outputFormat.CanStoreICCProfiles() )
-         outputFile.WriteICCProfile( data.profile );
-      else
-         console.WarningLn( "** Warning: The output format cannot store color profiles - original ICC profile not embedded." );
-
-   /*
-    * Write the output image and close the output stream.
-    */
-   t->TargetImage()->ResetSelections();
-   if ( !outputFile.WriteImage( *t->TargetImage() ) || !outputFile.Close() )
-      throw CaughtException();
-
-   /*
-    * Store output data
-    */
-   OutputData o;
-   o.outputFilePath = outputFilePath;
-   if ( p_masterDark.enabled )
-      if ( p_optimizeDarks )
-         for ( int i = 0; i < Min( 3, t->K.Length() ); ++i )
-            o.darkScalingFactors[i] = t->K[i];
-   if ( p_evaluateSignal )
-      for ( int i = 0; i < Min( 3, t->noiseEstimates.Length() ); ++i )
-      {
-         o.psfSignalEstimates[i] = t->psfSignalEstimates[i];
-         o.psfPowerEstimates[i] = t->psfPowerEstimates[i];
-         o.psfCounts[i] = t->psfCounts[i];
-      }
-   if ( p_evaluateNoise )
-      for ( int i = 0; i < Min( 3, t->noiseEstimates.Length() ); ++i )
-      {
-         o.noiseEstimates[i] = t->noiseEstimates[i];
-         o.noiseFractions[i] = t->noiseFractions[i];
-         o.noiseScaleLow[i] = t->noiseScaleLow[i];
-         o.noiseScaleHigh[i] = t->noiseScaleHigh[i];
-         o.noiseAlgorithms[i] = String( t->noiseAlgorithms[i] );
-      }
-   o_output.Add( o );
-}
-
-// ----------------------------------------------------------------------------
-
 bool ImageCalibrationInstance::ExecuteGlobal()
 {
+   Console console;
+
+   /*
+    * Reset output data.
+    */
+   o_output = Array<OutputData>( p_targetFrames.Length() );
+
    /*
     * Start with a general validation of working parameters.
     */
@@ -2144,22 +2107,40 @@ bool ImageCalibrationInstance::ExecuteGlobal()
          if ( !File::DirectoryExists( p_outputDirectory ) )
             throw Error( "The specified output directory does not exist: " + p_outputDirectory );
 
-      for ( auto frame : p_targetFrames )
-         if ( frame.enabled )
-            if ( !File::Exists( frame.path ) )
-               throw Error( "No such file exists on the local filesystem: " + frame.path );
+      StringList fileNames;
+      for ( const auto& target : p_targetFrames )
+         if ( target.enabled )
+         {
+            if ( !File::Exists( target.path ) )
+               throw Error( "No such file exists on the local filesystem: " + target.path );
+            fileNames << File::ExtractNameAndSuffix( target.path );
+         }
+      fileNames.Sort();
+      for ( size_type i = 1; i < fileNames.Length(); ++i )
+         if ( fileNames[i].CompareIC( fileNames[i-1] ) == 0 )
+         {
+            if ( p_overwriteExistingFiles )
+               throw Error( "The target frames list contains duplicate file names (case-insensitive). "
+                            "This is not allowed when the 'Overwrite existing files' option is enabled." );
+            console.WarningLn( "<end><cbr><br>** Warning: The target frames list contains duplicate file names (case-insensitive)." );
+            break;
+         }
    }
+
+   /*
+    * Setup high-level parallelism.
+    */
+   m_maxFileReadThreads = p_maxFileReadThreads;
+   if ( m_maxFileReadThreads < 1 )
+      m_maxFileReadThreads = Max( 1, PixInsightSettings::GlobalInteger( "Process/MaxFileReadThreads" ) );
+   m_maxFileWriteThreads = p_maxFileWriteThreads;
+   if ( m_maxFileWriteThreads < 1 )
+      m_maxFileWriteThreads = Max( 1, PixInsightSettings::GlobalInteger( "Process/MaxFileWriteThreads" ) );
 
    /*
     * Allow the user to abort the calibration process.
     */
-   Console console;
    console.EnableAbort();
-
-   /*
-    * Reset output data.
-    */
-   o_output.Clear();
 
    /*
     * Initialize validation frame geometries.
@@ -2199,19 +2180,19 @@ bool ImageCalibrationInstance::ExecuteGlobal()
       if ( p_masterBias.enabled )
       {
          console.NoteLn( "<end><cbr><br>* Loading master bias frame: <raw>" + p_masterBias.path + "</raw>" );
-         bias = LoadCalibrationFrame( p_masterBias.path, p_calibrateBias );
+         bias = LoadMasterCalibrationFrame( p_masterBias.path, p_calibrateBias );
       }
 
       if ( p_masterDark.enabled )
       {
          console.NoteLn( "<end><cbr><br>* Loading master dark frame: <raw>" + p_masterDark.path + "</raw>" );
-         dark = LoadCalibrationFrame( p_masterDark.path, p_calibrateDark, p_enableCFA ? &darkCFAPattern : nullptr );
+         dark = LoadMasterCalibrationFrame( p_masterDark.path, p_calibrateDark, p_enableCFA ? &darkCFAPattern : nullptr );
       }
 
       if ( p_masterFlat.enabled )
       {
          console.NoteLn( "<end><cbr><br>* Loading master flat frame: <raw>" + p_masterFlat.path + "</raw>" );
-         flat = LoadCalibrationFrame( p_masterFlat.path, p_calibrateFlat, p_enableCFA ? &flatCFAPattern : nullptr );
+         flat = LoadMasterCalibrationFrame( p_masterFlat.path, p_calibrateFlat, p_enableCFA ? &flatCFAPattern : nullptr );
          if ( p_enableCFA )
             if ( p_masterDark.enabled )
                if ( darkCFAPattern != flatCFAPattern )
@@ -2416,13 +2397,6 @@ bool ImageCalibrationInstance::ExecuteGlobal()
       }
    } // if bias or dark or flat
 
-   Module->ProcessEvents();
-
-   /*
-    * Begin light frame calibration process.
-    */
-   console.NoteLn( String().Format( "<end><cbr><br>* Calibration of %u target frames.", p_targetFrames.Length() ) );
-
    /*
     * Prepare working thread data.
     */
@@ -2436,306 +2410,177 @@ bool ImageCalibrationInstance::ExecuteGlobal()
    threadData.flat = flat;
    threadData.flatScalingFactors = flatScalingFactors;
 
-   /*
-    * Running threads list. Note that IndirectArray<> initializes all of its
-    * contained pointers to nullptr.
-    */
-   int numberOfThreads = Thread::NumberOfThreads( PCL_MAX_PROCESSORS, 1 );
-   thread_list runningThreads( Min( int( p_targetFrames.Length() ), numberOfThreads ) );
-   console.WriteLn( String().Format( "* Using %u worker threads.", runningThreads.Length() ) );
-
-   /*
-    * Waiting threads list. We use this list for temporary storage of
-    * calibration threads for multiple image files.
-    */
-   thread_list waitingThreads;
-
-   /*
-    * Flag to signal the beginning of the final waiting period, when there are
-    * no more pending images but there are still running threads.
-    */
-   bool waitingForFinished = false;
-
-   /*
-    * We'll work on a temporary duplicate of the target frames list. This
-    * allows us to modify the working list without altering the instance.
-    */
-   image_list targets( p_targetFrames );
-
    int succeeded = 0;
    int failed = 0;
    int skipped = 0;
 
-   try
-   {
-      for ( ;; )
+   Array<size_type> pendingItems;
+   for ( size_type i = 0; i < p_targetFrames.Length(); ++i )
+      if ( p_targetFrames[i].enabled )
+         pendingItems << i;
+      else
       {
-         try
+         console.NoteLn( "* Skipping disabled target: <raw>" + p_targetFrames[i].path + "</raw>" );
+         ++skipped;
+      }
+
+   /*
+    * Begin light frame calibration process.
+    */
+   console.NoteLn( String().Format( "<end><cbr><br>* Calibration of %u target frames.", pendingItems.Length() ) );
+
+   Module->ProcessEvents();
+
+   if ( p_useFileThreads && pendingItems.Length() > 1 )
+   {
+      /*
+       * Running threads list. Note that IndirectArray<> initializes all of its
+       * contained pointers to nullptr.
+       */
+      int numberOfThreadsAvailable = RoundInt( Thread::NumberOfThreads( PCL_MAX_PROCESSORS, 1 ) * p_fileThreadOverload );
+      int numberOfThreads = Min( numberOfThreadsAvailable, int( pendingItems.Length() ) );
+      thread_list runningThreads( numberOfThreads );
+
+      console.NoteLn( String().Format( "<end><br>* Using %d worker threads.", numberOfThreads ) );
+      console.Flush();
+
+      try
+      {
+         /*
+          * Thread execution loop.
+          */
+         for ( ;; )
          {
-            /*
-             * Thread execution loop.
-             */
-            thread_list::iterator i = nullptr;
-            size_type unused = 0;
-            for ( thread_list::iterator j = runningThreads.Begin(); j != runningThreads.End(); ++j )
+            try
             {
-               // Keep the GUI responsive
-               Module->ProcessEvents();
+               int running = 0;
+               for ( thread_list::iterator i = runningThreads.Begin(); i != runningThreads.End(); ++i )
+               {
+                  Module->ProcessEvents();
+                  if ( console.AbortRequested() )
+                     throw ProcessAborted();
+
+                  if ( *i != nullptr )
+                  {
+                     /*
+                      * Check for a running thread
+                      */
+                     if ( !(*i)->Wait( 150 ) )
+                     {
+                        ++running;
+                        continue;
+                     }
+
+                     /*
+                      * A thread has finished execution
+                      */
+                     (*i)->FlushConsoleOutputText();
+                     String errorInfo;
+                     if ( (*i)->Succeeded() )
+                        (*i)->GetOutputData( o_output[(*i)->Index()] );
+                     else
+                        errorInfo = (*i)->ErrorInfo();
+
+                     /*
+                      * N.B.: IndirectArray<>::Delete() sets to zero the
+                      * pointer pointed to by the iterator, but does not remove
+                      * the array element.
+                      */
+                     runningThreads.Delete( i );
+
+                     if ( !errorInfo.IsEmpty() )
+                        throw Error( errorInfo );
+
+                     ++succeeded;
+                  }
+
+                  /*
+                   * If there are pending items, try to create a new worker
+                   * thread and fire it.
+                   */
+                  if ( !pendingItems.IsEmpty() )
+                  {
+                     *i = new CalibrationThread( threadData, *pendingItems );
+                     pendingItems.Remove( pendingItems.Begin() );
+                     size_type threadIndex = i - runningThreads.Begin();
+                     console.NoteLn( String().Format( "<end><cbr>[%03u] <raw>", threadIndex ) + (*i)->TargetFilePath() + "</raw>" );
+                     (*i)->Start( ThreadPriority::DefaultMax, threadIndex );
+                     ++running;
+                     if ( pendingItems.IsEmpty() )
+                        console.NoteLn( "<br>* Waiting for running tasks to terminate..." );
+                  }
+               }
+
+               if ( !running )
+                  break;
+            }
+            catch ( ProcessAborted& )
+            {
+               throw;
+            }
+            catch ( ... )
+            {
                if ( console.AbortRequested() )
                   throw ProcessAborted();
 
-               if ( *j == nullptr )
+               ++failed;
+               try
                {
-                  /*
-                   * This is a free thread slot. Ignore it if we don't have
-                   * more pending images to feed in.
-                   */
-                  if ( targets.IsEmpty() )
-                     if ( waitingThreads.IsEmpty() )
-                     {
-                        ++unused;
-                        continue;
-                     }
+                  throw;
                }
-               else
-               {
-                  /*
-                   * This is an existing thread. If this thread is still alive,
-                   * wait for a while and then continue watching.
-                   */
-                  if ( (*j)->IsActive() )
-                  {
-                     pcl::Sleep( 150 );
-                     continue;
-                  }
-               }
+               ERROR_HANDLER
 
-               /*
-                * If we have a useful free thread slot, or if a thread has just
-                * finished, exit the execution loop and work it out.
-                */
-               i = j;
-               break;
+               ApplyErrorPolicy();
             }
-
-            /*
-             * Keep watching while there are no useful free thread slots or a
-             * finished thread.
-             */
-            if ( i == nullptr )
-               if ( unused == runningThreads.Length() )
-                  break;
-               else
-                  continue;
-
-            /*
-             * At this point we have found either a unused thread slot that we
-             * can reuse, or a thread that has just finished execution.
-             */
-            if ( *i != nullptr )
-            {
-               /*
-                * This is a just-finished thread.
-                */
-               (*i)->FlushConsoleOutputText();
-               String errorInfo;
-               if ( (*i)->Succeeded() )
-                  WriteCalibratedImage( *i );
-               else
-                  errorInfo = (*i)->ErrorInfo();
-
-               /*
-                * N.B.: IndirectArray<>::Delete() sets to zero the pointer
-                * pointed to by the iterator, but does not remove the array
-                * element.
-                */
-               runningThreads.Delete( i );
-
-               if ( !errorInfo.IsEmpty() )
-                  throw Error( errorInfo );
-
-               ++succeeded;
-            }
-
-            // Keep the GUI responsive.
-            Module->ProcessEvents();
-            if ( console.AbortRequested() )
-               throw ProcessAborted();
-
-            if ( !waitingThreads.IsEmpty() )
-            {
-               /*
-                * If there are waiting threads, pop the first one from the
-                * waiting threads list and put it in the free thread slot for
-                * immediate execution.
-                */
-               *i = *waitingThreads;
-               waitingThreads.Remove( waitingThreads.Begin() );
-            }
-            else
-            {
-               /*
-                * If there are no more target frames to calibrate, simply wait
-                * until all running threads terminate execution.
-                */
-               if ( targets.IsEmpty() )
-               {
-                  bool someRunning = false;
-                  for ( thread_list::iterator j = runningThreads.Begin(); j != runningThreads.End(); ++j )
-                     if ( *j != nullptr )
-                     {
-                        someRunning = true;
-                        break;
-                     }
-
-                  /*
-                   * If there are still running threads, continue waiting.
-                   */
-                  if ( someRunning )
-                  {
-                     if ( !waitingForFinished )
-                     {
-                        console.NoteLn( "<end><cbr><br>* Waiting for running tasks to terminate..." );
-                        waitingForFinished = true;
-                     }
-                     continue;
-                  }
-
-                  /*
-                   * If there are no running threads, no waiting threads, and
-                   * no pending target frames, then we are done.
-                   */
-                  break;
-               }
-
-               /*
-                * We still have pending work to do: Extract the next target
-                * frame from the targets list, load and calibrate it.
-                */
-               ImageItem item = *targets;
-               targets.Remove( targets.Begin() );
-
-               /*
-                * Skip disabled targets.
-                */
-               if ( !item.enabled )
-               {
-                  ++skipped;
-                  continue;
-               }
-
-               /*
-                * Create a new thread for this target frame image, or if this
-                * is a multiple-image file, a set of threads for all subimages
-                * in this file.
-                */
-               thread_list threads = LoadTargetFrame( item.path, threadData );
-
-               /*
-                * Put the new thread, or the first thread if this is a
-                * multiple-image file, in the free slot.
-                */
-               *i = *threads;
-               threads.Remove( threads.Begin() );
-
-               /*
-                * Add the rest of subimages in a multiple-image file to the
-                * list of waiting threads.
-                */
-               if ( !threads.IsEmpty() )
-                  waitingThreads.Add( threads );
-            }
-
-            /*
-             * If we have produced a new thread, run it.
-             */
-            if ( *i != nullptr )
-            {
-               size_type threadIndex = i - runningThreads.Begin();
-               console.NoteLn( String().Format( "<end><cbr><br>[%03u] ", threadIndex ) + (*i)->TargetFilePath() );
-               (*i)->Start( ThreadPriority::DefaultMax, threadIndex );
-            }
-         } // try
+         }
+      }
+      catch ( ... )
+      {
+         console.NoteLn( "<end><cbr><br>* Waiting for running tasks to terminate..." );
+         for ( CalibrationThread* thread : runningThreads )
+            if ( thread != nullptr )
+               thread->Abort();
+         for ( CalibrationThread* thread : runningThreads )
+            if ( thread != nullptr )
+               thread->Wait();
+         runningThreads.Destroy();
+         throw;
+      }
+   }
+   else // !p_useFileThreads || pendingItems.Length() < 2
+   {
+      for ( size_type itemIndex : pendingItems )
+      {
+         try
+         {
+            CalibrationThread thread( threadData, itemIndex );
+            thread.Run();
+            thread.GetOutputData( o_output[itemIndex] );
+            ++succeeded;
+         }
          catch ( ProcessAborted& )
          {
-            /*
-             * The user has requested to abort the process.
-             */
             throw;
          }
          catch ( ... )
          {
-            /*
-             * The user has requested to abort the process.
-             */
             if ( console.AbortRequested() )
                throw ProcessAborted();
 
-            /*
-             * Other errors handled according to the selected error policy.
-             */
             ++failed;
-
             try
             {
                throw;
             }
             ERROR_HANDLER
 
-            console.ResetStatus();
-            console.EnableAbort();
-
-            console.Note( "<end><cbr><br>* Applying error policy: " );
-
-            switch ( p_onError )
-            {
-            default: // ?
-            case ICOnError::Continue:
-               console.NoteLn( "Continue on error." );
-               continue;
-
-            case ICOnError::Abort:
-               console.NoteLn( "Abort on error." );
-               throw ProcessAborted();
-
-            case ICOnError::AskUser:
-               {
-                  console.NoteLn( "Ask on error..." );
-
-                  int r = MessageBox( "<p style=\"white-space:pre;\">"
-                     "An error occurred during ImageCalibration execution. What do you want to do?</p>",
-                     "ImageCalibration",
-                     StdIcon::Error,
-                     StdButton::Ignore, StdButton::Abort ).Execute();
-
-                  if ( r == StdButton::Abort )
-                  {
-                     console.NoteLn( "* Aborting as per user request." );
-                     throw ProcessAborted();
-                  }
-
-                  console.NoteLn( "* Ignoring error as per user request." );
-                  continue;
-               }
-            }
+            ApplyErrorPolicy();
          }
-      } // for ( ;; )
-   } // try
-   catch ( ... )
-   {
-      console.NoteLn( "<end><cbr><br>* Waiting for running tasks to terminate..." );
-      for ( thread_list::iterator i = runningThreads.Begin(); i != runningThreads.End(); ++i )
-         if ( *i != nullptr ) (*i)->Abort();
-      for ( thread_list::iterator i = runningThreads.Begin(); i != runningThreads.End(); ++i )
-         if ( *i != nullptr ) (*i)->Wait();
-      runningThreads.Destroy();
-      waitingThreads.Destroy();
-      throw;
+      }
    }
 
-   /*
-    * Fail if no images have been calibrated.
-    */
+   Module->ProcessEvents();
+
    if ( succeeded == 0 )
    {
       if ( failed == 0 )
@@ -2743,12 +2588,52 @@ bool ImageCalibrationInstance::ExecuteGlobal()
       throw Error( "No image could be calibrated." );
    }
 
-   /*
-    * Write the final report to the console.
-    */
    console.NoteLn( String().Format( "<end><cbr><br>===== ImageCalibration: %u succeeded, %u failed, %u skipped =====",
                                     succeeded, failed, skipped ) );
    return true;
+}
+
+// ----------------------------------------------------------------------------
+
+void ImageCalibrationInstance::ApplyErrorPolicy()
+{
+   Console console;
+   console.ResetStatus();
+   console.EnableAbort();
+
+   console.Note( "<end><cbr><br>* Applying error policy: " );
+
+   switch ( p_onError )
+   {
+   default: // ?
+   case ICOnError::Continue:
+      console.NoteLn( "Continue on error." );
+      break;
+
+   case ICOnError::Abort:
+      console.NoteLn( "Abort on error." );
+      throw ProcessAborted();
+
+   case ICOnError::AskUser:
+      {
+         console.NoteLn( "Ask on error..." );
+
+         int r = MessageBox( "<p style=\"white-space:pre;\">"
+                             "An error occurred during ImageCalibration execution. What do you want to do?</p>",
+                             "ImageCalibration",
+                             StdIcon::Error,
+                             StdButton::Ignore, StdButton::Abort ).Execute();
+
+         if ( r == StdButton::Abort )
+         {
+            console.NoteLn( "* Aborting as per user request." );
+            throw ProcessAborted();
+         }
+
+         console.NoteLn( "* Error ignored as per user request." );
+      }
+      break;
+   }
 }
 
 // ----------------------------------------------------------------------------
@@ -2856,6 +2741,8 @@ void* ImageCalibrationInstance::LockParameter( const MetaParameter* p, size_type
       return &p_evaluateSignal;
    if ( p == TheICStructureLayersParameter )
       return &p_structureLayers;
+   if ( p == TheICNoiseLayersParameter )
+      return &p_noiseLayers;
    if ( p == TheICHotPixelFilterRadiusParameter )
       return &p_hotPixelFilterRadius;
    if ( p == TheICNoiseReductionFilterRadiusParameter )
@@ -2864,6 +2751,8 @@ void* ImageCalibrationInstance::LockParameter( const MetaParameter* p, size_type
       return &p_minStructureSize;
    if ( p == TheICPSFTypeParameter )
       return &p_psfType;
+   if ( p == TheICPSFRejectionLimitParameter )
+      return &p_psfRejectionLimit;
 
    if ( p == TheICOutputDirectoryParameter )
       return p_outputDirectory.Begin();
@@ -2883,6 +2772,15 @@ void* ImageCalibrationInstance::LockParameter( const MetaParameter* p, size_type
       return &p_onError;
    if ( p == TheICNoGUIMessagesParameter )
       return &p_noGUIMessages;
+
+   if ( p == TheICUseFileThreadsParameter )
+      return &p_useFileThreads;
+   if ( p == TheICFileThreadOverloadParameter )
+      return &p_fileThreadOverload;
+   if ( p == TheICMaxFileReadThreadsParameter )
+      return &p_maxFileReadThreads;
+   if ( p == TheICMaxFileWriteThreadsParameter )
+      return &p_maxFileWriteThreads;
 
    if ( p == TheICOutputFilePathParameter )
       return o_output[tableRow].outputFilePath.Begin();
@@ -3117,4 +3015,4 @@ size_type ImageCalibrationInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInstance.cpp - Released 2021-10-20T18:10:09Z
+// EOF ImageCalibrationInstance.cpp - Released 2021-10-28T16:39:26Z

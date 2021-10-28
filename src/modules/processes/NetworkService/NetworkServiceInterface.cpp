@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.12
+// /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
 // Standard NetworkService Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// NetworkServiceInterface.cpp - Released 2021-10-20T18:10:09Z
+// NetworkServiceInterface.cpp - Released 2021-10-28T16:39:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NetworkService PixInsight module.
 //
@@ -62,8 +62,8 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-static const char* DEFAULT_TASK_PROVIDER_URL = "https://pixinsight.com/tasks/next-task.php";
-static const char* DEFAULT_TASK_TYPE = "DEFAULT_TASK";
+static const char* DEFAULT_TASK_PROVIDER_URL = "";
+static const char* DEFAULT_TASK_TYPE = "";
 
 // ----------------------------------------------------------------------------
 
@@ -419,4 +419,4 @@ NetworkServiceInterface::GUIData::GUIData( NetworkServiceInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF NetworkServiceInterface.cpp - Released 2021-10-20T18:10:09Z
+// EOF NetworkServiceInterface.cpp - Released 2021-10-28T16:39:26Z

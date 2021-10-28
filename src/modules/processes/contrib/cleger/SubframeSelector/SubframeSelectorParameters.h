@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.12
+// /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// SubframeSelectorParameters.h - Released 2021-10-20T18:10:09Z
+// SubframeSelectorParameters.h - Released 2021-10-28T16:39:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -933,6 +933,70 @@ extern SSGraphProperty* TheSSGraphPropertyParameter;
 
 // ----------------------------------------------------------------------------
 
+class SSUseFileThreads : public MetaBoolean
+{
+public:
+
+   SSUseFileThreads( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern SSUseFileThreads* TheSSUseFileThreadsParameter;
+
+// ----------------------------------------------------------------------------
+
+class SSFileThreadOverload : public MetaFloat
+{
+public:
+
+   SSFileThreadOverload( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern SSFileThreadOverload* TheSSFileThreadOverloadParameter;
+
+// ----------------------------------------------------------------------------
+
+class SSMaxFileReadThreads : public MetaInt32
+{
+public:
+
+   SSMaxFileReadThreads( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern SSMaxFileReadThreads* TheSSMaxFileReadThreadsParameter;
+
+// ----------------------------------------------------------------------------
+
+class SSMaxFileWriteThreads : public MetaInt32
+{
+public:
+
+   SSMaxFileWriteThreads( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern SSMaxFileWriteThreads* TheSSMaxFileWriteThreadsParameter;
+
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+
 class SSMeasurements : public MetaTable
 {
 public:
@@ -940,6 +1004,7 @@ public:
    SSMeasurements( MetaProcess* );
 
    IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern SSMeasurements* TheSSMeasurementsParameter;
@@ -956,6 +1021,7 @@ public:
    double DefaultValue() const override;
    double MinimumValue() const override;
    double MaximumValue() const override;
+   bool IsReadOnly() const override;
 };
 
 extern SSMeasurementIndex* TheSSMeasurementIndexParameter;
@@ -970,6 +1036,7 @@ public:
 
    IsoString Id() const override;
    bool DefaultValue() const override;
+   bool IsReadOnly() const override;
 };
 
 extern SSMeasurementEnabled* TheSSMeasurementEnabledParameter;
@@ -984,6 +1051,7 @@ public:
 
    IsoString Id() const override;
    bool DefaultValue() const override;
+   bool IsReadOnly() const override;
 };
 
 extern SSMeasurementLocked* TheSSMeasurementLockedParameter;
@@ -997,6 +1065,7 @@ public:
    SSMeasurementPath( MetaTable* );
 
    IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern SSMeasurementPath* TheSSMeasurementPathParameter;
@@ -1014,6 +1083,7 @@ public:
    double DefaultValue() const override;
    double MinimumValue() const override;
    double MaximumValue() const override;
+   bool IsReadOnly() const override;
 };
 
 extern SSMeasurementWeight* TheSSMeasurementWeightParameter;
@@ -1031,6 +1101,7 @@ public:
    double DefaultValue() const override;
    double MinimumValue() const override;
    double MaximumValue() const override;
+   bool IsReadOnly() const override;
 };
 
 extern SSMeasurementFWHM* TheSSMeasurementFWHMParameter;
@@ -1048,6 +1119,7 @@ public:
    double DefaultValue() const override;
    double MinimumValue() const override;
    double MaximumValue() const override;
+   bool IsReadOnly() const override;
 };
 
 extern SSMeasurementEccentricity* TheSSMeasurementEccentricityParameter;
@@ -1064,6 +1136,7 @@ public:
    int Precision() const override;
    bool ScientificNotation() const override;
    double DefaultValue() const override;
+   bool IsReadOnly() const override;
 };
 
 extern SSMeasurementPSFSignalWeight* TheSSMeasurementPSFSignalWeightParameter;
@@ -1080,6 +1153,7 @@ public:
    int Precision() const override;
    bool ScientificNotation() const override;
    double DefaultValue() const override;
+   bool IsReadOnly() const override;
 };
 
 extern SSMeasurementPSFPowerWeight* TheSSMeasurementPSFPowerWeightParameter;
@@ -1096,6 +1170,7 @@ public:
    int Precision() const override;
    bool ScientificNotation() const override;
    double DefaultValue() const override;
+   bool IsReadOnly() const override;
 };
 
 extern SSMeasurementSNRWeight* TheSSMeasurementSNRWeightParameter;
@@ -1113,6 +1188,7 @@ public:
    double DefaultValue() const override;
    double MinimumValue() const override;
    double MaximumValue() const override;
+   bool IsReadOnly() const override;
 };
 
 extern SSMeasurementMedian* TheSSMeasurementMedianParameter;
@@ -1130,6 +1206,7 @@ public:
    double DefaultValue() const override;
    double MinimumValue() const override;
    double MaximumValue() const override;
+   bool IsReadOnly() const override;
 };
 
 extern SSMeasurementMedianMeanDev* TheSSMeasurementMedianMeanDevParameter;
@@ -1147,6 +1224,7 @@ public:
    double DefaultValue() const override;
    double MinimumValue() const override;
    double MaximumValue() const override;
+   bool IsReadOnly() const override;
 };
 
 extern SSMeasurementNoise* TheSSMeasurementNoiseParameter;
@@ -1164,6 +1242,7 @@ public:
    double DefaultValue() const override;
    double MinimumValue() const override;
    double MaximumValue() const override;
+   bool IsReadOnly() const override;
 };
 
 extern SSMeasurementNoiseRatio* TheSSMeasurementNoiseRatioParameter;
@@ -1180,6 +1259,7 @@ public:
    double DefaultValue() const override;
    double MinimumValue() const override;
    double MaximumValue() const override;
+   bool IsReadOnly() const override;
 };
 
 extern SSMeasurementStars* TheSSMeasurementStarsParameter;
@@ -1197,6 +1277,7 @@ public:
    double DefaultValue() const override;
    double MinimumValue() const override;
    double MaximumValue() const override;
+   bool IsReadOnly() const override;
 };
 
 extern SSMeasurementStarResidual* TheSSMeasurementStarResidualParameter;
@@ -1214,6 +1295,7 @@ public:
    double DefaultValue() const override;
    double MinimumValue() const override;
    double MaximumValue() const override;
+   bool IsReadOnly() const override;
 };
 
 extern SSMeasurementFWHMMeanDev* TheSSMeasurementFWHMMeanDevParameter;
@@ -1231,6 +1313,7 @@ public:
    double DefaultValue() const override;
    double MinimumValue() const override;
    double MaximumValue() const override;
+   bool IsReadOnly() const override;
 };
 
 extern SSMeasurementEccentricityMeanDev* TheSSMeasurementEccentricityMeanDevParameter;
@@ -1248,6 +1331,7 @@ public:
    double DefaultValue() const override;
    double MinimumValue() const override;
    double MaximumValue() const override;
+   bool IsReadOnly() const override;
 };
 
 extern SSMeasurementStarResidualMeanDev* TheSSMeasurementStarResidualMeanDevParameter;
@@ -1261,4 +1345,4 @@ PCL_END_LOCAL
 #endif   // __SubframeSelectorParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorParameters.h - Released 2021-10-20T18:10:09Z
+// EOF SubframeSelectorParameters.h - Released 2021-10-28T16:39:26Z

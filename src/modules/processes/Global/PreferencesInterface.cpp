@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.12
+// /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.3.1
 // ----------------------------------------------------------------------------
-// PreferencesInterface.cpp - Released 2021-10-20T18:10:09Z
+// PreferencesInterface.cpp - Released 2021-10-28T16:39:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -1862,21 +1862,22 @@ DirectoriesAndNetworkPreferencesPage::DirectoriesAndNetworkPreferencesPage( Pref
    SwapDirectories_DirList.SetToolTip(
       "<p>This is the list of directories (or <i>folders</i>) where PixInsight generates temporary swap files.</p>"
       "<p>Each directory in this list must be a full path specification to an existing directory. "
-      "With two or more swap directories, PixInsight uses concurrent execution threads to perform <i>parallel disk I/O "
-      "operations</i> when reading and writing swap files. Parallel swap file access can provide significant performance "
+      "With two or more swap directories, PixInsight uses concurrent execution threads to perform parallel disk I/O "
+      "operations when reading and writing swap files. Parallel swap file access can provide significant performance "
       "improvements, especially working with very large images that require gigabytes of swap disk storage.</p>"
       "<p><b>* Important *</b> The swap storage routines have been optimized for parallel I/O operations on fast SSD "
       "disks and virtual RAM drives. If you use one of these drives for swap file storage, the best performance will be "
       "achieved when the same physical or virtual device (or a directory on it) is specified multiple times in this list. "
-      "The optimal number of concurrent threads for a SSD or RAM disk often lies between 4 and 8, but the best value must "
-      "be determined experimentally in each case through benchmarks.</p>"
-      "<p><b>* Warning *</b> If you use rotational hard disks for swap file storage, do not specify two or more swap "
-      "directories that are supported by the same physical device. Along with causing a severe performance degradation, "
-      "<b>multiple parallel write operations performed on a <u>rotational</u> hard disk may be dangerous to the integrity "
-      "of the disk drive.</b></p>"
+      "The optimal number of concurrent threads for a SSD or RAM disk often lies between 4 and 32, but the best value "
+      "must be determined experimentally in each case through benchmarks.</p>"
+      "<p><b>* Warning *</b> If you use rotational hard disks (HDD) for swap file storage with PixInsight (which is not "
+      "recommended), do not specify two or more swap directories that are supported by the same physical device. "
+      "Parallel I/O operations performed on <u>the same</u> rotational disk may cause severe performance degradation. "
+      "However, if you have several of these devices, you can specify a directory on each of them to achieve an important "
+      "performance improvement.</p>"
       "<p><b>* Warning *</b> Ensure that there is enough free space on the storage device(s) that support these "
       "directories on the local filesystem. Insufficient swap disk space may compromise system stability. For normal "
-      "CCD imaging production, a minimum of 60 GB is strongly recommended.</p>"
+      "CCD or DSLR imaging production, a minimum of 100 GB is strongly recommended.</p>"
       "<p><b>* Important *</b> Many critical operations depend on fast sequential access to very large files on the "
       "PixInsight platform. For this reason, a highly fragmented filesystem may degrade performance. Under MS Windows "
       "(both FAT and NTFS filesystems), it is very important to avoid heavy disk fragmentation by running the "
@@ -2489,32 +2490,28 @@ ParallelProcessingPreferencesPage::ParallelProcessingPreferencesPage( Preference
    MaxFileReadThreads_Integer.item = &instance.process.maxFileReadThreads;
    MaxFileReadThreads_Integer.SetToolTip(
       "<p>This is the maximum number of threads allowed for concurrent file reading operations. Tasks that perform "
-      "heavy file I/O operations, such as ImageIntegration or StarAlignment for example, can work more efficiently on "
-      "solid-state drives (SSD) when parallel file access is allowed.</p>"
-      "<p>The default value of one thread is very conservative and is appropriate only for rotational hard disk "
-      "drives (HDD), where parallel file I/O operations may incur in severe performance penalties. If you are using "
-      "SSD devices, you should allow parallel file reading operations by increasing the value of this parameter. "
-      "The optimal value depends on several hardware and software conditions, but is usually in the range from 4 to 16 "
-      "threads.</p>"
-      "<p><b>* Warning *</b> Do not increase the value of this parameter if you are using rotational hard disk drives, "
-      "as doing so may lead to severe performance degradation and can even be dangerous for the integrity of the "
-      "physical devices. Set a value greater than one only if you use solid-state disk drives (SDD).</p>" );
+      "heavy file I/O operations, such as ImageCalibration, ImageIntegration or StarAlignment for example, can work "
+      "more efficiently on solid-state drives (SSD) when parallel file access is allowed.</p>"
+      "<p>The default value of 8 threads is usually a good starting point for most SSD units. The optimal value "
+      "depends on specific hardware and software conditions and should be found through benchmarks. It is usually in "
+      "the range from 4 to 32 threads.</p>"
+      "<p>For rotational hard disk drives (HDD) parallel file I/O operations may incur in severe performance penalties. "
+      "If you are using one of these obsolete devices with PixInsight (which is not recommended) you normally should "
+      "set this parameter to its minimum value of one thread.</p>" );
 
    MaxFileWriteThreads_Integer.label.SetText( "Maximum number of file writing threads" );
    MaxFileWriteThreads_Integer.spinBox.SetRange( 1, 1024 );
    MaxFileWriteThreads_Integer.item = &instance.process.maxFileWriteThreads;
    MaxFileWriteThreads_Integer.SetToolTip(
       "<p>This is the maximum number of threads allowed for concurrent file writing operations. Tasks that perform "
-      "heavy file I/O operations, such as ImageIntegration or StarAlignment for example, can work more efficiently on "
-      "solid-state drives (SSD) when parallel file access is allowed.</p>"
-      "<p>The default value of one thread is very conservative and is appropriate only for rotational hard disk "
-      "drives (HDD), where parallel file I/O operations may incur in severe performance penalties. If you are using "
-      "SSD devices, you should allow parallel file writing operations by increasing the value of this parameter. "
-      "The optimal value depends on several hardware and software conditions, but is usually in the range from 4 to 16 "
-      "threads.</p>"
-      "<p><b>* Warning *</b> Do not increase the value of this parameter if you are using rotational hard disk drives, "
-      "as doing so may lead to severe performance degradation and can even be dangerous for the integrity of the "
-      "physical devices. Set a value greater than one only if you use solid-state disk drives (SDD).</p>" );
+      "heavy file I/O operations, such as ImageCalibration, ImageIntegration or StarAlignment for example, can work "
+      "more efficiently on solid-state drives (SSD) when parallel file access is allowed.</p>"
+      "<p>The default value of 8 threads is usually a good starting point for most SSD units. The optimal value "
+      "depends on specific hardware and software conditions and should be found through benchmarks. It is usually in "
+      "the range from 4 to 32 threads.</p>"
+      "<p>For rotational hard disk drives (HDD) parallel file I/O operations may incur in severe performance penalties. "
+      "If you are using one of these obsolete devices with PixInsight (which is not recommended) you normally should "
+      "set this parameter to its minimum value of one thread.</p>" );
 
    EnableCUDAAcceleration_Flag.checkBox.SetText( "Enable CUDA acceleration" );
    EnableCUDAAcceleration_Flag.item = &instance.process.enableCUDAAcceleration;
@@ -2867,4 +2864,4 @@ void PreferencesInterface::GUIData::InitializeCategories()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInterface.cpp - Released 2021-10-20T18:10:09Z
+// EOF PreferencesInterface.cpp - Released 2021-10-28T16:39:26Z

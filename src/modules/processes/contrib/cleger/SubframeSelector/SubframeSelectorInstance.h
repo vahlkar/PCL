@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.12
+// /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// SubframeSelectorInstance.h - Released 2021-10-20T18:10:09Z
+// SubframeSelectorInstance.h - Released 2021-10-28T16:39:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -64,10 +64,8 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-struct MeasureThreadInputData;
 class SubframeSelectorMeasureThread;
-
-typedef IndirectArray<SubframeSelectorMeasureThread> thread_list;
+class SubframeSelectorOutputThread;
 
 // ----------------------------------------------------------------------------
 
@@ -167,22 +165,30 @@ private:
    pcl_enum           p_sortingProperty;
    pcl_enum           p_graphProperty;
 
+   // High-level parallelism
+   pcl_bool           p_useFileThreads;
+   float              p_fileThreadOverload;
+   int32              p_maxFileReadThreads;
+   int32              p_maxFileWriteThreads;
+   int                m_maxFileReadThreads = 1;
+   int                m_maxFileWriteThreads = 1;
+
    // The set of measured subframes.
-   Array<MeasureItem> p_measures;
+   Array<MeasureItem> o_measures;
 
    bool CanTestStarDetector( String& whyNot ) const;
-   bool TestStarDetector();
+   void TestStarDetector();
 
    bool CanMeasure( String& whyNot ) const;
-   bool Measure();
+   void Measure();
 
    bool CanOutput( String& whyNot ) const;
-   bool Output();
+   void Output();
 
-   ImageVariant* LoadSubframe( double& noise, double& noiseRatio,
-                               double& psfSignalWeight, double& psfPowerWeight, double& snrWeight,
-                               const String& filePath );
-   void WriteMeasuredImage( MeasureItem* );
+   void ApplyErrorPolicy();
+
+   typedef IndirectArray<SubframeSelectorMeasureThread>  measure_thread_list;
+   typedef IndirectArray<SubframeSelectorOutputThread>   output_thread_list;
 
    friend struct MeasureData;
    friend class SubframeSelectorProcess;
@@ -190,6 +196,7 @@ private:
    friend class SubframeSelectorExpressionsInterface;
    friend class SubframeSelectorMeasurementsInterface;
    friend class SubframeSelectorMeasureThread;
+   friend class SubframeSelectorOutputThread;
 };
 
 // ----------------------------------------------------------------------------
@@ -199,4 +206,4 @@ private:
 #endif   // __SubframeSelectorInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInstance.h - Released 2021-10-20T18:10:09Z
+// EOF SubframeSelectorInstance.h - Released 2021-10-28T16:39:26Z
