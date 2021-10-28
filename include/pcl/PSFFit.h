@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.12
+// /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// pcl/PSFFit.h - Released 2021-10-20T18:03:58Z
+// pcl/PSFFit.h - Released 2021-10-28T16:38:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -118,8 +118,8 @@ namespace PSFunction
  * <tr><td>PSFFitStatus::FittedOk</td>           <td>PSF fitted correctly. The relative error of the solution is at most equal to the specified tolerance.</td></tr>
  * <tr><td>PSFFitStatus::BadParameters</td>      <td>The PSF fitting process failed because of improper input parameters.</td></tr>
  * <tr><td>PSFFitStatus::NoSolution</td>         <td>There is no solution with the specified parameters and source data.</td></tr>
- * <tr><td>PSFFitStatus::NoConvergence</td>      <td>The Levenberg-Marquadt algorithm did not find a valid solution after a prescribed maximum number of iterations.</td></tr>
- * <tr><td>PSFFitStatus::InaccurateSolution</td> <td>A PSF has been fitted, but the Levenberg-Marquadt algorithm couldn't find a valid solution to the specified tolerance.</td></tr>
+ * <tr><td>PSFFitStatus::NoConvergence</td>      <td>The Levenberg-Marquardt algorithm did not find a valid solution after a prescribed maximum number of iterations.</td></tr>
+ * <tr><td>PSFFitStatus::InaccurateSolution</td> <td>A PSF has been fitted, but the Levenberg-Marquardt algorithm couldn't find a valid solution to the specified tolerance.</td></tr>
  * <tr><td>PSFFitStatus::UnknownError</td>       <td>The PSF fitting process failed for an unspecified reason.</td></tr>
  * </table>
  */
@@ -207,6 +207,16 @@ struct PSFData
    operator bool() const
    {
       return status == PSFFitStatus::FittedOk;
+   }
+
+   /*!
+    * Conversion to double operator. Returns the mean signal estimate if
+    * nonzero, or the total flux otherwise. Useful for sorting and statistics
+    * calculations.
+    */
+   operator double() const
+   {
+      return (meanSignal != 0) ? meanSignal : flux;
    }
 
    /*!
@@ -378,8 +388,8 @@ public:
     *       Values outside this range may lead to numerically unstable PSF
     *       fitting processes.
     *
-    * The implementation of the Levenberg-Marquadt algorithm used internally by
-    * this function is extremely sensitive to the specified \a center and
+    * The implementation of the Levenberg-Marquardt algorithm used internally
+    * by this function is extremely sensitive to the specified \a center and
     * \a rect parameters. These starting parameters should always be
     * calculated using robust procedures to achieve consistent results.
     *
@@ -440,4 +450,4 @@ private:
 #endif   // __PCL_PSFFit_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFFit.h - Released 2021-10-20T18:03:58Z
+// EOF pcl/PSFFit.h - Released 2021-10-28T16:38:58Z

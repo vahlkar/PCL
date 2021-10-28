@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.12
+// /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// pcl/ProcessInterface.h - Released 2021-10-20T18:03:58Z
+// pcl/ProcessInterface.h - Released 2021-10-28T16:38:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -2615,4 +2615,4 @@ private:
 #endif   // __PCL_ProcessInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ProcessInterface.h - Released 2021-10-20T18:03:58Z
+// EOF pcl/ProcessInterface.h - Released 2021-10-28T16:38:58Z

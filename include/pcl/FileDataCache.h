@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.12
+// /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// pcl/FileDataCache.h - Released 2021-10-20T18:03:58Z
+// pcl/FileDataCache.h - Released 2021-10-28T16:38:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -518,4 +518,4 @@ private:
 #endif   // __PCL_FileDataCache_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FileDataCache.h - Released 2021-10-20T18:03:58Z
+// EOF pcl/FileDataCache.h - Released 2021-10-28T16:38:58Z

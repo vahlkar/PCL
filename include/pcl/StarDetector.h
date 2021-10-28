@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.12
+// /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// pcl/StarDetector.h - Released 2021-10-20T18:03:58Z
+// pcl/StarDetector.h - Released 2021-10-28T16:38:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -91,12 +91,16 @@ public:
        */
       typedef DPoint::component  component;
 
-      DPoint pos = 0.0;     //!< Barycenter or centroid position in pixels, image coordinates.
+      DPoint pos = 0.0;     /*!< Star position in image coordinates. Corresponds to the centroid of
+                                  the fitted PSF when PSF fitting is enabled; to the barycenter
+                                  calculated by the star detection algorithm otherwise. */
       Rect   rect = 0;      //!< Detection region in pixels, image coordinates.
       float  flux = 0;      //!< Total flux minus local background.
-      float  signal = 0;    //!< Estimated mean signal over the PSF fitting region.
-      float  mad = 0;       //!< Average absolute deviation of measured PSF with respect to sampled image data.
-      Star*  ref = nullptr; //!< Referenced star, for cross-reference applications.
+      float  signal = 0;    /*!< Estimated mean signal over the local background within the PSF
+                                 fitting region. Nonzero only when PSF fitting is enabled. */
+      float  mad = 0;       /*!< Average absolute deviation of the fitted PSF with respect to
+                                 sampled image data. */
+      Star*  ref = nullptr; //!< Referenced star, useful for cross-referencing applications.
 
       /*!
        * Default constructor.
@@ -124,8 +128,8 @@ public:
       Star& operator =( const Star& ) = default;
 
       /*!
-       * Equality operator. Two stars are equal iif they are located at the
-       * same coordinates.
+       * Equality operator. Two stars are equal iff they are located at the
+       * same coordinates, i.e at the same barycenter or centroid position.
        */
       bool operator ==( const Star& s ) const
       {
@@ -134,7 +138,8 @@ public:
 
       /*!
        * Less-than relational operator. By default stars are sorted by
-       * brightness in descending order (brighter stars come first).
+       * brightness in descending order. Stars with larger flux values come
+       * first in a sorted list.
        */
       bool operator <( const Star& s ) const
       {
@@ -142,8 +147,8 @@ public:
       }
 
       /*!
-       * Array subscript operator for coordinate selection, pcl::QuadTree
-       * compatible.
+       * Array subscript operator for coordinate selection, compatible with
+       * pcl::QuadTree.
        */
       component operator []( int i ) const
       {
@@ -179,7 +184,17 @@ public:
    }
 
    /*!
+    * Number of (dyadic) wavelet layers used for structure detection.
     *
+    * This parameter determines the size in pixels of the largest image
+    * structures that can be detected. With more layers, larger stars (and
+    * perhaps also some nonstellar objects) will be detected. The default value
+    * is 5, which corresponds to structures in the scale of 32 pixels.
+    *
+    * \note Although the current star detection algorithm does not use a
+    * wavelet transform for structure detection, this parameter is still
+    * expressed as a number of dyadic wavelet layers for convenience and
+    * compatibility with existing implementations.
     */
    int StructureLayers() const
    {
@@ -187,7 +202,8 @@ public:
    }
 
    /*!
-    *
+    * Sets the number of wavelet layers used for structure detection. See
+    * StructureLayers() for a description of this parameter.
     */
    void SetStructureLayers( int n )
    {
@@ -196,7 +212,19 @@ public:
    }
 
    /*!
+    * Number of (dyadic) wavelet layers used for noise reduction.
     *
+    * Noise reduction prevents detection of bright noise structures as false
+    * stars, including hot pixels and cosmic rays. This parameter can also be
+    * used to control the sizes of the smallest detected stars (increase it to
+    * exclude more stars), although the <em>minimum structure size</em>
+    * parameter can be more efficient for this purpose. The default value is 0,
+    * which effectively disables this noise reduction feature.
+    *
+    * \note Although the current star detection algorithm does not use a
+    * wavelet transform for structure detection, this parameter is still
+    * expressed as a number of dyadic wavelet layers for convenience and
+    * compatibility with existing implementations.
     */
    int NoiseLayers() const
    {
@@ -204,7 +232,8 @@ public:
    }
 
    /*!
-    *
+    * Sets the number of wavelet layers used for noise reduction. See
+    * NoiseLayers() for a description of this parameter.
     */
    void SetNoiseLayers( int n )
    {
@@ -213,7 +242,12 @@ public:
    }
 
    /*!
+    * Size of the hot pixel removal filter.
     *
+    * This is the radius in pixels of a median filter applied by the star
+    * detector before the structure detection phase. A median filter is very
+    * efficient to remove hot pixels. To disable hot pixel removal, set this
+    * parameter to zero. The default value is 1 pixel.
     */
    int HotPixelFilterRadius() const
    {
@@ -221,7 +255,8 @@ public:
    }
 
    /*!
-    *
+    * Sets the size of the hot pixel removal filter. See HotPixelFilterRadius()
+    * for a description of this parameter.
     */
    void SetHotPixelFilterRadius( int n )
    {
@@ -230,7 +265,19 @@ public:
    }
 
    /*!
+    * Size of the noise reduction filter.
     *
+    * This is the radius in pixels of a Gaussian convolution filter applied to
+    * the working image used for calculation of star positions during the star
+    * detection phase. Use it only for very low SNR images, where the star
+    * detector cannot find reliable stars with default parameters.
+    *
+    * Be aware that noise reduction will modify star profiles and hence the way
+    * star positions are calculated, resulting in a less accurate centroid
+    * determination. Under extreme low-SNR conditions, however, this is
+    * probably better than working with the actual data anyway.
+    *
+    * The default value is zero, which effectively disables this feature.
     */
    int NoiseReductionFilterRadius() const
    {
@@ -238,7 +285,8 @@ public:
    }
 
    /*!
-    *
+    * Sets the size in pixels of the noise reduction filter. See
+    * NoiseReductionFilterRadius() for a description of this parameter.
     */
    void SetNoiseReductionFilterRadius( int n )
    {
@@ -247,7 +295,15 @@ public:
    }
 
    /*!
+    * Minimum size of a detectable star structure in square pixels.
     *
+    * This parameter can be used to prevent detection of small and bright image
+    * artifacts as stars. This can be useful to work with uncalibrated or
+    * wrongly calibrated data, especially demosaiced CFA frames where hot
+    * pixels have generated large bright artifacts that cannot be removed with
+    * a median filter, poorly focused images, and images with poor tracking.
+    *
+    * The default value is zero, which effectively disables this feature.
     */
    int MinStructureSize() const
    {
@@ -255,7 +311,8 @@ public:
    }
 
    /*!
-    *
+    * Sets the minimum size of a detectable star structure in square pixels.
+    * See MinStructureSize() for a description of this parameter.
     */
    void SetMinStructureSize( int n )
    {
@@ -264,7 +321,15 @@ public:
    }
 
    /*!
+    * Star detection sensitivity.
     *
+    * The sensitivity of the star detection algorithm is measured with respect
+    * to the local background of each detected star. Given a star with
+    * estimated brightness \e s and local background \e b, sensitivity is the
+    * minimum value of (\e s - \e b)/\e b necessary to trigger star detection.
+    *
+    * Decrease this value to favor detection of fainter stars. Increase it to
+    * restrict detection to brighter stars. The default value is 0.1.
     */
    float Sensitivity() const
    {
@@ -272,7 +337,8 @@ public:
    }
 
    /*!
-    *
+    * Sets the star detection sensitivity. See Sensitivity() for a description
+    * of this parameter.
     */
    void SetSensitivity( float s )
    {
@@ -281,7 +347,14 @@ public:
    }
 
    /*!
+    * Star peak response.
     *
+    * If you decrease this value, stars will need to have stronger (or more
+    * prominent) peaks to be detected by the star detection algorithm. This is
+    * useful to prevent detection of saturated stars, as well as small
+    * nonstellar features. By increasing this parameter, the star detection
+    * algorithm will be more sensitive to \e peakedness, and hence more
+    * tolerant with relatively flat image features. The default value is 0.8.
     */
    float PeakResponse() const
    {
@@ -289,7 +362,8 @@ public:
    }
 
    /*!
-    *
+    * Sets the star peak response. See PeakResponse() for a description of this
+    * parameter.
     */
    void SetPeakResponse( float r )
    {
@@ -298,7 +372,13 @@ public:
    }
 
    /*!
+    * Maximum star distortion.
     *
+    * Star distortion is measured with respect to a perfect square, whose
+    * distortion is 1. Lower values mean more distortion. The distortion of a
+    * perfectly circular star is about 0.8 (actually, &pi;/4). Use this
+    * parameter, if necessary, to control inclusion of elongated stars,
+    * multiple stars, and nonstellar image features. The default value is 0.5.
     */
    float MaxDistortion() const
    {
@@ -306,7 +386,8 @@ public:
    }
 
    /*!
-    *
+    * Sets the maximum star distortion. See MaxDistortion() for a description
+    * of this parameter.
     */
    void SetMaxDistortion( float d )
    {
@@ -315,7 +396,11 @@ public:
    }
 
    /*!
+    * Upper star detection limit in the normalized [0,1] range.
     *
+    * Stars with peak values larger than this value won't be detected. This can
+    * be useful to reject all stars brighter than a fixed level systematically.
+    * The default value is 1.0, which effectively disables this feature.
     */
    float UpperLimit() const
    {
@@ -323,7 +408,8 @@ public:
    }
 
    /*!
-    *
+    * Sets the upper star detection limit. See UpperLimit() for a description
+    * of this parameter.
     */
    void SetUpperLimit( float u )
    {
@@ -332,7 +418,10 @@ public:
    }
 
    /*!
+    * Returns true iff image inversion is enabled for this star detector.
     *
+    * When inversion is enabled, the star detector algorithm will look for dark
+    * stars over a bright background. This feature is disabled by default.
     */
    bool IsImageInversionEnabled() const
    {
@@ -340,7 +429,8 @@ public:
    }
 
    /*!
-    *
+    * Enables image inversion. See IsImageInversionEnabled() for a description
+    * of this parameter.
     */
    void EnableImageInversion( bool enabled = true )
    {
@@ -348,7 +438,8 @@ public:
    }
 
    /*!
-    *
+    * Disables image inversion. See IsImageInversionEnabled() for a description
+    * of this parameter.
     */
    void DisableImageInversion( bool disable = true )
    {
@@ -356,7 +447,22 @@ public:
    }
 
    /*!
+    * Returns true iff PSF fitting is enabled for this star detector.
     *
+    * When PSF fitting is enabled, a point spread function of the type
+    * specified by PSFType() will be fitted numerically for each detected star.
+    * The Levenberg-Marquardt non-linear least squares algorithm will be used
+    * to minimize the difference between the fitted function and the pixel
+    * sample values in the detection region. See the PSFFit class for complete
+    * information on our PSF fitting implementation.
+    *
+    * When PSF fitting is enabled, the \c pos data member of the
+    * pcl::StarDetector::Star corresponds to the centroid of the fitted PSF
+    * instead of the barycenter position calculated by the star detection
+    * algorithm, and the \c signal member is a robust estimate of the mean
+    * signal evaluated over the local background, also from the fitted PSF.
+    *
+    * PSF fitting is disabled by default.
     */
    bool IsPSFFittingEnabled() const
    {
@@ -364,7 +470,8 @@ public:
    }
 
    /*!
-    *
+    * Enables PSF fitting for this star detector. See IsPSFFittingEnabled() for
+    * a description of this parameter.
     */
    void EnablePSFFitting( bool enable = true )
    {
@@ -372,7 +479,8 @@ public:
    }
 
    /*!
-    *
+    * Disables PSF fitting for this star detector. See IsPSFFittingEnabled()
+    * for a description of this parameter.
     */
    void DisablePSFFitting( bool disable = true )
    {
@@ -380,7 +488,9 @@ public:
    }
 
    /*!
-    *
+    * Returns the type of point spread function (PSF) fitted numerically when
+    * PSF fitting is enabled. See IsPSFFittingEnabled() and the pcl::PSFunction
+    * namespace.
     */
    psf_function PSFType() const
    {
@@ -388,7 +498,8 @@ public:
    }
 
    /*!
-    *
+    * Sets the type of point spread function (PSF) fitted numerically when PSF
+    * fitting is enabled. See PSFType().
     */
    void SetPSFType( psf_function type )
    {
@@ -396,7 +507,9 @@ public:
    }
 
    /*!
-    *
+    * Returns true if elliptical point spread functions (PSFs) will be fitted
+    * when PSF fitting is enabled. Returns false if circular functions will be
+    * fitted. Elliptical PSFs are disabled by default.
     */
    bool IsEllipticPSF() const
    {
@@ -404,7 +517,7 @@ public:
    }
 
    /*!
-    *
+    * Enables elliptical PSF fits. See IsEllipticPSF().
     */
    void EnableEllipticPSF( bool enable = true )
    {
@@ -412,7 +525,7 @@ public:
    }
 
    /*!
-    *
+    * Disables elliptical PSF fits. See IsEllipticPSF().
     */
    void DisableEllipticPSF( bool disable = true )
    {
@@ -517,12 +630,12 @@ public:
 protected:
 
          int          m_structureLayers = 5;
-         int          m_noiseLayers = 1;
+         int          m_noiseLayers = 0;
          int          m_hotPixelFilterRadius = 1;
          int          m_noiseReductionFilterRadius = 0;
          int          m_minStructureSize = 0;
          float        m_sensitivity = 0.1F;
-         float        m_peakResponse = 0.75F;
+         float        m_peakResponse = 0.8F;
          float        m_maxDistortion = 0.5F;
          float        m_upperLimit = 1.0F;
          bool         m_invert = false;
@@ -544,4 +657,4 @@ private:
 #endif   // __PCL_StarDetector_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/StarDetector.h - Released 2021-10-20T18:03:58Z
+// EOF pcl/StarDetector.h - Released 2021-10-28T16:38:58Z

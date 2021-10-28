@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.12
+// /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// pcl/PSFSignalEstimator.h - Released 2021-10-20T18:03:58Z
+// pcl/PSFSignalEstimator.h - Released 2021-10-28T16:38:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -84,8 +84,16 @@ public:
    struct Estimates
    {
       double mean = 0;  //!< Estimate of the mean value of the signal.
-      double power = 0; //!< Estimate of the mean signal power.
-      int    count = 0; //!< Number of PSF signal estimates.
+      double power = 0; //!< Estimate of the mean squared signal.
+      int    count = 0; //!< Number of valid PSF signal estimates.
+
+      /*!
+       * Conversion to double operator.
+       */
+      operator double() const
+      {
+         return mean;
+      }
    };
 
    /*!
@@ -120,7 +128,7 @@ public:
     */
    const StarDetector& Detector() const
    {
-      return m_starDetector;
+      return const_cast<const StarDetector&>( m_starDetector );
    }
 
    /*!
@@ -137,7 +145,10 @@ public:
    }
 
    /*!
-    * Returns the type of point spread function used by this signal estimator.
+    * Returns the type of point spread function (PSF) used by this signal
+    * estimator. Elliptical PSFs are always used for signal evaluation.
+    *
+    * The default PSF type is PSFunction::Moffat4.
     */
    psf_function PSFType() const
    {
@@ -146,6 +157,7 @@ public:
 
    /*!
     * Sets the type of point spread function used by this signal estimator.
+    * See PSFType() for more information.
     */
    void SetPSFType( psf_function type )
    {
@@ -181,6 +193,32 @@ public:
    }
 
    /*!
+    * Returns the rejection limit in sigma units.
+    *
+    * The rejection limit controls an iterative sigma-clipping algorithm used
+    * for robust rejection of outliers during the signal estimation process.
+    * Larger values favor the inclusion of more photometric PSF measurements,
+    * which can improve accuracy, but at the risk of including outliers that
+    * can degrade the result.
+    *
+    * The default rejection limit is 5 sigmas.
+    */
+   float RejectionLimit() const
+   {
+      return m_rejectionLimit;
+   }
+
+   /*!
+    * Sets the rejection limit in sigma units. See RejectionLimit() for a
+    * description of this parameter.
+    */
+   void SetRejectionLimit( float r )
+   {
+      PCL_PRECONDITION( r >= 0 )
+      m_rejectionLimit = Max( 0.0F, r );
+   }
+
+   /*!
     * Evaluates the mean value of the signal and the signal power for the
     * specified \a image. Returns the estimates as a new
     * PSFSignalEstimator::Estimates object.
@@ -202,9 +240,10 @@ public:
 
 private:
 
-   pcl::StarDetector m_starDetector;
-   psf_function      m_psfType = PSFunction::Gaussian;
-   float             m_psfTolerance = 1.5;
+   mutable pcl::StarDetector m_starDetector;
+           psf_function      m_psfType = PSFunction::Moffat4;
+           float             m_psfTolerance = 1.5F;
+           float             m_rejectionLimit = 5.0F;
 };
 
 // ----------------------------------------------------------------------------
@@ -214,4 +253,4 @@ private:
 #endif   // __PCL_PSFSignalEstimator_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFSignalEstimator.h - Released 2021-10-20T18:03:58Z
+// EOF pcl/PSFSignalEstimator.h - Released 2021-10-28T16:38:58Z
