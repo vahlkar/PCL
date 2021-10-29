@@ -1229,6 +1229,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    InputImages_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&ImageIntegrationInterface::e_ToggleSection, w );
 
    InputImages_TreeBox.SetMinHeight( IMAGELIST_MINHEIGHT( fnt ) );
+   InputImages_TreeBox.SetScaledMinWidth( 344 );
    InputImages_TreeBox.SetNumberOfColumns( 3 );
    InputImages_TreeBox.HideHeader();
    InputImages_TreeBox.EnableMultipleSelections();
@@ -2064,7 +2065,6 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    PercentileLow_NumericControl.label.SetText( "Percentile low:" );
    PercentileLow_NumericControl.label.SetFixedWidth( labelWidth1 );
    PercentileLow_NumericControl.slider.SetRange( 0, 100 );
-   PercentileLow_NumericControl.slider.SetScaledMinWidth( 250 );
    PercentileLow_NumericControl.SetReal();
    PercentileLow_NumericControl.SetRange( TheIIPercentileLowParameter->MinimumValue(), TheIIPercentileLowParameter->MaximumValue() );
    PercentileLow_NumericControl.SetPrecision( TheIIPercentileLowParameter->Precision() );
@@ -2075,7 +2075,6 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    PercentileHigh_NumericControl.label.SetText( "Percentile high:" );
    PercentileHigh_NumericControl.label.SetFixedWidth( labelWidth1 );
    PercentileHigh_NumericControl.slider.SetRange( 0, 100 );
-   PercentileHigh_NumericControl.slider.SetScaledMinWidth( 250 );
    PercentileHigh_NumericControl.SetReal();
    PercentileHigh_NumericControl.SetRange( TheIIPercentileHighParameter->MinimumValue(), TheIIPercentileHighParameter->MaximumValue() );
    PercentileHigh_NumericControl.SetPrecision( TheIIPercentileHighParameter->Precision() );
@@ -2086,7 +2085,6 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    SigmaLow_NumericControl.label.SetText( "Sigma low:" );
    SigmaLow_NumericControl.label.SetFixedWidth( labelWidth1 );
    SigmaLow_NumericControl.slider.SetRange( 0, 100 );
-   SigmaLow_NumericControl.slider.SetScaledMinWidth( 250 );
    SigmaLow_NumericControl.SetReal();
    SigmaLow_NumericControl.SetRange( TheIISigmaLowParameter->MinimumValue(), TheIISigmaLowParameter->MaximumValue() );
    SigmaLow_NumericControl.SetPrecision( TheIISigmaLowParameter->Precision() );
@@ -2098,7 +2096,6 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    SigmaHigh_NumericControl.label.SetText( "Sigma high:" );
    SigmaHigh_NumericControl.label.SetFixedWidth( labelWidth1 );
    SigmaHigh_NumericControl.slider.SetRange( 0, 100 );
-   SigmaHigh_NumericControl.slider.SetScaledMinWidth( 250 );
    SigmaHigh_NumericControl.SetReal();
    SigmaHigh_NumericControl.SetRange( TheIISigmaHighParameter->MinimumValue(), TheIISigmaHighParameter->MaximumValue() );
    SigmaHigh_NumericControl.SetPrecision( TheIISigmaHighParameter->Precision() );
@@ -2110,7 +2107,6 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    WinsorizationCutoff_NumericControl.label.SetText( "Winsorization cutoff:" );
    WinsorizationCutoff_NumericControl.label.SetFixedWidth( labelWidth1 );
    WinsorizationCutoff_NumericControl.slider.SetRange( 30, 100 );
-   WinsorizationCutoff_NumericControl.slider.SetScaledMinWidth( 250 );
    WinsorizationCutoff_NumericControl.SetReal();
    WinsorizationCutoff_NumericControl.SetRange( TheIIWinsorizationCutoffParameter->MinimumValue(), TheIIWinsorizationCutoffParameter->MaximumValue() );
    WinsorizationCutoff_NumericControl.SetPrecision( TheIIWinsorizationCutoffParameter->Precision() );
@@ -2125,7 +2121,6 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    LinearFitLow_NumericControl.label.SetText( "Linear fit low:" );
    LinearFitLow_NumericControl.label.SetFixedWidth( labelWidth1 );
    LinearFitLow_NumericControl.slider.SetRange( 0, 100 );
-   LinearFitLow_NumericControl.slider.SetScaledMinWidth( 250 );
    LinearFitLow_NumericControl.SetReal();
    LinearFitLow_NumericControl.SetRange( TheIILinearFitLowParameter->MinimumValue(), TheIILinearFitLowParameter->MaximumValue() );
    LinearFitLow_NumericControl.SetPrecision( TheIILinearFitLowParameter->Precision() );
@@ -2136,7 +2131,6 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    LinearFitHigh_NumericControl.label.SetText( "Linear fit high:" );
    LinearFitHigh_NumericControl.label.SetFixedWidth( labelWidth1 );
    LinearFitHigh_NumericControl.slider.SetRange( 0, 100 );
-   LinearFitHigh_NumericControl.slider.SetScaledMinWidth( 250 );
    LinearFitHigh_NumericControl.SetReal();
    LinearFitHigh_NumericControl.SetRange( TheIILinearFitHighParameter->MinimumValue(), TheIILinearFitHighParameter->MaximumValue() );
    LinearFitHigh_NumericControl.SetPrecision( TheIILinearFitHighParameter->Precision() );
@@ -2147,7 +2141,6 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    ESDOutliersFraction_NumericControl.label.SetText( "ESD outliers:" );
    ESDOutliersFraction_NumericControl.label.SetFixedWidth( labelWidth1 );
    ESDOutliersFraction_NumericControl.slider.SetRange( 0, 100 );
-   ESDOutliersFraction_NumericControl.slider.SetScaledMinWidth( 250 );
    ESDOutliersFraction_NumericControl.SetReal();
    ESDOutliersFraction_NumericControl.SetRange( TheIIESDOutliersFractionParameter->MinimumValue(), TheIIESDOutliersFractionParameter->MaximumValue() );
    ESDOutliersFraction_NumericControl.SetPrecision( TheIIESDOutliersFractionParameter->Precision() );
@@ -2163,7 +2156,6 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    ESDAlpha_NumericControl.label.SetText( "ESD significance:" );
    ESDAlpha_NumericControl.label.SetFixedWidth( labelWidth1 );
    ESDAlpha_NumericControl.slider.SetRange( 0, 100 );
-   ESDAlpha_NumericControl.slider.SetScaledMinWidth( 250 );
    ESDAlpha_NumericControl.SetReal();
    ESDAlpha_NumericControl.SetRange( TheIIESDAlphaParameter->MinimumValue(), TheIIESDAlphaParameter->MaximumValue() );
    ESDAlpha_NumericControl.SetPrecision( TheIIESDAlphaParameter->Precision() );
@@ -2181,7 +2173,6 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    ESDLowRelaxation_NumericControl.label.SetText( "ESD low relaxation:" );
    ESDLowRelaxation_NumericControl.label.SetFixedWidth( labelWidth1 );
    ESDLowRelaxation_NumericControl.slider.SetRange( 0, 50 );
-   ESDLowRelaxation_NumericControl.slider.SetScaledMinWidth( 250 );
    ESDLowRelaxation_NumericControl.SetReal();
    ESDLowRelaxation_NumericControl.SetRange( TheIIESDLowRelaxationParameter->MinimumValue(), TheIIESDLowRelaxationParameter->MaximumValue() );
    ESDLowRelaxation_NumericControl.SetPrecision( TheIIESDLowRelaxationParameter->Precision() );
@@ -2196,7 +2187,6 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    RangeLow_NumericControl.label.SetText( "Range low:" );
    RangeLow_NumericControl.label.SetFixedWidth( labelWidth1 );
    RangeLow_NumericControl.slider.SetRange( 0, 100 );
-   RangeLow_NumericControl.slider.SetScaledMinWidth( 250 );
    RangeLow_NumericControl.SetReal();
    RangeLow_NumericControl.SetRange( TheIIRangeLowParameter->MinimumValue(), TheIIRangeLowParameter->MaximumValue() );
    RangeLow_NumericControl.SetPrecision( TheIIRangeLowParameter->Precision() );
@@ -2208,7 +2198,6 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    RangeHigh_NumericControl.label.SetText( "Range high:" );
    RangeHigh_NumericControl.label.SetFixedWidth( labelWidth1 );
    RangeHigh_NumericControl.slider.SetRange( 0, 100 );
-   RangeHigh_NumericControl.slider.SetScaledMinWidth( 250 );
    RangeHigh_NumericControl.SetReal();
    RangeHigh_NumericControl.SetRange( TheIIRangeHighParameter->MinimumValue(), TheIIRangeHighParameter->MaximumValue() );
    RangeHigh_NumericControl.SetPrecision( TheIIRangeHighParameter->Precision() );
@@ -2244,7 +2233,6 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    CCDGain_NumericControl.label.SetText( "CCD gain:" );
    CCDGain_NumericControl.label.SetFixedWidth( labelWidth1 );
    CCDGain_NumericControl.slider.SetRange( 0, 100 );
-   CCDGain_NumericControl.slider.SetScaledMinWidth( 250 );
    CCDGain_NumericControl.SetReal();
    CCDGain_NumericControl.SetRange( TheIICCDGainParameter->MinimumValue(), TheIICCDGainParameter->MaximumValue() );
    CCDGain_NumericControl.SetPrecision( TheIICCDGainParameter->Precision() );
@@ -2256,7 +2244,6 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    CCDReadNoise_NumericControl.label.SetText( "CCD readout noise:" );
    CCDReadNoise_NumericControl.label.SetFixedWidth( labelWidth1 );
    CCDReadNoise_NumericControl.slider.SetRange( 0, 100 );
-   CCDReadNoise_NumericControl.slider.SetScaledMinWidth( 250 );
    CCDReadNoise_NumericControl.SetReal();
    CCDReadNoise_NumericControl.SetRange( TheIICCDReadNoiseParameter->MinimumValue(), TheIICCDReadNoiseParameter->MaximumValue() );
    CCDReadNoise_NumericControl.SetPrecision( TheIICCDReadNoiseParameter->Precision() );
@@ -2268,7 +2255,6 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    CCDScaleNoise_NumericControl.label.SetText( "CCD scale noise:" );
    CCDScaleNoise_NumericControl.label.SetFixedWidth( labelWidth1 );
    CCDScaleNoise_NumericControl.slider.SetRange( 0, 100 );
-   CCDScaleNoise_NumericControl.slider.SetScaledMinWidth( 250 );
    CCDScaleNoise_NumericControl.SetReal();
    CCDScaleNoise_NumericControl.SetRange( TheIICCDScaleNoiseParameter->MinimumValue(), TheIICCDScaleNoiseParameter->MaximumValue() );
    CCDScaleNoise_NumericControl.SetPrecision( TheIICCDScaleNoiseParameter->Precision() );

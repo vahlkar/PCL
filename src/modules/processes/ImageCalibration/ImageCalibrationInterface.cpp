@@ -990,6 +990,7 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    TargetImages_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&ImageCalibrationInterface::e_ToggleSection, w );
 
    TargetImages_TreeBox.SetMinHeight( IMAGELIST_MINHEIGHT( fnt ) );
+   TargetImages_TreeBox.SetScaledMinWidth( 344 );
    TargetImages_TreeBox.SetNumberOfColumns( 3 );
    TargetImages_TreeBox.HideHeader();
    TargetImages_TreeBox.EnableMultipleSelections();
@@ -1440,7 +1441,6 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    PSFRejectionLimit_NumericControl.label.SetText( "Rejection limit:" );
    PSFRejectionLimit_NumericControl.label.SetFixedWidth( labelWidth1 );
    PSFRejectionLimit_NumericControl.slider.SetRange( 0, 200 );
-   PSFRejectionLimit_NumericControl.slider.SetScaledMinWidth( 250 );
    PSFRejectionLimit_NumericControl.SetReal();
    PSFRejectionLimit_NumericControl.SetRange( TheICPSFRejectionLimitParameter->MinimumValue(), TheICPSFRejectionLimitParameter->MaximumValue() );
    PSFRejectionLimit_NumericControl.SetPrecision( TheICPSFRejectionLimitParameter->Precision() );
@@ -2140,7 +2140,6 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    DarkOptimizationThreshold_NumericControl.label.SetText( "Optimization threshold:" );
    DarkOptimizationThreshold_NumericControl.label.SetFixedWidth( labelWidth1 );
    DarkOptimizationThreshold_NumericControl.slider.SetRange( 0, 200 );
-   DarkOptimizationThreshold_NumericControl.slider.SetScaledMinWidth( 250 );
    DarkOptimizationThreshold_NumericControl.SetReal();
    DarkOptimizationThreshold_NumericControl.SetRange( TheICDarkOptimizationLowParameter->MinimumValue(), TheICDarkOptimizationLowParameter->MaximumValue() );
    DarkOptimizationThreshold_NumericControl.SetPrecision( TheICDarkOptimizationLowParameter->Precision() );
@@ -2236,7 +2235,6 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    FlatScaleClippingFactor_NumericControl.label.SetText( "Scale clipping factor:" );
    FlatScaleClippingFactor_NumericControl.label.SetFixedWidth( labelWidth1 );
    FlatScaleClippingFactor_NumericControl.slider.SetRange( 0, 250 );
-   FlatScaleClippingFactor_NumericControl.slider.SetScaledMinWidth( 250 );
    FlatScaleClippingFactor_NumericControl.SetReal();
    FlatScaleClippingFactor_NumericControl.SetRange( TheICFlatScaleClippingFactorParameter->MinimumValue(),
                                                     TheICFlatScaleClippingFactorParameter->MaximumValue() );

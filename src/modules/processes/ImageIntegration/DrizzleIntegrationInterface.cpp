@@ -811,6 +811,7 @@ DrizzleIntegrationInterface::GUIData::GUIData( DrizzleIntegrationInterface& w )
    InputData_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&DrizzleIntegrationInterface::e_ToggleSection, w );
 
    InputData_TreeBox.SetMinHeight( FILELIST_MINHEIGHT( fnt ) );
+   InputData_TreeBox.SetScaledMinWidth( 344 );
    InputData_TreeBox.SetNumberOfColumns( 3 );
    InputData_TreeBox.HideHeader();
    InputData_TreeBox.EnableMultipleSelections();
@@ -987,7 +988,6 @@ DrizzleIntegrationInterface::GUIData::GUIData( DrizzleIntegrationInterface& w )
    DropShrink_NumericControl.label.SetText( "Drop shrink:" );
    DropShrink_NumericControl.label.SetFixedWidth( labelWidth1 );
    DropShrink_NumericControl.slider.SetRange( 0, 200 );
-   DropShrink_NumericControl.slider.SetScaledMinWidth( 250 );
    DropShrink_NumericControl.SetReal();
    DropShrink_NumericControl.SetRange( TheDZDropShrinkParameter->MinimumValue(), TheDZDropShrinkParameter->MaximumValue() );
    DropShrink_NumericControl.SetPrecision( TheDZDropShrinkParameter->Precision() );

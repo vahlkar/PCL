@@ -682,6 +682,7 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
    TargetImages_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&DebayerInterface::e_ToggleSection, w );
 
    TargetImages_TreeBox.SetMinHeight( IMAGELIST_MINHEIGHT( fnt ) );
+   TargetImages_TreeBox.SetScaledMinWidth( 344 );
    TargetImages_TreeBox.SetNumberOfColumns( 3 );
    TargetImages_TreeBox.HideHeader();
    TargetImages_TreeBox.EnableMultipleSelections();
@@ -1031,7 +1032,6 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
    PSFRejectionLimit_NumericControl.label.SetText( "Rejection limit:" );
    PSFRejectionLimit_NumericControl.label.SetFixedWidth( labelWidth1 );
    PSFRejectionLimit_NumericControl.slider.SetRange( 0, 200 );
-   PSFRejectionLimit_NumericControl.slider.SetScaledMinWidth( 250 );
    PSFRejectionLimit_NumericControl.SetReal();
    PSFRejectionLimit_NumericControl.SetRange( TheDebayerPSFRejectionLimitParameter->MinimumValue(), TheDebayerPSFRejectionLimitParameter->MaximumValue() );
    PSFRejectionLimit_NumericControl.SetPrecision( TheDebayerPSFRejectionLimitParameter->Precision() );

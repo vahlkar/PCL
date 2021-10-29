@@ -638,6 +638,7 @@ HDRCompositionInterface::GUIData::GUIData( HDRCompositionInterface& w )
    InputImages_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&HDRCompositionInterface::e_ToggleSection, w );
 
    InputImages_TreeBox.SetMinHeight( IMAGELIST_MINHEIGHT( fnt ) );
+   InputImages_TreeBox.SetScaledMinWidth( 344 );
    InputImages_TreeBox.SetNumberOfColumns( 3 );
    InputImages_TreeBox.HideHeader();
    InputImages_TreeBox.EnableMultipleSelections();
@@ -749,7 +750,6 @@ HDRCompositionInterface::GUIData::GUIData( HDRCompositionInterface& w )
    MaskBinarizingThreshold_NumericControl.label.SetText( "Binarizing threshold:" );
    MaskBinarizingThreshold_NumericControl.label.SetFixedWidth( labelWidth1 );
    MaskBinarizingThreshold_NumericControl.slider.SetRange( 0, 100 );
-   MaskBinarizingThreshold_NumericControl.slider.SetScaledMinWidth( 250 );
    MaskBinarizingThreshold_NumericControl.SetReal();
    MaskBinarizingThreshold_NumericControl.SetRange( TheHCMaskBinarizingThresholdParameter->MinimumValue(), TheHCMaskBinarizingThresholdParameter->MaximumValue() );
    MaskBinarizingThreshold_NumericControl.SetPrecision( TheHCMaskBinarizingThresholdParameter->Precision() );

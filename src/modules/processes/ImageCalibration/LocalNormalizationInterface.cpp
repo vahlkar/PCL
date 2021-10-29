@@ -829,7 +829,6 @@ LocalNormalizationInterface::GUIData::GUIData( LocalNormalizationInterface& w )
    BackgroundRejectionLimit_NumericControl.label.SetText( "Background limit:" );
    BackgroundRejectionLimit_NumericControl.label.SetFixedWidth( labelWidth1 );
    BackgroundRejectionLimit_NumericControl.slider.SetRange( 1, 500 );
-   BackgroundRejectionLimit_NumericControl.slider.SetScaledMinWidth( 250 );
    BackgroundRejectionLimit_NumericControl.SetReal();
    BackgroundRejectionLimit_NumericControl.SetRange( TheLNBackgroundRejectionLimitParameter->MinimumValue(), TheLNBackgroundRejectionLimitParameter->MaximumValue() );
    BackgroundRejectionLimit_NumericControl.SetPrecision( TheLNBackgroundRejectionLimitParameter->Precision() );
@@ -850,7 +849,6 @@ LocalNormalizationInterface::GUIData::GUIData( LocalNormalizationInterface& w )
    ReferenceRejectionThreshold_NumericControl.label.SetText( "Reference threshold:" );
    ReferenceRejectionThreshold_NumericControl.label.SetFixedWidth( labelWidth1 );
    ReferenceRejectionThreshold_NumericControl.slider.SetRange( 1, 500 );
-   ReferenceRejectionThreshold_NumericControl.slider.SetScaledMinWidth( 250 );
    ReferenceRejectionThreshold_NumericControl.SetReal();
    ReferenceRejectionThreshold_NumericControl.SetRange( TheLNReferenceRejectionThresholdParameter->MinimumValue(), TheLNReferenceRejectionThresholdParameter->MaximumValue() );
    ReferenceRejectionThreshold_NumericControl.SetPrecision( TheLNReferenceRejectionThresholdParameter->Precision() );
@@ -867,7 +865,6 @@ LocalNormalizationInterface::GUIData::GUIData( LocalNormalizationInterface& w )
    TargetRejectionThreshold_NumericControl.label.SetText( "Target threshold:" );
    TargetRejectionThreshold_NumericControl.label.SetFixedWidth( labelWidth1 );
    TargetRejectionThreshold_NumericControl.slider.SetRange( 1, 500 );
-   TargetRejectionThreshold_NumericControl.slider.SetScaledMinWidth( 250 );
    TargetRejectionThreshold_NumericControl.SetReal();
    TargetRejectionThreshold_NumericControl.SetRange( TheLNTargetRejectionThresholdParameter->MinimumValue(), TheLNTargetRejectionThresholdParameter->MaximumValue() );
    TargetRejectionThreshold_NumericControl.SetPrecision( TheLNTargetRejectionThresholdParameter->Precision() );
@@ -1019,6 +1016,7 @@ LocalNormalizationInterface::GUIData::GUIData( LocalNormalizationInterface& w )
    TargetImages_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&LocalNormalizationInterface::e_ToggleSection, w );
 
    TargetImages_TreeBox.SetMinHeight( IMAGELIST_MINHEIGHT( fnt ) );
+   TargetImages_TreeBox.SetScaledMinWidth( 344 );
    TargetImages_TreeBox.SetNumberOfColumns( 3 );
    TargetImages_TreeBox.HideHeader();
    TargetImages_TreeBox.EnableMultipleSelections();
