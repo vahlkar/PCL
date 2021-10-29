@@ -2129,8 +2129,8 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    OptimizeDarks_CheckBox.SetToolTip( "<p>Select this option to apply <i>dark frame optimization.</i></p>"
       "<p>The dark frame optimization routine computes a dark scaling factor to minimize the noise "
       "induced by dark subtraction. Optimization is carried out separately for each target frame, including "
-      "the master flat frame, if selected. Dark frame optimization has been implemented using multiscale "
-      "(wavelet-based) noise evaluation and linear minimization routines.</p>" );
+      "the master flat frame, if selected. Dark frame optimization has been implemented using robust linear "
+      "minimization of variance.</p>" );
    OptimizeDarks_CheckBox.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::e_Click, w );
 
    OptimizeDarks_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );

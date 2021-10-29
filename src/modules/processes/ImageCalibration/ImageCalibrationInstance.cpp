@@ -72,8 +72,7 @@ namespace pcl
 // ----------------------------------------------------------------------------
 
 /*
- * 5x5 B3-spline wavelet scaling function. Used by the noise estimation routine
- * for dark frame optimization.
+ * 5x5 B3-spline wavelet scaling function used for the noise evaluation.
  *
  * Kernel filter coefficients:
  *
@@ -338,9 +337,9 @@ static void SubtractBias( Image& target, const Image& bias )
 {
    for ( int c = 0; c < target.NumberOfChannels(); ++c )
    {
-            float* t  = target.PixelData( c );
-            float* t1 = t + target.NumberOfPixels();
-      const float* b  = bias.PixelData( Min( c, bias.NumberOfChannels()-1 ) );
+            float* __restrict__ t  = target.PixelData( c );
+            float* __restrict__ t1 = t + target.NumberOfPixels();
+      const float* __restrict__ b  = bias.PixelData( Min( c, bias.NumberOfChannels()-1 ) );
       LOOP *t++ -= BIAS;
    }
 }
@@ -355,9 +354,9 @@ static void SubtractDark( Image& target, const Image& dark, const FVector& dScal
 {
    for ( int c = 0; c < target.NumberOfChannels(); ++c )
    {
-            float* t  = target.PixelData( c );
-            float* t1 = t + target.NumberOfPixels();
-      const float* d  = dark.PixelData( Min( c, dark.NumberOfChannels()-1 ) );
+            float* __restrict__ t  = target.PixelData( c );
+            float* __restrict__ t1 = t + target.NumberOfPixels();
+      const float* __restrict__ d  = dark.PixelData( Min( c, dark.NumberOfChannels()-1 ) );
             float  k  = dScale[c];
       if ( k != 1 )
          LOOP *t++ -= SCALED_DARK;
@@ -374,9 +373,9 @@ static void SubtractDark( Image& target, const Image& dark, const FVector& dScal
  */
 static void SubtractOneChannelDark( Image& target, int tCh, const Image& dark, int dCh, float k )
 {
-         float* t  = target.PixelData( tCh );
-         float* t1 = t + target.NumberOfPixels();
-   const float* d  = dark.PixelData( dCh );
+         float* __restrict__ t  = target.PixelData( tCh );
+         float* __restrict__ t1 = t + target.NumberOfPixels();
+   const float* __restrict__ d  = dark.PixelData( dCh );
    LOOP *t++ -= SCALED_DARK;
 }
 
@@ -402,11 +401,11 @@ static void Calibrate( Image& target,
    {
       Module->ProcessEvents();
 
-            float* t  = target.PixelData( c );
-            float* t1 = t + target.NumberOfPixels();
-      const float* b  = (bias != nullptr) ? bias->PixelData( Min( c, nb-1 ) ) : nullptr;
-      const float* d  = (dark != nullptr) ? dark->PixelData( Min( c, nd-1 ) ) : nullptr;
-      const float* f  = (flat != nullptr) ? flat->PixelData( Min( c, nf-1 ) ) : nullptr;
+            float* __restrict__ t  = target.PixelData( c );
+            float* __restrict__ t1 = t + target.NumberOfPixels();
+      const float* __restrict__ b  = (bias != nullptr) ? bias->PixelData( Min( c, nb-1 ) ) : nullptr;
+      const float* __restrict__ d  = (dark != nullptr) ? dark->PixelData( Min( c, nd-1 ) ) : nullptr;
+      const float* __restrict__ f  = (flat != nullptr) ? flat->PixelData( Min( c, nf-1 ) ) : nullptr;
             float  k  = (dark != nullptr) ? dScale[c] : 0;
 
       if ( b != nullptr )
@@ -810,34 +809,14 @@ void ImageCalibrationInstance::EvaluateSignalAndNoise( Vector& psfSignalEstimate
 // ----------------------------------------------------------------------------
 
 /*
- * Quick estimation of noise sigma after dark subtraction by the iterative
- * k-sigma method.
- *
- * J.L. Stark F. Murtagh, Astronomical Image and Data Analysis, pp. 37-38.
- *
- * J.L. Stark et al., Automatic Noise Estimation from the Multiresolution
- *    Support Publications of the Royal Astronomical Society of the Pacific,
- *    vol. 110, February 1998, pp. 193-199
- *
- * Returns a noise estimate for (target - k*dark).
+ * Quick estimation of standard deviation after dark subtraction.
  */
 static double TestDarkOptimization( float k, const Image& target, const Image& dark )
 {
    Image t( target );
    t.Status().DisableInitialization();
-
    SubtractOneChannelDark( t, 0, dark, Min( target.SelectedChannel(), dark.NumberOfChannels()-1 ), k );
-
-   ATrousWaveletTransform::WaveletScalingFunction H;
-   if ( SeparableConvolution::FasterThanNonseparableFilterSize( Thread::NumberOfThreads( PCL_MAX_PROCESSORS ) ) > 5 )
-      H.Set( KernelFilter( g_5x5B3Spline, 5 ) );
-   else
-      H.Set( SeparableFilter( g_5x5B3Spline_hv, g_5x5B3Spline_hv, 5 ) );
-
-   ATrousWaveletTransform W( H );
-   W.DisableLayer( 1 );
-   W << t;
-   return W.NoiseKSigma( 0 ) /*/g_5x5B3Spline_kj[0]*/; // we can work with unscaled noise estimates here.
+   return t.StdDev();
 }
 
 // ----------------------------------------------------------------------------
