@@ -667,9 +667,9 @@ public:
 
    protected:
 
-            image_type* m_image = nullptr;
-            sample*     m_iterator = nullptr;
-      const sample*     m_end = nullptr;
+            image_type*          m_image = nullptr;
+            sample* __restrict__ m_iterator = nullptr;
+      const sample* __restrict__ m_end = nullptr;
 
       friend class const_sample_iterator;
    };
@@ -1028,9 +1028,9 @@ public:
 
    protected:
 
-      const image_type* m_image = nullptr;
-      const sample*     m_iterator = nullptr;
-      const sample*     m_end = nullptr;
+      const image_type*          m_image = nullptr;
+      const sample* __restrict__ m_iterator = nullptr;
+      const sample* __restrict__ m_end = nullptr;
    };
 
    // -------------------------------------------------------------------------
@@ -2074,7 +2074,7 @@ public:
        */
       filter_sample_iterator operator ++( int ) noexcept
       {
-         sample* i0 = this->m_iterator++;
+         sample* __restrict__ i0 = this->m_iterator++;
          this->JumpToNextValidSample();
          return filter_sample_iterator( *this->m_image, this->m_filter, i0, this->m_end );
       }
@@ -2098,7 +2098,7 @@ public:
        */
       filter_sample_iterator operator --( int ) noexcept
       {
-         sample* i0 = this->m_iterator--;
+         sample* __restrict__ i0 = this->m_iterator--;
          this->JumpToPrevValidSample();
          return filter_sample_iterator( *this->m_image, this->m_filter, i0, this->m_end );
       }
@@ -2495,7 +2495,7 @@ public:
        */
       const_filter_sample_iterator operator ++( int ) noexcept
       {
-         sample* i0 = this->m_iterator++;
+         sample* __restrict__ i0 = this->m_iterator++;
          this->JumpToNextValidSample();
          return const_filter_sample_iterator( *this->m_image, this->m_filter, i0, this->m_end );
       }
@@ -2519,7 +2519,7 @@ public:
        */
       const_filter_sample_iterator operator --( int ) noexcept
       {
-         sample* i0 = this->m_iterator--;
+         sample* __restrict__ i0 = this->m_iterator--;
          this->JumpToPrevValidSample();
          return const_filter_sample_iterator( *this->m_image, this->m_filter, i0, this->m_end );
       }
@@ -3003,7 +3003,7 @@ public:
        */
       roi_filter_sample_iterator& MoveBy( int dx, int dy ) noexcept
       {
-         sample* i0 = this->m_iterator;
+         sample* __restrict__ i0 = this->m_iterator;
          iterator_base::MoveBy( dx, dy );
          if ( this->m_iterator >= i0 )
             this->JumpToNextValidSample();
@@ -3381,7 +3381,7 @@ public:
        */
       const_roi_filter_sample_iterator& MoveBy( int dx, int dy ) noexcept
       {
-         const sample* i0 = this->m_iterator;
+         const sample* __restrict__ i0 = this->m_iterator;
          iterator_base::MoveBy( dx, dy );
          if ( this->m_iterator >= i0 )
             this->JumpToNextValidSample();
@@ -3734,9 +3734,9 @@ public:
 
    protected:
 
-            image_type*   m_image = nullptr;
-            iterator_type m_iterator;
-      const sample*       m_end = nullptr;
+            image_type*          m_image = nullptr;
+            iterator_type        m_iterator;
+      const sample* __restrict__ m_end = nullptr;
    };
 
    // -------------------------------------------------------------------------
@@ -3997,9 +3997,9 @@ public:
 
    protected:
 
-      const image_type*   m_image = nullptr;
-            iterator_type m_iterator;
-      const sample*       m_end = nullptr;
+      const image_type*          m_image = nullptr;
+            iterator_type        m_iterator;
+      const sample* __restrict__ m_end = nullptr;
    };
 
    // -------------------------------------------------------------------------
@@ -5627,7 +5627,7 @@ public:
        */
       roi_filter_pixel_iterator& MoveBy( int dx, int dy ) noexcept
       {
-         sample* i0 = this->m_iterator[0];
+         sample* __restrict__ i0 = this->m_iterator[0];
          iterator_base::MoveBy( dx, dy );
          if ( this->m_iterator[0] >= i0 )
             this->JumpToNextValidSample();
@@ -5941,7 +5941,7 @@ public:
        */
       const_roi_filter_pixel_iterator& MoveBy( int dx, int dy ) noexcept
       {
-         const sample* i0 = this->m_iterator[0];
+         const sample* __restrict__ i0 = this->m_iterator[0];
          iterator_base::MoveBy( dx, dy );
          if ( this->m_iterator[0] >= i0 )
             this->JumpToNextValidSample();
