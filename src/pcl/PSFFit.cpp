@@ -877,10 +877,10 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
          psf.sx = psf.sy = P[4];
          psf.theta = 0;
          Vector r = GoodnessOfFit( function, true/*circular*/ );
-         psf.flux = r[2];
-         psf.meanSignal = r[3];
-         psf.meanSignalSqr = r[4];
          psf.mad = r[0];
+         psf.flux = r[1];
+         psf.meanSignal = r[2];
+         psf.meanSignalSqr = r[3];
       }
       else
       {
@@ -894,10 +894,10 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
              */
             psf.theta = 0;
             Vector r = GoodnessOfFit( function, false/*circular*/ );
-            psf.flux = r[2];
-            psf.meanSignal = r[3];
-            psf.meanSignalSqr= r[4];
             psf.mad = r[0];
+            psf.flux = r[1];
+            psf.meanSignal = r[2];
+            psf.meanSignalSqr= r[3];
          }
          else
          {
@@ -927,13 +927,13 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
 
             // Generate the four models and compute absolute differences.
             P[6] = a[0];
-            Vector r0 = GoodnessOfFit( function, false/*circular*/ );
+            double r0 = GoodnessOfFit( function, false/*circular*/, true/*test*/ )[0];
             int imin = 0;
             for ( int i = 1; i < 4; ++i )
             {
                P[6] = a[i];
-               Vector ri = GoodnessOfFit( function, false/*circular*/ );
-               if ( ri[1] < r0[1] )
+               double ri = GoodnessOfFit( function, false/*circular*/, true/*test*/ )[0];
+               if ( ri < r0 )
                {
                   imin = i;
                   r0 = ri;
@@ -941,11 +941,13 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
             }
 
             // Select the orientation angle that minimizes absolute deviation.
+            P[6] = a[imin];
+            Vector r = GoodnessOfFit( function, false/*circular*/ );
             psf.theta = Deg( a[imin] );
-            psf.flux = r0[2];
-            psf.meanSignal = r0[3];
-            psf.meanSignalSqr = r0[4];
-            psf.mad = r0[0];
+            psf.mad = r[0];
+            psf.flux = r[1];
+            psf.meanSignal = r[2];
+            psf.meanSignalSqr = r[3];
          }
       }
 
@@ -969,7 +971,7 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
  * Robust estimates of mean absolute difference, total flux and mean signal,
  * measured from sampled pixel data and the fitted PSF model.
  */
-Vector PSFFit::GoodnessOfFit( psf_function function, bool circular ) const
+Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) const
 {
 #define B      P[0]
 #define A      P[1]
@@ -988,20 +990,21 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular ) const
    double signal = 0;
    double signal2 = 0;
    double zsum = 0;
-   double b = (1 + B != 1) ? B : 1.0e-08;
 
 #define GET_DATA()               \
    {                             \
       double d = *s - B;         \
       adev[i] = Abs( d - A*z );  \
-      if ( d > 0 )               \
-      {                          \
-         flux += d;              \
-         double f = d/b;         \
-         signal += z*f;          \
-         signal2 += z*f*f;       \
-         zsum += z;              \
-      }                          \
+      if ( !test )               \
+         if ( d > 0 )            \
+         {                       \
+            flux += d;           \
+            if ( 1 + B > 1 )     \
+               d /= B;           \
+            signal += z*d;       \
+            signal2 += z*d*d;    \
+            zsum += z;           \
+         }                       \
    }
 
    if ( circular )
@@ -1173,32 +1176,15 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular ) const
 #undef y0
 #undef sx
 
-   Vector R( 5 );
-
    /*
-    * The fifth component of the returned vector is the estimated mean squared
-    * signal relative to the local background.
+    * If called for testing, the first component of the returned vector is the
+    * average absolute deviation for internal use, e.g. to solve ambiguity in
+    * the quadrant of the fitted rotation angle.
     */
-   R[4] = (1 + zsum != 1) ? signal2/zsum : 0.0;
+   if ( test )
+      return Vector( adev.Mean(), 1 );
 
-   /*
-    * The fourth component of the returned vector is the estimated mean signal
-    * relative to the local background.
-    */
-   R[3] = (1 + zsum != 1) ? signal/zsum : 0.0;
-
-   /*
-    * The third component of the returned vector is the total flux above the
-    * local background level, measured from source pixel data.
-    */
-   R[2] = flux;
-
-   /*
-    * The second component of the returned vector is the average absolute
-    * deviation for internal use, e.g. to solve ambiguity in the quadrant of
-    * the fitted rotation angle.
-    */
-   R[1] = adev.Mean();
+   Vector R( 4 );
 
    /*
     * The first returned component is a robust estimate of fitting quality.
@@ -1216,6 +1202,24 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular ) const
    for ( int i = i1; i < n; ++i )
       adev[i] = m;
    R[0] = adev.Mean();
+
+   /*
+    * The second component of the returned vector is the total flux above the
+    * local background level, measured from source pixel data.
+    */
+   R[1] = flux;
+
+   /*
+    * The third component of the returned vector is the estimated mean signal
+    * relative to the local background.
+    */
+   R[2] = (1 + zsum != 1) ? signal/zsum : 0.0;
+
+   /*
+    * The fourth component of the returned vector is the estimated mean squared
+    * signal relative to the local background.
+    */
+   R[3] = (1 + zsum != 1) ? signal2/zsum : 0.0;
 
    return R;
 }

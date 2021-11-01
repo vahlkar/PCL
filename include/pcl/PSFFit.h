@@ -438,7 +438,7 @@ private:
    Vector P; // vector of function parameters
    mutable double m_beta;
 
-   Vector GoodnessOfFit( psf_function, bool circular ) const;
+   Vector GoodnessOfFit( psf_function, bool circular, bool test = false ) const;
 
    friend class PSFFitEngine;
 };
