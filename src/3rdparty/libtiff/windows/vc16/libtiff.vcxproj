@@ -4,7 +4,7 @@
 # PixInsight Makefile Generator Script v1.124
 # Copyright (C) 2009-2021 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2021-10-28T18:11:32.924Z
+# Generated on .... 2021-11-07T10:04:48.207Z
 # Project id ...... libtiff
 # Project type .... StaticLibrary
 # Platform ........ Windows/vc16
@@ -37,7 +37,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{67273E1D-A88C-4310-91D5-A961B59992FB}</ProjectGuid>
+    <ProjectGuid>{F6453C14-9E59-44D0-A2E0-A4578A3001C9}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -217,6 +217,7 @@
     <ClCompile Include="..\..\tif_jbig.c"/>
     <ClCompile Include="..\..\tif_jpeg.c"/>
     <ClCompile Include="..\..\tif_jpeg_12.c"/>
+    <ClCompile Include="..\..\tif_lerc.c"/>
     <ClCompile Include="..\..\tif_luv.c"/>
     <ClCompile Include="..\..\tif_lzma.c"/>
     <ClCompile Include="..\..\tif_lzw.c"/>
@@ -236,8 +237,10 @@
     <ClCompile Include="..\..\tif_unix.c"/>
     <ClCompile Include="..\..\tif_version.c"/>
     <ClCompile Include="..\..\tif_warning.c"/>
+    <ClCompile Include="..\..\tif_webp.c"/>
     <ClCompile Include="..\..\tif_write.c"/>
     <ClCompile Include="..\..\tif_zip.c"/>
+    <ClCompile Include="..\..\tif_zstd.c"/>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\t4.h"/>
@@ -248,7 +251,6 @@
     <ClInclude Include="..\..\tiff.h"/>
     <ClInclude Include="..\..\tiffconf.h"/>
     <ClInclude Include="..\..\tiffio.h"/>
-    <ClInclude Include="..\..\tiffio.hxx"/>
     <ClInclude Include="..\..\tiffiop.h"/>
     <ClInclude Include="..\..\tiffvers.h"/>
     <ClInclude Include="..\..\uvcode.h"/>

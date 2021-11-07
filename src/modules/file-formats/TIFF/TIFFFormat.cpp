@@ -114,7 +114,7 @@ String TIFFFormat::Implementation() const
    "<p>This implementation of the TIFF format is based on LibTIFF Software, "
    "written by Sam Leffler at Silicon Graphics Inc.</p>"
 
-   "<p>LibTIFF Software (Version 4.0.7, released 2016 November 19):<br/>"
+   "<p>LibTIFF Software (Version 4.3.0, released 2021 April 16):<br/>"
    "Copyright (c) 1988-1997 Sam Leffler<br/>"
    "Copyright (c) 1991-1997 Silicon Graphics, Inc.</p>"
 

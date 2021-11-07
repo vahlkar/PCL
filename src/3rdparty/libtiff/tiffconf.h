@@ -17,84 +17,16 @@
 # endif
 #endif
 
-/* The size of a `int', as computed by sizeof. */
-#define SIZEOF_INT 4
-
-/* Signed 8-bit type */
-#define TIFF_INT8_T signed char
-
-/* Unsigned 8-bit type */
-#define TIFF_UINT8_T unsigned char
-
-/* Signed 16-bit type */
-#define TIFF_INT16_T signed short
-
-/* Unsigned 16-bit type */
-#define TIFF_UINT16_T unsigned short
-
-/* Signed 32-bit type */
-#define TIFF_INT32_T signed int
-
-/* Signed 32-bit type formatter */
-#define TIFF_INT32_FORMAT "%d"
-
-/* Unsigned 32-bit type */
-#define TIFF_UINT32_T unsigned int
-
-/* Unsigned 32-bit type formatter */
-#define TIFF_UINT32_FORMAT "%u"
-
-// ----------------------------------------------------------------------------
-#ifdef __WIN32__
-// ----------------------------------------------------------------------------
-
-/* Signed 64-bit type */
-#define TIFF_INT64_T signed __int64
-
-/* Signed 64-bit type formatter */
-#define TIFF_INT64_FORMAT "%I64d"
-
-/* Unsigned 64-bit type */
-#define TIFF_UINT64_T unsigned __int64
-
-/* Unsigned 64-bit type formatter */
-#define TIFF_UINT64_FORMAT "%I64u"
+#include <stddef.h>
+#include <stdint.h>
+#include <inttypes.h>
 
 /* Signed size type */
-#  define TIFF_SSIZE_T TIFF_INT64_T
-
-/* Pointer difference type */
-#  define TIFF_PTRDIFF_T TIFF_INT64_T
-
-// ----------------------------------------------------------------------------
-#else // !__WIN32__
-// ----------------------------------------------------------------------------
-
-/* Signed 64-bit type */
-#define TIFF_INT64_T signed long
-
-/* Signed 64-bit type formatter */
-#define TIFF_INT64_FORMAT "%ld"
-
-/* Unsigned 64-bit type */
-#define TIFF_UINT64_T unsigned long
-
-/* Unsigned 64-bit type formatter */
-#define TIFF_UINT64_FORMAT "%lu"
-
-/* Signed size type */
-#define TIFF_SSIZE_T signed long
-
-/* Pointer difference type */
-#define TIFF_PTRDIFF_T ptrdiff_t
-
-// ----------------------------------------------------------------------------
-#endif // __WIN32__
-// ----------------------------------------------------------------------------
+#define TIFF_SSIZE_T int64_t
 
 /* Compatibility stuff. */
 
-/* Define as 0 or 1 according to the floating point format suported by the
+/* Define as 0 or 1 according to the floating point format supported by the
    machine */
 #define HAVE_IEEEFP 1
 
@@ -112,7 +44,10 @@
 #define JPEG_SUPPORT 1
 
 /* Support JBIG compression (requires JBIG-KIT library) */
-/* #undef JBIG_SUPPORT */
+// #define JBIG_SUPPORT 1
+
+/* Support LERC compression */
+/* #undef LERC_SUPPORT */
 
 /* Support LogLuv high dynamic range encoding */
 #define LOGLUV_SUPPORT 1
@@ -139,8 +74,11 @@
 /* Support Deflate compression */
 #define ZIP_SUPPORT 1
 
+/* Support libdeflate enhanced compression */
+/* #undef LIBDEFLATE_SUPPORT */
+
 /* Support strip chopping (whether or not to convert single-strip uncompressed
-   images to mutiple strips of ~8Kb to reduce memory usage) */
+   images to multiple strips of ~8Kb to reduce memory usage) */
 #define STRIPCHOP_DEFAULT TIFF_STRIPCHOP
 
 /* Enable SubIFD tag (330) support */

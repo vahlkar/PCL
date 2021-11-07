@@ -324,6 +324,9 @@ void TIFFReader::Open( const String& path )
          case COMPRESSION_DEFLATE:
             m_tiffOptions.compression = TIFFCompression::ZIP;
             break;
+         case COMPRESSION_ADOBE_DEFLATE:
+            m_tiffOptions.compression = TIFFCompression::AdobeZIP;
+            break;
          case COMPRESSION_LZW:
             m_tiffOptions.compression = TIFFCompression::LZW;
             break;
@@ -1056,7 +1059,8 @@ static void WriteTIFFImage( const GenericImage<P>& image, TIFFWriter& writer,
       tiffCompression = COMPRESSION_NONE;
       break;
    case TIFFCompression::ZIP:
-      tiffCompression = COMPRESSION_DEFLATE;
+   case TIFFCompression::AdobeZIP:
+      tiffCompression = COMPRESSION_ADOBE_DEFLATE;
       break;
    case TIFFCompression::LZW:
       tiffCompression = COMPRESSION_LZW;

@@ -99,8 +99,9 @@ namespace TIFFCompression
    {
       Unknown  = 0x80,  // Unknown or unsupported TIFF compression
       None     = 0x00,  // No compression
-      ZIP      = 0x01,  // ZLIB (deflate) compression: Open, efficient, recommended.
-      LZW      = 0x02   // LZW: Less efficient than ZIP, had patent issues, discouraged.
+      ZIP      = 0x01,  // Legacy deflate compression
+      LZW      = 0x02,  // Lempel-Ziv & Welch compression
+      AdobeZIP = 0x03   // Deflate compression, as recognized by Adobe
    };
 }
 

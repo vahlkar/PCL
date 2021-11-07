@@ -167,14 +167,18 @@ TIFFPreferencesDialog::TIFFPreferencesDialog( const TIFFFormat::OutOfRangePolicy
    NoCompression_RadioButton.SetText( "None" );
    NoCompression_RadioButton.SetMinWidth( labelWidth );
    NoCompression_RadioButton.SetChecked( tiffOptions.compression == pcl::TIFFCompression::None );
+   NoCompression_RadioButton.SetToolTip( "No compression" );
 
-   ZIP_RadioButton.SetText( "ZIP" );
+   ZIP_RadioButton.SetText( "Deflate" );
    ZIP_RadioButton.SetMinWidth( labelWidth );
-   ZIP_RadioButton.SetChecked( tiffOptions.compression == pcl::TIFFCompression::ZIP );
+   ZIP_RadioButton.SetChecked( tiffOptions.compression == pcl::TIFFCompression::ZIP
+                            || tiffOptions.compression == pcl::TIFFCompression::AdobeZIP );
+   ZIP_RadioButton.SetToolTip( "Deflate compression (as recognized by Adobe)" );
 
    LZW_RadioButton.SetText( "LZW" );
    LZW_RadioButton.SetMinWidth( labelWidth );
    LZW_RadioButton.SetChecked( tiffOptions.compression == pcl::TIFFCompression::LZW );
+   LZW_RadioButton.SetToolTip( "Lempel-Ziv & Welch compression" );
 
    Compression_Sizer.SetMargin( 6 );
    Compression_Sizer.SetSpacing( 4 );
@@ -330,8 +334,8 @@ void TIFFPreferencesDialog::Button_Click( Button& sender, bool /*checked*/ )
       TIFFImageOptions o;
 
       NoCompression_RadioButton.SetChecked( o.compression == TIFFCompression::None );
-      ZIP_RadioButton.SetChecked( o.compression == TIFFCompression::ZIP );
-      LZW_RadioButton.SetChecked( o.compression == TIFFCompression::LZW ); // ### PCL 1.1: Consider suppressing
+      ZIP_RadioButton.SetChecked( o.compression == TIFFCompression::ZIP || o.compression == TIFFCompression::AdobeZIP );
+      LZW_RadioButton.SetChecked( o.compression == TIFFCompression::LZW );
 
       Planar_CheckBox.SetChecked( o.planar );
 
@@ -364,8 +368,8 @@ void TIFFPreferencesDialog::Dialog_Return( Dialog& sender, int retVal )
       if ( NoCompression_RadioButton.IsChecked() )
          tiffOptions.compression = TIFFCompression::None;
       else if ( ZIP_RadioButton.IsChecked() )
-         tiffOptions.compression = TIFFCompression::ZIP;
-      else if ( LZW_RadioButton.IsChecked() ) // ### PCL 1.1: Consider suppressing
+         tiffOptions.compression = TIFFCompression::AdobeZIP;
+      else if ( LZW_RadioButton.IsChecked() )
          tiffOptions.compression = TIFFCompression::LZW;
 
       tiffOptions.planar = Planar_CheckBox.IsChecked();

@@ -229,10 +229,11 @@ String TIFFInstance::ImageFormatInfo() const
    switch ( options.compression )
    {
    default:
-   case TIFFCompression::Unknown: cmp = "unknown"; break;
-   case TIFFCompression::None:    cmp = "none"; break;
-   case TIFFCompression::ZIP:     cmp = "ZIP"; break;
-   case TIFFCompression::LZW:     cmp = "LZW"; break;
+   case TIFFCompression::Unknown:  cmp = "unknown"; break;
+   case TIFFCompression::None:     cmp = "none"; break;
+   case TIFFCompression::ZIP:      cmp = "Deflate"; break;
+   case TIFFCompression::LZW:      cmp = "LZW"; break;
+   case TIFFCompression::AdobeZIP: cmp = "Deflate(Adobe)"; break;
    }
 
    String info = String().Format(
@@ -597,7 +598,7 @@ void TIFFInstance::Create( const String& filePath, int /*numberOfImages*/, const
    for ( IsoStringList::const_iterator i = theHints.Begin(); i < theHints.End(); ++i )
    {
       if ( *i == "zip-compression" )
-         tiffOptions.compression = TIFFCompression::ZIP;
+         tiffOptions.compression = TIFFCompression::AdobeZIP;
       else if ( *i == "lzw-compression" )
          tiffOptions.compression = TIFFCompression::LZW;
       else if ( *i == "uncompressed" || *i == "no-compression" )

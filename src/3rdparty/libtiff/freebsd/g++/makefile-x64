@@ -2,7 +2,7 @@
 # PixInsight Makefile Generator Script v1.124
 # Copyright (C) 2009-2021 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2021-10-28T18:11:32.501Z
+# Generated on .... 2021-11-07T10:04:47.791Z
 # Project id ...... libtiff
 # Project type .... StaticLibrary
 # Platform ........ FreeBSD/g++
@@ -42,6 +42,7 @@ SRC_FILES= \
 ../../tif_jbig.c \
 ../../tif_jpeg.c \
 ../../tif_jpeg_12.c \
+../../tif_lerc.c \
 ../../tif_luv.c \
 ../../tif_lzma.c \
 ../../tif_lzw.c \
@@ -61,8 +62,10 @@ SRC_FILES= \
 ../../tif_unix.c \
 ../../tif_version.c \
 ../../tif_warning.c \
+../../tif_webp.c \
 ../../tif_write.c \
-../../tif_zip.c
+../../tif_zip.c \
+../../tif_zstd.c
 
 #
 # Object files
@@ -88,6 +91,7 @@ OBJ_FILES= \
 ./x64/Release/tif_jbig.o \
 ./x64/Release/tif_jpeg.o \
 ./x64/Release/tif_jpeg_12.o \
+./x64/Release/tif_lerc.o \
 ./x64/Release/tif_luv.o \
 ./x64/Release/tif_lzma.o \
 ./x64/Release/tif_lzw.o \
@@ -107,8 +111,10 @@ OBJ_FILES= \
 ./x64/Release/tif_unix.o \
 ./x64/Release/tif_version.o \
 ./x64/Release/tif_warning.o \
+./x64/Release/tif_webp.o \
 ./x64/Release/tif_write.o \
-./x64/Release/tif_zip.o
+./x64/Release/tif_zip.o \
+./x64/Release/tif_zstd.o
 
 #
 # Dependency files
@@ -134,6 +140,7 @@ DEP_FILES= \
 ./x64/Release/tif_jbig.d \
 ./x64/Release/tif_jpeg.d \
 ./x64/Release/tif_jpeg_12.d \
+./x64/Release/tif_lerc.d \
 ./x64/Release/tif_luv.d \
 ./x64/Release/tif_lzma.d \
 ./x64/Release/tif_lzw.d \
@@ -153,8 +160,10 @@ DEP_FILES= \
 ./x64/Release/tif_unix.d \
 ./x64/Release/tif_version.d \
 ./x64/Release/tif_warning.d \
+./x64/Release/tif_webp.d \
 ./x64/Release/tif_write.d \
-./x64/Release/tif_zip.d
+./x64/Release/tif_zip.d \
+./x64/Release/tif_zstd.d
 
 #
 # Rules

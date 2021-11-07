@@ -92,13 +92,15 @@ TIFFOptionsDialog::TIFFOptionsDialog( const pcl::ImageOptions& o, const pcl::TIF
 
    NoCompression_RadioButton.SetText( "None" );
    NoCompression_RadioButton.SetMinWidth( labelWidth );
+   NoCompression_RadioButton.SetToolTip( "No compression" );
 
-   ZIP_RadioButton.SetText( "ZIP" );
+   ZIP_RadioButton.SetText( "Deflate" );
    ZIP_RadioButton.SetMinWidth( labelWidth );
+   ZIP_RadioButton.SetToolTip( "Deflate compression (as recognized by Adobe)" );
 
-   LZW_RadioButton.SetText( "LZW - deprecated" );
+   LZW_RadioButton.SetText( "LZW" );
    LZW_RadioButton.SetMinWidth( labelWidth );
-   LZW_RadioButton.SetToolTip( "LZW compression (discouraged)" );
+   LZW_RadioButton.SetToolTip( "Lempel-Ziv & Welch compression" );
 
    Compression_Sizer.SetMargin( 6 );
    Compression_Sizer.SetSpacing( 4 );
@@ -215,7 +217,8 @@ TIFFOptionsDialog::TIFFOptionsDialog( const pcl::ImageOptions& o, const pcl::TIF
    Double_RadioButton.SetChecked( options.bitsPerSample == 64 && options.ieeefpSampleFormat );
 
    NoCompression_RadioButton.SetChecked( tiffOptions.compression == pcl::TIFFCompression::None );
-   ZIP_RadioButton.SetChecked( tiffOptions.compression == pcl::TIFFCompression::ZIP );
+   ZIP_RadioButton.SetChecked( tiffOptions.compression == pcl::TIFFCompression::ZIP
+                            || tiffOptions.compression == pcl::TIFFCompression::AdobeZIP );
    LZW_RadioButton.SetChecked( tiffOptions.compression == pcl::TIFFCompression::LZW );
 
    ICCProfile_CheckBox.SetChecked( options.embedICCProfile );
@@ -274,8 +277,8 @@ void TIFFOptionsDialog::Dialog_Return( Dialog& /*sender*/, int retVal )
       if ( NoCompression_RadioButton.IsChecked() )
          tiffOptions.compression = pcl::TIFFCompression::None;
       else if ( ZIP_RadioButton.IsChecked() )
-         tiffOptions.compression = pcl::TIFFCompression::ZIP;
-      else if ( LZW_RadioButton.IsChecked() ) // ### PCL 1.x: Consider suppressing
+         tiffOptions.compression = pcl::TIFFCompression::AdobeZIP;
+      else if ( LZW_RadioButton.IsChecked() )
          tiffOptions.compression = pcl::TIFFCompression::LZW;
 
       options.embedICCProfile = ICCProfile_CheckBox.IsChecked();

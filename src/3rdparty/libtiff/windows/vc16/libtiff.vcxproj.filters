@@ -4,7 +4,7 @@
 # PixInsight Makefile Generator Script v1.124
 # Copyright (C) 2009-2021 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2021-10-28T18:11:32.925Z
+# Generated on .... 2021-11-07T10:04:48.208Z
 # Project id ...... libtiff
 # Project type .... StaticLibrary
 # Platform ........ Windows/vc16
@@ -20,10 +20,10 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>d4199f6c-f616-4dc4-8e33-414fde5ab1bc</UniqueIdentifier>
+      <UniqueIdentifier>e0b8c674-bed9-4116-82ea-a28dfab1af93</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>a0ca0972-037c-43bb-bdb4-179c8ca889ce</UniqueIdentifier>
+      <UniqueIdentifier>9890b4e9-7149-4d2b-8ac7-ac882febe1b1</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -84,6 +84,9 @@
     <ClCompile Include="..\..\tif_jpeg_12.c">
         <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\tif_lerc.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\tif_luv.c">
         <Filter>Source Files</Filter>
     </ClCompile>
@@ -141,10 +144,16 @@
     <ClCompile Include="..\..\tif_warning.c">
         <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\tif_webp.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\tif_write.c">
         <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\tif_zip.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\tif_zstd.c">
         <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -171,9 +180,6 @@
         <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\tiffio.h">
-        <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\tiffio.hxx">
         <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\tiffiop.h">
