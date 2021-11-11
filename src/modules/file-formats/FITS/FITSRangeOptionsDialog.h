@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.1.9
 // ----------------------------------------------------------------------------
-// FITSRangeOptionsDialog.h - Released 2021-10-28T16:39:17Z
+// FITSRangeOptionsDialog.h - Released 2021-11-11T17:55:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -105,4 +105,4 @@ private:
 #endif   // __FITSRangeOptionsDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF FITSRangeOptionsDialog.h - Released 2021-10-28T16:39:17Z
+// EOF FITSRangeOptionsDialog.h - Released 2021-11-11T17:55:57Z

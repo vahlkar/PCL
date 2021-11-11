@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.3.5
+// Standard ImageIntegration Process Module Version 1.3.6
 // ----------------------------------------------------------------------------
-// ImageIntegrationParameters.cpp - Released 2021-10-28T16:39:26Z
+// ImageIntegrationParameters.cpp - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -281,7 +281,7 @@ IsoString IICombination::Id() const
 
 size_type IICombination::NumberOfElements() const
 {
-   return NumberOfCombinationOperations;
+   return NumberOfItems;
 }
 
 IsoString IICombination::ElementId( size_type i ) const
@@ -320,7 +320,7 @@ IsoString IIWeightMode::Id() const
 
 size_type IIWeightMode::NumberOfElements() const
 {
-   return NumberOfWeightModes;
+   return NumberOfItems;
 }
 
 IsoString IIWeightMode::ElementId( size_type i ) const
@@ -355,6 +355,23 @@ size_type IIWeightMode::DefaultValueIndex() const
    return size_type( Default );
 }
 
+String IIWeightMode::ElementLabel( int index )
+{
+   switch ( index )
+   {
+   case DontCare:           return "Don't care (all weights = 1)";
+   case ExposureTimeWeight: return "Exposure time";
+   case SNREstimate:        return "SNR estimate";
+   case SignalWeight:       return "Average signal strength";
+   case MedianWeight:       return "Median value";
+   case AverageWeight:      return "Average value";
+   case KeywordWeight:      return "FITS keyword";
+   default:
+   case PSFSignalWeight:    return "PSF signal";
+   case PSFPowerWeight:     return "PSF power";
+   }
+}
+
 // ----------------------------------------------------------------------------
 
 IIWeightKeyword::IIWeightKeyword( MetaProcess* P ) : MetaString( P )
@@ -381,7 +398,7 @@ IsoString IIWeightScale::Id() const
 
 size_type IIWeightScale::NumberOfElements() const
 {
-   return NumberOfWeightScales;
+   return NumberOfItems;
 }
 
 IsoString IIWeightScale::ElementId( size_type i ) const
@@ -486,7 +503,7 @@ IsoString IINormalization::Id() const
 
 size_type IINormalization::NumberOfElements() const
 {
-   return NumberOfNormalizationAlgorithms;
+   return NumberOfItems;
 }
 
 IsoString IINormalization::ElementId( size_type i ) const
@@ -528,7 +545,7 @@ IsoString IIRejection::Id() const
 
 size_type IIRejection::NumberOfElements() const
 {
-   return NumberOfRejectionAlgorithms;
+   return NumberOfItems;
 }
 
 IsoString IIRejection::ElementId( size_type i ) const
@@ -572,7 +589,7 @@ IsoString IIRejectionNormalization::Id() const
 
 size_type IIRejectionNormalization::NumberOfElements() const
 {
-   return NumberOfRejectionNormalizationAlgorithms;
+   return NumberOfItems;
 }
 
 IsoString IIRejectionNormalization::ElementId( size_type i ) const
@@ -3045,4 +3062,4 @@ bool IIImageRejectedHighB::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationParameters.cpp - Released 2021-10-28T16:39:26Z
+// EOF ImageIntegrationParameters.cpp - Released 2021-11-11T17:56:06Z

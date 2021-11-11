@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.5.0
+// Standard SubframeSelector Process Module Version 1.6.0
 // ----------------------------------------------------------------------------
-// SubframeSelectorMeasureData.cpp - Released 2021-10-28T16:39:26Z
+// SubframeSelectorMeasureData.cpp - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -74,6 +74,8 @@ void MeasureData::ResetCacheableData()
    stars = TheSSMeasurementStarsParameter->DefaultValue();
    starResidual = TheSSMeasurementStarResidualParameter->DefaultValue();
    starResidualMeanDev = 0;
+   azimuth = TheSSMeasurementAzimuthParameter->DefaultValue();
+   altitude = TheSSMeasurementAltitudeParameter->DefaultValue();
 }
 
 // ----------------------------------------------------------------------------
@@ -98,6 +100,8 @@ void MeasureData::AddToCache( const SubframeSelectorInstance& instance ) const
       item.stars               = stars;
       item.starResidual        = starResidual;
       item.starResidualMeanDev = starResidualMeanDev;
+      item.azimuth             = azimuth;
+      item.altitude            = altitude;
       TheSubframeSelectorCache->Add( item );
    }
 }
@@ -127,6 +131,8 @@ bool MeasureData::GetFromCache( const SubframeSelectorInstance& instance )
          stars               = item.stars;
          starResidual        = item.starResidual;
          starResidualMeanDev = item.starResidualMeanDev;
+         azimuth             = item.azimuth;
+         altitude            = item.altitude;
 
          return RoundInt( 100*item.trimmingFactor ) == RoundInt( 100*instance.p_trimmingFactor ) &&
                 fwhm                != TheSSMeasurementFWHMParameter->DefaultValue() &&
@@ -142,7 +148,9 @@ bool MeasureData::GetFromCache( const SubframeSelectorInstance& instance )
                 noiseRatio          != TheSSMeasurementNoiseRatioParameter->DefaultValue() &&
                 stars               != TheSSMeasurementStarsParameter->DefaultValue() &&
                 starResidual        != TheSSMeasurementStarResidualParameter->DefaultValue() &&
-                starResidualMeanDev != 0;
+                starResidualMeanDev != 0 &&
+                azimuth             != TheSSMeasurementAzimuthParameter->DefaultValue() &&
+                altitude            != TheSSMeasurementAltitudeParameter->DefaultValue();
       }
    }
 
@@ -266,7 +274,21 @@ String MeasureItem::JavaScriptParameters( double subframeScale, int scaleUnit, d
    String().Format( "let StarResidualMeanDevMax = %.8e;\n", properties.starResidualMeanDev.max ) +
    String().Format( "let StarResidualMeanDevMedian = %.8e;\n", properties.starResidualMeanDev.median ) +
    String().Format( "let StarResidualMeanDevSigma = %.8e;\n", DeviationNormalize(
-                  starResidualMeanDev, properties.starResidualMeanDev.median, properties.starResidualMeanDev.deviation ) );
+                  starResidualMeanDev, properties.starResidualMeanDev.median, properties.starResidualMeanDev.deviation ) ) +
+
+   String().Format( "let Azimuth = %.8e;\n", azimuth ) +
+   String().Format( "let AzimuthMin = %.8e;\n", properties.azimuth.min ) +
+   String().Format( "let AzimuthMax = %.8e;\n", properties.azimuth.max ) +
+   String().Format( "let AzimuthMedian = %.8e;\n", properties.azimuth.median ) +
+   String().Format( "let AzimuthSigma = %.8e;\n", DeviationNormalize(
+                  azimuth, properties.azimuth.median, properties.azimuth.deviation ) ) +
+
+   String().Format( "let Altitude = %.8e;\n", altitude ) +
+   String().Format( "let AltitudeMin = %.8e;\n", properties.altitude.min ) +
+   String().Format( "let AltitudeMax = %.8e;\n", properties.altitude.max ) +
+   String().Format( "let AltitudeMedian = %.8e;\n", properties.altitude.median ) +
+   String().Format( "let AltitudeSigma = %.8e;\n", DeviationNormalize(
+                  altitude, properties.altitude.median, properties.altitude.deviation ) );
 }
 
 // ----------------------------------------------------------------------------
@@ -344,6 +366,8 @@ void MeasureUtils::MeasureProperties( const Array<MeasureItem>& measures, double
    Array<double> fwhmMeanDev( measuresLength );
    Array<double> eccentricityMeanDev( measuresLength );
    Array<double> starResidualMeanDev( measuresLength );
+   Array<double> azimuth( measuresLength );
+   Array<double> altitude( measuresLength );
 
    for ( size_type i = 0; i < measuresLength; ++i )
    {
@@ -368,6 +392,8 @@ void MeasureUtils::MeasureProperties( const Array<MeasureItem>& measures, double
       fwhmMeanDev[i] = measures[i].FWHMMeanDeviation( subframeScale, scaleUnit );
       eccentricityMeanDev[i] = measures[i].eccentricityMeanDev;
       starResidualMeanDev[i] = measures[i].starResidualMeanDev;
+      azimuth[i] = measures[i].azimuth;
+      altitude[i] = measures[i].altitude;
    }
 
    MeasureUtils::MeasureProperty( weight, properties.weight );
@@ -385,6 +411,8 @@ void MeasureUtils::MeasureProperties( const Array<MeasureItem>& measures, double
    MeasureUtils::MeasureProperty( fwhmMeanDev, properties.fwhmMeanDev );
    MeasureUtils::MeasureProperty( eccentricityMeanDev, properties.eccentricityMeanDev );
    MeasureUtils::MeasureProperty( starResidualMeanDev, properties.starResidualMeanDev );
+   MeasureUtils::MeasureProperty( azimuth, properties.azimuth );
+   MeasureUtils::MeasureProperty( altitude, properties.altitude );
 }
 
 // ----------------------------------------------------------------------------
@@ -392,4 +420,4 @@ void MeasureUtils::MeasureProperties( const Array<MeasureItem>& measures, double
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorMeasureData.cpp - Released 2021-10-28T16:39:26Z
+// EOF SubframeSelectorMeasureData.cpp - Released 2021-11-11T17:56:06Z

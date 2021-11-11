@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// JPEGFormat.h - Released 2021-10-28T16:39:17Z
+// JPEGFormat.h - Released 2021-11-11T17:55:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -126,4 +126,4 @@ public:
 #endif   // __JPEGFormat_h
 
 // ----------------------------------------------------------------------------
-// EOF JPEGFormat.h - Released 2021-10-28T16:39:17Z
+// EOF JPEGFormat.h - Released 2021-11-11T17:55:57Z

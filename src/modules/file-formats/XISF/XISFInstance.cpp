@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard XISF File Format Module Version 1.0.12
+// Standard XISF File Format Module Version 1.0.13
 // ----------------------------------------------------------------------------
-// XISFInstance.cpp - Released 2021-10-28T16:39:17Z
+// XISFInstance.cpp - Released 2021-11-11T17:55:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard XISF PixInsight module.
 //
@@ -421,9 +421,9 @@ public:
       if ( autoMetadata.HasChanged() )
          options.autoMetadata = autoMetadata;
       if ( embeddedData.HasChanged() )
-         options.ignoreEmbeddedData = embeddedData;
+         options.ignoreEmbeddedData = !embeddedData;
       if ( properties.HasChanged() )
-         options.ignoreProperties = properties;
+         options.ignoreProperties = !properties;
       if ( verbosity.HasChanged() )
          options.verbosity = verbosity;
       if ( noWarnings.HasChanged() )
@@ -441,12 +441,21 @@ public:
 //       if ( cfa.HasChanged() )
 //          options.cfaType = XISF::CFATypeFromId( cfa );
       if ( resolution.HasChanged() )
-         options.xResolution = options.yResolution = resolution;
+         options.xResolution = options.yResolution = resolution; // = 0 if disabled
       if ( resolutionUnit.HasChanged() )
          if ( resolutionUnit.Value().CompareIC( "cm" ) == 0 )
             options.metricResolution = true;
          else if ( resolutionUnit.Value().CompareIC( "inch" ) == 0 )
             options.metricResolution = false;
+      if ( embeddedData.HasChanged() )
+         if ( !embeddedData ) // or apply default format options otherwise
+            options.embedICCProfile =
+            options.embedThumbnail =
+            options.embedRGBWS =
+            options.embedDisplayFunction =
+            options.embedColorFilterArray =
+            options.embedProcessingHistory =
+            options.embedPreviewRects = false;
    }
 
    void ApplyWriteHints( XISFOptions& options ) const
@@ -869,10 +878,16 @@ bool XISFInstance::QueryOptions( Array<ImageOptions>& imageOptions, Array<void*>
    if ( overrides.overrideThumbnailEmbedding )
       options.embedThumbnail = overrides.embedThumbnails;
 
+   if ( overrides.overrideProcessingHistoriesEmbedding )
+      options.embedProcessingHistory = overrides.embedProcessingHistories;
+
    if ( overrides.overridePreviewRectsEmbedding )
       options.embedPreviewRects = overrides.embedPreviewRects;
 
    // Execute the XISF Options dialog
+
+
+
 
    XISFOptionsDialog dlg( options, xisfFormatOptions->options );
    if ( dlg.Execute() != StdDialogCode::Ok )
@@ -919,6 +934,8 @@ void XISFInstance::Create( const String& filePath, int numberOfImages, const Iso
       imageOptions.embedRGBWS = overrides.embedRGBWorkingSpaces;
    if ( overrides.overrideThumbnailEmbedding )
       imageOptions.embedThumbnail = overrides.embedThumbnails;
+   if ( overrides.overrideProcessingHistoriesEmbedding )
+      imageOptions.embedProcessingHistory = overrides.embedProcessingHistories;
    if ( overrides.overridePreviewRectsEmbedding )
       imageOptions.embedPreviewRects = overrides.embedPreviewRects;
 
@@ -964,6 +981,8 @@ void XISFInstance::SetOptions( const ImageOptions& options )
          imageOptions.embedRGBWS = overrides.embedRGBWorkingSpaces;
       if ( overrides.overrideThumbnailEmbedding )
          imageOptions.embedThumbnail = overrides.embedThumbnails;
+      if ( overrides.overrideProcessingHistoriesEmbedding )
+         imageOptions.embedProcessingHistory = overrides.embedProcessingHistories;
       if ( overrides.overridePreviewRectsEmbedding )
          imageOptions.embedPreviewRects = overrides.embedPreviewRects;
    }
@@ -1149,4 +1168,4 @@ void XISFInstance::CloseImage()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF XISFInstance.cpp - Released 2021-10-28T16:39:17Z
+// EOF XISFInstance.cpp - Released 2021-11-11T17:55:57Z

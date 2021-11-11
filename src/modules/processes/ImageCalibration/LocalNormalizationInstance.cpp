@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.7.1
+// Standard ImageCalibration Process Module Version 1.7.2
 // ----------------------------------------------------------------------------
-// LocalNormalizationInstance.cpp - Released 2021-10-28T16:39:26Z
+// LocalNormalizationInstance.cpp - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -1072,8 +1072,7 @@ private:
       static AtomicInt count;
 
       Console console;
-      console.WriteLn( "<end><cbr>Loading target file:" );
-      console.WriteLn( "<raw>" + m_targetFilePath + "</raw>" );
+      console.WriteLn( "<end><cbr>Loading target file: <raw>" + m_targetFilePath + "</raw>" );
 
       FileFormat format( File::ExtractExtension( m_targetFilePath ), true/*read*/, false/*write*/ );
       FileFormatInstance file( format );
@@ -1291,8 +1290,7 @@ static void LoadReferenceImage( ImageVariant& image, const String& path, const S
 {
    Console console;
 
-   console.WriteLn( "<end><cbr>Loading reference image:" );
-   console.WriteLn( "<raw>" + path + "</raw>" );
+   console.WriteLn( "<end><cbr>Loading reference image: <raw>" + path + "</raw>" );
 
    FileFormat format( File::ExtractExtension( path ), true/*read*/, false/*write*/ );
    FileFormatInstance file( format );
@@ -1543,6 +1541,8 @@ bool LocalNormalizationInstance::ExecuteGlobal()
                         /*
                          * A thread has just finished.
                          */
+                        if ( succeeded+failed == 0 )
+                           console.WriteLn();
                         (*i)->FlushConsoleOutputText();
                         console.WriteLn();
                         String errorInfo;
@@ -1896,4 +1896,4 @@ size_type LocalNormalizationInstance::ParameterLength( const MetaParameter* p, s
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationInstance.cpp - Released 2021-10-28T16:39:26Z
+// EOF LocalNormalizationInstance.cpp - Released 2021-11-11T17:56:06Z

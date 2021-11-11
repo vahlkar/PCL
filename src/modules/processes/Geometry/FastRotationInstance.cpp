@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.4
 // ----------------------------------------------------------------------------
-// FastRotationInstance.cpp - Released 2021-10-28T16:39:26Z
+// FastRotationInstance.cpp - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -188,4 +188,4 @@ void* FastRotationInstance::LockParameter( const MetaParameter* p, size_type /*t
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FastRotationInstance.cpp - Released 2021-10-28T16:39:26Z
+// EOF FastRotationInstance.cpp - Released 2021-11-11T17:56:06Z

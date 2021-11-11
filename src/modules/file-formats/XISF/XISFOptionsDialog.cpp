@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard XISF File Format Module Version 1.0.12
+// Standard XISF File Format Module Version 1.0.13
 // ----------------------------------------------------------------------------
-// XISFOptionsDialog.cpp - Released 2021-10-28T16:39:17Z
+// XISFOptionsDialog.cpp - Released 2021-11-11T17:55:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard XISF PixInsight module.
 //
@@ -404,23 +404,6 @@ XISFOptionsDialog::XISFOptionsDialog( const ImageOptions& o, const XISFOptions& 
    ICCProfile_Sizer.Add( ICCProfile_CheckBox );
    ICCProfile_Sizer.AddStretch();
 
-   DisplayFunction_CheckBox.SetText( "Display function" );
-   DisplayFunction_CheckBox.SetToolTip( "<p>Embed display function parameters "
-      "(aka <i>screen transfer function</i>, or STF).</p>" );
-   DisplayFunction_CheckBox.SetChecked( imageOptions.embedDisplayFunction );
-
-   DisplayFunction_Sizer.AddUnscaledSpacing( m_labelWidth + ui4 );
-   DisplayFunction_Sizer.Add( DisplayFunction_CheckBox );
-   DisplayFunction_Sizer.AddStretch();
-
-   RGBWorkingSpace_CheckBox.SetText( "RGB working space" );
-   RGBWorkingSpace_CheckBox.SetToolTip( "<p>Embed RGB working space parameters.</p>" );
-   RGBWorkingSpace_CheckBox.SetChecked( imageOptions.embedRGBWS );
-
-   RGBWorkingSpace_Sizer.AddUnscaledSpacing( m_labelWidth + ui4 );
-   RGBWorkingSpace_Sizer.Add( RGBWorkingSpace_CheckBox );
-   RGBWorkingSpace_Sizer.AddStretch();
-
    Thumbnail_CheckBox.SetText( "Thumbnail image" );
    Thumbnail_CheckBox.SetToolTip( "<p>Embed an 8-bit reduced version of the image for quick reference.</p>" );
    Thumbnail_CheckBox.SetChecked( imageOptions.embedThumbnail );
@@ -429,8 +412,36 @@ XISFOptionsDialog::XISFOptionsDialog( const ImageOptions& o, const XISFOptions& 
    Thumbnail_Sizer.Add( Thumbnail_CheckBox );
    Thumbnail_Sizer.AddStretch();
 
+   DisplayFunction_CheckBox.SetText( "Display function" );
+   DisplayFunction_CheckBox.SetToolTip( "<p>Embed display function parameters "
+      "(aka <i>screen transfer function</i>, or STF).</p>" );
+   DisplayFunction_CheckBox.SetChecked( imageOptions.embedDisplayFunction );
+   DisplayFunction_CheckBox.Enable( imageOptions.embedProperties );
+
+   DisplayFunction_Sizer.AddUnscaledSpacing( m_labelWidth + ui4 );
+   DisplayFunction_Sizer.Add( DisplayFunction_CheckBox );
+   DisplayFunction_Sizer.AddStretch();
+
+   RGBWorkingSpace_CheckBox.SetText( "RGB working space" );
+   RGBWorkingSpace_CheckBox.SetToolTip( "<p>Embed RGB working space parameters.</p>" );
+   RGBWorkingSpace_CheckBox.SetChecked( imageOptions.embedRGBWS );
+   RGBWorkingSpace_CheckBox.Enable( imageOptions.embedProperties );
+
+   RGBWorkingSpace_Sizer.AddUnscaledSpacing( m_labelWidth + ui4 );
+   RGBWorkingSpace_Sizer.Add( RGBWorkingSpace_CheckBox );
+   RGBWorkingSpace_Sizer.AddStretch();
+
+   ProcessingHistory_CheckBox.SetText( "Processing history" );
+   ProcessingHistory_CheckBox.SetToolTip( "<p>Embed the current processing history of the image as an XML document.</p>" );
+   ProcessingHistory_CheckBox.SetChecked( imageOptions.embedProcessingHistory );
+   ProcessingHistory_CheckBox.Enable( imageOptions.embedProperties );
+
+   ProcessingHistory_Sizer.AddUnscaledSpacing( m_labelWidth + ui4 );
+   ProcessingHistory_Sizer.Add( ProcessingHistory_CheckBox );
+   ProcessingHistory_Sizer.AddStretch();
+
    PreviewRects_CheckBox.SetText( "Preview rectangles" );
-   PreviewRects_CheckBox.SetToolTip( "<p>Embed preview rectangles and identifiers.</p>" );
+   PreviewRects_CheckBox.SetToolTip( "<p>Embed existing preview rectangles and preview identifiers.</p>" );
    PreviewRects_CheckBox.SetChecked( imageOptions.embedPreviewRects );
    PreviewRects_CheckBox.Enable( imageOptions.embedProperties );
 
@@ -443,9 +454,10 @@ XISFOptionsDialog::XISFOptionsDialog( const ImageOptions& o, const XISFOptions& 
    EmbeddedData_Sizer.Add( Properties_Sizer );
    EmbeddedData_Sizer.Add( FITSKeywords_Sizer );
    EmbeddedData_Sizer.Add( ICCProfile_Sizer );
+   EmbeddedData_Sizer.Add( Thumbnail_Sizer );
    EmbeddedData_Sizer.Add( DisplayFunction_Sizer );
    EmbeddedData_Sizer.Add( RGBWorkingSpace_Sizer );
-   EmbeddedData_Sizer.Add( Thumbnail_Sizer );
+   EmbeddedData_Sizer.Add( ProcessingHistory_Sizer );
    EmbeddedData_Sizer.Add( PreviewRects_Sizer );
 
    EmbeddedData_GroupBox.SetTitle( "Embedded Data" );
@@ -480,7 +492,12 @@ XISFOptionsDialog::XISFOptionsDialog( const ImageOptions& o, const XISFOptions& 
 void XISFOptionsDialog::Button_Click( Button& sender, bool checked )
 {
    if ( sender == Properties_CheckBox )
+   {
+      DisplayFunction_CheckBox.Enable( checked );
+      RGBWorkingSpace_CheckBox.Enable( checked );
+      ProcessingHistory_CheckBox.Enable( checked );
       PreviewRects_CheckBox.Enable( checked );
+   }
    else
       Base_Button_Click( sender, checked );
 }
@@ -527,9 +544,10 @@ void XISFOptionsDialog::Dialog_Return( Dialog&/*sender*/, int retVal )
       options.storeFITSKeywords = FITSKeywords_CheckBox.IsChecked();
       imageOptions.embedProperties = Properties_CheckBox.IsChecked();
       imageOptions.embedICCProfile = ICCProfile_CheckBox.IsChecked();
+      imageOptions.embedThumbnail = Thumbnail_CheckBox.IsChecked();
       imageOptions.embedDisplayFunction = DisplayFunction_CheckBox.IsChecked();
       imageOptions.embedRGBWS = RGBWorkingSpace_CheckBox.IsChecked();
-      imageOptions.embedThumbnail = Thumbnail_CheckBox.IsChecked();
+      imageOptions.embedProcessingHistory = ProcessingHistory_CheckBox.IsChecked();
       imageOptions.embedPreviewRects = PreviewRects_CheckBox.IsChecked();
 
       // outputHints = OutputHints_Edit.Text().Trimmed();
@@ -541,4 +559,4 @@ void XISFOptionsDialog::Dialog_Return( Dialog&/*sender*/, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF XISFOptionsDialog.cpp - Released 2021-10-28T16:39:17Z
+// EOF XISFOptionsDialog.cpp - Released 2021-11-11T17:55:57Z

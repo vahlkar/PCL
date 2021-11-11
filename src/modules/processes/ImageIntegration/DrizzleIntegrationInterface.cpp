@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.3.5
+// Standard ImageIntegration Process Module Version 1.3.6
 // ----------------------------------------------------------------------------
-// DrizzleIntegrationInterface.cpp - Released 2021-10-28T16:39:26Z
+// DrizzleIntegrationInterface.cpp - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -1332,4 +1332,4 @@ DrizzleIntegrationInterface::GUIData::GUIData( DrizzleIntegrationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DrizzleIntegrationInterface.cpp - Released 2021-10-28T16:39:26Z
+// EOF DrizzleIntegrationInterface.cpp - Released 2021-11-11T17:56:06Z

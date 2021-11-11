@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// pcl/StarDetector.cpp - Released 2021-10-28T16:39:05Z
+// pcl/StarDetector.cpp - Released 2021-11-11T17:57:35Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -315,7 +315,7 @@ struct PSFFitData
    float  flux;
 };
 
-class PSFFitThread : public Thread
+class PCL_SD_PSFFitThread : public Thread
 {
 public:
 
@@ -323,9 +323,9 @@ public:
 
    StarDetector::star_list stars;
 
-   PSFFitThread( const AbstractImage::ThreadData& data,
-                 Image& image, psf_function psfType, bool circular, float tolerance,
-                 const Array<PSFFitData>& psfData, int start, int end )
+   PCL_SD_PSFFitThread( const AbstractImage::ThreadData& data,
+                        Image& image, psf_function psfType, bool circular, float tolerance,
+                        const Array<PSFFitData>& psfData, int start, int end )
       : m_data( data )
       , m_image( image )
       , m_psfType( psfType )
@@ -590,14 +590,14 @@ StarDetector::star_list StarDetector::DetectStars( Image& image ) const
       Array<size_type> L = Thread::OptimalThreadLoads( psfData.Length(),
                                           1/*overheadLimit*/,
                                           IsParallelProcessingEnabled() ? MaxProcessors() : 1 );
-      ReferenceArray<PSFFitThread> threads;
+      ReferenceArray<PCL_SD_PSFFitThread> threads;
       AbstractImage::ThreadData data( image, psfData.Length() );
       for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
-         threads.Add( new PSFFitThread( data, image, m_psfType, !m_psfElliptic, m_psfTolerance,
+         threads.Add( new PCL_SD_PSFFitThread( data, image, m_psfType, !m_psfElliptic, m_psfCentroidTolerance,
                                         psfData, n, n + int( L[i] ) ) );
       AbstractImage::RunThreads( threads, data );
 
-      for ( const PSFFitThread& thread : threads )
+      for ( const PCL_SD_PSFFitThread& thread : threads )
          S << thread.stars;
 
       threads.Destroy();
@@ -654,4 +654,4 @@ Image StarDetector::Structures( const ImageVariant& image ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/StarDetector.cpp - Released 2021-10-28T16:39:05Z
+// EOF pcl/StarDetector.cpp - Released 2021-11-11T17:57:35Z

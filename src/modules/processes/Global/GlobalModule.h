@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.3.1
+// Standard Global Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// GlobalModule.h - Released 2021-10-28T16:39:26Z
+// GlobalModule.h - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -85,4 +85,4 @@ public:
 #endif   // __GlobalModule_h
 
 // ----------------------------------------------------------------------------
-// EOF GlobalModule.h - Released 2021-10-28T16:39:26Z
+// EOF GlobalModule.h - Released 2021-11-11T17:56:06Z

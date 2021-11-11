@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// pcl/APIDefs.h - Released 2021-10-28T16:38:58Z
+// pcl/APIDefs.h - Released 2021-11-11T17:57:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -207,20 +207,21 @@ struct api_image_info
  */
 struct api_image_options
 {
-   uint8  bitsPerSample         :  8;
-   bool   ieeefpSampleFormat    :  1;
-   bool   complexSample         :  1;
-   bool   signedIntegers        :  1;
-   bool   metricResolution      :  1;
-   bool   readNormalized        :  1;
-   bool   embedICCProfile       :  1;
-   bool   embedThumbnail        :  1;
-   bool   embedProperties       :  1;
-   bool   embedRGBWS            :  1;
-   bool   embedDisplayFunction  :  1;
-   bool   embedColorFilterArray :  1;
-   bool   embedPreviewRects     :  1;
-   uint32 __r__                 : 12;
+   uint8  bitsPerSample          :  8;
+   bool   ieeefpSampleFormat     :  1;
+   bool   complexSample          :  1;
+   bool   signedIntegers         :  1;
+   bool   metricResolution       :  1;
+   bool   readNormalized         :  1;
+   bool   embedICCProfile        :  1;
+   bool   embedThumbnail         :  1;
+   bool   embedProperties        :  1;
+   bool   embedRGBWS             :  1;
+   bool   embedDisplayFunction   :  1;
+   bool   embedColorFilterArray  :  1;
+   bool   embedProcessingHistory :  1;
+   bool   embedPreviewRects      :  1;
+   uint32 __r__                  : 11;
    double lowerRange;
    double upperRange;
    double xResolution;
@@ -237,19 +238,20 @@ struct api_image_options
  */
 struct api_image_file_info
 {
-   uint8  bitsPerSample         :  8;
-   bool   ieeefpSampleFormat    :  1;
-   bool   complexSample         :  1;
-   bool   signedIntegers        :  1;
-   bool   metricResolution      :  1;
-   bool   embedICCProfile       :  1;
-   bool   embedThumbnail        :  1;
-   bool   embedProperties       :  1;
-   bool   embedRGBWS            :  1;
-   bool   embedDisplayFunction  :  1;
-   bool   embedColorFilterArray :  1;
-   bool   embedPreviewRects     :  1;
-   uint32 __r__                 : 13;
+   uint8  bitsPerSample          :  8;
+   bool   ieeefpSampleFormat     :  1;
+   bool   complexSample          :  1;
+   bool   signedIntegers         :  1;
+   bool   metricResolution       :  1;
+   bool   embedICCProfile        :  1;
+   bool   embedThumbnail         :  1;
+   bool   embedProperties        :  1;
+   bool   embedRGBWS             :  1;
+   bool   embedDisplayFunction   :  1;
+   bool   embedColorFilterArray  :  1;
+   bool   embedProcessingHistory :  1;
+   bool   embedPreviewRects      :  1;
+   uint32 __r__                  : 12;
    double xResolution;
    double yResolution;
    int32  isoSpeed;
@@ -955,4 +957,4 @@ void PCL_FUNC PCLImageOptionsToAPI( api_image_options&, const ImageOptions& );
 #endif   // __PCL_API_APIDefs_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/APIDefs.h - Released 2021-10-28T16:38:58Z
+// EOF pcl/APIDefs.h - Released 2021-11-11T17:57:24Z

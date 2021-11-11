@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.1.9
 // ----------------------------------------------------------------------------
-// FITSFormat.cpp - Released 2021-10-28T16:39:17Z
+// FITSFormat.cpp - Released 2021-11-11T17:55:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -112,7 +112,7 @@ String FITSFormat::Implementation() const
    "<p>PixInsight Standard File Format Support Modules.</p>"
 
    "<p>This implementation of the FITS format is based on the CFITSIO library "
-   "of NASA/HEASARC (CFITSIO version 3.45 - released May 2018).</p>"
+   "of NASA/HEASARC (CFITSIO version 4.0.0 - released May 2021).</p>"
 
    "<p>The FITSIO software was written by William Pence at the High Energy "
    "Astrophysic Science Archive Research Center (HEASARC) at the NASA "
@@ -120,7 +120,8 @@ String FITSFormat::Implementation() const
 
    "<p>FITSIO:<br/>"
    "Copyright U.S. Government as represented by the Administrator of the "
-   "National Aeronautics and Space Administration.</p>"
+   "National Aeronautics and Space Administration. No copyright is claimed in "
+   "the United States under Title 17, U.S. Code.</p>"
 
    "<p>PixInsight Class Library (PCL):<br/>"
    "Copyright (c) 2003-2021 Pleiades Astrophoto</p>"
@@ -508,4 +509,4 @@ FITSFormat::FormatOptions* FITSFormat::FormatOptions::FromGenericDataBlock( cons
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITSFormat.cpp - Released 2021-10-28T16:39:17Z
+// EOF FITSFormat.cpp - Released 2021-11-11T17:55:57Z

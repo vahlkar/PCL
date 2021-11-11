@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard GREYCstoration Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// GREYCstorationModule.cpp - Released 2021-10-28T16:39:26Z
+// GREYCstorationModule.cpp - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GREYCstoration PixInsight module.
 //
@@ -72,8 +72,8 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2021
-#define MODULE_RELEASE_MONTH     10
-#define MODULE_RELEASE_DAY       28
+#define MODULE_RELEASE_MONTH     11
+#define MODULE_RELEASE_DAY       11
 
 #include "GREYCstorationInterface.h"
 #include "GREYCstorationModule.h"
@@ -188,4 +188,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF GREYCstorationModule.cpp - Released 2021-10-28T16:39:26Z
+// EOF GREYCstorationModule.cpp - Released 2021-11-11T17:56:06Z

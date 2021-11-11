@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.7.1
+// Standard ImageCalibration Process Module Version 1.7.2
 // ----------------------------------------------------------------------------
-// ImageCalibrationParameters.cpp - Released 2021-10-28T16:39:26Z
+// ImageCalibrationParameters.cpp - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -127,6 +127,7 @@ ICNoiseReductionFilterRadius*    TheICNoiseReductionFilterRadiusParameter = null
 ICMinStructureSize*              TheICMinStructureSizeParameter = nullptr;
 ICPSFType*                       TheICPSFTypeParameter = nullptr;
 ICPSFRejectionLimit*             TheICPSFRejectionLimitParameter = nullptr;
+ICMaxStars*                      TheICMaxStarsParameter = nullptr;
 
 ICOutputDirectory*               TheICOutputDirectoryParameter = nullptr;
 ICOutputExtension*               TheICOutputExtensionParameter = nullptr;
@@ -1271,6 +1272,19 @@ IsoString ICPSFType::ElementId( size_type i ) const
    }
 }
 
+IsoString ICPSFType::FunctionName( pcl_enum i )
+{
+   switch ( i )
+   {
+   case Gaussian:      return "Gaussian";
+   default:
+   case Moffat4:       return "Moffat4";
+   case Moffat6:       return "Moffat6";
+   case Moffat8:       return "Moffat8";
+   case VariableShape: return "VariableShape";
+   }
+}
+
 int ICPSFType::ElementValue( size_type i ) const
 {
    return int( i );
@@ -1311,6 +1325,33 @@ double ICPSFRejectionLimit::MinimumValue() const
 double ICPSFRejectionLimit::MaximumValue() const
 {
    return 10.0;
+}
+
+// ----------------------------------------------------------------------------
+
+ICMaxStars::ICMaxStars( MetaProcess* p ) : MetaInt32( p )
+{
+   TheICMaxStarsParameter = this;
+}
+
+IsoString ICMaxStars::Id() const
+{
+   return "maxStars";
+}
+
+double ICMaxStars::DefaultValue() const
+{
+   return 24*1024;
+}
+
+double ICMaxStars::MinimumValue() const
+{
+   return 256;
+}
+
+double ICMaxStars::MaximumValue() const
+{
+   return 999999;
 }
 
 // ----------------------------------------------------------------------------
@@ -2297,4 +2338,4 @@ bool ICNoiseAlgorithmB::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationParameters.cpp - Released 2021-10-28T16:39:26Z
+// EOF ImageCalibrationParameters.cpp - Released 2021-11-11T17:56:06Z

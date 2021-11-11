@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.5.0
+// Standard SubframeSelector Process Module Version 1.6.0
 // ----------------------------------------------------------------------------
-// SubframeSelectorInterface.h - Released 2021-10-28T16:39:26Z
+// SubframeSelectorInterface.h - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -108,7 +108,7 @@ private:
 
       HorizontalSizer   Routine_Sizer;
          Label             Routine_Label;
-         ComboBox          Routine_Control;
+         ComboBox          Routine_ComboBox;
          ToolButton        GoToExpressionsWindow_ToolButton;
          ToolButton        GoToMeasurementsWindow_ToolButton;
 
@@ -122,53 +122,53 @@ private:
             PushButton        SubframeImages_Toggle_PushButton;
             PushButton        SubframeImages_Remove_PushButton;
             PushButton        SubframeImages_Clear_PushButton;
-            CheckBox          SubframeImages_FileCache_Control;
+            CheckBox          SubframeImages_FileCache_CheckBox;
 
       SectionBar        SystemParameters_SectionBar;
       Control           SystemParameters_Control;
       VerticalSizer     SystemParameters_Sizer;
          HorizontalSizer   SystemParameters_SubframeScale_Sizer;
             NumericControl    SystemParameters_SubframeScale_Control;
-            Label             SystemParameters_SubframeScale_Unit;
+            Label             SystemParameters_SubframeScale_Unit_Label;
          HorizontalSizer   SystemParameters_CameraGain_Sizer;
             NumericControl    SystemParameters_CameraGain_Control;
-            Label             SystemParameters_CameraGain_Unit;
+            Label             SystemParameters_CameraGain_Unit_Label;
          HorizontalSizer   SystemParameters_CameraResolution_Sizer;
             Label             SystemParameters_CameraResolution_Label;
-            ComboBox          SystemParameters_CameraResolution_Control;
+            ComboBox          SystemParameters_CameraResolution_ComboBox;
          HorizontalSizer   SystemParameters_SiteLocalMidnight_Sizer;
             Label             SystemParameters_SiteLocalMidnight_Label;
-            SpinBox           SystemParameters_SiteLocalMidnight_Control;
-            Label             SystemParameters_SiteLocalMidnight_Unit;
+            SpinBox           SystemParameters_SiteLocalMidnight_SpinBox;
+            Label             SystemParameters_SiteLocalMidnight_Unit_Label;
          HorizontalSizer   SystemParameters_ScaleUnit_Sizer;
             Label             SystemParameters_ScaleUnit_Label;
-            ComboBox          SystemParameters_ScaleUnit_Control;
+            ComboBox          SystemParameters_ScaleUnit_ComboBox;
          HorizontalSizer   SystemParameters_DataUnit_Sizer;
             Label             SystemParameters_DataUnit_Label;
-            ComboBox          SystemParameters_DataUnit_Control;
+            ComboBox          SystemParameters_DataUnit_ComboBox;
 
       SectionBar        StarDetectorParameters_SectionBar;
       Control           StarDetectorParameters_Control;
       VerticalSizer     StarDetectorParameters_Sizer;
          HorizontalSizer   StarDetectorParameters_StructureLayers_Sizer;
             Label             StarDetectorParameters_StructureLayers_Label;
-            SpinBox           StarDetectorParameters_StructureLayers_Control;
+            SpinBox           StarDetectorParameters_StructureLayers_SpinBox;
          HorizontalSizer   StarDetectorParameters_NoiseLayers_Sizer;
             Label             StarDetectorParameters_NoiseLayers_Label;
-            SpinBox           StarDetectorParameters_NoiseLayers_Control;
+            SpinBox           StarDetectorParameters_NoiseLayers_SpinBox;
          HorizontalSizer   StarDetectorParameters_HotPixelFilterRadius_Sizer;
             Label             StarDetectorParameters_HotPixelFilterRadius_Label;
-            SpinBox           StarDetectorParameters_HotPixelFilterRadius_Control;
+            SpinBox           StarDetectorParameters_HotPixelFilterRadius_SpinBox;
          HorizontalSizer   StarDetectorParameters_NoiseReductionFilterRadius_Sizer;
             Label             StarDetectorParameters_NoiseReductionFilterRadius_Label;
-            SpinBox           StarDetectorParameters_NoiseReductionFilterRadius_Control;
+            SpinBox           StarDetectorParameters_NoiseReductionFilterRadius_SpinBox;
          NumericControl    StarDetectorParameters_Sensitivity_Control;
          NumericControl    StarDetectorParameters_PeakResponse_Control;
          NumericControl    StarDetectorParameters_MaxDistortion_Control;
          NumericControl    StarDetectorParameters_UpperLimit_Control;
          HorizontalSizer   StarDetectorParameters_PSFFit_Sizer;
             Label             StarDetectorParameters_PSFFit_Label;
-            ComboBox          StarDetectorParameters_PSFFit_Control;
+            ComboBox          StarDetectorParameters_PSFFit_ComboBox;
          HorizontalSizer   StarDetectorParameters_PSFFitCircular_Sizer;
             CheckBox          StarDetectorParameters_PSFFitCircular_CheckBox;
 
@@ -177,14 +177,14 @@ private:
       VerticalSizer     StarDetectorParameters_ROI_Sizer;
          HorizontalSizer   StarDetectorParameters_ROIRow1_Sizer;
             Label             StarDetectorParameters_ROIX0_Label;
-            SpinBox           StarDetectorParameters_ROIX0_Control;
+            SpinBox           StarDetectorParameters_ROIX0_SpinBox;
             Label             StarDetectorParameters_ROIY0_Label;
-            SpinBox           StarDetectorParameters_ROIY0_Control;
+            SpinBox           StarDetectorParameters_ROIY0_SpinBox;
          HorizontalSizer   StarDetectorParameters_ROIRow2_Sizer;
             Label             StarDetectorParameters_ROIWidth_Label;
-            SpinBox           StarDetectorParameters_ROIWidth_Control;
+            SpinBox           StarDetectorParameters_ROIWidth_SpinBox;
             Label             StarDetectorParameters_ROIHeight_Label;
-            SpinBox           StarDetectorParameters_ROIHeight_Control;
+            SpinBox           StarDetectorParameters_ROIHeight_SpinBox;
             PushButton        StarDetectorParameters_ROISelectPreview_Button;
 
       SectionBar        Pedestal_SectionBar;
@@ -225,8 +225,9 @@ private:
          HorizontalSizer   OutputKeyword_Sizer;
             Label             OutputKeyword_Label;
             Edit              OutputKeyword_Edit;
-         HorizontalSizer   OutputMisc_Sizer;
+         HorizontalSizer   OverwriteExistingFiles_Sizer;
             CheckBox          OverwriteExistingFiles_CheckBox;
+         HorizontalSizer   OnError_Sizer;
             Label             OnError_Label;
             ComboBox          OnError_ComboBox;
    };
@@ -282,4 +283,4 @@ PCL_END_LOCAL
 #endif   // e_SubframeSelectorInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInterface.h - Released 2021-10-28T16:39:26Z
+// EOF SubframeSelectorInterface.h - Released 2021-11-11T17:56:06Z

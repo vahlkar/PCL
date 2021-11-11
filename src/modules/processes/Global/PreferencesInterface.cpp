@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.3.1
+// Standard Global Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// PreferencesInterface.cpp - Released 2021-10-28T16:39:26Z
+// PreferencesInterface.cpp - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -2225,6 +2225,11 @@ MiscImageWindowSettingsPreferencesPage::MiscImageWindowSettingsPreferencesPage( 
       "renditions, such as HDR compositions. Note that you can enable or disable this feature on a per view "
       "basis; this setting refers to the default state for newly created images.</p>" );
 
+   LoadInitialProcessingFromCoreProperties_Flag.checkBox.SetText( "Load processing histories from core properties" );
+   LoadInitialProcessingFromCoreProperties_Flag.item = &instance.imageWindow.loadInitialProcessingFromCoreProperties;
+   LoadInitialProcessingFromCoreProperties_Flag.SetToolTip(
+      "<p>Load initial processing histories automatically from core properties stored in image files (XISF format feature).</p>" );
+
    CreatePreviewsFromCoreProperties_Flag.checkBox.SetText( "Create previews from core properties" );
    CreatePreviewsFromCoreProperties_Flag.item = &instance.imageWindow.createPreviewsFromCoreProperties;
    CreatePreviewsFromCoreProperties_Flag.SetToolTip(
@@ -2251,6 +2256,7 @@ MiscImageWindowSettingsPreferencesPage::MiscImageWindowSettingsPreferencesPage( 
    Page_Sizer.Add( FastScreenRenditionThreshold_Integer );
    Page_Sizer.Add( HighDPIRenditions_Flag );
    Page_Sizer.Add( Default24BitScreenLUT_Flag );
+   Page_Sizer.Add( LoadInitialProcessingFromCoreProperties_Flag );
    Page_Sizer.Add( CreatePreviewsFromCoreProperties_Flag );
    Page_Sizer.Add( LoadAstrometricSolutions_Flag );
    Page_Sizer.AddStretch();
@@ -2260,22 +2266,23 @@ MiscImageWindowSettingsPreferencesPage::MiscImageWindowSettingsPreferencesPage( 
 
 void MiscImageWindowSettingsPreferencesPage::TransferSettings( PreferencesInstance& to, const PreferencesInstance& from )
 {
-   to.imageWindow.showCaptionCurrentChannels       = from.imageWindow.showCaptionCurrentChannels;
-   to.imageWindow.showCaptionZoomRatios            = from.imageWindow.showCaptionZoomRatios;
-   to.imageWindow.showCaptionIdentifiers           = from.imageWindow.showCaptionIdentifiers;
-   to.imageWindow.showCaptionFullPaths             = from.imageWindow.showCaptionFullPaths;
-   to.imageWindow.showActiveSTFIndicators          = from.imageWindow.showActiveSTFIndicators;
-   to.imageWindow.cursorTolerance                  = from.imageWindow.cursorTolerance;
-   to.imageWindow.wheelStepAngle                   = from.imageWindow.wheelStepAngle;
-   to.imageWindow.wheelDirection                   = from.imageWindow.wheelDirection;
-   to.imageWindow.touchEvents                      = from.imageWindow.touchEvents;
-   to.imageWindow.pinchSensitivity                 = from.imageWindow.pinchSensitivity;
-   to.imageWindow.fastScreenRenditions             = from.imageWindow.fastScreenRenditions;
-   to.imageWindow.fastScreenRenditionThreshold     = from.imageWindow.fastScreenRenditionThreshold;
-   to.imageWindow.highDPIRenditions                = from.imageWindow.highDPIRenditions;
-   to.imageWindow.default24BitScreenLUT            = from.imageWindow.default24BitScreenLUT;
-   to.imageWindow.createPreviewsFromCoreProperties = from.imageWindow.createPreviewsFromCoreProperties;
-   to.imageWindow.loadAstrometricSolutions         = from.imageWindow.loadAstrometricSolutions;
+   to.imageWindow.showCaptionCurrentChannels              = from.imageWindow.showCaptionCurrentChannels;
+   to.imageWindow.showCaptionZoomRatios                   = from.imageWindow.showCaptionZoomRatios;
+   to.imageWindow.showCaptionIdentifiers                  = from.imageWindow.showCaptionIdentifiers;
+   to.imageWindow.showCaptionFullPaths                    = from.imageWindow.showCaptionFullPaths;
+   to.imageWindow.showActiveSTFIndicators                 = from.imageWindow.showActiveSTFIndicators;
+   to.imageWindow.cursorTolerance                         = from.imageWindow.cursorTolerance;
+   to.imageWindow.wheelStepAngle                          = from.imageWindow.wheelStepAngle;
+   to.imageWindow.wheelDirection                          = from.imageWindow.wheelDirection;
+   to.imageWindow.touchEvents                             = from.imageWindow.touchEvents;
+   to.imageWindow.pinchSensitivity                        = from.imageWindow.pinchSensitivity;
+   to.imageWindow.fastScreenRenditions                    = from.imageWindow.fastScreenRenditions;
+   to.imageWindow.fastScreenRenditionThreshold            = from.imageWindow.fastScreenRenditionThreshold;
+   to.imageWindow.highDPIRenditions                       = from.imageWindow.highDPIRenditions;
+   to.imageWindow.default24BitScreenLUT                   = from.imageWindow.default24BitScreenLUT;
+   to.imageWindow.loadInitialProcessingFromCoreProperties = from.imageWindow.loadInitialProcessingFromCoreProperties;
+   to.imageWindow.createPreviewsFromCoreProperties        = from.imageWindow.createPreviewsFromCoreProperties;
+   to.imageWindow.loadAstrometricSolutions                = from.imageWindow.loadAstrometricSolutions;
 }
 
 // ----------------------------------------------------------------------------
@@ -2864,4 +2871,4 @@ void PreferencesInterface::GUIData::InitializeCategories()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInterface.cpp - Released 2021-10-28T16:39:26Z
+// EOF PreferencesInterface.cpp - Released 2021-11-11T17:56:06Z

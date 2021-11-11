@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.3.5
+// Standard ImageIntegration Process Module Version 1.3.6
 // ----------------------------------------------------------------------------
-// ImageIntegrationParameters.h - Released 2021-10-28T16:39:26Z
+// ImageIntegrationParameters.h - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -150,7 +150,7 @@ public:
           Median,
           Minimum,
           Maximum,
-          NumberOfCombinationOperations,
+          NumberOfItems,
           Default = Average };
 
    IICombination( MetaProcess* );
@@ -179,7 +179,7 @@ public:
           KeywordWeight,      // user-specified keyword
           PSFSignalWeight,    // SNR with PSF mean signal estimates
           PSFPowerWeight,     // SNR with PSF signal power estimates
-          NumberOfWeightModes,
+          NumberOfItems,
           Default = PSFSignalWeight };
 
    IIWeightMode( MetaProcess* );
@@ -190,6 +190,8 @@ public:
    IsoString ElementAliases() const override;
    int ElementValue( size_type ) const override;
    size_type DefaultValueIndex() const override;
+
+   static String ElementLabel( int );
 };
 
 extern IIWeightMode* TheIIWeightModeParameter;
@@ -220,7 +222,7 @@ public:
           Sn,        // DEPRECATED - Rousseeuw/Croux Sn estimator of scale
           Qn,        // DEPRECATED - Rousseeuw/Croux Qn estimator of scale
           IKSS,      // DEPRECATED - iterative k-sigma estimator of scale
-          NumberOfWeightScales,
+          NumberOfItems,
           Default = BWMV };
 
    IIWeightScale( MetaProcess* );
@@ -291,7 +293,7 @@ public:
           MultiplicativeWithScaling,
           LocalNormalization,
           AdaptiveNormalization,
-          NumberOfNormalizationAlgorithms,
+          NumberOfItems,
           Default = AdditiveWithScaling };
 
    IINormalization( MetaProcess* );
@@ -320,7 +322,7 @@ public:
           LinearFit,
           CCDClip,
           ESD,
-          NumberOfRejectionAlgorithms,
+          NumberOfItems,
           Default = NoRejection };
 
    IIRejection( MetaProcess* );
@@ -345,7 +347,7 @@ public:
           EqualizeFluxes,
           LocalRejectionNormalization,
           AdaptiveRejectionNormalization,
-          NumberOfRejectionNormalizationAlgorithms,
+          NumberOfItems,
           Default = Scale };
 
    IIRejectionNormalization( MetaProcess* );
@@ -1985,4 +1987,4 @@ PCL_END_LOCAL
 #endif   // __ImageIntegrationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationParameters.h - Released 2021-10-28T16:39:26Z
+// EOF ImageIntegrationParameters.h - Released 2021-11-11T17:56:06Z

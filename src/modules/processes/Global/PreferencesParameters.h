@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.3.1
+// Standard Global Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// PreferencesParameters.h - Released 2021-10-28T16:39:26Z
+// PreferencesParameters.h - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -344,6 +344,7 @@ DECLARE_BOOLEAN_METAPARAMETER ( ImageWindow, fastScreenRenditions,             t
 DECLARE_INT32_METAPARAMETER   ( ImageWindow, fastScreenRenditionThreshold,     6, 0, 64 )
 DECLARE_BOOLEAN_METAPARAMETER ( ImageWindow, highDPIRenditions,                true )
 DECLARE_BOOLEAN_METAPARAMETER ( ImageWindow, default24BitScreenLUT,            false )
+DECLARE_BOOLEAN_METAPARAMETER ( ImageWindow, loadInitialProcessingFromCoreProperties, true )
 DECLARE_BOOLEAN_METAPARAMETER ( ImageWindow, createPreviewsFromCoreProperties, true )
 DECLARE_BOOLEAN_METAPARAMETER ( ImageWindow, loadAstrometricSolutions,         true )
 DECLARE_TABLE_METAPARAMETER   ( ImageWindow, swapDirectories )
@@ -409,4 +410,4 @@ PCL_END_LOCAL
 #endif   // __PreferencesParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesParameters.h - Released 2021-10-28T16:39:26Z
+// EOF PreferencesParameters.h - Released 2021-11-11T17:56:06Z

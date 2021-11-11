@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard NetworkService Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// NetworkServiceTask.h - Released 2021-10-28T16:39:26Z
+// NetworkServiceTask.h - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NetworkService PixInsight module.
 //
@@ -181,4 +181,4 @@ protected:
 #endif   // __NetworkServiceTask_h
 
 // ----------------------------------------------------------------------------
-// EOF NetworkServiceTask.h - Released 2021-10-28T16:39:26Z
+// EOF NetworkServiceTask.h - Released 2021-11-11T17:56:06Z

@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.5.0
+// Standard SubframeSelector Process Module Version 1.6.0
 // ----------------------------------------------------------------------------
-// SubframeSelectorMeasurementsInterface.h - Released 2021-10-28T16:39:26Z
+// SubframeSelectorMeasurementsInterface.h - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -144,8 +144,8 @@ private:
    void e_CurrentNodeUpdated( TreeBox& sender, TreeBox::Node& current, TreeBox::Node& oldCurrent );
    void e_NodeActivated( TreeBox& sender, TreeBox::Node& node, int col );
    void e_ButtonClick( Button& sender, bool checked );
-   void e_GraphApprove( GraphWebView &sender, int& index );
-   void e_GraphUnlock( GraphWebView &sender, int& index );
+   void e_GraphApprove( GraphWebView &sender, int measureIndex );
+   void e_GraphUnlock( GraphWebView &sender, int measureIndex );
    void e_ItemSelected( ComboBox& sender, int itemIndex );
 
    friend struct GUIData;
@@ -167,4 +167,4 @@ PCL_END_LOCAL
 #endif   // e_SubframeSelectorMeasurementsInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorMeasurementsInterface.h - Released 2021-10-28T16:39:26Z
+// EOF SubframeSelectorMeasurementsInterface.h - Released 2021-11-11T17:56:06Z

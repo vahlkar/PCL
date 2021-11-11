@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// INDIParamListTypes.h - Released 2021-10-28T16:39:26Z
+// INDIParamListTypes.h - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -215,4 +215,4 @@ typedef Array<INDINewPropertyListItem> INDINewPropertyListItemArray;
 #endif // __INDIParamListTypes_h
 
 // ----------------------------------------------------------------------------
-// EOF INDIParamListTypes.h - Released 2021-10-28T16:39:26Z
+// EOF INDIParamListTypes.h - Released 2021-11-11T17:56:06Z

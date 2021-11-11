@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.5.0
+// Standard SubframeSelector Process Module Version 1.6.0
 // ----------------------------------------------------------------------------
-// SubframeSelectorCache.h - Released 2021-10-28T16:39:26Z
+// SubframeSelectorCache.h - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -79,6 +79,8 @@ public:
    unsigned stars;
    double   starResidual;
    double   starResidualMeanDev;
+   double   azimuth;
+   double   altitude;
 
    SubframeSelectorCacheItem( const String& path = String() )
       : FileDataCacheItem( path )
@@ -112,12 +114,12 @@ public:
 
    int Version() const override
    {
-      return 5;
+      return 6;
    }
 
    int MinSupportedVersion() const override
    {
-      return 5;
+      return 6;
    }
 
 private:
@@ -137,4 +139,4 @@ extern SubframeSelectorCache* TheSubframeSelectorCache;
 #endif   // __SubframeSelectorCache_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorCache.h - Released 2021-10-28T16:39:26Z
+// EOF SubframeSelectorCache.h - Released 2021-11-11T17:56:06Z

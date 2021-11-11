@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.3.5
+// Standard ImageIntegration Process Module Version 1.3.6
 // ----------------------------------------------------------------------------
-// ImageIntegrationInterface.cpp - Released 2021-10-28T16:39:26Z
+// ImageIntegrationInterface.cpp - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -66,6 +66,23 @@
 
 namespace pcl
 {
+
+// ----------------------------------------------------------------------------
+
+static pcl_enum s_comboBoxItemIndexToWeightMode[] =
+{
+   IIWeightMode::DontCare,
+   IIWeightMode::PSFSignalWeight,
+   IIWeightMode::PSFPowerWeight,
+   IIWeightMode::SNREstimate,
+   IIWeightMode::ExposureTimeWeight,
+   IIWeightMode::AverageWeight,
+   IIWeightMode::MedianWeight,
+   IIWeightMode::SignalWeight,
+   IIWeightMode::KeywordWeight
+};
+
+static int s_weightModeToComboBoxItemIndex[ IIWeightMode::NumberOfItems ];
 
 // ----------------------------------------------------------------------------
 
@@ -146,6 +163,14 @@ bool ImageIntegrationInterface::Launch( const MetaProcess& P, const ProcessImple
 {
    if ( GUI == nullptr )
    {
+      for ( int i = 0; i < IIWeightMode::NumberOfItems; ++i )
+         for ( int j = 0; j < IIWeightMode::NumberOfItems; ++j )
+            if ( s_comboBoxItemIndexToWeightMode[j] == pcl_enum( i ) )
+            {
+               s_weightModeToComboBoxItemIndex[i] = j;
+               break;
+            }
+
       GUI = new GUIData( *this );
       SetWindowTitle( "ImageIntegration" );
       UpdateControls();
@@ -323,7 +348,7 @@ void ImageIntegrationInterface::UpdateIntegrationControls()
    GUI->WeightMode_Label.Enable( isAverage );
 
    GUI->WeightMode_ComboBox.Enable( isAverage );
-   GUI->WeightMode_ComboBox.SetCurrentItem( m_instance.p_weightMode );
+   GUI->WeightMode_ComboBox.SetCurrentItem( s_weightModeToComboBoxItemIndex[m_instance.p_weightMode] );
 
    GUI->WeightKeyword_Label.Enable( isAverage && isKeywordWeight );
 
@@ -851,7 +876,7 @@ void ImageIntegrationInterface::e_Integration_ItemSelected( ComboBox& sender, in
    }
    else if ( sender == GUI->WeightMode_ComboBox )
    {
-      m_instance.p_weightMode = itemIndex;
+      m_instance.p_weightMode = s_comboBoxItemIndexToWeightMode[itemIndex];
       UpdateIntegrationControls();
    }
    else if ( sender == GUI->WeightScale_ComboBox )
@@ -1524,15 +1549,8 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    WeightMode_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
    WeightMode_Label.SetToolTip( weightModeToolTip );
 
-   WeightMode_ComboBox.AddItem( "Don't care (all weights = 1)" );
-   WeightMode_ComboBox.AddItem( "Exposure time" );
-   WeightMode_ComboBox.AddItem( "SNR estimate" );
-   WeightMode_ComboBox.AddItem( "Average signal strength" );
-   WeightMode_ComboBox.AddItem( "Median value" );
-   WeightMode_ComboBox.AddItem( "Average value" );
-   WeightMode_ComboBox.AddItem( "FITS keyword" );
-   WeightMode_ComboBox.AddItem( "PSF signal" );
-   WeightMode_ComboBox.AddItem( "PSF power" );
+   for ( int i = 0; i < IIWeightMode::NumberOfItems; ++i )
+      WeightMode_ComboBox.AddItem( TheIIWeightModeParameter->ElementLabel( s_comboBoxItemIndexToWeightMode[i] ) );
    WeightMode_ComboBox.SetToolTip( weightModeToolTip );
    WeightMode_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ImageIntegrationInterface::e_Integration_ItemSelected, w );
 
@@ -2533,4 +2551,4 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationInterface.cpp - Released 2021-10-28T16:39:26Z
+// EOF ImageIntegrationInterface.cpp - Released 2021-11-11T17:56:06Z

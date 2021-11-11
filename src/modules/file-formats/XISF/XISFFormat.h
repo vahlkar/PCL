@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard XISF File Format Module Version 1.0.12
+// Standard XISF File Format Module Version 1.0.13
 // ----------------------------------------------------------------------------
-// XISFFormat.h - Released 2021-10-28T16:39:17Z
+// XISFFormat.h - Released 2021-11-11T17:55:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard XISF PixInsight module.
 //
@@ -127,18 +127,20 @@ public:
 
    struct EmbeddingOverrides
    {
-      bool overridePropertyEmbedding        = false;
-      bool embedProperties                  = true;
-      bool overrideICCProfileEmbedding      = false;
-      bool embedICCProfiles                 = false;
-      bool overrideDisplayFunctionEmbedding = false;
-      bool embedDisplayFunctions            = false;
-      bool overrideRGBWorkingSpaceEmbedding = false;
-      bool embedRGBWorkingSpaces            = false;
-      bool overrideThumbnailEmbedding       = false;
-      bool embedThumbnails                  = false;
-      bool overridePreviewRectsEmbedding    = true;
-      bool embedPreviewRects                = false;
+      bool overridePropertyEmbedding            = false;
+      bool embedProperties                      = true;
+      bool overrideICCProfileEmbedding          = false;
+      bool embedICCProfiles                     = false;
+      bool overrideDisplayFunctionEmbedding     = false;
+      bool embedDisplayFunctions                = false;
+      bool overrideRGBWorkingSpaceEmbedding     = false;
+      bool embedRGBWorkingSpaces                = false;
+      bool overrideThumbnailEmbedding           = false;
+      bool embedThumbnails                      = false;
+      bool overrideProcessingHistoriesEmbedding = false;
+      bool embedProcessingHistories             = false;
+      bool overridePreviewRectsEmbedding        = false;
+      bool embedPreviewRects                    = false;
    };
 
    static EmbeddingOverrides DefaultEmbeddingOverrides();
@@ -151,4 +153,4 @@ public:
 #endif   // __XISFFormat_h
 
 // ----------------------------------------------------------------------------
-// EOF XISFFormat.h - Released 2021-10-28T16:39:17Z
+// EOF XISFFormat.h - Released 2021-11-11T17:55:57Z

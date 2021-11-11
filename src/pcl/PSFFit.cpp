@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// pcl/PSFFit.cpp - Released 2021-10-28T16:39:05Z
+// pcl/PSFFit.cpp - Released 2021-11-11T17:57:35Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -92,7 +92,7 @@ public:
       /*
        * f(x,y) = B + A*Exp(-(a*(x - x0)^2 + 2*b*(x - x0)*(y - y0) + c*(y - y0)^2))
        */
-      if ( B < 0 || A < 0 )
+      if ( F->m_bkg > 0 && Abs( B - F->m_bkg)/F->m_bkg > F->m_bkgMaxVar || A < 0 )
       {
          for ( int i = 0; i < m; ++i )
             *fvec++ = std::numeric_limits<double>::max();
@@ -137,7 +137,8 @@ public:
       /*
        * f(x,y) = B + A/(1 + a*(x - x0)^2 + 2*b*(x - x0)*(y - y0) + c*(y - y0)^2)^beta
        */
-      if ( B < 0 || A < 0 || beta < 0 || beta > 10 || Abs( beta - F->m_beta )/F->m_beta > 0.05 )
+      if ( F->m_bkg > 0 && Abs( B - F->m_bkg)/F->m_bkg > F->m_bkgMaxVar
+        || A < 0 || beta < 0 || beta > 10 || Abs( beta - F->m_beta )/F->m_beta > 0.05 )
       {
          for ( int i = 0; i < m; ++i )
             *fvec++ = std::numeric_limits<double>::max();
@@ -179,15 +180,97 @@ public:
 #undef beta
 #define beta   F->P[7]
 
+/*
+ * Elliptical Moffat PSF with a fixed integer beta parameter.
+ */
+#define E_MOFFAT_IMPL( zmul )                                                    \
+                                                                                 \
+   if ( F->m_bkg > 0 && Abs( B - F->m_bkg)/F->m_bkg > F->m_bkgMaxVar || A < 0 )  \
+   {                                                                             \
+      for ( int i = 0; i < m; ++i )                                              \
+         *fvec++ = std::numeric_limits<double>::max();                           \
+      return 0;                                                                  \
+   }                                                                             \
+                                                                                 \
+   double st, ct;                                                                \
+   SinCos( theta, st, ct );                                                      \
+   double sct = st*ct;                                                           \
+   double st2 = st*st;                                                           \
+   double ct2 = ct*ct;                                                           \
+   double sx2 = sx*sx;                                                           \
+   double sy2 = sy*sy;                                                           \
+   double p1  = ct2/sx2 + st2/sy2;                                               \
+   double p2  = sct/sy2 - sct/sx2;                                               \
+   double p3  = st2/sx2 + ct2/sy2;                                               \
+   int h = F->S.Rows();                                                          \
+   int w = F->S.Cols();                                                          \
+   double w2x0 = (w >> 1) + x0;                                                  \
+   double h2y0 = (h >> 1) + y0;                                                  \
+   const double* __restrict__ s = F->S.Begin();                                  \
+   for ( int y = 0; y < h; ++y )                                                 \
+   {                                                                             \
+      double dy = y - h2y0;                                                      \
+      double twop2dy = 2*p2*dy;                                                  \
+      double p3dy2 = p3*dy*dy;                                                   \
+      PCL_IVDEP                                                                  \
+      for ( int x = 0; x < w; ++x )                                              \
+      {                                                                          \
+         double dx = x - w2x0;                                                   \
+         double z = 1 + p1*dx*dx + twop2dy*dx + p3dy2;                           \
+         *fvec++ = *s++ - B - A/(zmul);                                          \
+      }                                                                          \
+   }                                                                             \
+   return 0;
+
    /*
-    * Elliptical Moffat PSF, prescribed beta exponent.
+    * Elliptical Moffat PSF with beta = 10.
+    */
+   static int FitMoffatA( void* p, int m, int n, const double* __restrict__ a, double* __restrict__ fvec, int iflag )
+   {
+      E_MOFFAT_IMPL( z*z*z*z*z*z*z*z*z*z )
+   }
+
+   /*
+    * Elliptical Moffat PSF with beta = 8.
+    */
+   static int FitMoffat8( void* p, int m, int n, const double* __restrict__ a, double* __restrict__ fvec, int iflag )
+   {
+      E_MOFFAT_IMPL( z*z*z*z*z*z*z*z )
+   }
+
+   /*
+    * Elliptical Moffat PSF with beta = 6.
+    */
+   static int FitMoffat6( void* p, int m, int n, const double* __restrict__ a, double* __restrict__ fvec, int iflag )
+   {
+      E_MOFFAT_IMPL( z*z*z*z*z*z )
+   }
+
+   /*
+    * Elliptical Moffat PSF with beta = 4.
+    */
+   static int FitMoffat4( void* p, int m, int n, const double* __restrict__ a, double* __restrict__ fvec, int iflag )
+   {
+      E_MOFFAT_IMPL( z*z*z*z )
+   }
+
+   /*
+    * Elliptical Lorentzian PSF.
+    */
+   static int FitLorentzian( void* p, int m, int n, const double* __restrict__ a, double* __restrict__ fvec, int iflag )
+   {
+      E_MOFFAT_IMPL( z )
+   }
+
+   /*
+    * Elliptical Moffat PSF, arbitrary beta exponent.
     */
    static int FitMoffatWithFixedBeta( void* p, int m, int n, const double* __restrict__ a, double* __restrict__ fvec, int iflag )
    {
       /*
        * f(x,y) = B + A/(1 + a*(x - x0)^2 + 2*b*(x - x0)*(y - y0) + c*(y - y0)^2)^beta
        */
-      if ( B < 0 || A < 0 )
+      if ( F->m_bkg > 0 && Abs( B - F->m_bkg)/F->m_bkg > F->m_bkgMaxVar || A < 0 )
       {
          for ( int i = 0; i < m; ++i )
             *fvec++ = std::numeric_limits<double>::max();
@@ -232,7 +315,7 @@ public:
       /*
        * f(x,y) = B + A*Exp( -((dx^k)/(k*sx^k) + (dy^k)/(k*sy^k)) )
        */
-      if ( B < 0 || A < 0 )
+      if ( F->m_bkg > 0 && Abs( B - F->m_bkg)/F->m_bkg > F->m_bkgMaxVar || A < 0 )
       {
          for ( int i = 0; i < m; ++i )
             *fvec++ = std::numeric_limits<double>::max();
@@ -295,7 +378,7 @@ public:
       /*
        * f(x,y) = B + A*Exp( -((x - x0)^2 + (y - y0)^2)/(2*sigma^2) )
        */
-      if ( B < 0 || A < 0 )
+      if ( F->m_bkg > 0 && Abs( B - F->m_bkg)/F->m_bkg > F->m_bkgMaxVar || A < 0 )
       {
          for ( int i = 0; i < m; ++i )
             *fvec++ = std::numeric_limits<double>::max();
@@ -330,7 +413,8 @@ public:
       /*
        * f(x,y) = B + A/(1 + ((x - x0)^2 + (y - y0)^2)/sigma^2)^beta
        */
-      if ( B < 0 || A < 0 || beta < 0 || beta > 10 || Abs( beta - F->m_beta )/F->m_beta > 0.05 )
+      if ( F->m_bkg > 0 && Abs( B - F->m_bkg)/F->m_bkg > F->m_bkgMaxVar
+        || A < 0 || beta < 0 || beta > 10 || Abs( beta - F->m_beta )/F->m_beta > 0.05 )
       {
          for ( int i = 0; i < m; ++i )
             *fvec++ = std::numeric_limits<double>::max();
@@ -362,15 +446,87 @@ public:
 #undef beta
 #define beta   F->P[5]
 
+/*
+ * Circular Moffat PSF with a fixed integer beta parameter.
+ */
+#define C_MOFFAT_IMPL( zmul )                                                    \
+                                                                                 \
+   if ( F->m_bkg > 0 && Abs( B - F->m_bkg)/F->m_bkg > F->m_bkgMaxVar || A < 0 )  \
+   {                                                                             \
+      for ( int i = 0; i < m; ++i )                                              \
+         *fvec++ = std::numeric_limits<double>::max();                           \
+      return 0;                                                                  \
+   }                                                                             \
+                                                                                 \
+   double sx2 = sx*sx;                                                           \
+   int h = F->S.Rows();                                                          \
+   int w = F->S.Cols();                                                          \
+   double w2x0 = (w >> 1) + x0;                                                  \
+   double h2y0 = (h >> 1) + y0;                                                  \
+   const double* __restrict__ s = F->S.Begin();                                  \
+   for ( int y = 0; y < h; ++y )                                                 \
+   {                                                                             \
+      double dy = y - h2y0;                                                      \
+      double dy2 = dy*dy;                                                        \
+      PCL_IVDEP                                                                  \
+      for ( int x = 0; x < w; ++x )                                              \
+      {                                                                          \
+         double dx = x - w2x0;                                                   \
+         double z = 1 + (dx*dx + dy2)/sx2;                                       \
+         *fvec++ = *s++ - B - A/(zmul);                                          \
+      }                                                                          \
+   }                                                                             \
+   return 0;
+
    /*
-    * Circular Moffat PSF, prescribed beta exponent.
+    * Circular Moffat PSF with beta = 10.
+    */
+   static int FitCircularMoffatA( void* p, int m, int n, const double* __restrict__ a, double* __restrict__ fvec, int iflag )
+   {
+      C_MOFFAT_IMPL( z*z*z*z*z*z*z*z*z*z )
+   }
+
+   /*
+    * Circular Moffat PSF with beta = 8.
+    */
+   static int FitCircularMoffat8( void* p, int m, int n, const double* __restrict__ a, double* __restrict__ fvec, int iflag )
+   {
+      C_MOFFAT_IMPL( z*z*z*z*z*z*z*z )
+   }
+
+   /*
+    * Circular Moffat PSF with beta = 6.
+    */
+   static int FitCircularMoffat6( void* p, int m, int n, const double* __restrict__ a, double* __restrict__ fvec, int iflag )
+   {
+      C_MOFFAT_IMPL( z*z*z*z*z*z )
+   }
+
+   /*
+    * Circular Moffat PSF with beta = 4.
+    */
+   static int FitCircularMoffat4( void* p, int m, int n, const double* __restrict__ a, double* __restrict__ fvec, int iflag )
+   {
+      C_MOFFAT_IMPL( z*z*z*z )
+   }
+
+   /*
+    * Circular Lorentzian PSF.
+    */
+   static int FitCircularLorentzian( void* p, int m, int n, const double* __restrict__ a, double* __restrict__ fvec, int iflag )
+   {
+      C_MOFFAT_IMPL( z )
+   }
+
+   /*
+    * Circular Moffat PSF, arbitrary beta exponent.
     */
    static int FitCircularMoffatWithFixedBeta( void* p, int m, int n, const double* __restrict__ a, double* __restrict__ fvec, int iflag )
    {
       /*
        * f(x,y) = B + A/(1 + ((x - x0)^2 + (y - y0)^2)/sigma^2)^beta
        */
-      if ( B < 0 || A < 0 )
+      if ( F->m_bkg > 0 && Abs( B - F->m_bkg)/F->m_bkg > F->m_bkgMaxVar || A < 0 )
       {
          for ( int i = 0; i < m; ++i )
             *fvec++ = std::numeric_limits<double>::max();
@@ -405,7 +561,7 @@ public:
       /*
        * f(x,y) = B + A*Exp( -((x - x0)^k + (y - y0)^k)/(k*sigma^k) )
        */
-      if ( B < 0 || A < 0 )
+      if ( F->m_bkg > 0 && Abs( B - F->m_bkg)/F->m_bkg > F->m_bkgMaxVar || A < 0 )
       {
          for ( int i = 0; i < m; ++i )
             *fvec++ = std::numeric_limits<double>::max();
@@ -453,7 +609,8 @@ public:
    Array<PSFFit> fits;
 
    PCL_VSFitThread( const ImageVariant& image, const DPoint& pos, const DRect& rect, bool circular,
-                    double betaFirst, double betaLast, double betaStep )
+                    double betaFirst, double betaLast, double betaStep,
+                    double tolerance, float bkgMaxVar )
       : m_image( image )
       , m_pos( pos )
       , m_rect( rect )
@@ -461,6 +618,8 @@ public:
       , m_betaFirst( betaFirst )
       , m_betaLast( betaLast )
       , m_betaStep( betaStep )
+      , m_tolerance( tolerance )
+      , m_bkgMaxVar( bkgMaxVar )
    {
    }
 
@@ -468,7 +627,8 @@ public:
    {
       for ( double beta = m_betaFirst; beta <= m_betaLast; beta += m_betaStep )
       {
-         PSFFit F( m_image, m_pos, m_rect, PSFunction::VariableShape, m_circular, beta, beta );
+         PSFFit F( m_image, m_pos, m_rect, PSFunction::VariableShape, m_circular,
+                   beta, beta, m_tolerance, m_bkgMaxVar );
          if ( F )
             fits << F;
       }
@@ -481,20 +641,23 @@ private:
          DRect         m_rect;
          bool          m_circular;
          double        m_betaFirst, m_betaLast, m_betaStep;
+         double        m_tolerance;
+         float         m_bkgMaxVar;
 };
 
 typedef int (*cminpack_callback)( void*, int, int, const double*, double*, int );
 
 PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
-                psf_function function, bool circular, double betaMin, double betaMax )
+                psf_function function, bool circular,
+                float betaMin, float betaMax, double tolerance, float bkgMaxVar )
 {
    if ( !image )
       return;
 
    if ( function == PSFunction::VariableShape )
    {
-      betaMin = Range( betaMin, 0.5, 6.0 );
-      betaMax = Range( betaMax, betaMin, 6.0 );
+      betaMin = Range( betaMin, 0.5F, 6.0F );
+      betaMax = Range( betaMax, betaMin, 6.0F );
 
       if ( betaMin < betaMax )
       {
@@ -503,12 +666,13 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
           */
          Array<size_type> L = Thread::OptimalThreadLoads( 10, 1/*overheadLimit*/ );
          ReferenceArray<PCL_VSFitThread> threads;
-         double betaStep = (betaMax - betaMin)/10;
+         double betaStep = 0.1*(betaMax - betaMin);
          for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
          {
             double betaFirst = betaMin + n*betaStep;
             double betaLast = betaMin + (n + int( L[i] ) - 1)*betaStep;
-            threads << new PCL_VSFitThread( image, pos, rect, circular, betaFirst, betaLast, betaStep );
+            threads << new PCL_VSFitThread( image, pos, rect, circular,
+                                            betaFirst, betaLast, betaStep, tolerance, bkgMaxVar );
          }
          if ( threads.Length() > 1 )
          {
@@ -561,8 +725,8 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
             const double C = 1 - R;
 
             // Form an initial triplet (ax,bx,cx) that brackets the minimum.
-            double ax = Max( betaMin, B[imin] - betaStep );
-            double cx = Min( betaMax, B[imin] + betaStep );
+            double ax = Max( double( betaMin ), B[imin] - betaStep );
+            double cx = Min( double( betaMax ), B[imin] + betaStep );
             double bx = (ax + cx)/2;
 
             // [x0,x3] is the total search interval.
@@ -618,8 +782,8 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
             /*
              * Fit this PSF using the estimated optimal beta parameter value.
              */
-            double beta = Range( (f1 < f2) ? x1 : x2, betaMin, betaMax );
-            PSFFit F( image, pos, rect, PSFunction::VariableShape, circular, beta, beta );
+            float beta = Range( float( (f1 < f2) ? x1 : x2 ), betaMin, betaMax );
+            PSFFit F( image, pos, rect, PSFunction::VariableShape, circular, beta, beta, tolerance, bkgMaxVar );
             if ( F )
                psf = F.psf;
          }
@@ -635,8 +799,6 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
            TruncInt( rect.x1 )+1, TruncInt( rect.y1 )+1 );
    image.Clip( r );
    S = Matrix::FromImage( image, r );
-   int h = S.Rows();
-   int w = S.Cols();
 
    /*
     * Center of the sampling region.
@@ -647,21 +809,22 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
     * Setup initial working parameters.
     */
    P = Vector( 8 );
-   P[0] = (S.RowVector( 0 ).Median() +
-           S.RowVector( h-1 ).Median() +
-           S.ColVector( 0 ).Median() +
-           S.ColVector( w-1 ).Median())/4;         // B
-   P[1] = *MaxItem( S.Begin(), S.End() ) - P[0];   // A
-   P[2] = pos.x - r0.x;                            // x0
-   P[3] = pos.y - r0.y;                            // y0
+   P[0] = m_bkg = S.Median();          // B
+   P[1] = S.MaxElement() - P[0];       // A
+   P[2] = pos.x - r0.x;                // x0
+   P[3] = pos.y - r0.y;                // y0
 
    if ( circular )
-      P[4] = 0.15*rect.Width();                    // sx
+      P[4] = 0.15*rect.Width();        // sx
    else
    {
-      P[4] = P[5] = 0.15*rect.Width();             // sx, sy
-      P[6] = 0;                                    // theta
+      P[4] = P[5] = 0.15*rect.Width(); // sx, sy
+      P[6] = 0;                        // theta
    }
+
+   tolerance = Range( tolerance, 1.0e-12, 1.0e-03 );
+
+   m_bkgMaxVar = Range( bkgMaxVar, 0.01F, 1.0F );
 
    /*
     * Setup CMINPACK working parameters and data.
@@ -688,13 +851,23 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
          fitFunc = PSFFitEngine::FitCircularMoffat;
          break;
       case PSFunction::MoffatA:
+         fitFunc = PSFFitEngine::FitCircularMoffatA;
+         break;
       case PSFunction::Moffat8:
+         fitFunc = PSFFitEngine::FitCircularMoffat8;
+         break;
       case PSFunction::Moffat6:
+         fitFunc = PSFFitEngine::FitCircularMoffat6;
+         break;
       case PSFunction::Moffat4:
+         fitFunc = PSFFitEngine::FitCircularMoffat4;
+         break;
       case PSFunction::Moffat25:
       case PSFunction::Moffat15:
-      case PSFunction::Lorentzian:
          fitFunc = PSFFitEngine::FitCircularMoffatWithFixedBeta;
+         break;
+      case PSFunction::Lorentzian:
+         fitFunc = PSFFitEngine::FitCircularLorentzian;
          break;
       case PSFunction::VariableShape:
          fitFunc = PSFFitEngine::FitCircularVShape;
@@ -711,13 +884,23 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
          fitFunc = PSFFitEngine::FitMoffat;
          break;
       case PSFunction::MoffatA:
+         fitFunc = PSFFitEngine::FitMoffatA;
+         break;
       case PSFunction::Moffat8:
+         fitFunc = PSFFitEngine::FitMoffat8;
+         break;
       case PSFunction::Moffat6:
+         fitFunc = PSFFitEngine::FitMoffat6;
+         break;
       case PSFunction::Moffat4:
+         fitFunc = PSFFitEngine::FitMoffat4;
+         break;
       case PSFunction::Moffat25:
       case PSFunction::Moffat15:
-      case PSFunction::Lorentzian:
          fitFunc = PSFFitEngine::FitMoffatWithFixedBeta;
+         break;
+      case PSFunction::Lorentzian:
+         fitFunc = PSFFitEngine::FitLorentzian;
          break;
       case PSFunction::VariableShape:
          fitFunc = PSFFitEngine::FitVShape;
@@ -760,7 +943,7 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
    }
 
    /*
-    * CMINPACK - Levenberg-Marquadt / finite differences.
+    * CMINPACK - Levenberg-Marquardt / finite differences.
     */
    {
       Vector fvec( m );
@@ -772,7 +955,7 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
                          n,
                          P.Begin(),
                          fvec.Begin(),
-                         1.0e-08/*tol*/,
+                         tolerance,
                          iwa.Begin(),
                          wa.Begin(),
                          wa.Length() );
@@ -1030,14 +1213,42 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
          }
          break;
 
-      case PSFunction::Moffat:
+#define C_MOFFAT_TEST( zmul )                      \
+   {                                               \
+      double sx2 = sx*sx;                          \
+      for ( int y = 0, i = 0; y < h; ++y )         \
+      {                                            \
+         double dy  = y - h2y0;                    \
+         double dy2 = dy*dy;                       \
+         for ( int x = 0; x < w; ++x, ++i, ++s )   \
+         {                                         \
+            double dx = x - w2x0;                  \
+            double z = 1 + (dx*dx + dy2)/sx2;      \
+            z = 1/(zmul);                          \
+            GET_DATA()                             \
+         }                                         \
+      }                                            \
+   }
+
       case PSFunction::MoffatA:
+         C_MOFFAT_TEST( z*z*z*z*z*z*z*z*z*z )
+         break;
       case PSFunction::Moffat8:
+         C_MOFFAT_TEST( z*z*z*z*z*z*z*z )
+         break;
       case PSFunction::Moffat6:
+         C_MOFFAT_TEST( z*z*z*z*z*z )
+         break;
       case PSFunction::Moffat4:
+         C_MOFFAT_TEST( z*z*z*z )
+         break;
+      case PSFunction::Lorentzian:
+         C_MOFFAT_TEST( z )
+         break;
+
+      case PSFunction::Moffat:
       case PSFunction::Moffat25:
       case PSFunction::Moffat15:
-      case PSFunction::Lorentzian:
          {
             double sx2 = sx*sx;
             for ( int y = 0, i = 0; y < h; ++y )
@@ -1106,14 +1317,52 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
          }
          break;
 
-      case PSFunction::Moffat:
+#define E_MOFFAT_TEST( zmul )                               \
+   {                                                        \
+      double st, ct;                                        \
+      SinCos( theta, st, ct );                              \
+      double sct = st*ct;                                   \
+      double st2 = st*st;                                   \
+      double ct2 = ct*ct;                                   \
+      double sx2 = sx*sx;                                   \
+      double sy2 = sy*sy;                                   \
+      double p1  = ct2/sx2 + st2/sy2;                       \
+      double p2  = sct/sy2 - sct/sx2;                       \
+      double p3  = st2/sx2 + ct2/sy2;                       \
+      for ( int y = 0, i = 0; y < h; ++y )                  \
+      {                                                     \
+         double dy      = y - h2y0;                         \
+         double twop2dy = 2*p2*dy;                          \
+         double p3dy2   = p3*dy*dy;                         \
+         for ( int x = 0; x < w; ++x, ++i, ++s )            \
+         {                                                  \
+            double dx = x - w2x0;                           \
+            double z = 1 + p1*dx*dx + twop2dy*dx + p3dy2;   \
+            z = 1/(zmul);                                   \
+            GET_DATA()                                      \
+         }                                                  \
+      }                                                     \
+   }
+
       case PSFunction::MoffatA:
+         E_MOFFAT_TEST( z*z*z*z*z*z*z*z*z*z )
+         break;
       case PSFunction::Moffat8:
+         E_MOFFAT_TEST( z*z*z*z*z*z*z*z )
+         break;
       case PSFunction::Moffat6:
+         E_MOFFAT_TEST( z*z*z*z*z*z )
+         break;
       case PSFunction::Moffat4:
+         E_MOFFAT_TEST( z*z*z*z )
+         break;
+      case PSFunction::Lorentzian:
+         E_MOFFAT_TEST( z )
+         break;
+
+      case PSFunction::Moffat:
       case PSFunction::Moffat25:
       case PSFunction::Moffat15:
-      case PSFunction::Lorentzian:
          {
             double st, ct;
             SinCos( theta, st, ct );
@@ -1264,4 +1513,4 @@ String PSFData::StatusText() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFFit.cpp - Released 2021-10-28T16:39:05Z
+// EOF pcl/PSFFit.cpp - Released 2021-11-11T17:57:35Z

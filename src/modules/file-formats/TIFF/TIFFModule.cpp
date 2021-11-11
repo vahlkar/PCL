@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard TIFF File Format Module Version 1.0.8
+// Standard TIFF File Format Module Version 1.0.9
 // ----------------------------------------------------------------------------
-// TIFFModule.cpp - Released 2021-10-28T16:39:17Z
+// TIFFModule.cpp - Released 2021-11-11T17:55:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard TIFF PixInsight module.
 //
@@ -58,7 +58,7 @@
 
 #define MODULE_RELEASE_YEAR      2021
 #define MODULE_RELEASE_MONTH     11
-#define MODULE_RELEASE_DAY       7
+#define MODULE_RELEASE_DAY       11
 
 #include "TIFFModule.h"
 #include "TIFFFormat.h"
@@ -169,4 +169,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF TIFFModule.cpp - Released 2021-10-28T16:39:17Z
+// EOF TIFFModule.cpp - Released 2021-11-11T17:55:57Z

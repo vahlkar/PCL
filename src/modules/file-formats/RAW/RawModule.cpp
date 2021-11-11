@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard RAW File Format Module Version 1.5.7
 // ----------------------------------------------------------------------------
-// RawModule.cpp - Released 2021-10-28T16:39:17Z
+// RawModule.cpp - Released 2021-11-11T17:55:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RAW PixInsight module.
 //
@@ -57,8 +57,8 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2021
-#define MODULE_RELEASE_MONTH     10
-#define MODULE_RELEASE_DAY       28
+#define MODULE_RELEASE_MONTH     11
+#define MODULE_RELEASE_DAY       11
 
 #include "RawModule.h"
 #include "RawFormat.h"
@@ -163,4 +163,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF RawModule.cpp - Released 2021-10-28T16:39:17Z
+// EOF RawModule.cpp - Released 2021-11-11T17:55:57Z

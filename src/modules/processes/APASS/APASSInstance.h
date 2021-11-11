@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard APASS Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// APASSInstance.h - Released 2021-10-28T16:39:26Z
+// APASSInstance.h - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard APASS PixInsight module.
 //
@@ -112,4 +112,4 @@ private:
 #endif   // __APASSInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF APASSInstance.h - Released 2021-10-28T16:39:26Z
+// EOF APASSInstance.h - Released 2021-11-11T17:56:06Z

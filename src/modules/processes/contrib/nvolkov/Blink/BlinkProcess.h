@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Blink Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// BlinkProcess.h - Released 2021-10-28T16:39:26Z
+// BlinkProcess.h - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Blink PixInsight module.
 //
@@ -90,4 +90,4 @@ PCL_END_LOCAL
 #endif   // __BlinkProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF BlinkProcess.h - Released 2021-10-28T16:39:26Z
+// EOF BlinkProcess.h - Released 2021-11-11T17:56:06Z

@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.5.0
+// Standard SubframeSelector Process Module Version 1.6.0
 // ----------------------------------------------------------------------------
-// SubframeSelectorCache.cpp - Released 2021-10-28T16:39:26Z
+// SubframeSelectorCache.cpp - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -79,6 +79,8 @@ void SubframeSelectorCacheItem::AssignData( const FileDataCacheItem& item )
    stars                = src.stars;
    starResidual         = src.starResidual;
    starResidualMeanDev  = src.starResidualMeanDev;
+   azimuth              = src.azimuth;
+   altitude             = src.altitude;
 #undef src
 }
 
@@ -101,7 +103,9 @@ String SubframeSelectorCacheItem::DataToString() const
       << String().Format( "noiseRatio\n%.8e", noiseRatio )
       << String().Format( "stars\n%u", stars )
       << String().Format( "starResidual\n%.8e", starResidual )
-      << String().Format( "starResidualMeanDev\n%.8e", starResidualMeanDev );
+      << String().Format( "starResidualMeanDev\n%.8e", starResidualMeanDev )
+      << String().Format( "azimuth\n%.6e", azimuth )
+      << String().Format( "altitude\n%.6e", altitude );
    return String().ToNewLineSeparated( tokens );
 }
 
@@ -189,6 +193,16 @@ bool SubframeSelectorCacheItem::GetDataFromTokens( const StringList& tokens )
          if ( !(++i)->TryToDouble( starResidualMeanDev ) )
             return false;
       }
+      else if ( *i == "azimuth" )
+      {
+         if ( !(++i)->TryToDouble( azimuth ) )
+            return false;
+      }
+      else if ( *i == "altitude" )
+      {
+         if ( !(++i)->TryToDouble( altitude ) )
+            return false;
+      }
       else
       {
          ++i;
@@ -219,4 +233,4 @@ SubframeSelectorCache::~SubframeSelectorCache()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorCache.cpp - Released 2021-10-28T16:39:26Z
+// EOF SubframeSelectorCache.cpp - Released 2021-11-11T17:56:06Z

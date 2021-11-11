@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// pcl/MorphologicalTransformation.cpp - Released 2021-10-28T16:39:05Z
+// pcl/MorphologicalTransformation.cpp - Released 2021-11-11T17:57:35Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -431,4 +431,4 @@ void MorphologicalTransformation::Validate() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MorphologicalTransformation.cpp - Released 2021-10-28T16:39:05Z
+// EOF pcl/MorphologicalTransformation.cpp - Released 2021-11-11T17:57:35Z

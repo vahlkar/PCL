@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.5.0
+// Standard SubframeSelector Process Module Version 1.6.0
 // ----------------------------------------------------------------------------
-// GraphWebView.h - Released 2021-10-28T16:39:26Z
+// GraphWebView.h - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -103,8 +103,8 @@ public:
 
    void SetDataset( const String& dataname, const DataPointVector* dataset );
 
-   typedef void (Control::*approve_event_handler)( GraphWebView& sender, int& index );
-   typedef void (Control::*unlock_event_handler)( GraphWebView& sender, int& index );
+   typedef void (Control::*approve_event_handler)( GraphWebView& sender, int index );
+   typedef void (Control::*unlock_event_handler)( GraphWebView& sender, int index );
 
    void OnApprove( approve_event_handler handler, Control& receiver );
    void OnUnlock( unlock_event_handler handler, Control& receiver );
@@ -149,4 +149,4 @@ private:
 #endif   // __GRAPHWEBVIEW_h
 
 // ----------------------------------------------------------------------------
-// EOF GraphWebView.h - Released 2021-10-28T16:39:26Z
+// EOF GraphWebView.h - Released 2021-11-11T17:56:06Z

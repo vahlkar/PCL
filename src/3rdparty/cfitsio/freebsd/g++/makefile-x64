@@ -2,7 +2,7 @@
 # PixInsight Makefile Generator Script v1.124
 # Copyright (C) 2009-2021 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2021-10-28T18:11:28.642Z
+# Generated on .... 2021-11-11T20:09:57.067Z
 # Project id ...... cfitsio
 # Project type .... StaticLibrary
 # Platform ........ FreeBSD/g++
@@ -26,7 +26,6 @@ SRC_FILES= \
 ../../cfileio.c \
 ../../checksum.c \
 ../../drvrfile.c \
-../../drvrgsiftp.c \
 ../../drvrmem.c \
 ../../drvrnet.c \
 ../../drvrsmem.c \
@@ -86,18 +85,8 @@ SRC_FILES= \
 ../../swapproc.c \
 ../../wcssub.c \
 ../../wcsutil.c \
-../../zlib/adler32.c \
-../../zlib/crc32.c \
-../../zlib/deflate.c \
-../../zlib/infback.c \
-../../zlib/inffast.c \
-../../zlib/inflate.c \
-../../zlib/inftrees.c \
-../../zlib/trees.c \
-../../zlib/uncompr.c \
-../../zlib/zcompress.c \
-../../zlib/zuncompress.c \
-../../zlib/zutil.c
+../../zcompress.c \
+../../zuncompress.c
 
 #
 # Object files
@@ -108,7 +97,6 @@ OBJ_FILES= \
 ./x64/Release/cfileio.o \
 ./x64/Release/checksum.o \
 ./x64/Release/drvrfile.o \
-./x64/Release/drvrgsiftp.o \
 ./x64/Release/drvrmem.o \
 ./x64/Release/drvrnet.o \
 ./x64/Release/drvrsmem.o \
@@ -168,18 +156,8 @@ OBJ_FILES= \
 ./x64/Release/swapproc.o \
 ./x64/Release/wcssub.o \
 ./x64/Release/wcsutil.o \
-./x64/Release/zlib/adler32.o \
-./x64/Release/zlib/crc32.o \
-./x64/Release/zlib/deflate.o \
-./x64/Release/zlib/infback.o \
-./x64/Release/zlib/inffast.o \
-./x64/Release/zlib/inflate.o \
-./x64/Release/zlib/inftrees.o \
-./x64/Release/zlib/trees.o \
-./x64/Release/zlib/uncompr.o \
-./x64/Release/zlib/zcompress.o \
-./x64/Release/zlib/zuncompress.o \
-./x64/Release/zlib/zutil.o
+./x64/Release/zcompress.o \
+./x64/Release/zuncompress.o
 
 #
 # Dependency files
@@ -190,7 +168,6 @@ DEP_FILES= \
 ./x64/Release/cfileio.d \
 ./x64/Release/checksum.d \
 ./x64/Release/drvrfile.d \
-./x64/Release/drvrgsiftp.d \
 ./x64/Release/drvrmem.d \
 ./x64/Release/drvrnet.d \
 ./x64/Release/drvrsmem.d \
@@ -250,18 +227,8 @@ DEP_FILES= \
 ./x64/Release/swapproc.d \
 ./x64/Release/wcssub.d \
 ./x64/Release/wcsutil.d \
-./x64/Release/zlib/adler32.d \
-./x64/Release/zlib/crc32.d \
-./x64/Release/zlib/deflate.d \
-./x64/Release/zlib/infback.d \
-./x64/Release/zlib/inffast.d \
-./x64/Release/zlib/inflate.d \
-./x64/Release/zlib/inftrees.d \
-./x64/Release/zlib/trees.d \
-./x64/Release/zlib/uncompr.d \
-./x64/Release/zlib/zcompress.d \
-./x64/Release/zlib/zuncompress.d \
-./x64/Release/zlib/zutil.d
+./x64/Release/zcompress.d \
+./x64/Release/zuncompress.d
 
 #
 # Rules
@@ -282,9 +249,6 @@ post-build:
 	cp $(OBJ_DIR)/libcfitsio-pxi.a $(PCLLIBDIR64)
 
 ./x64/Release/%.o: ../../%.c
-	clang -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_FREEBSD -D"f2cFortran" -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mtune=znver2 -msse4.2 -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -std=c99 -Wall -Wno-parentheses -Wno-error=implicit-function-declaration -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
-	@echo ' '
-./x64/Release/zlib/%.o: ../../zlib/%.c
 	clang -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_FREEBSD -D"f2cFortran" -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mtune=znver2 -msse4.2 -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -std=c99 -Wall -Wno-parentheses -Wno-error=implicit-function-declaration -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 

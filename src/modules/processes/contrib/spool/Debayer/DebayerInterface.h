@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Debayer Process Module Version 1.10.1
 // ----------------------------------------------------------------------------
-// DebayerInterface.h - Released 2021-10-28T16:39:26Z
+// DebayerInterface.h - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -174,6 +174,9 @@ private:
                Label             PSFType_Label;
                ComboBox          PSFType_ComboBox;
             NumericControl    PSFRejectionLimit_NumericControl;
+            HorizontalSizer   MaxStars_Sizer;
+               Label             MaxStars_Label;
+               SpinBox           MaxStars_SpinBox;
 
          SectionBar        NoiseEvaluation_SectionBar;
          Control           NoiseEvaluation_Control;
@@ -223,4 +226,4 @@ PCL_END_LOCAL
 #endif   // __DebayerInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF DebayerInterface.h - Released 2021-10-28T16:39:26Z
+// EOF DebayerInterface.h - Released 2021-11-11T17:56:06Z

@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// pcl/Rotation.h - Released 2021-10-28T16:38:58Z
+// pcl/Rotation.h - Released 2021-11-11T17:57:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -269,4 +269,4 @@ protected:
 #endif   // __PCL_Rotation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Rotation.h - Released 2021-10-28T16:38:58Z
+// EOF pcl/Rotation.h - Released 2021-11-11T17:57:24Z

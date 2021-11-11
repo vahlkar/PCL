@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// pcl/StarDetector.h - Released 2021-10-28T16:38:58Z
+// pcl/StarDetector.h - Released 2021-11-11T17:57:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -92,8 +92,8 @@ public:
       typedef DPoint::component  component;
 
       DPoint pos = 0.0;     /*!< Star position in image coordinates. Corresponds to the centroid of
-                                  the fitted PSF when PSF fitting is enabled; to the barycenter
-                                  calculated by the star detection algorithm otherwise. */
+                                 the fitted PSF when PSF fitting is enabled; to the barycenter
+                                 calculated by the star detection algorithm otherwise. */
       Rect   rect = 0;      //!< Detection region in pixels, image coordinates.
       float  flux = 0;      //!< Total flux minus local background.
       float  signal = 0;    /*!< Estimated mean signal over the local background within the PSF
@@ -109,7 +109,7 @@ public:
 
       /*!
        * Constructs a new %Star object with the specified position \a p in
-       * image coordinates, total flux \a f, mean signal \a s  and PSF average
+       * image coordinates, total flux \a f, mean signal \a s and PSF average
        * deviation \a m.
        */
       Star( const DPoint& p, const Rect& r, float f = 0, float s = 0, float m = 0 )
@@ -547,7 +547,7 @@ public:
     */
    float PSFCentroidTolerance() const
    {
-      return m_psfTolerance;
+      return m_psfCentroidTolerance;
    }
 
    /*!
@@ -557,7 +557,7 @@ public:
    void SetPSFCentroidTolerance( float t )
    {
       PCL_PRECONDITION( t >= 0 )
-      m_psfTolerance = Max( 0.0F, t );
+      m_psfCentroidTolerance = Max( 0.0F, t );
    }
 
    /*!
@@ -642,7 +642,7 @@ protected:
          bool         m_fitPSF = false;
          psf_function m_psfType = PSFunction::Gaussian;
          bool         m_psfElliptic = false;
-         float        m_psfTolerance = 1.5;
+         float        m_psfCentroidTolerance = 1.5F;
    const UInt8Image*  m_mask = nullptr;
 
 private:
@@ -657,4 +657,4 @@ private:
 #endif   // __PCL_StarDetector_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/StarDetector.h - Released 2021-10-28T16:38:58Z
+// EOF pcl/StarDetector.h - Released 2021-11-11T17:57:24Z

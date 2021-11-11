@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// pcl/PSFSignalEstimator.h - Released 2021-10-28T16:38:58Z
+// pcl/PSFSignalEstimator.h - Released 2021-11-11T17:57:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -179,7 +179,7 @@ public:
     */
    float PSFCentroidTolerance() const
    {
-      return m_psfTolerance;
+      return m_psfCentroidTolerance;
    }
 
    /*!
@@ -189,7 +189,7 @@ public:
    void SetPSFCentroidTolerance( float t )
    {
       PCL_PRECONDITION( t >= 0 )
-      m_psfTolerance = Max( 0.0F, t );
+      m_psfCentroidTolerance = Max( 0.0F, t );
    }
 
    /*!
@@ -219,7 +219,38 @@ public:
    }
 
    /*!
-    * Evaluates the mean value of the signal and the signal power for the
+    * Returns the maximum number of stars that will be measured to compute mean
+    * signal estimates. Returns zero if no limit has been set on the maximum
+    * number of star measurements.
+    *
+    * When a limit \a n greater than zero is specified, PSF photometry will be
+    * performed for no more than the \a n brightest stars detected in the
+    * target image.
+    *
+    * The default value is zero, meaning that no specific limit is set.
+    */
+   int MaxStars() const
+   {
+      return m_maxStars;
+   }
+
+   /*!
+    * Sets the maximum number of stars that will be measured. See MaxStars()
+    * for more information on this parameter.
+    *
+    * When a limit \a n greater than zero is specified, PSF photometry will be
+    * performed for no more than the \a n brightest stars detected in the
+    * target image. When a value &le; 0 is specified, no specific limit will be
+    * set on the number of measured stars.
+    */
+   void SetMaxStars( int n )
+   {
+      PCL_PRECONDITION( n >= 0 )
+      m_maxStars = Max( 0, n );
+   }
+
+   /*!
+    * Evaluates the mean values of the signal and the signal power for the
     * specified \a image. Returns the estimates as a new
     * PSFSignalEstimator::Estimates object.
     */
@@ -242,8 +273,9 @@ private:
 
    mutable pcl::StarDetector m_starDetector;
            psf_function      m_psfType = PSFunction::Moffat4;
-           float             m_psfTolerance = 1.5F;
+           float             m_psfCentroidTolerance = 1.5F;
            float             m_rejectionLimit = 5.0F;
+           int               m_maxStars = 0;
 };
 
 // ----------------------------------------------------------------------------
@@ -253,4 +285,4 @@ private:
 #endif   // __PCL_PSFSignalEstimator_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFSignalEstimator.h - Released 2021-10-28T16:38:58Z
+// EOF pcl/PSFSignalEstimator.h - Released 2021-11-11T17:57:24Z

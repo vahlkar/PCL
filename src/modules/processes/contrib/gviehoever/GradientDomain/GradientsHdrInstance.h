@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsHdrInstance.h - Released 2021-10-28T16:39:26Z
+// GradientsHdrInstance.h - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
@@ -81,4 +81,4 @@ private:
 #endif // __GradientsHdrInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF GradientsHdrInstance.h - Released 2021-10-28T16:39:26Z
+// EOF GradientsHdrInstance.h - Released 2021-11-11T17:56:06Z

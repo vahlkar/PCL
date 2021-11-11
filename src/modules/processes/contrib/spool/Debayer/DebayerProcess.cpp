@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Debayer Process Module Version 1.10.1
 // ----------------------------------------------------------------------------
-// DebayerProcess.cpp - Released 2021-10-28T16:39:26Z
+// DebayerProcess.cpp - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -92,6 +92,7 @@ DebayerProcess::DebayerProcess()
    new DebayerMinStructureSize( this );
    new DebayerPSFType( this );
    new DebayerPSFRejectionLimit( this );
+   new DebayerMaxStars( this );
    new DebayerInputHints( this );
    new DebayerOutputHints( this );
    new DebayerOutputRGBImages( this );
@@ -330,4 +331,4 @@ int DebayerProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DebayerProcess.cpp - Released 2021-10-28T16:39:26Z
+// EOF DebayerProcess.cpp - Released 2021-11-11T17:56:06Z

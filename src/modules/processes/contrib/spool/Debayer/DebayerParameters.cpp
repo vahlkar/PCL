@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Debayer Process Module Version 1.10.1
 // ----------------------------------------------------------------------------
-// DebayerParameters.cpp - Released 2021-10-28T16:39:26Z
+// DebayerParameters.cpp - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -78,6 +78,7 @@ DebayerNoiseReductionFilterRadius*   TheDebayerNoiseReductionFilterRadiusParamet
 DebayerMinStructureSize*             TheDebayerMinStructureSizeParameter = nullptr;
 DebayerPSFType*                      TheDebayerPSFTypeParameter = nullptr;
 DebayerPSFRejectionLimit*            TheDebayerPSFRejectionLimitParameter = nullptr;
+DebayerMaxStars*                     TheDebayerMaxStarsParameter = nullptr;
 
 DebayerInputHints*                   TheDebayerInputHintsParameter = nullptr;
 DebayerOutputHints*                  TheDebayerOutputHintsParameter = nullptr;
@@ -599,6 +600,19 @@ IsoString DebayerPSFType::ElementId( size_type i ) const
    }
 }
 
+IsoString DebayerPSFType::FunctionName( pcl_enum i )
+{
+   switch ( i )
+   {
+   case Gaussian:      return "Gaussian";
+   default:
+   case Moffat4:       return "Moffat4";
+   case Moffat6:       return "Moffat6";
+   case Moffat8:       return "Moffat8";
+   case VariableShape: return "VariableShape";
+   }
+}
+
 int DebayerPSFType::ElementValue( size_type i ) const
 {
    return int( i );
@@ -639,6 +653,33 @@ double DebayerPSFRejectionLimit::MinimumValue() const
 double DebayerPSFRejectionLimit::MaximumValue() const
 {
    return 10.0;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerMaxStars::DebayerMaxStars( MetaProcess* p ) : MetaInt32( p )
+{
+   TheDebayerMaxStarsParameter = this;
+}
+
+IsoString DebayerMaxStars::Id() const
+{
+   return "maxStars";
+}
+
+double DebayerMaxStars::DefaultValue() const
+{
+   return 24*1024;
+}
+
+double DebayerMaxStars::MinimumValue() const
+{
+   return 256;
+}
+
+double DebayerMaxStars::MaximumValue() const
+{
+   return 999999;
 }
 
 // ----------------------------------------------------------------------------
@@ -2278,4 +2319,4 @@ bool DebayerOutputFileNoiseAlgorithmB::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DebayerParameters.cpp - Released 2021-10-28T16:39:26Z
+// EOF DebayerParameters.cpp - Released 2021-11-11T17:56:06Z

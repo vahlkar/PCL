@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ExponentialTransformationInstance.h - Released 2021-10-28T16:39:26Z
+// ExponentialTransformationInstance.h - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -98,4 +98,4 @@ private:
 #endif   // __ExponentialTransformationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ExponentialTransformationInstance.h - Released 2021-10-28T16:39:26Z
+// EOF ExponentialTransformationInstance.h - Released 2021-11-11T17:56:06Z

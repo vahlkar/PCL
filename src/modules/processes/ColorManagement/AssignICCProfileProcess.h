@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorManagement Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// AssignICCProfileProcess.h - Released 2021-10-28T16:39:26Z
+// AssignICCProfileProcess.h - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorManagement PixInsight module.
 //
@@ -91,4 +91,4 @@ PCL_END_LOCAL
 #endif   // __AssignICCProfileProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF AssignICCProfileProcess.h - Released 2021-10-28T16:39:26Z
+// EOF AssignICCProfileProcess.h - Released 2021-11-11T17:56:06Z

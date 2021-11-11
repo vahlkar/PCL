@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.4
 // ----------------------------------------------------------------------------
-// CropInterface.h - Released 2021-10-28T16:39:26Z
+// CropInterface.h - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -234,4 +234,4 @@ PCL_END_LOCAL
 #endif   // __CropInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF CropInterface.h - Released 2021-10-28T16:39:26Z
+// EOF CropInterface.h - Released 2021-11-11T17:56:06Z

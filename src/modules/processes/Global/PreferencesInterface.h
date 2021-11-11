@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.3.1
+// Standard Global Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// PreferencesInterface.h - Released 2021-10-28T16:39:26Z
+// PreferencesInterface.h - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -729,6 +729,7 @@ public:
    GlobalIntegerControl       FastScreenRenditionThreshold_Integer;
    GlobalFlagControl          HighDPIRenditions_Flag;
    GlobalFlagControl          Default24BitScreenLUT_Flag;
+   GlobalFlagControl          LoadInitialProcessingFromCoreProperties_Flag;
    GlobalFlagControl          CreatePreviewsFromCoreProperties_Flag;
    GlobalFlagControl          LoadAstrometricSolutions_Flag;
 };
@@ -951,4 +952,4 @@ PCL_END_LOCAL
 #endif   // __PreferencesInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInterface.h - Released 2021-10-28T16:39:26Z
+// EOF PreferencesInterface.h - Released 2021-11-11T17:56:06Z

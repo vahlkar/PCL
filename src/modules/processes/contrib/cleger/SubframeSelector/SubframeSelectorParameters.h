@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.5.0
+// Standard SubframeSelector Process Module Version 1.6.0
 // ----------------------------------------------------------------------------
-// SubframeSelectorParameters.h - Released 2021-10-28T16:39:26Z
+// SubframeSelectorParameters.h - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -209,7 +209,7 @@ public:
           Bits14,
           Bits16,
           NumberOfItems,
-          Default = Bits8 };
+          Default = Bits16 };
 
    SSCameraResolution( MetaProcess* );
 
@@ -526,8 +526,9 @@ public:
           Moffat25,
           Moffat15,
           Lorentzian,
+//           VariableShape,
           NumberOfItems,
-          Default = Gaussian };
+          Default = Moffat4 };
 
    SSPSFFit( MetaProcess* );
 
@@ -878,6 +879,8 @@ public:
           StarResidualMeanDev,
           PSFSignalWeight,
           PSFPowerWeight,
+          Azimuth,
+          Altitude,
           NumberOfItems,
           Default = Index };
 
@@ -915,6 +918,8 @@ public:
           StarResidualMeanDev,
           PSFSignalWeight,
           PSFPowerWeight,
+          Azimuth,
+          Altitude,
           NumberOfItems,
           Default = PSFSignalWeight };
 
@@ -1338,6 +1343,42 @@ extern SSMeasurementStarResidualMeanDev* TheSSMeasurementStarResidualMeanDevPara
 
 // ----------------------------------------------------------------------------
 
+class SSMeasurementAzimuth : public MetaDouble
+{
+public:
+
+   SSMeasurementAzimuth( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   bool IsReadOnly() const override;
+};
+
+extern SSMeasurementAzimuth* TheSSMeasurementAzimuthParameter;
+
+// ----------------------------------------------------------------------------
+
+class SSMeasurementAltitude : public MetaDouble
+{
+public:
+
+   SSMeasurementAltitude( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   bool IsReadOnly() const override;
+};
+
+extern SSMeasurementAltitude* TheSSMeasurementAltitudeParameter;
+
+// ----------------------------------------------------------------------------
+
 PCL_END_LOCAL
 
 } // pcl
@@ -1345,4 +1386,4 @@ PCL_END_LOCAL
 #endif   // __SubframeSelectorParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorParameters.h - Released 2021-10-28T16:39:26Z
+// EOF SubframeSelectorParameters.h - Released 2021-11-11T17:56:06Z

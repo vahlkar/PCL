@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// pcl/PSFSignalEstimator.cpp - Released 2021-10-28T16:39:05Z
+// pcl/PSFSignalEstimator.cpp - Released 2021-11-11T17:57:35Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -56,7 +56,7 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-class PSFFitThread : public Thread
+class PCL_SE_PSFFitThread : public Thread
 {
 public:
 
@@ -64,9 +64,9 @@ public:
 
    Array<PSFData> psfs;
 
-   PSFFitThread( const AbstractImage::ThreadData& data,
-                 const ImageVariant& image, psf_function psfType, float tolerance,
-                 const Array<StarDetector::Star>& stars, int start, int end )
+   PCL_SE_PSFFitThread( const AbstractImage::ThreadData& data,
+                        const ImageVariant& image, psf_function psfType, float tolerance,
+                        const StarDetector::star_list& stars, int start, int end )
       : m_data( data )
       , m_image( image )
       , m_psfType( psfType )
@@ -103,7 +103,9 @@ public:
           * PSF fitting and validation. Always fit elliptical functions instead
           * of circular ones for more adaptive and accurate signal evaluation.
           */
-         PSFFit fit( m_image, star.pos + 0.5, rect, m_psfType, false/*circular*/ );
+         PSFFit fit( m_image, star.pos + 0.5, rect, m_psfType, false/*circular*/,
+                     1.0F/*betaMin*/, 4.0F/*betaMax*/,
+                     1.0e-06/*tolerance*/, 0.1F/*bkgMaxVar*/ );
          if ( fit )
             if ( fit.psf.meanSignal > 0 )
                if ( fit.psf.meanSignalSqr > 0 )
@@ -121,7 +123,7 @@ private:
    const ImageVariant&              m_image;
          psf_function               m_psfType;
          float                      m_tolerance;
-   const Array<StarDetector::Star>& m_stars;
+   const StarDetector::star_list&   m_stars;
          int                        m_start, m_end;
 };
 
@@ -132,7 +134,7 @@ PSFSignalEstimator::Estimates PSFSignalEstimator::EstimateSignal( const ImageVar
    bool initializeStatus = image.Status().IsInitializationEnabled();
 
    /*
-    * Perform star detection.
+    * Perform star detection
     */
    m_starDetector.DisablePSFFitting();
    m_starDetector.EnableParallelProcessing( IsParallelProcessingEnabled() );
@@ -142,26 +144,34 @@ PSFSignalEstimator::Estimates PSFSignalEstimator::EstimateSignal( const ImageVar
    if ( !stars.IsEmpty() )
    {
       /*
-       * Perform PSF fitting.
+       * Perform PSF fitting
        */
+
+      /*
+       * Optional limit on the number of measured stars. StarDetector returns
+       * a list of stars sorted by flux in descending order, so we are always
+       * restricting measurements to a subset of the brightest stars.
+       */
+      size_type numberOfStars = (m_maxStars > 0) ? Min( size_type( m_maxStars ), stars.Length() ) : stars.Length();
+
       if ( initializeStatus )
       {
          image.Status().EnableInitialization();
-         image.Status().Initialize( String().Format( "Fitting %u stars", stars.Length() ), stars.Length() );
+         image.Status().Initialize( String().Format( "Fitting %u stars", numberOfStars ), numberOfStars );
          image.Status().DisableInitialization();
       }
 
-      Array<size_type> L = Thread::OptimalThreadLoads( stars.Length(),
+      Array<size_type> L = Thread::OptimalThreadLoads( numberOfStars,
                                           1/*overheadLimit*/,
                                           IsParallelProcessingEnabled() ? MaxProcessors() : 1 );
-      ReferenceArray<PSFFitThread> threads;
-      AbstractImage::ThreadData data( *image, stars.Length() );
+      ReferenceArray<PCL_SE_PSFFitThread> threads;
+      AbstractImage::ThreadData data( *image, numberOfStars );
       for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
-         threads.Add( new PSFFitThread( data, image, m_psfType, m_psfTolerance, stars, n, n + int( L[i] ) ) );
+         threads.Add( new PCL_SE_PSFFitThread( data, image, m_psfType, m_psfCentroidTolerance, stars, n, n + int( L[i] ) ) );
       AbstractImage::RunThreads( threads, data );
 
       Array<PSFData> psfs;
-      for ( const PSFFitThread& thread : threads )
+      for ( const PCL_SE_PSFFitThread& thread : threads )
          psfs << thread.psfs;
 
       threads.Destroy();
@@ -229,4 +239,4 @@ PSFSignalEstimator::Estimates PSFSignalEstimator::EstimateSignal( const ImageVar
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFSignalEstimator.cpp - Released 2021-10-28T16:39:05Z
+// EOF pcl/PSFSignalEstimator.cpp - Released 2021-11-11T17:57:35Z

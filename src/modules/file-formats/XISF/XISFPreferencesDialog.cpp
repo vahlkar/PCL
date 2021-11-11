@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard XISF File Format Module Version 1.0.12
+// Standard XISF File Format Module Version 1.0.13
 // ----------------------------------------------------------------------------
-// XISFPreferencesDialog.cpp - Released 2021-10-28T16:39:17Z
+// XISFPreferencesDialog.cpp - Released 2021-11-11T17:55:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard XISF PixInsight module.
 //
@@ -180,6 +180,16 @@ XISFPreferencesDialog::XISFPreferencesDialog( const XISFFormat::EmbeddingOverrid
    ICCProfile_Sizer.Add( ICCProfile_CheckBox );
    ICCProfile_Sizer.AddStretch();
 
+   Thumbnail_CheckBox.SetText( "Thumbnail image" );
+   Thumbnail_CheckBox.SetTristateMode();
+   Thumbnail_CheckBox.SetToolTip( "<p>Override global core application settings for embedded thumbnails.</p>" );
+   Thumbnail_CheckBox.SetState( overrides.overrideThumbnailEmbedding ?
+      (overrides.embedThumbnails ? CheckState::Checked : CheckState::Unchecked) : CheckState::ThirdState );
+
+   Thumbnail_Sizer.AddUnscaledSpacing( m_labelWidth + ui4 );
+   Thumbnail_Sizer.Add( Thumbnail_CheckBox );
+   Thumbnail_Sizer.AddStretch();
+
    DisplayFunction_CheckBox.SetText( "Display function" );
    DisplayFunction_CheckBox.SetTristateMode();
    DisplayFunction_CheckBox.SetToolTip( "<p>Override global core application settings for embedded display functions.</p>" );
@@ -200,15 +210,15 @@ XISFPreferencesDialog::XISFPreferencesDialog( const XISFFormat::EmbeddingOverrid
    RGBWorkingSpace_Sizer.Add( RGBWorkingSpace_CheckBox );
    RGBWorkingSpace_Sizer.AddStretch();
 
-   Thumbnail_CheckBox.SetText( "Thumbnail image" );
-   Thumbnail_CheckBox.SetTristateMode();
-   Thumbnail_CheckBox.SetToolTip( "<p>Override global core application settings for embedded thumbnails.</p>" );
-   Thumbnail_CheckBox.SetState( overrides.overrideThumbnailEmbedding ?
-      (overrides.embedThumbnails ? CheckState::Checked : CheckState::Unchecked) : CheckState::ThirdState );
+   ProcessingHistory_CheckBox.SetText( "Processing history" );
+   ProcessingHistory_CheckBox.SetTristateMode();
+   ProcessingHistory_CheckBox.SetToolTip( "<p>Override global core application settings for embedded processing histories.</p>" );
+   ProcessingHistory_CheckBox.SetState( overrides.overrideProcessingHistoriesEmbedding ?
+      (overrides.embedProcessingHistories ? CheckState::Checked : CheckState::Unchecked) : CheckState::ThirdState );
 
-   Thumbnail_Sizer.AddUnscaledSpacing( m_labelWidth + ui4 );
-   Thumbnail_Sizer.Add( Thumbnail_CheckBox );
-   Thumbnail_Sizer.AddStretch();
+   ProcessingHistory_Sizer.AddUnscaledSpacing( m_labelWidth + ui4 );
+   ProcessingHistory_Sizer.Add( ProcessingHistory_CheckBox );
+   ProcessingHistory_Sizer.AddStretch();
 
    PreviewRects_CheckBox.SetText( "Preview rectangles" );
    PreviewRects_CheckBox.SetTristateMode();
@@ -224,9 +234,10 @@ XISFPreferencesDialog::XISFPreferencesDialog( const XISFFormat::EmbeddingOverrid
    EmbeddedData_Sizer.SetSpacing( 4 );
    EmbeddedData_Sizer.Add( Properties_Sizer );
    EmbeddedData_Sizer.Add( ICCProfile_Sizer );
+   EmbeddedData_Sizer.Add( Thumbnail_Sizer );
    EmbeddedData_Sizer.Add( DisplayFunction_Sizer );
    EmbeddedData_Sizer.Add( RGBWorkingSpace_Sizer );
-   EmbeddedData_Sizer.Add( Thumbnail_Sizer );
+   EmbeddedData_Sizer.Add( ProcessingHistory_Sizer );
    EmbeddedData_Sizer.Add( PreviewRects_Sizer );
 
    EmbeddedData_GroupBox.SetTitle( "Override Embedding Settings" );
@@ -270,9 +281,13 @@ void XISFPreferencesDialog::Button_Click( Button& sender, bool checked )
 {
    if ( sender == Reset_PushButton )
    {
-      ICCProfile_CheckBox.SetState( CheckState::ThirdState );
       Properties_CheckBox.SetState( CheckState::ThirdState );
+      ICCProfile_CheckBox.SetState( CheckState::ThirdState );
       Thumbnail_CheckBox.SetState( CheckState::ThirdState );
+      DisplayFunction_CheckBox.SetState( CheckState::ThirdState );
+      RGBWorkingSpace_CheckBox.SetState( CheckState::ThirdState );
+      ProcessingHistory_CheckBox.SetState( CheckState::ThirdState );
+      PreviewRects_CheckBox.SetState( CheckState::ThirdState );
 
       XISFOptions defaultOptions;
 
@@ -308,14 +323,17 @@ void XISFPreferencesDialog::Dialog_Return( Dialog& sender, int retVal )
       overrides.overrideICCProfileEmbedding = ICCProfile_CheckBox.State() != CheckState::ThirdState;
       overrides.embedICCProfiles = ICCProfile_CheckBox.IsChecked();
 
+      overrides.overrideThumbnailEmbedding = Thumbnail_CheckBox.State() != CheckState::ThirdState;
+      overrides.embedThumbnails = Thumbnail_CheckBox.IsChecked();
+
       overrides.overrideDisplayFunctionEmbedding = DisplayFunction_CheckBox.State() != CheckState::ThirdState;
       overrides.embedDisplayFunctions = DisplayFunction_CheckBox.IsChecked();
 
       overrides.overrideRGBWorkingSpaceEmbedding = RGBWorkingSpace_CheckBox.State() != CheckState::ThirdState;
       overrides.embedRGBWorkingSpaces = RGBWorkingSpace_CheckBox.IsChecked();
 
-      overrides.overrideThumbnailEmbedding = Thumbnail_CheckBox.State() != CheckState::ThirdState;
-      overrides.embedThumbnails = Thumbnail_CheckBox.IsChecked();
+      overrides.overrideProcessingHistoriesEmbedding = ProcessingHistory_CheckBox.State() != CheckState::ThirdState;
+      overrides.embedProcessingHistories = ProcessingHistory_CheckBox.IsChecked();
 
       overrides.overridePreviewRectsEmbedding = PreviewRects_CheckBox.State() != CheckState::ThirdState;
       overrides.embedPreviewRects = PreviewRects_CheckBox.IsChecked();
@@ -336,4 +354,4 @@ void XISFPreferencesDialog::Dialog_Return( Dialog& sender, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF XISFPreferencesDialog.cpp - Released 2021-10-28T16:39:17Z
+// EOF XISFPreferencesDialog.cpp - Released 2021-11-11T17:55:57Z

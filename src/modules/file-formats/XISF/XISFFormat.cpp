@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard XISF File Format Module Version 1.0.12
+// Standard XISF File Format Module Version 1.0.13
 // ----------------------------------------------------------------------------
-// XISFFormat.cpp - Released 2021-10-28T16:39:17Z
+// XISFFormat.cpp - Released 2021-11-11T17:55:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard XISF PixInsight module.
 //
@@ -422,18 +422,20 @@ bool XISFFormat::EditPreferences() const
    if ( dlg.Execute() == StdDialogCode::Ok )
    {
       overrides = dlg.overrides;
-      Settings::Write( "XISFOverridePropertyEmbedding",        overrides.overridePropertyEmbedding );
-      Settings::Write( "XISFEmbedProperties",                  overrides.embedProperties );
-      Settings::Write( "XISFOverrideICCProfileEmbedding",      overrides.overrideICCProfileEmbedding );
-      Settings::Write( "XISFEmbedICCProfiles",                 overrides.embedICCProfiles );
-      Settings::Write( "XISFOverrideDisplayFunctionEmbedding", overrides.overrideDisplayFunctionEmbedding );
-      Settings::Write( "XISFEmbedDisplayFunctions",            overrides.embedDisplayFunctions );
-      Settings::Write( "XISFOverrideRGBWorkingSpaceEmbedding", overrides.overrideRGBWorkingSpaceEmbedding );
-      Settings::Write( "XISFEmbedRGBWorkingSpaces",            overrides.embedRGBWorkingSpaces );
-      Settings::Write( "XISFOverrideThumbnailEmbedding",       overrides.overrideThumbnailEmbedding );
-      Settings::Write( "XISFEmbedThumbnails",                  overrides.embedThumbnails );
-      Settings::Write( "XISFOverridePreviewRectsEmbedding",    overrides.overridePreviewRectsEmbedding );
-      Settings::Write( "XISFEmbedPreviewRects",                overrides.embedPreviewRects );
+      Settings::Write( "XISFOverridePropertyEmbedding",            overrides.overridePropertyEmbedding );
+      Settings::Write( "XISFEmbedProperties",                      overrides.embedProperties );
+      Settings::Write( "XISFOverrideICCProfileEmbedding",          overrides.overrideICCProfileEmbedding );
+      Settings::Write( "XISFEmbedICCProfiles",                     overrides.embedICCProfiles );
+      Settings::Write( "XISFOverrideDisplayFunctionEmbedding",     overrides.overrideDisplayFunctionEmbedding );
+      Settings::Write( "XISFEmbedDisplayFunctions",                overrides.embedDisplayFunctions );
+      Settings::Write( "XISFOverrideRGBWorkingSpaceEmbedding",     overrides.overrideRGBWorkingSpaceEmbedding );
+      Settings::Write( "XISFEmbedRGBWorkingSpaces",                overrides.embedRGBWorkingSpaces );
+      Settings::Write( "XISFOverrideThumbnailEmbedding",           overrides.overrideThumbnailEmbedding );
+      Settings::Write( "XISFEmbedThumbnails",                      overrides.embedThumbnails );
+      Settings::Write( "XISFOverrideProcessingHistoriesEmbedding", overrides.overrideProcessingHistoriesEmbedding );
+      Settings::Write( "XISFEmbedProcessingHistories",             overrides.embedProcessingHistories );
+      Settings::Write( "XISFOverridePreviewRectsEmbedding",        overrides.overridePreviewRectsEmbedding );
+      Settings::Write( "XISFEmbedPreviewRects",                    overrides.embedPreviewRects );
 
       options = dlg.options;
       Settings::Write( "XISFStoreFITSKeywords",  options.storeFITSKeywords );
@@ -516,18 +518,20 @@ XISFFormat::EmbeddingOverrides XISFFormat::DefaultEmbeddingOverrides()
 {
    EmbeddingOverrides overrides;
 
-   Settings::Read( "XISFOverridePropertyEmbedding",        overrides.overridePropertyEmbedding );
-   Settings::Read( "XISFEmbedProperties",                  overrides.embedProperties );
-   Settings::Read( "XISFOverrideICCProfileEmbedding",      overrides.overrideICCProfileEmbedding );
-   Settings::Read( "XISFEmbedICCProfiles",                 overrides.embedICCProfiles );
-   Settings::Read( "XISFOverrideDisplayFunctionEmbedding", overrides.overrideDisplayFunctionEmbedding );
-   Settings::Read( "XISFEmbedDisplayFunctions",            overrides.embedDisplayFunctions );
-   Settings::Read( "XISFOverrideRGBWorkingSpaceEmbedding", overrides.overrideRGBWorkingSpaceEmbedding );
-   Settings::Read( "XISFEmbedRGBWorkingSpaces",            overrides.embedRGBWorkingSpaces );
-   Settings::Read( "XISFOverrideThumbnailEmbedding",       overrides.overrideThumbnailEmbedding );
-   Settings::Read( "XISFEmbedThumbnails",                  overrides.embedThumbnails );
-   Settings::Read( "XISFOverridePreviewRectsEmbedding",    overrides.overridePreviewRectsEmbedding );
-   Settings::Read( "XISFEmbedPreviewRects",                overrides.embedPreviewRects );
+   Settings::Read( "XISFOverridePropertyEmbedding",            overrides.overridePropertyEmbedding );
+   Settings::Read( "XISFEmbedProperties",                      overrides.embedProperties );
+   Settings::Read( "XISFOverrideICCProfileEmbedding",          overrides.overrideICCProfileEmbedding );
+   Settings::Read( "XISFEmbedICCProfiles",                     overrides.embedICCProfiles );
+   Settings::Read( "XISFOverrideDisplayFunctionEmbedding",     overrides.overrideDisplayFunctionEmbedding );
+   Settings::Read( "XISFEmbedDisplayFunctions",                overrides.embedDisplayFunctions );
+   Settings::Read( "XISFOverrideRGBWorkingSpaceEmbedding",     overrides.overrideRGBWorkingSpaceEmbedding );
+   Settings::Read( "XISFEmbedRGBWorkingSpaces",                overrides.embedRGBWorkingSpaces );
+   Settings::Read( "XISFOverrideThumbnailEmbedding",           overrides.overrideThumbnailEmbedding );
+   Settings::Read( "XISFEmbedThumbnails",                      overrides.embedThumbnails );
+   Settings::Read( "XISFOverrideProcessingHistoriesEmbedding", overrides.overrideProcessingHistoriesEmbedding );
+   Settings::Read( "XISFEmbedProcessingHistories",             overrides.embedProcessingHistories );
+   Settings::Read( "XISFOverridePreviewRectsEmbedding",        overrides.overridePreviewRectsEmbedding );
+   Settings::Read( "XISFEmbedPreviewRects",                    overrides.embedPreviewRects );
 
    return overrides;
 }
@@ -558,4 +562,4 @@ XISFFormat::FormatOptions* XISFFormat::FormatOptions::FromGenericDataBlock( cons
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF XISFFormat.cpp - Released 2021-10-28T16:39:17Z
+// EOF XISFFormat.cpp - Released 2021-11-11T17:55:57Z

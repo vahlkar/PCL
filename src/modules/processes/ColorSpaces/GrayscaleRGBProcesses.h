@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.2
 // ----------------------------------------------------------------------------
-// GrayscaleRGBProcesses.h - Released 2021-10-28T16:39:26Z
+// GrayscaleRGBProcesses.h - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -111,4 +111,4 @@ PCL_END_LOCAL
 #endif   // __GrayscaleRGBProcesses_h
 
 // ----------------------------------------------------------------------------
-// EOF GrayscaleRGBProcesses.h - Released 2021-10-28T16:39:26Z
+// EOF GrayscaleRGBProcesses.h - Released 2021-11-11T17:56:06Z

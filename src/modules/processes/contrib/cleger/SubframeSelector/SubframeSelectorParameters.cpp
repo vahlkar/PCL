@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.5.0
+// Standard SubframeSelector Process Module Version 1.6.0
 // ----------------------------------------------------------------------------
-// SubframeSelectorParameters.cpp - Released 2021-10-28T16:39:26Z
+// SubframeSelectorParameters.cpp - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -138,6 +138,8 @@ SSMeasurementStarResidual*         TheSSMeasurementStarResidualParameter = nullp
 SSMeasurementFWHMMeanDev*          TheSSMeasurementFWHMMeanDevParameter = nullptr;
 SSMeasurementEccentricityMeanDev*  TheSSMeasurementEccentricityMeanDevParameter = nullptr;
 SSMeasurementStarResidualMeanDev*  TheSSMeasurementStarResidualMeanDevParameter = nullptr;
+SSMeasurementAzimuth*              TheSSMeasurementAzimuthParameter = nullptr;
+SSMeasurementAltitude*             TheSSMeasurementAltitudeParameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -377,11 +379,11 @@ IsoString SSCameraResolution::ElementId( size_type i ) const
 {
    switch ( i )
    {
-   default:
    case Bits8:  return "Bits8";
    case Bits10: return "Bits10";
    case Bits12: return "Bits12";
    case Bits14: return "Bits14";
+   default:
    case Bits16: return "Bits16";
    }
 }
@@ -395,11 +397,11 @@ int SSCameraResolution::ElementData( size_type i ) const
 {
    switch ( i )
    {
-   default:
    case Bits8:  return 255;
    case Bits10: return 1023;
    case Bits12: return 4095;
    case Bits14: return 16383;
+   default:
    case Bits16: return 65535;
    }
 }
@@ -408,12 +410,12 @@ IsoString SSCameraResolution::ElementLabel( size_type i ) const
 {
    switch ( i )
    {
+   case Bits8:  return "8-bit [0,255]";
+   case Bits10: return "10-bit [0,1023]";
+   case Bits12: return "12-bit [0,4095]";
+   case Bits14: return "14-bit [0,16383]";
    default:
-   case Bits8:  return "8-bit [0, 255]";
-   case Bits10: return "10-bit [0, 1023]";
-   case Bits12: return "12-bit [0, 4095]";
-   case Bits14: return "14-bit [0, 16383]";
-   case Bits16: return "16-bit [0, 65535]";
+   case Bits16: return "16-bit [0,65535]";
    }
 }
 
@@ -1021,15 +1023,16 @@ IsoString SSPSFFit::ElementId( size_type i ) const
 {
    switch ( i )
    {
+   case Gaussian:      return "Gaussian";
+   case Moffat10:      return "Moffat10";
+   case Moffat8:       return "Moffat8";
+   case Moffat6:       return "Moffat6";
    default:
-   case Gaussian:   return "Gaussian";
-   case Moffat10:   return "Moffat10";
-   case Moffat8:    return "Moffat8";
-   case Moffat6:    return "Moffat6";
-   case Moffat4:    return "Moffat4";
-   case Moffat25:   return "Moffat25";
-   case Moffat15:   return "Moffat15";
-   case Lorentzian: return "Lorentzian";
+   case Moffat4:       return "Moffat4";
+   case Moffat25:      return "Moffat25";
+   case Moffat15:      return "Moffat15";
+   case Lorentzian:    return "Lorentzian";
+//    case VariableShape: return "VariableShape";
    }
 }
 
@@ -1042,15 +1045,16 @@ IsoString SSPSFFit::ElementLabel( size_type i ) const
 {
    switch ( i )
    {
+   case Gaussian:      return "Gaussian";
+   case Moffat10:      return "Moffat10";
+   case Moffat8:       return "Moffat8";
+   case Moffat6:       return "Moffat6";
    default:
-   case Gaussian:   return "Gaussian";
-   case Moffat10:   return "Moffat10";
-   case Moffat8:    return "Moffat8";
-   case Moffat6:    return "Moffat6";
-   case Moffat4:    return "Moffat4";
-   case Moffat25:   return "Moffat2.5";
-   case Moffat15:   return "Moffat1.5";
-   case Lorentzian: return "Lorentzian";
+   case Moffat4:       return "Moffat4";
+   case Moffat25:      return "Moffat2.5";
+   case Moffat15:      return "Moffat1.5";
+   case Lorentzian:    return "Lorentzian";
+//    case VariableShape: return "VariableShape";
    }
 }
 
@@ -1061,10 +1065,12 @@ size_type SSPSFFit::DefaultValueIndex() const
 
 IsoString SSPSFFit::Tooltip() const
 {
-   return "<p>This parameter specifies the <i>point spread function</i> (PSF) used to fit star images.</p>"
-          "<p>The function may be either an elliptical <i>Gaussian</i>, an elliptical "
-          "<i>Moffat</i> with a selected <i>Beta</i> parameter or an elliptical "
-          "<i>Lorentzian</i>.</p>";
+   return "<p>This parameter specifies the type of <i>point spread function</i> (PSF) used "
+          "to fit star image models numerically.</p>"
+          "<p>The PSF can be either a Gaussian or a Moffat function with a prescribed "
+          "shape parameter.</p>"
+          "<p>The default option is a Moffat PSF with <i>beta</i>=4, which is fast and quite "
+          "accurate in most cases.</p>";
 }
 
 // ----------------------------------------------------------------------------
@@ -1471,7 +1477,7 @@ IsoString SSOverwriteExistingFiles::Tooltip() const
    return "<p>If this option is selected, SubframeSelector will overwrite "
           "existing files with the same names as generated output files. This can "
           "be dangerous because the original contents of overwritten files will be lost.</p>"
-          "<p><b>Enable this option <u>at your own risk.</u></b></p>";
+          "<p><b>Warning: Enable this option <u>at your own risk.</u></b></p>";
 }
 
 // ----------------------------------------------------------------------------
@@ -1548,8 +1554,8 @@ IsoString SSApprovalExpression::Tooltip() const
           "<i>Math.abs(FWHMSigma)</i> or using <i>//</i> to comment the end of the line. "
           "Please see the documentation for more information.</p>"
           "<p><i>property</i> = [Index | Weight | PSFSignalWeight | PSFPowerWeight | SNRWeight | "
-          "FWHM | Eccentricity | Median | MedianMeanDev | Noise | NoiseRatio | Stars | StarResidual | "
-          "FWHMMeanDev | EccentricityMeanDev | StarResidualMeanDev]</p>"
+          "FWHM | Eccentricity | Altitude | Azimuth | Median | MedianMeanDev | Noise | NoiseRatio | "
+          "Stars | StarResidual | FWHMMeanDev | EccentricityMeanDev | StarResidualMeanDev]</p>"
           "<p>Each <i>property</i> (excluding <i>Index</i>) also has a Median, Min, and Max version, "
           "e.g. <i>FWHMMin</i>, which are computed across all subframes.</p>"
           "<p>Each <i>property</i> (excluding <i>Index</i>) also has a Sigma version, "
@@ -1577,8 +1583,8 @@ IsoString SSWeightingExpression::Tooltip() const
           "<i>Math.abs(FWHMSigma)</i> or using <i>//</i> to comment the end of the line. "
           "Please see the documentation for more information.</p>"
           "<p><i>property</i> = [Index | PSFSignalWeight | PSFPowerWeight | SNRWeight | "
-          "FWHM | Eccentricity | Median | MedianMeanDev | Noise | NoiseRatio | Stars | StarResidual | "
-          "FWHMMeanDev | EccentricityMeanDev | StarResidualMeanDev]</p>"
+          "FWHM | Eccentricity | Altitude | Azimuth | Median | MedianMeanDev | Noise | NoiseRatio | "
+          "Stars | StarResidual | FWHMMeanDev | EccentricityMeanDev | StarResidualMeanDev]</p>"
           "<p>Each <i>property</i> (excluding <i>Index</i>) also has a Median, Min, and Max version, "
           "e.g. <i>FWHMMin</i>, which are computed across all subframes.</p>"
           "<p>Each <i>property</i> (excluding <i>Index</i>) also has a Sigma version, "
@@ -1624,6 +1630,8 @@ IsoString SSSortingProperty::ElementId( size_type i ) const
    case FWHMMeanDev:         return "FWHMMeanDev";
    case EccentricityMeanDev: return "EccentricityMeanDev";
    case StarResidualMeanDev: return "StarResidualMeanDev";
+   case Azimuth:             return "Azimuth";
+   case Altitude:            return "Altitude";
    }
 }
 
@@ -1653,6 +1661,8 @@ IsoString SSSortingProperty::ElementLabel( size_type i ) const
    case FWHMMeanDev:         return "FWHM Mean Dev.";
    case EccentricityMeanDev: return "Eccentricity Mean Dev.";
    case StarResidualMeanDev: return "Star Residual Mean Dev.";
+   case Azimuth:             return "Azimuth";
+   case Altitude:            return "Altitude";
    }
 }
 
@@ -1698,6 +1708,8 @@ IsoString SSGraphProperty::ElementId( size_type i ) const
    case FWHMMeanDev:         return "FWHMMeanDev";
    case EccentricityMeanDev: return "EccentricityMeanDev";
    case StarResidualMeanDev: return "StarResidualMeanDev";
+   case Azimuth:             return "Azimuth";
+   case Altitude:            return "Altitude";
    }
 }
 
@@ -1726,6 +1738,8 @@ IsoString SSGraphProperty::ElementLabel( size_type i ) const
    case FWHMMeanDev:         return "FWHM Mean Dev.";
    case EccentricityMeanDev: return "Eccentricity Mean Dev.";
    case StarResidualMeanDev: return "Star Residual Mean Dev.";
+   case Azimuth:             return "Azimuth";
+   case Altitude:            return "Altitude";
    }
 }
 
@@ -2484,7 +2498,81 @@ bool SSMeasurementStarResidualMeanDev::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
+SSMeasurementAzimuth::SSMeasurementAzimuth( MetaTable* T ) : MetaDouble( T )
+{
+   TheSSMeasurementAzimuthParameter = this;
+}
+
+IsoString SSMeasurementAzimuth::Id() const
+{
+   return "measurementAzimuth";
+}
+
+int SSMeasurementAzimuth::Precision() const
+{
+   return 4;
+}
+
+double SSMeasurementAzimuth::DefaultValue() const
+{
+   return 0;
+}
+
+double SSMeasurementAzimuth::MinimumValue() const
+{
+   return 0;
+}
+
+double SSMeasurementAzimuth::MaximumValue() const
+{
+   return 360;
+}
+
+bool SSMeasurementAzimuth::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+SSMeasurementAltitude::SSMeasurementAltitude( MetaTable* T ) : MetaDouble( T )
+{
+   TheSSMeasurementAltitudeParameter = this;
+}
+
+IsoString SSMeasurementAltitude::Id() const
+{
+   return "measurementAltitude";
+}
+
+int SSMeasurementAltitude::Precision() const
+{
+   return 4;
+}
+
+double SSMeasurementAltitude::DefaultValue() const
+{
+   return 0;
+}
+
+double SSMeasurementAltitude::MinimumValue() const
+{
+   return 0;
+}
+
+double SSMeasurementAltitude::MaximumValue() const
+{
+   return 90;
+}
+
+bool SSMeasurementAltitude::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorParameters.cpp - Released 2021-10-28T16:39:26Z
+// EOF SubframeSelectorParameters.cpp - Released 2021-11-11T17:56:06Z

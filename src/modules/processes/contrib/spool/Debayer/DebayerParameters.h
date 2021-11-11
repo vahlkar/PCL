@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Debayer Process Module Version 1.10.1
 // ----------------------------------------------------------------------------
-// DebayerParameters.h - Released 2021-10-28T16:39:26Z
+// DebayerParameters.h - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -377,6 +377,8 @@ public:
       case VariableShape: return PSFunction::VariableShape;
       }
    }
+
+   static IsoString FunctionName( pcl_enum );
 };
 
 extern DebayerPSFType* TheDebayerPSFTypeParameter;
@@ -397,6 +399,22 @@ public:
 };
 
 extern DebayerPSFRejectionLimit* TheDebayerPSFRejectionLimitParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerMaxStars : public MetaInt32
+{
+public:
+
+   DebayerMaxStars( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern DebayerMaxStars* TheDebayerMaxStarsParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -1514,4 +1532,4 @@ PCL_END_LOCAL
 #endif   // __DebayerParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF DebayerParameters.h - Released 2021-10-28T16:39:26Z
+// EOF DebayerParameters.h - Released 2021-11-11T17:56:06Z

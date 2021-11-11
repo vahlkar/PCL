@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.5.0
+// Standard SubframeSelector Process Module Version 1.6.0
 // ----------------------------------------------------------------------------
-// SubframeSelectorInterface.cpp - Released 2021-10-28T16:39:26Z
+// SubframeSelectorInterface.cpp - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -86,13 +86,6 @@ SubframeSelectorInterface::SubframeSelectorInterface()
 
    if ( TheSubframeSelectorMeasurementsInterface == nullptr )
       new SubframeSelectorMeasurementsInterface( m_instance );
-
-   /*
-    * The auto save geometry feature is of no good to interfaces that include
-    * both auto-expanding controls (e.g. TreeBox) and collapsible sections
-    * (e.g. SectionBar).
-    */
-   DisableAutoSaveGeometry();
 }
 
 // ----------------------------------------------------------------------------
@@ -157,10 +150,6 @@ bool SubframeSelectorInterface::Launch( const MetaProcess& P, const ProcessImple
    {
       GUI = new GUIData( *this );
       SetWindowTitle( "SubframeSelector" );
-
-      // Restore position only
-      if ( !RestoreGeometry() )
-         SetDefaultPosition();
    }
 
    /*
@@ -248,8 +237,8 @@ void SubframeSelectorInterface::HideMeasurementsInterface() const
 
 void SubframeSelectorInterface::UpdateControls()
 {
-   GUI->Routine_Control.SetCurrentItem( m_instance.p_routine );
-   GUI->SubframeImages_FileCache_Control.SetChecked( m_instance.p_fileCache );
+   GUI->Routine_ComboBox.SetCurrentItem( m_instance.p_routine );
+   GUI->SubframeImages_FileCache_CheckBox.SetChecked( m_instance.p_fileCache );
    UpdateSubframeImagesList();
    UpdateSystemParametersControls();
    UpdateStarDetectorControls();
@@ -328,30 +317,30 @@ void SubframeSelectorInterface::UpdateSystemParametersControls()
 {
    GUI->SystemParameters_SubframeScale_Control.SetValue( m_instance.p_subframeScale );
    GUI->SystemParameters_CameraGain_Control.SetValue( m_instance.p_cameraGain );
-   GUI->SystemParameters_CameraResolution_Control.SetCurrentItem( m_instance.p_cameraResolution );
-   GUI->SystemParameters_SiteLocalMidnight_Control.SetValue( m_instance.p_siteLocalMidnight );
-   GUI->SystemParameters_ScaleUnit_Control.SetCurrentItem( m_instance.p_scaleUnit );
-   GUI->SystemParameters_DataUnit_Control.SetCurrentItem( m_instance.p_dataUnit );
+   GUI->SystemParameters_CameraResolution_ComboBox.SetCurrentItem( m_instance.p_cameraResolution );
+   GUI->SystemParameters_SiteLocalMidnight_SpinBox.SetValue( m_instance.p_siteLocalMidnight );
+   GUI->SystemParameters_ScaleUnit_ComboBox.SetCurrentItem( m_instance.p_scaleUnit );
+   GUI->SystemParameters_DataUnit_ComboBox.SetCurrentItem( m_instance.p_dataUnit );
 }
 
 // ----------------------------------------------------------------------------
 
 void SubframeSelectorInterface::UpdateStarDetectorControls()
 {
-   GUI->StarDetectorParameters_StructureLayers_Control.SetValue( m_instance.p_structureLayers );
-   GUI->StarDetectorParameters_NoiseLayers_Control.SetValue( m_instance.p_noiseLayers );
-   GUI->StarDetectorParameters_HotPixelFilterRadius_Control.SetValue( m_instance.p_hotPixelFilterRadius );
-   GUI->StarDetectorParameters_NoiseReductionFilterRadius_Control.SetValue( m_instance.p_noiseReductionFilterRadius );
+   GUI->StarDetectorParameters_StructureLayers_SpinBox.SetValue( m_instance.p_structureLayers );
+   GUI->StarDetectorParameters_NoiseLayers_SpinBox.SetValue( m_instance.p_noiseLayers );
+   GUI->StarDetectorParameters_HotPixelFilterRadius_SpinBox.SetValue( m_instance.p_hotPixelFilterRadius );
+   GUI->StarDetectorParameters_NoiseReductionFilterRadius_SpinBox.SetValue( m_instance.p_noiseReductionFilterRadius );
    GUI->StarDetectorParameters_Sensitivity_Control.SetValue( m_instance.p_sensitivity );
    GUI->StarDetectorParameters_PeakResponse_Control.SetValue( m_instance.p_peakResponse );
    GUI->StarDetectorParameters_MaxDistortion_Control.SetValue( m_instance.p_maxDistortion );
    GUI->StarDetectorParameters_UpperLimit_Control.SetValue( m_instance.p_upperLimit );
-   GUI->StarDetectorParameters_PSFFit_Control.SetCurrentItem( m_instance.p_psfFit );
+   GUI->StarDetectorParameters_PSFFit_ComboBox.SetCurrentItem( m_instance.p_psfFit );
    GUI->StarDetectorParameters_PSFFitCircular_CheckBox.SetChecked( m_instance.p_psfFitCircular );
-   GUI->StarDetectorParameters_ROIX0_Control.SetValue( m_instance.p_roi.x0 );
-   GUI->StarDetectorParameters_ROIY0_Control.SetValue( m_instance.p_roi.y0 );
-   GUI->StarDetectorParameters_ROIWidth_Control.SetValue( m_instance.p_roi.Width() );
-   GUI->StarDetectorParameters_ROIHeight_Control.SetValue( m_instance.p_roi.Height() );
+   GUI->StarDetectorParameters_ROIX0_SpinBox.SetValue( m_instance.p_roi.x0 );
+   GUI->StarDetectorParameters_ROIY0_SpinBox.SetValue( m_instance.p_roi.y0 );
+   GUI->StarDetectorParameters_ROIWidth_SpinBox.SetValue( m_instance.p_roi.Width() );
+   GUI->StarDetectorParameters_ROIHeight_SpinBox.SetValue( m_instance.p_roi.Height() );
 }
 
 // ----------------------------------------------------------------------------
@@ -541,25 +530,25 @@ void SubframeSelectorInterface::e_RealValueUpdated( NumericEdit& sender, double 
 
 void SubframeSelectorInterface::e_SpinValueUpdated( SpinBox& sender, int value )
 {
-   if ( sender == GUI->SystemParameters_SiteLocalMidnight_Control )
+   if ( sender == GUI->SystemParameters_SiteLocalMidnight_SpinBox )
       m_instance.p_siteLocalMidnight = value;
-   else if ( sender == GUI->StarDetectorParameters_StructureLayers_Control )
+   else if ( sender == GUI->StarDetectorParameters_StructureLayers_SpinBox )
       m_instance.p_structureLayers = value;
-   else if ( sender == GUI->StarDetectorParameters_NoiseLayers_Control )
+   else if ( sender == GUI->StarDetectorParameters_NoiseLayers_SpinBox )
       m_instance.p_noiseLayers = value;
-   else if ( sender == GUI->StarDetectorParameters_HotPixelFilterRadius_Control )
+   else if ( sender == GUI->StarDetectorParameters_HotPixelFilterRadius_SpinBox )
       m_instance.p_hotPixelFilterRadius = value;
-   else if ( sender == GUI->StarDetectorParameters_NoiseReductionFilterRadius_Control )
+   else if ( sender == GUI->StarDetectorParameters_NoiseReductionFilterRadius_SpinBox )
       m_instance.p_noiseReductionFilterRadius = value;
 //    else if ( sender == GUI->StarDetectorParameters_BackgroundExpansion_Control )
 //       m_instance.p_backgroundExpansion = value;
-   else if ( sender == GUI->StarDetectorParameters_ROIX0_Control )
+   else if ( sender == GUI->StarDetectorParameters_ROIX0_SpinBox )
       m_instance.p_roi.x0 = value;
-   else if ( sender == GUI->StarDetectorParameters_ROIY0_Control )
+   else if ( sender == GUI->StarDetectorParameters_ROIY0_SpinBox )
       m_instance.p_roi.y0 = value;
-   else if ( sender == GUI->StarDetectorParameters_ROIWidth_Control )
+   else if ( sender == GUI->StarDetectorParameters_ROIWidth_SpinBox )
       m_instance.p_roi.x1 = m_instance.p_roi.x0 + value;
-   else if ( sender == GUI->StarDetectorParameters_ROIHeight_Control )
+   else if ( sender == GUI->StarDetectorParameters_ROIHeight_SpinBox )
       m_instance.p_roi.y1 = m_instance.p_roi.y0 + value;
    else if ( sender == GUI->PedestalValue_SpinBox )
       m_instance.p_pedestal = value;
@@ -569,24 +558,24 @@ void SubframeSelectorInterface::e_SpinValueUpdated( SpinBox& sender, int value )
 
 void SubframeSelectorInterface::e_ItemSelected( ComboBox& sender, int itemIndex )
 {
-   if ( sender == GUI->Routine_Control )
+   if ( sender == GUI->Routine_ComboBox )
       m_instance.p_routine = itemIndex;
-   else if ( sender == GUI->SystemParameters_CameraResolution_Control )
+   else if ( sender == GUI->SystemParameters_CameraResolution_ComboBox )
    {
       m_instance.p_cameraResolution = itemIndex;
       TheSubframeSelectorMeasurementsInterface->UpdateControls();
    }
-   else if ( sender == GUI->SystemParameters_ScaleUnit_Control )
+   else if ( sender == GUI->SystemParameters_ScaleUnit_ComboBox )
    {
       m_instance.p_scaleUnit = itemIndex;
       TheSubframeSelectorMeasurementsInterface->UpdateControls();
    }
-   else if ( sender == GUI->SystemParameters_DataUnit_Control )
+   else if ( sender == GUI->SystemParameters_DataUnit_ComboBox )
    {
       m_instance.p_dataUnit = itemIndex;
       TheSubframeSelectorMeasurementsInterface->UpdateControls();
    }
-   else if ( sender == GUI->StarDetectorParameters_PSFFit_Control )
+   else if ( sender == GUI->StarDetectorParameters_PSFFit_ComboBox )
       m_instance.p_psfFit = itemIndex;
    else if ( sender == GUI->PedestalMode_ComboBox )
    {
@@ -601,7 +590,7 @@ void SubframeSelectorInterface::e_ItemSelected( ComboBox& sender, int itemIndex 
 
 void SubframeSelectorInterface::e_CheckboxUpdated( Button& sender, Button::check_state state )
 {
-   if ( sender == GUI->SubframeImages_FileCache_Control )
+   if ( sender == GUI->SubframeImages_FileCache_CheckBox )
       m_instance.p_fileCache = state == CheckState::Checked;
 //    else if ( sender == GUI->StarDetectorParameters_ApplyHotPixelFilter_CheckBox )
 //       m_instance.p_hotPixelFilter = state == CheckState::Checked;
@@ -763,9 +752,9 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
    Routine_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
 
    for ( size_type i = 0; i < TheSSRoutineParameter->NumberOfElements(); ++i )
-      Routine_Control.AddItem( TheSSRoutineParameter->ElementLabel( i ) );
-   Routine_Control.SetToolTip( TheSSRoutineParameter->Tooltip() );
-   Routine_Control.OnItemSelected( (ComboBox::item_event_handler)
+      Routine_ComboBox.AddItem( TheSSRoutineParameter->ElementLabel( i ) );
+   Routine_ComboBox.SetToolTip( TheSSRoutineParameter->Tooltip() );
+   Routine_ComboBox.OnItemSelected( (ComboBox::item_event_handler)
                                     &SubframeSelectorInterface::e_ItemSelected, w );
 
    GoToExpressionsWindow_ToolButton.SetIcon( Bitmap( w.ScaledResource( ":/icons/function.png" ) ) );
@@ -784,7 +773,7 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
 
    Routine_Sizer.SetSpacing( 4 );
    Routine_Sizer.Add( Routine_Label );
-   Routine_Sizer.Add( Routine_Control );
+   Routine_Sizer.Add( Routine_ComboBox );
    Routine_Sizer.AddStretch();
    Routine_Sizer.Add( GoToExpressionsWindow_ToolButton );
    Routine_Sizer.AddSpacing( 8 );
@@ -798,7 +787,7 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
                                     &SubframeSelectorInterface::e_ToggleSection, w );
 
    SubframeImages_TreeBox.SetMinHeight( IMAGELIST_MINHEIGHT( w.Font() ) );
-   SubframeImages_TreeBox.SetScaledMinWidth( 250 );
+   SubframeImages_TreeBox.SetScaledMinWidth( 344 );
    SubframeImages_TreeBox.SetNumberOfColumns( 3 );
    SubframeImages_TreeBox.HideHeader();
    SubframeImages_TreeBox.EnableMultipleSelections();
@@ -841,9 +830,9 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
    SubframeImages_Clear_PushButton.OnClick( (Button::click_event_handler)
                                     &SubframeSelectorInterface::e_SubframeImages_Click, w );
 
-   SubframeImages_FileCache_Control.SetText( "File cache" );
-   SubframeImages_FileCache_Control.SetToolTip( TheSSFileCacheParameter->Tooltip() );
-   SubframeImages_FileCache_Control.OnCheck( (Button::check_event_handler)
+   SubframeImages_FileCache_CheckBox.SetText( "File cache" );
+   SubframeImages_FileCache_CheckBox.SetToolTip( TheSSFileCacheParameter->Tooltip() );
+   SubframeImages_FileCache_CheckBox.OnCheck( (Button::check_event_handler)
                                     &SubframeSelectorInterface::e_CheckboxUpdated, w );
 
    SubframeButtons_Sizer.SetSpacing( 4 );
@@ -853,7 +842,7 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
    SubframeButtons_Sizer.Add( SubframeImages_Remove_PushButton );
    SubframeButtons_Sizer.Add( SubframeImages_Clear_PushButton );
    SubframeButtons_Sizer.AddStretch();
-   SubframeButtons_Sizer.Add( SubframeImages_FileCache_Control );
+   SubframeButtons_Sizer.Add( SubframeImages_FileCache_CheckBox );
 
    SubframeImages_Sizer.SetSpacing( 4 );
    SubframeImages_Sizer.Add( SubframeImages_TreeBox, 100 );
@@ -880,12 +869,12 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
    SystemParameters_SubframeScale_Control.OnValueUpdated( (NumericEdit::value_event_handler)
                                     &SubframeSelectorInterface::e_RealValueUpdated, w );
 
-   SystemParameters_SubframeScale_Unit.SetText( "arcseconds / pixel" );
-   SystemParameters_SubframeScale_Unit.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
+   SystemParameters_SubframeScale_Unit_Label.SetText( "arcseconds / pixel" );
+   SystemParameters_SubframeScale_Unit_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
 
    SystemParameters_SubframeScale_Sizer.SetSpacing( 4 );
    SystemParameters_SubframeScale_Sizer.Add( SystemParameters_SubframeScale_Control );
-   SystemParameters_SubframeScale_Sizer.Add( SystemParameters_SubframeScale_Unit );
+   SystemParameters_SubframeScale_Sizer.Add( SystemParameters_SubframeScale_Unit_Label );
    SystemParameters_SubframeScale_Sizer.AddStretch();
 
    SystemParameters_CameraGain_Control.label.SetText( "Camera gain:" );
@@ -900,12 +889,12 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
    SystemParameters_CameraGain_Control.OnValueUpdated( (NumericEdit::value_event_handler)
                                     &SubframeSelectorInterface::e_RealValueUpdated, w );
 
-   SystemParameters_CameraGain_Unit.SetText( "electrons / Data Number" );
-   SystemParameters_CameraGain_Unit.SetTextAlignment( TextAlign::Left | TextAlign::VertCenter );
+   SystemParameters_CameraGain_Unit_Label.SetText( "electrons / Data Number" );
+   SystemParameters_CameraGain_Unit_Label.SetTextAlignment( TextAlign::Left | TextAlign::VertCenter );
 
    SystemParameters_CameraGain_Sizer.SetSpacing( 4 );
    SystemParameters_CameraGain_Sizer.Add( SystemParameters_CameraGain_Control );
-   SystemParameters_CameraGain_Sizer.Add( SystemParameters_CameraGain_Unit );
+   SystemParameters_CameraGain_Sizer.Add( SystemParameters_CameraGain_Unit_Label );
    SystemParameters_CameraGain_Sizer.AddStretch();
 
    SystemParameters_CameraResolution_Label.SetText( "Camera resolution:" );
@@ -913,33 +902,33 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
    SystemParameters_CameraResolution_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
 
    for ( size_type i = 0; i < TheSSCameraResolutionParameter->NumberOfElements(); ++i )
-      SystemParameters_CameraResolution_Control.AddItem( TheSSCameraResolutionParameter->ElementLabel( i ) );
-   SystemParameters_CameraResolution_Control.SetToolTip( TheSSCameraResolutionParameter->Tooltip() );
-   SystemParameters_CameraResolution_Control.OnItemSelected( (ComboBox::item_event_handler)
+      SystemParameters_CameraResolution_ComboBox.AddItem( TheSSCameraResolutionParameter->ElementLabel( i ) );
+   SystemParameters_CameraResolution_ComboBox.SetToolTip( TheSSCameraResolutionParameter->Tooltip() );
+   SystemParameters_CameraResolution_ComboBox.OnItemSelected( (ComboBox::item_event_handler)
                                     &SubframeSelectorInterface::e_ItemSelected, w );
 
    SystemParameters_CameraResolution_Sizer.SetSpacing( 4 );
    SystemParameters_CameraResolution_Sizer.Add( SystemParameters_CameraResolution_Label );
-   SystemParameters_CameraResolution_Sizer.Add( SystemParameters_CameraResolution_Control );
+   SystemParameters_CameraResolution_Sizer.Add( SystemParameters_CameraResolution_ComboBox );
    SystemParameters_CameraResolution_Sizer.AddStretch();
 
    SystemParameters_SiteLocalMidnight_Label.SetText( "Site local midnight:" );
    SystemParameters_SiteLocalMidnight_Label.SetMinWidth( labelWidth1 );
    SystemParameters_SiteLocalMidnight_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
 
-   SystemParameters_SiteLocalMidnight_Control.SetRange( TheSSSiteLocalMidnightParameter->MinimumValue(),
+   SystemParameters_SiteLocalMidnight_SpinBox.SetRange( TheSSSiteLocalMidnightParameter->MinimumValue(),
                                                         TheSSSiteLocalMidnightParameter->MaximumValue() );
-   SystemParameters_SiteLocalMidnight_Control.SetToolTip( TheSSSiteLocalMidnightParameter->Tooltip() );
-   SystemParameters_SiteLocalMidnight_Control.OnValueUpdated( (SpinBox::value_event_handler)
+   SystemParameters_SiteLocalMidnight_SpinBox.SetToolTip( TheSSSiteLocalMidnightParameter->Tooltip() );
+   SystemParameters_SiteLocalMidnight_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)
                                     &SubframeSelectorInterface::e_SpinValueUpdated, w );
 
-   SystemParameters_SiteLocalMidnight_Unit.SetText( "hours (UTC)" );
-   SystemParameters_SiteLocalMidnight_Unit.SetTextAlignment( TextAlign::Left | TextAlign::VertCenter );
+   SystemParameters_SiteLocalMidnight_Unit_Label.SetText( "hours (UTC)" );
+   SystemParameters_SiteLocalMidnight_Unit_Label.SetTextAlignment( TextAlign::Left | TextAlign::VertCenter );
 
    SystemParameters_SiteLocalMidnight_Sizer.SetSpacing( 4 );
    SystemParameters_SiteLocalMidnight_Sizer.Add( SystemParameters_SiteLocalMidnight_Label );
-   SystemParameters_SiteLocalMidnight_Sizer.Add( SystemParameters_SiteLocalMidnight_Control );
-   SystemParameters_SiteLocalMidnight_Sizer.Add( SystemParameters_SiteLocalMidnight_Unit );
+   SystemParameters_SiteLocalMidnight_Sizer.Add( SystemParameters_SiteLocalMidnight_SpinBox );
+   SystemParameters_SiteLocalMidnight_Sizer.Add( SystemParameters_SiteLocalMidnight_Unit_Label );
    SystemParameters_SiteLocalMidnight_Sizer.AddStretch();
 
    SystemParameters_ScaleUnit_Label.SetText( "Scale unit:" );
@@ -947,14 +936,14 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
    SystemParameters_ScaleUnit_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
 
    for ( size_type i = 0; i < TheSSScaleUnitParameter->NumberOfElements(); ++i )
-      SystemParameters_ScaleUnit_Control.AddItem( TheSSScaleUnitParameter->ElementLabel( i ) );
-   SystemParameters_ScaleUnit_Control.SetToolTip( TheSSScaleUnitParameter->Tooltip() );
-   SystemParameters_ScaleUnit_Control.OnItemSelected( (ComboBox::item_event_handler)
+      SystemParameters_ScaleUnit_ComboBox.AddItem( TheSSScaleUnitParameter->ElementLabel( i ) );
+   SystemParameters_ScaleUnit_ComboBox.SetToolTip( TheSSScaleUnitParameter->Tooltip() );
+   SystemParameters_ScaleUnit_ComboBox.OnItemSelected( (ComboBox::item_event_handler)
                                     &SubframeSelectorInterface::e_ItemSelected, w );
 
    SystemParameters_ScaleUnit_Sizer.SetSpacing( 4 );
    SystemParameters_ScaleUnit_Sizer.Add( SystemParameters_ScaleUnit_Label );
-   SystemParameters_ScaleUnit_Sizer.Add( SystemParameters_ScaleUnit_Control );
+   SystemParameters_ScaleUnit_Sizer.Add( SystemParameters_ScaleUnit_ComboBox );
    SystemParameters_ScaleUnit_Sizer.AddStretch();
 
    SystemParameters_DataUnit_Label.SetText( "Data unit:" );
@@ -962,14 +951,14 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
    SystemParameters_DataUnit_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
 
    for ( size_type i = 0; i < TheSSDataUnitParameter->NumberOfElements(); ++i )
-      SystemParameters_DataUnit_Control.AddItem( TheSSDataUnitParameter->ElementLabel( i ) );
-   SystemParameters_DataUnit_Control.SetToolTip( TheSSDataUnitParameter->Tooltip() );
-   SystemParameters_DataUnit_Control.OnItemSelected( (ComboBox::item_event_handler)
+      SystemParameters_DataUnit_ComboBox.AddItem( TheSSDataUnitParameter->ElementLabel( i ) );
+   SystemParameters_DataUnit_ComboBox.SetToolTip( TheSSDataUnitParameter->Tooltip() );
+   SystemParameters_DataUnit_ComboBox.OnItemSelected( (ComboBox::item_event_handler)
                                     &SubframeSelectorInterface::e_ItemSelected, w );
 
    SystemParameters_DataUnit_Sizer.SetSpacing( 4 );
    SystemParameters_DataUnit_Sizer.Add( SystemParameters_DataUnit_Label );
-   SystemParameters_DataUnit_Sizer.Add( SystemParameters_DataUnit_Control );
+   SystemParameters_DataUnit_Sizer.Add( SystemParameters_DataUnit_ComboBox );
    SystemParameters_DataUnit_Sizer.AddStretch();
 
    SystemParameters_Sizer.SetSpacing( 4 );
@@ -993,45 +982,45 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
    StarDetectorParameters_StructureLayers_Label.SetMinWidth( labelWidth1 );
    StarDetectorParameters_StructureLayers_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
 
-   StarDetectorParameters_StructureLayers_Control.SetRange( TheSSStructureLayersParameter->MinimumValue(),
+   StarDetectorParameters_StructureLayers_SpinBox.SetRange( TheSSStructureLayersParameter->MinimumValue(),
                                                             TheSSStructureLayersParameter->MaximumValue() );
-   StarDetectorParameters_StructureLayers_Control.SetToolTip( TheSSStructureLayersParameter->Tooltip() );
-   StarDetectorParameters_StructureLayers_Control.OnValueUpdated( (SpinBox::value_event_handler)
+   StarDetectorParameters_StructureLayers_SpinBox.SetToolTip( TheSSStructureLayersParameter->Tooltip() );
+   StarDetectorParameters_StructureLayers_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)
                                     &SubframeSelectorInterface::e_SpinValueUpdated, w );
 
    StarDetectorParameters_StructureLayers_Sizer.SetSpacing( 4 );
    StarDetectorParameters_StructureLayers_Sizer.Add( StarDetectorParameters_StructureLayers_Label );
-   StarDetectorParameters_StructureLayers_Sizer.Add( StarDetectorParameters_StructureLayers_Control );
+   StarDetectorParameters_StructureLayers_Sizer.Add( StarDetectorParameters_StructureLayers_SpinBox );
    StarDetectorParameters_StructureLayers_Sizer.AddStretch();
 
    StarDetectorParameters_NoiseLayers_Label.SetText( "Noise layers:" );
    StarDetectorParameters_NoiseLayers_Label.SetMinWidth( labelWidth1 );
    StarDetectorParameters_NoiseLayers_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
 
-   StarDetectorParameters_NoiseLayers_Control.SetRange( TheSSNoiseLayersParameter->MinimumValue(),
+   StarDetectorParameters_NoiseLayers_SpinBox.SetRange( TheSSNoiseLayersParameter->MinimumValue(),
                                                         TheSSNoiseLayersParameter->MaximumValue() );
-   StarDetectorParameters_NoiseLayers_Control.SetToolTip( TheSSNoiseLayersParameter->Tooltip() );
-   StarDetectorParameters_NoiseLayers_Control.OnValueUpdated( (SpinBox::value_event_handler)
+   StarDetectorParameters_NoiseLayers_SpinBox.SetToolTip( TheSSNoiseLayersParameter->Tooltip() );
+   StarDetectorParameters_NoiseLayers_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)
                                     &SubframeSelectorInterface::e_SpinValueUpdated, w );
 
    StarDetectorParameters_NoiseLayers_Sizer.SetSpacing( 4 );
    StarDetectorParameters_NoiseLayers_Sizer.Add( StarDetectorParameters_NoiseLayers_Label );
-   StarDetectorParameters_NoiseLayers_Sizer.Add( StarDetectorParameters_NoiseLayers_Control );
+   StarDetectorParameters_NoiseLayers_Sizer.Add( StarDetectorParameters_NoiseLayers_SpinBox );
    StarDetectorParameters_NoiseLayers_Sizer.AddStretch();
 
    StarDetectorParameters_HotPixelFilterRadius_Label.SetText( "Hot pixel filter:" );
    StarDetectorParameters_HotPixelFilterRadius_Label.SetMinWidth( labelWidth1 );
    StarDetectorParameters_HotPixelFilterRadius_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
 
-   StarDetectorParameters_HotPixelFilterRadius_Control.SetRange( TheSSHotPixelFilterRadiusParameter->MinimumValue(),
+   StarDetectorParameters_HotPixelFilterRadius_SpinBox.SetRange( TheSSHotPixelFilterRadiusParameter->MinimumValue(),
                                                                  TheSSHotPixelFilterRadiusParameter->MaximumValue() );
-   StarDetectorParameters_HotPixelFilterRadius_Control.SetToolTip( TheSSHotPixelFilterRadiusParameter->Tooltip() );
-   StarDetectorParameters_HotPixelFilterRadius_Control.OnValueUpdated( (SpinBox::value_event_handler)
+   StarDetectorParameters_HotPixelFilterRadius_SpinBox.SetToolTip( TheSSHotPixelFilterRadiusParameter->Tooltip() );
+   StarDetectorParameters_HotPixelFilterRadius_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)
                                     &SubframeSelectorInterface::e_SpinValueUpdated, w );
 
    StarDetectorParameters_HotPixelFilterRadius_Sizer.SetSpacing( 4 );
    StarDetectorParameters_HotPixelFilterRadius_Sizer.Add( StarDetectorParameters_HotPixelFilterRadius_Label );
-   StarDetectorParameters_HotPixelFilterRadius_Sizer.Add( StarDetectorParameters_HotPixelFilterRadius_Control );
+   StarDetectorParameters_HotPixelFilterRadius_Sizer.Add( StarDetectorParameters_HotPixelFilterRadius_SpinBox );
    StarDetectorParameters_HotPixelFilterRadius_Sizer.AddStretch();
 
 //    StarDetectorParameters_ApplyHotPixelFilter_CheckBox.SetText( "Apply hot pixel filter to detection image" );
@@ -1047,16 +1036,16 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
    StarDetectorParameters_NoiseReductionFilterRadius_Label.SetMinWidth( labelWidth1 );
    StarDetectorParameters_NoiseReductionFilterRadius_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
 
-   StarDetectorParameters_NoiseReductionFilterRadius_Control.SetRange(
+   StarDetectorParameters_NoiseReductionFilterRadius_SpinBox.SetRange(
            TheSSNoiseReductionFilterRadiusParameter->MinimumValue(),
            TheSSNoiseReductionFilterRadiusParameter->MaximumValue() );
-   StarDetectorParameters_NoiseReductionFilterRadius_Control.SetToolTip( TheSSNoiseReductionFilterRadiusParameter->Tooltip() );
-   StarDetectorParameters_NoiseReductionFilterRadius_Control.OnValueUpdated( (SpinBox::value_event_handler)
+   StarDetectorParameters_NoiseReductionFilterRadius_SpinBox.SetToolTip( TheSSNoiseReductionFilterRadiusParameter->Tooltip() );
+   StarDetectorParameters_NoiseReductionFilterRadius_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)
                                     &SubframeSelectorInterface::e_SpinValueUpdated, w );
 
    StarDetectorParameters_NoiseReductionFilterRadius_Sizer.SetSpacing( 4 );
    StarDetectorParameters_NoiseReductionFilterRadius_Sizer.Add( StarDetectorParameters_NoiseReductionFilterRadius_Label );
-   StarDetectorParameters_NoiseReductionFilterRadius_Sizer.Add( StarDetectorParameters_NoiseReductionFilterRadius_Control );
+   StarDetectorParameters_NoiseReductionFilterRadius_Sizer.Add( StarDetectorParameters_NoiseReductionFilterRadius_SpinBox );
    StarDetectorParameters_NoiseReductionFilterRadius_Sizer.AddStretch();
 
    StarDetectorParameters_Sensitivity_Control.label.SetText( "Sensitivity:" );
@@ -1134,15 +1123,15 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
    StarDetectorParameters_PSFFit_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
 
    for ( size_type i = 0; i < TheSSPSFFitParameter->NumberOfElements(); ++i )
-      StarDetectorParameters_PSFFit_Control.AddItem( TheSSPSFFitParameter->ElementLabel( i ) );
+      StarDetectorParameters_PSFFit_ComboBox.AddItem( TheSSPSFFitParameter->ElementLabel( i ) );
 
-   StarDetectorParameters_PSFFit_Control.SetToolTip( TheSSPSFFitParameter->Tooltip() );
-   StarDetectorParameters_PSFFit_Control.OnItemSelected( (ComboBox::item_event_handler)
+   StarDetectorParameters_PSFFit_ComboBox.SetToolTip( TheSSPSFFitParameter->Tooltip() );
+   StarDetectorParameters_PSFFit_ComboBox.OnItemSelected( (ComboBox::item_event_handler)
                                     &SubframeSelectorInterface::e_ItemSelected, w );
 
    StarDetectorParameters_PSFFit_Sizer.SetSpacing( 4 );
    StarDetectorParameters_PSFFit_Sizer.Add( StarDetectorParameters_PSFFit_Label );
-   StarDetectorParameters_PSFFit_Sizer.Add( StarDetectorParameters_PSFFit_Control );
+   StarDetectorParameters_PSFFit_Sizer.Add( StarDetectorParameters_PSFFit_ComboBox );
    StarDetectorParameters_PSFFit_Sizer.AddStretch();
 
    StarDetectorParameters_PSFFitCircular_CheckBox.SetText( "Circular PSF" );
@@ -1183,10 +1172,10 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
    StarDetectorParameters_ROIX0_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
    StarDetectorParameters_ROIX0_Label.SetToolTip( "<p>X pixel coordinate of the upper-left corner of the ROI.</p>" );
 
-   StarDetectorParameters_ROIX0_Control.SetRange( TheSSROIX0Parameter->MinimumValue(),
+   StarDetectorParameters_ROIX0_SpinBox.SetRange( TheSSROIX0Parameter->MinimumValue(),
                                                   TheSSROIX0Parameter->MaximumValue() );
-   StarDetectorParameters_ROIX0_Control.SetToolTip( "<p>X pixel coordinate of the upper-left corner of the ROI.</p>" );
-   StarDetectorParameters_ROIX0_Control.OnValueUpdated( (SpinBox::value_event_handler)
+   StarDetectorParameters_ROIX0_SpinBox.SetToolTip( "<p>X pixel coordinate of the upper-left corner of the ROI.</p>" );
+   StarDetectorParameters_ROIX0_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)
                                     &SubframeSelectorInterface::e_SpinValueUpdated, w );
 
    StarDetectorParameters_ROIY0_Label.SetText( "Top:" );
@@ -1194,17 +1183,17 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
    StarDetectorParameters_ROIY0_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
    StarDetectorParameters_ROIY0_Label.SetToolTip( "<p>Y pixel coordinate of the upper-left corner of the ROI.</p>" );
 
-   StarDetectorParameters_ROIY0_Control.SetRange( TheSSROIY0Parameter->MinimumValue(),
+   StarDetectorParameters_ROIY0_SpinBox.SetRange( TheSSROIY0Parameter->MinimumValue(),
                                                   TheSSROIY0Parameter->MaximumValue() );
-   StarDetectorParameters_ROIY0_Control.SetToolTip( "<p>Y pixel coordinate of the upper-left corner of the ROI.</p>" );
-   StarDetectorParameters_ROIY0_Control.OnValueUpdated( (SpinBox::value_event_handler)
+   StarDetectorParameters_ROIY0_SpinBox.SetToolTip( "<p>Y pixel coordinate of the upper-left corner of the ROI.</p>" );
+   StarDetectorParameters_ROIY0_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)
                                     &SubframeSelectorInterface::e_SpinValueUpdated, w );
 
    StarDetectorParameters_ROIRow1_Sizer.SetSpacing( 4 );
    StarDetectorParameters_ROIRow1_Sizer.Add( StarDetectorParameters_ROIX0_Label );
-   StarDetectorParameters_ROIRow1_Sizer.Add( StarDetectorParameters_ROIX0_Control );
+   StarDetectorParameters_ROIRow1_Sizer.Add( StarDetectorParameters_ROIX0_SpinBox );
    StarDetectorParameters_ROIRow1_Sizer.Add( StarDetectorParameters_ROIY0_Label );
-   StarDetectorParameters_ROIRow1_Sizer.Add( StarDetectorParameters_ROIY0_Control );
+   StarDetectorParameters_ROIRow1_Sizer.Add( StarDetectorParameters_ROIY0_SpinBox );
    StarDetectorParameters_ROIRow1_Sizer.AddStretch();
 
    StarDetectorParameters_ROIWidth_Label.SetText( "Width:" );
@@ -1212,10 +1201,10 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
    StarDetectorParameters_ROIWidth_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
    StarDetectorParameters_ROIWidth_Label.SetToolTip( "<p>Width of the ROI in pixels.</p>" );
 
-   StarDetectorParameters_ROIWidth_Control.SetRange( TheSSROIX1Parameter->MinimumValue(),
+   StarDetectorParameters_ROIWidth_SpinBox.SetRange( TheSSROIX1Parameter->MinimumValue(),
                                                      TheSSROIX1Parameter->MaximumValue() );
-   StarDetectorParameters_ROIWidth_Control.SetToolTip( "<p>Width of the ROI in pixels.</p>" );
-   StarDetectorParameters_ROIWidth_Control.OnValueUpdated( (SpinBox::value_event_handler)
+   StarDetectorParameters_ROIWidth_SpinBox.SetToolTip( "<p>Width of the ROI in pixels.</p>" );
+   StarDetectorParameters_ROIWidth_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)
                                     &SubframeSelectorInterface::e_SpinValueUpdated, w );
 
    StarDetectorParameters_ROIHeight_Label.SetText( "Height:" );
@@ -1223,10 +1212,10 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
    StarDetectorParameters_ROIHeight_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
    StarDetectorParameters_ROIHeight_Label.SetToolTip( "<p>Height of the ROI in pixels.</p>" );
 
-   StarDetectorParameters_ROIHeight_Control.SetRange( TheSSROIY1Parameter->MinimumValue(),
+   StarDetectorParameters_ROIHeight_SpinBox.SetRange( TheSSROIY1Parameter->MinimumValue(),
                                                       TheSSROIY1Parameter->MaximumValue() );
-   StarDetectorParameters_ROIHeight_Control.SetToolTip( "<p>Height of the ROI in pixels.</p>" );
-   StarDetectorParameters_ROIHeight_Control.OnValueUpdated( (SpinBox::value_event_handler)
+   StarDetectorParameters_ROIHeight_SpinBox.SetToolTip( "<p>Height of the ROI in pixels.</p>" );
+   StarDetectorParameters_ROIHeight_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)
                                     &SubframeSelectorInterface::e_SpinValueUpdated, w );
 
    StarDetectorParameters_ROISelectPreview_Button.SetText( "From Preview" );
@@ -1241,9 +1230,9 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
 
    StarDetectorParameters_ROIRow2_Sizer.SetSpacing( 4 );
    StarDetectorParameters_ROIRow2_Sizer.Add( StarDetectorParameters_ROIWidth_Label );
-   StarDetectorParameters_ROIRow2_Sizer.Add( StarDetectorParameters_ROIWidth_Control );
+   StarDetectorParameters_ROIRow2_Sizer.Add( StarDetectorParameters_ROIWidth_SpinBox );
    StarDetectorParameters_ROIRow2_Sizer.Add( StarDetectorParameters_ROIHeight_Label );
-   StarDetectorParameters_ROIRow2_Sizer.Add( StarDetectorParameters_ROIHeight_Control );
+   StarDetectorParameters_ROIRow2_Sizer.Add( StarDetectorParameters_ROIHeight_SpinBox );
    StarDetectorParameters_ROIRow2_Sizer.AddSpacing( 12 );
    StarDetectorParameters_ROIRow2_Sizer.Add( StarDetectorParameters_ROISelectPreview_Button );
    StarDetectorParameters_ROIRow2_Sizer.AddStretch();
@@ -1418,6 +1407,10 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
    OverwriteExistingFiles_CheckBox.OnClick( (Button::click_event_handler)
                                     &SubframeSelectorInterface::e_ButtonClick, w );
 
+   OverwriteExistingFiles_Sizer.AddUnscaledSpacing( labelWidth1 + w.LogicalPixelsToPhysical( 4 ) );
+   OverwriteExistingFiles_Sizer.Add( OverwriteExistingFiles_CheckBox );
+   OverwriteExistingFiles_Sizer.AddStretch();
+
    OnError_Label.SetText( "On error:" );
    OnError_Label.SetFixedWidth( labelWidth1 );
    OnError_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
@@ -1429,18 +1422,17 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
    OnError_ComboBox.OnItemSelected( (ComboBox::item_event_handler)
                                     &SubframeSelectorInterface::e_ItemSelected, w );
 
-   OutputMisc_Sizer.SetSpacing( 4 );
-   OutputMisc_Sizer.AddUnscaledSpacing( labelWidth1 + w.LogicalPixelsToPhysical( 4 ) );
-   OutputMisc_Sizer.Add( OverwriteExistingFiles_CheckBox );
-   OutputMisc_Sizer.AddStretch();
-   OutputMisc_Sizer.Add( OnError_Label );
-   OutputMisc_Sizer.Add( OnError_ComboBox );
+   OnError_Sizer.SetSpacing( 4 );
+   OnError_Sizer.Add( OnError_Label );
+   OnError_Sizer.Add( OnError_ComboBox );
+   OnError_Sizer.AddStretch();
 
    OutputFiles_Sizer.SetSpacing( 4 );
    OutputFiles_Sizer.Add( OutputDirectory_Sizer );
    OutputFiles_Sizer.Add( OutputChunks_Sizer );
    OutputFiles_Sizer.Add( OutputKeyword_Sizer );
-   OutputFiles_Sizer.Add( OutputMisc_Sizer );
+   OutputFiles_Sizer.Add( OverwriteExistingFiles_Sizer );
+   OutputFiles_Sizer.Add( OnError_Sizer );
 
    OutputFiles_Control.SetSizer( OutputFiles_Sizer );
 
@@ -1473,6 +1465,7 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
 
    w.EnsureLayoutUpdated();
    w.AdjustToContents();
+   w.SetFixedWidth();
 
    w.OnHide( (Control::event_handler)&SubframeSelectorInterface::e_Hide, w );
 }
@@ -1482,4 +1475,4 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInterface.cpp - Released 2021-10-28T16:39:26Z
+// EOF SubframeSelectorInterface.cpp - Released 2021-11-11T17:56:06Z

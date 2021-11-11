@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.5.0
+// Standard SubframeSelector Process Module Version 1.6.0
 // ----------------------------------------------------------------------------
-// SubframeSelectorInstance.cpp - Released 2021-10-28T16:39:26Z
+// SubframeSelectorInstance.cpp - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -56,13 +56,16 @@
 #include <pcl/ErrorHandler.h>
 #include <pcl/FileFormat.h>
 #include <pcl/FileFormatInstance.h>
+#include <pcl/Graphics.h>
 #include <pcl/ICCProfile.h>
 #include <pcl/MessageBox.h>
 #include <pcl/MetaModule.h>
-#include <pcl/ProcessInstance.h>
 #include <pcl/PSFFit.h>
 #include <pcl/PSFSignalEstimator.h>
+#include <pcl/Position.h>
+#include <pcl/ProcessInstance.h>
 #include <pcl/Version.h>
+#include <pcl/WCSKeywords.h>
 
 #include "SubframeSelectorCache.h"
 #include "SubframeSelectorInstance.h"
@@ -208,27 +211,18 @@ void SubframeSelectorInstance::Assign( const ProcessImplementation& p )
 
 // ----------------------------------------------------------------------------
 
-struct MeasureThreadInputData
-{
-   // The static settings
-   pcl_bool                  showStarDetectionMaps = false;
-   SubframeSelectorInstance* instance = nullptr;
-};
-
-// ----------------------------------------------------------------------------
-
 typedef Array<PSFData> psf_list;
 
 class SubframeSelectorMeasureThread : public Thread
 {
 public:
 
-   SubframeSelectorMeasureThread( const MeasureThreadInputData& data,
+   SubframeSelectorMeasureThread( const SubframeSelectorInstance& instance,
                                   size_type itemIndex,
                                   bool throwsOnMeasurementError = true )
-      : m_data( data )
+      : m_instance( instance )
       , m_index( itemIndex )
-      , m_filePath( m_data.instance->p_subframes[m_index].path )
+      , m_filePath( m_instance.p_subframes[m_index].path )
       , m_throwsOnMeasurementError( throwsOnMeasurementError )
    {
    }
@@ -289,30 +283,30 @@ public:
 
 private:
 
-   const MeasureThreadInputData& m_data;
-         size_type               m_index;
-         String                  m_filePath;
-         ImageVariant            m_subframe;
-         double                  m_noise = 0;
-         double                  m_noiseRatio = 0;
-         double                  m_psfSignalWeight = 0;
-         double                  m_psfPowerWeight = 0;
-         double                  m_snrWeight = 0;
-         MeasureData             m_outputData;
-         bool                    m_success = false;
-         String                  m_errorInfo;
-         bool                    m_throwsOnMeasurementError = true;
+   const SubframeSelectorInstance& m_instance;
+         size_type                 m_index;
+         String                    m_filePath;
+         ImageVariant              m_subframe;
+         double                    m_noise = 0;
+         double                    m_noiseRatio = 0;
+         double                    m_psfSignalWeight = 0;
+         double                    m_psfPowerWeight = 0;
+         double                    m_snrWeight = 0;
+         MeasureData               m_outputData;
+         bool                      m_success = false;
+         String                    m_errorInfo;
+         bool                      m_throwsOnMeasurementError = true;
 
    void ReadInputData()
    {
       Console console;
-      console.WriteLn( "<end><cbr><br>* Loading subframe file: <raw>" + m_filePath + "</raw>" );
+      console.WriteLn( "<end><cbr>* Loading subframe file: <raw>" + m_filePath + "</raw>" );
 
       FileFormat format( File::ExtractExtension( m_filePath ), true, false );
       FileFormatInstance file( format );
 
       ImageDescriptionArray images;
-      if ( !file.Open( images, m_filePath, m_data.instance->p_inputHints ) )
+      if ( !file.Open( images, m_filePath, m_instance.p_inputHints ) )
          throw CaughtException();
 
       if ( images.IsEmpty() )
@@ -324,6 +318,10 @@ private:
       FITSKeywordArray keywords;
       if ( format.CanStoreKeywords() )
          file.ReadFITSKeywords( keywords );
+
+      PropertyArray properties;
+      if ( format.CanStoreImageProperties() )
+         properties = file.ReadImageProperties();
 
       int cfaSourceChannel = 0;
       if ( format.CanStoreImageProperties() )
@@ -339,7 +337,7 @@ private:
       {
          static Mutex mutex;
          static AtomicInt count;
-         volatile AutoLockCounter lock( mutex, count, m_data.instance->m_maxFileReadThreads );
+         volatile AutoLockCounter lock( mutex, count, m_instance.m_maxFileReadThreads );
 
          if ( !file.ReadImage( m_subframe ) || !file.Close() )
             throw CaughtException();
@@ -348,21 +346,21 @@ private:
       /*
        * Optional pedestal subtraction.
        */
-      switch ( m_data.instance->p_pedestalMode )
+      switch ( m_instance.p_pedestalMode )
       {
       case SSPedestalMode::Literal:
-         if ( m_data.instance->p_pedestal != 0 )
+         if ( m_instance.p_pedestal != 0 )
          {
-            console.NoteLn( String().Format( "* Subtracting pedestal: %d DN", m_data.instance->p_pedestal ) );
-            m_subframe.Apply( m_data.instance->p_pedestal/65535.0, ImageOp::Sub );
+            console.NoteLn( String().Format( "* Subtracting pedestal: %d DN", m_instance.p_pedestal ) );
+            m_subframe.Apply( m_instance.p_pedestal/65535.0, ImageOp::Sub );
          }
          break;
       case SSPedestalMode::Keyword:
       case SSPedestalMode::CustomKeyword:
          if ( !keywords.IsEmpty() )
          {
-            IsoString keyName( (m_data.instance->p_pedestalMode == SSPedestalMode::Keyword) ?
-                                    "PEDESTAL" : m_data.instance->p_pedestalKeyword );
+            IsoString keyName( (m_instance.p_pedestalMode == SSPedestalMode::Keyword) ?
+                                    "PEDESTAL" : m_instance.p_pedestalKeyword );
             double d = 0;
             for ( const FITSHeaderKeyword& keyword : keywords )
                if ( !keyword.name.CompareIC( keyName ) )
@@ -375,7 +373,7 @@ private:
                 * Silently be compatible with acquisition applications that
                 * write negative PEDESTAL keyword values.
                 */
-               if ( m_data.instance->p_pedestalMode == SSPedestalMode::Keyword )
+               if ( m_instance.p_pedestalMode == SSPedestalMode::Keyword )
                   if ( d < 0 )
                      d = -d;
 
@@ -488,6 +486,8 @@ private:
           */
          if ( psfSignal == 0 || psfPower == 0 )
          {
+            Console().WarningLn( "<end><cbr>** Warning: PSF signal/power estimates are not available in the image metadata and "
+                                 "are being calculated from possibly non-raw data. Image weights can be wrong or inaccurate." );
             PSFSignalEstimator E;
             PSFSignalEstimator::Estimates e = E( m_subframe );
             psfSignal = e.mean;
@@ -502,6 +502,9 @@ private:
           */
          if ( noiseScaleLow == 0 || noiseScaleHigh == 0 )
          {
+            Console().WarningLn( "<end><cbr>** Warning: Noise scaling factors are not available in the image metadata and "
+                                 "are being calculated from possibly non-raw data. Image weights can be wrong or inaccurate." );
+
             const double clipLow = 2.0/65535;
             const double clipHigh = 1.0 - 2.0/65535;
 
@@ -529,25 +532,84 @@ private:
             m_snrWeight = e*e;
       }
 
+      /*
+       * Get horizontal coordinates from image metadata
+       */
+      WCSKeywords wcs( properties, keywords );
+      if (  wcs.objctra.IsDefined()
+         && wcs.objctdec.IsDefined()
+         && wcs.dateobs.IsDefined()
+         && wcs.longobs.IsDefined()
+         && wcs.latobs.IsDefined() )
+      {
+         /*
+          * If possible, compute horizontal coordinates from the equatorial
+          * coordinates of the center of the image and the geodetic coordinates
+          * of the observation location.
+          */
+         Position P( wcs.dateobs(), "UTC" );
+         double sd, cd;
+         SinCos( Rad( wcs.objctdec() ), sd, cd );
+         double sh, ch;
+         SinCos( P.GAST() - Rad( wcs.objctra() ) + Rad( wcs.longobs() ), sh, ch );
+         double sp, cp;
+         SinCos( Rad( wcs.latobs() ), sp, cp );
+         m_outputData.altitude = Deg( ArcSin( sd*sp + cd*ch*cp ) );
+         m_outputData.azimuth = Deg( ArcTan2Pi( -cd*sh, sd*cp - cd*ch*sp ) );
+      }
+      else
+      {
+         /*
+          * Otherwise try to read the nonstandard FITS keywords OBJCTALT and
+          * OBJCTAZ (SBFITSEXT convention).
+          */
+         for ( const FITSHeaderKeyword& keyword : keywords )
+            if ( !keyword.name.CompareIC( "OBJCTALT" ) )
+            {
+               if ( keyword.IsNumeric() )
+               {
+                  double deg = 0;
+                  keyword.GetNumericValue( deg );
+                  if ( deg >= 0 && deg <= 90 )
+                     m_outputData.altitude = deg;
+               }
+               break;
+            }
+         for ( const FITSHeaderKeyword& keyword : keywords )
+            if ( !keyword.name.CompareIC( "OBJCTAZ" ) )
+            {
+               if ( keyword.IsNumeric() )
+               {
+                  double deg = 0;
+                  keyword.GetNumericValue( deg );
+                  if ( deg >= 0 && deg < 360 )
+                     m_outputData.altitude = deg;
+               }
+               break;
+            }
+      }
+
       m_outputData.path = m_filePath;
    }
 
    void Perform()
    {
       Console console;
-      console.NoteLn( "<end><cbr><br>Measuring subframe: " + m_outputData.path );
+      console.NoteLn( "<end><cbr><br>Measuring subframe: <raw>" + m_outputData.path + "</raw>" );
 
       if ( IsAborted() )
          throw ProcessAborted();
 
-      MeasureImage();
-
-      if ( IsAborted() )
-         throw ProcessAborted();
+      if ( m_instance.p_routine == SSRoutine::MeasureSubframes )
+      {
+         MeasureImage();
+         if ( IsAborted() )
+            throw ProcessAborted();
+      }
 
       // Crop if the ROI was set
-      if ( m_data.instance->p_roi.IsRect() )
-         m_subframe.CropTo( m_data.instance->p_roi );
+      if ( m_instance.p_roi.IsRect() )
+         m_subframe.CropTo( m_instance.p_roi );
 
       // Run the star detector
       StarDetector::star_list stars = DetectStars();
@@ -557,10 +619,6 @@ private:
 
       if ( IsAborted() )
          throw ProcessAborted();
-
-      // Stop if just showing the maps
-      if ( m_data.showStarDetectionMaps )
-         return;
 
       // Run the PSF Fitter
       psf_list fits = FitPSFs( stars.Begin(), stars.End() );
@@ -587,6 +645,8 @@ private:
       }
       else
       {
+         Console().WarningLn( "<end><cbr>** Warning: Noise estimates are not available in the image metadata and "
+                              "are being calculated from possibly non-raw data. Image weights can be wrong or inaccurate." );
          double noiseEstimate = 0;
          double noiseFraction = 0;
          double noiseEstimateKS = 0;
@@ -622,13 +682,15 @@ private:
          m_outputData.noiseRatio = noiseFraction;
       }
 
-      if ( m_psfSignalWeight > 0 && m_psfPowerWeight )
+      if ( m_psfSignalWeight > 0 && m_psfPowerWeight > 0 )
       {
          m_outputData.psfSignalWeight = m_psfSignalWeight;
          m_outputData.psfPowerWeight = m_psfPowerWeight;
       }
       else
       {
+         Console().WarningLn( "<end><cbr>** Warning: PSF signal/power estimates are not available in the image metadata and "
+                              "are being calculated from possibly non-raw data. Image weights can be wrong or inaccurate." );
          PSFSignalEstimator E;
          PSFSignalEstimator::Estimates e = E( m_subframe );
          m_outputData.psfSignalWeight = e.mean/m_outputData.noise;
@@ -644,6 +706,9 @@ private:
          /*
           * Noise scaling factors
           */
+         Console().WarningLn( "<end><cbr>** Warning: Noise scaling factors are not available in the image metadata and "
+                              "are being calculated from possibly non-raw data. Image weights can be wrong or inaccurate." );
+
          const double clipLow = 2.0/65535;
          const double clipHigh = 1.0 - 2.0/65535;
 
@@ -695,8 +760,8 @@ private:
       /*
        * Robust estimate of scale: trimmed mean deviation from the median.
        */
-      m_subframe.SetRangeClipping( m_outputData.median - (1 - m_data.instance->p_trimmingFactor)*(m_outputData.median - min),
-                                   m_outputData.median + (1 - m_data.instance->p_trimmingFactor)*(max - m_outputData.median) );
+      m_subframe.SetRangeClipping( m_outputData.median - (1 - m_instance.p_trimmingFactor)*(m_outputData.median - min),
+                                   m_outputData.median + (1 - m_instance.p_trimmingFactor)*(max - m_outputData.median) );
       m_outputData.medianMeanDev = m_subframe.AvgDev( m_outputData.median );
 
       m_subframe.ResetRangeClipping();
@@ -711,23 +776,28 @@ private:
    {
       // Setup StarDetector parameters and find the list of stars
       StarDetector S;
-      S.SetStructureLayers( m_data.instance->p_structureLayers );
-      S.SetNoiseLayers( m_data.instance->p_noiseLayers );
-      S.SetHotPixelFilterRadius( m_data.instance->p_hotPixelFilterRadius );
-      S.SetNoiseReductionFilterRadius( m_data.instance->p_noiseReductionFilterRadius );
-//       S.SetMinStructureSize( m_data.instance->p_minStructureSize );
-      S.SetSensitivity( m_data.instance->p_sensitivity );
-      S.SetPeakResponse( m_data.instance->p_peakResponse );
-      S.SetMaxDistortion( m_data.instance->p_maxDistortion );
-      S.SetUpperLimit( m_data.instance->p_upperLimit );
+      S.SetStructureLayers( m_instance.p_structureLayers );
+      S.SetNoiseLayers( m_instance.p_noiseLayers );
+      S.SetHotPixelFilterRadius( m_instance.p_hotPixelFilterRadius );
+      S.SetNoiseReductionFilterRadius( m_instance.p_noiseReductionFilterRadius );
+//       S.SetMinStructureSize( m_instance.p_minStructureSize );
+      S.SetSensitivity( m_instance.p_sensitivity );
+      S.SetPeakResponse( m_instance.p_peakResponse );
+      S.SetMaxDistortion( m_instance.p_maxDistortion );
+      S.SetUpperLimit( m_instance.p_upperLimit );
 
       StarDetector::star_list stars = S.DetectStars( m_subframe );
 
-      if ( m_data.showStarDetectionMaps )
+      if ( m_instance.p_routine == SSRoutine::StarDetectionPreview )
          if ( IsRootThread() )
-         {
-            // ### TODO
-         }
+            {
+               ImageWindow window( 1, 1, 1, 8/*bitsPerSample*/, false/*floatSample*/,
+                                 false/*color*/, true/*history*/, "structure_map" );
+               if ( window.IsNull() )
+                  throw Error( "Unable to create image window: structure_map" );
+               window.MainView().Image().CopyImage( S.StructureMap( m_subframe ) );
+               window.Show();
+            }
 
       return stars;
    }
@@ -749,7 +819,7 @@ private:
             rect.InflateBy( 1, 1 );
          }
 
-         PSFFit fit( m_subframe, i->pos, rect, PSFFunction(), m_data.instance->p_psfFitCircular );
+         PSFFit fit( m_subframe, i->pos, rect, PSFFunction(), m_instance.p_psfFitCircular );
          if ( fit )
             PSFs << fit.psf;
       }
@@ -758,62 +828,75 @@ private:
 
    PSFFit::psf_function PSFFunction()
    {
-      switch ( m_data.instance->p_psfFit )
+      switch ( m_instance.p_psfFit )
       {
+      case SSPSFFit::Gaussian:      return PSFunction::Gaussian;
+      case SSPSFFit::Moffat10:      return PSFunction::MoffatA;
+      case SSPSFFit::Moffat8:       return PSFunction::Moffat8;
+      case SSPSFFit::Moffat6:       return PSFunction::Moffat6;
       default: // ?!
-      case SSPSFFit::Gaussian:   return PSFunction::Gaussian;
-      case SSPSFFit::Moffat10:   return PSFunction::MoffatA;
-      case SSPSFFit::Moffat8:    return PSFunction::Moffat8;
-      case SSPSFFit::Moffat6:    return PSFunction::Moffat6;
-      case SSPSFFit::Moffat4:    return PSFunction::Moffat4;
-      case SSPSFFit::Moffat25:   return PSFunction::Moffat25;
-      case SSPSFFit::Moffat15:   return PSFunction::Moffat15;
-      case SSPSFFit::Lorentzian: return PSFunction::Lorentzian;
+      case SSPSFFit::Moffat4:       return PSFunction::Moffat4;
+      case SSPSFFit::Moffat25:      return PSFunction::Moffat25;
+      case SSPSFFit::Moffat15:      return PSFunction::Moffat15;
+      case SSPSFFit::Lorentzian:    return PSFunction::Lorentzian;
+//       case SSPSFFit::VariableShape: return PSFunction::VariableShape;
       }
    }
 
    void MeasurePSFs( const psf_list& fits )
    {
+      if ( m_instance.p_routine == SSRoutine::StarDetectionPreview )
+      {
+         if ( IsRootThread() )
+            if ( !fits.IsEmpty() )
+            {
+               Bitmap bmp( m_subframe.Width(), m_subframe.Height() );
+               bmp.Fill( 0 ); // transparent
+
+               VectorGraphics G( bmp );
+               G.EnableAntialiasing();
+               G.SetPen( 0xff000000 ); // solid black
+               for ( const PSFData& psf : fits )
+                  if ( psf )
+                  {
+                     G.DrawLine( psf.c0.x, psf.c0.y-5, psf.c0.x, psf.c0.y-1 );
+                     G.DrawLine( psf.c0.x, psf.c0.y+1, psf.c0.x, psf.c0.y+5 );
+                     G.DrawLine( psf.c0.x-5, psf.c0.y, psf.c0.x-1, psf.c0.y );
+                     G.DrawLine( psf.c0.x+1, psf.c0.y, psf.c0.x+5, psf.c0.y );
+                     G.DrawEllipse( psf.Bounds().InflatedBy( 2 ) );
+                  }
+               G.EndPaint();
+
+               ImageWindow window( 1, 1, 1, 8/*bitsPerSample*/, false/*floatSample*/,
+                                 false/*color*/, true/*history*/, "stars" );
+               if ( window.IsNull() )
+                  throw Error( "Unable to create image window: stars" );
+               ImageVariant image = window.MainView().Image();
+               image.AllocateData( m_subframe.Width(), m_subframe.Height() );
+               image.White();
+               image.Blend( bmp );
+               window.Show();
+            }
+
+         return;
+      }
+
       m_outputData.stars = fits.Length();
 
-      // Determine the best fit to weight the others against
-      double minMAD = DBL_MAX;
-      for ( const PSFData& psf : fits )
-         minMAD = Min( minMAD, psf.mad );
-
-      // Analyze each star parameter against the best residual
-      double fwhmSumSigma = 0;
-      double eccentricitySumSigma = 0;
-      double residualSumSigma = 0;
-      double sumWeight = 0;
       Array<double> fwhms, eccentricities, residuals;
       for ( const PSFData& fit : fits )
       {
-         double fwhm = Sqrt( fit.sx * fit.sy );
-         fwhms << fwhm;
-         double eccentricity = Sqrt( 1.0 - Pow( fit.sy / fit.sx, 2.0 ) );
-         eccentricities << eccentricity;
+         fwhms << PSFData::FWHM( PSFFunction(), Sqrt( fit.sx * fit.sy ) );
+         eccentricities << Sqrt( 1 - fit.sy*fit.sy/fit.sx/fit.sx );
          residuals << fit.mad;
-
-         double weight = minMAD / fit.mad;
-         sumWeight += weight;
-         fwhmSumSigma += weight * fwhm;
-         eccentricitySumSigma += weight * eccentricity;
-         residualSumSigma += weight;
       }
+      m_outputData.fwhm = Median( fwhms.Begin(), fwhms.End() );
+      m_outputData.eccentricity = Median( eccentricities.Begin(), eccentricities.End() );
+      m_outputData.starResidual = Median( residuals.Begin(), residuals.End() );
 
-      // Average each star parameter against the total weight
-      m_outputData.fwhm = PSFData::FWHM( PSFFunction(), fwhmSumSigma / sumWeight );
-      m_outputData.eccentricity = eccentricitySumSigma / sumWeight;
-      m_outputData.starResidual = residualSumSigma / sumWeight;
-
-      // Determine Mean Deviation for each star parameter
-      m_outputData.fwhmMeanDev = PSFData::FWHM( PSFFunction(), AvgDev( fwhms.Begin(), fwhms.End(),
-                                                                       Median( fwhms.Begin(), fwhms.End() ) ) );
-      m_outputData.eccentricityMeanDev = AvgDev( eccentricities.Begin(), eccentricities.End(),
-                                                 Median( eccentricities.Begin(), eccentricities.End() ) );
-      m_outputData.starResidualMeanDev = AvgDev( residuals.Begin(), residuals.End(),
-                                                 Median( residuals.Begin(), residuals.End() ) );
+      m_outputData.fwhmMeanDev = AvgDev( fwhms.Begin(), fwhms.End(), m_outputData.fwhm );
+      m_outputData.eccentricityMeanDev = AvgDev( eccentricities.Begin(), eccentricities.End(), m_outputData.eccentricity );
+      m_outputData.starResidualMeanDev = AvgDev( residuals.Begin(), residuals.End(), m_outputData.starResidual );
    }
 };
 
@@ -871,10 +954,7 @@ void SubframeSelectorInstance::TestStarDetector()
       /*
        * Load and measure the first target frame from the targets list.
        */
-      MeasureThreadInputData inputThreadData;
-      inputThreadData.showStarDetectionMaps = true;
-      inputThreadData.instance = this;
-      SubframeSelectorMeasureThread thread( inputThreadData, 0/*index*/ );
+      SubframeSelectorMeasureThread thread( *this, 0/*index*/ );
 
       // Keep the GUI responsive, last chance to abort
       Module->ProcessEvents();
@@ -960,12 +1040,6 @@ void SubframeSelectorInstance::Measure()
    console.EnableAbort();
 
    /*
-    * Setup common data for each thread.
-    */
-   MeasureThreadInputData inputThreadData;
-   inputThreadData.instance = this;
-
-   /*
     * Setup the cache.
     */
    if ( TheSubframeSelectorCache == nullptr )
@@ -1010,7 +1084,7 @@ void SubframeSelectorInstance::Measure()
          pendingItems << i;
       else
       {
-         console.NoteLn( "* Skipping disabled target: " + p_subframes[i].path );
+         console.NoteLn( "* Skipping disabled target: <raw>" + p_subframes[i].path + "</raw>" );
          ++skipped;
       }
    size_type pendingItemsTotal = pendingItems.Length();
@@ -1062,7 +1136,10 @@ void SubframeSelectorInstance::Measure()
                      /*
                       * A thread has finished execution
                       */
+                     if ( succeeded+failed == 0 )
+                        console.WriteLn();
                      (*i)->FlushConsoleOutputText();
+                     console.WriteLn();
                      String errorInfo;
                      if ( (*i)->Succeeded() )
                      {
@@ -1118,7 +1195,7 @@ void SubframeSelectorInstance::Measure()
                          * If not in cache, create a new thread for this
                          * subframe image.
                          */
-                        *i = new SubframeSelectorMeasureThread( inputThreadData,
+                        *i = new SubframeSelectorMeasureThread( *this,
                                                                 pendingItemsTotal - pendingItems.Length()/*itemIndex*/,
                                                                 !p_nonInteractive/*throwsOnMeasurementError*/ );
                         size_type threadIndex = i - runningThreads.Begin();
@@ -1126,7 +1203,9 @@ void SubframeSelectorInstance::Measure()
                         (*i)->Start( ThreadPriority::DefaultMax, threadIndex );
                         ++running;
                         if ( pendingItems.Length() == 1 )
-                           console.NoteLn( "<br>* Waiting for running tasks to terminate..." );
+                           console.NoteLn( "<br>* Waiting for running tasks to terminate...<br>" );
+                        else if ( succeeded+failed > 0 )
+                           console.WriteLn();
                      }
 
                      pendingItems.Remove( pendingItems.Begin() );
@@ -1175,7 +1254,7 @@ void SubframeSelectorInstance::Measure()
       {
          try
          {
-            SubframeSelectorMeasureThread thread( inputThreadData,
+            SubframeSelectorMeasureThread thread( *this,
                                                   itemIndex,
                                                   !p_nonInteractive/*throwsOnMeasurementError*/ );
             thread.Run();
@@ -1260,15 +1339,15 @@ void SubframeSelectorInstance::ApproveMeasurements()
             continue;
 
          // The standard parameters for the MeasureItem
-         String JSEvaluator = item.JavaScriptParameters( p_subframeScale, p_scaleUnit, p_cameraGain,
-                                                         TheSSCameraResolutionParameter->ElementData( p_cameraResolution ),
-                                                         p_dataUnit, properties );
+         String scriptSource = item.JavaScriptParameters( p_subframeScale, p_scaleUnit, p_cameraGain,
+                                                          TheSSCameraResolutionParameter->ElementData( p_cameraResolution ),
+                                                          p_dataUnit, properties );
 
          // The final expression that evaluates to a return value
-         JSEvaluator += p_approvalExpression;
+         scriptSource += p_approvalExpression;
 
          // Try to get the final result and update the MeasureItem
-         Variant result = Module->EvaluateScript( JSEvaluator.DecodedHTMLSpecialChars(), "JavaScript" );
+         Variant result = Module->EvaluateScript( scriptSource.DecodedHTMLSpecialChars(), "JavaScript" );
          if ( !result.IsValid() )
             throw Error( "Approval error: Invalid script execution" );
          String resultText = result.ToString();
@@ -1302,15 +1381,15 @@ void SubframeSelectorInstance::WeightMeasurements()
       for ( MeasureItem& item : o_measures )
       {
          // The standard parameters for the MeasureItem
-         String JSEvaluator = item.JavaScriptParameters( p_subframeScale, p_scaleUnit, p_cameraGain,
-                                                         TheSSCameraResolutionParameter->ElementData( p_cameraResolution ),
-                                                         p_dataUnit, properties );
+         String scriptSource = item.JavaScriptParameters( p_subframeScale, p_scaleUnit, p_cameraGain,
+                                                          TheSSCameraResolutionParameter->ElementData( p_cameraResolution ),
+                                                          p_dataUnit, properties );
 
          // The final expression that evaluates to a return value
-         JSEvaluator += p_weightingExpression;
+         scriptSource += p_weightingExpression;
 
          // Try to get the final result and update the MeasureItem
-         Variant result = Module->EvaluateScript( JSEvaluator.DecodedHTMLSpecialChars(), "JavaScript" );
+         Variant result = Module->EvaluateScript( scriptSource.DecodedHTMLSpecialChars(), "JavaScript" );
          if ( !result.IsValid() )
             throw Error( "Weighting error: Invalid script execution" );
          String resultText = result.ToString();
@@ -1458,7 +1537,15 @@ private:
        */
       UniqueFileChecks checks = File::EnsureNewUniqueFile( outputFilePath, m_instance.p_overwriteExistingFiles );
       if ( checks.overwrite )
+      {
+         /*
+          * Prevent losing input files with copy/overwrite or move operations.
+          */
+         if ( File::SameFile( m_item.path, outputFilePath ) )
+            throw Error( "Blocked attempt to overwrite an input file: " + m_item.path );
+
          console.WarningLn( "** Warning: Overwriting existing file." );
+      }
       else if ( checks.exists )
          console.NoteLn( "* File already exists, writing to: <raw>" + outputFilePath + "</raw>" );
 
@@ -1492,10 +1579,10 @@ private:
          throw Error( m_item.path + ": Empty subframe image." );
 
       /*
-       * Subframe files can store multiple images - we don't support them.
+       * Multiple-image files not supported for calibration.
        */
       if ( images.Length() > 1 )
-         throw Error ( m_item.path + ": Has multiple images - unsupported." );
+         console.NoteLn( String().Format( "* Ignoring %u additional image(s) in subframe file.", images.Length()-1 ) );
 
       /*
        * Create a shared image with the same pixel sample format as the
@@ -1505,13 +1592,14 @@ private:
       image.CreateSharedImage( images[0].options.ieeefpSampleFormat,
                                images[0].options.complexSample,
                                images[0].options.bitsPerSample );
-      /*
-       * Read the image.
-       */
       {
          static Mutex mutex;
          static AtomicInt count;
          volatile AutoLockCounter lock( mutex, count, m_instance.m_maxFileReadThreads );
+
+         /*
+          * Read the input image.
+          */
          if ( !inputFile.ReadImage( image ) )
             throw CaughtException();
       }
@@ -1574,9 +1662,7 @@ private:
          outputFile.WriteFITSKeywords( newKeywords );
       }
       else
-      {
          console.WarningLn( "** Warning: The output format cannot store FITS header keywords - subframe weight metadata not embedded." );
-      }
 
       /*
        * Preserve an existing ICC profile if possible.
@@ -1599,13 +1685,14 @@ private:
 
       Module->ProcessEvents();
 
-      /*
-       * Write the output image and close the output stream.
-       */
       {
          static Mutex mutex;
          static AtomicInt count;
          volatile AutoLockCounter lock( mutex, count, m_instance.m_maxFileWriteThreads );
+
+         /*
+          * Write the output image and close the output stream.
+          */
          image.ResetSelections();
          if ( !outputFile.WriteImage( image ) || !outputFile.Close() )
             throw CaughtException();
@@ -1877,14 +1964,8 @@ bool SubframeSelectorInstance::CanExecuteGlobal( String &whyNot ) const
 {
    switch ( p_routine )
    {
-   case SSRoutine::StarDetectionPreview:
-      if ( p_subframes.IsEmpty() )
-      {
-         whyNot = "No subframes have been specified.";
-         return false;
-      }
-      break;
    case SSRoutine::MeasureSubframes:
+   case SSRoutine::StarDetectionPreview:
       if ( p_subframes.IsEmpty() )
       {
          whyNot = "No subframes have been specified.";
@@ -1910,7 +1991,7 @@ bool SubframeSelectorInstance::CanExecuteGlobal( String &whyNot ) const
          }
       break;
    default:
-      whyNot = String().Format( "Internal error: Unknown routine 0x%04X", unsigned( p_routine ) );
+      whyNot = String().Format( "Internal error: Unknown routine with code '%d'", p_routine );
       return false;
    }
 
@@ -1932,7 +2013,7 @@ bool SubframeSelectorInstance::ExecuteGlobal()
       for ( const SubframeItem& subframe : p_subframes )
          if ( subframe.enabled )
             if ( !File::Exists( subframe.path ) )
-               throw Error( "No such file exists on the local filesystem: " + subframe.path );
+               throw Error( "No such file exists on the local filesystem:" + subframe.path );
    }
 
    /*
@@ -1950,7 +2031,7 @@ bool SubframeSelectorInstance::ExecuteGlobal()
       Output();
       break;
    default:
-      throw Error( String().Format( "Internal error: Unknown routine 0x%04X", unsigned( p_routine ) ) );
+      throw Error( String().Format( "Internal error: Unknown routine with code '%d'", p_routine ) );
    }
 
    return true;
@@ -2107,6 +2188,10 @@ void* SubframeSelectorInstance::LockParameter( const MetaParameter* p, size_type
       return &o_measures[tableRow].eccentricityMeanDev;
    if ( p == TheSSMeasurementStarResidualMeanDevParameter )
       return &o_measures[tableRow].starResidualMeanDev;
+   if ( p == TheSSMeasurementAzimuthParameter )
+      return &o_measures[tableRow].azimuth;
+   if ( p == TheSSMeasurementAltitudeParameter )
+      return &o_measures[tableRow].altitude;
 
    return nullptr;
 }
@@ -2252,4 +2337,4 @@ size_type SubframeSelectorInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInstance.cpp - Released 2021-10-28T16:39:26Z
+// EOF SubframeSelectorInstance.cpp - Released 2021-11-11T17:56:06Z

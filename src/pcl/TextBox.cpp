@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// pcl/TextBox.cpp - Released 2021-10-28T16:39:05Z
+// pcl/TextBox.cpp - Released 2021-11-11T17:57:35Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -250,4 +250,4 @@ void TextBox::OnSelectionUpdated( selection_event_handler f, Control& receiver )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/TextBox.cpp - Released 2021-10-28T16:39:05Z
+// EOF pcl/TextBox.cpp - Released 2021-11-11T17:57:35Z

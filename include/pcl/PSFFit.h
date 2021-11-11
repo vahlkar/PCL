@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// pcl/PSFFit.h - Released 2021-10-28T16:38:58Z
+// pcl/PSFFit.h - Released 2021-11-11T17:57:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -362,8 +362,9 @@ public:
     *                         consistent results, these coordinates must be the
     *                         result of a robust object detection process.
     *
-    * \param rect             The rectangular region of the image where the
-    *                         function fitting process will take place. PSF
+    * \param rect             The PSF sampling region in image coordinates.
+    *                         This is the rectangular region of the image where
+    *                         the function fitting process will take place. PSF
     *                         parameters will be evaluated from source pixel
     *                         values acquired exclusively from this region.
     *
@@ -388,6 +389,21 @@ public:
     *       Values outside this range may lead to numerically unstable PSF
     *       fitting processes.
     *
+    * \param tolerance        Tolerance of the Levenberg-Marquardt algorithm.
+    *                         The default value is 1.0e-08. The valid range is
+    *                         from 1.0e-12 to 0.001.
+    *
+    * \param bkgMaxVar        Maximum relative difference allowed between the
+    *                         fitted local background (\e B PSF parameter) and
+    *       the initial local background estimated as the median pixel sample
+    *       value of the sampling region. The default value is 0.1, meaning
+    *       that a maximum relative difference of a 10% will be allowed. This
+    *       parameter is useful to enforce stability of the PSF fitting
+    *       process: assuming that the median pixel sample value is a robust
+    *       estimate of the local background, by constraining the range of
+    *       variation of the \e B parameter the PSF fitting process can be more
+    *       accurate and robust.
+    *
     * The implementation of the Levenberg-Marquardt algorithm used internally
     * by this function is extremely sensitive to the specified \a center and
     * \a rect parameters. These starting parameters should always be
@@ -401,7 +417,8 @@ public:
    PSFFit( const ImageVariant& image,
            const DPoint& center, const DRect& rect,
            psf_function function = PSFunction::Gaussian, bool circular = false,
-           double betaMin = 1.0, double betaMax = 4.0 );
+           float betaMin = 1.0F, float betaMax = 4.0F,
+           double tolerance = 1.0e-08, float bkgMaxVar = 0.1F );
 
    /*!
     * Copy constructor.
@@ -436,7 +453,16 @@ private:
 
    Matrix S; // matrix of sampled pixel data
    Vector P; // vector of function parameters
-   mutable double m_beta;
+
+   // The initial local background measured on the sampling region and the
+   // maximum allowed relative difference, for stabilization of local
+   // background PSF parameters.
+   double m_bkg;
+   float  m_bkgMaxVar;
+
+   // Keep track of successive beta values in L-M iterations for stabilization
+   // of shape parameters. This guarantees convergence for Moffat functions.
+   mutable float m_beta;
 
    Vector GoodnessOfFit( psf_function, bool circular, bool test = false ) const;
 
@@ -450,4 +476,4 @@ private:
 #endif   // __PCL_PSFFit_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFFit.h - Released 2021-10-28T16:38:58Z
+// EOF pcl/PSFFit.h - Released 2021-11-11T17:57:24Z

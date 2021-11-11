@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// BackgroundNeutralizationParameters.h - Released 2021-10-28T16:39:26Z
+// BackgroundNeutralizationParameters.h - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -236,4 +236,4 @@ PCL_END_LOCAL
 #endif   // __BackgroundNeutralizationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF BackgroundNeutralizationParameters.h - Released 2021-10-28T16:39:26Z
+// EOF BackgroundNeutralizationParameters.h - Released 2021-11-11T17:56:06Z

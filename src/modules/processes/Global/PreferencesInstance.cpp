@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.3.1
+// Standard Global Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// PreferencesInstance.cpp - Released 2021-10-28T16:39:26Z
+// PreferencesInstance.cpp - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -232,6 +232,7 @@ bool PreferencesInstance::ExecuteGlobal()
       PixInsightSettings::SetGlobalFlag    ( "ImageWindow/ShowCaptionIdentifiers",              imageWindow.showCaptionIdentifiers );
       PixInsightSettings::SetGlobalFlag    ( "ImageWindow/ShowCaptionFullPaths",                imageWindow.showCaptionFullPaths );
       PixInsightSettings::SetGlobalFlag    ( "ImageWindow/ShowActiveSTFIndicators",             imageWindow.showActiveSTFIndicators );
+      PixInsightSettings::SetGlobalFlag    ( "ImageWindow/LoadInitialProcessingFromCoreProperties", imageWindow.loadInitialProcessingFromCoreProperties );
       PixInsightSettings::SetGlobalFlag    ( "ImageWindow/CreatePreviewsFromCoreProperties",    imageWindow.createPreviewsFromCoreProperties );
       PixInsightSettings::SetGlobalFlag    ( "ImageWindow/LoadAstrometricSolutions",            imageWindow.loadAstrometricSolutions );
 
@@ -527,6 +528,8 @@ void* PreferencesInstance::LockParameter( const MetaParameter* p, size_type tabl
       return &imageWindow.showCaptionFullPaths;
    if ( p == METAPARAMETER_INSTANCE_ID( ImageWindow, showActiveSTFIndicators ) )
       return &imageWindow.showActiveSTFIndicators;
+   if ( p == METAPARAMETER_INSTANCE_ID( ImageWindow, loadInitialProcessingFromCoreProperties ) )
+      return &imageWindow.loadInitialProcessingFromCoreProperties;
    if ( p == METAPARAMETER_INSTANCE_ID( ImageWindow, createPreviewsFromCoreProperties ) )
       return &imageWindow.createPreviewsFromCoreProperties;
    if ( p == METAPARAMETER_INSTANCE_ID( ImageWindow, loadAstrometricSolutions ) )
@@ -779,6 +782,7 @@ void PreferencesInstance::LoadDefaultSettings()
    imageWindow.showCaptionIdentifiers           =         METAPARAMETER_INSTANCE_ID( ImageWindow, showCaptionIdentifiers           )->DefaultValue();
    imageWindow.showCaptionFullPaths             =         METAPARAMETER_INSTANCE_ID( ImageWindow, showCaptionFullPaths             )->DefaultValue();
    imageWindow.showActiveSTFIndicators          =         METAPARAMETER_INSTANCE_ID( ImageWindow, showActiveSTFIndicators          )->DefaultValue();
+   imageWindow.loadInitialProcessingFromCoreProperties =  METAPARAMETER_INSTANCE_ID( ImageWindow, loadInitialProcessingFromCoreProperties )->DefaultValue();
    imageWindow.createPreviewsFromCoreProperties =         METAPARAMETER_INSTANCE_ID( ImageWindow, createPreviewsFromCoreProperties )->DefaultValue();
    imageWindow.loadAstrometricSolutions         =         METAPARAMETER_INSTANCE_ID( ImageWindow, loadAstrometricSolutions         )->DefaultValue();
 
@@ -943,6 +947,7 @@ void PreferencesInstance::LoadCurrentSettings()
    imageWindow.showCaptionIdentifiers           = PixInsightSettings::GlobalFlag    ( "ImageWindow/ShowCaptionIdentifiers" );
    imageWindow.showCaptionFullPaths             = PixInsightSettings::GlobalFlag    ( "ImageWindow/ShowCaptionFullPaths" );
    imageWindow.showActiveSTFIndicators          = PixInsightSettings::GlobalFlag    ( "ImageWindow/ShowActiveSTFIndicators" );
+   imageWindow.loadInitialProcessingFromCoreProperties = PixInsightSettings::GlobalFlag( "ImageWindow/LoadInitialProcessingFromCoreProperties" );
    imageWindow.createPreviewsFromCoreProperties = PixInsightSettings::GlobalFlag    ( "ImageWindow/CreatePreviewsFromCoreProperties" );
    imageWindow.loadAstrometricSolutions         = PixInsightSettings::GlobalFlag    ( "ImageWindow/LoadAstrometricSolutions" );
    imageWindow.transparencyBrush                = PixInsightSettings::GlobalInteger ( "TransparencyBrush/Brush" );
@@ -1103,4 +1108,4 @@ String* PreferencesInstance::StringParameterFromMetaParameter( const MetaParamet
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInstance.cpp - Released 2021-10-28T16:39:26Z
+// EOF PreferencesInstance.cpp - Released 2021-11-11T17:56:06Z

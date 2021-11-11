@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.3.5
+// Standard ImageIntegration Process Module Version 1.3.6
 // ----------------------------------------------------------------------------
-// IntegrationFile.cpp - Released 2021-10-28T16:39:26Z
+// IntegrationFile.cpp - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -380,6 +380,7 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
    m_noiseEstimates        = DVector();
    m_noiseScaleEstimates   = scale_estimates();
    m_adaptiveNormalization = AdaptiveNormalizationData();
+   m_keywords              = FITSKeywordArray();
    m_metadata              = IntegrationMetadata();
 
    if ( instance.p_useCache )
@@ -395,12 +396,11 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
       if ( format.CanStoreImageProperties() )
          properties = m_file->ReadImageProperties();
 
-      FITSKeywordArray keywords;
       if ( format.CanStoreKeywords() )
-         if ( !m_file->ReadFITSKeywords( keywords ) )
+         if ( !m_file->ReadFITSKeywords( m_keywords ) )
             throw CaughtException();
 
-      m_metadata = IntegrationMetadata( properties, keywords );
+      m_metadata = IntegrationMetadata( properties, m_keywords );
    }
 
    if ( s_incremental )
@@ -802,32 +802,17 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
        * Image weighting only makes sense for average combination. It is also
        * required for generation of drizzle integration data files.
        */
-      if ( instance.p_generateDrizzleData || instance.p_combination == IICombination::Average )
+      if ( instance.p_weightMode != IIWeightMode::DontCare &&
+           (instance.p_generateDrizzleData || instance.p_combination == IICombination::Average) )
       {
          switch ( instance.p_weightMode )
          {
          default:
-         case IIWeightMode::DontCare:
-            m_weights = 1.0;
-            break;
-         case IIWeightMode::ExposureTimeWeight:
-            m_weights[0] = images[0].options.exposure;
-            if ( m_weights[0] <= 0 )
-               if ( format.CanStoreKeywords() )
-               {
-                  m_weights[0] = KeywordValue( "EXPTIME" );
-                  if ( m_weights[0] <= 0 )
-                     m_weights[0] = KeywordValue( "EXPOSURE" );
-               }
-            if ( m_weights[0] <= 0 )
-               throw Error( m_file->FilePath() + ": No way to know the exposure time." );
-            m_weights = m_weights[0];
-            break;
          case IIWeightMode::PSFSignalWeight:
             for ( int c = 0; c < s_numberOfChannels; ++c )
             {
                /*
-                * Weighting by signal-to-noise ratio with PSF signal estimates
+                * Weighting by signal-to-noise ratio with mean PSF signal estimates
                 */
                double w_psf = PSFSignalEstimate( c )/NoiseEstimate( c );
                if ( !IsFinite( w_psf ) || 1 + w_psf == 1 )
@@ -839,7 +824,7 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
             for ( int c = 0; c < s_numberOfChannels; ++c )
             {
                /*
-                * Weighting by signal-to-noise ratio with PSF signal power estimates
+                * Weighting by signal-to-noise ratio with mean PSF signal power estimates
                 */
                double w_psf2 = PSFPowerEstimate( c )/NoiseEstimate( c )/NoiseEstimate( c );
                if ( !IsFinite( w_psf2 ) || 1 + w_psf2 == 1 )
@@ -858,6 +843,19 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
                   throw Error( m_file->FilePath() + String().Format( " (channel #%d): Zero or insignificant scaled noise estimate.", c ) );
                m_weights[c] = w_snr*w_snr;
             }
+            break;
+         case IIWeightMode::ExposureTimeWeight:
+            m_weights[0] = images[0].options.exposure;
+            if ( m_weights[0] <= 0 )
+               if ( format.CanStoreKeywords() )
+               {
+                  m_weights[0] = KeywordValue( "EXPTIME" );
+                  if ( m_weights[0] <= 0 )
+                     m_weights[0] = KeywordValue( "EXPOSURE" );
+               }
+            if ( m_weights[0] <= 0 )
+               throw Error( m_file->FilePath() + ": No way to know the exposure time." );
+            m_weights = m_weights[0];
             break;
          case IIWeightMode::KeywordWeight:
             if ( !format.CanStoreKeywords() )
@@ -884,8 +882,8 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
          for ( int c = 0; c < s_numberOfChannels; ++c )
             if ( !IsFinite( m_weights[c] ) || 1 + m_weights[c] == 1 )
                throw Error( m_file->FilePath() + ": Zero or insignificant signal detected (empty image?)." );
-
          console.Write(           "Weight                 :" );
+
          for ( int c = 0; c < s_numberOfChannels; ++c )
             console.Write( String().Format( " %.5e", ImageWeight( c ) ) );
          console.WriteLn();
@@ -894,7 +892,7 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
       {
          /*
           * Set all weights equal to one for median, minimum and maximum
-          * combinations.
+          * combinations, or when 'don't care' weighting has been selected.
           */
          m_weights = 1.0;
       }
@@ -1063,11 +1061,12 @@ IntegrationMetadata IntegrationFile::SummaryMetadata()
 
 double IntegrationFile::KeywordValue( const IsoString& keyName )
 {
-   FITSKeywordArray keywords;
-   if ( !m_file->ReadFITSKeywords( keywords ) )
-      throw CaughtException();
+   if ( m_keywords.IsEmpty() )
+      if ( m_file->Format().CanStoreKeywords() )
+         if ( !m_file->ReadFITSKeywords( m_keywords ) )
+            throw CaughtException();
 
-   for ( const FITSHeaderKeyword& keyword : keywords )
+   for ( const FITSHeaderKeyword& keyword : m_keywords )
       if ( !keyword.name.CompareIC( keyName ) )
       {
          if ( keyword.IsNumeric() )
@@ -1264,4 +1263,4 @@ void IntegrationFile::OpenFileThread::Run()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationFile.cpp - Released 2021-10-28T16:39:26Z
+// EOF IntegrationFile.cpp - Released 2021-11-11T17:56:06Z

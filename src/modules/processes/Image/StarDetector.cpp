@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// StarDetector.cpp - Released 2021-10-28T16:39:26Z
+// StarDetector.cpp - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -266,4 +266,4 @@ StarDetector::StarDetector( const Image& image, int channel,
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF StarDetector.cpp - Released 2021-10-28T16:39:26Z
+// EOF StarDetector.cpp - Released 2021-11-11T17:56:06Z

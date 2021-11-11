@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Debayer Process Module Version 1.10.1
 // ----------------------------------------------------------------------------
-// DebayerInstance.cpp - Released 2021-10-28T16:39:26Z
+// DebayerInstance.cpp - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -134,6 +134,7 @@ DebayerInstance::DebayerInstance( const MetaProcess* m )
    , p_minStructureSize( TheDebayerMinStructureSizeParameter->DefaultValue() )
    , p_psfType( DebayerPSFType::Default )
    , p_psfRejectionLimit( TheDebayerPSFRejectionLimitParameter->DefaultValue() )
+   , p_maxStars( TheDebayerMaxStarsParameter->DefaultValue() )
    , p_inputHints( TheDebayerInputHintsParameter->DefaultValue() )
    , p_outputHints( TheDebayerOutputHintsParameter->DefaultValue() )
    , p_outputRGBImages( TheDebayerOutputRGBImagesParameter->DefaultValue() )
@@ -185,6 +186,7 @@ void DebayerInstance::Assign( const ProcessImplementation& p )
       p_minStructureSize           = x->p_minStructureSize;
       p_psfType                    = x->p_psfType;
       p_psfRejectionLimit          = x->p_psfRejectionLimit;
+      p_maxStars                   = x->p_maxStars;
       p_inputHints                 = x->p_inputHints;
       p_outputHints                = x->p_outputHints;
       p_outputRGBImages            = x->p_outputRGBImages;
@@ -332,6 +334,8 @@ public:
          E.Detector().SetMinStructureSize( m_instance.p_minStructureSize );
          E.SetPSFType( DebayerPSFType::ToPSFFunction( m_instance.p_psfType ) );
          E.SetRejectionLimit( m_instance.p_psfRejectionLimit );
+         E.SetMaxStars( m_instance.p_maxStars );
+         E.EnableParallelProcessing( m_numberOfSubthreads > 1, m_numberOfSubthreads );
          PSFSignalEstimator::Estimates e = E( ImageVariant( &m_image ) );
          psfSignalEstimate = e.mean;
          psfPowerEstimate = e.power;
@@ -2526,7 +2530,7 @@ private:
    bool ReadInputData()
    {
       Console console;
-      console.WriteLn( "<end><cbr><br>* Loading target file: <raw>" + m_targetFilePath + "</raw>" );
+      console.WriteLn( "<end><cbr>* Loading target file: <raw>" + m_targetFilePath + "</raw>" );
 
       FileFormat format( File::ExtractExtension( m_targetFilePath ), true/*read*/, false/*write*/ );
       FileFormatInstance file( format );
@@ -2707,7 +2711,10 @@ private:
                            << FITSHeaderKeyword( "HISTORY", IsoString(), IsoString().Format( "Demosaic.psfPowerEstimates: %.4e %.4e %.4e",
                                                             m_psfPowerEstimates[0], m_psfPowerEstimates[1], m_psfPowerEstimates[2] ) )
                            << FITSHeaderKeyword( "HISTORY", IsoString(), IsoString().Format( "Demosaic.psfCounts: %d %d %d",
-                                                            m_psfCounts[0], m_psfCounts[1], m_psfCounts[2] ) );
+                                                            m_psfCounts[0], m_psfCounts[1], m_psfCounts[2] ) )
+                           << FITSHeaderKeyword( "HISTORY", IsoString(), "Demosaic.psfType: "
+                                                            + DebayerPSFType::FunctionName( m_instance.p_psfType ) );
+
                for ( int i = 0; i < 3; ++i )
                   keywordsRGB << FITSHeaderKeyword( IsoString().Format( "PSFSGL%02d", i ),
                                                     IsoString().Format( "%.4e", m_psfSignalEstimates[i] ),
@@ -2718,6 +2725,10 @@ private:
                               << FITSHeaderKeyword( IsoString().Format( "PSFSGN%02d", i ),
                                                     IsoString().Format( "%d", m_psfCounts[i] ),
                                                     IsoString().Format( "Number of evaluated PSF fits, channel #%d", i ) );
+
+               keywordsRGB << FITSHeaderKeyword( "PSFSGTYP",
+                                                 DebayerPSFType::FunctionName( m_instance.p_psfType ).SingleQuoted(),
+                                                 "PSF type used for signal estimation" );
             }
 
             if ( m_instance.p_evaluateNoise )
@@ -2809,6 +2820,8 @@ private:
                                                                                                 m_psfPowerEstimates[i] ) )
                               << FITSHeaderKeyword( "HISTORY", IsoString(), IsoString().Format( "Demosaic.psfCounts: %d",
                                                                                                 m_psfCounts[i] ) )
+                              << FITSHeaderKeyword( "HISTORY", IsoString(), "Demosaic.psfType: "
+                                                               + DebayerPSFType::FunctionName( m_instance.p_psfType ) )
                               << FITSHeaderKeyword( IsoString().Format( "PSFSGL%02d", i ),
                                                     IsoString().Format( "%.4e", m_psfSignalEstimates[i] ),
                                                     IsoString().Format( "PSF mean signal estimate, channel #%d", i ) )
@@ -2817,7 +2830,10 @@ private:
                                                     IsoString().Format( "PSF mean signal power estimate, channel #%d", i ) )
                               << FITSHeaderKeyword( IsoString().Format( "PSFSGN%02d", i ),
                                                     IsoString().Format( "%d", m_psfCounts[i] ),
-                                                    IsoString().Format( "Number of evaluated PSF fits, channel #%d", i ) );
+                                                    IsoString().Format( "Number of evaluated PSF fits, channel #%d", i ) )
+                              << FITSHeaderKeyword( "PSFSGTYP",
+                                                    DebayerPSFType::FunctionName( m_instance.p_psfType ).SingleQuoted(),
+                                                    "PSF type used for signal estimation" );
 
                if ( m_instance.p_evaluateNoise )
                   keywordsChn << FITSHeaderKeyword( "HISTORY", IsoString(), "Noise evaluation with " + Module->ReadableVersion() )
@@ -2996,7 +3012,9 @@ bool DebayerInstance::ExecuteOn( View& view )
                   << FITSHeaderKeyword( "HISTORY", IsoString(), IsoString().Format( "Demosaic.psfPowerEstimates: %.4e %.4e %.4e",
                                                       o_psfPowerEstimates[0], o_psfPowerEstimates[1], o_psfPowerEstimates[2] ) )
                   << FITSHeaderKeyword( "HISTORY", IsoString(), IsoString().Format( "Demosaic.psfCounts: %d %d %d",
-                                                      o_psfCounts[0], o_psfCounts[1], o_psfCounts[2] ) );
+                                                      o_psfCounts[0], o_psfCounts[1], o_psfCounts[2] ) )
+                  << FITSHeaderKeyword( "HISTORY", IsoString(), "Demosaic.psfType: "
+                                                      + DebayerPSFType::FunctionName( p_psfType ) );
 
       if ( p_evaluateNoise )
          keywords << FITSHeaderKeyword( "HISTORY", IsoString(), "Noise evaluation with " + Module->ReadableVersion() )
@@ -3040,7 +3058,10 @@ bool DebayerInstance::ExecuteOn( View& view )
                                               IsoString().Format( "PSF mean signal power estimate, channel #%d", i ) )
                         << FITSHeaderKeyword( IsoString().Format( "PSFSGN%02d", i ),
                                               IsoString().Format( "%d", o_psfCounts[i] ),
-                                              IsoString().Format( "Number of evaluated PSF fits, channel #%d", i ) );
+                                              IsoString().Format( "Number of evaluated PSF fits, channel #%d", i ) )
+                        << FITSHeaderKeyword( "PSFSGTYP",
+                                              DebayerPSFType::FunctionName( p_psfType ).SingleQuoted(),
+                                              "PSF type used for signal estimation" );
 
       if ( p_evaluateNoise )
          for ( int i = 0; i < 3; ++i )
@@ -3102,7 +3123,10 @@ bool DebayerInstance::ExecuteOn( View& view )
                                               IsoString().Format( "PSF mean signal power estimate, channel #%d", i ) )
                         << FITSHeaderKeyword( IsoString().Format( "PSFSGN%02d", i ),
                                               IsoString().Format( "%d", o_psfCounts[i] ),
-                                              IsoString().Format( "Number of evaluated PSF fits, channel #%d", i ) );
+                                              IsoString().Format( "Number of evaluated PSF fits, channel #%d", i ) )
+                        << FITSHeaderKeyword( "PSFSGTYP",
+                                              DebayerPSFType::FunctionName( p_psfType ).SingleQuoted(),
+                                              "PSF type used for signal estimation" );
          if ( p_evaluateNoise )
             keywordsChn << FITSHeaderKeyword( IsoString().Format( "NOISE%02d", i ),
                                               IsoString().Format( "%.4e", o_noiseEstimates[i] ),
@@ -3330,7 +3354,10 @@ bool DebayerInstance::ExecuteGlobal()
                      /*
                       * A thread has finished execution
                       */
+                     if ( succeeded+failed == 0 )
+                        console.WriteLn();
                      (*i)->FlushConsoleOutputText();
+                     console.WriteLn();
                      String errorInfo;
                      if ( (*i)->Succeeded() )
                         (*i)->GetOutputData( o_outputFileData[(*i)->Index()] );
@@ -3359,11 +3386,13 @@ bool DebayerInstance::ExecuteGlobal()
                      *i = new DebayerFileThread( *this, *pendingItems );
                      pendingItems.Remove( pendingItems.Begin() );
                      size_type threadIndex = i - runningThreads.Begin();
-                     console.NoteLn( String().Format( "<end><cbr>[%03u] ", threadIndex ) + (*i)->TargetFilePath() );
+                     console.NoteLn( String().Format( "<end><cbr>[%03u] <raw>", threadIndex ) + (*i)->TargetFilePath() + "</raw>" );
                      (*i)->Start( ThreadPriority::DefaultMax, threadIndex );
                      ++running;
                      if ( pendingItems.IsEmpty() )
-                        console.NoteLn( "<br>* Waiting for running tasks to terminate..." );
+                        console.NoteLn( "<br>* Waiting for running tasks to terminate...<br>" );
+                     else if ( succeeded+failed > 0 )
+                        console.WriteLn();
                   }
                }
 
@@ -3955,6 +3984,8 @@ void* DebayerInstance::LockParameter( const MetaParameter* p, size_type tableRow
       return &p_psfType;
    if ( p == TheDebayerPSFRejectionLimitParameter )
       return &p_psfRejectionLimit;
+   if ( p == TheDebayerMaxStarsParameter )
+      return &p_maxStars;
 
    if ( p == TheDebayerInputHintsParameter )
       return p_inputHints.Begin();
@@ -4342,4 +4373,4 @@ size_type DebayerInstance::ParameterLength( const MetaParameter* p, size_type ta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DebayerInstance.cpp - Released 2021-10-28T16:39:26Z
+// EOF DebayerInstance.cpp - Released 2021-11-11T17:56:06Z

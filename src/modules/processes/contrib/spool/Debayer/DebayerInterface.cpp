@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Debayer Process Module Version 1.10.1
 // ----------------------------------------------------------------------------
-// DebayerInterface.cpp - Released 2021-10-28T16:39:26Z
+// DebayerInterface.cpp - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -303,6 +303,7 @@ void DebayerInterface::UpdateSignalAndNoiseEvaluationControls()
    GUI->NoiseReductionFilterRadius_SpinBox.SetValue( m_instance.p_noiseReductionFilterRadius );
    GUI->PSFType_ComboBox.SetCurrentItem( m_instance.p_psfType );
    GUI->PSFRejectionLimit_NumericControl.SetValue( m_instance.p_psfRejectionLimit );
+   GUI->MaxStars_SpinBox.SetValue( m_instance.p_maxStars );
 
    GUI->NoiseEvaluation_SectionBar.SetChecked( m_instance.p_evaluateNoise );
 
@@ -501,6 +502,8 @@ void DebayerInterface::e_SpinValueUpdated( SpinBox& sender, int value )
       m_instance.p_hotPixelFilterRadius = value;
    else if ( sender == GUI->NoiseReductionFilterRadius_SpinBox )
       m_instance.p_noiseReductionFilterRadius = value;
+   else if ( sender == GUI->MaxStars_SpinBox )
+      m_instance.p_maxStars = value;
 }
 
 // ----------------------------------------------------------------------------
@@ -880,14 +883,13 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
    //
 
    SignalEvaluation_SectionBar.SetTitle( "Signal Evaluation" );
-   SignalEvaluation_SectionBar.SetToolTip( "<p>Compute estimates of the mean signal present in source calibrated frames. "
+   SignalEvaluation_SectionBar.SetToolTip( "<p>Compute estimates of the mean signal present in target calibration frames. "
       "Our current implementation uses PSF photometry to generate accurate and robust estimates of mean signal and mean "
-      "signal power. These estimates, along with estimates of the standard deviation of the noise, can be used for image "
+      "squared signal. These estimates, along with estimates of the standard deviation of the noise, can be used for image "
       "weighting with the SubframeSelector and ImageIntegration processes.</p>"
       "<p>The signal evaluation result will be stored as PSFSGLxx, PSFSGPxx and PSFSGNxx FITS header keywords, "
-      "respectively for mean signal estimates, mean signal power estimates, and number of valid PSF fits used, where 'xx' "
-      "is a zero-padded decimal representation of the zero-based channel index (typically in the 0 to 2 range). Signal "
-      "estimates will always be computed from uninterpolated, raw calibrated data.</p>"
+      "respectively for mean signal estimates, mean squared signal estimates, and number of valid PSF fits used, where 'xx' "
+      "is a zero-padded decimal representation of the zero-based channel index (typically in the 0 to 2 range).</p>"
       "<p><b>This option should always be enabled for demosaicing of deep-sky raw frames.</b></p>" );
    SignalEvaluation_SectionBar.SetSection( SignalEvaluation_Control );
    SignalEvaluation_SectionBar.EnableTitleCheckBox();
@@ -1006,10 +1008,10 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
       "<p>In all cases elliptical functions are fitted to detected star structures, and PSF sampling regions are "
       "computed adaptively using a median stabilization algorithm.</p>"
       "<p>Variable shape functions can lead to optimal PSF fits in terms of minimization of absolute deviation "
-      "between fitted point spread functions and source image pixel samples for each detected star, which improves "
+      "between fitted point spread functions and image pixel samples for each detected source, which improves "
       "accuracy of PSF photometry. However, fitting variable shape functions is computationally expensive.</p>"
-      "<p>The default option is a Moffat function with shape parameter beta=4, which usually works well for signal "
-      "estimation on most deep-sky images.</p>";
+      "<p>The default option is a Moffat function with a fixed shape parameter <i>beta</i>=4, which usually works well "
+      "for signal estimation on most deep-sky images.</p>";
 
    PSFType_Label.SetText( "PSF type:" );
    PSFType_Label.SetFixedWidth( labelWidth1 );
@@ -1042,6 +1044,29 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
       "which can improve accuracy, but at the risk of including outliers that can degrade the result.</p>" );
    PSFRejectionLimit_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&DebayerInterface::e_ValueUpdated, w );
 
+   const char* maxStarsToolTip =
+   "<p>The maximum number of stars that can be measured to compute mean signal estimates.</p>"
+   "<p>PSF photometry will be performed for no more than the specified number of stars. The subset of measured stars "
+   "will always start at the beginning of the set of detected stars, sorted by brightness in descending order.</p>"
+   "<p>The default value imposes a generous limit of 24K stars. Limiting the number of photometric samples can improve "
+   "performance for demosaicing of wide-field frames, where the number of detected stars can be very large. However, "
+   "reducing the set of measured sources too much will damage the accuracy of signal estimation.</p>";
+
+   MaxStars_Label.SetText( "Maximum stars:" );
+   MaxStars_Label.SetFixedWidth( labelWidth1 );
+   MaxStars_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   MaxStars_Label.SetToolTip( maxStarsToolTip );
+
+   MaxStars_SpinBox.SetRange( int( TheDebayerMaxStarsParameter->MinimumValue() ), int( TheDebayerMaxStarsParameter->MaximumValue() ) );
+   MaxStars_SpinBox.SetToolTip( maxStarsToolTip );
+   MaxStars_SpinBox.SetFixedWidth( editWidth2 );
+   MaxStars_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&DebayerInterface::e_SpinValueUpdated, w );
+
+   MaxStars_Sizer.SetSpacing( 4 );
+   MaxStars_Sizer.Add( MaxStars_Label );
+   MaxStars_Sizer.Add( MaxStars_SpinBox );
+   MaxStars_Sizer.AddStretch();
+
    SignalEvaluation_Sizer.SetSpacing( 4 );
    SignalEvaluation_Sizer.Add( StructureLayers_Sizer );
    SignalEvaluation_Sizer.Add( NoiseLayers_Sizer );
@@ -1050,6 +1075,7 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
    SignalEvaluation_Sizer.Add( NoiseReductionFilterRadius_Sizer );
    SignalEvaluation_Sizer.Add( PSFType_Sizer );
    SignalEvaluation_Sizer.Add( PSFRejectionLimit_NumericControl );
+   SignalEvaluation_Sizer.Add( MaxStars_Sizer );
 
    SignalEvaluation_Control.SetSizer( SignalEvaluation_Sizer );
 
@@ -1136,4 +1162,4 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DebayerInterface.cpp - Released 2021-10-28T16:39:26Z
+// EOF DebayerInterface.cpp - Released 2021-11-11T17:56:06Z

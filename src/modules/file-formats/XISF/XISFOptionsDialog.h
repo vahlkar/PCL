@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard XISF File Format Module Version 1.0.12
+// Standard XISF File Format Module Version 1.0.13
 // ----------------------------------------------------------------------------
-// XISFOptionsDialog.h - Released 2021-10-28T16:39:17Z
+// XISFOptionsDialog.h - Released 2021-11-11T17:55:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard XISF PixInsight module.
 //
@@ -159,12 +159,14 @@ private:
          CheckBox             FITSKeywords_CheckBox;
       HorizontalSizer      ICCProfile_Sizer;
          CheckBox             ICCProfile_CheckBox;
+      HorizontalSizer      Thumbnail_Sizer;
+         CheckBox             Thumbnail_CheckBox;
       HorizontalSizer      DisplayFunction_Sizer;
          CheckBox             DisplayFunction_CheckBox;
       HorizontalSizer      RGBWorkingSpace_Sizer;
          CheckBox             RGBWorkingSpace_CheckBox;
-      HorizontalSizer      Thumbnail_Sizer;
-         CheckBox             Thumbnail_CheckBox;
+      HorizontalSizer      ProcessingHistory_Sizer;
+         CheckBox             ProcessingHistory_CheckBox;
       HorizontalSizer      PreviewRects_Sizer;
          CheckBox             PreviewRects_CheckBox;
 
@@ -179,4 +181,4 @@ private:
 #endif   // XISFOptionsDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF XISFOptionsDialog.h - Released 2021-10-28T16:39:17Z
+// EOF XISFOptionsDialog.h - Released 2021-11-11T17:55:57Z

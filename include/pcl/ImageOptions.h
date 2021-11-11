@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// pcl/ImageOptions.h - Released 2021-10-28T16:38:58Z
+// pcl/ImageOptions.h - Released 2021-11-11T17:57:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -92,32 +92,33 @@ namespace CFAType
 
 /*!
  * \class ImageOptions
- * \brief Format-independent fundamental image stream options.
+ * \brief Format-independent, fundamental image stream options.
  */
 class PCL_CLASS ImageOptions
 {
 public:
 
-   uint8    bitsPerSample         :  8; //!< Number of bits per sample: 8, 16, 32 or 64. The default value is 16.
-   bool     ieeefpSampleFormat    :  1; //!< Sample type: IEEE 754 floating point (true) or integers (false). The default value is false.
-   bool     complexSample         :  1; //!< Sample type: Complex (true) or real (false) samples. The default value is false.
-   bool     signedIntegers        :  1; //!< Integer sample values are signed (true) or unsigned (false).
-   bool     metricResolution      :  1; //!< Resolution units: centimeter (true) or inch (false). The default value is false.
-   bool     readNormalized        :  1; //!< Normalize floating-point sample values after reading. The default value is true.
-   bool     embedICCProfile       :  1; //!< Embed an ICC profile (when available). The default value is true.
-   bool     embedThumbnail        :  1; //!< Embed thumbnail images (when available). The default value is false.
-   bool     embedProperties       :  1; //!< Embed data properties (when available). The default value is true.
-   bool     embedRGBWS            :  1; //!< Embed RGB working space parameters.
-   bool     embedDisplayFunction  :  1; //!< Embed display function (aka STF) parameters.
-   bool     embedColorFilterArray :  1; //!< Embed color filter array (CFA) description.
-   bool     embedPreviewRects     :  1; //!< Embed preview rectangles and identifiers.
-   int      __rsv__               : 12; // Reserved for future extensions; must be zero.
+   uint8    bitsPerSample          :  8; //!< Number of bits per sample: 8, 16, 32 or 64. The default value is 16.
+   bool     ieeefpSampleFormat     :  1; //!< Sample type: IEEE 754 floating point (true) or integers (false). The default value is false.
+   bool     complexSample          :  1; //!< Sample type: Complex (true) or real (false) samples. The default value is false.
+   bool     signedIntegers         :  1; //!< Integer sample values are signed (true) or unsigned (false). The default value is false.
+   bool     metricResolution       :  1; //!< Resolution units: centimeter (true) or inch (false). The default value is false.
+   bool     readNormalized         :  1; //!< Normalize floating-point sample values after reading. The default value is true.
+   bool     embedICCProfile        :  1; //!< Embed an ICC profile (when available). The default value is true.
+   bool     embedThumbnail         :  1; //!< Embed thumbnail images (when available). The default value is false.
+   bool     embedProperties        :  1; //!< Embed data properties (when available). The default value is true.
+   bool     embedRGBWS             :  1; //!< Embed RGB working space parameters. The default value is true.
+   bool     embedDisplayFunction   :  1; //!< Embed display function (aka STF) parameters. The default value is true.
+   bool     embedColorFilterArray  :  1; //!< Embed color filter array (CFA) description. The default value is true.
+   bool     embedProcessingHistory :  1; //!< Embed existing processing history as an XML document. The default value is false.
+   bool     embedPreviewRects      :  1; //!< Embed existing preview rectangles and their identifiers. The default value is false.
+   int      __rsv__                : 11; // Reserved for future extensions; must be zero.
 
    double   lowerRange;    //!< Lower limit to normalize read floating-point samples. The default value is 0.
    double   upperRange;    //!< Upper limit to normalize read floating-point samples. The default value is 1.
 
-   double   xResolution;   //!< Horizontal resolution in pixels per resolution unit. The default value is 72.
-   double   yResolution;   //!< Vertical resolution in pixels per resolution unit. The default value is 72.
+   double   xResolution;   //!< Horizontal resolution in pixels per resolution unit (0=unknown). The default value is 72.
+   double   yResolution;   //!< Vertical resolution in pixels per resolution unit (0=unknown). The default value is 72.
 
    int      isoSpeed;      //!< ISO speed as specified in ISO 12232 (0=unknown)
    float    exposure;      //!< Exposure in seconds (0=unknown)
@@ -148,29 +149,30 @@ public:
     */
    void Reset()
    {
-      bitsPerSample         = 16;
-      ieeefpSampleFormat    = false;
-      complexSample         = false;
-      signedIntegers        = false;
-      metricResolution      = false;
-      readNormalized        = true;
-      embedICCProfile       = true;
-      embedThumbnail        = false;
-      embedProperties       = true;
-      embedRGBWS            = true;
-      embedDisplayFunction  = true;
-      embedColorFilterArray = true;
-      embedPreviewRects     = false;
-      __rsv__               = 0;
-      lowerRange            = 0;
-      upperRange            = 1;
-      xResolution           = 72;
-      yResolution           = 72;
-      isoSpeed              = 0;
-      exposure              = 0;
-      aperture              = 0;
-      focalLength           = 0;
-      cfaType               = CFAType::None;
+      bitsPerSample          = 16;
+      ieeefpSampleFormat     = false;
+      complexSample          = false;
+      signedIntegers         = false;
+      metricResolution       = false;
+      readNormalized         = true;
+      embedICCProfile        = true;
+      embedThumbnail         = false;
+      embedProperties        = true;
+      embedRGBWS             = true;
+      embedDisplayFunction   = true;
+      embedColorFilterArray  = true;
+      embedProcessingHistory = false;
+      embedPreviewRects      = false;
+      __rsv__                = 0;
+      lowerRange             = 0;
+      upperRange             = 1;
+      xResolution            = 72;
+      yResolution            = 72;
+      isoSpeed               = 0;
+      exposure               = 0;
+      aperture               = 0;
+      focalLength            = 0;
+      cfaType                = CFAType::None;
    }
 };
 
@@ -181,4 +183,4 @@ public:
 #endif   // __PCL_ImageOptions_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ImageOptions.h - Released 2021-10-28T16:38:58Z
+// EOF pcl/ImageOptions.h - Released 2021-11-11T17:57:24Z

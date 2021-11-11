@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.3.1
+// Standard Global Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// PreferencesInstance.h - Released 2021-10-28T16:39:26Z
+// PreferencesInstance.h - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -180,6 +180,7 @@ struct ImageWindowPreferences
    int32       fastScreenRenditionThreshold;
    pcl_bool    highDPIRenditions;
    pcl_bool    default24BitScreenLUT;
+   pcl_bool    loadInitialProcessingFromCoreProperties;
    pcl_bool    createPreviewsFromCoreProperties;
    pcl_bool    loadAstrometricSolutions;
    StringList  swapDirectories;
@@ -300,4 +301,4 @@ private:
 #endif   // __PreferencesInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInstance.h - Released 2021-10-28T16:39:26Z
+// EOF PreferencesInstance.h - Released 2021-11-11T17:56:06Z

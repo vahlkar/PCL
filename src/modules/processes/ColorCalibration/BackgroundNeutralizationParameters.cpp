@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// BackgroundNeutralizationParameters.cpp - Released 2021-10-28T16:39:26Z
+// BackgroundNeutralizationParameters.cpp - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -345,4 +345,4 @@ double BNTargetBackground::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BackgroundNeutralizationParameters.cpp - Released 2021-10-28T16:39:26Z
+// EOF BackgroundNeutralizationParameters.cpp - Released 2021-11-11T17:56:06Z

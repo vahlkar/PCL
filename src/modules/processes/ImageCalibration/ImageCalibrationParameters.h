@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.7.1
+// Standard ImageCalibration Process Module Version 1.7.2
 // ----------------------------------------------------------------------------
-// ImageCalibrationParameters.h - Released 2021-10-28T16:39:26Z
+// ImageCalibrationParameters.h - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -851,6 +851,8 @@ public:
       case VariableShape: return PSFunction::VariableShape;
       }
    }
+
+   static IsoString FunctionName( pcl_enum );
 };
 
 extern ICPSFType* TheICPSFTypeParameter;
@@ -871,6 +873,22 @@ public:
 };
 
 extern ICPSFRejectionLimit* TheICPSFRejectionLimitParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICMaxStars : public MetaInt32
+{
+public:
+
+   ICMaxStars( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern ICMaxStars* TheICMaxStarsParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -1538,4 +1556,4 @@ PCL_END_LOCAL
 #endif   // __ImageCalibrationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationParameters.h - Released 2021-10-28T16:39:26Z
+// EOF ImageCalibrationParameters.h - Released 2021-11-11T17:56:06Z

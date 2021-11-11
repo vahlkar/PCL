@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.5.0
+// Standard SubframeSelector Process Module Version 1.6.0
 // ----------------------------------------------------------------------------
-// GraphWebView.cpp - Released 2021-10-28T16:39:26Z
+// GraphWebView.cpp - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -122,7 +122,7 @@ void GraphWebView::__JSResult( WebView& sender, const Variant& result )
    resultText.DeleteLeft( 2 );
 
    int index = resultText.ToInt();
-   if ( index <= 0 )
+   if ( index < 0 )
    {
       if ( !m_keepChecking )
          m_eventCheckTimer.Stop();
@@ -130,14 +130,16 @@ void GraphWebView::__JSResult( WebView& sender, const Variant& result )
    else
    {
       if ( !m_eventHandlers.IsNull() )
-      {
          if ( approve )
+         {
             if ( m_eventHandlers->onApprove != nullptr )
                (m_eventHandlers->onApproveReceiver->*m_eventHandlers->onApprove)( *this, index );
-         if ( unlock )
+         }
+         else if ( unlock )
+         {
             if ( m_eventHandlers->onUnlock != nullptr )
                (m_eventHandlers->onUnlockReceiver->*m_eventHandlers->onUnlock)( *this, index );
-      }
+         }
    }
 }
 
@@ -352,11 +354,11 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector* da
    approvalQueue = [];
    lockQueue = [];
    function getApprovalIndex() {
-      if (approvalQueue.length <= 0) return 'A:' + -1;
+      if (approvalQueue.length <= 0) return 'A:-1';
       return 'A:' + approvalQueue.shift();
    }
    function getLockIndex() {
-      if (lockQueue.length <= 0) return 'U:' + -1;
+      if (lockQueue.length <= 0) return 'U:-1';
       return 'U:' + lockQueue.shift();
    }
 
@@ -538,6 +540,7 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector* da
             },
             y2: {
                independentTicks: true,
+               digitsAfterDecimal: 2,
                drawGrid: false,
             },
          },
@@ -660,12 +663,12 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector* da
     * N.B. On Windows with relative frequency, and rarely on Linux and macOS,
     * setting contents directly by calling SetHTML() fails, causing the graphs
     * to be empty and leading to an 'invalid script execution' error after this
-    * function. This is probably a bug in QTWebEngine, which we have seen in
+    * function. This is probably a bug in QtWebEngine, which we have seen in
     * other places with several Qt versions. As happens with most Qt bugs, we
     * cannot rely on the hope of someone fixing this problem within a
     * manageable amount of time (years, maybe), so here is a workaround: save
-    * the document to a local file and force loading it. This works reliably on
-    * all platforms, fortunately.
+    * the document to a local file and force loading it. So far this works
+    * reliably on all platforms, fortunately.
     */
    // SetHTML( html.ToUTF8() );
    Cleanup();
@@ -798,4 +801,4 @@ void GraphWebView::Cleanup()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GraphWebView.cpp - Released 2021-10-28T16:39:26Z
+// EOF GraphWebView.cpp - Released 2021-11-11T17:56:06Z

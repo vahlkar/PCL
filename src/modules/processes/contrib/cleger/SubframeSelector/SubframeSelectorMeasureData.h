@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.5.0
+// Standard SubframeSelector Process Module Version 1.6.0
 // ----------------------------------------------------------------------------
-// SubframeSelectorMeasureData.h - Released 2021-10-28T16:39:26Z
+// SubframeSelectorMeasureData.h - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -94,6 +94,8 @@ struct MeasureProperties
    MeasureProperty stars;
    MeasureProperty starResidual;
    MeasureProperty starResidualMeanDev;
+   MeasureProperty azimuth;
+   MeasureProperty altitude;
 };
 
 // ----------------------------------------------------------------------------
@@ -117,6 +119,8 @@ struct MeasureData
    uint16 stars;
    double starResidual;
    double starResidualMeanDev;
+   double azimuth;
+   double altitude;
 
    MeasureData( const String& p = String() )
       : path( p )
@@ -154,6 +158,8 @@ struct MeasureItem
    double   fwhmMeanDev;
    double   eccentricityMeanDev;
    double   starResidualMeanDev;
+   double   azimuth;
+   double   altitude;
 
    MeasureItem( uint16 a_index, const String& a_path = String() )
       : index( a_index )
@@ -175,6 +181,8 @@ struct MeasureItem
       , fwhmMeanDev( TheSSMeasurementFWHMMeanDevParameter->DefaultValue() )
       , eccentricityMeanDev( TheSSMeasurementEccentricityMeanDevParameter->DefaultValue() )
       , starResidualMeanDev( TheSSMeasurementStarResidualMeanDevParameter->DefaultValue() )
+      , azimuth( TheSSMeasurementAzimuthParameter->DefaultValue() )
+      , altitude( TheSSMeasurementAltitudeParameter->DefaultValue() )
    {
    }
 
@@ -197,6 +205,8 @@ struct MeasureItem
       fwhmMeanDev = measureData.fwhmMeanDev;
       eccentricityMeanDev = measureData.eccentricityMeanDev;
       starResidualMeanDev = measureData.starResidualMeanDev;
+      azimuth = measureData.azimuth;
+      altitude = measureData.altitude;
    }
 
    double FWHM( double subframeScale, int scaleUnit ) const
@@ -251,23 +261,25 @@ struct MeasureItem
    {
       switch ( sortBy )
       {
-      case SSSortingProperty::Index:                return index;
-      case SSSortingProperty::Weight:               return weight;
-      case SSSortingProperty::FWHM:                 return fwhm;
-      case SSSortingProperty::Eccentricity:         return eccentricity;
-      case SSSortingProperty::PSFSignalWeight:      return psfSignalWeight;
-      case SSSortingProperty::PSFPowerWeight: return psfPowerWeight;
-      case SSSortingProperty::SNRWeight:            return snrWeight;
-      case SSSortingProperty::Median:               return median;
-      case SSSortingProperty::MedianMeanDev:        return medianMeanDev;
-      case SSSortingProperty::Noise:                return noise;
-      case SSSortingProperty::NoiseRatio:           return noiseRatio;
-      case SSSortingProperty::Stars:                return stars;
-      case SSSortingProperty::StarResidual:         return starResidual;
-      case SSSortingProperty::FWHMMeanDev:          return fwhmMeanDev;
-      case SSSortingProperty::EccentricityMeanDev:  return eccentricityMeanDev;
-      case SSSortingProperty::StarResidualMeanDev:  return starResidualMeanDev;
-      default:                                      return 0; // ?
+      case SSSortingProperty::Index:               return index;
+      case SSSortingProperty::Weight:              return weight;
+      case SSSortingProperty::FWHM:                return fwhm;
+      case SSSortingProperty::Eccentricity:        return eccentricity;
+      case SSSortingProperty::PSFSignalWeight:     return psfSignalWeight;
+      case SSSortingProperty::PSFPowerWeight:      return psfPowerWeight;
+      case SSSortingProperty::SNRWeight:           return snrWeight;
+      case SSSortingProperty::Median:              return median;
+      case SSSortingProperty::MedianMeanDev:       return medianMeanDev;
+      case SSSortingProperty::Noise:               return noise;
+      case SSSortingProperty::NoiseRatio:          return noiseRatio;
+      case SSSortingProperty::Stars:               return stars;
+      case SSSortingProperty::StarResidual:        return starResidual;
+      case SSSortingProperty::FWHMMeanDev:         return fwhmMeanDev;
+      case SSSortingProperty::EccentricityMeanDev: return eccentricityMeanDev;
+      case SSSortingProperty::StarResidualMeanDev: return starResidualMeanDev;
+      case SSSortingProperty::Azimuth:             return azimuth;
+      case SSSortingProperty::Altitude:            return altitude;
+      default:                                     return 0; // ?
       }
    }
 };
@@ -335,4 +347,4 @@ private:
 #endif   // __SubframeSelectorMeasureData_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorMeasureData.h - Released 2021-10-28T16:39:26Z
+// EOF SubframeSelectorMeasureData.h - Released 2021-11-11T17:56:06Z

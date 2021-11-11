@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// pcl/ImageWindow.cpp - Released 2021-10-28T16:39:05Z
+// pcl/ImageWindow.cpp - Released 2021-11-11T17:57:35Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -169,25 +169,26 @@ ImageOptions ImageWindow::FileInfo() const
    (*API->ImageWindow->GetImageWindowFileInfo)( handle, &a );
 
    ImageOptions o;
-   o.bitsPerSample         = a.bitsPerSample;
-   o.ieeefpSampleFormat    = a.ieeefpSampleFormat;
-   o.complexSample         = a.complexSample;
-   o.signedIntegers        = a.signedIntegers;
-   o.metricResolution      = a.metricResolution;
-   o.embedICCProfile       = a.embedICCProfile;
-   o.embedThumbnail        = a.embedThumbnail;
-   o.embedProperties       = a.embedProperties;
-   o.embedRGBWS            = a.embedRGBWS;
-   o.embedDisplayFunction  = a.embedDisplayFunction;
-   o.embedColorFilterArray = a.embedColorFilterArray;
-   o.embedPreviewRects     = a.embedPreviewRects;
-   o.xResolution           = a.xResolution;
-   o.yResolution           = a.yResolution;
-   o.isoSpeed              = a.isoSpeed;
-   o.exposure              = a.exposure;
-   o.aperture              = a.aperture;
-   o.focalLength           = a.focalLength;
-   o.cfaType               = a.cfaType;
+   o.bitsPerSample          = a.bitsPerSample;
+   o.ieeefpSampleFormat     = a.ieeefpSampleFormat;
+   o.complexSample          = a.complexSample;
+   o.signedIntegers         = a.signedIntegers;
+   o.metricResolution       = a.metricResolution;
+   o.embedICCProfile        = a.embedICCProfile;
+   o.embedThumbnail         = a.embedThumbnail;
+   o.embedProperties        = a.embedProperties;
+   o.embedRGBWS             = a.embedRGBWS;
+   o.embedDisplayFunction   = a.embedDisplayFunction;
+   o.embedColorFilterArray  = a.embedColorFilterArray;
+   o.embedProcessingHistory = a.embedProcessingHistory;
+   o.embedPreviewRects      = a.embedPreviewRects;
+   o.xResolution            = a.xResolution;
+   o.yResolution            = a.yResolution;
+   o.isoSpeed               = a.isoSpeed;
+   o.exposure               = a.exposure;
+   o.aperture               = a.aperture;
+   o.focalLength            = a.focalLength;
+   o.cfaType                = a.cfaType;
    return o;
 }
 
@@ -1214,4 +1215,4 @@ Array<ImageWindow> ImageWindow::AllWindows( bool includeIconicWindows )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ImageWindow.cpp - Released 2021-10-28T16:39:05Z
+// EOF pcl/ImageWindow.cpp - Released 2021-11-11T17:57:35Z

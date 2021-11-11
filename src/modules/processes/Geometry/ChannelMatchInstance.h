@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.4
 // ----------------------------------------------------------------------------
-// ChannelMatchInstance.h - Released 2021-10-28T16:39:26Z
+// ChannelMatchInstance.h - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -94,4 +94,4 @@ private:
 #endif   // __ChannelMatchInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ChannelMatchInstance.h - Released 2021-10-28T16:39:26Z
+// EOF ChannelMatchInstance.h - Released 2021-11-11T17:56:06Z

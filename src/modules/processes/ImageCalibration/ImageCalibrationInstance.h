@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.7.1
+// Standard ImageCalibration Process Module Version 1.7.2
 // ----------------------------------------------------------------------------
-// ImageCalibrationInstance.h - Released 2021-10-28T16:39:26Z
+// ImageCalibrationInstance.h - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -225,6 +225,7 @@ private:
    int32           p_minStructureSize;
    pcl_enum        p_psfType;
    float           p_psfRejectionLimit;
+   int32           p_maxStars;
 
    // Output files
    String          p_outputDirectory;
@@ -281,12 +282,6 @@ private:
    // CFA pattern identification.
    IsoString CFAPatternFromTarget( FileFormatInstance& ) const;
 
-   // Signal and noise estimates.
-   void EvaluateSignalAndNoise( Vector& psfSignalEstimates, Vector& psfPowerEstimates, IVector& psfCounts,
-                                Vector& noiseEstimates, Vector& noiseFractions,
-                                Vector& noiseScaleLow, Vector& noiseScaleHigh, StringList& noiseAlgorithms,
-                                const Image& target, const IsoString& cfaPattern = IsoString() ) const;
-
    void ApplyErrorPolicy();
 
    friend class CalibrationThread;
@@ -300,4 +295,4 @@ private:
 #endif   // __ImageCalibrationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInstance.h - Released 2021-10-28T16:39:26Z
+// EOF ImageCalibrationInstance.h - Released 2021-11-11T17:56:06Z

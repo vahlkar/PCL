@@ -2,11 +2,14 @@
 # PixInsight Makefile Generator Script v1.124
 # Copyright (C) 2009-2021 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2021-10-28T18:11:31.916Z
+# Generated on .... 2021-11-11T20:09:59.893Z
 # Project id ...... lcms
 # Project type .... StaticLibrary
 # Platform ........ Linux/g++
 # Configuration ... Release/x64
+# --------------------------------------------------------------------
+# Additional preprocessor definitions:
+# CMS_NO_REGISTER_KEYWORD=1
 ######################################################################
 
 OBJ_DIR="$(PCLSRCDIR)/3rdparty/lcms/linux/g++/x64/Release"
@@ -129,6 +132,6 @@ post-build:
 	cp $(OBJ_DIR)/liblcms-pxi.a $(PCLLIBDIR64)
 
 ./x64/Release/%.o: ../../%.c
-	gcc -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -D__PCL_CUDA -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"$(CUDA_HOME)/include" -mtune=znver2 -mfpmath=sse -msse4.2 -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fnon-call-exceptions -std=c99 -Wall -Wno-parentheses -Wno-error=implicit-function-declaration -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	gcc -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -D"CMS_NO_REGISTER_KEYWORD=1" -D__PCL_CUDA -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"$(CUDA_HOME)/include" -mtune=znver2 -mfpmath=sse -msse4.2 -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fnon-call-exceptions -std=c99 -Wall -Wno-parentheses -Wno-error=implicit-function-declaration -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 

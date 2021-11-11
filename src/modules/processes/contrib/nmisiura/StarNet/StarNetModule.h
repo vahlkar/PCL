@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard StarNet Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// StarNetModule.h - Released 2021-10-28T16:39:26Z
+// StarNetModule.h - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarNet PixInsight module.
 //
@@ -63,4 +63,4 @@ public:
 #endif   // __StarNetModule_h
 
 // ----------------------------------------------------------------------------
-// EOF StarNetModule.h - Released 2021-10-28T16:39:26Z
+// EOF StarNetModule.h - Released 2021-11-11T17:56:06Z

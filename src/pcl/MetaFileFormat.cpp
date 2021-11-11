@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// pcl/MetaFileFormat.cpp - Released 2021-10-28T16:39:05Z
+// pcl/MetaFileFormat.cpp - Released 2021-11-11T17:57:35Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -72,28 +72,29 @@ void APIImageInfoToPCL( ImageInfo& info, const api_image_info& i )
 
 void APIImageOptionsToPCL( ImageOptions& opt, const api_image_options& o )
 {
-   opt.bitsPerSample         = o.bitsPerSample;
-   opt.ieeefpSampleFormat    = o.ieeefpSampleFormat;
-   opt.complexSample         = o.complexSample;
-   opt.signedIntegers        = o.signedIntegers;
-   opt.metricResolution      = o.metricResolution;
-   opt.readNormalized        = o.readNormalized;
-   opt.embedICCProfile       = o.embedICCProfile;
-   opt.embedThumbnail        = o.embedThumbnail;
-   opt.embedProperties       = o.embedProperties;
-   opt.embedRGBWS            = o.embedRGBWS;
-   opt.embedDisplayFunction  = o.embedDisplayFunction;
-   opt.embedColorFilterArray = o.embedColorFilterArray;
-   opt.embedPreviewRects     = o.embedPreviewRects;
-   opt.lowerRange            = o.lowerRange;
-   opt.upperRange            = o.upperRange;
-   opt.xResolution           = o.xResolution;
-   opt.yResolution           = o.yResolution;
-   opt.isoSpeed              = o.isoSpeed;
-   opt.exposure              = o.exposure;
-   opt.aperture              = o.aperture;
-   opt.focalLength           = o.focalLength;
-   opt.cfaType               = o.cfaType;
+   opt.bitsPerSample          = o.bitsPerSample;
+   opt.ieeefpSampleFormat     = o.ieeefpSampleFormat;
+   opt.complexSample          = o.complexSample;
+   opt.signedIntegers         = o.signedIntegers;
+   opt.metricResolution       = o.metricResolution;
+   opt.readNormalized         = o.readNormalized;
+   opt.embedICCProfile        = o.embedICCProfile;
+   opt.embedThumbnail         = o.embedThumbnail;
+   opt.embedProperties        = o.embedProperties;
+   opt.embedRGBWS             = o.embedRGBWS;
+   opt.embedDisplayFunction   = o.embedDisplayFunction;
+   opt.embedColorFilterArray  = o.embedColorFilterArray;
+   opt.embedProcessingHistory = o.embedProcessingHistory;
+   opt.embedPreviewRects      = o.embedPreviewRects;
+   opt.lowerRange             = o.lowerRange;
+   opt.upperRange             = o.upperRange;
+   opt.xResolution            = o.xResolution;
+   opt.yResolution            = o.yResolution;
+   opt.isoSpeed               = o.isoSpeed;
+   opt.exposure               = o.exposure;
+   opt.aperture               = o.aperture;
+   opt.focalLength            = o.focalLength;
+   opt.cfaType                = o.cfaType;
 }
 
 void PCLImageInfoToAPI( api_image_info& i, const ImageInfo& info )
@@ -108,29 +109,30 @@ void PCLImageInfoToAPI( api_image_info& i, const ImageInfo& info )
 
 void PCLImageOptionsToAPI( api_image_options& o, const ImageOptions& opt )
 {
-   o.bitsPerSample         = opt.bitsPerSample;
-   o.ieeefpSampleFormat    = opt.ieeefpSampleFormat;
-   o.complexSample         = opt.complexSample;
-   o.signedIntegers        = opt.signedIntegers;
-   o.metricResolution      = opt.metricResolution;
-   o.readNormalized        = opt.readNormalized;
-   o.embedICCProfile       = opt.embedICCProfile;
-   o.embedThumbnail        = opt.embedThumbnail;
-   o.embedProperties       = opt.embedProperties;
-   o.embedRGBWS            = opt.embedRGBWS;
-   o.embedDisplayFunction  = opt.embedDisplayFunction;
-   o.embedColorFilterArray = opt.embedColorFilterArray;
-   o.embedPreviewRects     = opt.embedPreviewRects;
-   o.lowerRange            = opt.lowerRange;
-   o.upperRange            = opt.upperRange;
-   o.xResolution           = opt.xResolution;
-   o.yResolution           = opt.yResolution;
-   o.isoSpeed              = opt.isoSpeed;
-   o.exposure              = opt.exposure;
-   o.aperture              = opt.aperture;
-   o.focalLength           = opt.focalLength;
-   o.cfaType               = opt.cfaType;
-   o.__r__                 = 0;
+   o.bitsPerSample          = opt.bitsPerSample;
+   o.ieeefpSampleFormat     = opt.ieeefpSampleFormat;
+   o.complexSample          = opt.complexSample;
+   o.signedIntegers         = opt.signedIntegers;
+   o.metricResolution       = opt.metricResolution;
+   o.readNormalized         = opt.readNormalized;
+   o.embedICCProfile        = opt.embedICCProfile;
+   o.embedThumbnail         = opt.embedThumbnail;
+   o.embedProperties        = opt.embedProperties;
+   o.embedRGBWS             = opt.embedRGBWS;
+   o.embedDisplayFunction   = opt.embedDisplayFunction;
+   o.embedColorFilterArray  = opt.embedColorFilterArray;
+   o.embedProcessingHistory = opt.embedProcessingHistory;
+   o.embedPreviewRects      = opt.embedPreviewRects;
+   o.lowerRange             = opt.lowerRange;
+   o.upperRange             = opt.upperRange;
+   o.xResolution            = opt.xResolution;
+   o.yResolution            = opt.yResolution;
+   o.isoSpeed               = opt.isoSpeed;
+   o.exposure               = opt.exposure;
+   o.aperture               = opt.aperture;
+   o.focalLength            = opt.focalLength;
+   o.cfaType                = opt.cfaType;
+   o.__r__                  = 0;
 }
 
 // ----------------------------------------------------------------------------
@@ -1882,4 +1884,4 @@ void MetaFileFormat::PerformAPIDefinitions() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MetaFileFormat.cpp - Released 2021-10-28T16:39:05Z
+// EOF pcl/MetaFileFormat.cpp - Released 2021-11-11T17:57:35Z

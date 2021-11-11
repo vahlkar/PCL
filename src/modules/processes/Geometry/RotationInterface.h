@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.4
 // ----------------------------------------------------------------------------
-// RotationInterface.h - Released 2021-10-28T16:39:26Z
+// RotationInterface.h - Released 2021-11-11T17:56:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -167,4 +167,4 @@ PCL_END_LOCAL
 #endif   // __RotationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF RotationInterface.h - Released 2021-10-28T16:39:26Z
+// EOF RotationInterface.h - Released 2021-11-11T17:56:06Z
