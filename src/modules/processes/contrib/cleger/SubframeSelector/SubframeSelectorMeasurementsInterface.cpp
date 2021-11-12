@@ -951,8 +951,13 @@ SubframeSelectorMeasurementsInterface::GUIData::GUIData( SubframeSelectorMeasure
    MeasurementTable_TreeBox.EnableMultipleSelections();
    MeasurementTable_TreeBox.DisableRootDecoration();
    MeasurementTable_TreeBox.EnableAlternateRowColor();
+#ifndef __PCL_MACOSX
+   /*
+    * ### TODO - Qt 5.15.7 LTS: this doesn't work on macOS... bug? idiosyncrasy?
+    */
    MeasurementTable_TreeBox.SetStyleSheet( String().Format(
                               "* QHeaderView { font-size: %.2fpt; }", 0.9*w.Font().PointSize() ) );
+#endif
    MeasurementTable_TreeBox.OnCurrentNodeUpdated( (TreeBox::node_navigation_event_handler)
                                     &SubframeSelectorMeasurementsInterface::e_CurrentNodeUpdated, w );
    MeasurementTable_TreeBox.OnNodeActivated( (TreeBox::node_event_handler)
