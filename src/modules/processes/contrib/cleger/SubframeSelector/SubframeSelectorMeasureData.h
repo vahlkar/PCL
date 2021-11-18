@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.6.0
+// Standard SubframeSelector Process Module Version 1.6.2
 // ----------------------------------------------------------------------------
-// SubframeSelectorMeasureData.h - Released 2021-11-11T17:56:06Z
+// SubframeSelectorMeasureData.h - Released 2021-11-18T17:01:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -116,7 +116,7 @@ struct MeasureData
    double medianMeanDev;
    double noise;
    double noiseRatio;
-   uint16 stars;
+   uint32 stars;
    double starResidual;
    double starResidualMeanDev;
    double azimuth;
@@ -135,11 +135,13 @@ struct MeasureData
    bool GetFromCache( const SubframeSelectorInstance& instance );
 };
 
+typedef Array<MeasureData> MeasureDataList;
+
 // ----------------------------------------------------------------------------
 
 struct MeasureItem
 {
-   uint16   index;
+   uint32   index;
    pcl_bool enabled;
    pcl_bool locked;
    String   path;
@@ -153,7 +155,7 @@ struct MeasureItem
    double   medianMeanDev;
    double   noise;
    double   noiseRatio;
-   uint16   stars;
+   uint32   stars;
    double   starResidual;
    double   fwhmMeanDev;
    double   eccentricityMeanDev;
@@ -161,7 +163,7 @@ struct MeasureItem
    double   azimuth;
    double   altitude;
 
-   MeasureItem( uint16 a_index, const String& a_path = String() )
+   MeasureItem( uint32 a_index, const String& a_path = String() )
       : index( a_index )
       , enabled( TheSSMeasurementEnabledParameter->DefaultValue() )
       , locked( TheSSMeasurementLockedParameter->DefaultValue() )
@@ -187,6 +189,11 @@ struct MeasureItem
    }
 
    MeasureItem( const MeasureItem& ) = default;
+
+   bool operator ==( const MeasureItem& item ) const
+   {
+      return index == item.index;
+   }
 
    void Input( const MeasureData& measureData )
    {
@@ -284,6 +291,8 @@ struct MeasureItem
    }
 };
 
+typedef Array<MeasureItem> MeasureItemList;
+
 // ----------------------------------------------------------------------------
 
 struct MeasureUtils
@@ -291,7 +300,7 @@ struct MeasureUtils
    // Rudimentary first-line check for a JS Expression
    static bool IsValidExpression( const String& );
 
-   static void MeasureProperties( const Array<MeasureItem>& measures, double subframeScale,
+   static void MeasureProperties( const MeasureItemList& measures, double subframeScale,
                                   int scaleUnit, double cameraGain,
                                   int cameraResolution, int dataUnit,
                                   pcl::MeasureProperties& properties );
@@ -347,4 +356,4 @@ private:
 #endif   // __SubframeSelectorMeasureData_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorMeasureData.h - Released 2021-11-11T17:56:06Z
+// EOF SubframeSelectorMeasureData.h - Released 2021-11-18T17:01:48Z

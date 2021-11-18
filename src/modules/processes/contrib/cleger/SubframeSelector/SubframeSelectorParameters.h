@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.6.0
+// Standard SubframeSelector Process Module Version 1.6.2
 // ----------------------------------------------------------------------------
-// SubframeSelectorParameters.h - Released 2021-11-11T17:56:06Z
+// SubframeSelectorParameters.h - Released 2021-11-18T17:01:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -1016,7 +1016,7 @@ extern SSMeasurements* TheSSMeasurementsParameter;
 
 // ----------------------------------------------------------------------------
 
-class SSMeasurementIndex : public MetaUInt16
+class SSMeasurementIndex : public MetaUInt32
 {
 public:
 
@@ -1254,7 +1254,7 @@ extern SSMeasurementNoiseRatio* TheSSMeasurementNoiseRatioParameter;
 
 // ----------------------------------------------------------------------------
 
-class SSMeasurementStars : public MetaUInt16
+class SSMeasurementStars : public MetaUInt32
 {
 public:
 
@@ -1386,4 +1386,4 @@ PCL_END_LOCAL
 #endif   // __SubframeSelectorParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorParameters.h - Released 2021-11-11T17:56:06Z
+// EOF SubframeSelectorParameters.h - Released 2021-11-18T17:01:48Z

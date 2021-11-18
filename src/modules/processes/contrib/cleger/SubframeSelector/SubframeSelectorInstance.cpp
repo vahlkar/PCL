@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.6.0
+// Standard SubframeSelector Process Module Version 1.6.2
 // ----------------------------------------------------------------------------
-// SubframeSelectorInstance.cpp - Released 2021-11-11T17:56:06Z
+// SubframeSelectorInstance.cpp - Released 2021-11-18T17:01:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -52,6 +52,7 @@
 
 #include <pcl/ATrousWaveletTransform.h>
 #include <pcl/Console.h>
+#include <pcl/Cryptography.h>
 #include <pcl/ElapsedTime.h>
 #include <pcl/ErrorHandler.h>
 #include <pcl/FileFormat.h>
@@ -232,6 +233,19 @@ public:
       try
       {
          Module->ProcessEvents();
+
+         if ( m_instance.p_routine == SSRoutine::MeasureSubframes )
+            if ( m_instance.p_fileCache )
+            {
+               MeasureData cacheData( m_filePath );
+               if ( cacheData.GetFromCache( m_instance ) )
+               {
+                  Console().NoteLn( "<end><cbr>* Retrieved data from file cache: <raw>" + m_filePath + "</raw>" );
+                  m_outputData = cacheData;
+                  m_success = true;
+                  return;
+               }
+            }
 
          ReadInputData();
          Perform();
@@ -1104,6 +1118,7 @@ void SubframeSelectorInstance::Measure()
       measure_thread_list runningThreads( numberOfThreads );
 
       console.NoteLn( String().Format( "<end><br>* Using %d worker threads.", numberOfThreads ) );
+      console.NoteLn( String().Format(          "* Using %d file reading threads.<br/>", m_maxFileReadThreads ) );
       console.Flush();
 
       try
@@ -1174,39 +1189,17 @@ void SubframeSelectorInstance::Measure()
                    */
                   if ( !pendingItems.IsEmpty() )
                   {
-                     SubframeItem item = p_subframes[*pendingItems];
-
-                     /*
-                      * Check for the subframe in the cache, and use that if
-                      * possible.
-                      */
-                     MeasureData cacheData( item.path );
-                     if ( p_fileCache && cacheData.GetFromCache( *this ) )
-                     {
-                        console.NoteLn( "<end><cbr>* Retrieved data from file cache: <raw>" + item.path + "</raw>" );
-                        MeasureItem m( pendingItemsTotal - pendingItems.Length()/*index*/, item.path );
-                        m.Input( cacheData );
-                        o_measures << m;
-                        ++succeeded;
-                     }
-                     else
-                     {
-                        /*
-                         * If not in cache, create a new thread for this
-                         * subframe image.
-                         */
-                        *i = new SubframeSelectorMeasureThread( *this,
-                                                                pendingItemsTotal - pendingItems.Length()/*itemIndex*/,
-                                                                !p_nonInteractive/*throwsOnMeasurementError*/ );
-                        size_type threadIndex = i - runningThreads.Begin();
-                        console.NoteLn( String().Format( "<end><cbr>[%03u] <raw>", threadIndex ) + (*i)->TargetFilePath() + "</raw>" );
-                        (*i)->Start( ThreadPriority::DefaultMax, threadIndex );
-                        ++running;
-                        if ( pendingItems.Length() == 1 )
-                           console.NoteLn( "<br>* Waiting for running tasks to terminate...<br>" );
-                        else if ( succeeded+failed > 0 )
-                           console.WriteLn();
-                     }
+                     *i = new SubframeSelectorMeasureThread( *this,
+                                                             *pendingItems/*itemIndex*/,
+                                                             !p_nonInteractive/*throwsOnMeasurementError*/ );
+                     int threadIndex = i - runningThreads.Begin();
+                     console.NoteLn( String().Format( "<end><cbr>[%03d] <raw>", threadIndex ) + (*i)->TargetFilePath() + "</raw>" );
+                     (*i)->Start( ThreadPriority::DefaultMax, threadIndex );
+                     ++running;
+                     if ( pendingItems.Length() == 1 )
+                        console.NoteLn( "<br>* Waiting for running tasks to terminate...<br>" );
+                     else if ( succeeded+failed > 0 )
+                        console.WriteLn();
 
                      pendingItems.Remove( pendingItems.Begin() );
                   }
@@ -1736,6 +1729,16 @@ void SubframeSelectorInstance::Output()
          }
    }
 
+   /*
+    * Setup high-level parallelism.
+    */
+   m_maxFileReadThreads = p_maxFileReadThreads;
+   if ( m_maxFileReadThreads < 1 )
+      m_maxFileReadThreads = Max( 1, PixInsightSettings::GlobalInteger( "Process/MaxFileReadThreads" ) );
+   m_maxFileWriteThreads = p_maxFileWriteThreads;
+   if ( m_maxFileWriteThreads < 1 )
+      m_maxFileWriteThreads = Max( 1, PixInsightSettings::GlobalInteger( "Process/MaxFileWriteThreads" ) );
+
    int succeeded = 0;
    int failed = 0;
    int skipped = 0;
@@ -1768,6 +1771,8 @@ void SubframeSelectorInstance::Output()
       output_thread_list runningThreads( numberOfThreads );
 
       console.NoteLn( String().Format( "<end><br>* Using %d worker threads.", numberOfThreads ) );
+      console.NoteLn( String().Format(          "* Using %d file reading threads.", m_maxFileReadThreads ) );
+      console.NoteLn( String().Format(          "* Using %d file writing threads.<br/>", m_maxFileWriteThreads ) );
       console.Flush();
 
       try
@@ -1956,6 +1961,28 @@ void SubframeSelectorInstance::ApplyErrorPolicy()
       }
       break;
    }
+}
+
+// ----------------------------------------------------------------------------
+
+IsoString SubframeSelectorInstance::EncodedCacheSensitiveParameters() const
+{
+   return IsoString::ToHex( MD5().Hash(      String().Format( "%.2f", p_trimmingFactor )
+                                          << String( p_structureLayers )
+                                          << String( p_noiseLayers )
+                                          << String( p_hotPixelFilterRadius )
+                                          << String( p_noiseReductionFilterRadius )
+                                          << String().Format( "%.4f", p_sensitivity )
+                                          << String().Format( "%.4f", p_peakResponse )
+                                          << String().Format( "%.4f", p_maxDistortion )
+                                          << String().Format( "%.4f", p_upperLimit )
+                                          << String( p_psfFit )
+                                          << String( bool( p_psfFitCircular ) )
+                                          << String().Format( "%d%d%d%d", p_roi.x0, p_roi.y0, p_roi.x1, p_roi.y1 )
+                                          << String( p_pedestal )
+                                          << String( p_pedestalMode )
+                                          << p_pedestalKeyword
+                                          << String( p_inputHints ) ) );
 }
 
 // ----------------------------------------------------------------------------
@@ -2337,4 +2364,4 @@ size_type SubframeSelectorInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInstance.cpp - Released 2021-11-11T17:56:06Z
+// EOF SubframeSelectorInstance.cpp - Released 2021-11-18T17:01:48Z

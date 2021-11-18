@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.6.0
+// Standard SubframeSelector Process Module Version 1.6.2
 // ----------------------------------------------------------------------------
-// GraphWebView.h - Released 2021-11-11T17:56:06Z
+// GraphWebView.h - Released 2021-11-18T17:01:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -116,11 +116,11 @@ private:
    String Header() const;
    String Footer() const;
 
-   void __MouseEnter( Control& sender );
-   void __MouseLeave( Control& sender );
-   void __Timer( Timer& sender );
-   void __JSResult( WebView& sender, const Variant& result );
-   void __LoadFinished( WebView& sender, bool state );
+   void e_MouseEnter( Control& sender );
+   void e_MouseLeave( Control& sender );
+   void e_Timer( Timer& sender );
+   void e_JSResult( WebView& sender, const Variant& result );
+   void e_LoadFinished( WebView& sender, bool state );
 
    bool   m_loaded = false;
    Timer  m_eventCheckTimer;
@@ -149,4 +149,4 @@ private:
 #endif   // __GRAPHWEBVIEW_h
 
 // ----------------------------------------------------------------------------
-// EOF GraphWebView.h - Released 2021-11-11T17:56:06Z
+// EOF GraphWebView.h - Released 2021-11-18T17:01:48Z

@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.6.0
+// Standard SubframeSelector Process Module Version 1.6.2
 // ----------------------------------------------------------------------------
-// GraphWebView.cpp - Released 2021-11-11T17:56:06Z
+// GraphWebView.cpp - Released 2021-11-18T17:01:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -63,17 +63,17 @@ GraphWebView::GraphWebView( Control& parent )
 {
    m_eventCheckTimer.SetInterval( 0.1 );
    m_eventCheckTimer.SetPeriodic();
-   m_eventCheckTimer.OnTimer( (Timer::timer_event_handler)&GraphWebView::__Timer, *this );
+   m_eventCheckTimer.OnTimer( (Timer::timer_event_handler)&GraphWebView::e_Timer, *this );
 
-   OnEnter( (Control::event_handler)&GraphWebView::__MouseEnter, *this );
-   OnLeave( (Control::event_handler)&GraphWebView::__MouseLeave, *this );
-   OnScriptResultAvailable( (WebView::result_event_handler)&GraphWebView::__JSResult, *this );
-   OnLoadFinished( (WebView::state_event_handler)&GraphWebView::__LoadFinished, *this );
+   OnEnter( (Control::event_handler)&GraphWebView::e_MouseEnter, *this );
+   OnLeave( (Control::event_handler)&GraphWebView::e_MouseLeave, *this );
+   OnScriptResultAvailable( (WebView::result_event_handler)&GraphWebView::e_JSResult, *this );
+   OnLoadFinished( (WebView::state_event_handler)&GraphWebView::e_LoadFinished, *this );
 }
 
 // ----------------------------------------------------------------------------
 
-void GraphWebView::__MouseEnter( Control& sender )
+void GraphWebView::e_MouseEnter( Control& sender )
 {
    m_keepChecking = true;
    if ( !m_eventCheckTimer.IsRunning() )
@@ -84,14 +84,14 @@ void GraphWebView::__MouseEnter( Control& sender )
 
 // ----------------------------------------------------------------------------
 
-void GraphWebView::__MouseLeave( Control& sender )
+void GraphWebView::e_MouseLeave( Control& sender )
 {
    m_keepChecking = false;
 }
 
 // ----------------------------------------------------------------------------
 
-void GraphWebView::__Timer( Timer& sender )
+void GraphWebView::e_Timer( Timer& sender )
 {
    /*
     * N.B. Do not evaluate scripts until the page has been completely and
@@ -108,7 +108,7 @@ void GraphWebView::__Timer( Timer& sender )
 
 // ----------------------------------------------------------------------------
 
-void GraphWebView::__JSResult( WebView& sender, const Variant& result )
+void GraphWebView::e_JSResult( WebView& sender, const Variant& result )
 {
    if ( !result.IsValid() )
       throw Error( "Graph Error: Invalid script execution" );
@@ -145,7 +145,7 @@ void GraphWebView::__JSResult( WebView& sender, const Variant& result )
 
 // ----------------------------------------------------------------------------
 
-void GraphWebView::__LoadFinished( WebView& sender, bool loadedOk )
+void GraphWebView::e_LoadFinished( WebView& sender, bool loadedOk )
 {
    /*
     * WebView contents are represented in physical pixels by default. The
@@ -383,6 +383,7 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector* da
    // Custom Legend Formatting to lookup attributes and hide some series.
    function legendFormatter(data) {
       let html = '<table>';
+      html += '<tr><td>Index:</td><td>' + data.x + '</td></tr>';
       data.series.forEach(function(series) {
          if (series.labelHTML.indexOf('NOLEGEND') === -1)
             html += '<tr><td>' + series.labelHTML + ':</td><td>' + series.yHTML + '</td></tr>';
@@ -739,7 +740,7 @@ String GraphWebView::Header() const
       padding: 1px;
       background-color: black;
       color: white;
-      opacity: 0.7;
+      opacity: 0.65;
       border: 1px solid gray;
       border-radius: 2px;
    }
@@ -801,4 +802,4 @@ void GraphWebView::Cleanup()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GraphWebView.cpp - Released 2021-11-11T17:56:06Z
+// EOF GraphWebView.cpp - Released 2021-11-18T17:01:48Z

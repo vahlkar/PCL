@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.6.0
+// Standard SubframeSelector Process Module Version 1.6.2
 // ----------------------------------------------------------------------------
-// SubframeSelectorInstance.h - Released 2021-11-11T17:56:06Z
+// SubframeSelectorInstance.h - Released 2021-11-18T17:01:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -174,7 +174,7 @@ private:
    int                m_maxFileWriteThreads = 1;
 
    // The set of measured subframes.
-   Array<MeasureItem> o_measures;
+   MeasureItemList    o_measures;
 
    bool CanTestStarDetector( String& whyNot ) const;
    void TestStarDetector();
@@ -186,6 +186,8 @@ private:
    void Output();
 
    void ApplyErrorPolicy();
+
+   IsoString EncodedCacheSensitiveParameters() const;
 
    typedef IndirectArray<SubframeSelectorMeasureThread>  measure_thread_list;
    typedef IndirectArray<SubframeSelectorOutputThread>   output_thread_list;
@@ -206,4 +208,4 @@ private:
 #endif   // __SubframeSelectorInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInstance.h - Released 2021-11-11T17:56:06Z
+// EOF SubframeSelectorInstance.h - Released 2021-11-18T17:01:48Z

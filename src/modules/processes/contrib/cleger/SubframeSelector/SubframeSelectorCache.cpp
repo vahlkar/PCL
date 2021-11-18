@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.6.0
+// Standard SubframeSelector Process Module Version 1.6.2
 // ----------------------------------------------------------------------------
-// SubframeSelectorCache.cpp - Released 2021-11-11T17:56:06Z
+// SubframeSelectorCache.cpp - Released 2021-11-18T17:01:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -64,23 +64,23 @@ SubframeSelectorCache* TheSubframeSelectorCache = nullptr;
 void SubframeSelectorCacheItem::AssignData( const FileDataCacheItem& item )
 {
 #define src static_cast<const SubframeSelectorCacheItem&>( item )
-   fwhm                 = src.fwhm;
-   fwhmMeanDev          = src.fwhmMeanDev;
-   eccentricity         = src.eccentricity;
-   eccentricityMeanDev  = src.eccentricityMeanDev;
-   psfSignalWeight      = src.psfSignalWeight;
-   psfPowerWeight = src.psfPowerWeight;
-   snrWeight            = src.snrWeight;
-   median               = src.median;
-   medianMeanDev        = src.medianMeanDev;
-   trimmingFactor       = src.trimmingFactor;
-   noise                = src.noise;
-   noiseRatio           = src.noiseRatio;
-   stars                = src.stars;
-   starResidual         = src.starResidual;
-   starResidualMeanDev  = src.starResidualMeanDev;
-   azimuth              = src.azimuth;
-   altitude             = src.altitude;
+   fwhm                = src.fwhm;
+   fwhmMeanDev         = src.fwhmMeanDev;
+   eccentricity        = src.eccentricity;
+   eccentricityMeanDev = src.eccentricityMeanDev;
+   psfSignalWeight     = src.psfSignalWeight;
+   psfPowerWeight      = src.psfPowerWeight;
+   snrWeight           = src.snrWeight;
+   median              = src.median;
+   medianMeanDev       = src.medianMeanDev;
+   noise               = src.noise;
+   noiseRatio          = src.noiseRatio;
+   stars               = src.stars;
+   starResidual        = src.starResidual;
+   starResidualMeanDev = src.starResidualMeanDev;
+   azimuth             = src.azimuth;
+   altitude            = src.altitude;
+   instanceParameters  = src.instanceParameters;
 #undef src
 }
 
@@ -98,14 +98,14 @@ String SubframeSelectorCacheItem::DataToString() const
       << String().Format( "snrWeight\n%.8e", snrWeight )
       << String().Format( "median\n%.8e", median )
       << String().Format( "medianMeanDev\n%.8e", medianMeanDev )
-      << String().Format( "trimmingFactor\n%.2f", trimmingFactor )
       << String().Format( "noise\n%.8e", noise )
       << String().Format( "noiseRatio\n%.8e", noiseRatio )
       << String().Format( "stars\n%u", stars )
       << String().Format( "starResidual\n%.8e", starResidual )
       << String().Format( "starResidualMeanDev\n%.8e", starResidualMeanDev )
       << String().Format( "azimuth\n%.6e", azimuth )
-      << String().Format( "altitude\n%.6e", altitude );
+      << String().Format( "altitude\n%.6e", altitude )
+      << "instanceParameters" << instanceParameters.ToString();
    return String().ToNewLineSeparated( tokens );
 }
 
@@ -161,11 +161,6 @@ bool SubframeSelectorCacheItem::GetDataFromTokens( const StringList& tokens )
          if ( !(++i)->TryToDouble( medianMeanDev ) )
             return false;
       }
-      else if ( *i == "trimmingFactor" )
-      {
-         if ( !(++i)->TryToDouble( trimmingFactor ) )
-            return false;
-      }
       else if ( *i == "noise" )
       {
          if ( !(++i)->TryToDouble( noise ) )
@@ -178,10 +173,8 @@ bool SubframeSelectorCacheItem::GetDataFromTokens( const StringList& tokens )
       }
       else if ( *i == "stars" )
       {
-         unsigned s;
-         if ( !(++i)->TryToUInt( s ) )
+         if ( !(++i)->TryToUInt( stars ) )
             return false;
-         stars = static_cast<uint16>(s);
       }
       else if ( *i == "starResidual" )
       {
@@ -202,6 +195,10 @@ bool SubframeSelectorCacheItem::GetDataFromTokens( const StringList& tokens )
       {
          if ( !(++i)->TryToDouble( altitude ) )
             return false;
+      }
+      else if ( *i == "instanceParameters" )
+      {
+         instanceParameters = (++i)->ToIsoString();
       }
       else
       {
@@ -233,4 +230,4 @@ SubframeSelectorCache::~SubframeSelectorCache()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorCache.cpp - Released 2021-11-11T17:56:06Z
+// EOF SubframeSelectorCache.cpp - Released 2021-11-18T17:01:48Z

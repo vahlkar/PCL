@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.6.0
+// Standard SubframeSelector Process Module Version 1.6.2
 // ----------------------------------------------------------------------------
-// SubframeSelectorParameters.cpp - Released 2021-11-11T17:56:06Z
+// SubframeSelectorParameters.cpp - Released 2021-11-18T17:01:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -1121,7 +1121,7 @@ double SSROIX0::MinimumValue() const
 
 double SSROIX0::MaximumValue() const
 {
-   return uint16_max;
+   return int32_max;
 }
 
 // ----------------------------------------------------------------------------
@@ -1148,7 +1148,7 @@ double SSROIY0::MinimumValue() const
 
 double SSROIY0::MaximumValue() const
 {
-   return uint16_max;
+   return int32_max;
 }
 
 // ----------------------------------------------------------------------------
@@ -1175,7 +1175,7 @@ double SSROIX1::MinimumValue() const
 
 double SSROIX1::MaximumValue() const
 {
-   return uint16_max;
+   return int32_max;
 }
 
 // ----------------------------------------------------------------------------
@@ -1202,7 +1202,7 @@ double SSROIY1::MinimumValue() const
 
 double SSROIY1::MaximumValue() const
 {
-   return uint16_max;
+   return int32_max;
 }
 
 // ----------------------------------------------------------------------------
@@ -1811,7 +1811,7 @@ IsoString SSMaxFileReadThreads::Id() const
 
 double SSMaxFileReadThreads::DefaultValue() const
 {
-   return 0;
+   return 0; // retrieve from global preferences
 }
 
 double SSMaxFileReadThreads::MinimumValue() const
@@ -1838,7 +1838,7 @@ IsoString SSMaxFileWriteThreads::Id() const
 
 double SSMaxFileWriteThreads::DefaultValue() const
 {
-   return 0;
+   return 0; // retrieve from global preferences
 }
 
 double SSMaxFileWriteThreads::MinimumValue() const
@@ -1870,7 +1870,7 @@ bool SSMeasurements::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-SSMeasurementIndex::SSMeasurementIndex( MetaTable* T ) : MetaUInt16( T )
+SSMeasurementIndex::SSMeasurementIndex( MetaTable* T ) : MetaUInt32( T )
 {
    TheSSMeasurementIndexParameter = this;
 }
@@ -1892,7 +1892,7 @@ double SSMeasurementIndex::MinimumValue() const
 
 double SSMeasurementIndex::MaximumValue() const
 {
-   return UINT16_MAX;
+   return uint32_max;
 }
 
 bool SSMeasurementIndex::IsReadOnly() const
@@ -2318,7 +2318,7 @@ bool SSMeasurementNoiseRatio::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-SSMeasurementStars::SSMeasurementStars( MetaTable* T ) : MetaUInt16( T )
+SSMeasurementStars::SSMeasurementStars( MetaTable* T ) : MetaUInt32( T )
 {
    TheSSMeasurementStarsParameter = this;
 }
@@ -2340,7 +2340,7 @@ double SSMeasurementStars::MinimumValue() const
 
 double SSMeasurementStars::MaximumValue() const
 {
-   return UINT16_MAX;
+   return uint32_max;
 }
 
 bool SSMeasurementStars::IsReadOnly() const
@@ -2575,4 +2575,4 @@ bool SSMeasurementAltitude::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorParameters.cpp - Released 2021-11-11T17:56:06Z
+// EOF SubframeSelectorParameters.cpp - Released 2021-11-18T17:01:48Z

@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.6.0
+// Standard SubframeSelector Process Module Version 1.6.2
 // ----------------------------------------------------------------------------
-// SubframeSelectorMeasureData.cpp - Released 2021-11-11T17:56:06Z
+// SubframeSelectorMeasureData.cpp - Released 2021-11-18T17:01:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -94,7 +94,6 @@ void MeasureData::AddToCache( const SubframeSelectorInstance& instance ) const
       item.snrWeight           = snrWeight;
       item.median              = median;
       item.medianMeanDev       = medianMeanDev;
-      item.trimmingFactor      = instance.p_trimmingFactor;
       item.noise               = noise;
       item.noiseRatio          = noiseRatio;
       item.stars               = stars;
@@ -102,6 +101,7 @@ void MeasureData::AddToCache( const SubframeSelectorInstance& instance ) const
       item.starResidualMeanDev = starResidualMeanDev;
       item.azimuth             = azimuth;
       item.altitude            = altitude;
+      item.instanceParameters  = instance.EncodedCacheSensitiveParameters();
       TheSubframeSelectorCache->Add( item );
    }
 }
@@ -134,23 +134,7 @@ bool MeasureData::GetFromCache( const SubframeSelectorInstance& instance )
          azimuth             = item.azimuth;
          altitude            = item.altitude;
 
-         return RoundInt( 100*item.trimmingFactor ) == RoundInt( 100*instance.p_trimmingFactor ) &&
-                fwhm                != TheSSMeasurementFWHMParameter->DefaultValue() &&
-                fwhmMeanDev         != 0 &&
-                eccentricity        != TheSSMeasurementEccentricityParameter->DefaultValue() &&
-                eccentricityMeanDev != 0 &&
-                psfSignalWeight     != TheSSMeasurementPSFSignalWeightParameter->DefaultValue() &&
-                psfPowerWeight      != TheSSMeasurementPSFPowerWeightParameter->DefaultValue() &&
-                snrWeight           != TheSSMeasurementSNRWeightParameter->DefaultValue() &&
-                median              != TheSSMeasurementMedianParameter->DefaultValue() &&
-                medianMeanDev       != 0 &&
-                noise               != TheSSMeasurementNoiseParameter->DefaultValue() &&
-                noiseRatio          != TheSSMeasurementNoiseRatioParameter->DefaultValue() &&
-                stars               != TheSSMeasurementStarsParameter->DefaultValue() &&
-                starResidual        != TheSSMeasurementStarResidualParameter->DefaultValue() &&
-                starResidualMeanDev != 0 &&
-                azimuth             != TheSSMeasurementAzimuthParameter->DefaultValue() &&
-                altitude            != TheSSMeasurementAltitudeParameter->DefaultValue();
+         return item.instanceParameters == instance.EncodedCacheSensitiveParameters();
       }
    }
 
@@ -344,7 +328,7 @@ bool MeasureUtils::IsValidExpression( const String& expression )
 
 // ----------------------------------------------------------------------------
 
-void MeasureUtils::MeasureProperties( const Array<MeasureItem>& measures, double subframeScale,
+void MeasureUtils::MeasureProperties( const MeasureItemList& measures, double subframeScale,
                                       int scaleUnit, double cameraGain,
                                       int cameraResolution, int dataUnit,
                                       pcl::MeasureProperties& properties )
@@ -420,4 +404,4 @@ void MeasureUtils::MeasureProperties( const Array<MeasureItem>& measures, double
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorMeasureData.cpp - Released 2021-11-11T17:56:06Z
+// EOF SubframeSelectorMeasureData.cpp - Released 2021-11-18T17:01:48Z

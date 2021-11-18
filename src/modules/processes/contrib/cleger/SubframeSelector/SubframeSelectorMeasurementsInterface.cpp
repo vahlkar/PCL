@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.6.0
+// Standard SubframeSelector Process Module Version 1.6.2
 // ----------------------------------------------------------------------------
-// SubframeSelectorMeasurementsInterface.cpp - Released 2021-11-11T17:56:06Z
+// SubframeSelectorMeasurementsInterface.cpp - Released 2021-11-18T17:01:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -222,47 +222,17 @@ void SubframeSelectorMeasurementsInterface::Cleanup()
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-MeasureItem* SubframeSelectorMeasurementsInterface::GetMeasurementItem( size_type i )
-{
-   TreeBox::Node* node = GUI->MeasurementTable_TreeBox[i];
-   if ( node == nullptr )
-      return nullptr;
-
-   int index;
-   if ( !node->Text( 0 ).TryToInt( index ) )
-      return nullptr;
-
-   // 1-based index, 0-based arrays
-   if ( index > 0 ) // ?!
-      --index;
-   return m_instance.o_measures.At( index );
-}
-
-// ----------------------------------------------------------------------------
-
-TreeBox::Node* SubframeSelectorMeasurementsInterface::GetMeasurementNode( MeasureItem* item )
+TreeBox::Node* SubframeSelectorMeasurementsInterface::MeasurementNodeByItem( const MeasureItem* item ) const
 {
    if ( item == nullptr )
       return nullptr;
-
-   for ( int i = 0; i < GUI->MeasurementTable_TreeBox.NumberOfChildren(); ++i )
-   {
-      TreeBox::Node* node = GUI->MeasurementTable_TreeBox[i];
-      if ( node == nullptr )
-         return nullptr;
-
-      int index;
-      if ( !node->Text( 0 ).TryToInt( index ) )
-         return nullptr;
-
-      // 1-based index, 0-based arrays
-      if ( index > 0 ) // ?!
-         --index;
-      if ( index == item->index )
-         return node;
-   }
-
-   return nullptr;
+   MeasureItemList::const_iterator i = m_instance.o_measures.Search( *item );
+   if ( i == m_instance.o_measures.End() )
+      return nullptr;
+   int index = i - m_instance.o_measures.Begin();
+   if ( index >= GUI->MeasurementTable_TreeBox.NumberOfChildren() )
+      return nullptr;
+   return GUI->MeasurementTable_TreeBox[index];
 }
 
 // ----------------------------------------------------------------------------
@@ -283,7 +253,7 @@ void SubframeSelectorMeasurementsInterface::UpdateMeasurementQuantity()
    size_type amount = m_instance.o_measures.Length();
    if ( amount > 0 )
    {
-      for ( Array<MeasureItem>::const_iterator i = m_instance.o_measures.Begin(); i < m_instance.o_measures.End(); ++i )
+      for ( MeasureItemList::const_iterator i = m_instance.o_measures.Begin(); i < m_instance.o_measures.End(); ++i )
       {
          if ( i->enabled )
             ++approved;
@@ -413,28 +383,28 @@ void SubframeSelectorMeasurementsInterface::UpdateMeasurementImagesList()
       GUI->MeasurementTable_TreeBox.Clear();
 
    // Ensure items are sorted properly
-   Array<MeasureItem> measuresSorted( m_instance.o_measures );
+   MeasureItemList measuresSorted( m_instance.o_measures );
    measuresSorted.Sort( SubframeSortingBinaryPredicate( m_instance.p_sortingProperty,
                                     GUI->MeasurementsTable_SortingMode_ComboBox.CurrentItem() ) );
 
    // Update the table
-   size_type amount = measuresSorted.Length();
-   for ( size_type i = 0; i < amount; ++i )
+   for ( size_type n = measuresSorted.Length(), i = 0; i < n; ++i )
    {
       if ( shouldRecreate )
          new TreeBox::Node( GUI->MeasurementTable_TreeBox );
-      UpdateMeasurementImageItem( i, &measuresSorted[i] );
+      UpdateMeasurementImageItem( i, measuresSorted.At( i ) );
    }
 
    for ( int i = 0, n = GUI->MeasurementTable_TreeBox.NumberOfColumns(); i < n; ++i )
       GUI->MeasurementTable_TreeBox.AdjustColumnWidthToContents( i );
 
    // If the table was cleared, setup previous selections
-   if ( shouldRecreate && !m_instance.o_measures.IsEmpty() )
-      for ( size_type i = 0; i < currentIds.Length(); ++i )
-         if ( currentIds[i] >= 0 )
-            if ( currentIds[i] < GUI->MeasurementTable_TreeBox.NumberOfChildren() )
-               GUI->MeasurementTable_TreeBox.Child( currentIds[i] )->Select();
+   if ( shouldRecreate )
+      if ( !m_instance.o_measures.IsEmpty() )
+         for ( size_type i = 0; i < currentIds.Length(); ++i )
+            if ( currentIds[i] >= 0 )
+               if ( currentIds[i] < GUI->MeasurementTable_TreeBox.NumberOfChildren() )
+                  GUI->MeasurementTable_TreeBox.Child( currentIds[i] )->Select();
 
    GUI->MeasurementTable_TreeBox.EnableUpdates();
    UpdateMeasurementQuantity();
@@ -517,17 +487,32 @@ void SubframeSelectorMeasurementsInterface::UpdateMeasurementGraph()
       dataset[i].locked = m_instance.o_measures[i].locked;
    }
 
-   GUI->MeasurementGraph_WebView.SetDataset( TheSSGraphPropertyParameter->ElementLabel( m_instance.p_graphProperty ),
-                                           &dataset );
+   GUI->MeasurementGraph_WebView.SetDataset( TheSSGraphPropertyParameter->ElementLabel( m_instance.p_graphProperty ), &dataset );
 }
 
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-void SubframeSelectorMeasurementsInterface::SetMeasurements( const Array<MeasureItem>& measures )
+void SubframeSelectorMeasurementsInterface::SetMeasurements( const MeasureItemList& measures )
 {
    m_instance.o_measures = measures;
    UpdateControls();
+}
+
+// ----------------------------------------------------------------------------
+
+MeasureItem* SubframeSelectorMeasurementsInterface::MeasureItemByGraphIndex( int index ) const
+{
+   if ( index > 0 )
+      if ( index <= int( m_instance.o_measures.Length() ) )
+      {
+         --index; // 1-based to 0-based
+         for ( MeasureItem& item : m_instance.o_measures )
+            if ( item.index == unsigned( index ) )
+               return &item;
+      }
+
+   return nullptr;
 }
 
 // ----------------------------------------------------------------------------
@@ -675,9 +660,7 @@ void SubframeSelectorMeasurementsInterface::e_NodeActivated( TreeBox& sender, Tr
    if ( index < 0 || size_type( index ) >= m_instance.o_measures.Length() )
       throw Error( "SubframeSelectorMeasurementsInterface: *Warning* Corrupted interface structures" );
 
-   MeasureItem* item = GetMeasurementItem( index );
-   if ( item == nullptr )
-      return;
+   MeasureItem* item = m_instance.o_measures.At( index );
 
    switch ( col )
    {
@@ -719,10 +702,7 @@ void SubframeSelectorMeasurementsInterface::e_ButtonClick( Button& sender, bool 
       for ( int i = 0, n = GUI->MeasurementTable_TreeBox.NumberOfChildren(); i < n; ++i )
          if ( GUI->MeasurementTable_TreeBox[i]->IsSelected() )
          {
-            MeasureItem* item = GetMeasurementItem( i );
-            if ( item == nullptr )
-               continue;
-
+            MeasureItem* item = m_instance.o_measures.At( i );
             item->enabled = !item->enabled;
             item->locked = true;
          }
@@ -733,10 +713,7 @@ void SubframeSelectorMeasurementsInterface::e_ButtonClick( Button& sender, bool 
       for ( int i = 0, n = GUI->MeasurementTable_TreeBox.NumberOfChildren(); i < n; ++i )
          if ( GUI->MeasurementTable_TreeBox[i]->IsSelected() )
          {
-            MeasureItem* item = GetMeasurementItem( i );
-            if ( item == nullptr )
-               continue;
-
+            MeasureItem* item = m_instance.o_measures.At( i );
             item->locked = !item->locked;
          }
       UpdateControls();
@@ -748,19 +725,19 @@ void SubframeSelectorMeasurementsInterface::e_ButtonClick( Button& sender, bool 
    }
    else if ( sender == GUI->MeasurementsTable_Remove_PushButton )
    {
-      Array<MeasureItem> newMeasures;
-      uint16 index = 0;
+      MeasureItemList newMeasures;
+      uint32 index = 0;
       for ( size_type i = 0; i < m_instance.o_measures.Length(); ++i )
       {
-         MeasureItem* measure = m_instance.o_measures.At( i );
-         TreeBox::Node* measureNode = GetMeasurementNode( measure );
-         if ( measureNode == nullptr )
+         MeasureItem* item = m_instance.o_measures.At( i );
+         TreeBox::Node* node = GUI->MeasurementTable_TreeBox[i];
+         if ( node == nullptr )
             continue;
 
-         if ( !measureNode->IsSelected() )
+         if ( !node->IsSelected() )
          {
-            measure->index = index++;
-            newMeasures.Add( *measure );
+            item->index = index++;
+            newMeasures.Add( *item );
          }
       }
       m_instance.o_measures = newMeasures;
@@ -785,48 +762,44 @@ void SubframeSelectorMeasurementsInterface::e_ButtonClick( Button& sender, bool 
 
 void SubframeSelectorMeasurementsInterface::e_GraphApprove( GraphWebView &sender, int index )
 {
-   if ( index < 1 || index > int( m_instance.o_measures.Length() ) )
-      return;
+   MeasureItem* item = MeasureItemByGraphIndex( index );
+   if ( item != nullptr )
+   {
+      item->enabled = !item->enabled;
+      item->locked = true;
 
-   --index; // 1-based to 0-based
-
-   MeasureItem* item = m_instance.o_measures.At( index );
-   item->enabled = !item->enabled;
-   item->locked = true;
-
-   TreeBox::Node* node = GetMeasurementNode( item );
-   if ( node == nullptr )
-      return;
-
-   GUI->MeasurementTable_TreeBox.SetCurrentNode( node );
-   GUI->MeasurementTable_TreeBox.SetNodeIntoView( node );
-   UpdateMeasurementImageItem( GUI->MeasurementTable_TreeBox.ChildIndex( node ), item );
-   UpdateMeasurementQuantity();
-   UpdateMeasurementGraph();
+      TreeBox::Node* node = MeasurementNodeByItem( item );
+      if ( node != nullptr )
+      {
+         GUI->MeasurementTable_TreeBox.SetCurrentNode( node );
+         GUI->MeasurementTable_TreeBox.SetNodeIntoView( node );
+         UpdateMeasurementImageItem( GUI->MeasurementTable_TreeBox.ChildIndex( node ), item );
+         UpdateMeasurementQuantity();
+         UpdateMeasurementGraph();
+      }
+   }
 }
 
 // ----------------------------------------------------------------------------
 
 void SubframeSelectorMeasurementsInterface::e_GraphUnlock( GraphWebView &sender, int index )
 {
-   if ( index < 1 || index > int( m_instance.o_measures.Length() ) )
-      return;
+   MeasureItem* item = MeasureItemByGraphIndex( index );
+   if ( item != nullptr )
+   {
+      item->locked = false;
 
-   --index; // 1-based to 0-based
-
-   MeasureItem* item = m_instance.o_measures.At( index );
-   item->locked = false;
-
-   TreeBox::Node* node = GetMeasurementNode( item );
-   if ( node == nullptr )
-      return;
-
-   GUI->MeasurementTable_TreeBox.SetCurrentNode( node );
-   GUI->MeasurementTable_TreeBox.SetNodeIntoView( node );
-   TheSubframeSelectorExpressionsInterface->ApplyApprovalExpression();
-   UpdateMeasurementImageItem( GUI->MeasurementTable_TreeBox.ChildIndex( node ), item );
-   UpdateMeasurementQuantity();
-   UpdateMeasurementGraph();
+      TreeBox::Node* node = MeasurementNodeByItem( item );
+      if ( node != nullptr )
+      {
+         GUI->MeasurementTable_TreeBox.SetCurrentNode( node );
+         GUI->MeasurementTable_TreeBox.SetNodeIntoView( node );
+         TheSubframeSelectorExpressionsInterface->ApplyApprovalExpression();
+         UpdateMeasurementImageItem( GUI->MeasurementTable_TreeBox.ChildIndex( node ), item );
+         UpdateMeasurementQuantity();
+         UpdateMeasurementGraph();
+      }
+   }
 }
 
 // ----------------------------------------------------------------------------
@@ -1029,4 +1002,4 @@ SubframeSelectorMeasurementsInterface::GUIData::GUIData( SubframeSelectorMeasure
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorMeasurementsInterface.cpp - Released 2021-11-11T17:56:06Z
+// EOF SubframeSelectorMeasurementsInterface.cpp - Released 2021-11-18T17:01:48Z
