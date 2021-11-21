@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.6.2
+// Standard SubframeSelector Process Module Version 1.6.5
 // ----------------------------------------------------------------------------
-// SubframeSelectorInterface.cpp - Released 2021-11-18T17:01:48Z
+// SubframeSelectorInterface.cpp - Released 2021-11-21T21:48:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -195,6 +195,7 @@ bool SubframeSelectorInterface::RequiresInstanceValidation() const
 
 bool SubframeSelectorInterface::ImportProcess( const ProcessImplementation& p )
 {
+
    m_instance.Assign( p );
    UpdateControls();
    return true;
@@ -237,6 +238,8 @@ void SubframeSelectorInterface::HideMeasurementsInterface() const
 
 void SubframeSelectorInterface::UpdateControls()
 {
+   TheSubframeSelectorMeasurementsInterface->Cleanup();
+
    GUI->Routine_ComboBox.SetCurrentItem( m_instance.p_routine );
    GUI->SubframeImages_FileCache_CheckBox.SetChecked( m_instance.p_fileCache );
    UpdateSubframeImagesList();
@@ -337,10 +340,10 @@ void SubframeSelectorInterface::UpdateStarDetectorControls()
    GUI->StarDetectorParameters_UpperLimit_Control.SetValue( m_instance.p_upperLimit );
    GUI->StarDetectorParameters_PSFFit_ComboBox.SetCurrentItem( m_instance.p_psfFit );
    GUI->StarDetectorParameters_PSFFitCircular_CheckBox.SetChecked( m_instance.p_psfFitCircular );
-   GUI->StarDetectorParameters_ROIX0_SpinBox.SetValue( m_instance.p_roi.x0 );
-   GUI->StarDetectorParameters_ROIY0_SpinBox.SetValue( m_instance.p_roi.y0 );
-   GUI->StarDetectorParameters_ROIWidth_SpinBox.SetValue( m_instance.p_roi.Width() );
-   GUI->StarDetectorParameters_ROIHeight_SpinBox.SetValue( m_instance.p_roi.Height() );
+   GUI->RegionOfInterestX0_SpinBox.SetValue( m_instance.p_roi.x0 );
+   GUI->RegionOfInterestY0_SpinBox.SetValue( m_instance.p_roi.y0 );
+   GUI->RegionOfInterestWidth_SpinBox.SetValue( m_instance.p_roi.Width() );
+   GUI->RegionOfInterestHeight_SpinBox.SetValue( m_instance.p_roi.Height() );
 }
 
 // ----------------------------------------------------------------------------
@@ -542,13 +545,13 @@ void SubframeSelectorInterface::e_SpinValueUpdated( SpinBox& sender, int value )
       m_instance.p_noiseReductionFilterRadius = value;
 //    else if ( sender == GUI->StarDetectorParameters_BackgroundExpansion_Control )
 //       m_instance.p_backgroundExpansion = value;
-   else if ( sender == GUI->StarDetectorParameters_ROIX0_SpinBox )
+   else if ( sender == GUI->RegionOfInterestX0_SpinBox )
       m_instance.p_roi.x0 = value;
-   else if ( sender == GUI->StarDetectorParameters_ROIY0_SpinBox )
+   else if ( sender == GUI->RegionOfInterestY0_SpinBox )
       m_instance.p_roi.y0 = value;
-   else if ( sender == GUI->StarDetectorParameters_ROIWidth_SpinBox )
+   else if ( sender == GUI->RegionOfInterestWidth_SpinBox )
       m_instance.p_roi.x1 = m_instance.p_roi.x0 + value;
-   else if ( sender == GUI->StarDetectorParameters_ROIHeight_SpinBox )
+   else if ( sender == GUI->RegionOfInterestHeight_SpinBox )
       m_instance.p_roi.y1 = m_instance.p_roi.y0 + value;
    else if ( sender == GUI->PedestalValue_SpinBox )
       m_instance.p_pedestal = value;
@@ -614,7 +617,7 @@ void SubframeSelectorInterface::e_ButtonClick( Button& sender, bool checked )
       ShowMeasurementsInterface();
       TheSubframeSelectorMeasurementsInterface->Focus();
    }
-   else if ( sender == GUI->StarDetectorParameters_ROISelectPreview_Button )
+   else if ( sender == GUI->RegionOfInterestSelectPreview_Button )
    {
       PreviewSelectionDialog d;
       if ( d.Execute() )
@@ -668,7 +671,7 @@ void SubframeSelectorInterface::e_EditCompleted( Edit& sender )
 void SubframeSelectorInterface::e_StarDetector_ViewDrag( Control& sender, const Point& pos, const View& view,
                                                          unsigned modifiers, bool& wantsView )
 {
-   if ( sender == GUI->StarDetectorParameters_ROISelectPreview_Button )
+   if ( sender == GUI->RegionOfInterestSelectPreview_Button )
       wantsView = view.IsPreview();
 }
 
@@ -677,7 +680,7 @@ void SubframeSelectorInterface::e_StarDetector_ViewDrag( Control& sender, const 
 void SubframeSelectorInterface::e_StarDetector_ViewDrop( Control& sender, const Point& pos, const View& view,
                                                          unsigned modifiers )
 {
-   if ( sender == GUI->StarDetectorParameters_ROISelectPreview_Button )
+   if ( sender == GUI->RegionOfInterestSelectPreview_Button )
       if ( view.IsPreview() )
       {
          m_instance.p_roi = view.Window().PreviewRect( view.Id() );
@@ -1162,86 +1165,78 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
 
    //
 
-   StarDetectorParameters_ROI_SectionBar.SetTitle( "Region of Interest" );
-   StarDetectorParameters_ROI_SectionBar.SetSection( StarDetectorParameters_ROI_Control );
-   StarDetectorParameters_ROI_SectionBar.OnToggleSection( (SectionBar::section_event_handler)
-                                    &SubframeSelectorInterface::e_ToggleSection, w );
+   RegionOfInterest_SectionBar.SetTitle( "Region of Interest" );
+   RegionOfInterest_SectionBar.SetSection( RegionOfInterest_Control );
+   RegionOfInterest_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&SubframeSelectorInterface::e_ToggleSection, w );
 
-   StarDetectorParameters_ROIX0_Label.SetText( "Left:" );
-   StarDetectorParameters_ROIX0_Label.SetMinWidth( labelWidth1 );
-   StarDetectorParameters_ROIX0_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
-   StarDetectorParameters_ROIX0_Label.SetToolTip( "<p>X pixel coordinate of the upper-left corner of the ROI.</p>" );
+   RegionOfInterestX0_Label.SetText( "Left:" );
+   RegionOfInterestX0_Label.SetMinWidth( labelWidth1 );
+   RegionOfInterestX0_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
+   RegionOfInterestX0_Label.SetToolTip( "<p>X pixel coordinate of the upper-left corner of the ROI.</p>" );
 
-   StarDetectorParameters_ROIX0_SpinBox.SetRange( TheSSROIX0Parameter->MinimumValue(),
-                                                  TheSSROIX0Parameter->MaximumValue() );
-   StarDetectorParameters_ROIX0_SpinBox.SetToolTip( "<p>X pixel coordinate of the upper-left corner of the ROI.</p>" );
-   StarDetectorParameters_ROIX0_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)
-                                    &SubframeSelectorInterface::e_SpinValueUpdated, w );
+   RegionOfInterestX0_SpinBox.SetRange( TheSSROIX0Parameter->MinimumValue(), TheSSROIX0Parameter->MaximumValue() );
+   RegionOfInterestX0_SpinBox.SetFixedWidth( editWidth1 );
+   RegionOfInterestX0_SpinBox.SetToolTip( "<p>X pixel coordinate of the upper-left corner of the ROI.</p>" );
+   RegionOfInterestX0_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&SubframeSelectorInterface::e_SpinValueUpdated, w );
 
-   StarDetectorParameters_ROIY0_Label.SetText( "Top:" );
-   StarDetectorParameters_ROIY0_Label.SetMinWidth( labelWidth2 );
-   StarDetectorParameters_ROIY0_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
-   StarDetectorParameters_ROIY0_Label.SetToolTip( "<p>Y pixel coordinate of the upper-left corner of the ROI.</p>" );
+   RegionOfInterestY0_Label.SetText( "Top:" );
+   RegionOfInterestY0_Label.SetMinWidth( labelWidth2 );
+   RegionOfInterestY0_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
+   RegionOfInterestY0_Label.SetToolTip( "<p>Y pixel coordinate of the upper-left corner of the ROI.</p>" );
 
-   StarDetectorParameters_ROIY0_SpinBox.SetRange( TheSSROIY0Parameter->MinimumValue(),
-                                                  TheSSROIY0Parameter->MaximumValue() );
-   StarDetectorParameters_ROIY0_SpinBox.SetToolTip( "<p>Y pixel coordinate of the upper-left corner of the ROI.</p>" );
-   StarDetectorParameters_ROIY0_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)
-                                    &SubframeSelectorInterface::e_SpinValueUpdated, w );
+   RegionOfInterestY0_SpinBox.SetRange( TheSSROIY0Parameter->MinimumValue(), TheSSROIY0Parameter->MaximumValue() );
+   RegionOfInterestY0_SpinBox.SetFixedWidth( editWidth1 );
+   RegionOfInterestY0_SpinBox.SetToolTip( "<p>Y pixel coordinate of the upper-left corner of the ROI.</p>" );
+   RegionOfInterestY0_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&SubframeSelectorInterface::e_SpinValueUpdated, w );
 
-   StarDetectorParameters_ROIRow1_Sizer.SetSpacing( 4 );
-   StarDetectorParameters_ROIRow1_Sizer.Add( StarDetectorParameters_ROIX0_Label );
-   StarDetectorParameters_ROIRow1_Sizer.Add( StarDetectorParameters_ROIX0_SpinBox );
-   StarDetectorParameters_ROIRow1_Sizer.Add( StarDetectorParameters_ROIY0_Label );
-   StarDetectorParameters_ROIRow1_Sizer.Add( StarDetectorParameters_ROIY0_SpinBox );
-   StarDetectorParameters_ROIRow1_Sizer.AddStretch();
+   RegionOfInterestRow1_Sizer.SetSpacing( 4 );
+   RegionOfInterestRow1_Sizer.Add( RegionOfInterestX0_Label );
+   RegionOfInterestRow1_Sizer.Add( RegionOfInterestX0_SpinBox );
+   RegionOfInterestRow1_Sizer.Add( RegionOfInterestY0_Label );
+   RegionOfInterestRow1_Sizer.Add( RegionOfInterestY0_SpinBox );
+   RegionOfInterestRow1_Sizer.AddStretch();
 
-   StarDetectorParameters_ROIWidth_Label.SetText( "Width:" );
-   StarDetectorParameters_ROIWidth_Label.SetMinWidth( labelWidth1 );
-   StarDetectorParameters_ROIWidth_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
-   StarDetectorParameters_ROIWidth_Label.SetToolTip( "<p>Width of the ROI in pixels.</p>" );
+   RegionOfInterestWidth_Label.SetText( "Width:" );
+   RegionOfInterestWidth_Label.SetMinWidth( labelWidth1 );
+   RegionOfInterestWidth_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
+   RegionOfInterestWidth_Label.SetToolTip( "<p>Width of the ROI in pixels.</p>" );
 
-   StarDetectorParameters_ROIWidth_SpinBox.SetRange( TheSSROIX1Parameter->MinimumValue(),
-                                                     TheSSROIX1Parameter->MaximumValue() );
-   StarDetectorParameters_ROIWidth_SpinBox.SetToolTip( "<p>Width of the ROI in pixels.</p>" );
-   StarDetectorParameters_ROIWidth_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)
-                                    &SubframeSelectorInterface::e_SpinValueUpdated, w );
+   RegionOfInterestWidth_SpinBox.SetRange( TheSSROIX1Parameter->MinimumValue(), TheSSROIX1Parameter->MaximumValue() );
+   RegionOfInterestWidth_SpinBox.SetFixedWidth( editWidth1 );
+   RegionOfInterestWidth_SpinBox.SetToolTip( "<p>Width of the ROI in pixels.</p>" );
+   RegionOfInterestWidth_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&SubframeSelectorInterface::e_SpinValueUpdated, w );
 
-   StarDetectorParameters_ROIHeight_Label.SetText( "Height:" );
-   StarDetectorParameters_ROIHeight_Label.SetMinWidth( labelWidth2 );
-   StarDetectorParameters_ROIHeight_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
-   StarDetectorParameters_ROIHeight_Label.SetToolTip( "<p>Height of the ROI in pixels.</p>" );
+   RegionOfInterestHeight_Label.SetText( "Height:" );
+   RegionOfInterestHeight_Label.SetMinWidth( labelWidth2 );
+   RegionOfInterestHeight_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
+   RegionOfInterestHeight_Label.SetToolTip( "<p>Height of the ROI in pixels.</p>" );
 
-   StarDetectorParameters_ROIHeight_SpinBox.SetRange( TheSSROIY1Parameter->MinimumValue(),
-                                                      TheSSROIY1Parameter->MaximumValue() );
-   StarDetectorParameters_ROIHeight_SpinBox.SetToolTip( "<p>Height of the ROI in pixels.</p>" );
-   StarDetectorParameters_ROIHeight_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)
-                                    &SubframeSelectorInterface::e_SpinValueUpdated, w );
+   RegionOfInterestHeight_SpinBox.SetRange( TheSSROIY1Parameter->MinimumValue(), TheSSROIY1Parameter->MaximumValue() );
+   RegionOfInterestHeight_SpinBox.SetFixedWidth( editWidth1 );
+   RegionOfInterestHeight_SpinBox.SetToolTip( "<p>Height of the ROI in pixels.</p>" );
+   RegionOfInterestHeight_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&SubframeSelectorInterface::e_SpinValueUpdated, w );
 
-   StarDetectorParameters_ROISelectPreview_Button.SetText( "From Preview" );
-   StarDetectorParameters_ROISelectPreview_Button.SetToolTip(
+   RegionOfInterestSelectPreview_Button.SetText( "From Preview" );
+   RegionOfInterestSelectPreview_Button.SetToolTip(
            "<p>Import ROI coordinates from an existing preview.</p>" );
-   StarDetectorParameters_ROISelectPreview_Button.OnClick( (Button::click_event_handler)
-                                    &SubframeSelectorInterface::e_ButtonClick, w );
-   StarDetectorParameters_ROISelectPreview_Button.OnViewDrag( (Control::view_drag_event_handler)
-                                    &SubframeSelectorInterface::e_StarDetector_ViewDrag, w );
-   StarDetectorParameters_ROISelectPreview_Button.OnViewDrop( (Control::view_drop_event_handler)
-                                    &SubframeSelectorInterface::e_StarDetector_ViewDrop, w );
+   RegionOfInterestSelectPreview_Button.OnClick( (Button::click_event_handler)&SubframeSelectorInterface::e_ButtonClick, w );
+   RegionOfInterestSelectPreview_Button.OnViewDrag( (Control::view_drag_event_handler)&SubframeSelectorInterface::e_StarDetector_ViewDrag, w );
+   RegionOfInterestSelectPreview_Button.OnViewDrop( (Control::view_drop_event_handler)&SubframeSelectorInterface::e_StarDetector_ViewDrop, w );
 
-   StarDetectorParameters_ROIRow2_Sizer.SetSpacing( 4 );
-   StarDetectorParameters_ROIRow2_Sizer.Add( StarDetectorParameters_ROIWidth_Label );
-   StarDetectorParameters_ROIRow2_Sizer.Add( StarDetectorParameters_ROIWidth_SpinBox );
-   StarDetectorParameters_ROIRow2_Sizer.Add( StarDetectorParameters_ROIHeight_Label );
-   StarDetectorParameters_ROIRow2_Sizer.Add( StarDetectorParameters_ROIHeight_SpinBox );
-   StarDetectorParameters_ROIRow2_Sizer.AddSpacing( 12 );
-   StarDetectorParameters_ROIRow2_Sizer.Add( StarDetectorParameters_ROISelectPreview_Button );
-   StarDetectorParameters_ROIRow2_Sizer.AddStretch();
+   RegionOfInterestRow2_Sizer.SetSpacing( 4 );
+   RegionOfInterestRow2_Sizer.Add( RegionOfInterestWidth_Label );
+   RegionOfInterestRow2_Sizer.Add( RegionOfInterestWidth_SpinBox );
+   RegionOfInterestRow2_Sizer.Add( RegionOfInterestHeight_Label );
+   RegionOfInterestRow2_Sizer.Add( RegionOfInterestHeight_SpinBox );
+   RegionOfInterestRow2_Sizer.AddSpacing( 12 );
+   RegionOfInterestRow2_Sizer.Add( RegionOfInterestSelectPreview_Button );
+   RegionOfInterestRow2_Sizer.AddStretch();
 
-   StarDetectorParameters_ROI_Sizer.SetSpacing( 4 );
-   StarDetectorParameters_ROI_Sizer.Add( StarDetectorParameters_ROIRow1_Sizer );
-   StarDetectorParameters_ROI_Sizer.Add( StarDetectorParameters_ROIRow2_Sizer );
+   RegionOfInterest_Sizer.SetSpacing( 4 );
+   RegionOfInterest_Sizer.Add( RegionOfInterestRow1_Sizer );
+   RegionOfInterest_Sizer.Add( RegionOfInterestRow2_Sizer );
 
-   StarDetectorParameters_ROI_Control.SetSizer( StarDetectorParameters_ROI_Sizer );
+   RegionOfInterest_Control.SetSizer( RegionOfInterest_Sizer );
 
    //
 
@@ -1447,8 +1442,8 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
    Global_Sizer.Add( SystemParameters_Control );
    Global_Sizer.Add( StarDetectorParameters_SectionBar );
    Global_Sizer.Add( StarDetectorParameters_Control );
-   Global_Sizer.Add( StarDetectorParameters_ROI_SectionBar );
-   Global_Sizer.Add( StarDetectorParameters_ROI_Control );
+   Global_Sizer.Add( RegionOfInterest_SectionBar );
+   Global_Sizer.Add( RegionOfInterest_Control );
    Global_Sizer.Add( Pedestal_SectionBar );
    Global_Sizer.Add( Pedestal_Control );
    Global_Sizer.Add( FormatHints_SectionBar );
@@ -1461,7 +1456,7 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
    StarDetectorParameters_Control.Hide();
    Pedestal_Control.Hide();
    FormatHints_Control.Hide();
-   StarDetectorParameters_ROI_Control.Hide();
+   RegionOfInterest_Control.Hide();
 
    w.EnsureLayoutUpdated();
    w.AdjustToContents();
@@ -1475,4 +1470,4 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInterface.cpp - Released 2021-11-18T17:01:48Z
+// EOF SubframeSelectorInterface.cpp - Released 2021-11-21T21:48:09Z

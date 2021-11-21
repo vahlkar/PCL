@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.6.2
+// Standard SubframeSelector Process Module Version 1.6.5
 // ----------------------------------------------------------------------------
-// SubframeSelectorMeasureData.h - Released 2021-11-18T17:01:48Z
+// SubframeSelectorMeasureData.h - Released 2021-11-21T21:48:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -192,7 +192,7 @@ struct MeasureItem
 
    bool operator ==( const MeasureItem& item ) const
    {
-      return index == item.index;
+      return path == item.path;
    }
 
    void Input( const MeasureData& measureData )
@@ -305,15 +305,20 @@ struct MeasureUtils
                                   int cameraResolution, int dataUnit,
                                   pcl::MeasureProperties& properties );
 
-   static void MeasureProperty( Array<double>& values, MeasureProperty& property )
+   static void MeasureProperty( const Array<double>& values, MeasureProperty& property )
    {
-      for ( Array<double>::const_iterator i = values.Begin(); i != values.End(); ++i )
+      if ( values.IsEmpty() )
+         property.min = property.max = property.median = property.deviation = 0;
+      else
       {
-         property.min = pcl::Min( *i, property.min );
-         property.max = pcl::Max( *i, property.max );
+         for ( Array<double>::const_iterator i = values.Begin(); i != values.End(); ++i )
+         {
+            property.min = pcl::Min( *i, property.min );
+            property.max = pcl::Max( *i, property.max );
+         }
+         property.median = pcl::Median( values.Begin(), values.End() );
+         property.deviation = pcl::AvgDev( values.Begin(), values.End(), property.median );
       }
-      property.median = pcl::Median( values.Begin(), values.End() );
-      property.deviation = pcl::AvgDev( values.Begin(), values.End(), property.median );
    }
 
    static void MedianAndMeanDeviation( Array<double>& values,
@@ -356,4 +361,4 @@ private:
 #endif   // __SubframeSelectorMeasureData_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorMeasureData.h - Released 2021-11-18T17:01:48Z
+// EOF SubframeSelectorMeasureData.h - Released 2021-11-21T21:48:09Z

@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.6.2
+// Standard SubframeSelector Process Module Version 1.6.5
 // ----------------------------------------------------------------------------
-// SubframeSelectorMeasureData.cpp - Released 2021-11-18T17:01:48Z
+// SubframeSelectorMeasureData.cpp - Released 2021-11-21T21:48:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -333,51 +333,30 @@ void MeasureUtils::MeasureProperties( const MeasureItemList& measures, double su
                                       int cameraResolution, int dataUnit,
                                       pcl::MeasureProperties& properties )
 {
-   size_type measuresLength( measures.Length() );
+   Array<double>
+   weight, fwhm, eccentricity, psfSignalWeight, psfPowerWeight, snrWeight,
+   median, medianMeanDev, noise, noiseRatio, stars, starResidual, fwhmMeanDev,
+   eccentricityMeanDev, starResidualMeanDev, azimuth, altitude;
 
-   Array<double> weight( measuresLength );
-   Array<double> fwhm( measuresLength );
-   Array<double> eccentricity( measuresLength );
-   Array<double> psfSignalWeight( measuresLength );
-   Array<double> psfPowerWeight( measuresLength );
-   Array<double> snrWeight( measuresLength );
-   Array<double> median( measuresLength );
-   Array<double> medianMeanDev( measuresLength );
-   Array<double> noise( measuresLength );
-   Array<double> noiseRatio( measuresLength );
-   Array<double> stars( measuresLength );
-   Array<double> starResidual( measuresLength );
-   Array<double> fwhmMeanDev( measuresLength );
-   Array<double> eccentricityMeanDev( measuresLength );
-   Array<double> starResidualMeanDev( measuresLength );
-   Array<double> azimuth( measuresLength );
-   Array<double> altitude( measuresLength );
-
-   for ( size_type i = 0; i < measuresLength; ++i )
+   for ( const MeasureItem& item : measures )
    {
-      weight[i] = measures[i].weight;
-      fwhm[i] = measures[i].FWHM( subframeScale, scaleUnit );
-      eccentricity[i] = measures[i].eccentricity;
-      psfSignalWeight[i] = measures[i].psfSignalWeight;
-      psfPowerWeight[i] = measures[i].psfPowerWeight;
-      snrWeight[i] = measures[i].snrWeight;
-      median[i] = measures[i].Median( cameraGain,
-                                      TheSSCameraResolutionParameter->ElementData( cameraResolution ),
-                                      dataUnit );
-      medianMeanDev[i] = measures[i].MedianMeanDev( cameraGain,
-                                                    TheSSCameraResolutionParameter->ElementData( cameraResolution ),
-                                                    dataUnit );
-      noise[i] = measures[i].Noise( cameraGain,
-                                    TheSSCameraResolutionParameter->ElementData( cameraResolution ),
-                                    dataUnit );
-      noiseRatio[i] = measures[i].noiseRatio;
-      stars[i] = measures[i].stars;
-      starResidual[i] = measures[i].starResidual;
-      fwhmMeanDev[i] = measures[i].FWHMMeanDeviation( subframeScale, scaleUnit );
-      eccentricityMeanDev[i] = measures[i].eccentricityMeanDev;
-      starResidualMeanDev[i] = measures[i].starResidualMeanDev;
-      azimuth[i] = measures[i].azimuth;
-      altitude[i] = measures[i].altitude;
+      weight << item.weight;
+      fwhm << item.FWHM( subframeScale, scaleUnit );
+      eccentricity << item.eccentricity;
+      psfSignalWeight << item.psfSignalWeight;
+      psfPowerWeight << item.psfPowerWeight;
+      snrWeight << item.snrWeight;
+      median << item.Median( cameraGain, TheSSCameraResolutionParameter->ElementData( cameraResolution ), dataUnit );
+      medianMeanDev << item.MedianMeanDev( cameraGain, TheSSCameraResolutionParameter->ElementData( cameraResolution ), dataUnit );
+      noise << item.Noise( cameraGain, TheSSCameraResolutionParameter->ElementData( cameraResolution ), dataUnit );
+      noiseRatio << item.noiseRatio;
+      stars << item.stars;
+      starResidual << item.starResidual;
+      fwhmMeanDev << item.FWHMMeanDeviation( subframeScale, scaleUnit );
+      eccentricityMeanDev << item.eccentricityMeanDev;
+      starResidualMeanDev << item.starResidualMeanDev;
+      azimuth << item.azimuth;
+      altitude << item.altitude;
    }
 
    MeasureUtils::MeasureProperty( weight, properties.weight );
@@ -404,4 +383,4 @@ void MeasureUtils::MeasureProperties( const MeasureItemList& measures, double su
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorMeasureData.cpp - Released 2021-11-18T17:01:48Z
+// EOF SubframeSelectorMeasureData.cpp - Released 2021-11-21T21:48:09Z

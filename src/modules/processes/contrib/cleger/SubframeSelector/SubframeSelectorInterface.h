@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.6.2
+// Standard SubframeSelector Process Module Version 1.6.5
 // ----------------------------------------------------------------------------
-// SubframeSelectorInterface.h - Released 2021-11-18T17:01:48Z
+// SubframeSelectorInterface.h - Released 2021-11-21T21:48:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -172,20 +172,20 @@ private:
          HorizontalSizer   StarDetectorParameters_PSFFitCircular_Sizer;
             CheckBox          StarDetectorParameters_PSFFitCircular_CheckBox;
 
-      SectionBar        StarDetectorParameters_ROI_SectionBar;
-      Control           StarDetectorParameters_ROI_Control;
-      VerticalSizer     StarDetectorParameters_ROI_Sizer;
-         HorizontalSizer   StarDetectorParameters_ROIRow1_Sizer;
-            Label             StarDetectorParameters_ROIX0_Label;
-            SpinBox           StarDetectorParameters_ROIX0_SpinBox;
-            Label             StarDetectorParameters_ROIY0_Label;
-            SpinBox           StarDetectorParameters_ROIY0_SpinBox;
-         HorizontalSizer   StarDetectorParameters_ROIRow2_Sizer;
-            Label             StarDetectorParameters_ROIWidth_Label;
-            SpinBox           StarDetectorParameters_ROIWidth_SpinBox;
-            Label             StarDetectorParameters_ROIHeight_Label;
-            SpinBox           StarDetectorParameters_ROIHeight_SpinBox;
-            PushButton        StarDetectorParameters_ROISelectPreview_Button;
+      SectionBar        RegionOfInterest_SectionBar;
+      Control           RegionOfInterest_Control;
+      VerticalSizer     RegionOfInterest_Sizer;
+         HorizontalSizer   RegionOfInterestRow1_Sizer;
+            Label             RegionOfInterestX0_Label;
+            SpinBox           RegionOfInterestX0_SpinBox;
+            Label             RegionOfInterestY0_Label;
+            SpinBox           RegionOfInterestY0_SpinBox;
+         HorizontalSizer   RegionOfInterestRow2_Sizer;
+            Label             RegionOfInterestWidth_Label;
+            SpinBox           RegionOfInterestWidth_SpinBox;
+            Label             RegionOfInterestHeight_Label;
+            SpinBox           RegionOfInterestHeight_SpinBox;
+            PushButton        RegionOfInterestSelectPreview_Button;
 
       SectionBar        Pedestal_SectionBar;
       Control           Pedestal_Control;
@@ -283,4 +283,4 @@ PCL_END_LOCAL
 #endif   // e_SubframeSelectorInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInterface.h - Released 2021-11-18T17:01:48Z
+// EOF SubframeSelectorInterface.h - Released 2021-11-21T21:48:09Z

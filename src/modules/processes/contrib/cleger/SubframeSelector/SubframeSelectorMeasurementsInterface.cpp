@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.6.2
+// Standard SubframeSelector Process Module Version 1.6.5
 // ----------------------------------------------------------------------------
-// SubframeSelectorMeasurementsInterface.cpp - Released 2021-11-18T17:01:48Z
+// SubframeSelectorMeasurementsInterface.cpp - Released 2021-11-21T21:48:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -214,6 +214,7 @@ void SubframeSelectorMeasurementsInterface::Cleanup()
 {
    if ( GUI != nullptr )
    {
+      GUI->MeasurementTable_TreeBox.Clear();
       GUI->MeasurementGraph_WebView.Cleanup();
       GUI->MeasurementDistributionGraph_WebView.Cleanup();
    }
@@ -222,24 +223,69 @@ void SubframeSelectorMeasurementsInterface::Cleanup()
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-TreeBox::Node* SubframeSelectorMeasurementsInterface::MeasurementNodeByItem( const MeasureItem* item ) const
+class MeasurementNode : public TreeBox::Node
 {
-   if ( item == nullptr )
-      return nullptr;
-   MeasureItemList::const_iterator i = m_instance.o_measures.Search( *item );
-   if ( i == m_instance.o_measures.End() )
-      return nullptr;
-   int index = i - m_instance.o_measures.Begin();
-   if ( index >= GUI->MeasurementTable_TreeBox.NumberOfChildren() )
-      return nullptr;
-   return GUI->MeasurementTable_TreeBox[index];
+public:
+
+      MeasurementNode() = default;
+
+      MeasurementNode( TreeBox::Node& parent, MeasureItem* item, int index )
+         : TreeBox::Node( parent, index )
+         , m_item( item )
+      {
+      }
+
+      MeasurementNode( TreeBox& parentTree, MeasureItem* item, int index = -1 )
+         : TreeBox::Node( parentTree, index )
+         , m_item( item )
+      {
+      }
+
+      const MeasureItem* Item() const
+      {
+         return m_item;
+      }
+
+      MeasureItem* Item()
+      {
+         return m_item;
+      }
+
+private:
+
+   MeasureItem* m_item = nullptr;
+};
+
+// ----------------------------------------------------------------------------
+
+MeasurementNode* SubframeSelectorMeasurementsInterface::MeasurementNodeByItem( const MeasureItem* item ) const
+{
+   if ( item != nullptr )
+      for ( int i = 0, n = GUI->MeasurementTable_TreeBox.NumberOfChildren(); i < n; ++i )
+      {
+         MeasurementNode* node = static_cast<MeasurementNode*>( GUI->MeasurementTable_TreeBox[i] );
+         if ( node->Item() == item )
+            return node;
+      }
+   return nullptr;
+}
+
+// ----------------------------------------------------------------------------
+
+MeasureItem* SubframeSelectorMeasurementsInterface::MeasureItemByGraphIndex( int index ) const
+{
+   if ( --index >= 0 ) // 1-based to 0-based
+      for ( MeasureItem& item : m_instance.o_measures )
+         if ( item.index == unsigned( index ) )
+            return &item;
+   return nullptr;
 }
 
 // ----------------------------------------------------------------------------
 
 void SubframeSelectorMeasurementsInterface::UpdateControls()
 {
-   UpdateMeasurementImagesList();
+   UpdateMeasurementTable();
    UpdateMeasurementGraph();
 }
 
@@ -247,38 +293,34 @@ void SubframeSelectorMeasurementsInterface::UpdateControls()
 
 void SubframeSelectorMeasurementsInterface::UpdateMeasurementQuantity()
 {
-   // Update the table and gather quantities
-   int approved = 0;
-   int locked = 0;
-   size_type amount = m_instance.o_measures.Length();
-   if ( amount > 0 )
-   {
-      for ( MeasureItemList::const_iterator i = m_instance.o_measures.Begin(); i < m_instance.o_measures.End(); ++i )
-      {
-         if ( i->enabled )
-            ++approved;
-         if ( i->locked )
-            ++locked;
-      }
-
-      GUI->MeasurementsTable_Quantities_Label.SetText(
-         String().Format( "%i/%i Approved (%.2f%%), %i Locked (%.2f%%)",
-                          approved, amount, 100.0*approved/amount,
-                          locked, 100.0*locked/amount ) );
-   }
+   if ( m_instance.o_measures.IsEmpty() )
+      GUI->MeasurementsTable_Quantities_Label.SetText( "No measurements" );
    else
    {
-      GUI->MeasurementsTable_Quantities_Label.SetText( "0/0 Approved (0%), 0 Locked (0%)" );
+      size_type approved = 0;
+      size_type locked = 0;
+      size_type amount = m_instance.o_measures.Length();
+      for ( const MeasureItem& item : m_instance.o_measures )
+      {
+         if ( item.enabled )
+            ++approved;
+         if ( item.locked )
+            ++locked;
+      }
+      GUI->MeasurementsTable_Quantities_Label.SetText(
+         String().Format( "%u/%u Approved (%.2f%%), %u Locked (%.2f%%)",
+                          approved, amount, 100.0*approved/amount,
+                          locked, 100.0*locked/amount ) );
    }
 }
 
 // ----------------------------------------------------------------------------
 
-void SubframeSelectorMeasurementsInterface::UpdateMeasurementImageItem( size_type i, MeasureItem* item )
+void SubframeSelectorMeasurementsInterface::UpdateMeasurementNode( MeasurementNode* node )
 {
-   TreeBox::Node* node = GUI->MeasurementTable_TreeBox[i];
    if ( node == nullptr )
       return;
+   MeasureItem* item = node->Item();
    if ( item == nullptr )
       return;
 
@@ -357,7 +399,7 @@ void SubframeSelectorMeasurementsInterface::UpdateMeasurementImageItem( size_typ
 
 // ----------------------------------------------------------------------------
 
-void SubframeSelectorMeasurementsInterface::UpdateMeasurementImagesList()
+void SubframeSelectorMeasurementsInterface::UpdateMeasurementTable()
 {
    GUI->MeasurementsTable_SortingProperty_ComboBox.SetCurrentItem(
             s_sortingPropertyToComboBoxItemIndex[m_instance.p_sortingProperty] );
@@ -366,46 +408,37 @@ void SubframeSelectorMeasurementsInterface::UpdateMeasurementImagesList()
    TheSubframeSelectorExpressionsInterface->ApplyWeightingExpression();
    TheSubframeSelectorExpressionsInterface->ApplyApprovalExpression();
 
-   GUI->MeasurementTable_TreeBox.DisableUpdates();
-
-   // Removing/Adding all the items can be slow; try to update each items text if possible
-   bool shouldRecreate = m_instance.o_measures.Length()
-                         != size_type( GUI->MeasurementTable_TreeBox.NumberOfChildren() );
-
-   // Store all current selections to re-select later
-   const IndirectArray<TreeBox::Node>& selections = GUI->MeasurementTable_TreeBox.SelectedNodes();
-   Array<int> currentIds( selections.Length() );
-   for ( size_type i = 0; i < selections.Length(); ++i )
-      currentIds[i] = GUI->MeasurementTable_TreeBox.ChildIndex( selections[i] );
-
-   // When the number of items changes, it's easier to add all items over again
-   if ( shouldRecreate )
-      GUI->MeasurementTable_TreeBox.Clear();
-
-   // Ensure items are sorted properly
-   MeasureItemList measuresSorted( m_instance.o_measures );
-   measuresSorted.Sort( SubframeSortingBinaryPredicate( m_instance.p_sortingProperty,
-                                    GUI->MeasurementsTable_SortingMode_ComboBox.CurrentItem() ) );
-
-   // Update the table
-   for ( size_type n = measuresSorted.Length(), i = 0; i < n; ++i )
+   // Store current item selection to re-select later
+   MeasureItemList selectedItems;
    {
-      if ( shouldRecreate )
-         new TreeBox::Node( GUI->MeasurementTable_TreeBox );
-      UpdateMeasurementImageItem( i, measuresSorted.At( i ) );
+      IndirectArray<TreeBox::Node> selectedNodes = GUI->MeasurementTable_TreeBox.SelectedNodes();
+      for ( TreeBox::Node* node : selectedNodes )
+         selectedItems << *static_cast<MeasurementNode*>( node )->Item();
    }
 
+   // Prevent interface updates while we are modifying the table
+   GUI->MeasurementTable_TreeBox.DisableUpdates();
+   GUI->MeasurementTable_TreeBox.Clear();
+
+   // Ensure items are sorted properly
+   m_instance.o_measures.Sort( SubframeSortingBinaryPredicate( m_instance.p_sortingProperty,
+                                    GUI->MeasurementsTable_SortingMode_ComboBox.CurrentItem() ) );
+
+   // Regenerate the table
+   for ( MeasureItem& item : m_instance.o_measures )
+   {
+      MeasurementNode* node = new MeasurementNode( GUI->MeasurementTable_TreeBox, &item );
+      UpdateMeasurementNode( node );
+      // Re-select previously selected items
+      if ( selectedItems.Contains( item ) )
+         node->Select();
+   }
+
+   // Adjust all table columns
    for ( int i = 0, n = GUI->MeasurementTable_TreeBox.NumberOfColumns(); i < n; ++i )
       GUI->MeasurementTable_TreeBox.AdjustColumnWidthToContents( i );
 
-   // If the table was cleared, setup previous selections
-   if ( shouldRecreate )
-      if ( !m_instance.o_measures.IsEmpty() )
-         for ( size_type i = 0; i < currentIds.Length(); ++i )
-            if ( currentIds[i] >= 0 )
-               if ( currentIds[i] < GUI->MeasurementTable_TreeBox.NumberOfChildren() )
-                  GUI->MeasurementTable_TreeBox.Child( currentIds[i] )->Select();
-
+   // Update everything
    GUI->MeasurementTable_TreeBox.EnableUpdates();
    UpdateMeasurementQuantity();
 }
@@ -417,104 +450,84 @@ void SubframeSelectorMeasurementsInterface::UpdateMeasurementGraph()
    GUI->MeasurementGraph_WebViewProperty_ComboBox.SetCurrentItem(
             s_graphPropertyToComboBoxItemIndex[m_instance.p_graphProperty] );
 
-   DataPointVector dataset( m_instance.o_measures.Length() );
-   for ( size_type i = 0; i < m_instance.o_measures.Length(); ++i )
+   DataPointVector dataset( int( m_instance.o_measures.Length() ) );
+   int i = 0;
+   for ( const MeasureItem& item : m_instance.o_measures )
    {
-      dataset[i].x = m_instance.o_measures[i].index + 1; // N.B. 1-based index, 0-based arrays
+      DataPoint& point = dataset[i++];
+
+      point.x = item.index + 1; // N.B. 1-based table/graph index, 0-based arrays
+
       switch ( m_instance.p_graphProperty )
       {
       default: // ?!
       case SSGraphProperty::Weight:
-         dataset[i].data = m_instance.o_measures[i].weight;
+         point.data = item.weight;
          break;
       case SSGraphProperty::FWHM:
-         dataset[i].data = m_instance.o_measures[i].FWHM( m_instance.p_subframeScale, m_instance.p_scaleUnit );
+         point.data = item.FWHM( m_instance.p_subframeScale, m_instance.p_scaleUnit );
          break;
       case SSGraphProperty::Eccentricity:
-         dataset[i].data = m_instance.o_measures[i].eccentricity;
+         point.data = item.eccentricity;
          break;
       case SSGraphProperty::PSFSignalWeight:
-         dataset[i].data = m_instance.o_measures[i].psfSignalWeight;
+         point.data = item.psfSignalWeight;
          break;
       case SSGraphProperty::PSFPowerWeight:
-         dataset[i].data = m_instance.o_measures[i].psfPowerWeight;
+         point.data = item.psfPowerWeight;
          break;
       case SSGraphProperty::SNRWeight:
-         dataset[i].data = m_instance.o_measures[i].snrWeight;
+         point.data = item.snrWeight;
          break;
       case SSGraphProperty::Median:
-         dataset[i].data = m_instance.o_measures[i].Median( m_instance.p_cameraGain,
-                              TheSSCameraResolutionParameter->ElementData( m_instance.p_cameraResolution ),
-                              m_instance.p_dataUnit );
+         point.data = item.Median( m_instance.p_cameraGain,
+                                   TheSSCameraResolutionParameter->ElementData( m_instance.p_cameraResolution ),
+                                   m_instance.p_dataUnit );
          break;
       case SSGraphProperty::MedianMeanDev:
-         dataset[i].data = m_instance.o_measures[i].MedianMeanDev( m_instance.p_cameraGain,
-                              TheSSCameraResolutionParameter->ElementData( m_instance.p_cameraResolution ),
-                              m_instance.p_dataUnit );
+         point.data = item.MedianMeanDev( m_instance.p_cameraGain,
+                                          TheSSCameraResolutionParameter->ElementData( m_instance.p_cameraResolution ),
+                                          m_instance.p_dataUnit );
          break;
       case SSGraphProperty::Noise:
-         dataset[i].data = m_instance.o_measures[i].Noise( m_instance.p_cameraGain,
-                              TheSSCameraResolutionParameter->ElementData( m_instance.p_cameraResolution ),
-                              m_instance.p_dataUnit );
+         point.data = item.Noise( m_instance.p_cameraGain,
+                                  TheSSCameraResolutionParameter->ElementData( m_instance.p_cameraResolution ),
+                                  m_instance.p_dataUnit );
          break;
       case SSGraphProperty::NoiseRatio:
-         dataset[i].data = m_instance.o_measures[i].noiseRatio;
+         point.data = item.noiseRatio;
          break;
       case SSGraphProperty::Stars:
-         dataset[i].data = m_instance.o_measures[i].stars;
+         point.data = item.stars;
          break;
       case SSGraphProperty::StarResidual:
-         dataset[i].data = m_instance.o_measures[i].starResidual;
+         point.data = item.starResidual;
          break;
       case SSGraphProperty::FWHMMeanDev:
-         dataset[i].data = m_instance.o_measures[i].FWHMMeanDeviation( m_instance.p_subframeScale, m_instance.p_scaleUnit );
+         point.data = item.FWHMMeanDeviation( m_instance.p_subframeScale, m_instance.p_scaleUnit );
          break;
       case SSGraphProperty::EccentricityMeanDev:
-         dataset[i].data = m_instance.o_measures[i].eccentricityMeanDev;
+         point.data = item.eccentricityMeanDev;
          break;
       case SSGraphProperty::StarResidualMeanDev:
-         dataset[i].data = m_instance.o_measures[i].starResidualMeanDev;
+         point.data = item.starResidualMeanDev;
          break;
       case SSGraphProperty::Azimuth:
-         dataset[i].data = m_instance.o_measures[i].azimuth;
+         point.data = item.azimuth;
          break;
       case SSGraphProperty::Altitude:
-         dataset[i].data = m_instance.o_measures[i].altitude;
+         point.data = item.altitude;
          break;
       }
-      dataset[i].weight = m_instance.o_measures[i].weight;
-      dataset[i].approved = m_instance.o_measures[i].enabled;
-      dataset[i].locked = m_instance.o_measures[i].locked;
+      point.weight = item.weight;
+      point.approved = item.enabled;
+      point.locked = item.locked;
    }
 
    GUI->MeasurementGraph_WebView.SetDataset( TheSSGraphPropertyParameter->ElementLabel( m_instance.p_graphProperty ), &dataset );
 }
 
 // ----------------------------------------------------------------------------
-// ----------------------------------------------------------------------------
-
-void SubframeSelectorMeasurementsInterface::SetMeasurements( const MeasureItemList& measures )
-{
-   m_instance.o_measures = measures;
-   UpdateControls();
-}
-
-// ----------------------------------------------------------------------------
-
-MeasureItem* SubframeSelectorMeasurementsInterface::MeasureItemByGraphIndex( int index ) const
-{
-   if ( index > 0 )
-      if ( index <= int( m_instance.o_measures.Length() ) )
-      {
-         --index; // 1-based to 0-based
-         for ( MeasureItem& item : m_instance.o_measures )
-            if ( item.index == unsigned( index ) )
-               return &item;
-      }
-
-   return nullptr;
-}
-
 // ----------------------------------------------------------------------------
 
 void SubframeSelectorMeasurementsInterface::ExportCSV() const
@@ -562,36 +575,36 @@ void SubframeSelectorMeasurementsInterface::ExportCSV() const
                "Eccentricity,Altitude,Azimuth,Median,Median Mean Deviation,Noise,Noise Ratio,Stars,Star Residual,FWHM Mean Deviation,"
                "Eccentricity Mean Deviation,Star Residual Mean Deviation";
 
-      for ( const MeasureItem& i : m_instance.o_measures )
+      for ( const MeasureItem& item : m_instance.o_measures )
       {
-         lines << IsoString( i.index + 1 ) + ',' + // N.B. 1-based index, 0-based arrays
-                  (i.enabled ? "true," : "false,") +
-                  (i.locked ? "true," : "false,") +
-                  '"' + i.path.ToUTF8() + '"' + ',' +
+         lines << IsoString( item.index + 1 ) + ',' + // N.B. 1-based table/graph index, 0-based arrays
+                  (item.enabled ? "true," : "false,") +
+                  (item.locked ? "true," : "false,") +
+                  '"' + item.path.ToUTF8() + '"' + ',' +
                   IsoString().Format( "%.6e,%.6e,%.6e,%.6e,%.4f,%.4f,%.4f,%.4f,%.6e,%.6e,%.4e,%.4f,%d,%.4f,%.4f,%.4f,%.4f",
-                     i.weight,
-                     i.psfSignalWeight,
-                     i.psfPowerWeight,
-                     i.snrWeight,
-                     i.FWHM( m_instance.p_subframeScale, m_instance.p_scaleUnit ),
-                     i.eccentricity,
-                     i.altitude,
-                     i.azimuth,
-                     i.Median( m_instance.p_cameraGain,
-                               TheSSCameraResolutionParameter->ElementData( m_instance.p_cameraResolution ),
-                               m_instance.p_dataUnit ),
-                     i.MedianMeanDev( m_instance.p_cameraGain,
-                                      TheSSCameraResolutionParameter->ElementData( m_instance.p_cameraResolution ),
-                                      m_instance.p_dataUnit ),
-                     i.Noise( m_instance.p_cameraGain,
-                              TheSSCameraResolutionParameter->ElementData( m_instance.p_cameraResolution ),
-                              m_instance.p_dataUnit ),
-                     i.noiseRatio,
-                     i.stars,
-                     i.starResidual,
-                     i.FWHMMeanDeviation( m_instance.p_subframeScale, m_instance.p_scaleUnit ),
-                     i.eccentricityMeanDev,
-                     i.starResidualMeanDev );
+                     item.weight,
+                     item.psfSignalWeight,
+                     item.psfPowerWeight,
+                     item.snrWeight,
+                     item.FWHM( m_instance.p_subframeScale, m_instance.p_scaleUnit ),
+                     item.eccentricity,
+                     item.altitude,
+                     item.azimuth,
+                     item.Median( m_instance.p_cameraGain,
+                                  TheSSCameraResolutionParameter->ElementData( m_instance.p_cameraResolution ),
+                                  m_instance.p_dataUnit ),
+                     item.MedianMeanDev( m_instance.p_cameraGain,
+                                         TheSSCameraResolutionParameter->ElementData( m_instance.p_cameraResolution ),
+                                         m_instance.p_dataUnit ),
+                     item.Noise( m_instance.p_cameraGain,
+                                 TheSSCameraResolutionParameter->ElementData( m_instance.p_cameraResolution ),
+                                 m_instance.p_dataUnit ),
+                     item.noiseRatio,
+                     item.stars,
+                     item.starResidual,
+                     item.FWHMMeanDeviation( m_instance.p_subframeScale, m_instance.p_scaleUnit ),
+                     item.eccentricityMeanDev,
+                     item.starResidualMeanDev );
          ++monitor;
       }
 
@@ -615,7 +628,6 @@ void SubframeSelectorMeasurementsInterface::ExportPDF() const
    {
       Console console;
       String filePath = d.FileName();
-      //File f = File::CreateFileForWriting( filePath );
       console.WriteLn( "Generating output PDF file: " + filePath );
       GUI->MeasurementGraph_WebView.SaveAsPDF( filePath, 210/*width*/, 297/*height*/, 5, 5, 5, 5/*margins*/, true/*landscape*/ );
       console.WriteLn( "Generated PDF file: " + filePath );
@@ -646,21 +658,17 @@ void SubframeSelectorMeasurementsInterface::e_ToggleSection( SectionBar& sender,
 void SubframeSelectorMeasurementsInterface::e_CurrentNodeUpdated( TreeBox& sender,
                                                    TreeBox::Node& current, TreeBox::Node& oldCurrent )
 {
-   // Actually do nothing (placeholder). Just perform a sanity check.
-   int index = sender.ChildIndex( &current );
-   if ( index < 0 || size_type( index ) >= m_instance.o_measures.Length() )
-      throw Error( "SubframeSelectorMeasurementsInterface: *Warning* Corrupted interface structures" );
+   // placeholder
 }
 
 // ----------------------------------------------------------------------------
 
 void SubframeSelectorMeasurementsInterface::e_NodeActivated( TreeBox& sender, TreeBox::Node& node, int col )
 {
-   int index = sender.ChildIndex( &node );
-   if ( index < 0 || size_type( index ) >= m_instance.o_measures.Length() )
-      throw Error( "SubframeSelectorMeasurementsInterface: *Warning* Corrupted interface structures" );
-
-   MeasureItem* item = m_instance.o_measures.At( index );
+   MeasurementNode& measurementNode = static_cast<MeasurementNode&>( node );
+   MeasureItem* item = measurementNode.Item();
+   if ( item == nullptr )
+      return;
 
    switch ( col )
    {
@@ -671,14 +679,14 @@ void SubframeSelectorMeasurementsInterface::e_NodeActivated( TreeBox& sender, Tr
       // Activate the item's checkmark: toggle item's enabled state.
       item->enabled = !item->enabled;
       item->locked = true;
-      UpdateMeasurementImageItem( index, item );
+      UpdateMeasurementNode( &measurementNode );
       UpdateMeasurementQuantity();
       UpdateMeasurementGraph();
       break;
    case 2:
       // Activate the item's checkmark: toggle item's locked state.
       item->locked = !item->locked;
-      UpdateMeasurementImageItem( index, item );
+      UpdateMeasurementNode( &measurementNode );
       UpdateMeasurementQuantity();
       UpdateMeasurementGraph();
       break;
@@ -700,23 +708,33 @@ void SubframeSelectorMeasurementsInterface::e_ButtonClick( Button& sender, bool 
    if ( sender == GUI->MeasurementsTable_ToggleApproved_PushButton )
    {
       for ( int i = 0, n = GUI->MeasurementTable_TreeBox.NumberOfChildren(); i < n; ++i )
-         if ( GUI->MeasurementTable_TreeBox[i]->IsSelected() )
+      {
+         MeasurementNode* node = static_cast<MeasurementNode*>( GUI->MeasurementTable_TreeBox[i] );
+         if ( node->IsSelected() )
          {
-            MeasureItem* item = m_instance.o_measures.At( i );
+            MeasureItem* item = node->Item();
             item->enabled = !item->enabled;
             item->locked = true;
+            UpdateMeasurementNode( node );
          }
-      UpdateControls();
+      }
+      UpdateMeasurementQuantity();
+      UpdateMeasurementGraph();
    }
    else if ( sender == GUI->MeasurementsTable_ToggleLocked_PushButton )
    {
       for ( int i = 0, n = GUI->MeasurementTable_TreeBox.NumberOfChildren(); i < n; ++i )
-         if ( GUI->MeasurementTable_TreeBox[i]->IsSelected() )
+      {
+         MeasurementNode* node = static_cast<MeasurementNode*>( GUI->MeasurementTable_TreeBox[i] );
+         if ( node->IsSelected() )
          {
-            MeasureItem* item = m_instance.o_measures.At( i );
+            MeasureItem* item = node->Item();
             item->locked = !item->locked;
+            UpdateMeasurementNode( node );
          }
-      UpdateControls();
+      }
+      UpdateMeasurementQuantity();
+      UpdateMeasurementGraph();
    }
    else if ( sender == GUI->MeasurementsTable_Invert_PushButton )
    {
@@ -726,19 +744,11 @@ void SubframeSelectorMeasurementsInterface::e_ButtonClick( Button& sender, bool 
    else if ( sender == GUI->MeasurementsTable_Remove_PushButton )
    {
       MeasureItemList newMeasures;
-      uint32 index = 0;
-      for ( size_type i = 0; i < m_instance.o_measures.Length(); ++i )
+      for ( int i = 0, n = GUI->MeasurementTable_TreeBox.NumberOfChildren(); i < n; ++i )
       {
-         MeasureItem* item = m_instance.o_measures.At( i );
-         TreeBox::Node* node = GUI->MeasurementTable_TreeBox[i];
-         if ( node == nullptr )
-            continue;
-
+         MeasurementNode* node = static_cast<MeasurementNode*>( GUI->MeasurementTable_TreeBox[i] );
          if ( !node->IsSelected() )
-         {
-            item->index = index++;
-            newMeasures.Add( *item );
-         }
+            newMeasures << *node->Item();
       }
       m_instance.o_measures = newMeasures;
       UpdateControls();
@@ -768,12 +778,12 @@ void SubframeSelectorMeasurementsInterface::e_GraphApprove( GraphWebView &sender
       item->enabled = !item->enabled;
       item->locked = true;
 
-      TreeBox::Node* node = MeasurementNodeByItem( item );
+      MeasurementNode* node = MeasurementNodeByItem( item );
       if ( node != nullptr )
       {
          GUI->MeasurementTable_TreeBox.SetCurrentNode( node );
          GUI->MeasurementTable_TreeBox.SetNodeIntoView( node );
-         UpdateMeasurementImageItem( GUI->MeasurementTable_TreeBox.ChildIndex( node ), item );
+         UpdateMeasurementNode( node );
          UpdateMeasurementQuantity();
          UpdateMeasurementGraph();
       }
@@ -789,13 +799,13 @@ void SubframeSelectorMeasurementsInterface::e_GraphUnlock( GraphWebView &sender,
    {
       item->locked = false;
 
-      TreeBox::Node* node = MeasurementNodeByItem( item );
+      MeasurementNode* node = MeasurementNodeByItem( item );
       if ( node != nullptr )
       {
          GUI->MeasurementTable_TreeBox.SetCurrentNode( node );
          GUI->MeasurementTable_TreeBox.SetNodeIntoView( node );
          TheSubframeSelectorExpressionsInterface->ApplyApprovalExpression();
-         UpdateMeasurementImageItem( GUI->MeasurementTable_TreeBox.ChildIndex( node ), item );
+         UpdateMeasurementNode( node );
          UpdateMeasurementQuantity();
          UpdateMeasurementGraph();
       }
@@ -809,11 +819,11 @@ void SubframeSelectorMeasurementsInterface::e_ItemSelected( ComboBox& sender, in
    if ( sender == GUI->MeasurementsTable_SortingProperty_ComboBox )
    {
       m_instance.p_sortingProperty = s_comboBoxItemIndexToSortingProperty[itemIndex];
-      UpdateMeasurementImagesList();
+      UpdateMeasurementTable();
    }
    else if ( sender == GUI->MeasurementsTable_SortingMode_ComboBox )
    {
-      UpdateMeasurementImagesList();
+      UpdateMeasurementTable();
    }
    else if ( sender == GUI->MeasurementGraph_WebViewProperty_ComboBox )
    {
@@ -1002,4 +1012,4 @@ SubframeSelectorMeasurementsInterface::GUIData::GUIData( SubframeSelectorMeasure
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorMeasurementsInterface.cpp - Released 2021-11-18T17:01:48Z
+// EOF SubframeSelectorMeasurementsInterface.cpp - Released 2021-11-21T21:48:09Z

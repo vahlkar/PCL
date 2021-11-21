@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.6.2
+// Standard SubframeSelector Process Module Version 1.6.5
 // ----------------------------------------------------------------------------
-// GraphWebView.cpp - Released 2021-11-18T17:01:48Z
+// GraphWebView.cpp - Released 2021-11-21T21:48:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -328,9 +328,9 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector* da
 <div id="histograph"></div>
 <script type="text/javascript">
 
-   // Store the graphs later globally for access.
-   graph = null;
-   histograph = null;
+   // Declare the graph objects globally for later access.
+   var graph = null;
+   var histograph = null;
 
    // Some items are stored in Objects (hashmap-like) for quick lookup.
    approvals = )DELIM" + indexedApprovals + R"DELIM(;
@@ -353,149 +353,171 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector* da
    // and return them with this function call.
    approvalQueue = [];
    lockQueue = [];
-   function getApprovalIndex() {
-      if (approvalQueue.length <= 0) return 'A:-1';
+   function getApprovalIndex()
+   {
+      if ( approvalQueue.length <= 0 )
+         return 'A:-1';
       return 'A:' + approvalQueue.shift();
    }
-   function getLockIndex() {
-      if (lockQueue.length <= 0) return 'U:-1';
+   function getLockIndex()
+   {
+      if ( lockQueue.length <= 0 )
+         return 'U:-1';
       return 'U:' + lockQueue.shift();
    }
 
    // When points are clicked, put them in the Queues.
    // Update the graph too for more immediate feedback.
-   function pointClickCallback(event, point) {
-      if (event.shiftKey) {
-         if (locks.hasOwnProperty(point.xval) && locks[point.xval] === true) {
+   function pointClickCallback( event, point )
+   {
+      if ( event.shiftKey )
+      {
+         if ( locks.hasOwnProperty( point.xval ) && locks[point.xval] === true )
+         {
             lockQueue.push(point.xval);
             locks[point.xval] = false;
          }
-      } else {
-         approvalQueue.push(point.xval);
-         if (approvals.hasOwnProperty(point.xval))
+      }
+      else
+      {
+         approvalQueue.push( point.xval );
+         if ( approvals.hasOwnProperty( point.xval ) )
             approvals[point.xval] = !approvals[point.xval];
-         if (locks.hasOwnProperty(point.xval))
+         if ( locks.hasOwnProperty( point.xval ) )
             locks[point.xval] = true;
       }
-      graph.updateOptions({}); // force redraw
+      graph.updateOptions( {} ); // force redraw
    }
 
    // Custom Legend Formatting to lookup attributes and hide some series.
-   function legendFormatter(data) {
+   function legendFormatter( data )
+   {
       let html = '<table>';
       html += '<tr><td>Index:</td><td>' + data.x + '</td></tr>';
-      data.series.forEach(function(series) {
-         if (series.labelHTML.indexOf('NOLEGEND') === -1)
-            html += '<tr><td>' + series.labelHTML + ':</td><td>' + series.yHTML + '</td></tr>';
-      });
+      data.series.forEach(
+         function( series )
+         {
+            if ( series.labelHTML.indexOf( 'NOLEGEND' ) === -1 )
+               html += '<tr><td>' + series.labelHTML + ':</td><td>' + series.yHTML + '</td></tr>';
+         } );
       html += '<tr><td>Sigma:</td><td>' + sigmas[data.x] + '</td></tr>';
       html += '</table>';
       return html;
    }
-   function legendFormatterHistograph(data) {
+   function legendFormatterHistograph( data )
+   {
       let html = '<center>';
       let hasFirstLine = false;
-      data.series.forEach(function(series) {
-         if (series.labelHTML === "Count" && series.yHTML !== undefined) {
-            html += '<strong>' + series.labelHTML + '</strong><br/>';
-
-            html += (data.x - datasetBinRange/2.0).toFixed(4);
-            html += ' - ';
-            html += (data.x + datasetBinRange/2.0).toFixed(4);
-            html += '<br/>';
-
-            html += '<strong>' + series.yHTML + '</strong>';
-            hasFirstLine = true;
-         }
-         if (series.labelHTML === "Probability" && series.yHTML !== undefined) {
-            if (hasFirstLine)
-               html += '<br/>';
-            html += '<strong>' + series.labelHTML + '</strong><br/>';
-
-            html += '< ' + data.x.toFixed(4) + '<br/>';
-            html += '<strong>' + (series.y * 100.0).toFixed(1) + '%</strong>';
-         }
-      });
+      data.series.forEach(
+         function( series )
+         {
+            if ( series.labelHTML === "Count" )
+               if ( series.yHTML !== undefined )
+               {
+                  html += '<strong>' + series.labelHTML + '</strong><br/>';
+                  html += (data.x - datasetBinRange/2.0).toFixed( 4 );
+                  html += ' - ';
+                  html += (data.x + datasetBinRange/2.0).toFixed( 4 );
+                  html += '<br/>';
+                  html += '<strong>' + series.yHTML + '</strong>';
+                  hasFirstLine = true;
+               }
+            if ( series.labelHTML === "Probability" )
+               if ( series.yHTML !== undefined )
+               {
+                  if ( hasFirstLine )
+                     html += '<br/>';
+                  html += '<strong>' + series.labelHTML + '</strong><br/>';
+                  html += '< ' + data.x.toFixed( 4 ) + '<br/>';
+                  html += '<strong>' + (series.y * 100.0).toFixed( 1 ) + '%</strong>';
+               }
+         } );
       html += '</center>';
       return html;
    }
 
    // The main series can be drawn to indicate approved and locked frames.
-   function drawApprovedPoint(g, series, ctx, cx, cy, color, radius, idx) {
+   function drawApprovedPoint( g, series, ctx, cx, cy, color, radius, idx )
+   {
       ctx.save();
 
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
 
-      if (approvals[datasetValues[idx][0]] === false) {
+      if ( approvals[datasetValues[idx][0]] === false )
+      {
          ctx.strokeStyle = "red";
          ctx.lineWidth = 3;
 
          ctx.beginPath();
-         ctx.moveTo(cx + radius/2, cy + radius/2);
-         ctx.lineTo(cx - radius/2, cy - radius/2);
+         ctx.moveTo( cx + radius/2, cy + radius/2 );
+         ctx.lineTo( cx - radius/2, cy - radius/2 );
          ctx.closePath();
          ctx.stroke();
 
          ctx.beginPath();
-         ctx.moveTo(cx + radius/2, cy - radius/2);
-         ctx.lineTo(cx - radius/2, cy + radius/2);
+         ctx.moveTo( cx + radius/2, cy - radius/2 );
+         ctx.lineTo( cx - radius/2, cy + radius/2 );
          ctx.closePath();
          ctx.stroke();
       }
 
-      if (locks[datasetValues[idx][0]] === true) {
+      if ( locks[datasetValues[idx][0]] === true )
+      {
          ctx.strokeStyle = "black";
          ctx.lineWidth = 1;
 
          ctx.beginPath();
-         ctx.arc(cx, cy, radius, 0, 2 * Math.PI, false);
+         ctx.arc( cx, cy, radius, 0, 2 * Math.PI, false );
          ctx.closePath();
          ctx.stroke();
       }
 
-      ctx.restore()
+      ctx.restore();
    }
 
    // Custom Plotter to show bars instead of a line.
-   function barChartPlotter(e) {
-      var ctx = e.drawingContext;
-      var points = e.points;
-      var y_bottom = e.dygraph.toDomYCoord(0);  // see http://dygraphs.com/jsdoc/symbols/Dygraph.html#toDomYCoord
+   function barChartPlotter( e )
+   {
+      let ctx = e.drawingContext;
+      let points = e.points;
+      let y_bottom = e.dygraph.toDomYCoord( 0 ); // see http://dygraphs.com/jsdoc/symbols/Dygraph.html#toDomYCoord
 
       // Find the bar width from only points that have values.
-      var point1 = undefined;
-      var point2 = undefined;
-      for (var i = 0; i < points.length; i++) {
-         if (points[i].yval !== null && point1 === undefined) {
+      let point1 = undefined;
+      let point2 = undefined;
+      for ( let i = 0; i < points.length; ++i )
+      {
+         if ( points[i].yval !== null && point1 === undefined )
+         {
             point1 = points[i];
             continue;
          }
-         if (points[i].yval !== null && point2 === undefined) {
+         if ( points[i].yval !== null && point2 === undefined )
+         {
             point2 = points[i];
             break;
          }
       }
-      if (point1 == undefined || point2 == undefined)
+      if ( point1 == undefined || point2 == undefined )
          return;
-      var bar_width = 0.9 * (point2.canvasx - point1.canvasx);
+      let bar_width = 0.9*(point2.canvasx - point1.canvasx);
 
       ctx.fillStyle = e.color;
 
       // Do the actual plotting.
-      for (var i = 0; i < points.length; i++) {
-         var p = points[i];
-         var center_x = p.canvasx;  // center of the bar
+      for ( let i = 0; i < points.length; i++ )
+      {
+         let p = points[i];
+         let center_x = p.canvasx;  // center of the bar
 
-         ctx.fillRect(center_x - bar_width / 2.0, p.canvasy,
-            bar_width, y_bottom - p.canvasy);
-         ctx.strokeRect(center_x - bar_width / 2.0, p.canvasy,
-            bar_width, y_bottom - p.canvasy);
+         ctx.fillRect( center_x - bar_width/2.0, p.canvasy, bar_width, y_bottom - p.canvasy );
+         ctx.strokeRect( center_x - bar_width/2.0, p.canvasy, bar_width, y_bottom - p.canvasy );
       }
    }
 
    graph = new Dygraph(
-      document.getElementById("graph"), datasetValues,
+      document.getElementById( "graph" ), datasetValues,
       {
          title: " ", // empty space above graph for our own labels
          xlabel: "Index",
@@ -535,19 +557,36 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector* da
 
          // Separate the Axes' Grids
          axes: {
+            x: {
+               valueFormatter: function( x )
+               {
+                  return x.toFixed();
+               },
+            },
             y: {
                independentTicks: true,
-               digitsAfterDecimal: 2,
+               valueFormatter: function( x )
+               {
+                  if ( (x | 0) === x )
+                     return (x <= 99999) ? x.toFixed() : x.toExponential( 1 );
+                  if ( Math.abs( x ) < 100 )
+                     return x.toFixed( 3 );
+                  return x.toPrecision( 4 );
+               },
             },
             y2: {
                independentTicks: true,
-               digitsAfterDecimal: 2,
                drawGrid: false,
+               valueFormatter: function( x )
+               {
+                  if ( (x | 0) === x )
+                     return (x <= 99999) ? x.toFixed() : x.toExponential( 1 );
+                  if ( Math.abs( x ) < 100 )
+                     return x.toFixed( 3 );
+                  return x.toPrecision( 4 );
+               },
             },
          },
-
-         digitsAfterDecimal: 4,
-         maxNumberWidth: 3,
 
          // Need to know which points were clicked
          pointClickCallback: pointClickCallback,
@@ -571,7 +610,7 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector* da
    );
 
    histograph = new Dygraph(
-      document.getElementById("histograph"), datasetHistogram,
+      document.getElementById( "histograph" ), datasetHistogram,
       {
          title: " ", // empty space above graph for our own labels
          xlabel: ")DELIM" + dataname + R"DELIM(",
@@ -600,21 +639,33 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector* da
          // Separate the Axes' Grids
          axes: {
             x: {
-               digitsAfterDecimal: 2,
+               valueFormatter: function( x )
+               {
+                  if ( (x | 0) === x )
+                     return (x <= 99999) ? x.toFixed() : x.toExponential( 1 );
+                  if ( Math.abs( x ) < 100 )
+                     return x.toFixed( 3 );
+                  return x.toPrecision( 4 );
+               },
             },
             y: {
                independentTicks: true,
                valueRange: [0, datasetMaxValue*1.1],
+               valueFormatter: function( x )
+               {
+                  return x.toFixed();
+               },
             },
             y2: {
                independentTicks: true,
                drawGrid: false,
                valueRange: [0, 1],
+               valueFormatter: function( x )
+               {
+                  return x.toFixed( 3 );
+               },
             },
          },
-
-         digitsAfterDecimal: 6,
-         maxNumberWidth: 3,
 
          // Legend acts more like a tooltip
          legend: "follow",
@@ -629,33 +680,33 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector* da
 
    // Dygraphs replaces the div content, but we want our own labels,
    // so add them afterwards.
-   var node = document.createElement("div");
-   var nodeClass = document.createAttribute("class");
+   var node = document.createElement( "div" );
+   var nodeClass = document.createAttribute( "class" );
    nodeClass.value = "label-y1";
-   node.attributes.setNamedItem(nodeClass);
-   node.appendChild(document.createTextNode(")DELIM" + dataname + R"DELIM("));
-   document.getElementById("graph").appendChild(node);
+   node.attributes.setNamedItem( nodeClass );
+   node.appendChild( document.createTextNode( ")DELIM" + dataname + R"DELIM(" ) );
+   document.getElementById( "graph" ).appendChild( node );
 
-   node = document.createElement("div");
-   nodeClass = document.createAttribute("class");
+   node = document.createElement( "div" );
+   nodeClass = document.createAttribute( "class" );
    nodeClass.value = "label-y2";
-   node.attributes.setNamedItem(nodeClass);
-   node.appendChild(document.createTextNode("Weight"));
-   document.getElementById("graph").appendChild(node);
+   node.attributes.setNamedItem( nodeClass );
+   node.appendChild( document.createTextNode( "Weight" ) );
+   document.getElementById( "graph" ).appendChild( node );
 
-   node = document.createElement("div");
-   nodeClass = document.createAttribute("class");
+   node = document.createElement( "div" );
+   nodeClass = document.createAttribute( "class" );
    nodeClass.value = "label-y1";
-   node.attributes.setNamedItem(nodeClass);
-   node.appendChild(document.createTextNode("Count"));
-   document.getElementById("histograph").appendChild(node);
+   node.attributes.setNamedItem( nodeClass );
+   node.appendChild( document.createTextNode( "Count" ) );
+   document.getElementById( "histograph" ).appendChild( node );
 
-   node = document.createElement("div");
-   nodeClass = document.createAttribute("class");
+   node = document.createElement( "div" );
+   nodeClass = document.createAttribute( "class" );
    nodeClass.value = "label-y2";
-   node.attributes.setNamedItem(nodeClass);
-   node.appendChild(document.createTextNode("Probability"));
-   document.getElementById("histograph").appendChild(node);
+   node.attributes.setNamedItem( nodeClass );
+   node.appendChild( document.createTextNode( "Probability" ) );
+   document.getElementById( "histograph" ).appendChild( node );
 
 </script>
    )DELIM" + Footer();
@@ -795,6 +846,8 @@ void GraphWebView::Cleanup()
       }
       m_htmlFilePath.Clear();
    }
+
+   SetPlainText( String() );
 }
 
 // ----------------------------------------------------------------------------
@@ -802,4 +855,4 @@ void GraphWebView::Cleanup()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GraphWebView.cpp - Released 2021-11-18T17:01:48Z
+// EOF GraphWebView.cpp - Released 2021-11-21T21:48:09Z

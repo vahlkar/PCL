@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.6.2
+// Standard SubframeSelector Process Module Version 1.6.5
 // ----------------------------------------------------------------------------
-// SubframeSelectorInstance.cpp - Released 2021-11-18T17:01:48Z
+// SubframeSelectorInstance.cpp - Released 2021-11-21T21:48:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -500,8 +500,8 @@ private:
           */
          if ( psfSignal == 0 || psfPower == 0 )
          {
-            Console().WarningLn( "<end><cbr>** Warning: PSF signal/power estimates are not available in the image metadata and "
-                                 "are being calculated from possibly non-raw data. Image weights can be wrong or inaccurate." );
+            Console().WarningLn( "<end><cbr>** Warning: PSF signal/power estimates are not available in the image metadata and are being "
+                                 "calculated from possibly non-raw or uncalibrated data. Image weights can be wrong or inaccurate." );
             PSFSignalEstimator E;
             PSFSignalEstimator::Estimates e = E( m_subframe );
             psfSignal = e.mean;
@@ -516,8 +516,8 @@ private:
           */
          if ( noiseScaleLow == 0 || noiseScaleHigh == 0 )
          {
-            Console().WarningLn( "<end><cbr>** Warning: Noise scaling factors are not available in the image metadata and "
-                                 "are being calculated from possibly non-raw data. Image weights can be wrong or inaccurate." );
+            Console().WarningLn( "<end><cbr>** Warning: Noise scaling factors are not available in the image metadata and are being "
+                                 "calculated from possibly non-raw or uncalibrated data. Image weights can be wrong or inaccurate." );
 
             const double clipLow = 2.0/65535;
             const double clipHigh = 1.0 - 2.0/65535;
@@ -659,8 +659,8 @@ private:
       }
       else
       {
-         Console().WarningLn( "<end><cbr>** Warning: Noise estimates are not available in the image metadata and "
-                              "are being calculated from possibly non-raw data. Image weights can be wrong or inaccurate." );
+         Console().WarningLn( "<end><cbr>** Warning: Noise estimates are not available in the image metadata and are being "
+                              "calculated from possibly non-raw or uncalibrated data. Image weights can be wrong or inaccurate." );
          double noiseEstimate = 0;
          double noiseFraction = 0;
          double noiseEstimateKS = 0;
@@ -703,8 +703,8 @@ private:
       }
       else
       {
-         Console().WarningLn( "<end><cbr>** Warning: PSF signal/power estimates are not available in the image metadata and "
-                              "are being calculated from possibly non-raw data. Image weights can be wrong or inaccurate." );
+         Console().WarningLn( "<end><cbr>** Warning: PSF signal/power estimates are not available in the image metadata and are being "
+                              "calculated from possibly non-raw or uncalibrated data. Image weights can be wrong or inaccurate." );
          PSFSignalEstimator E;
          PSFSignalEstimator::Estimates e = E( m_subframe );
          m_outputData.psfSignalWeight = e.mean/m_outputData.noise;
@@ -720,8 +720,8 @@ private:
          /*
           * Noise scaling factors
           */
-         Console().WarningLn( "<end><cbr>** Warning: Noise scaling factors are not available in the image metadata and "
-                              "are being calculated from possibly non-raw data. Image weights can be wrong or inaccurate." );
+         Console().WarningLn( "<end><cbr>** Warning: Noise scaling factors are not available in the image metadata and are being "
+                              "calculated from possibly non-raw or uncalibrated data. Image weights can be wrong or inaccurate." );
 
          const double clipLow = 2.0/65535;
          const double clipHigh = 1.0 - 2.0/65535;
@@ -1291,19 +1291,16 @@ void SubframeSelectorInstance::Measure()
    console.NoteLn( String().Format( "<end><cbr><br>===== SubframeSelector: %u succeeded, %u failed, %u skipped =====",
                                     succeeded, failed, skipped ) );
 
-   o_measures.Sort( SubframeSortingBinaryPredicate( SSSortingProperty::Index, 0 ) );
+   o_measures.Sort( SubframeSortingBinaryPredicate( SSSortingProperty::Index, 0/*ascending*/ ) );
 
    if ( !p_nonInteractive )
-   {
-      if ( TheSubframeSelectorMeasurementsInterface != nullptr )
-         TheSubframeSelectorMeasurementsInterface->SetMeasurements( o_measures );
-
       if ( TheSubframeSelectorInterface != nullptr )
       {
+         TheSubframeSelectorInterface->m_instance.Assign( *this );
+         TheSubframeSelectorInterface->UpdateControls();
          TheSubframeSelectorInterface->ShowExpressionsInterface();
          TheSubframeSelectorInterface->ShowMeasurementsInterface();
       }
-   }
 }
 
 // ----------------------------------------------------------------------------
@@ -2040,7 +2037,7 @@ bool SubframeSelectorInstance::ExecuteGlobal()
       for ( const SubframeItem& subframe : p_subframes )
          if ( subframe.enabled )
             if ( !File::Exists( subframe.path ) )
-               throw Error( "No such file exists on the local filesystem:" + subframe.path );
+               throw Error( "No such file exists on the local filesystem: " + subframe.path );
    }
 
    /*
@@ -2364,4 +2361,4 @@ size_type SubframeSelectorInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInstance.cpp - Released 2021-11-18T17:01:48Z
+// EOF SubframeSelectorInstance.cpp - Released 2021-11-21T21:48:09Z

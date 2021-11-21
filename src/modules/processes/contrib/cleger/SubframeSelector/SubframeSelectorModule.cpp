@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.6.2
+// Standard SubframeSelector Process Module Version 1.6.5
 // ----------------------------------------------------------------------------
-// SubframeSelectorModule.cpp - Released 2021-11-18T17:01:48Z
+// SubframeSelectorModule.cpp - Released 2021-11-21T21:48:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -57,13 +57,13 @@
 
 #define MODULE_VERSION_MAJOR     1
 #define MODULE_VERSION_MINOR     6
-#define MODULE_VERSION_REVISION  2
+#define MODULE_VERSION_REVISION  5
 #define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2021
 #define MODULE_RELEASE_MONTH     11
-#define MODULE_RELEASE_DAY       18
+#define MODULE_RELEASE_DAY       21
 
 namespace pcl
 {
@@ -184,4 +184,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorModule.cpp - Released 2021-11-18T17:01:48Z
+// EOF SubframeSelectorModule.cpp - Released 2021-11-21T21:48:09Z

@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.6.2
+// Standard SubframeSelector Process Module Version 1.6.5
 // ----------------------------------------------------------------------------
-// SubframeSelectorMeasurementsInterface.h - Released 2021-11-18T17:01:48Z
+// SubframeSelectorMeasurementsInterface.h - Released 2021-11-21T21:48:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -69,6 +69,8 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
+class MeasurementNode;
+
 class SubframeSelectorMeasurementsInterface : public ProcessInterface
 {
 public:
@@ -128,14 +130,12 @@ private:
 
    void UpdateControls();
    void UpdateMeasurementQuantity();
-   void UpdateMeasurementImageItem( size_type, MeasureItem* );
-   void UpdateMeasurementImagesList();
+   void UpdateMeasurementNode( MeasurementNode* );
+   void UpdateMeasurementTable();
    void UpdateMeasurementGraph();
 
-   void SetMeasurements( const MeasureItemList& );
-
+   MeasurementNode* MeasurementNodeByItem( const MeasureItem* ) const;
    MeasureItem* MeasureItemByGraphIndex( int index ) const;
-   TreeBox::Node* MeasurementNodeByItem( const MeasureItem* ) const;
 
    void ExportCSV() const;
    void ExportPDF() const;
@@ -167,4 +167,4 @@ PCL_END_LOCAL
 #endif   // e_SubframeSelectorMeasurementsInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorMeasurementsInterface.h - Released 2021-11-18T17:01:48Z
+// EOF SubframeSelectorMeasurementsInterface.h - Released 2021-11-21T21:48:09Z
