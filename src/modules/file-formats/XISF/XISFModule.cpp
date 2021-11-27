@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard XISF File Format Module Version 1.0.13
 // ----------------------------------------------------------------------------
-// XISFModule.cpp - Released 2021-11-11T17:55:57Z
+// XISFModule.cpp - Released 2021-11-25T11:45:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard XISF PixInsight module.
 //
@@ -58,7 +58,7 @@
 
 #define MODULE_RELEASE_YEAR      2021
 #define MODULE_RELEASE_MONTH     11
-#define MODULE_RELEASE_DAY       11
+#define MODULE_RELEASE_DAY       25
 
 #include "XISFModule.h"
 #include "XISFFormat.h"
@@ -169,4 +169,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF XISFModule.cpp - Released 2021-11-11T17:55:57Z
+// EOF XISFModule.cpp - Released 2021-11-25T11:45:11Z

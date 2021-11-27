@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationGraphInterface.cpp - Released 2021-11-11T17:56:06Z
+// PhotometricColorCalibrationGraphInterface.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -360,4 +360,4 @@ PhotometricColorCalibrationGraphInterface::GUIData::GUIData( PhotometricColorCal
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationGraphInterface.cpp - Released 2021-11-11T17:56:06Z
+// EOF PhotometricColorCalibrationGraphInterface.cpp - Released 2021-11-25T11:45:24Z

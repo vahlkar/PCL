@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Annotation Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// AnnotationModule.cpp - Released 2021-11-11T17:56:06Z
+// AnnotationModule.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Annotation PixInsight module.
 //
@@ -59,7 +59,7 @@
 
 #define MODULE_RELEASE_YEAR      2021
 #define MODULE_RELEASE_MONTH     11
-#define MODULE_RELEASE_DAY       11
+#define MODULE_RELEASE_DAY       25
 
 #include "AnnotationInterface.h"
 #include "AnnotationModule.h"
@@ -174,4 +174,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF AnnotationModule.cpp - Released 2021-11-11T17:56:06Z
+// EOF AnnotationModule.cpp - Released 2021-11-25T11:45:24Z

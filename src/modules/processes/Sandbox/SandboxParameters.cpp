@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Sandbox Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// SandboxParameters.cpp - Released 2021-11-11T17:56:06Z
+// SandboxParameters.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Sandbox PixInsight module.
 //
@@ -199,4 +199,4 @@ size_type SandboxParameterFive::MinLength() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SandboxParameters.cpp - Released 2021-11-11T17:56:06Z
+// EOF SandboxParameters.cpp - Released 2021-11-25T11:45:24Z

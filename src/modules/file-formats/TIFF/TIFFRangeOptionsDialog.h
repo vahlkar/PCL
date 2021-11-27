@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard TIFF File Format Module Version 1.0.9
 // ----------------------------------------------------------------------------
-// TIFFRangeOptionsDialog.h - Released 2021-11-11T17:55:57Z
+// TIFFRangeOptionsDialog.h - Released 2021-11-25T11:45:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard TIFF PixInsight module.
 //
@@ -105,4 +105,4 @@ private:
 #endif   // __TIFFRangeOptionsDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF TIFFRangeOptionsDialog.h - Released 2021-11-11T17:55:57Z
+// EOF TIFFRangeOptionsDialog.h - Released 2021-11-25T11:45:11Z

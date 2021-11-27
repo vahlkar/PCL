@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard NoiseGeneration Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// NoiseGeneratorProcess.cpp - Released 2021-11-11T17:56:06Z
+// NoiseGeneratorProcess.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NoiseGeneration PixInsight module.
 //
@@ -136,4 +136,4 @@ ProcessImplementation* NoiseGeneratorProcess::Clone( const ProcessImplementation
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF NoiseGeneratorProcess.cpp - Released 2021-11-11T17:56:06Z
+// EOF NoiseGeneratorProcess.cpp - Released 2021-11-25T11:45:24Z

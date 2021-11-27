@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ColorSaturationParameters.cpp - Released 2021-11-11T17:56:06Z
+// ColorSaturationParameters.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -119,4 +119,4 @@ double HueShift::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ColorSaturationParameters.cpp - Released 2021-11-11T17:56:06Z
+// EOF ColorSaturationParameters.cpp - Released 2021-11-25T11:45:24Z

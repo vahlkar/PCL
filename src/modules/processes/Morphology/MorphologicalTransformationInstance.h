@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Morphology Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// MorphologicalTransformationInstance.h - Released 2021-11-11T17:56:06Z
+// MorphologicalTransformationInstance.h - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Morphology PixInsight module.
 //
@@ -145,4 +145,4 @@ private:
 #endif   // __MorphologicalTransformationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF MorphologicalTransformationInstance.h - Released 2021-11-11T17:56:06Z
+// EOF MorphologicalTransformationInstance.h - Released 2021-11-25T11:45:24Z

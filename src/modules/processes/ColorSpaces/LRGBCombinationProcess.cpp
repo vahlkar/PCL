@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.2
 // ----------------------------------------------------------------------------
-// LRGBCombinationProcess.cpp - Released 2021-11-11T17:56:06Z
+// LRGBCombinationProcess.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -142,4 +142,4 @@ bool LRGBCombinationProcess::NeedsValidation() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LRGBCombinationProcess.cpp - Released 2021-11-11T17:56:06Z
+// EOF LRGBCombinationProcess.cpp - Released 2021-11-25T11:45:24Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// INDIMountParameters.h - Released 2021-11-11T17:56:06Z
+// INDIMountParameters.h - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -158,4 +158,4 @@ PCL_END_LOCAL
 #endif // __INDIMountParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF INDIMountParameters.h - Released 2021-11-11T17:56:06Z
+// EOF INDIMountParameters.h - Released 2021-11-25T11:45:24Z

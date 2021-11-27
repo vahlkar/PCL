@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.2
 // ----------------------------------------------------------------------------
-// ChannelExtractionInstance.h - Released 2021-11-11T17:56:06Z
+// ChannelExtractionInstance.h - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -120,4 +120,4 @@ private:
 #endif   // __ChannelExtractionInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ChannelExtractionInstance.h - Released 2021-11-11T17:56:06Z
+// EOF ChannelExtractionInstance.h - Released 2021-11-25T11:45:24Z

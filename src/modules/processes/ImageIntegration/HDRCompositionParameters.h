@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.3.6
 // ----------------------------------------------------------------------------
-// HDRCompositionParameters.h - Released 2021-11-11T17:56:06Z
+// HDRCompositionParameters.h - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -335,4 +335,4 @@ PCL_END_LOCAL
 #endif   // __HDRCompositionParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF HDRCompositionParameters.h - Released 2021-11-11T17:56:06Z
+// EOF HDRCompositionParameters.h - Released 2021-11-25T11:45:24Z

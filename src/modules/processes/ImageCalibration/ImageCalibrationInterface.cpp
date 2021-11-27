@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.7.2
 // ----------------------------------------------------------------------------
-// ImageCalibrationInterface.cpp - Released 2021-11-11T17:56:06Z
+// ImageCalibrationInterface.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -2326,4 +2326,4 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInterface.cpp - Released 2021-11-11T17:56:06Z
+// EOF ImageCalibrationInterface.cpp - Released 2021-11-25T11:45:24Z

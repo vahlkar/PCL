@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard GREYCstoration Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// GREYCstorationProcess.cpp - Released 2021-11-11T17:56:06Z
+// GREYCstorationProcess.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GREYCstoration PixInsight module.
 //
@@ -400,4 +400,4 @@ int GREYCstorationProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GREYCstorationProcess.cpp - Released 2021-11-11T17:56:06Z
+// EOF GREYCstorationProcess.cpp - Released 2021-11-25T11:45:24Z

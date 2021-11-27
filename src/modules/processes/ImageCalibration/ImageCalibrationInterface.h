@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.7.2
 // ----------------------------------------------------------------------------
-// ImageCalibrationInterface.h - Released 2021-11-11T17:56:06Z
+// ImageCalibrationInterface.h - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -352,4 +352,4 @@ PCL_END_LOCAL
 #endif   // __ImageCalibrationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInterface.h - Released 2021-11-11T17:56:06Z
+// EOF ImageCalibrationInterface.h - Released 2021-11-25T11:45:24Z

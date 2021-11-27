@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// BackgroundNeutralizationProcess.cpp - Released 2021-11-11T17:56:06Z
+// BackgroundNeutralizationProcess.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -250,4 +250,4 @@ int BackgroundNeutralizationProcess::ProcessCommandLine( const StringList& argv 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BackgroundNeutralizationProcess.cpp - Released 2021-11-11T17:56:06Z
+// EOF BackgroundNeutralizationProcess.cpp - Released 2021-11-25T11:45:24Z

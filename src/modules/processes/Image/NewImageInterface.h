@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// NewImageInterface.h - Released 2021-11-11T17:56:06Z
+// NewImageInterface.h - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -173,4 +173,4 @@ PCL_END_LOCAL
 #endif   // __NewImageInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF NewImageInterface.h - Released 2021-11-11T17:56:06Z
+// EOF NewImageInterface.h - Released 2021-11-25T11:45:24Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard APASS Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// APASSInstance.cpp - Released 2021-11-11T17:56:06Z
+// APASSInstance.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard APASS PixInsight module.
 //
@@ -860,4 +860,4 @@ int APASSInstance::OutputDataRelease() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF APASSInstance.cpp - Released 2021-11-11T17:56:06Z
+// EOF APASSInstance.cpp - Released 2021-11-25T11:45:24Z

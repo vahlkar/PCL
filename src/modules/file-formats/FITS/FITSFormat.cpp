@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.1.9
 // ----------------------------------------------------------------------------
-// FITSFormat.cpp - Released 2021-11-11T17:55:57Z
+// FITSFormat.cpp - Released 2021-11-25T11:45:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -509,4 +509,4 @@ FITSFormat::FormatOptions* FITSFormat::FormatOptions::FromGenericDataBlock( cons
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITSFormat.cpp - Released 2021-11-11T17:55:57Z
+// EOF FITSFormat.cpp - Released 2021-11-25T11:45:11Z

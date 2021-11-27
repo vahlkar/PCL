@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard XISF File Format Module Version 1.0.13
 // ----------------------------------------------------------------------------
-// XISFOptionsDialog.h - Released 2021-11-11T17:55:57Z
+// XISFOptionsDialog.h - Released 2021-11-25T11:45:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard XISF PixInsight module.
 //
@@ -181,4 +181,4 @@ private:
 #endif   // XISFOptionsDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF XISFOptionsDialog.h - Released 2021-11-11T17:55:57Z
+// EOF XISFOptionsDialog.h - Released 2021-11-25T11:45:11Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ArcsinhStretch Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// ArcsinhStretchInterface.cpp - Released 2021-11-11T17:56:06Z
+// ArcsinhStretchInterface.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ArcsinhStretch PixInsight module.
 //
@@ -553,4 +553,4 @@ ArcsinhStretchInterface::GUIData::GUIData( ArcsinhStretchInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ArcsinhStretchInterface.cpp - Released 2021-11-11T17:56:06Z
+// EOF ArcsinhStretchInterface.cpp - Released 2021-11-25T11:45:24Z

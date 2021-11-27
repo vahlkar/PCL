@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard TIFF File Format Module Version 1.0.9
 // ----------------------------------------------------------------------------
-// TIFFFormat.cpp - Released 2021-11-11T17:55:57Z
+// TIFFFormat.cpp - Released 2021-11-25T11:45:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard TIFF PixInsight module.
 //
@@ -400,4 +400,4 @@ TIFFFormat::FormatOptions* TIFFFormat::FormatOptions::FromGenericDataBlock( cons
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF TIFFFormat.cpp - Released 2021-11-11T17:55:57Z
+// EOF TIFFFormat.cpp - Released 2021-11-25T11:45:11Z

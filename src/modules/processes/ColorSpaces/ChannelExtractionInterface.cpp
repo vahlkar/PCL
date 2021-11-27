@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.2
 // ----------------------------------------------------------------------------
-// ChannelExtractionInterface.cpp - Released 2021-11-11T17:56:06Z
+// ChannelExtractionInterface.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -453,4 +453,4 @@ ChannelExtractionInterface::GUIData::GUIData( ChannelExtractionInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ChannelExtractionInterface.cpp - Released 2021-11-11T17:56:06Z
+// EOF ChannelExtractionInterface.cpp - Released 2021-11-25T11:45:24Z

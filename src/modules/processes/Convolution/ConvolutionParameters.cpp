@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// ConvolutionParameters.cpp - Released 2021-11-11T17:56:06Z
+// ConvolutionParameters.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -283,4 +283,4 @@ IsoString ConViewId::Id() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ConvolutionParameters.cpp - Released 2021-11-11T17:56:06Z
+// EOF ConvolutionParameters.cpp - Released 2021-11-25T11:45:24Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard StarGenerator Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// StarGeneratorParameters.cpp - Released 2021-11-11T17:56:06Z
+// StarGeneratorParameters.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarGenerator PixInsight module.
 //
@@ -503,4 +503,4 @@ IsoString SGOutputFilePath::Id() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF StarGeneratorParameters.cpp - Released 2021-11-11T17:56:06Z
+// EOF StarGeneratorParameters.cpp - Released 2021-11-25T11:45:24Z

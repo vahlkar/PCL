@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Blink Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// BlinkProcess.cpp - Released 2021-11-11T17:56:06Z
+// BlinkProcess.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Blink PixInsight module.
 //
@@ -136,4 +136,4 @@ bool BlinkProcess::IsAssignable() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BlinkProcess.cpp - Released 2021-11-11T17:56:06Z
+// EOF BlinkProcess.cpp - Released 2021-11-25T11:45:24Z

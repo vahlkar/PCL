@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Fourier Process Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// FourierTransformInstance.cpp - Released 2021-11-11T17:56:06Z
+// FourierTransformInstance.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Fourier PixInsight module.
 //
@@ -375,4 +375,4 @@ void* FourierTransformInstance::LockParameter( const MetaParameter* p, size_type
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FourierTransformInstance.cpp - Released 2021-11-11T17:56:06Z
+// EOF FourierTransformInstance.cpp - Released 2021-11-25T11:45:24Z

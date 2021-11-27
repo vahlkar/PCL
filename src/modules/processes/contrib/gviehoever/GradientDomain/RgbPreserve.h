@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// RgbPreserve.h - Released 2021-11-11T17:56:06Z
+// RgbPreserve.h - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
@@ -79,4 +79,4 @@ public:
 #endif
 
 // ----------------------------------------------------------------------------
-// EOF RgbPreserve.h - Released 2021-11-11T17:56:06Z
+// EOF RgbPreserve.h - Released 2021-11-25T11:45:24Z

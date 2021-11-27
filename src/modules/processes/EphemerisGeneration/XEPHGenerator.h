@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard EphemerisGeneration Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// XEPHGenerator.h - Released 2021-11-11T17:56:06Z
+// XEPHGenerator.h - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -99,4 +99,4 @@ private:
 #endif   // __XEPHGenerator_h
 
 // ----------------------------------------------------------------------------
-// EOF XEPHGenerator.h - Released 2021-11-11T17:56:06Z
+// EOF XEPHGenerator.h - Released 2021-11-25T11:45:24Z

@@ -1,7 +1,7 @@
 // ----------------------------------------------------------------------------
 // PixInsight JavaScript Runtime API - PJSR Version 1.0
 // ----------------------------------------------------------------------------
-// INDI-helper.jsh - Released 2021-11-11T17:56:06Z
+// INDI-helper.jsh - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 //
 //
@@ -150,4 +150,4 @@ function propertyEquals( propertyTable, propertyKey, propertyValue )
 #endif //_INDI_helper_jsh
 
 // ----------------------------------------------------------------------------
-// EOF INDI-helper.jsh - Released 2021-11-11T17:56:06Z
+// EOF INDI-helper.jsh - Released 2021-11-25T11:45:24Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.2
 // ----------------------------------------------------------------------------
-// ChannelExtractionParameters.cpp - Released 2021-11-11T17:56:06Z
+// ChannelExtractionParameters.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -68,4 +68,4 @@ ChannelSampleFormat* TheChannelSampleFormatExtractionParameter = nullptr;
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ChannelExtractionParameters.cpp - Released 2021-11-11T17:56:06Z
+// EOF ChannelExtractionParameters.cpp - Released 2021-11-25T11:45:24Z

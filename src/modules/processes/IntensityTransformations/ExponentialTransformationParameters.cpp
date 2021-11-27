@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ExponentialTransformationParameters.cpp - Released 2021-11-11T17:56:06Z
+// ExponentialTransformationParameters.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -191,4 +191,4 @@ bool ExponentialFunctionMask::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ExponentialTransformationParameters.cpp - Released 2021-11-11T17:56:06Z
+// EOF ExponentialTransformationParameters.cpp - Released 2021-11-25T11:45:24Z

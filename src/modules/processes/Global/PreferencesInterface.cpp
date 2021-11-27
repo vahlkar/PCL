@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// PreferencesInterface.cpp - Released 2021-11-11T17:56:06Z
+// PreferencesInterface.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -2871,4 +2871,4 @@ void PreferencesInterface::GUIData::InitializeCategories()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInterface.cpp - Released 2021-11-11T17:56:06Z
+// EOF PreferencesInterface.cpp - Released 2021-11-25T11:45:24Z

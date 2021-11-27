@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// BackgroundNeutralizationInstance.h - Released 2021-11-11T17:56:06Z
+// BackgroundNeutralizationInstance.h - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -97,4 +97,4 @@ private:
 #endif   // __BackgroundNeutralizationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF BackgroundNeutralizationInstance.h - Released 2021-11-11T17:56:06Z
+// EOF BackgroundNeutralizationInstance.h - Released 2021-11-25T11:45:24Z

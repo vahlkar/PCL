@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// DynamicPSFParameters.h - Released 2021-11-11T17:56:06Z
+// DynamicPSFParameters.h - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -1013,4 +1013,4 @@ PCL_END_LOCAL
 #endif   // __DynamicPSFParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF DynamicPSFParameters.h - Released 2021-11-11T17:56:06Z
+// EOF DynamicPSFParameters.h - Released 2021-11-25T11:45:24Z

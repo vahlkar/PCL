@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.2
 // ----------------------------------------------------------------------------
-// RGBWorkingSpaceParameters.cpp - Released 2021-11-11T17:56:06Z
+// RGBWorkingSpaceParameters.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -239,4 +239,4 @@ bool RGBWSApplyGlobal::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RGBWorkingSpaceParameters.cpp - Released 2021-11-11T17:56:06Z
+// EOF RGBWorkingSpaceParameters.cpp - Released 2021-11-25T11:45:24Z

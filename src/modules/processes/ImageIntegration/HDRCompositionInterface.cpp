@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.3.6
 // ----------------------------------------------------------------------------
-// HDRCompositionInterface.cpp - Released 2021-11-11T17:56:06Z
+// HDRCompositionInterface.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -1055,4 +1055,4 @@ HDRCompositionInterface::GUIData::GUIData( HDRCompositionInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF HDRCompositionInterface.cpp - Released 2021-11-11T17:56:06Z
+// EOF HDRCompositionInterface.cpp - Released 2021-11-25T11:45:24Z

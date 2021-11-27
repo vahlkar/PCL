@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// INDIMountInterface.cpp - Released 2021-11-11T17:56:06Z
+// INDIMountInterface.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -2779,4 +2779,4 @@ void INDIMountInterface::plotAlignemtResiduals( AlignmentModel* model )
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDIMountInterface.cpp - Released 2021-11-11T17:56:06Z
+// EOF INDIMountInterface.cpp - Released 2021-11-25T11:45:24Z

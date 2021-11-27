@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// pcl/SharedPixelData.cpp - Released 2021-11-11T17:57:35Z
+// pcl/SharedPixelData.cpp - Released 2021-11-25T11:44:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -267,4 +267,4 @@ void SharedPixelData::SetSharedColor( color_space colorSpace, const RGBColorSyst
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SharedPixelData.cpp - Released 2021-11-11T17:57:35Z
+// EOF pcl/SharedPixelData.cpp - Released 2021-11-25T11:44:55Z

@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// pcl/ImageInfo.h - Released 2021-11-11T17:57:24Z
+// pcl/ImageInfo.h - Released 2021-11-25T11:44:47Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -177,4 +177,4 @@ public:
 #endif   // __PCL_ImageInfo_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ImageInfo.h - Released 2021-11-11T17:57:24Z
+// EOF pcl/ImageInfo.h - Released 2021-11-25T11:44:47Z

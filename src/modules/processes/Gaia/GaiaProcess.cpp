@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Gaia Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// GaiaProcess.cpp - Released 2021-11-11T17:56:06Z
+// GaiaProcess.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Gaia PixInsight module.
 //
@@ -693,4 +693,4 @@ void GaiaProcess::SavePreferences( int dr )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GaiaProcess.cpp - Released 2021-11-11T17:56:06Z
+// EOF GaiaProcess.cpp - Released 2021-11-25T11:45:24Z

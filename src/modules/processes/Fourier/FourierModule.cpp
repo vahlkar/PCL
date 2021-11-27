@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Fourier Process Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// FourierModule.cpp - Released 2021-11-11T17:56:06Z
+// FourierModule.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Fourier PixInsight module.
 //
@@ -58,7 +58,7 @@
 
 #define MODULE_RELEASE_YEAR      2021
 #define MODULE_RELEASE_MONTH     11
-#define MODULE_RELEASE_DAY       11
+#define MODULE_RELEASE_DAY       25
 
 #include "FourierModule.h"
 #include "FourierTransformProcess.h"
@@ -177,4 +177,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF FourierModule.cpp - Released 2021-11-11T17:56:06Z
+// EOF FourierModule.cpp - Released 2021-11-25T11:45:24Z

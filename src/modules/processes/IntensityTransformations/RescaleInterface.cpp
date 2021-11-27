@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// RescaleInterface.cpp - Released 2021-11-11T17:56:06Z
+// RescaleInterface.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -242,4 +242,4 @@ RescaleInterface::GUIData::GUIData( RescaleInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RescaleInterface.cpp - Released 2021-11-11T17:56:06Z
+// EOF RescaleInterface.cpp - Released 2021-11-25T11:45:24Z

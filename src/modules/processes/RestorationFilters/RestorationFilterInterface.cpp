@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard RestorationFilters Process Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// RestorationFilterInterface.cpp - Released 2021-11-11T17:56:06Z
+// RestorationFilterInterface.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RestorationFilters PixInsight module.
 //
@@ -848,4 +848,4 @@ RestorationFilterInterface::GUIData::GUIData( RestorationFilterInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RestorationFilterInterface.cpp - Released 2021-11-11T17:56:06Z
+// EOF RestorationFilterInterface.cpp - Released 2021-11-25T11:45:24Z

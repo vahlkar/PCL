@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard NoiseGeneration Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// NoiseGenerationModule.h - Released 2021-11-11T17:56:06Z
+// NoiseGenerationModule.h - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NoiseGeneration PixInsight module.
 //
@@ -84,4 +84,4 @@ public:
 #endif   // __NoiseGenerationModule_h
 
 // ----------------------------------------------------------------------------
-// EOF NoiseGenerationModule.h - Released 2021-11-11T17:56:06Z
+// EOF NoiseGenerationModule.h - Released 2021-11-25T11:45:24Z

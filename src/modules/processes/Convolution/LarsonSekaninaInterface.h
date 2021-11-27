@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// LarsonSekaninaInterface.h - Released 2021-11-11T17:56:06Z
+// LarsonSekaninaInterface.h - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -177,4 +177,4 @@ PCL_END_LOCAL
 #endif   // __LarsonSekaninaInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF LarsonSekaninaInterface.h - Released 2021-11-11T17:56:06Z
+// EOF LarsonSekaninaInterface.h - Released 2021-11-25T11:45:24Z

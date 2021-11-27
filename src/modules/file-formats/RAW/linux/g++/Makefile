@@ -2,7 +2,7 @@
 # PixInsight Makefile Generator Script v1.124
 # Copyright (C) 2009-2021 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2021-11-11T20:10:16.315Z
+# Generated on .... 2021-11-25T15:44:39.808Z
 # Project id ...... RAW
 # Project type .... Module
 # Platform ........ Linux/g++

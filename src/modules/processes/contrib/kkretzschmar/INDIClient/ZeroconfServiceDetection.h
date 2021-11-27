@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// ZeroconfServiceDetection.h - Released 2021-11-11T17:56:06Z
+// ZeroconfServiceDetection.h - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -293,4 +293,4 @@ private:
 #endif // ZEROCONFSERVICEDETECTION_H
 
 // ----------------------------------------------------------------------------
-// EOF ZeroconfServiceDetection.h - Released 2021-11-11T17:56:06Z
+// EOF ZeroconfServiceDetection.h - Released 2021-11-25T11:45:24Z

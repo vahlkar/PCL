@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard EphemerisGeneration Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// XEPHGenerator.cpp - Released 2021-11-11T17:56:06Z
+// XEPHGenerator.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -352,4 +352,4 @@ SerializableEphemerisObjectData XEPHGenerator::MakeObjectData( const Integration
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF XEPHGenerator.cpp - Released 2021-11-11T17:56:06Z
+// EOF XEPHGenerator.cpp - Released 2021-11-25T11:45:24Z

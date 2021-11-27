@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// pcl/Compression.cpp - Released 2021-11-11T17:57:35Z
+// pcl/Compression.cpp - Released 2021-11-25T11:44:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -744,4 +744,4 @@ size_type LZ4HCCompression::UncompressBlock( void* outputData, size_type maxOutp
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Compression.cpp - Released 2021-11-11T17:57:35Z
+// EOF pcl/Compression.cpp - Released 2021-11-25T11:44:55Z

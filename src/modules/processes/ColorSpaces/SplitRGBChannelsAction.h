@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.2
 // ----------------------------------------------------------------------------
-// SplitRGBChannelsAction.h - Released 2021-11-11T17:56:06Z
+// SplitRGBChannelsAction.h - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -113,4 +113,4 @@ public:
 #endif   // __SplitRGBChannelsAction_h
 
 // ----------------------------------------------------------------------------
-// EOF SplitRGBChannelsAction.h - Released 2021-11-11T17:56:06Z
+// EOF SplitRGBChannelsAction.h - Released 2021-11-25T11:45:24Z

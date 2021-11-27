@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.4
 // ----------------------------------------------------------------------------
-// RotationInterface.cpp - Released 2021-11-11T17:56:06Z
+// RotationInterface.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -576,4 +576,4 @@ RotationInterface::GUIData::GUIData( RotationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RotationInterface.cpp - Released 2021-11-11T17:56:06Z
+// EOF RotationInterface.cpp - Released 2021-11-25T11:45:24Z

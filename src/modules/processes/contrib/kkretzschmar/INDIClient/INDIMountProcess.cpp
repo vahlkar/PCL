@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// INDIMountProcess.cpp - Released 2021-11-11T17:56:06Z
+// INDIMountProcess.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -190,4 +190,4 @@ int INDIMountProcess::ProcessCommandLine( const StringList& argv ) const
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDIMountProcess.cpp - Released 2021-11-11T17:56:06Z
+// EOF INDIMountProcess.cpp - Released 2021-11-25T11:45:24Z

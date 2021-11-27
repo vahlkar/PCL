@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// AutoHistogramInstance.cpp - Released 2021-11-11T17:56:06Z
+// AutoHistogramInstance.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -352,4 +352,4 @@ void* AutoHistogramInstance::LockParameter( const MetaParameter* p, size_type /*
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF AutoHistogramInstance.cpp - Released 2021-11-11T17:56:06Z
+// EOF AutoHistogramInstance.cpp - Released 2021-11-25T11:45:24Z

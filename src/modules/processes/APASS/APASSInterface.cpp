@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard APASS Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// APASSInterface.cpp - Released 2021-11-11T17:56:06Z
+// APASSInterface.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard APASS PixInsight module.
 //
@@ -1393,4 +1393,4 @@ APASSInterface::GUIData::GUIData( APASSInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF APASSInterface.cpp - Released 2021-11-11T17:56:06Z
+// EOF APASSInterface.cpp - Released 2021-11-25T11:45:24Z

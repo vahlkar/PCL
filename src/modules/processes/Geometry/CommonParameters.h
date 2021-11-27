@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.4
 // ----------------------------------------------------------------------------
-// CommonParameters.h - Released 2021-11-11T17:56:06Z
+// CommonParameters.h - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -430,4 +430,4 @@ public:
 #endif   // __CommonParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF CommonParameters.h - Released 2021-11-11T17:56:06Z
+// EOF CommonParameters.h - Released 2021-11-25T11:45:24Z

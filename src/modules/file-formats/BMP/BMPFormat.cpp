@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard BMP File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// BMPFormat.cpp - Released 2021-11-11T17:55:57Z
+// BMPFormat.cpp - Released 2021-11-25T11:45:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard BMP PixInsight module.
 //
@@ -1345,4 +1345,4 @@ FileFormatImplementation* SVGFormat::Create() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BMPFormat.cpp - Released 2021-11-11T17:55:57Z
+// EOF BMPFormat.cpp - Released 2021-11-25T11:45:11Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// ImageIdentifierInterface.cpp - Released 2021-11-11T17:56:06Z
+// ImageIdentifierInterface.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -243,4 +243,4 @@ ImageIdentifierInterface::GUIData::GUIData( ImageIdentifierInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIdentifierInterface.cpp - Released 2021-11-11T17:56:06Z
+// EOF ImageIdentifierInterface.cpp - Released 2021-11-25T11:45:24Z

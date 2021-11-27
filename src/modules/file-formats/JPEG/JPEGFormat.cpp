@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// JPEGFormat.cpp - Released 2021-11-11T17:55:57Z
+// JPEGFormat.cpp - Released 2021-11-25T11:45:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -329,4 +329,4 @@ JPEGFormat::FormatOptions* JPEGFormat::FormatOptions::FromGenericDataBlock( cons
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF JPEGFormat.cpp - Released 2021-11-11T17:55:57Z
+// EOF JPEGFormat.cpp - Released 2021-11-25T11:45:11Z

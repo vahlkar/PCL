@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.4
 // ----------------------------------------------------------------------------
-// IntegerResampleProcess.cpp - Released 2021-11-11T17:56:06Z
+// IntegerResampleProcess.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -139,4 +139,4 @@ ProcessImplementation* IntegerResampleProcess::Clone( const ProcessImplementatio
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF IntegerResampleProcess.cpp - Released 2021-11-11T17:56:06Z
+// EOF IntegerResampleProcess.cpp - Released 2021-11-25T11:45:24Z

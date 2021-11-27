@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Gaia Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// GaiaParameters.cpp - Released 2021-11-11T17:56:06Z
+// GaiaParameters.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Gaia PixInsight module.
 //
@@ -994,4 +994,4 @@ bool GDatabaseMagnitudeHigh::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GaiaParameters.cpp - Released 2021-11-11T17:56:06Z
+// EOF GaiaParameters.cpp - Released 2021-11-25T11:45:24Z

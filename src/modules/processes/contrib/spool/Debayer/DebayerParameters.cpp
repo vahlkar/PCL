@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Debayer Process Module Version 1.10.1
 // ----------------------------------------------------------------------------
-// DebayerParameters.cpp - Released 2021-11-11T17:56:06Z
+// DebayerParameters.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -2319,4 +2319,4 @@ bool DebayerOutputFileNoiseAlgorithmB::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DebayerParameters.cpp - Released 2021-11-11T17:56:06Z
+// EOF DebayerParameters.cpp - Released 2021-11-25T11:45:24Z

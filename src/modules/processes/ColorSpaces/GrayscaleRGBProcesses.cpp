@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.2
 // ----------------------------------------------------------------------------
-// GrayscaleRGBProcesses.cpp - Released 2021-11-11T17:56:06Z
+// GrayscaleRGBProcesses.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -204,4 +204,4 @@ bool ConvertToRGBColorProcess::IsAssignable() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GrayscaleRGBProcesses.cpp - Released 2021-11-11T17:56:06Z
+// EOF GrayscaleRGBProcesses.cpp - Released 2021-11-25T11:45:24Z

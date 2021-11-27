@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// UnsharpMaskInstance.h - Released 2021-11-11T17:56:06Z
+// UnsharpMaskInstance.h - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -106,4 +106,4 @@ private:
 #endif   // __UnsharpMaskInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF UnsharpMaskInstance.h - Released 2021-11-11T17:56:06Z
+// EOF UnsharpMaskInstance.h - Released 2021-11-25T11:45:24Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Debayer Process Module Version 1.10.1
 // ----------------------------------------------------------------------------
-// DebayerProcess.h - Released 2021-11-11T17:56:06Z
+// DebayerProcess.h - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -91,4 +91,4 @@ PCL_END_LOCAL
 #endif   // __DebayerProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF DebayerProcess.h - Released 2021-11-11T17:56:06Z
+// EOF DebayerProcess.h - Released 2021-11-25T11:45:24Z

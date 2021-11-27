@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.6.5
 // ----------------------------------------------------------------------------
-// SubframeSelectorMeasurementsInterface.h - Released 2021-11-21T21:48:09Z
+// SubframeSelectorMeasurementsInterface.h - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -167,4 +167,4 @@ PCL_END_LOCAL
 #endif   // e_SubframeSelectorMeasurementsInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorMeasurementsInterface.h - Released 2021-11-21T21:48:09Z
+// EOF SubframeSelectorMeasurementsInterface.h - Released 2021-11-25T11:45:24Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.3.6
 // ----------------------------------------------------------------------------
-// LargeScaleRejectionMapGenerationEngine.cpp - Released 2021-11-11T17:56:06Z
+// LargeScaleRejectionMapGenerationEngine.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -176,4 +176,4 @@ void LargeScaleRejectionMapGenerationEngine::GenerationThread::Run()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LargeScaleRejectionMapGenerationEngine.cpp - Released 2021-11-11T17:56:06Z
+// EOF LargeScaleRejectionMapGenerationEngine.cpp - Released 2021-11-25T11:45:24Z

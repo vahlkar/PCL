@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsHdrCompositionParameters.cpp - Released 2021-11-11T17:56:06Z
+// GradientsHdrCompositionParameters.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
@@ -181,4 +181,4 @@ bool GradientsHdrCompositionGenerateMask::DefaultValue() const
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF GradientsHdrCompositionParameters.cpp - Released 2021-11-11T17:56:06Z
+// EOF GradientsHdrCompositionParameters.cpp - Released 2021-11-25T11:45:24Z

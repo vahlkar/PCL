@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.4
 // ----------------------------------------------------------------------------
-// ChannelMatchProcess.cpp - Released 2021-11-11T17:56:06Z
+// ChannelMatchProcess.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -144,4 +144,4 @@ bool ChannelMatchProcess::NeedsValidation() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ChannelMatchProcess.cpp - Released 2021-11-11T17:56:06Z
+// EOF ChannelMatchProcess.cpp - Released 2021-11-25T11:45:24Z

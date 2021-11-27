@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// pcl/APIInterface.cpp - Released 2021-11-11T17:57:35Z
+// pcl/APIInterface.cpp - Released 2021-11-25T11:44:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -3715,4 +3715,4 @@ bool APIInterface::Resolve( function_resolver R )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/APIInterface.cpp - Released 2021-11-11T17:57:35Z
+// EOF pcl/APIInterface.cpp - Released 2021-11-25T11:44:55Z

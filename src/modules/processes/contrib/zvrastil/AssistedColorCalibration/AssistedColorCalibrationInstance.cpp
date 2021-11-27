@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard AssistedColorCalibration Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// AssistedColorCalibrationInstance.cpp - Released 2021-11-11T17:56:06Z
+// AssistedColorCalibrationInstance.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard AssistedColorCalibration PixInsight module.
 //
@@ -502,4 +502,4 @@ double AssistedColorCalibrationInstance::GetSaturationBoost() const
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF AssistedColorCalibrationInstance.cpp - Released 2021-11-11T17:56:06Z
+// EOF AssistedColorCalibrationInstance.cpp - Released 2021-11-25T11:45:24Z

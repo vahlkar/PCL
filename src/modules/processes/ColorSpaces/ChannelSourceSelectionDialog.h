@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.2
 // ----------------------------------------------------------------------------
-// ChannelSourceSelectionDialog.h - Released 2021-11-11T17:56:06Z
+// ChannelSourceSelectionDialog.h - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -95,4 +95,4 @@ private:
 #endif   // __ChannelSourceSelectionDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF ChannelSourceSelectionDialog.h - Released 2021-11-11T17:56:06Z
+// EOF ChannelSourceSelectionDialog.h - Released 2021-11-25T11:45:24Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsHdrCompression.h - Released 2021-11-11T17:56:06Z
+// GradientsHdrCompression.h - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
@@ -105,4 +105,4 @@ private: // member functions
 #endif // __GradientsHdrCompression_h
 
 // ----------------------------------------------------------------------------
-// EOF GradientsHdrCompression.h - Released 2021-11-11T17:56:06Z
+// EOF GradientsHdrCompression.h - Released 2021-11-25T11:45:24Z

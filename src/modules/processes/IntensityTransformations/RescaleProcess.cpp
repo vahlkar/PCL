@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// RescaleProcess.cpp - Released 2021-11-11T17:56:06Z
+// RescaleProcess.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -278,4 +278,4 @@ int RescaleProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RescaleProcess.cpp - Released 2021-11-11T17:56:06Z
+// EOF RescaleProcess.cpp - Released 2021-11-25T11:45:24Z

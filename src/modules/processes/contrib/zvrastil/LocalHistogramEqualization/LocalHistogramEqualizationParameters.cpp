@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard LocalHistogramEqualization Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// LocalHistogramEqualizationParameters.cpp - Released 2021-11-11T17:56:06Z
+// LocalHistogramEqualizationParameters.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard LocalHistogramEqualization PixInsight module.
 //
@@ -225,4 +225,4 @@ bool LHECircularKernel::DefaultValue() const
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalHistogramEqualizationParameters.cpp - Released 2021-11-11T17:56:06Z
+// EOF LocalHistogramEqualizationParameters.cpp - Released 2021-11-25T11:45:24Z

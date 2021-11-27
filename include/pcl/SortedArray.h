@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// pcl/SortedArray.h - Released 2021-11-11T17:57:24Z
+// pcl/SortedArray.h - Released 2021-11-25T11:44:47Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -1101,4 +1101,4 @@ SortedArray<T,A>& operator <<( SortedArray<T,A>&& x1, const Array<T,A>& x2 )
 #endif  // __PCL_SortedArray_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SortedArray.h - Released 2021-11-11T17:57:24Z
+// EOF pcl/SortedArray.h - Released 2021-11-25T11:44:47Z

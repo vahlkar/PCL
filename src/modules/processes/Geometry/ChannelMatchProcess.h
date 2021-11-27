@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.4
 // ----------------------------------------------------------------------------
-// ChannelMatchProcess.h - Released 2021-11-11T17:56:06Z
+// ChannelMatchProcess.h - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -90,4 +90,4 @@ PCL_END_LOCAL
 #endif   // __ChannelMatchProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF ChannelMatchProcess.h - Released 2021-11-11T17:56:06Z
+// EOF ChannelMatchProcess.h - Released 2021-11-25T11:45:24Z

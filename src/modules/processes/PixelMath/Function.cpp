@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.8.4
 // ----------------------------------------------------------------------------
-// Function.cpp - Released 2021-11-11T17:56:06Z
+// Function.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -4339,4 +4339,4 @@ Expression::component_list InlineSwitchFunction::Optimized() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Function.cpp - Released 2021-11-11T17:56:06Z
+// EOF Function.cpp - Released 2021-11-25T11:45:24Z

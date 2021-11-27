@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard EphemerisGeneration Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// EphemerisGeneratorProcess.cpp - Released 2021-11-11T17:56:06Z
+// EphemerisGeneratorProcess.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -239,4 +239,4 @@ int EphemerisGeneratorProcess::FindDatabaseFormatByName( const String& name )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF EphemerisGeneratorProcess.cpp - Released 2021-11-11T17:56:06Z
+// EOF EphemerisGeneratorProcess.cpp - Released 2021-11-25T11:45:24Z

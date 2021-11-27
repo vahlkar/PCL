@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.7.2
 // ----------------------------------------------------------------------------
-// SuperbiasInterface.cpp - Released 2021-11-11T17:56:06Z
+// SuperbiasInterface.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -316,4 +316,4 @@ SuperbiasInterface::GUIData::GUIData( SuperbiasInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SuperbiasInterface.cpp - Released 2021-11-11T17:56:06Z
+// EOF SuperbiasInterface.cpp - Released 2021-11-25T11:45:24Z

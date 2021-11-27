@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.1.9
 // ----------------------------------------------------------------------------
-// FITSInstance.h - Released 2021-11-11T17:55:57Z
+// FITSInstance.h - Released 2021-11-25T11:45:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -145,4 +145,4 @@ private:
 #endif   // __FITSInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF FITSInstance.h - Released 2021-11-11T17:55:57Z
+// EOF FITSInstance.h - Released 2021-11-25T11:45:11Z

@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// pcl/StatusMonitor.cpp - Released 2021-11-11T17:57:35Z
+// pcl/StatusMonitor.cpp - Released 2021-11-25T11:44:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -281,4 +281,4 @@ void StatusMonitor::Update()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/StatusMonitor.cpp - Released 2021-11-11T17:57:35Z
+// EOF pcl/StatusMonitor.cpp - Released 2021-11-25T11:44:55Z

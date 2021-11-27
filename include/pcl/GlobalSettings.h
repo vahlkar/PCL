@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.15
 // ----------------------------------------------------------------------------
-// pcl/GlobalSettings.h - Released 2021-11-11T17:57:24Z
+// pcl/GlobalSettings.h - Released 2021-11-25T11:44:47Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -112,7 +112,7 @@ namespace GlobalVariableType
  * pcl::GlobalVariableType namespace for more details.
  *
  * Below is a complete list of all global settings available in current
- * versions of the PixInsight platform (updated as of core version 1.8.6.1455).
+ * versions of the PixInsight platform (updated as of core version 1.8.8-11).
  *
  * <h3>PixInsight Public Global Variables</h3>
  *
@@ -120,6 +120,7 @@ namespace GlobalVariableType
  *
  * <table border="1" cellpadding="4" cellspacing="0">
  * <tr><td>Application/AutoUIScaling</td><td></td></tr>
+ * <tr><td>Application/HealRegistryInformationOnUpdates</td><td></td></tr>
  * <tr><td>ColorManagement/DefaultEmbedProfilesInGrayscaleImages</td><td></td></tr>
  * <tr><td>ColorManagement/DefaultEmbedProfilesInRGBImages</td><td></td></tr>
  * <tr><td>ColorManagement/DefaultGamutCheckEnabled</td><td></td></tr>
@@ -209,6 +210,7 @@ namespace GlobalVariableType
  * <tr><td>Process/EnableThreadCPUAffinity</td><td></td></tr>
  * <tr><td>Process/GenerateScriptComments</td><td></td></tr>
  * <tr><td>Process/InitCUDARuntimeAtStartup</td><td></td></tr>
+ * <tr><td>Process/VerifyScriptChecksums</td><td></td></tr>
  * </table>
  *
  * <h4>Global Integers</h4>
@@ -516,4 +518,4 @@ public:
 #endif   // __PCL_GlobalSettings_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/GlobalSettings.h - Released 2021-11-11T17:57:24Z
+// EOF pcl/GlobalSettings.h - Released 2021-11-25T11:44:47Z

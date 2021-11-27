@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard XISF File Format Module Version 1.0.13
 // ----------------------------------------------------------------------------
-// XISFPreferencesDialog.cpp - Released 2021-11-11T17:55:57Z
+// XISFPreferencesDialog.cpp - Released 2021-11-25T11:45:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard XISF PixInsight module.
 //
@@ -354,4 +354,4 @@ void XISFPreferencesDialog::Dialog_Return( Dialog& sender, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF XISFPreferencesDialog.cpp - Released 2021-11-11T17:55:57Z
+// EOF XISFPreferencesDialog.cpp - Released 2021-11-25T11:45:11Z

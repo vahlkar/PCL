@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.4
 // ----------------------------------------------------------------------------
-// CropInterface.cpp - Released 2021-11-11T17:56:06Z
+// CropInterface.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -1421,4 +1421,4 @@ CropInterface::GUIData::GUIData( CropInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CropInterface.cpp - Released 2021-11-11T17:56:06Z
+// EOF CropInterface.cpp - Released 2021-11-25T11:45:24Z

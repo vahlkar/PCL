@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard CloneStamp Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// CloneStampProcess.cpp - Released 2021-11-11T17:56:06Z
+// CloneStampProcess.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CloneStamp PixInsight module.
 //
@@ -165,4 +165,4 @@ ProcessImplementation* CloneStampProcess::TestClone( const ProcessImplementation
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CloneStampProcess.cpp - Released 2021-11-11T17:56:06Z
+// EOF CloneStampProcess.cpp - Released 2021-11-25T11:45:24Z

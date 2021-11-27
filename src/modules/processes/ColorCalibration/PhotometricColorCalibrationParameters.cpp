@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationParameters.cpp - Released 2021-11-11T17:56:06Z
+// PhotometricColorCalibrationParameters.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -1449,4 +1449,4 @@ double PCCBackgroundROIY1::MaximumValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationParameters.cpp - Released 2021-11-11T17:56:06Z
+// EOF PhotometricColorCalibrationParameters.cpp - Released 2021-11-25T11:45:24Z

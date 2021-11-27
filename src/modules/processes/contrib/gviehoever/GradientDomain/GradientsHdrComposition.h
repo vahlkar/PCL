@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsHdrComposition.h - Released 2021-11-11T17:56:06Z
+// GradientsHdrComposition.h - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
@@ -151,4 +151,4 @@ private:
 #endif // __GradientsHdrComposition_h
 
 // ----------------------------------------------------------------------------
-// EOF GradientsHdrComposition.h - Released 2021-11-11T17:56:06Z
+// EOF GradientsHdrComposition.h - Released 2021-11-25T11:45:24Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.6.5
 // ----------------------------------------------------------------------------
-// SubframeSelectorInstance.cpp - Released 2021-11-21T21:48:09Z
+// SubframeSelectorInstance.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -2361,4 +2361,4 @@ size_type SubframeSelectorInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInstance.cpp - Released 2021-11-21T21:48:09Z
+// EOF SubframeSelectorInstance.cpp - Released 2021-11-25T11:45:24Z

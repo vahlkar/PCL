@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.7.2
 // ----------------------------------------------------------------------------
-// SuperbiasInstance.cpp - Released 2021-11-11T17:56:06Z
+// SuperbiasInstance.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -371,4 +371,4 @@ size_type SuperbiasInstance::ParameterLength( const MetaParameter* p, size_type 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SuperbiasInstance.cpp - Released 2021-11-11T17:56:06Z
+// EOF SuperbiasInstance.cpp - Released 2021-11-25T11:45:24Z

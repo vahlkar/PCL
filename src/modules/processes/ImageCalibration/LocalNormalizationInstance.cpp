@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.7.2
 // ----------------------------------------------------------------------------
-// LocalNormalizationInstance.cpp - Released 2021-11-11T17:56:06Z
+// LocalNormalizationInstance.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -1896,4 +1896,4 @@ size_type LocalNormalizationInstance::ParameterLength( const MetaParameter* p, s
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationInstance.cpp - Released 2021-11-11T17:56:06Z
+// EOF LocalNormalizationInstance.cpp - Released 2021-11-25T11:45:24Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.7.2
 // ----------------------------------------------------------------------------
-// SuperbiasInterface.h - Released 2021-11-11T17:56:06Z
+// SuperbiasInterface.h - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -132,4 +132,4 @@ PCL_END_LOCAL
 #endif   // __SuperbiasInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF SuperbiasInterface.h - Released 2021-11-11T17:56:06Z
+// EOF SuperbiasInterface.h - Released 2021-11-25T11:45:24Z

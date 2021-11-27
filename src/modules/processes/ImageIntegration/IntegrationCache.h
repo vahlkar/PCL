@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.3.6
 // ----------------------------------------------------------------------------
-// IntegrationCache.h - Released 2021-11-11T17:56:06Z
+// IntegrationCache.h - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -145,4 +145,4 @@ extern IntegrationCache* TheIntegrationCache;
 #endif   // __IntegrationCache_h
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationCache.h - Released 2021-11-11T17:56:06Z
+// EOF IntegrationCache.h - Released 2021-11-25T11:45:24Z

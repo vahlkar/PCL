@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.7.2
 // ----------------------------------------------------------------------------
-// LocalNormalizationParameters.h - Released 2021-11-11T17:56:06Z
+// LocalNormalizationParameters.h - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -624,4 +624,4 @@ PCL_END_LOCAL
 #endif   // __LocalNormalizationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationParameters.h - Released 2021-11-11T17:56:06Z
+// EOF LocalNormalizationParameters.h - Released 2021-11-25T11:45:24Z

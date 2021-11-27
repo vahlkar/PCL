@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// INDIDeviceControllerInstance.h - Released 2021-11-11T17:56:06Z
+// INDIDeviceControllerInstance.h - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -106,4 +106,4 @@ private:
 #endif // __INDIDeviceControllerInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF INDIDeviceControllerInstance.h - Released 2021-11-11T17:56:06Z
+// EOF INDIDeviceControllerInstance.h - Released 2021-11-25T11:45:24Z

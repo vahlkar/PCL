@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// PreferencesProcess.cpp - Released 2021-11-11T17:56:06Z
+// PreferencesProcess.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -383,4 +383,4 @@ int PreferencesProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesProcess.cpp - Released 2021-11-11T17:56:06Z
+// EOF PreferencesProcess.cpp - Released 2021-11-25T11:45:24Z

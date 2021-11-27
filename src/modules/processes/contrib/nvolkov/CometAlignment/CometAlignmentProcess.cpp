@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard CometAlignment Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// CometAlignmentProcess.cpp - Released 2021-11-11T17:56:06Z
+// CometAlignmentProcess.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CometAlignment PixInsight module.
 //
@@ -160,4 +160,4 @@ ProcessImplementation* CometAlignmentProcess::Clone( const ProcessImplementation
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF CometAlignmentProcess.cpp - Released 2021-11-11T17:56:06Z
+// EOF CometAlignmentProcess.cpp - Released 2021-11-25T11:45:24Z

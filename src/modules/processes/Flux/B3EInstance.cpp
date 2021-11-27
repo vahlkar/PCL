@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Flux Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// B3EInstance.cpp - Released 2021-11-11T17:56:06Z
+// B3EInstance.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Flux PixInsight module.
 //
@@ -971,4 +971,4 @@ size_type B3EInstance::ParameterLength( const MetaParameter* p, size_type tableR
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF B3EInstance.cpp - Released 2021-11-11T17:56:06Z
+// EOF B3EInstance.cpp - Released 2021-11-25T11:45:24Z

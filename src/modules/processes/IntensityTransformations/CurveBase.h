@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// CurveBase.h - Released 2021-11-11T17:56:06Z
+// CurveBase.h - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -188,4 +188,4 @@ protected:
 #endif   // __CurveBase_h
 
 // ----------------------------------------------------------------------------
-// EOF CurveBase.h - Released 2021-11-11T17:56:06Z
+// EOF CurveBase.h - Released 2021-11-25T11:45:24Z

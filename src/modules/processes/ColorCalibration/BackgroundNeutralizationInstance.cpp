@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// BackgroundNeutralizationInstance.cpp - Released 2021-11-11T17:56:06Z
+// BackgroundNeutralizationInstance.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -357,4 +357,4 @@ size_type BackgroundNeutralizationInstance::ParameterLength( const MetaParameter
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BackgroundNeutralizationInstance.cpp - Released 2021-11-11T17:56:06Z
+// EOF BackgroundNeutralizationInstance.cpp - Released 2021-11-25T11:45:24Z

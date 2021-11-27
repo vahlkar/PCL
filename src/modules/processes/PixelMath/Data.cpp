@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.8.4
 // ----------------------------------------------------------------------------
-// Data.cpp - Released 2021-11-11T17:56:06Z
+// Data.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -305,4 +305,4 @@ bool InternalImageReference::FindImage()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Data.cpp - Released 2021-11-11T17:56:06Z
+// EOF Data.cpp - Released 2021-11-25T11:45:24Z

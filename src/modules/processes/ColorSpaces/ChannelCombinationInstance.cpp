@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.2
 // ----------------------------------------------------------------------------
-// ChannelCombinationInstance.cpp - Released 2021-11-11T17:56:06Z
+// ChannelCombinationInstance.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -747,4 +747,4 @@ size_type ChannelCombinationInstance::ParameterLength( const MetaParameter* p, s
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ChannelCombinationInstance.cpp - Released 2021-11-11T17:56:06Z
+// EOF ChannelCombinationInstance.cpp - Released 2021-11-25T11:45:24Z

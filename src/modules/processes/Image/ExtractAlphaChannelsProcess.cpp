@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// ExtractAlphaChannelsProcess.cpp - Released 2021-11-11T17:56:06Z
+// ExtractAlphaChannelsProcess.cpp - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -299,4 +299,4 @@ int ExtractAlphaChannelsProcess::ProcessCommandLine( const StringList& argv ) co
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ExtractAlphaChannelsProcess.cpp - Released 2021-11-11T17:56:06Z
+// EOF ExtractAlphaChannelsProcess.cpp - Released 2021-11-25T11:45:24Z

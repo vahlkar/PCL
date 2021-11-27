@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Morphology Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// MorphologicalTransformationProcess.h - Released 2021-11-11T17:56:06Z
+// MorphologicalTransformationProcess.h - Released 2021-11-25T11:45:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Morphology PixInsight module.
 //
@@ -89,4 +89,4 @@ PCL_END_LOCAL
 #endif   // __MorphologicalTransformationProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF MorphologicalTransformationProcess.h - Released 2021-11-11T17:56:06Z
+// EOF MorphologicalTransformationProcess.h - Released 2021-11-25T11:45:24Z
