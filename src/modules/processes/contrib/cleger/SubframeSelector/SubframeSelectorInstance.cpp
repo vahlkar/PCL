@@ -1307,88 +1307,90 @@ void SubframeSelectorInstance::Measure()
 
 void SubframeSelectorInstance::ApproveMeasurements()
 {
-   if ( p_approvalExpression.IsEmpty() )
-   {
-      o_measures.Apply( []( MeasureItem& item )
-                        {
-                           if ( !item.locked )
-                              item.enabled = true;
-                        } );
-   }
-   else
-   {
-      // First, get all Medians and Mean Deviation from Medians for Sigma units
-      MeasureProperties properties = MeasureProperties();
-      MeasureUtils::MeasureProperties( o_measures, p_subframeScale, p_scaleUnit,
-                                       p_cameraGain, p_cameraResolution, p_dataUnit,
-                                       properties );
-
-      for ( MeasureItem& item : o_measures )
+   if ( !o_measures.IsEmpty() )
+      if ( p_approvalExpression.IsEmpty() )
       {
-         if ( item.locked )
-            continue;
-
-         // The standard parameters for the MeasureItem
-         String scriptSource = item.JavaScriptParameters( p_subframeScale, p_scaleUnit, p_cameraGain,
-                                                          TheSSCameraResolutionParameter->ElementData( p_cameraResolution ),
-                                                          p_dataUnit, properties );
-
-         // The final expression that evaluates to a return value
-         scriptSource += p_approvalExpression;
-
-         // Try to get the final result and update the MeasureItem
-         Variant result = Module->EvaluateScript( scriptSource.DecodedHTMLSpecialChars(), "JavaScript" );
-         if ( !result.IsValid() )
-            throw Error( "Approval error: Invalid script execution" );
-         String resultText = result.ToString();
-         if ( resultText.Contains( "Error" ) )
-            throw Error( resultText );
-
-         item.enabled = result.ToBool();
+         o_measures.Apply( []( MeasureItem& item )
+                           {
+                              if ( !item.locked )
+                                 item.enabled = true;
+                           } );
       }
-   }
+      else
+      {
+         // First, get all Medians and Mean Deviation from Medians for Sigma units
+         MeasureProperties properties = MeasureProperties();
+         MeasureUtils::MeasureProperties( o_measures, p_subframeScale, p_scaleUnit,
+                                          p_cameraGain, p_cameraResolution, p_dataUnit,
+                                          properties );
+
+         for ( MeasureItem& item : o_measures )
+         {
+            if ( item.locked )
+               continue;
+
+            // The standard parameters for the MeasureItem
+            String scriptSource = item.JavaScriptParameters( p_subframeScale, p_scaleUnit, p_cameraGain,
+                                                            TheSSCameraResolutionParameter->ElementData( p_cameraResolution ),
+                                                            p_dataUnit, properties );
+
+            // The final expression that evaluates to a return value
+            scriptSource += p_approvalExpression;
+
+            // Try to get the final result and update the MeasureItem
+            Variant result = Module->EvaluateScript( scriptSource.DecodedHTMLSpecialChars(), "JavaScript" );
+            if ( !result.IsValid() )
+               throw Error( "SubframeSelector: Approval error: Invalid script execution." );
+            String resultText = result.ToString();
+            if ( resultText.Contains( "Error" ) )
+               throw Error( resultText );
+
+            item.enabled = result.ToBool();
+         }
+      }
 }
 
 // ----------------------------------------------------------------------------
 
 void SubframeSelectorInstance::WeightMeasurements()
 {
-   if ( p_weightingExpression.IsEmpty() )
-   {
-      o_measures.Apply( []( MeasureItem& item )
-                        {
-                           item.weight = 0;
-                        } );
-   }
-   else
-   {
-      // First, get all Medians and Mean Deviation from Medians for Sigma units
-      MeasureProperties properties = MeasureProperties();
-      MeasureUtils::MeasureProperties( o_measures, p_subframeScale, p_scaleUnit,
-                                       p_cameraGain, p_cameraResolution, p_dataUnit,
-                                       properties );
-
-      for ( MeasureItem& item : o_measures )
+   if ( !o_measures.IsEmpty() )
+      if ( p_weightingExpression.IsEmpty() )
       {
-         // The standard parameters for the MeasureItem
-         String scriptSource = item.JavaScriptParameters( p_subframeScale, p_scaleUnit, p_cameraGain,
-                                                          TheSSCameraResolutionParameter->ElementData( p_cameraResolution ),
-                                                          p_dataUnit, properties );
-
-         // The final expression that evaluates to a return value
-         scriptSource += p_weightingExpression;
-
-         // Try to get the final result and update the MeasureItem
-         Variant result = Module->EvaluateScript( scriptSource.DecodedHTMLSpecialChars(), "JavaScript" );
-         if ( !result.IsValid() )
-            throw Error( "Weighting error: Invalid script execution" );
-         String resultText = result.ToString();
-         if ( resultText.Contains( "Error" ) )
-            throw Error( resultText );
-
-         item.weight = result.ToFloat();
+         o_measures.Apply( []( MeasureItem& item )
+                           {
+                              item.weight = 0;
+                           } );
       }
-   }
+      else
+      {
+         // First, get all Medians and Mean Deviation from Medians for Sigma units
+         MeasureProperties properties = MeasureProperties();
+         MeasureUtils::MeasureProperties( o_measures, p_subframeScale, p_scaleUnit,
+                                          p_cameraGain, p_cameraResolution, p_dataUnit,
+                                          properties );
+
+         for ( MeasureItem& item : o_measures )
+         {
+            // The standard parameters for the MeasureItem
+            String scriptSource = item.JavaScriptParameters( p_subframeScale, p_scaleUnit, p_cameraGain,
+                                                            TheSSCameraResolutionParameter->ElementData( p_cameraResolution ),
+                                                            p_dataUnit, properties );
+
+            // The final expression that evaluates to a return value
+            scriptSource += p_weightingExpression;
+
+            // Try to get the final result and update the MeasureItem
+            Variant result = Module->EvaluateScript( scriptSource.DecodedHTMLSpecialChars(), "JavaScript" );
+            if ( !result.IsValid() )
+               throw Error( "SubframeSelector: Weighting error: Invalid script execution." );
+            String resultText = result.ToString();
+            if ( resultText.Contains( "Error" ) )
+               throw Error( resultText );
+
+            item.weight = result.ToFloat();
+         }
+      }
 }
 
 // ----------------------------------------------------------------------------

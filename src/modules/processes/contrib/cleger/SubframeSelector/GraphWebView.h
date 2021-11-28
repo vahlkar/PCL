@@ -101,7 +101,7 @@ public:
 
    GraphWebView( Control& parent );
 
-   void SetDataset( const String& dataname, const DataPointVector* dataset );
+   void SetDataset( const String& dataname, const DataPointVector& dataset );
 
    typedef void (Control::*approve_event_handler)( GraphWebView& sender, int index );
    typedef void (Control::*unlock_event_handler)( GraphWebView& sender, int index );

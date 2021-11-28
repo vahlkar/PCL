@@ -53,6 +53,8 @@
 #include "GraphWebView.h"
 #include "SubframeSelectorMeasureData.h"
 
+#include <pcl/Console.h>
+
 namespace pcl
 {
 
@@ -111,11 +113,19 @@ void GraphWebView::e_Timer( Timer& sender )
 void GraphWebView::e_JSResult( WebView& sender, const Variant& result )
 {
    if ( !result.IsValid() )
-      throw Error( "Graph Error: Invalid script execution" );
+   {
+      Console().CriticalLn( "<end><cbr>*** Error: Generating SubframeSelector graphs: Invalid script execution." );
+      m_eventCheckTimer.Stop();
+      return;
+   }
 
    String resultText = result.ToString();
    if ( resultText.Contains( "Error" ) )
-      throw Error( resultText );
+   {
+      Console().CriticalLn( "<end><cbr>*** Error: Generating SubframeSelector graphs: " + resultText );
+      m_eventCheckTimer.Stop();
+      return;
+   }
 
    bool approve = resultText.StartsWith( "A:" );
    bool unlock = resultText.StartsWith( "U:" );
@@ -182,40 +192,38 @@ void GraphWebView::OnUnlock( unlock_event_handler handler, Control& receiver )
 
 // ----------------------------------------------------------------------------
 
-void GraphWebView::SetDataset( const String& dataname, const DataPointVector* dataset )
+void GraphWebView::SetDataset( const String& dataname, const DataPointVector& dataset )
 {
    m_loaded = false;
 
-   int length = int( dataset->Length() );
-
    // Sort the dataset by X values to ensure a proper line
-   DataPointVector datasetSortedX = dataset->Sorted( DataPointSortingBinaryPredicate( false/*y*/ ) );
+   DataPointVector datasetSortedX = dataset.Sorted( DataPointSortingBinaryPredicate( false/*y*/ ) );
    // Sort the dataset by Y values to make distribution graphs
-   DataPointVector datasetSortedY = dataset->Sorted( DataPointSortingBinaryPredicate( true/*y*/ ) );
+   DataPointVector datasetSortedY = dataset.Sorted( DataPointSortingBinaryPredicate( true/*y*/ ) );
 
    // Find Median and MAD of the values
-   Array<double> values( length );
-   for ( int i = 0; i < length; ++i )
-      values[i] = dataset->At( i )->data;
+   Array<double> values;
+   for ( const DataPoint& p : dataset )
+      values << p.data;
    double median, meanDev;
    MeasureUtils::MedianAndMeanDeviation( values, median, meanDev );
 
    // Find Min, Max, and Range of the values
    double min = 0;
    double max = 0;
-   if ( !dataset->IsEmpty() )
+   if ( !dataset.IsEmpty() )
    {
-      min = datasetSortedY.Begin()->data;
-      max = datasetSortedY.At( datasetSortedY.Length() - 1 )->data;
+      min = datasetSortedY[0].data;
+      max = datasetSortedY[datasetSortedY.Length()-1].data;
    }
    double range = max - min;
 
    // Determine the # of bins and their width
    int bins = 0;
    double binRange = 0;
-   if ( !dataset->IsEmpty() )
+   if ( !dataset.IsEmpty() )
    {
-      bins = pcl::Sqrt( length );
+      bins = pcl::Sqrt( dataset.Length() );
       binRange = range / bins;
    }
 
@@ -228,7 +236,7 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector* da
    }
    // Sort Y values into bins
    double maxBins = 0;
-   for ( const DataPoint& p : *dataset )
+   for ( const DataPoint& p : dataset )
    {
       int b = pcl::Min( bins - 1, pcl::RoundInt( pcl::Floor( (p.data - min) / binRange ) ) );
       datasetBinned[b].data += 1;
@@ -240,12 +248,12 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector* da
    double currentEDF = 0;
    for ( const DataPoint& p : datasetSortedY )
    {
-      currentEDF += 1.0/length;
+      currentEDF += 1.0/dataset.Length();
 
-      if ( !datasetEDF.IsEmpty() && datasetEDF.At( datasetEDF.Length()-1 )->x == p.data )
+      if ( !datasetEDF.IsEmpty() && datasetEDF[datasetEDF.Length()-1].x == p.data )
       {
          // For extremely close values, add to the previous value
-         datasetEDF.At( datasetEDF.Length()-1 )->data = currentEDF;
+         datasetEDF[datasetEDF.Length()-1].data = currentEDF;
       }
       else
       {
@@ -253,7 +261,7 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector* da
          DataPoint dataPoint = DataPoint();
          dataPoint.x = p.data;
          dataPoint.data = currentEDF;
-         datasetEDF.Append( dataPoint );
+         datasetEDF << dataPoint;
       }
    }
 
@@ -292,14 +300,14 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector* da
       int eMatched = -1;
       for ( int e = 0; e != int( datasetEDF.Length() ); ++e )
       {
-         const DataPoint* edf = datasetEDF.At( e );
+         const DataPoint& edf = datasetEDF[e];
 
-         if ( edf->x < b.x ) // EDF < Bin, add the EDF and remove it later
+         if ( edf.x < b.x ) // EDF < Bin, add the EDF and remove it later
          {
-            histographingArray += String().Format( "[%.8f, null, %.4f], ", edf->x, edf->data );
+            histographingArray += String().Format( "[%.8f, null, %.4f], ", edf.x, edf.data );
             ++eAdded;
          }
-         else if ( edf->x == b.x ) // EDF = Bin, mark the EDF to be merged and remove it later
+         else if ( edf.x == b.x ) // EDF = Bin, mark the EDF to be merged and remove it later
          {
             eMatched = e;
             ++eAdded;

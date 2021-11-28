@@ -524,7 +524,7 @@ void SubframeSelectorMeasurementsInterface::UpdateMeasurementGraph()
       point.locked = item.locked;
    }
 
-   GUI->MeasurementGraph_WebView.SetDataset( TheSSGraphPropertyParameter->ElementLabel( m_instance.p_graphProperty ), &dataset );
+   GUI->MeasurementGraph_WebView.SetDataset( TheSSGraphPropertyParameter->ElementLabel( m_instance.p_graphProperty ), dataset );
 }
 
 // ----------------------------------------------------------------------------
@@ -744,14 +744,29 @@ void SubframeSelectorMeasurementsInterface::e_ButtonClick( Button& sender, bool 
    else if ( sender == GUI->MeasurementsTable_Remove_PushButton )
    {
       MeasureItemList newMeasures;
+      int selectedNodeIndex = -1;
       for ( int i = 0, n = GUI->MeasurementTable_TreeBox.NumberOfChildren(); i < n; ++i )
       {
          MeasurementNode* node = static_cast<MeasurementNode*>( GUI->MeasurementTable_TreeBox[i] );
          if ( !node->IsSelected() )
             newMeasures << *node->Item();
+         else if ( selectedNodeIndex < 0 )
+            selectedNodeIndex = i;
       }
+
+      Cleanup();
       m_instance.o_measures = newMeasures;
-      UpdateControls();
+      if ( !m_instance.o_measures.IsEmpty() )
+      {
+         UpdateControls();
+         if ( selectedNodeIndex >= 0 )
+         {
+            TreeBox::Node* currentNode = GUI->MeasurementTable_TreeBox[
+               Min( selectedNodeIndex, GUI->MeasurementTable_TreeBox.NumberOfChildren()-1 )];
+            currentNode->Select();
+            GUI->MeasurementTable_TreeBox.SetNodeIntoView( currentNode );
+         }
+      }
    }
    else if ( sender == GUI->MeasurementsTable_Clear_PushButton )
    {
