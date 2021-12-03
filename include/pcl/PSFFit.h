@@ -168,9 +168,10 @@ struct PSFData
    double         sy = 0;     //!< Function width in pixels on the Y axis, sx >= sy.
    double         theta = 0;  //!< Rotation angle of the sx axis in degrees, in the [0,180) range.
    double         beta = 0;   //!< Moffat beta or shape parameter (dimensionless).
-   double         flux = 0;   //!< Total flux above the local background, measured on source image pixels.
-   double         meanSignal = 0; //!< Estimated mean signal over the fitting region.
-   double         meanSignalSqr = 0; //!< Estimated mean squared signal over the fitting region.
+   double         flux = 0;   //!< Total flux above the local background, measured on source image pixels within the fitting region.
+   double         meanSignal = 0; //!< Estimated signal over the PSF region.
+   double         meanSignalSqr = 0; //!< Estimated squared signal over the PSF region.
+   unsigned       signalCount = 0; //!< Number of pixels used for signal evaluation.
    double         mad = 0;    /*!< Goodness of fit estimate. A robust, normalized mean absolute difference between
                                    the estimated PSF and the sample of source image pixels over the fitting region. */
 

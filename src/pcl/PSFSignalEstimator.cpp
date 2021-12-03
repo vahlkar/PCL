@@ -141,6 +141,8 @@ PSFSignalEstimator::Estimates PSFSignalEstimator::EstimateSignal( const ImageVar
    m_starDetector.SetMaxProcessors( MaxProcessors() );
    StarDetector::star_list stars = m_starDetector.DetectStars( image );
 
+   Estimates E;
+
    if ( !stars.IsEmpty() )
    {
       /*
@@ -213,25 +215,40 @@ PSFSignalEstimator::Estimates PSFSignalEstimator::EstimateSignal( const ImageVar
           * Compute efficient average signal and squared signal estimates as
           * trimmed means after sigma clipping.
           */
-         Estimates E;
          if ( (E.count = t2 - t1) > 0 )
          {
+//             Array<double> m, m2;
+//             for ( int i = t2; --i >= t1; )
+//             {
+//                m << psfs[i].meanSignal;
+//                m2 << psfs[i].meanSignalSqr;
+//             }
+//             E.mean = Median( m.Begin(), m.End() );
+//             E.power = Median( m2.Begin(), m2.End() );
+
+            double signalNorm = 0;
             for ( int i = t2; --i >= t1; )
             {
                E.mean += psfs[i].meanSignal;
                E.power += psfs[i].meanSignalSqr;
+               signalNorm += psfs[i].A + psfs[i].B;
             }
             E.mean /= E.count;
             E.power /= E.count;
+            image.PushSelections();
+            image.SetRangeClipping( 0, 1 - 2.0/65535 );
+            double norm = image.Norm();
+            image.PopSelections();
+            E.mean *= signalNorm/norm;
+            E.power *= signalNorm/norm;
          }
-         return E;
       }
    }
 
    if ( initializeStatus )
       image.Status().EnableInitialization();
 
-   return Estimates();
+   return E;
 }
 
 // ----------------------------------------------------------------------------

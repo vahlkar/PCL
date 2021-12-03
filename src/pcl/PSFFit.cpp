@@ -1064,6 +1064,7 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
          psf.flux = r[1];
          psf.meanSignal = r[2];
          psf.meanSignalSqr = r[3];
+         psf.signalCount = r[4];
       }
       else
       {
@@ -1081,6 +1082,7 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
             psf.flux = r[1];
             psf.meanSignal = r[2];
             psf.meanSignalSqr= r[3];
+            psf.signalCount = r[4];
          }
          else
          {
@@ -1131,6 +1133,7 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
             psf.flux = r[1];
             psf.meanSignal = r[2];
             psf.meanSignalSqr = r[3];
+            psf.signalCount = r[4];
          }
       }
 
@@ -1172,32 +1175,42 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
    double flux = 0;
    double signal = 0;
    double signal2 = 0;
-   double zsum = 0;
+   unsigned nsignal = 0;
+   double rx2 = 0;
+   double ry2 = 2;
 
-#define GET_DATA()               \
-   {                             \
-      double d = *s - B;         \
-      adev[i] = Abs( d - A*z );  \
-      if ( !test )               \
-         if ( d > 0 )            \
-         {                       \
-            flux += d;           \
-            if ( 1 + B > 1 )     \
-               d /= B;           \
-            signal += z*d;       \
-            signal2 += z*d*d;    \
-            zsum += z;           \
-         }                       \
+#define GET_DATA()                        \
+   {                                      \
+      double d = *s - B;                  \
+      adev[i] = Abs( d - A*z );           \
+      if ( !test )                        \
+         if ( d > 0 )                     \
+         {                                \
+            flux += d;                    \
+            if ( dx2/rx2 + dy2/ry2 <= 1 ) \
+            {                             \
+               signal += d;               \
+               signal2 += d*d;            \
+               ++nsignal;                 \
+            }                             \
+         }                                \
    }
 
    if ( circular )
    {
 #define beta   P[5]
+
       switch ( function )
       {
       default:
       case PSFunction::Gaussian:
          {
+            if ( !test )
+            {
+               rx2 = 4.60517*sx*sx;
+               ry2 = rx2;
+            }
+
             double twosx2 = 2*sx*sx;
             for ( int y = 0, i = 0; y < h; ++y )
             {
@@ -1205,8 +1218,9 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
                double dy2 = dy*dy;
                for ( int x = 0; x < w; ++x, ++i, ++s )
                {
-                  double dx = x - w2x0;
-                  double z = Exp( -(dx*dx + dy2)/twosx2 );
+                  double dx  = x - w2x0;
+                  double dx2 = dx*dx;
+                  double z   = Exp( -(dx2 + dy2)/twosx2 );
                   GET_DATA()
                }
             }
@@ -1215,6 +1229,12 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
 
 #define C_MOFFAT_TEST( zmul )                      \
    {                                               \
+      if ( !test )                                 \
+      {                                            \
+         rx2 = (Pow( 10.0, 1/beta ) - 1)*sx*sx;    \
+         ry2 = rx2;                                \
+      }                                            \
+                                                   \
       double sx2 = sx*sx;                          \
       for ( int y = 0, i = 0; y < h; ++y )         \
       {                                            \
@@ -1222,8 +1242,9 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
          double dy2 = dy*dy;                       \
          for ( int x = 0; x < w; ++x, ++i, ++s )   \
          {                                         \
-            double dx = x - w2x0;                  \
-            double z = 1 + (dx*dx + dy2)/sx2;      \
+            double dx  = x - w2x0;                 \
+            double dx2 = dx*dx;                    \
+            double z   = 1 + (dx2 + dy2)/sx2;      \
             z = 1/(zmul);                          \
             GET_DATA()                             \
          }                                         \
@@ -1250,6 +1271,12 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
       case PSFunction::Moffat25:
       case PSFunction::Moffat15:
          {
+            if ( !test )
+            {
+               rx2 = (Pow( 10.0, 1/beta ) - 1)*sx*sx;
+               ry2 = rx2;
+            }
+
             double sx2 = sx*sx;
             for ( int y = 0, i = 0; y < h; ++y )
             {
@@ -1257,8 +1284,9 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
                double dy2 = dy*dy;
                for ( int x = 0; x < w; ++x, ++i, ++s )
                {
-                  double dx = x - w2x0;
-                  double z = 1/Pow( 1 + (dx*dx + dy2)/sx2, beta );
+                  double dx  = x - w2x0;
+                  double dx2 = dx*dx;
+                  double z   = 1/Pow( 1 + (dx2 + dy2)/sx2, beta );
                   GET_DATA()
                }
             }
@@ -1270,16 +1298,21 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
             double ksxk = beta*Pow( Abs( sx ), beta );
             for ( int y = 0, i = 0; y < h; ++y )
             {
-               double dyk = Pow( Abs( y - h2y0 ), beta );
+               double dy  = y - h2y0;
+               double dy2 = dy*dy;
+               double dyk = Pow( Abs( dy ), beta );
                for ( int x = 0; x < w; ++x, ++i, ++s )
                {
-                  double z = Exp( -(Pow( Abs( x - w2x0 ), beta ) + dyk)/ksxk );
+                  double dx  = x - w2x0;
+                  double dx2 = dx*dx;
+                  double z   = Exp( -(Pow( Abs( dx ), beta ) + dyk)/ksxk );
                   GET_DATA()
                }
             }
          }
          break;
       }
+
 #undef beta
    }
    else // !circular
@@ -1287,11 +1320,18 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
 #define sy     P[5]
 #define theta  P[6]
 #define beta   P[7]
+
       switch ( function )
       {
       default:
       case PSFunction::Gaussian:
          {
+            if ( !test )
+            {
+               rx2 = 4.60517*sx*sx;
+               ry2 = 4.60517*sy*sy;
+            }
+
             double st, ct;
             SinCos( theta, st, ct );
             double sct    = st*ct;
@@ -1305,12 +1345,14 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
             for ( int y = 0, i = 0; y < h; ++y )
             {
                double dy      = y - h2y0;
+               double dy2     = dy*dy;
                double twop2dy = 2*p2*dy;
                double p3dy2   = p3*dy*dy;
                for ( int x = 0; x < w; ++x, ++i, ++s )
                {
-                  double dx = x - w2x0;
-                  double z = Exp( -(p1*dx*dx + twop2dy*dx + p3dy2) );
+                  double dx  = x - w2x0;
+                  double dx2 = dx*dx;
+                  double z   = Exp( -(p1*dx2 + twop2dy*dx + p3dy2) );
                   GET_DATA()
                }
             }
@@ -1319,6 +1361,13 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
 
 #define E_MOFFAT_TEST( zmul )                               \
    {                                                        \
+      if ( !test )                                          \
+      {                                                     \
+         double k = Pow( 10.0, 1/beta ) - 1;                \
+         rx2 = k*sx*sx;                                     \
+         ry2 = k*sy*sy;                                     \
+      }                                                     \
+                                                            \
       double st, ct;                                        \
       SinCos( theta, st, ct );                              \
       double sct = st*ct;                                   \
@@ -1332,12 +1381,14 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
       for ( int y = 0, i = 0; y < h; ++y )                  \
       {                                                     \
          double dy      = y - h2y0;                         \
+         double dy2     = dy*dy;                            \
          double twop2dy = 2*p2*dy;                          \
          double p3dy2   = p3*dy*dy;                         \
          for ( int x = 0; x < w; ++x, ++i, ++s )            \
          {                                                  \
-            double dx = x - w2x0;                           \
-            double z = 1 + p1*dx*dx + twop2dy*dx + p3dy2;   \
+            double dx  = x - w2x0;                          \
+            double dx2 = dx*dx;                             \
+            double z   = 1 + p1*dx*dx + twop2dy*dx + p3dy2; \
             z = 1/(zmul);                                   \
             GET_DATA()                                      \
          }                                                  \
@@ -1364,6 +1415,13 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
       case PSFunction::Moffat25:
       case PSFunction::Moffat15:
          {
+            if ( !test )
+            {
+               double k = Pow( 10.0, 1/beta ) - 1;
+               rx2 = k*sx*sx;
+               ry2 = k*sy*sy;
+            }
+
             double st, ct;
             SinCos( theta, st, ct );
             double sct = st*ct;
@@ -1377,12 +1435,14 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
             for ( int y = 0, i = 0; y < h; ++y )
             {
                double dy      = y - h2y0;
+               double dy2     = dy*dy;
                double twop2dy = 2*p2*dy;
                double p3dy2   = p3*dy*dy;
                for ( int x = 0; x < w; ++x, ++i, ++s )
                {
-                  double dx = x - w2x0;
-                  double z = 1/Pow( 1 + p1*dx*dx + twop2dy*dx + p3dy2, beta );
+                  double dx  = x - w2x0;
+                  double dx2 = dx*dx;
+                  double z   = 1/Pow( 1 + p1*dx2 + twop2dy*dx + p3dy2, beta );
                   GET_DATA()
                }
             }
@@ -1398,12 +1458,14 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
             for ( int y = 0, i = 0; y < h; ++y )
             {
                double dy   = y - h2y0;
+               double dy2  = dy*dy;
                double dyst = dy*st;
                double dyct = dy*ct;
                for ( int x = 0; x < w; ++x, ++i, ++s )
                {
-                  double dx = x - w2x0;
-                  double dy = dx*st + dyct;
+                  double dx  = x - w2x0;
+                  double dx2 = dx*dx;
+                  double dy  = dx*st + dyct;
                   dx = dx*ct - dyst;
                   double z = Exp( -(Pow( Abs( dx ), beta )/ksxk + Pow( Abs( dy ), beta )/ksyk) );
                   GET_DATA()
@@ -1412,6 +1474,7 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
          }
          break;
       }
+
 #undef sy
 #undef theta
 #undef beta
@@ -1433,7 +1496,7 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
    if ( test )
       return Vector( adev.Mean(), 1 );
 
-   Vector R( 4 );
+   Vector R( 5 );
 
    /*
     * The first returned component is a robust estimate of fitting quality.
@@ -1453,22 +1516,27 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
    R[0] = adev.Mean();
 
    /*
-    * The second component of the returned vector is the total flux above the
-    * local background level, measured from source pixel data.
+    * Total flux above the local background level, measured from source pixel
+    * data on the entire fitting region.
     */
    R[1] = flux;
 
    /*
-    * The third component of the returned vector is the estimated mean signal
-    * relative to the local background.
+    * Estimated signal above the local background, measured from source pixel
+    * data on the PSF region.
     */
-   R[2] = (1 + zsum != 1) ? signal/zsum : 0.0;
+   R[2] = signal;
 
    /*
-    * The fourth component of the returned vector is the estimated mean squared
-    * signal relative to the local background.
+    * Estimated squared signal above the local background, measured from source
+    * pixel data on the PSF region.
     */
-   R[3] = (1 + zsum != 1) ? signal2/zsum : 0.0;
+   R[3] = signal2;
+
+   /*
+    * Number of pixels used for signal evaluation.
+    */
+   R[4] = nsignal;
 
    return R;
 }
