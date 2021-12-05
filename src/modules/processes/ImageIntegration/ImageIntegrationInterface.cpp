@@ -73,7 +73,7 @@ static pcl_enum s_comboBoxItemIndexToWeightMode[] =
 {
    IIWeightMode::DontCare,
    IIWeightMode::PSFSignalWeight,
-   IIWeightMode::PSFPowerWeight,
+   IIWeightMode::PSFSignalPowerWeight,
    IIWeightMode::SNREstimate,
    IIWeightMode::ExposureTimeWeight,
    IIWeightMode::AverageWeight,
@@ -1515,8 +1515,8 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
 
    const char* weightModeToolTip = "<p>Image weighting method.</p>"
 
-      "<p>The <b>PSF signal</b> and <b>PSF power</b> algorithms are based on robust estimates of mean signal and mean "
-      "squared signal computed by PSF photometry, as well as noise estimates computed using multiscale analysis "
+      "<p>The <b>PSF signal</b> and <b>PSF signal power</b> algorithms are based on robust estimates of mean signal and "
+      "mean squared signal computed by PSF photometry, as well as noise estimates computed using multiscale analysis "
       "techniques. These methods are robust and accurate. The PSF signal method is currently the default option."
 
       "<p>The <b>SNR estimate</b> option uses multiscale noise evaluation techniques to compute noise "
@@ -1527,12 +1527,12 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
 
       "<p>Noise estimates and scaling factors, as well as PSF signal estimates, are obtained either from cached data, "
       "when available, of from XISF properties. If no XISF properties are available, the estimates are obtained from "
-      "NOISExx, NOISELxx, NOISEHxx, PSFSGLxx and PSFSGPxx FITS keywords, if they are present in the images. If the data "
-      "being integrated has been correctly calibrated (and demosaiced when applicable) with our preprocessing tools, "
-      "these properties and keywords should always be included in each input frame. Otherwise ImageIntegration will "
-      "have to compute these estimates from the data being integrated, which is a potentially wrong procedure because "
-      "input frames have been interpolated during the image demosaicing (when applicable) and registration tasks, "
-      "destroying the original statistics of the raw data. Appropriate warning messages will be shown in these cases.</p>"
+      "NOISExx, NOISELxx, NOISEHxx, PSFSGLxx, PSFSGPxx, PSFFLXxx and PSFFLPxx FITS keywords, if they are present in the "
+      "images. If the data being integrated has been correctly calibrated (and demosaiced when applicable) with our "
+      "preprocessing tools, these properties and keywords should always be included in each input frame. Otherwise "
+      "ImageIntegration will have to compute these estimates from the data being integrated, which is a potentially wrong "
+      "procedure because input frames have been interpolated during the image demosaicing (when applicable) and registration "
+      "tasks, destroying the original statistics of the raw data. Appropriate warning messages will be shown in these cases.</p>"
 
       "<p>Exposure times will be retrieved from standard EXPTIME and EXPOSURE FITS keywords (in that order).</p>"
 

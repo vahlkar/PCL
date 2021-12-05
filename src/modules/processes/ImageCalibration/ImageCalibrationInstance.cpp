@@ -1019,7 +1019,9 @@ public:
          for ( int i = 0; i < Min( 3, m_noiseEstimates.Length() ); ++i )
          {
             o.psfSignalEstimates[i] = m_psfSignalEstimates[i];
-            o.psfPowerEstimates[i] = m_psfPowerEstimates[i];
+            o.psfSignalPowerEstimates[i] = m_psfSignalPowerEstimates[i];
+            o.psfFluxEstimates[i] = m_psfFluxEstimates[i];
+            o.psfFluxPowerEstimates[i] = m_psfFluxPowerEstimates[i];
             o.psfCounts[i] = m_psfCounts[i];
          }
       if ( m_data.instance->p_evaluateNoise )
@@ -1079,9 +1081,11 @@ private:
    // Optimized dark scaling factors
    FVector m_K;
 
-   // Signal estimatesa
+   // Signal estimates
    Vector     m_psfSignalEstimates;
-   Vector     m_psfPowerEstimates;
+   Vector     m_psfSignalPowerEstimates;
+   Vector     m_psfFluxEstimates;
+   Vector     m_psfFluxPowerEstimates;
    IVector    m_psfCounts;
 
    // Noise estimates
@@ -1212,7 +1216,8 @@ private:
       if ( m_data.instance->p_evaluateSignal || m_data.instance->p_evaluateNoise )
       {
          console.WriteLn( "<end><cbr>* Performing signal and noise evaluation." );
-         EvaluateSignalAndNoise( m_psfSignalEstimates, m_psfPowerEstimates, m_psfCounts,
+         EvaluateSignalAndNoise( m_psfSignalEstimates, m_psfSignalPowerEstimates,
+                                 m_psfFluxEstimates, m_psfFluxPowerEstimates, m_psfCounts,
                                  m_noiseEstimates, m_noiseFractions, m_noiseScaleLow, m_noiseScaleHigh, m_noiseAlgorithms,
                                  TargetImage(), m_data.darkCFAPattern );
       }
@@ -1285,8 +1290,10 @@ private:
             console.WriteLn( "<end><cbr>PSF signal estimates:" );
             for ( int i = 0; i < m_psfSignalEstimates.Length(); ++i )
                if ( m_psfCounts[i] > 0 )
-                  console.WriteLn( String().Format( "ch %d : S = %.4e, S2 = %.4e, %d PSF fits",
-                                                    i, m_psfSignalEstimates[i], m_psfPowerEstimates[i], m_psfCounts[i] ) );
+                  console.WriteLn( String().Format( "ch %d : S = %.4e, S2 = %.4e, F = %.4e, F2 = %.4e, %d PSF fits",
+                                                    i,
+                                                    m_psfSignalEstimates[i], m_psfSignalPowerEstimates[i],
+                                                    m_psfFluxEstimates[i], m_psfFluxPowerEstimates[i], m_psfCounts[i] ) );
                else
                   console.WarningLn( String().Format( "** Warning: No valid PSF signal samples (channel %d).", i ) );
          }
@@ -1532,11 +1539,12 @@ private:
          {
             /*
              * N.B.: If we have computed signal estimates, remove any
-             * previously existing PSFSGLxx, PSFSGPxx and PSFSGNxx keywords.
-             * Only our newly created keywords must be present in the header.
+             * previously existing PSFSGLxx, PSFSGPxx, PSFFLXxx, PSFFLPxx and
+             * PSFSGNxx keywords. Only our newly created keywords must be
+             * present in the header.
              */
             for ( size_type i = 0; i < keywords.Length(); )
-               if ( keywords[i].name.StartsWithIC( "PSFSG" ) )
+               if ( keywords[i].name.StartsWithIC( "PSFSG" ) || keywords[i].name.StartsWithIC( "PSFFL" ) )
                   keywords.Remove( keywords.At( i ) );
                else
                   ++i;
@@ -1548,10 +1556,20 @@ private:
                psfSignalEstimates.AppendFormat( " %.4e", m_psfSignalEstimates[i] );
             keywords << FITSHeaderKeyword( "HISTORY", IsoString(), psfSignalEstimates );
 
-            IsoString psfPowerEstimates = "ImageCalibration.psfPowerEstimates:";
-            for ( int i = 0; i < m_psfPowerEstimates.Length(); ++i )
-               psfPowerEstimates.AppendFormat( " %.4e", m_psfPowerEstimates[i] );
-            keywords << FITSHeaderKeyword( "HISTORY", IsoString(), psfPowerEstimates );
+            IsoString psfSignalPowerEstimates = "ImageCalibration.psfSignalPowerEstimates:";
+            for ( int i = 0; i < m_psfSignalPowerEstimates.Length(); ++i )
+               psfSignalPowerEstimates.AppendFormat( " %.4e", m_psfSignalPowerEstimates[i] );
+            keywords << FITSHeaderKeyword( "HISTORY", IsoString(), psfSignalPowerEstimates );
+
+            IsoString psfFluxEstimates = "ImageCalibration.psfFluxEstimates:";
+            for ( int i = 0; i < m_psfFluxEstimates.Length(); ++i )
+               psfFluxEstimates.AppendFormat( " %.4e", m_psfFluxEstimates[i] );
+            keywords << FITSHeaderKeyword( "HISTORY", IsoString(), psfFluxEstimates );
+
+            IsoString psfFluxPowerEstimates = "ImageCalibration.psfFluxPowerEstimates:";
+            for ( int i = 0; i < m_psfFluxPowerEstimates.Length(); ++i )
+               psfFluxPowerEstimates.AppendFormat( " %.4e", m_psfFluxPowerEstimates[i] );
+            keywords << FITSHeaderKeyword( "HISTORY", IsoString(), psfFluxPowerEstimates );
 
             IsoString psfCounts = "ImageCalibration.psfCounts:";
             for ( int i = 0; i < m_psfCounts.Length(); ++i )
@@ -1566,8 +1584,14 @@ private:
                                               IsoString().Format( "%.4e", m_psfSignalEstimates[i] ),
                                               IsoString().Format( "PSF mean signal estimate, channel #%d", i ) )
                         << FITSHeaderKeyword( IsoString().Format( "PSFSGP%02d", i ),
-                                              IsoString().Format( "%.4e", m_psfPowerEstimates[i] ),
+                                              IsoString().Format( "%.4e", m_psfSignalPowerEstimates[i] ),
                                               IsoString().Format( "PSF mean signal power estimate, channel #%d", i ) )
+                        << FITSHeaderKeyword( IsoString().Format( "PSFFLX%02d", i ),
+                                              IsoString().Format( "%.4e", m_psfFluxEstimates[i] ),
+                                              IsoString().Format( "PSF mean flux estimate, channel #%d", i ) )
+                        << FITSHeaderKeyword( IsoString().Format( "PSFFLP%02d", i ),
+                                              IsoString().Format( "%.4e", m_psfFluxPowerEstimates[i] ),
+                                              IsoString().Format( "PSF mean flux power estimate, channel #%d", i ) )
                         << FITSHeaderKeyword( IsoString().Format( "PSFSGN%02d", i ),
                                               IsoString().Format( "%d", m_psfCounts[i] ),
                                               IsoString().Format( "Number of evaluated PSF fits, channel #%d", i ) );
@@ -1680,7 +1704,8 @@ private:
     * - Automatically iterate to find the highest wavelet layer where noise can
     *   be successfully evaluated, in the [1,3] range.
     */
-   void EvaluateSignalAndNoise( Vector& psfSignalEstimates, Vector& psfPowerEstimates, IVector& psfCounts,
+   void EvaluateSignalAndNoise( Vector& psfSignalEstimates, Vector& psfSignalPowerEstimates,
+                                Vector& psfFluxEstimates, Vector& psfFluxPowerEstimates, IVector& psfCounts,
                                 Vector& noiseEstimates, Vector& noiseFractions,
                                 Vector& noiseScaleLow, Vector& noiseScaleHigh, StringList& noiseAlgorithms,
                                 const Image& target, const IsoString& cfaPattern = IsoString() ) const
@@ -1693,7 +1718,8 @@ private:
       {
          Image evaluationTarget( target );
          IntegerResample( -DownsamplingFactorForCFAPattern( cfaPattern ) ) >> evaluationTarget;
-         EvaluateSignalAndNoise( psfSignalEstimates, psfPowerEstimates, psfCounts,
+         EvaluateSignalAndNoise( psfSignalEstimates, psfSignalPowerEstimates,
+                                 psfFluxEstimates, psfFluxPowerEstimates, psfCounts,
                                  noiseEstimates, noiseFractions,
                                  noiseScaleLow, noiseScaleHigh, noiseAlgorithms,
                                  evaluationTarget );
@@ -1708,7 +1734,9 @@ private:
       if ( m_data.instance->p_evaluateSignal )
       {
          psfSignalEstimates = Vector( 0.0, target.NumberOfChannels() );
-         psfPowerEstimates = Vector( 0.0, target.NumberOfChannels() );
+         psfSignalPowerEstimates = Vector( 0.0, target.NumberOfChannels() );
+         psfFluxEstimates = Vector( 0.0, target.NumberOfChannels() );
+         psfFluxPowerEstimates = Vector( 0.0, target.NumberOfChannels() );
          psfCounts = IVector( 0, target.NumberOfChannels() );
 
          PSFSignalEstimator E;
@@ -1727,7 +1755,9 @@ private:
             target.SelectChannel( c );
             PSFSignalEstimator::Estimates e = E( ImageVariant( const_cast<Image*>( &target ) ) );
             psfSignalEstimates[c] = e.mean;
-            psfPowerEstimates[c] = e.power;
+            psfSignalPowerEstimates[c] = e.power;
+            psfFluxEstimates[c] = e.meanFlux;
+            psfFluxPowerEstimates[c] = e.powerFlux;
             psfCounts[c] = e.count;
          }
       }
@@ -2808,12 +2838,26 @@ void* ImageCalibrationInstance::LockParameter( const MetaParameter* p, size_type
    if ( p == TheICPSFSignalEstimateBParameter )
       return o_output[tableRow].psfSignalEstimates.At( 2 );
 
-   if ( p == TheICPSFPowerEstimateRKParameter )
-      return o_output[tableRow].psfPowerEstimates.At( 0 );
-   if ( p == TheICPSFPowerEstimateGParameter )
-      return o_output[tableRow].psfPowerEstimates.At( 1 );
-   if ( p == TheICPSFPowerEstimateBParameter )
-      return o_output[tableRow].psfPowerEstimates.At( 2 );
+   if ( p == TheICPSFSignalPowerEstimateRKParameter )
+      return o_output[tableRow].psfSignalPowerEstimates.At( 0 );
+   if ( p == TheICPSFSignalPowerEstimateGParameter )
+      return o_output[tableRow].psfSignalPowerEstimates.At( 1 );
+   if ( p == TheICPSFSignalPowerEstimateBParameter )
+      return o_output[tableRow].psfSignalPowerEstimates.At( 2 );
+
+   if ( p == TheICPSFFluxEstimateRKParameter )
+      return o_output[tableRow].psfFluxEstimates.At( 0 );
+   if ( p == TheICPSFFluxEstimateGParameter )
+      return o_output[tableRow].psfFluxEstimates.At( 1 );
+   if ( p == TheICPSFFluxEstimateBParameter )
+      return o_output[tableRow].psfFluxEstimates.At( 2 );
+
+   if ( p == TheICPSFFluxPowerEstimateRKParameter )
+      return o_output[tableRow].psfFluxPowerEstimates.At( 0 );
+   if ( p == TheICPSFFluxPowerEstimateGParameter )
+      return o_output[tableRow].psfFluxPowerEstimates.At( 1 );
+   if ( p == TheICPSFFluxPowerEstimateBParameter )
+      return o_output[tableRow].psfFluxPowerEstimates.At( 2 );
 
    if ( p == TheICPSFCountRKParameter )
       return o_output[tableRow].psfCounts.At( 0 );

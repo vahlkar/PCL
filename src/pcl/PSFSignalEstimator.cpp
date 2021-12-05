@@ -146,10 +146,6 @@ PSFSignalEstimator::Estimates PSFSignalEstimator::EstimateSignal( const ImageVar
    if ( !stars.IsEmpty() )
    {
       /*
-       * Perform PSF fitting
-       */
-
-      /*
        * Optional limit on the number of measured stars. StarDetector returns
        * a list of stars sorted by flux in descending order, so we are always
        * restricting measurements to a subset of the brightest stars.
@@ -163,6 +159,9 @@ PSFSignalEstimator::Estimates PSFSignalEstimator::EstimateSignal( const ImageVar
          image.Status().DisableInitialization();
       }
 
+      /*
+       * Perform PSF fitting
+       */
       Array<size_type> L = Thread::OptimalThreadLoads( numberOfStars,
                                           1/*overheadLimit*/,
                                           IsParallelProcessingEnabled() ? MaxProcessors() : 1 );
@@ -217,30 +216,68 @@ PSFSignalEstimator::Estimates PSFSignalEstimator::EstimateSignal( const ImageVar
           */
          if ( (E.count = t2 - t1) > 0 )
          {
-//             Array<double> m, m2;
-//             for ( int i = t2; --i >= t1; )
-//             {
-//                m << psfs[i].meanSignal;
-//                m2 << psfs[i].meanSignalSqr;
-//             }
-//             E.mean = Median( m.Begin(), m.End() );
-//             E.power = Median( m2.Begin(), m2.End() );
+            /*
+             * PSF flux estimates can optionally be weighted by inverse mean
+             * absolute deviations of fitted PSFs with respect to sampled data.
+             * In such case the minimum PSF mean absolute deviation determines
+             * the maximum sample weight.
+             */
+            double mmin = 0;
+            if ( m_weighted )
+            {
+               mmin = psfs[t1].mad;
+               for ( int i = t1; ++i <= t2; )
+                  if ( psfs[i].mad < mmin )
+                     mmin = psfs[i].mad;
+            }
 
-            double signalNorm = 0;
+            /*
+             * Accumulate PSF fluxes and intensities.
+             */
+            double W = 0;
+            double psfNorm = 0;
             for ( int i = t2; --i >= t1; )
             {
-               E.mean += psfs[i].meanSignal;
-               E.power += psfs[i].meanSignalSqr;
-               signalNorm += psfs[i].A + psfs[i].B;
+               if ( unlikely( m_weighted ) )
+               {
+                  double w = mmin/psfs[i].mad;
+                  E.meanFlux += psfs[i].meanSignal * w;
+                  E.powerFlux += psfs[i].meanSignalSqr * w;
+                  W += w;
+               }
+               else
+               {
+                  E.meanFlux += psfs[i].meanSignal;
+                  E.powerFlux += psfs[i].meanSignalSqr;
+               }
+
+               psfNorm += psfs[i].A + psfs[i].B;
             }
-            E.mean /= E.count;
-            E.power /= E.count;
+
+            /*
+             * Mean PSF flux.
+             */
+            if ( m_weighted )
+            {
+               E.meanFlux /= W;
+               E.powerFlux /= W;
+            }
+            else
+            {
+               E.meanFlux /= E.count;
+               E.powerFlux /= E.count;
+            }
+
+            /*
+             * Mean PSF signal estimates. The penalty function is the ratio of
+             * the total measured PSF intensity to the norm of the image.
+             */
             image.PushSelections();
-            image.SetRangeClipping( 0, 1 - 2.0/65535 );
-            double norm = image.Norm();
+            image.SetRangeClipping( 2.0/65535, 1 - 2.0/65535 );
+            double P = psfNorm/image.Norm();
             image.PopSelections();
-            E.mean *= signalNorm/norm;
-            E.power *= signalNorm/norm;
+            E.mean = E.meanFlux * P;
+            E.power = E.powerFlux * P;
          }
       }
    }

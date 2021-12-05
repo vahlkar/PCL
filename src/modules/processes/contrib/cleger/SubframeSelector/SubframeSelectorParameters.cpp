@@ -127,7 +127,9 @@ SSMeasurementWeight*               TheSSMeasurementWeightParameter = nullptr;
 SSMeasurementFWHM*                 TheSSMeasurementFWHMParameter = nullptr;
 SSMeasurementEccentricity*         TheSSMeasurementEccentricityParameter = nullptr;
 SSMeasurementPSFSignalWeight*      TheSSMeasurementPSFSignalWeightParameter = nullptr;
-SSMeasurementPSFPowerWeight* TheSSMeasurementPSFPowerWeightParameter = nullptr;
+SSMeasurementPSFSignalPowerWeight* TheSSMeasurementPSFSignalPowerWeightParameter = nullptr;
+SSMeasurementPSFFlux*              TheSSMeasurementPSFFluxParameter = nullptr;
+SSMeasurementPSFFluxPower*         TheSSMeasurementPSFFluxPowerParameter = nullptr;
 SSMeasurementSNRWeight*            TheSSMeasurementSNRWeightParameter = nullptr;
 SSMeasurementMedian*               TheSSMeasurementMedianParameter = nullptr;
 SSMeasurementMedianMeanDev*        TheSSMeasurementMedianMeanDevParameter = nullptr;
@@ -1553,14 +1555,16 @@ IsoString SSApprovalExpression::Tooltip() const
           "some characters are limited to prevent misuse, many things are possible such as "
           "<i>Math.abs(FWHMSigma)</i> or using <i>//</i> to comment the end of the line. "
           "Please see the documentation for more information.</p>"
-          "<p><i>property</i> = [Index | Weight | PSFSignalWeight | PSFPowerWeight | SNRWeight | "
+          "<p>A <i>property</i> can be one of:</p>"
+          "<p>Index | Weight | PSFSignal = PSFSignalWeight | PSFSignalPower = PSFSignalPowerWeight | "
+          "SNR = SNRWeight | PSFFlux | PSFFluxPower | "
           "FWHM | Eccentricity | Altitude | Azimuth | Median | MedianMeanDev | Noise | NoiseRatio | "
-          "Stars | StarResidual | FWHMMeanDev | EccentricityMeanDev | StarResidualMeanDev]</p>"
+          "Stars | StarResidual | FWHMMeanDev | EccentricityMeanDev | StarResidualMeanDev</p>"
           "<p>Each <i>property</i> (excluding <i>Index</i>) also has a Median, Min, and Max version, "
           "e.g. <i>FWHMMin</i>, which are computed across all subframes.</p>"
           "<p>Each <i>property</i> (excluding <i>Index</i>) also has a Sigma version, "
           "e.g. <i>SNRWeightSigma</i>, where the value is represented in sigma units of the "
-          "Mean Absolute Deviation from the Median.</p>";
+          "mean absolute deviation from the median.</p>";
 }
 
 // ----------------------------------------------------------------------------
@@ -1582,14 +1586,16 @@ IsoString SSWeightingExpression::Tooltip() const
           "and although some characters are limited to prevent misuse, many things are possible such as "
           "<i>Math.abs(FWHMSigma)</i> or using <i>//</i> to comment the end of the line. "
           "Please see the documentation for more information.</p>"
-          "<p><i>property</i> = [Index | PSFSignalWeight | PSFPowerWeight | SNRWeight | "
+          "<p>A <i>property</i> can be one of:<p>"
+          "<p>Index | PSFSignal = PSFSignalWeight | PSFSignalPower = PSFSignalPowerWeight | "
+          "SNR = SNRWeight | PSFFlux | PSFFluxPower | "
           "FWHM | Eccentricity | Altitude | Azimuth | Median | MedianMeanDev | Noise | NoiseRatio | "
-          "Stars | StarResidual | FWHMMeanDev | EccentricityMeanDev | StarResidualMeanDev]</p>"
+          "Stars | StarResidual | FWHMMeanDev | EccentricityMeanDev | StarResidualMeanDev</p>"
           "<p>Each <i>property</i> (excluding <i>Index</i>) also has a Median, Min, and Max version, "
           "e.g. <i>FWHMMin</i>, which are computed across all subframes.</p>"
           "<p>Each <i>property</i> (excluding <i>Index</i>) also has a Sigma version, "
           "e.g. <i>SNRWeightSigma</i>, where the value is represented in sigma units of the "
-          "Mean Absolute Deviation from the Median.</p>";
+          "mean absolute deviation from the median.</p>";
 }
 
 // ----------------------------------------------------------------------------
@@ -1614,25 +1620,32 @@ IsoString SSSortingProperty::ElementId( size_type i ) const
    switch ( i )
    {
    default:
-   case Index:               return "Index";
-   case Weight:              return "Weight";
-   case FWHM:                return "FWHM";
-   case Eccentricity:        return "Eccentricity";
-   case PSFSignalWeight:     return "PSFSignalWeight";
-   case PSFPowerWeight:      return "PSFPowerWeight";
-   case SNRWeight:           return "SNRWeight";
-   case Median:              return "Median";
-   case MedianMeanDev:       return "MedianMeanDev";
-   case Noise:               return "Noise";
-   case NoiseRatio:          return "NoiseRatio";
-   case Stars:               return "Stars";
-   case StarResidual:        return "StarResidual";
-   case FWHMMeanDev:         return "FWHMMeanDev";
-   case EccentricityMeanDev: return "EccentricityMeanDev";
-   case StarResidualMeanDev: return "StarResidualMeanDev";
-   case Azimuth:             return "Azimuth";
-   case Altitude:            return "Altitude";
+   case Index:                return "Index";
+   case Weight:               return "Weight";
+   case FWHM:                 return "FWHM";
+   case Eccentricity:         return "Eccentricity";
+   case PSFSignalWeight:      return "PSFSignalWeight";
+   case PSFSignalPowerWeight: return "PSFSignalPowerWeight";
+   case PSFFlux:              return "PSFFlux";
+   case PSFFluxPower:         return "PSFFluxPower";
+   case SNRWeight:            return "SNRWeight";
+   case Median:               return "Median";
+   case MedianMeanDev:        return "MedianMeanDev";
+   case Noise:                return "Noise";
+   case NoiseRatio:           return "NoiseRatio";
+   case Stars:                return "Stars";
+   case StarResidual:         return "StarResidual";
+   case FWHMMeanDev:          return "FWHMMeanDev";
+   case EccentricityMeanDev:  return "EccentricityMeanDev";
+   case StarResidualMeanDev:  return "StarResidualMeanDev";
+   case Azimuth:              return "Azimuth";
+   case Altitude:             return "Altitude";
    }
+}
+
+IsoString SSSortingProperty::ElementAliases() const
+{
+   return "PSFPowerWeight=PSFSignalPowerWeight";
 }
 
 int SSSortingProperty::ElementValue( size_type i ) const
@@ -1645,24 +1658,26 @@ IsoString SSSortingProperty::ElementLabel( size_type i ) const
    switch ( i )
    {
    default:
-   case Index:               return "Index";
-   case Weight:              return "Weight";
-   case FWHM:                return "FWHM";
-   case Eccentricity:        return "Eccentricity";
-   case PSFSignalWeight:     return "PSF Signal Weight";
-   case PSFPowerWeight:      return "PSF Power Weight";
-   case SNRWeight:           return "SNR Weight";
-   case Median:              return "Median";
-   case MedianMeanDev:       return "Median Mean Dev.";
-   case Noise:               return "Noise";
-   case NoiseRatio:          return "Noise Ratio";
-   case Stars:               return "Stars";
-   case StarResidual:        return "Star Residual";
-   case FWHMMeanDev:         return "FWHM Mean Dev.";
-   case EccentricityMeanDev: return "Eccentricity Mean Dev.";
-   case StarResidualMeanDev: return "Star Residual Mean Dev.";
-   case Azimuth:             return "Azimuth";
-   case Altitude:            return "Altitude";
+   case Index:                return "Index";
+   case Weight:               return "Weight";
+   case FWHM:                 return "FWHM";
+   case Eccentricity:         return "Eccentricity";
+   case PSFSignalWeight:      return "PSF Signal";
+   case PSFSignalPowerWeight: return "PSF Signal Power";
+   case PSFFlux:              return "PSF Flux";
+   case PSFFluxPower:         return "PSF Flux Power";
+   case SNRWeight:            return "SNR";
+   case Median:               return "Median";
+   case MedianMeanDev:        return "Median Mean Dev.";
+   case Noise:                return "Noise";
+   case NoiseRatio:           return "Noise Ratio";
+   case Stars:                return "Stars";
+   case StarResidual:         return "Star Residual";
+   case FWHMMeanDev:          return "FWHM Mean Dev.";
+   case EccentricityMeanDev:  return "Eccentricity Mean Dev.";
+   case StarResidualMeanDev:  return "Star Residual Mean Dev.";
+   case Azimuth:              return "Azimuth";
+   case Altitude:             return "Altitude";
    }
 }
 
@@ -1693,24 +1708,31 @@ IsoString SSGraphProperty::ElementId( size_type i ) const
    switch ( i )
    {
    default:
-   case Weight:              return "Weight";
-   case FWHM:                return "FWHM";
-   case Eccentricity:        return "Eccentricity";
-   case PSFSignalWeight:     return "PSFSignalWeight";
-   case PSFPowerWeight:      return "PSFPowerWeight";
-   case SNRWeight:           return "SNRWeight";
-   case Median:              return "Median";
-   case MedianMeanDev:       return "MedianMeanDev";
-   case Noise:               return "Noise";
-   case NoiseRatio:          return "NoiseRatio";
-   case Stars:               return "Stars";
-   case StarResidual:        return "StarResidual";
-   case FWHMMeanDev:         return "FWHMMeanDev";
-   case EccentricityMeanDev: return "EccentricityMeanDev";
-   case StarResidualMeanDev: return "StarResidualMeanDev";
-   case Azimuth:             return "Azimuth";
-   case Altitude:            return "Altitude";
+   case Weight:               return "Weight";
+   case FWHM:                 return "FWHM";
+   case Eccentricity:         return "Eccentricity";
+   case PSFSignalWeight:      return "PSFSignalWeight";
+   case PSFSignalPowerWeight: return "PSFSignalPowerWeight";
+   case PSFFlux:              return "PSFFlux";
+   case PSFFluxPower:         return "PSFFluxPower";
+   case SNRWeight:            return "SNRWeight";
+   case Median:               return "Median";
+   case MedianMeanDev:        return "MedianMeanDev";
+   case Noise:                return "Noise";
+   case NoiseRatio:           return "NoiseRatio";
+   case Stars:                return "Stars";
+   case StarResidual:         return "StarResidual";
+   case FWHMMeanDev:          return "FWHMMeanDev";
+   case EccentricityMeanDev:  return "EccentricityMeanDev";
+   case StarResidualMeanDev:  return "StarResidualMeanDev";
+   case Azimuth:              return "Azimuth";
+   case Altitude:             return "Altitude";
    }
+}
+
+IsoString SSGraphProperty::ElementAliases() const
+{
+   return "PSFPowerWeight=PSFSignalPowerWeight";
 }
 
 int SSGraphProperty::ElementValue( size_type i ) const
@@ -1723,23 +1745,25 @@ IsoString SSGraphProperty::ElementLabel( size_type i ) const
    switch ( i )
    {
    default:
-   case Weight:              return "Weight";
-   case FWHM:                return "FWHM";
-   case Eccentricity:        return "Eccentricity";
-   case PSFSignalWeight:     return "PSF Signal Weight";
-   case PSFPowerWeight:      return "PSF Power Weight";
-   case SNRWeight:           return "SNR Weight";
-   case Median:              return "Median";
-   case MedianMeanDev:       return "Median Mean Dev.";
-   case Noise:               return "Noise";
-   case NoiseRatio:          return "Noise Ratio";
-   case Stars:               return "Stars";
-   case StarResidual:        return "Star Residual";
-   case FWHMMeanDev:         return "FWHM Mean Dev.";
-   case EccentricityMeanDev: return "Eccentricity Mean Dev.";
-   case StarResidualMeanDev: return "Star Residual Mean Dev.";
-   case Azimuth:             return "Azimuth";
-   case Altitude:            return "Altitude";
+   case Weight:               return "Weight";
+   case FWHM:                 return "FWHM";
+   case Eccentricity:         return "Eccentricity";
+   case PSFSignalWeight:      return "PSF Signal";
+   case PSFSignalPowerWeight: return "PSF Signal Power";
+   case PSFFlux:              return "PSF Flux";
+   case PSFFluxPower:         return "PSF Flux Power";
+   case SNRWeight:            return "SNR";
+   case Median:               return "Median";
+   case MedianMeanDev:        return "Median Mean Dev.";
+   case Noise:                return "Noise";
+   case NoiseRatio:           return "Noise Ratio";
+   case Stars:                return "Stars";
+   case StarResidual:         return "Star Residual";
+   case FWHMMeanDev:          return "FWHM Mean Dev.";
+   case EccentricityMeanDev:  return "Eccentricity Mean Dev.";
+   case StarResidualMeanDev:  return "Star Residual Mean Dev.";
+   case Azimuth:              return "Azimuth";
+   case Altitude:             return "Altitude";
    }
 }
 
@@ -2106,32 +2130,101 @@ bool SSMeasurementPSFSignalWeight::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-SSMeasurementPSFPowerWeight::SSMeasurementPSFPowerWeight( MetaTable* T ) : MetaDouble( T )
+SSMeasurementPSFSignalPowerWeight::SSMeasurementPSFSignalPowerWeight( MetaTable* T ) : MetaDouble( T )
 {
-   TheSSMeasurementPSFPowerWeightParameter = this;
+   TheSSMeasurementPSFSignalPowerWeightParameter = this;
 }
 
-IsoString SSMeasurementPSFPowerWeight::Id() const
+IsoString SSMeasurementPSFSignalPowerWeight::Id() const
+{
+   return "measurementPSFSignalPowerWeight";
+}
+
+IsoString SSMeasurementPSFSignalPowerWeight::Aliases() const
 {
    return "measurementPSFPowerWeight";
 }
 
-int SSMeasurementPSFPowerWeight::Precision() const
+int SSMeasurementPSFSignalPowerWeight::Precision() const
 {
    return 4;
 }
 
-bool SSMeasurementPSFPowerWeight::ScientificNotation() const
+bool SSMeasurementPSFSignalPowerWeight::ScientificNotation() const
 {
    return true;
 }
 
-double SSMeasurementPSFPowerWeight::DefaultValue() const
+double SSMeasurementPSFSignalPowerWeight::DefaultValue() const
 {
    return 0.0;
 }
 
-bool SSMeasurementPSFPowerWeight::IsReadOnly() const
+bool SSMeasurementPSFSignalPowerWeight::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+SSMeasurementPSFFlux::SSMeasurementPSFFlux( MetaTable* T ) : MetaDouble( T )
+{
+   TheSSMeasurementPSFFluxParameter = this;
+}
+
+IsoString SSMeasurementPSFFlux::Id() const
+{
+   return "measurementPSFFlux";
+}
+
+int SSMeasurementPSFFlux::Precision() const
+{
+   return 4;
+}
+
+bool SSMeasurementPSFFlux::ScientificNotation() const
+{
+   return true;
+}
+
+double SSMeasurementPSFFlux::DefaultValue() const
+{
+   return 0.0;
+}
+
+bool SSMeasurementPSFFlux::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+SSMeasurementPSFFluxPower::SSMeasurementPSFFluxPower( MetaTable* T ) : MetaDouble( T )
+{
+   TheSSMeasurementPSFFluxPowerParameter = this;
+}
+
+IsoString SSMeasurementPSFFluxPower::Id() const
+{
+   return "measurementPSFFluxPower";
+}
+
+int SSMeasurementPSFFluxPower::Precision() const
+{
+   return 4;
+}
+
+bool SSMeasurementPSFFluxPower::ScientificNotation() const
+{
+   return true;
+}
+
+double SSMeasurementPSFFluxPower::DefaultValue() const
+{
+   return 0.0;
+}
+
+bool SSMeasurementPSFFluxPower::IsReadOnly() const
 {
    return true;
 }

@@ -83,9 +83,11 @@ public:
     */
    struct Estimates
    {
-      double mean = 0;  //!< Estimate of the mean value of the signal.
-      double power = 0; //!< Estimate of the mean squared signal.
-      int    count = 0; //!< Number of valid PSF signal estimates.
+      double mean = 0;      //!< Estimate of the mean signal.
+      double power = 0;     //!< Estimate of the mean squared signal.
+      double meanFlux = 0;  //!< Estimate of the mean flux.
+      double powerFlux = 0; //!< Estimate of the mean squared flux.
+      int    count = 0;     //!< Number of valid PSF signal estimates.
 
       /*!
        * Conversion to double operator.
@@ -250,6 +252,37 @@ public:
    }
 
    /*!
+    * Returns true iff PSF weighting is enabled for signal estimation. When PSF
+    * weighting is enabled, each photometric PSF sample is multiplied by the
+    * inverse of the mean absolute deviation of the fitted PSF measured with
+    * respect to sampled image data.
+    *
+    * PSF weighting is disabled by default.
+    */
+   bool IsPSFWeightingEnabled() const
+   {
+      return m_weighted;
+   }
+
+   /*!
+    * Enables PSF weighting for this signal estimator. See
+    * IsPSFWeightingEnabled() for more information.
+    */
+   void EnablePSFWeighting( bool enable = true )
+   {
+      m_weighted = enable;
+   }
+
+   /*!
+    * Disables PSF weighting for this signal estimator. See
+    * IsPSFWeightingEnabled() for more information.
+    */
+   void DisablePSFWeighting( bool disable = true )
+   {
+      EnablePSFWeighting( !disable );
+   }
+
+   /*!
     * Evaluates the mean values of the signal and the signal power for the
     * specified \a image. Returns the estimates as a new
     * PSFSignalEstimator::Estimates object.
@@ -276,6 +309,7 @@ private:
            float             m_psfCentroidTolerance = 1.5F;
            float             m_rejectionLimit = 5.0F;
            int               m_maxStars = 0;
+           bool              m_weighted = false;
 };
 
 // ----------------------------------------------------------------------------

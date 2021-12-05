@@ -304,7 +304,9 @@ private:
          double                    m_noise = 0;
          double                    m_noiseRatio = 0;
          double                    m_psfSignalWeight = 0;
-         double                    m_psfPowerWeight = 0;
+         double                    m_psfSignalPowerWeight = 0;
+         double                    m_psfFlux = 0;
+         double                    m_psfFluxPower = 0;
          double                    m_snrWeight = 0;
          MeasureData               m_outputData;
          bool                      m_success = false;
@@ -406,7 +408,9 @@ private:
       DVector noiseScaleLows( 0.0, m_subframe.NumberOfNominalChannels() );
       DVector noiseScaleHighs( 0.0, m_subframe.NumberOfNominalChannels() );
       DVector psfSignalEstimates( 0.0, m_subframe.NumberOfNominalChannels() );
-      DVector psfPowerEstimates( 0.0, m_subframe.NumberOfNominalChannels() );
+      DVector psfSignalPowerEstimates( 0.0, m_subframe.NumberOfNominalChannels() );
+      DVector psfFluxEstimates( 0.0, m_subframe.NumberOfNominalChannels() );
+      DVector psfFluxPowerEstimates( 0.0, m_subframe.NumberOfNominalChannels() );
       for ( int c = 0; c < m_subframe.NumberOfNominalChannels(); ++c )
       {
          IsoString keyName = IsoString().Format( "NOISE%02d", c + cfaSourceChannel );
@@ -459,7 +463,25 @@ private:
             if ( !keyword.name.CompareIC( keyName ) )
             {
                if ( keyword.IsNumeric() )
-                  keyword.GetNumericValue( psfPowerEstimates[c] );
+                  keyword.GetNumericValue( psfSignalPowerEstimates[c] );
+               break;
+            }
+
+         keyName = IsoString().Format( "PSFFLX%02d", c + cfaSourceChannel );
+         for ( const FITSHeaderKeyword& keyword : keywords )
+            if ( !keyword.name.CompareIC( keyName ) )
+            {
+               if ( keyword.IsNumeric() )
+                  keyword.GetNumericValue( psfFluxEstimates[c] );
+               break;
+            }
+
+         keyName = IsoString().Format( "PSFFLP%02d", c + cfaSourceChannel );
+         for ( const FITSHeaderKeyword& keyword : keywords )
+            if ( !keyword.name.CompareIC( keyName ) )
+            {
+               if ( keyword.IsNumeric() )
+                  keyword.GetNumericValue( psfFluxPowerEstimates[c] );
                break;
             }
       }
@@ -469,7 +491,7 @@ private:
        * noise estimates if available. For color images, extract the HSI
        * intensity component and provide coherent estimates if available.
        */
-      double psfSignal, psfPower, noiseScaleLow, noiseScaleHigh;
+      double psfSignal, psfSignalPower, psfFlux, psfFluxPower, noiseScaleLow, noiseScaleHigh;
       if ( m_subframe.NumberOfNominalChannels() == 1 )
       {
          m_noise = noiseEstimates[0];
@@ -477,7 +499,9 @@ private:
          noiseScaleLow = noiseScaleLows[0];
          noiseScaleHigh = noiseScaleHighs[0];
          psfSignal = psfSignalEstimates[0];
-         psfPower = psfPowerEstimates[0];
+         psfSignalPower = psfSignalPowerEstimates[0];
+         psfFlux = psfFluxEstimates[0];
+         psfFluxPower = psfFluxPowerEstimates[0];
       }
       else
       {
@@ -490,7 +514,9 @@ private:
          noiseScaleLow = 0.5*(noiseScaleLows.MinComponent() + noiseScaleLows.MaxComponent());
          noiseScaleHigh = 0.5*(noiseScaleHighs.MinComponent() + noiseScaleHighs.MaxComponent());
          psfSignal = 0.5*(psfSignalEstimates.MinComponent() + psfSignalEstimates.MaxComponent());
-         psfPower = 0.5*(psfPowerEstimates.MinComponent() + psfPowerEstimates.MaxComponent());
+         psfSignalPower = 0.5*(psfSignalPowerEstimates.MinComponent() + psfSignalPowerEstimates.MaxComponent());
+         psfFlux = 0.5*(psfFluxEstimates.MinComponent() + psfFluxEstimates.MaxComponent());
+         psfFluxPower = 0.5*(psfFluxPowerEstimates.MinComponent() + psfFluxPowerEstimates.MaxComponent());
       }
 
       if ( 1 + m_noise != 1 )
@@ -498,18 +524,22 @@ private:
          /*
           * Compute PSF signal estimates if not available.
           */
-         if ( psfSignal == 0 || psfPower == 0 )
+         if ( psfSignal == 0 || psfSignalPower == 0 || psfFlux == 0 || psfFluxPower == 0 )
          {
-            Console().WarningLn( "<end><cbr>** Warning: PSF signal/power estimates are not available in the image metadata and are being "
+            Console().WarningLn( "<end><cbr>** Warning: PSF signal estimates are not available in the image metadata and are being "
                                  "calculated from possibly non-raw or uncalibrated data. Image weights can be wrong or inaccurate." );
             PSFSignalEstimator E;
             PSFSignalEstimator::Estimates e = E( m_subframe );
             psfSignal = e.mean;
-            psfPower = e.power;
+            psfSignalPower = e.power;
+            psfFlux = e.meanFlux;
+            psfFluxPower = e.powerFlux;
          }
 
          m_psfSignalWeight = psfSignal/m_noise;
-         m_psfPowerWeight = psfPower/m_noise/m_noise;
+         m_psfSignalPowerWeight = psfSignalPower/m_noise/m_noise;
+         m_psfFlux = psfFlux;
+         m_psfFluxPower = psfFluxPower;
 
          /*
           * Compute noise scaling factors if not available.
@@ -696,19 +726,23 @@ private:
          m_outputData.noiseRatio = noiseFraction;
       }
 
-      if ( m_psfSignalWeight > 0 && m_psfPowerWeight > 0 )
+      if ( m_psfSignalWeight > 0 && m_psfSignalPowerWeight > 0 && m_psfFlux > 0 && m_psfFluxPower > 0 )
       {
          m_outputData.psfSignalWeight = m_psfSignalWeight;
-         m_outputData.psfPowerWeight = m_psfPowerWeight;
+         m_outputData.psfSignalPowerWeight = m_psfSignalPowerWeight;
+         m_outputData.psfFlux = m_psfFlux;
+         m_outputData.psfFluxPower = m_psfFluxPower;
       }
       else
       {
-         Console().WarningLn( "<end><cbr>** Warning: PSF signal/power estimates are not available in the image metadata and are being "
+         Console().WarningLn( "<end><cbr>** Warning: PSF signal estimates are not available in the image metadata and are being "
                               "calculated from possibly non-raw or uncalibrated data. Image weights can be wrong or inaccurate." );
          PSFSignalEstimator E;
          PSFSignalEstimator::Estimates e = E( m_subframe );
          m_outputData.psfSignalWeight = e.mean/m_outputData.noise;
-         m_outputData.psfPowerWeight = e.power/m_outputData.noise/m_outputData.noise;
+         m_outputData.psfSignalPowerWeight = e.power/m_outputData.noise/m_outputData.noise;
+         m_outputData.psfFlux = e.meanFlux;
+         m_outputData.psfFluxPower = e.powerFlux;
       }
 
       if ( m_snrWeight > 0 )
@@ -2192,8 +2226,12 @@ void* SubframeSelectorInstance::LockParameter( const MetaParameter* p, size_type
       return &o_measures[tableRow].eccentricity;
    if ( p == TheSSMeasurementPSFSignalWeightParameter )
       return &o_measures[tableRow].psfSignalWeight;
-   if ( p == TheSSMeasurementPSFPowerWeightParameter )
-      return &o_measures[tableRow].psfPowerWeight;
+   if ( p == TheSSMeasurementPSFSignalPowerWeightParameter )
+      return &o_measures[tableRow].psfSignalPowerWeight;
+   if ( p == TheSSMeasurementPSFFluxParameter )
+      return &o_measures[tableRow].psfFlux;
+   if ( p == TheSSMeasurementPSFFluxPowerParameter )
+      return &o_measures[tableRow].psfFluxPower;
    if ( p == TheSSMeasurementSNRWeightParameter )
       return &o_measures[tableRow].snrWeight;
    if ( p == TheSSMeasurementMedianParameter )

@@ -1137,16 +1137,14 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
          }
       }
 
+      // Normalize mean absolute deviation with respect to PSF amplitude.
+      psf.mad /= psf.A;
+
       // Moffat/VariableShape beta parameter.
       psf.beta = (function == PSFunction::Gaussian) ? 2.0 : P[ibeta];
 
-      /*
-       * Normalize mean absolute deviation with respect to the estimated mean
-       * signal value.
-       */
-      if ( 1 + psf.meanSignal != 1 )
-         psf.mad /= psf.meanSignal;
-      else
+      // Invalidate measurements with insignificant signal levels.
+      if ( 1 + psf.meanSignal == 1 || 1 + psf.meanSignalSqr == 1 )
          psf.status = PSFFitStatus::Invalid;
    }
 }
@@ -1179,6 +1177,7 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
    double rx2 = 0;
    double ry2 = 2;
 
+// Gather goodness-of-fit and signal data
 #define GET_DATA()                        \
    {                                      \
       double d = *s - B;                  \
@@ -1207,6 +1206,7 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
          {
             if ( !test )
             {
+               // PSF squared radius at tenth maximum height
                rx2 = 4.60517*sx*sx;
                ry2 = rx2;
             }
@@ -1227,6 +1227,7 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
          }
          break;
 
+// Circular Moffat with fixed integer shape parameter
 #define C_MOFFAT_TEST( zmul )                      \
    {                                               \
       if ( !test )                                 \
@@ -1273,6 +1274,7 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
          {
             if ( !test )
             {
+               // PSF squared radius at tenth maximum height
                rx2 = (Pow( 10.0, 1/beta ) - 1)*sx*sx;
                ry2 = rx2;
             }
@@ -1328,6 +1330,7 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
          {
             if ( !test )
             {
+               // PSF squared radii at tenth maximum height
                rx2 = 4.60517*sx*sx;
                ry2 = 4.60517*sy*sy;
             }
@@ -1359,6 +1362,7 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
          }
          break;
 
+// Elliptical Moffat with fixed integer shape parameter
 #define E_MOFFAT_TEST( zmul )                               \
    {                                                        \
       if ( !test )                                          \
@@ -1417,6 +1421,7 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
          {
             if ( !test )
             {
+               // PSF squared radii at tenth maximum height
                double k = Pow( 10.0, 1/beta ) - 1;
                rx2 = k*sx*sx;
                ry2 = k*sy*sy;
@@ -1489,9 +1494,9 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
 #undef sx
 
    /*
-    * If called for testing, the first component of the returned vector is the
-    * average absolute deviation for internal use, e.g. to solve ambiguity in
-    * the quadrant of the fitted rotation angle.
+    * If called for testing, return only the average absolute deviation for
+    * internal use; e.g. to solve ambiguity in the quadrant of the fitted
+    * rotation angle.
     */
    if ( test )
       return Vector( adev.Mean(), 1 );
@@ -1501,18 +1506,16 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
    /*
     * The first returned component is a robust estimate of fitting quality.
     * Here we need an estimator of location with a good balance between
-    * robustness and efficiency for the vector of absolute differences. We use
-    * a mean with median replacement for a 10% of the sample tails.
+    * robustness and efficiency for the vector of absolute differences. We
+    * Winsorize a 10% of both sample tails.
     */
    int n = adev.Length();
-   int i0 = TruncInt( 0.1*n );
-   int i1 = n - i0;
+   int m = TruncInt( 0.1*n );
    adev.Sort();
-   double m = adev[n >> 1];
-   for ( int i = 0; i < i0; ++i )
-      adev[i] = m;
-   for ( int i = i1; i < n; ++i )
-      adev[i] = m;
+   for ( int i = m; --i >= 0; )
+      adev[i] = adev[m];
+   for ( int j = n-m-1, i = j; ++i < n; )
+      adev[i] = adev[j];
    R[0] = adev.Mean();
 
    /*

@@ -1228,43 +1228,62 @@ extern ICPSFSignalEstimateB* TheICPSFSignalEstimateBParameter;
 
 // ----------------------------------------------------------------------------
 
-class ICPSFPowerEstimateRK : public MetaDouble
+class ICPSFSignalPowerEstimateRK : public MetaDouble
 {
 public:
 
-   ICPSFPowerEstimateRK( MetaTable* );
+   ICPSFSignalPowerEstimateRK( MetaTable* );
 
    IsoString Id() const override;
+   IsoString Aliases() const override;
    int Precision() const override;
    bool ScientificNotation() const override;
    bool IsReadOnly() const override;
 };
 
-extern ICPSFPowerEstimateRK* TheICPSFPowerEstimateRKParameter;
+extern ICPSFSignalPowerEstimateRK* TheICPSFSignalPowerEstimateRKParameter;
 
 // ----------------------------------------------------------------------------
 
-class ICPSFPowerEstimateG : public MetaDouble
+class ICPSFSignalPowerEstimateG : public MetaDouble
 {
 public:
 
-   ICPSFPowerEstimateG( MetaTable* );
+   ICPSFSignalPowerEstimateG( MetaTable* );
 
    IsoString Id() const override;
+   IsoString Aliases() const override;
    int Precision() const override;
    bool ScientificNotation() const override;
    bool IsReadOnly() const override;
 };
 
-extern ICPSFPowerEstimateG* TheICPSFPowerEstimateGParameter;
+extern ICPSFSignalPowerEstimateG* TheICPSFSignalPowerEstimateGParameter;
 
 // ----------------------------------------------------------------------------
 
-class ICPSFPowerEstimateB : public MetaDouble
+class ICPSFSignalPowerEstimateB : public MetaDouble
 {
 public:
 
-   ICPSFPowerEstimateB( MetaTable* );
+   ICPSFSignalPowerEstimateB( MetaTable* );
+
+   IsoString Id() const override;
+   IsoString Aliases() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern ICPSFSignalPowerEstimateB* TheICPSFSignalPowerEstimateBParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICPSFFluxEstimateRK : public MetaDouble
+{
+public:
+
+   ICPSFFluxEstimateRK( MetaTable* );
 
    IsoString Id() const override;
    int Precision() const override;
@@ -1272,7 +1291,88 @@ public:
    bool IsReadOnly() const override;
 };
 
-extern ICPSFPowerEstimateB* TheICPSFPowerEstimateBParameter;
+extern ICPSFFluxEstimateRK* TheICPSFFluxEstimateRKParameter;
+
+
+// ----------------------------------------------------------------------------
+
+class ICPSFFluxEstimateG : public MetaDouble
+{
+public:
+
+   ICPSFFluxEstimateG( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern ICPSFFluxEstimateG* TheICPSFFluxEstimateGParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICPSFFluxEstimateB : public MetaDouble
+{
+public:
+
+   ICPSFFluxEstimateB( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern ICPSFFluxEstimateB* TheICPSFFluxEstimateBParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICPSFFluxPowerEstimateRK : public MetaDouble
+{
+public:
+
+   ICPSFFluxPowerEstimateRK( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern ICPSFFluxPowerEstimateRK* TheICPSFFluxPowerEstimateRKParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICPSFFluxPowerEstimateG : public MetaDouble
+{
+public:
+
+   ICPSFFluxPowerEstimateG( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern ICPSFFluxPowerEstimateG* TheICPSFFluxPowerEstimateGParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICPSFFluxPowerEstimateB : public MetaDouble
+{
+public:
+
+   ICPSFFluxPowerEstimateB( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern ICPSFFluxPowerEstimateB* TheICPSFFluxPowerEstimateBParameter;
 
 // ----------------------------------------------------------------------------
 

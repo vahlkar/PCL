@@ -252,7 +252,9 @@ private:
       String     outputFilePath;
       FVector    darkScalingFactors = FVector( 0.0F, 3 );
       Vector     psfSignalEstimates = Vector( 0.0, 3 );
-      Vector     psfPowerEstimates = Vector( 0.0, 3 );
+      Vector     psfSignalPowerEstimates = Vector( 0.0, 3 );
+      Vector     psfFluxEstimates = Vector( 0.0, 3 );
+      Vector     psfFluxPowerEstimates = Vector( 0.0, 3 );
       IVector    psfCounts = IVector( 0, 3 );
       Vector     noiseEstimates = Vector( 0.0, 3 );
       Vector     noiseFractions = Vector( 0.0, 3 );

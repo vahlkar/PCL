@@ -129,6 +129,12 @@ SubframeSelectorProcess::SubframeSelectorProcess()
    new SSMaxFileReadThreads( this );
    new SSMaxFileWriteThreads( this );
 
+   /*
+    * ### N.B. Please do not change the order of instantiation of the following
+    * table row parameters, as doing so will break compatibility with existing
+    * scripts that depend on the SubframeSelector process.
+    */
+
    new SSMeasurements( this );
    new SSMeasurementIndex( TheSSMeasurementsParameter );
    new SSMeasurementEnabled( TheSSMeasurementsParameter );
@@ -138,7 +144,7 @@ SubframeSelectorProcess::SubframeSelectorProcess()
    new SSMeasurementFWHM( TheSSMeasurementsParameter );
    new SSMeasurementEccentricity( TheSSMeasurementsParameter );
    new SSMeasurementPSFSignalWeight( TheSSMeasurementsParameter );
-   new SSMeasurementPSFPowerWeight( TheSSMeasurementsParameter );
+   new SSMeasurementPSFSignalPowerWeight( TheSSMeasurementsParameter );
    new SSMeasurementSNRWeight( TheSSMeasurementsParameter );
    new SSMeasurementMedian( TheSSMeasurementsParameter );
    new SSMeasurementMedianMeanDev( TheSSMeasurementsParameter );
@@ -151,6 +157,8 @@ SubframeSelectorProcess::SubframeSelectorProcess()
    new SSMeasurementStarResidualMeanDev( TheSSMeasurementsParameter );
    new SSMeasurementAzimuth( TheSSMeasurementsParameter );
    new SSMeasurementAltitude( TheSSMeasurementsParameter );
+   new SSMeasurementPSFFlux( TheSSMeasurementsParameter );
+   new SSMeasurementPSFFluxPower( TheSSMeasurementsParameter );
 }
 
 // ----------------------------------------------------------------------------

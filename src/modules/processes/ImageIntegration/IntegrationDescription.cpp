@@ -143,8 +143,8 @@ ImageIntegrationInstance::IntegrationDescriptionItems::IntegrationDescriptionIte
       case IIWeightMode::PSFSignalWeight:
          weightMode = "PSF signal";
          break;
-      case IIWeightMode::PSFPowerWeight:
-         weightMode = "PSF power";
+      case IIWeightMode::PSFSignalPowerWeight:
+         weightMode = "PSF signal power";
          break;
       }
 

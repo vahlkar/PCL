@@ -143,9 +143,15 @@ ImageCalibrationProcess::ImageCalibrationProcess()
    new ICPSFSignalEstimateRK( TheICOutputDataParameter );
    new ICPSFSignalEstimateG( TheICOutputDataParameter );
    new ICPSFSignalEstimateB( TheICOutputDataParameter );
-   new ICPSFPowerEstimateRK( TheICOutputDataParameter );
-   new ICPSFPowerEstimateG( TheICOutputDataParameter );
-   new ICPSFPowerEstimateB( TheICOutputDataParameter );
+   new ICPSFSignalPowerEstimateRK( TheICOutputDataParameter );
+   new ICPSFSignalPowerEstimateG( TheICOutputDataParameter );
+   new ICPSFSignalPowerEstimateB( TheICOutputDataParameter );
+   new ICPSFFluxEstimateRK( TheICOutputDataParameter );
+   new ICPSFFluxEstimateG( TheICOutputDataParameter );
+   new ICPSFFluxEstimateB( TheICOutputDataParameter );
+   new ICPSFFluxPowerEstimateRK( TheICOutputDataParameter );
+   new ICPSFFluxPowerEstimateG( TheICOutputDataParameter );
+   new ICPSFFluxPowerEstimateB( TheICOutputDataParameter );
    new ICPSFCountRK( TheICOutputDataParameter );
    new ICPSFCountG( TheICOutputDataParameter );
    new ICPSFCountB( TheICOutputDataParameter );

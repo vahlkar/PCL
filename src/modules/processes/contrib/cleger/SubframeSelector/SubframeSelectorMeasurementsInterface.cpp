@@ -71,7 +71,9 @@ static pcl_enum s_comboBoxItemIndexToSortingProperty[] =
    SSSortingProperty::Index,
    SSSortingProperty::Weight,
    SSSortingProperty::PSFSignalWeight,
-   SSSortingProperty::PSFPowerWeight,
+   SSSortingProperty::PSFSignalPowerWeight,
+   SSSortingProperty::PSFFlux,
+   SSSortingProperty::PSFFluxPower,
    SSSortingProperty::SNRWeight,
    SSSortingProperty::FWHM,
    SSSortingProperty::Eccentricity,
@@ -94,7 +96,9 @@ static pcl_enum s_comboBoxItemIndexToGraphProperty[] =
 {
    SSGraphProperty::Weight,
    SSGraphProperty::PSFSignalWeight,
-   SSGraphProperty::PSFPowerWeight,
+   SSGraphProperty::PSFSignalPowerWeight,
+   SSGraphProperty::PSFFlux,
+   SSGraphProperty::PSFFluxPower,
    SSGraphProperty::SNRWeight,
    SSGraphProperty::FWHM,
    SSGraphProperty::Eccentricity,
@@ -344,57 +348,63 @@ void SubframeSelectorMeasurementsInterface::UpdateMeasurementNode( MeasurementNo
    node->SetText( 5, String().Format( "%.4e", item->psfSignalWeight ) );
    node->SetAlignment( 5, TextAlign::Center );
 
-   node->SetText( 6, String().Format( "%.4e", item->psfPowerWeight ) );
+   node->SetText( 6, String().Format( "%.4e", item->psfSignalPowerWeight ) );
    node->SetAlignment( 6, TextAlign::Center );
 
-   node->SetText( 7, String().Format( "%.4e", item->snrWeight ) );
+   node->SetText( 7, String().Format( "%.4e", item->psfFlux ) );
    node->SetAlignment( 7, TextAlign::Center );
 
-   node->SetText( 8, String().Format( "%.4f", item->FWHM( m_instance.p_subframeScale, m_instance.p_scaleUnit ) ) );
+   node->SetText( 8, String().Format( "%.4e", item->psfFluxPower ) );
    node->SetAlignment( 8, TextAlign::Center );
 
-   node->SetText( 9, String().Format( "%.4f", item->eccentricity ) );
+   node->SetText( 9, String().Format( "%.4e", item->snrWeight ) );
    node->SetAlignment( 9, TextAlign::Center );
 
-   node->SetText( 10, String().Format( "%u", unsigned( item->stars ) ) );
+   node->SetText( 10, String().Format( "%.4f", item->FWHM( m_instance.p_subframeScale, m_instance.p_scaleUnit ) ) );
    node->SetAlignment( 10, TextAlign::Center );
 
-   node->SetText( 11, String().Format( "%.4e", item->starResidual ) );
+   node->SetText( 11, String().Format( "%.4f", item->eccentricity ) );
    node->SetAlignment( 11, TextAlign::Center );
 
-   node->SetText( 12, String().Format( "%.4f", item->altitude ) );
+   node->SetText( 12, String().Format( "%u", unsigned( item->stars ) ) );
    node->SetAlignment( 12, TextAlign::Center );
 
-   node->SetText( 13, String().Format( "%.4f", item->azimuth ) );
+   node->SetText( 13, String().Format( "%.4e", item->starResidual ) );
    node->SetAlignment( 13, TextAlign::Center );
 
-   node->SetText( 14, String().Format( "%.4e",
+   node->SetText( 14, String().Format( "%.4f", item->altitude ) );
+   node->SetAlignment( 14, TextAlign::Center );
+
+   node->SetText( 15, String().Format( "%.4f", item->azimuth ) );
+   node->SetAlignment( 15, TextAlign::Center );
+
+   node->SetText( 16, String().Format( "%.4e",
             item->Noise( m_instance.p_cameraGain,
                          TheSSCameraResolutionParameter->ElementData( m_instance.p_cameraResolution ),
                          m_instance.p_dataUnit ) ) );
-   node->SetAlignment( 14, TextAlign::Center );
-
-   node->SetText( 15, String().Format( "%.4f", item->noiseRatio ) );
-   node->SetAlignment( 15, TextAlign::Center );
-
-   node->SetText( 16, String().Format( "%.4e", item->Median( m_instance.p_cameraGain,
-                                 TheSSCameraResolutionParameter->ElementData( m_instance.p_cameraResolution ),
-                                 m_instance.p_dataUnit ) ) );
    node->SetAlignment( 16, TextAlign::Center );
 
-   node->SetText( 17, String().Format( "%.4f", item->FWHMMeanDeviation( m_instance.p_subframeScale, m_instance.p_scaleUnit ) ) );
+   node->SetText( 17, String().Format( "%.4f", item->noiseRatio ) );
    node->SetAlignment( 17, TextAlign::Center );
 
-   node->SetText( 18, String().Format( "%.4f", item->eccentricityMeanDev ) );
-   node->SetAlignment( 18, TextAlign::Center );
-
-   node->SetText( 19, String().Format( "%.4f", item->starResidualMeanDev ) );
-   node->SetAlignment( 19, TextAlign::Center );
-
-   node->SetText( 20, String().Format( "%.4f", item->MedianMeanDev( m_instance.p_cameraGain,
+   node->SetText( 18, String().Format( "%.4e", item->Median( m_instance.p_cameraGain,
                                  TheSSCameraResolutionParameter->ElementData( m_instance.p_cameraResolution ),
                                  m_instance.p_dataUnit ) ) );
+   node->SetAlignment( 18, TextAlign::Center );
+
+   node->SetText( 19, String().Format( "%.4f", item->FWHMMeanDeviation( m_instance.p_subframeScale, m_instance.p_scaleUnit ) ) );
+   node->SetAlignment( 19, TextAlign::Center );
+
+   node->SetText( 20, String().Format( "%.4f", item->eccentricityMeanDev ) );
    node->SetAlignment( 20, TextAlign::Center );
+
+   node->SetText( 21, String().Format( "%.4f", item->starResidualMeanDev ) );
+   node->SetAlignment( 21, TextAlign::Center );
+
+   node->SetText( 22, String().Format( "%.4f", item->MedianMeanDev( m_instance.p_cameraGain,
+                                 TheSSCameraResolutionParameter->ElementData( m_instance.p_cameraResolution ),
+                                 m_instance.p_dataUnit ) ) );
+   node->SetAlignment( 22, TextAlign::Center );
 }
 
 // ----------------------------------------------------------------------------
@@ -473,8 +483,14 @@ void SubframeSelectorMeasurementsInterface::UpdateMeasurementGraph()
       case SSGraphProperty::PSFSignalWeight:
          point.data = item.psfSignalWeight;
          break;
-      case SSGraphProperty::PSFPowerWeight:
-         point.data = item.psfPowerWeight;
+      case SSGraphProperty::PSFSignalPowerWeight:
+         point.data = item.psfSignalPowerWeight;
+         break;
+      case SSGraphProperty::PSFFlux:
+         point.data = item.psfFlux;
+         break;
+      case SSGraphProperty::PSFFluxPower:
+         point.data = item.psfFluxPower;
          break;
       case SSGraphProperty::SNRWeight:
          point.data = item.snrWeight;
@@ -571,7 +587,7 @@ void SubframeSelectorMeasurementsInterface::ExportCSV() const
             << IsoString().Format( "Circular PSF,%s", m_instance.p_psfFitCircular ? "true" : "false" )
             << "Approval expression,\"" + m_instance.p_approvalExpression + "\""
             << "Weighting expression,\"" + m_instance.p_weightingExpression + "\""
-            << "Index,Approved,Locked,File,Weight,PSF Signal Weight,PSF Power Weight,SNR Weight,FWHM,"
+            << "Index,Approved,Locked,File,Weight,PSF Signal,PSF Signal Power,PSF Flux,PSF Flux Power,SNR,FWHM,"
                "Eccentricity,Altitude,Azimuth,Median,Median Mean Deviation,Noise,Noise Ratio,Stars,Star Residual,FWHM Mean Deviation,"
                "Eccentricity Mean Deviation,Star Residual Mean Deviation";
 
@@ -581,10 +597,12 @@ void SubframeSelectorMeasurementsInterface::ExportCSV() const
                   (item.enabled ? "true," : "false,") +
                   (item.locked ? "true," : "false,") +
                   '"' + item.path.ToUTF8() + '"' + ',' +
-                  IsoString().Format( "%.6e,%.6e,%.6e,%.6e,%.4f,%.4f,%.4f,%.4f,%.6e,%.6e,%.4e,%.4f,%d,%.4f,%.4f,%.4f,%.4f",
+                  IsoString().Format( "%.6e,%.6e,%.6e,%.6e,%.6e,%.6e,%.4f,%.4f,%.4f,%.4f,%.6e,%.6e,%.4e,%.4f,%d,%.4f,%.4f,%.4f,%.4f",
                      item.weight,
                      item.psfSignalWeight,
-                     item.psfPowerWeight,
+                     item.psfSignalPowerWeight,
+                     item.psfFlux,
+                     item.psfFluxPower,
                      item.snrWeight,
                      item.FWHM( m_instance.p_subframeScale, m_instance.p_scaleUnit ),
                      item.eccentricity,
@@ -927,7 +945,7 @@ SubframeSelectorMeasurementsInterface::GUIData::GUIData( SubframeSelectorMeasure
 
    MeasurementTable_TreeBox.SetMinHeight( IMAGELIST_MINHEIGHT( w.Font() ) );
    MeasurementTable_TreeBox.SetScaledMinWidth( 400 );
-   MeasurementTable_TreeBox.SetNumberOfColumns( 22 );
+   MeasurementTable_TreeBox.SetNumberOfColumns( 24 );
    MeasurementTable_TreeBox.SetHeaderText( 0, "Index" );
    MeasurementTable_TreeBox.SetScaledColumnWidth( 0, 40 );
    MeasurementTable_TreeBox.SetHeaderIcon( 1, Bitmap( w.ScaledResource( ":/icons/picture-ok.png" ) ) );
@@ -937,7 +955,7 @@ SubframeSelectorMeasurementsInterface::GUIData::GUIData( SubframeSelectorMeasure
    MeasurementTable_TreeBox.SetHeaderText( 2, "" );
    MeasurementTable_TreeBox.SetScaledColumnWidth( 2, 30 );
    MeasurementTable_TreeBox.SetHeaderText( 3, "Filename" );
-   for ( int i = 0; i <= 20; ++i )
+   for ( int i = 0; i <= 22; ++i )
    {
       MeasurementTable_TreeBox.SetHeaderAlignment( i, TextAlign::Center|TextAlign::VertCenter );
       if ( i >= 4 )
@@ -945,7 +963,7 @@ SubframeSelectorMeasurementsInterface::GUIData::GUIData( SubframeSelectorMeasure
                   TheSSSortingPropertyParameter->ElementLabel( s_comboBoxItemIndexToSortingProperty[i-3] ) );
    }
 
-   MeasurementTable_TreeBox.SetHeaderText( 21, "" ); // blank 'spacer' column
+   MeasurementTable_TreeBox.SetHeaderText( 23, "" ); // blank 'spacer' column
    MeasurementTable_TreeBox.EnableMultipleSelections();
    MeasurementTable_TreeBox.DisableRootDecoration();
    MeasurementTable_TreeBox.EnableAlternateRowColor();

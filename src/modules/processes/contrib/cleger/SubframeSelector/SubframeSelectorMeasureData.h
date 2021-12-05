@@ -85,7 +85,9 @@ struct MeasureProperties
    MeasureProperty eccentricity;
    MeasureProperty eccentricityMeanDev;
    MeasureProperty psfSignalWeight;
-   MeasureProperty psfPowerWeight;
+   MeasureProperty psfSignalPowerWeight;
+   MeasureProperty psfFlux;
+   MeasureProperty psfFluxPower;
    MeasureProperty snrWeight;
    MeasureProperty median;
    MeasureProperty medianMeanDev;
@@ -110,7 +112,9 @@ struct MeasureData
    double eccentricity;
    double eccentricityMeanDev;
    double psfSignalWeight;
-   double psfPowerWeight;
+   double psfSignalPowerWeight;
+   double psfFlux;
+   double psfFluxPower;
    double snrWeight;
    double median;
    double medianMeanDev;
@@ -149,7 +153,9 @@ struct MeasureItem
    double   fwhm;
    double   eccentricity;
    double   psfSignalWeight;
-   double   psfPowerWeight;
+   double   psfSignalPowerWeight;
+   double   psfFlux;
+   double   psfFluxPower;
    double   snrWeight;
    double   median;
    double   medianMeanDev;
@@ -172,7 +178,9 @@ struct MeasureItem
       , fwhm( TheSSMeasurementFWHMParameter->DefaultValue() )
       , eccentricity( TheSSMeasurementEccentricityParameter->DefaultValue() )
       , psfSignalWeight( TheSSMeasurementPSFSignalWeightParameter->DefaultValue() )
-      , psfPowerWeight( TheSSMeasurementPSFPowerWeightParameter->DefaultValue() )
+      , psfSignalPowerWeight( TheSSMeasurementPSFSignalPowerWeightParameter->DefaultValue() )
+      , psfFlux( TheSSMeasurementPSFFluxParameter->DefaultValue() )
+      , psfFluxPower( TheSSMeasurementPSFFluxPowerParameter->DefaultValue() )
       , snrWeight( TheSSMeasurementSNRWeightParameter->DefaultValue() )
       , median( TheSSMeasurementMedianParameter->DefaultValue() )
       , medianMeanDev( TheSSMeasurementMedianMeanDevParameter->DefaultValue() )
@@ -201,7 +209,9 @@ struct MeasureItem
       fwhm = measureData.fwhm;
       eccentricity = measureData.eccentricity;
       psfSignalWeight = measureData.psfSignalWeight;
-      psfPowerWeight = measureData.psfPowerWeight;
+      psfSignalPowerWeight = measureData.psfSignalPowerWeight;
+      psfFlux = measureData.psfFlux;
+      psfFluxPower = measureData.psfFluxPower;
       snrWeight = measureData.snrWeight;
       median = measureData.median;
       medianMeanDev = measureData.medianMeanDev;
@@ -268,25 +278,27 @@ struct MeasureItem
    {
       switch ( sortBy )
       {
-      case SSSortingProperty::Index:               return index;
-      case SSSortingProperty::Weight:              return weight;
-      case SSSortingProperty::FWHM:                return fwhm;
-      case SSSortingProperty::Eccentricity:        return eccentricity;
-      case SSSortingProperty::PSFSignalWeight:     return psfSignalWeight;
-      case SSSortingProperty::PSFPowerWeight:      return psfPowerWeight;
-      case SSSortingProperty::SNRWeight:           return snrWeight;
-      case SSSortingProperty::Median:              return median;
-      case SSSortingProperty::MedianMeanDev:       return medianMeanDev;
-      case SSSortingProperty::Noise:               return noise;
-      case SSSortingProperty::NoiseRatio:          return noiseRatio;
-      case SSSortingProperty::Stars:               return stars;
-      case SSSortingProperty::StarResidual:        return starResidual;
-      case SSSortingProperty::FWHMMeanDev:         return fwhmMeanDev;
-      case SSSortingProperty::EccentricityMeanDev: return eccentricityMeanDev;
-      case SSSortingProperty::StarResidualMeanDev: return starResidualMeanDev;
-      case SSSortingProperty::Azimuth:             return azimuth;
-      case SSSortingProperty::Altitude:            return altitude;
-      default:                                     return 0; // ?
+      case SSSortingProperty::Index:                return index;
+      case SSSortingProperty::Weight:               return weight;
+      case SSSortingProperty::FWHM:                 return fwhm;
+      case SSSortingProperty::Eccentricity:         return eccentricity;
+      case SSSortingProperty::PSFSignalWeight:      return psfSignalWeight;
+      case SSSortingProperty::PSFSignalPowerWeight: return psfSignalPowerWeight;
+      case SSSortingProperty::PSFFlux:        return psfFlux;
+      case SSSortingProperty::PSFFluxPower:   return psfFluxPower;
+      case SSSortingProperty::SNRWeight:            return snrWeight;
+      case SSSortingProperty::Median:               return median;
+      case SSSortingProperty::MedianMeanDev:        return medianMeanDev;
+      case SSSortingProperty::Noise:                return noise;
+      case SSSortingProperty::NoiseRatio:           return noiseRatio;
+      case SSSortingProperty::Stars:                return stars;
+      case SSSortingProperty::StarResidual:         return starResidual;
+      case SSSortingProperty::FWHMMeanDev:          return fwhmMeanDev;
+      case SSSortingProperty::EccentricityMeanDev:  return eccentricityMeanDev;
+      case SSSortingProperty::StarResidualMeanDev:  return starResidualMeanDev;
+      case SSSortingProperty::Azimuth:              return azimuth;
+      case SSSortingProperty::Altitude:             return altitude;
+      default:                                      return 0; // ?
       }
    }
 };

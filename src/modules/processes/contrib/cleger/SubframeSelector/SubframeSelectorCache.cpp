@@ -64,23 +64,25 @@ SubframeSelectorCache* TheSubframeSelectorCache = nullptr;
 void SubframeSelectorCacheItem::AssignData( const FileDataCacheItem& item )
 {
 #define src static_cast<const SubframeSelectorCacheItem&>( item )
-   fwhm                = src.fwhm;
-   fwhmMeanDev         = src.fwhmMeanDev;
-   eccentricity        = src.eccentricity;
-   eccentricityMeanDev = src.eccentricityMeanDev;
-   psfSignalWeight     = src.psfSignalWeight;
-   psfPowerWeight      = src.psfPowerWeight;
-   snrWeight           = src.snrWeight;
-   median              = src.median;
-   medianMeanDev       = src.medianMeanDev;
-   noise               = src.noise;
-   noiseRatio          = src.noiseRatio;
-   stars               = src.stars;
-   starResidual        = src.starResidual;
-   starResidualMeanDev = src.starResidualMeanDev;
-   azimuth             = src.azimuth;
-   altitude            = src.altitude;
-   instanceParameters  = src.instanceParameters;
+   fwhm                 = src.fwhm;
+   fwhmMeanDev          = src.fwhmMeanDev;
+   eccentricity         = src.eccentricity;
+   eccentricityMeanDev  = src.eccentricityMeanDev;
+   psfSignalWeight      = src.psfSignalWeight;
+   psfSignalPowerWeight = src.psfSignalPowerWeight;
+   psfFlux        = src.psfFlux;
+   psfFluxPower   = src.psfFluxPower;
+   snrWeight            = src.snrWeight;
+   median               = src.median;
+   medianMeanDev        = src.medianMeanDev;
+   noise                = src.noise;
+   noiseRatio           = src.noiseRatio;
+   stars                = src.stars;
+   starResidual         = src.starResidual;
+   starResidualMeanDev  = src.starResidualMeanDev;
+   azimuth              = src.azimuth;
+   altitude             = src.altitude;
+   instanceParameters   = src.instanceParameters;
 #undef src
 }
 
@@ -94,7 +96,9 @@ String SubframeSelectorCacheItem::DataToString() const
       << String().Format( "eccentricity\n%.8e", eccentricity )
       << String().Format( "eccentricityMeanDev\n%.8e", eccentricityMeanDev )
       << String().Format( "psfSignalWeight\n%.8e", psfSignalWeight )
-      << String().Format( "psfPowerWeight\n%.8e", psfPowerWeight )
+      << String().Format( "psfSignalPowerWeight\n%.8e", psfSignalPowerWeight )
+      << String().Format( "psfFlux\n%.8e", psfFlux )
+      << String().Format( "psfFluxPower\n%.8e", psfFluxPower )
       << String().Format( "snrWeight\n%.8e", snrWeight )
       << String().Format( "median\n%.8e", median )
       << String().Format( "medianMeanDev\n%.8e", medianMeanDev )
@@ -141,9 +145,19 @@ bool SubframeSelectorCacheItem::GetDataFromTokens( const StringList& tokens )
          if ( !(++i)->TryToDouble( psfSignalWeight ) )
             return false;
       }
-      else if ( *i == "psfPowerWeight" )
+      else if ( *i == "psfSignalPowerWeight" )
       {
-         if ( !(++i)->TryToDouble( psfPowerWeight ) )
+         if ( !(++i)->TryToDouble( psfSignalPowerWeight ) )
+            return false;
+      }
+      else if ( *i == "psfFlux" )
+      {
+         if ( !(++i)->TryToDouble( psfFlux ) )
+            return false;
+      }
+      else if ( *i == "psfFluxPower" )
+      {
+         if ( !(++i)->TryToDouble( psfFluxPower ) )
             return false;
       }
       else if ( *i == "snrWeight" )

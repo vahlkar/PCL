@@ -152,9 +152,15 @@ ICDarkScalingFactorB*            TheICDarkScalingFactorBParameter = nullptr;
 ICPSFSignalEstimateRK*           TheICPSFSignalEstimateRKParameter = nullptr;
 ICPSFSignalEstimateG*            TheICPSFSignalEstimateGParameter = nullptr;
 ICPSFSignalEstimateB*            TheICPSFSignalEstimateBParameter = nullptr;
-ICPSFPowerEstimateRK*            TheICPSFPowerEstimateRKParameter = nullptr;
-ICPSFPowerEstimateG*             TheICPSFPowerEstimateGParameter = nullptr;
-ICPSFPowerEstimateB*             TheICPSFPowerEstimateBParameter = nullptr;
+ICPSFSignalPowerEstimateRK*      TheICPSFSignalPowerEstimateRKParameter = nullptr;
+ICPSFSignalPowerEstimateG*       TheICPSFSignalPowerEstimateGParameter = nullptr;
+ICPSFSignalPowerEstimateB*       TheICPSFSignalPowerEstimateBParameter = nullptr;
+ICPSFFluxEstimateRK*             TheICPSFFluxEstimateRKParameter = nullptr;
+ICPSFFluxEstimateG*              TheICPSFFluxEstimateGParameter = nullptr;
+ICPSFFluxEstimateB*              TheICPSFFluxEstimateBParameter = nullptr;
+ICPSFFluxPowerEstimateRK*        TheICPSFFluxPowerEstimateRKParameter = nullptr;
+ICPSFFluxPowerEstimateG*         TheICPSFFluxPowerEstimateGParameter = nullptr;
+ICPSFFluxPowerEstimateB*         TheICPSFFluxPowerEstimateBParameter = nullptr;
 ICPSFCountRK*                    TheICPSFCountRKParameter = nullptr;
 ICPSFCountG*                     TheICPSFCountGParameter = nullptr;
 ICPSFCountB*                     TheICPSFCountBParameter = nullptr;
@@ -1843,81 +1849,258 @@ bool ICPSFSignalEstimateB::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICPSFPowerEstimateRK::ICPSFPowerEstimateRK( MetaTable* T ) : MetaDouble( T )
+ICPSFSignalPowerEstimateRK::ICPSFSignalPowerEstimateRK( MetaTable* T ) : MetaDouble( T )
 {
-   TheICPSFPowerEstimateRKParameter = this;
+   TheICPSFSignalPowerEstimateRKParameter = this;
 }
 
-IsoString ICPSFPowerEstimateRK::Id() const
+IsoString ICPSFSignalPowerEstimateRK::Id() const
+{
+   return "psfSignalPowerEstimateRK";
+}
+
+IsoString ICPSFSignalPowerEstimateRK::Aliases() const
 {
    return "psfPowerEstimateRK";
 }
 
-int ICPSFPowerEstimateRK::Precision() const
+int ICPSFSignalPowerEstimateRK::Precision() const
 {
    return 4;
 }
 
-bool ICPSFPowerEstimateRK::ScientificNotation() const
+bool ICPSFSignalPowerEstimateRK::ScientificNotation() const
 {
    return true;
 }
 
-bool ICPSFPowerEstimateRK::IsReadOnly() const
+bool ICPSFSignalPowerEstimateRK::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-ICPSFPowerEstimateG::ICPSFPowerEstimateG( MetaTable* T ) : MetaDouble( T )
+ICPSFSignalPowerEstimateG::ICPSFSignalPowerEstimateG( MetaTable* T ) : MetaDouble( T )
 {
-   TheICPSFPowerEstimateGParameter = this;
+   TheICPSFSignalPowerEstimateGParameter = this;
 }
 
-IsoString ICPSFPowerEstimateG::Id() const
+IsoString ICPSFSignalPowerEstimateG::Id() const
+{
+   return "psfSignalPowerEstimateG";
+}
+
+IsoString ICPSFSignalPowerEstimateG::Aliases() const
 {
    return "psfPowerEstimateG";
 }
 
-int ICPSFPowerEstimateG::Precision() const
+int ICPSFSignalPowerEstimateG::Precision() const
 {
    return 4;
 }
 
-bool ICPSFPowerEstimateG::ScientificNotation() const
+bool ICPSFSignalPowerEstimateG::ScientificNotation() const
 {
    return true;
 }
 
-bool ICPSFPowerEstimateG::IsReadOnly() const
+bool ICPSFSignalPowerEstimateG::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-ICPSFPowerEstimateB::ICPSFPowerEstimateB( MetaTable* T ) : MetaDouble( T )
+ICPSFSignalPowerEstimateB::ICPSFSignalPowerEstimateB( MetaTable* T ) : MetaDouble( T )
 {
-   TheICPSFPowerEstimateBParameter = this;
+   TheICPSFSignalPowerEstimateBParameter = this;
 }
 
-IsoString ICPSFPowerEstimateB::Id() const
+IsoString ICPSFSignalPowerEstimateB::Id() const
+{
+   return "psfSignalPowerEstimateB";
+}
+
+IsoString ICPSFSignalPowerEstimateB::Aliases() const
 {
    return "psfPowerEstimateB";
 }
 
-int ICPSFPowerEstimateB::Precision() const
+int ICPSFSignalPowerEstimateB::Precision() const
 {
    return 4;
 }
 
-bool ICPSFPowerEstimateB::ScientificNotation() const
+bool ICPSFSignalPowerEstimateB::ScientificNotation() const
 {
    return true;
 }
 
-bool ICPSFPowerEstimateB::IsReadOnly() const
+bool ICPSFSignalPowerEstimateB::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+ICPSFFluxEstimateRK::ICPSFFluxEstimateRK( MetaTable* T ) : MetaDouble( T )
+{
+   TheICPSFFluxEstimateRKParameter = this;
+}
+
+IsoString ICPSFFluxEstimateRK::Id() const
+{
+   return "psfFluxEstimateRK";
+}
+
+int ICPSFFluxEstimateRK::Precision() const
+{
+   return 4;
+}
+
+bool ICPSFFluxEstimateRK::ScientificNotation() const
+{
+   return true;
+}
+
+bool ICPSFFluxEstimateRK::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+ICPSFFluxEstimateG::ICPSFFluxEstimateG( MetaTable* T ) : MetaDouble( T )
+{
+   TheICPSFFluxEstimateGParameter = this;
+}
+
+IsoString ICPSFFluxEstimateG::Id() const
+{
+   return "psfFluxEstimateG";
+}
+
+int ICPSFFluxEstimateG::Precision() const
+{
+   return 4;
+}
+
+bool ICPSFFluxEstimateG::ScientificNotation() const
+{
+   return true;
+}
+
+bool ICPSFFluxEstimateG::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+ICPSFFluxEstimateB::ICPSFFluxEstimateB( MetaTable* T ) : MetaDouble( T )
+{
+   TheICPSFFluxEstimateBParameter = this;
+}
+
+IsoString ICPSFFluxEstimateB::Id() const
+{
+   return "psfFluxEstimateB";
+}
+
+int ICPSFFluxEstimateB::Precision() const
+{
+   return 4;
+}
+
+bool ICPSFFluxEstimateB::ScientificNotation() const
+{
+   return true;
+}
+
+bool ICPSFFluxEstimateB::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+ICPSFFluxPowerEstimateRK::ICPSFFluxPowerEstimateRK( MetaTable* T ) : MetaDouble( T )
+{
+   TheICPSFFluxPowerEstimateRKParameter = this;
+}
+
+IsoString ICPSFFluxPowerEstimateRK::Id() const
+{
+   return "psfFluxPowerEstimateRK";
+}
+
+int ICPSFFluxPowerEstimateRK::Precision() const
+{
+   return 4;
+}
+
+bool ICPSFFluxPowerEstimateRK::ScientificNotation() const
+{
+   return true;
+}
+
+bool ICPSFFluxPowerEstimateRK::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+ICPSFFluxPowerEstimateG::ICPSFFluxPowerEstimateG( MetaTable* T ) : MetaDouble( T )
+{
+   TheICPSFFluxPowerEstimateGParameter = this;
+}
+
+IsoString ICPSFFluxPowerEstimateG::Id() const
+{
+   return "psfFluxPowerEstimateG";
+}
+
+int ICPSFFluxPowerEstimateG::Precision() const
+{
+   return 4;
+}
+
+bool ICPSFFluxPowerEstimateG::ScientificNotation() const
+{
+   return true;
+}
+
+bool ICPSFFluxPowerEstimateG::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+ICPSFFluxPowerEstimateB::ICPSFFluxPowerEstimateB( MetaTable* T ) : MetaDouble( T )
+{
+   TheICPSFFluxPowerEstimateBParameter = this;
+}
+
+IsoString ICPSFFluxPowerEstimateB::Id() const
+{
+   return "psfFluxPowerEstimateB";
+}
+
+int ICPSFFluxPowerEstimateB::Precision() const
+{
+   return 4;
+}
+
+bool ICPSFFluxPowerEstimateB::ScientificNotation() const
+{
+   return true;
+}
+
+bool ICPSFFluxPowerEstimateB::IsReadOnly() const
 {
    return true;
 }

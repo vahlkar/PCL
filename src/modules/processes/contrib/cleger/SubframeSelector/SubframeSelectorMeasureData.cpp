@@ -65,7 +65,9 @@ void MeasureData::ResetCacheableData()
    eccentricity = TheSSMeasurementEccentricityParameter->DefaultValue();
    eccentricityMeanDev = 0;
    psfSignalWeight = TheSSMeasurementPSFSignalWeightParameter->DefaultValue();
-   psfPowerWeight = TheSSMeasurementPSFPowerWeightParameter->DefaultValue();
+   psfSignalPowerWeight = TheSSMeasurementPSFSignalPowerWeightParameter->DefaultValue();
+   psfFlux = TheSSMeasurementPSFFluxParameter->DefaultValue();
+   psfFluxPower = TheSSMeasurementPSFFluxPowerParameter->DefaultValue();
    snrWeight = TheSSMeasurementSNRWeightParameter->DefaultValue();
    median = TheSSMeasurementMedianParameter->DefaultValue();
    medianMeanDev = 0;
@@ -85,23 +87,25 @@ void MeasureData::AddToCache( const SubframeSelectorInstance& instance ) const
    if ( TheSubframeSelectorCache != nullptr )
    {
       SubframeSelectorCacheItem item( path );
-      item.fwhm                = fwhm;
-      item.fwhmMeanDev         = fwhmMeanDev;
-      item.eccentricity        = eccentricity;
-      item.eccentricityMeanDev = eccentricityMeanDev;
-      item.psfSignalWeight     = psfSignalWeight;
-      item.psfPowerWeight      = psfPowerWeight;
-      item.snrWeight           = snrWeight;
-      item.median              = median;
-      item.medianMeanDev       = medianMeanDev;
-      item.noise               = noise;
-      item.noiseRatio          = noiseRatio;
-      item.stars               = stars;
-      item.starResidual        = starResidual;
-      item.starResidualMeanDev = starResidualMeanDev;
-      item.azimuth             = azimuth;
-      item.altitude            = altitude;
-      item.instanceParameters  = instance.EncodedCacheSensitiveParameters();
+      item.fwhm                 = fwhm;
+      item.fwhmMeanDev          = fwhmMeanDev;
+      item.eccentricity         = eccentricity;
+      item.eccentricityMeanDev  = eccentricityMeanDev;
+      item.psfSignalWeight      = psfSignalWeight;
+      item.psfSignalPowerWeight = psfSignalPowerWeight;
+      item.psfFlux        = psfFlux;
+      item.psfFluxPower   = psfFluxPower;
+      item.snrWeight            = snrWeight;
+      item.median               = median;
+      item.medianMeanDev        = medianMeanDev;
+      item.noise                = noise;
+      item.noiseRatio           = noiseRatio;
+      item.stars                = stars;
+      item.starResidual         = starResidual;
+      item.starResidualMeanDev  = starResidualMeanDev;
+      item.azimuth              = azimuth;
+      item.altitude             = altitude;
+      item.instanceParameters   = instance.EncodedCacheSensitiveParameters();
       TheSubframeSelectorCache->Add( item );
    }
 }
@@ -117,22 +121,24 @@ bool MeasureData::GetFromCache( const SubframeSelectorInstance& instance )
       SubframeSelectorCacheItem item;
       if ( TheSubframeSelectorCache->Get( item, path ) )
       {
-         fwhm                = item.fwhm;
-         fwhmMeanDev         = item.fwhmMeanDev;
-         eccentricity        = item.eccentricity;
-         eccentricityMeanDev = item.eccentricityMeanDev;
-         psfSignalWeight     = item.psfSignalWeight;
-         psfPowerWeight      = item.psfPowerWeight;
-         snrWeight           = item.snrWeight;
-         median              = item.median;
-         medianMeanDev       = item.medianMeanDev;
-         noise               = item.noise;
-         noiseRatio          = item.noiseRatio;
-         stars               = item.stars;
-         starResidual        = item.starResidual;
-         starResidualMeanDev = item.starResidualMeanDev;
-         azimuth             = item.azimuth;
-         altitude            = item.altitude;
+         fwhm                 = item.fwhm;
+         fwhmMeanDev          = item.fwhmMeanDev;
+         eccentricity         = item.eccentricity;
+         eccentricityMeanDev  = item.eccentricityMeanDev;
+         psfSignalWeight      = item.psfSignalWeight;
+         psfSignalPowerWeight = item.psfSignalPowerWeight;
+         psfFlux        = item.psfFlux;
+         psfFluxPower   = item.psfFluxPower;
+         snrWeight            = item.snrWeight;
+         median               = item.median;
+         medianMeanDev        = item.medianMeanDev;
+         noise                = item.noise;
+         noiseRatio           = item.noiseRatio;
+         stars                = item.stars;
+         starResidual         = item.starResidual;
+         starResidualMeanDev  = item.starResidualMeanDev;
+         azimuth              = item.azimuth;
+         altitude             = item.altitude;
 
          return item.instanceParameters == instance.EncodedCacheSensitiveParameters();
       }
@@ -172,6 +178,7 @@ String MeasureItem::JavaScriptParameters( double subframeScale, int scaleUnit, d
    String().Format( "let EccentricitySigma = %.8e;\n", DeviationNormalize(
                   eccentricity, properties.eccentricity.median, properties.eccentricity.deviation ) ) +
 
+   /**/
    String().Format( "let PSFSignalWeight = %.8e;\n", psfSignalWeight ) +
    String().Format( "let PSFSignalWeightMin = %.8e;\n", properties.psfSignalWeight.min ) +
    String().Format( "let PSFSignalWeightMax = %.8e;\n", properties.psfSignalWeight.max ) +
@@ -179,19 +186,67 @@ String MeasureItem::JavaScriptParameters( double subframeScale, int scaleUnit, d
    String().Format( "let PSFSignalWeightSigma = %.8e;\n", DeviationNormalize(
                   psfSignalWeight, properties.psfSignalWeight.median, properties.psfSignalWeight.deviation ) ) +
 
-   String().Format( "let PSFPowerWeight = %.8e;\n", psfPowerWeight ) +
-   String().Format( "let PSFPowerWeightMin = %.8e;\n", properties.psfPowerWeight.min ) +
-   String().Format( "let PSFPowerWeightMax = %.8e;\n", properties.psfPowerWeight.max ) +
-   String().Format( "let PSFPowerWeightMedian = %.8e;\n", properties.psfPowerWeight.median ) +
-   String().Format( "let PSFPowerWeightSigma = %.8e;\n", DeviationNormalize(
-                  psfPowerWeight, properties.psfPowerWeight.median, properties.psfPowerWeight.deviation ) ) +
+   String().Format( "let PSFSignal = %.8e;\n", psfSignalWeight ) +
+   String().Format( "let PSFSignalMin = %.8e;\n", properties.psfSignalWeight.min ) +
+   String().Format( "let PSFSignalMax = %.8e;\n", properties.psfSignalWeight.max ) +
+   String().Format( "let PSFSignalMedian = %.8e;\n", properties.psfSignalWeight.median ) +
+   String().Format( "let PSFSignalSigma = %.8e;\n", DeviationNormalize(
+                  psfSignalWeight, properties.psfSignalWeight.median, properties.psfSignalWeight.deviation ) ) +
+   /**/
 
+   /**/
+   // Deprecated - for compatibility with old versions
+   String().Format( "let PSFPowerWeight = %.8e;\n", psfSignalPowerWeight ) +
+   String().Format( "let PSFPowerWeightMin = %.8e;\n", properties.psfSignalPowerWeight.min ) +
+   String().Format( "let PSFPowerWeightMax = %.8e;\n", properties.psfSignalPowerWeight.max ) +
+   String().Format( "let PSFPowerWeightMedian = %.8e;\n", properties.psfSignalPowerWeight.median ) +
+   String().Format( "let PSFPowerWeightSigma = %.8e;\n", DeviationNormalize(
+                  psfSignalPowerWeight, properties.psfSignalPowerWeight.median, properties.psfSignalPowerWeight.deviation ) ) +
+
+   String().Format( "let PSFSignalPowerWeight = %.8e;\n", psfSignalPowerWeight ) +
+   String().Format( "let PSFSignalPowerWeightMin = %.8e;\n", properties.psfSignalPowerWeight.min ) +
+   String().Format( "let PSFSignalPowerWeightMax = %.8e;\n", properties.psfSignalPowerWeight.max ) +
+   String().Format( "let PSFSignalPowerWeightMedian = %.8e;\n", properties.psfSignalPowerWeight.median ) +
+   String().Format( "let PSFSignalPowerWeightSigma = %.8e;\n", DeviationNormalize(
+                  psfSignalPowerWeight, properties.psfSignalPowerWeight.median, properties.psfSignalPowerWeight.deviation ) ) +
+
+   String().Format( "let PSFSignalPower = %.8e;\n", psfSignalPowerWeight ) +
+   String().Format( "let PSFSignalPowerMin = %.8e;\n", properties.psfSignalPowerWeight.min ) +
+   String().Format( "let PSFSignalPowerMax = %.8e;\n", properties.psfSignalPowerWeight.max ) +
+   String().Format( "let PSFSignalPowerMedian = %.8e;\n", properties.psfSignalPowerWeight.median ) +
+   String().Format( "let PSFSignalPowerSigma = %.8e;\n", DeviationNormalize(
+                  psfSignalPowerWeight, properties.psfSignalPowerWeight.median, properties.psfSignalPowerWeight.deviation ) ) +
+   /**/
+
+   String().Format( "let PSFFlux = %.8e;\n", psfFlux ) +
+   String().Format( "let PSFFluxMin = %.8e;\n", properties.psfFlux.min ) +
+   String().Format( "let PSFFluxMax = %.8e;\n", properties.psfFlux.max ) +
+   String().Format( "let PSFFluxMedian = %.8e;\n", properties.psfFlux.median ) +
+   String().Format( "let PSFFluxSigma = %.8e;\n", DeviationNormalize(
+                  psfFlux, properties.psfFlux.median, properties.psfFlux.deviation ) ) +
+
+   String().Format( "let PSFFluxPower = %.8e;\n", psfFluxPower ) +
+   String().Format( "let PSFFluxPowerMin = %.8e;\n", properties.psfFluxPower.min ) +
+   String().Format( "let PSFFluxPowerMax = %.8e;\n", properties.psfFluxPower.max ) +
+   String().Format( "let PSFFluxPowerMedian = %.8e;\n", properties.psfFluxPower.median ) +
+   String().Format( "let PSFFluxPowerSigma = %.8e;\n", DeviationNormalize(
+                  psfFluxPower, properties.psfFluxPower.median, properties.psfFluxPower.deviation ) ) +
+
+   /**/
    String().Format( "let SNRWeight = %.8e;\n", snrWeight ) +
    String().Format( "let SNRWeightMin = %.8e;\n", properties.snrWeight.min ) +
    String().Format( "let SNRWeightMax = %.8e;\n", properties.snrWeight.max ) +
    String().Format( "let SNRWeightMedian = %.8e;\n", properties.snrWeight.median ) +
    String().Format( "let SNRWeightSigma = %.8e;\n", DeviationNormalize(
                   snrWeight, properties.snrWeight.median, properties.snrWeight.deviation ) ) +
+
+   String().Format( "let SNR = %.8e;\n", snrWeight ) +
+   String().Format( "let SNRMin = %.8e;\n", properties.snrWeight.min ) +
+   String().Format( "let SNRMax = %.8e;\n", properties.snrWeight.max ) +
+   String().Format( "let SNRMedian = %.8e;\n", properties.snrWeight.median ) +
+   String().Format( "let SNRSigma = %.8e;\n", DeviationNormalize(
+                  snrWeight, properties.snrWeight.median, properties.snrWeight.deviation ) ) +
+   /**/
 
    String().Format( "let Median = %.8e;\n", Median( cameraGain, cameraResolution, dataUnit ) ) +
    String().Format( "let MedianMin = %.8e;\n", properties.median.min ) +
@@ -334,7 +389,8 @@ void MeasureUtils::MeasureProperties( const MeasureItemList& measures, double su
                                       pcl::MeasureProperties& properties )
 {
    Array<double>
-   weight, fwhm, eccentricity, psfSignalWeight, psfPowerWeight, snrWeight,
+   weight, fwhm, eccentricity,
+   psfSignalWeight, psfSignalPowerWeight, psfFlux, psfFluxPower, snrWeight,
    median, medianMeanDev, noise, noiseRatio, stars, starResidual, fwhmMeanDev,
    eccentricityMeanDev, starResidualMeanDev, azimuth, altitude;
 
@@ -344,7 +400,9 @@ void MeasureUtils::MeasureProperties( const MeasureItemList& measures, double su
       fwhm << item.FWHM( subframeScale, scaleUnit );
       eccentricity << item.eccentricity;
       psfSignalWeight << item.psfSignalWeight;
-      psfPowerWeight << item.psfPowerWeight;
+      psfSignalPowerWeight << item.psfSignalPowerWeight;
+      psfFlux << item.psfFlux;
+      psfFluxPower << item.psfFluxPower;
       snrWeight << item.snrWeight;
       median << item.Median( cameraGain, TheSSCameraResolutionParameter->ElementData( cameraResolution ), dataUnit );
       medianMeanDev << item.MedianMeanDev( cameraGain, TheSSCameraResolutionParameter->ElementData( cameraResolution ), dataUnit );
@@ -363,7 +421,9 @@ void MeasureUtils::MeasureProperties( const MeasureItemList& measures, double su
    MeasureUtils::MeasureProperty( fwhm, properties.fwhm );
    MeasureUtils::MeasureProperty( eccentricity, properties.eccentricity );
    MeasureUtils::MeasureProperty( psfSignalWeight, properties.psfSignalWeight );
-   MeasureUtils::MeasureProperty( psfPowerWeight, properties.psfPowerWeight );
+   MeasureUtils::MeasureProperty( psfSignalPowerWeight, properties.psfSignalPowerWeight );
+   MeasureUtils::MeasureProperty( psfFlux, properties.psfFlux );
+   MeasureUtils::MeasureProperty( psfFluxPower, properties.psfFluxPower );
    MeasureUtils::MeasureProperty( snrWeight, properties.snrWeight );
    MeasureUtils::MeasureProperty( median, properties.median );
    MeasureUtils::MeasureProperty( medianMeanDev, properties.medianMeanDev );

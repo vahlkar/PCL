@@ -425,11 +425,11 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
                                   instance.p_combination == IICombination::Average &&
                                   (instance.p_weightMode == IIWeightMode::SNREstimate ||
                                    instance.p_weightMode == IIWeightMode::PSFSignalWeight ||
-                                   instance.p_weightMode == IIWeightMode::PSFPowerWeight))
+                                   instance.p_weightMode == IIWeightMode::PSFSignalPowerWeight))
                                || instance.p_generateDrizzleData &&
                                   (instance.p_weightMode == IIWeightMode::SNREstimate ||
                                    instance.p_weightMode == IIWeightMode::PSFSignalWeight ||
-                                   instance.p_weightMode == IIWeightMode::PSFPowerWeight);
+                                   instance.p_weightMode == IIWeightMode::PSFSignalPowerWeight);
 
    bool needScale = needNoise  || instance.p_generateDrizzleData
                                || instance.p_generateIntegratedImage &&
@@ -576,12 +576,12 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
          if ( format.CanStoreImageProperties() )
          {
             if ( m_file->HasImageProperty( "PCL:PSFSignalEstimates" ) )
-               if ( m_file->HasImageProperty( "PCL:PSFPowerEstimates" ) )
+               if ( m_file->HasImageProperty( "PCL:PSFSignalPowerEstimates" ) )
                {
                   Variant v1 = m_file->ReadImageProperty( "PCL:PSFSignalEstimates" );
                   if ( v1.IsValid() )
                   {
-                     Variant v2 = m_file->ReadImageProperty( "PCL:PSFPowerEstimates" );
+                     Variant v2 = m_file->ReadImageProperty( "PCL:PSFSignalPowerEstimates" );
                      if ( v2.IsValid() )
                      {
                         DVector s1 = v1.ToVector();
@@ -743,7 +743,7 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
 
       if ( !signalOk )
       {
-         console.WarningLn( "<end><cbr>** Warning: PSF signal/power estimates are being calculated from non-raw data. "
+         console.WarningLn( "<end><cbr>** Warning: PSF signal estimates are being calculated from non-raw data. "
                             "Image weights can be wrong or inaccurate." );
          m_psfSignalEstimates = instance.EvaluatePSFSignal( ImageVariant( m_image.Ptr() ) );
       }
@@ -820,15 +820,15 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
                m_weights[c] = w_psf;
             }
             break;
-         case IIWeightMode::PSFPowerWeight:
+         case IIWeightMode::PSFSignalPowerWeight:
             for ( int c = 0; c < s_numberOfChannels; ++c )
             {
                /*
                 * Weighting by signal-to-noise ratio with mean PSF signal power estimates
                 */
-               double w_psf2 = PSFPowerEstimate( c )/NoiseEstimate( c )/NoiseEstimate( c );
+               double w_psf2 = PSFSignalPowerEstimate( c )/NoiseEstimate( c )/NoiseEstimate( c );
                if ( !IsFinite( w_psf2 ) || 1 + w_psf2 == 1 )
-                  throw Error( m_file->FilePath() + String().Format( " (channel #%d): Zero or insignificant SNR estimate for PSF power weight.", c ) );
+                  throw Error( m_file->FilePath() + String().Format( " (channel #%d): Zero or insignificant SNR estimate for PSF signal power weight.", c ) );
                m_weights[c] = w_psf2;
             }
             break;

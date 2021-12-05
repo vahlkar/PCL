@@ -170,15 +170,15 @@ class IIWeightMode : public MetaEnumeration
 {
 public:
 
-   enum { DontCare,           // weight = 1
-          ExposureTimeWeight, // EXPTIME keyword or ImageOptions::exposure
-          SNREstimate,        // Scaled inverse noise variance with MRS noise estimates
-          SignalWeight,       // mean - median distance
-          MedianWeight,       // median
-          AverageWeight,      // mean
-          KeywordWeight,      // user-specified keyword
-          PSFSignalWeight,    // SNR with PSF mean signal estimates
-          PSFPowerWeight,     // SNR with PSF signal power estimates
+   enum { DontCare,             // weight = 1
+          ExposureTimeWeight,   // EXPTIME keyword or ImageOptions::exposure
+          SNREstimate,          // Scaled inverse noise variance with MRS noise estimates
+          SignalWeight,         // mean - median distance
+          MedianWeight,         // median
+          AverageWeight,        // mean
+          KeywordWeight,        // user-specified keyword
+          PSFSignalWeight,      // SNR with PSF mean signal estimates
+          PSFSignalPowerWeight, // SNR with PSF mean signal power estimates
           NumberOfItems,
           Default = PSFSignalWeight };
 

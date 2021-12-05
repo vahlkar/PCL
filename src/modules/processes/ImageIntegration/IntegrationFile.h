@@ -139,7 +139,7 @@ public:
       return m_psfSignalEstimates[c].mean;
    }
 
-   double PSFPowerEstimate( int c ) const
+   double PSFSignalPowerEstimate( int c ) const
    {
       return m_psfSignalEstimates[c].power;
    }

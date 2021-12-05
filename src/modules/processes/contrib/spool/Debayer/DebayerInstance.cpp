@@ -207,7 +207,9 @@ void DebayerInstance::Assign( const ProcessImplementation& p )
       o_imageId                    = x->o_imageId;
       o_channelIds                 = x->o_channelIds;
       o_psfSignalEstimates         = x->o_psfSignalEstimates;
-      o_psfPowerEstimates          = x->o_psfPowerEstimates;
+      o_psfSignalPowerEstimates    = x->o_psfSignalPowerEstimates;
+      o_psfFluxEstimates           = x->o_psfFluxEstimates;
+      o_psfFluxPowerEstimates      = x->o_psfFluxPowerEstimates;
       o_psfCounts                  = x->o_psfCounts;
       o_noiseEstimates             = x->o_noiseEstimates;
       o_noiseFractions             = x->o_noiseFractions;
@@ -274,7 +276,9 @@ class SignalAndNoiseEvaluationThread : public Thread
 public:
 
    double    psfSignalEstimate = 0;
-   double    psfPowerEstimate = 0;
+   double    psfSignalPowerEstimate = 0;
+   double    psfFluxEstimate = 0;
+   double    psfFluxPowerEstimate = 0;
    int       psfCount = 0;
    double    noiseEstimate = 0;
    double    noiseFraction = 0;
@@ -338,7 +342,9 @@ public:
          E.EnableParallelProcessing( m_numberOfSubthreads > 1, m_numberOfSubthreads );
          PSFSignalEstimator::Estimates e = E( ImageVariant( &m_image ) );
          psfSignalEstimate = e.mean;
-         psfPowerEstimate = e.power;
+         psfSignalPowerEstimate = e.power;
+         psfFluxEstimate = e.meanFlux;
+         psfFluxPowerEstimate = e.powerFlux;
          psfCount = e.count;
       }
 
@@ -2466,7 +2472,9 @@ public:
       if ( m_instance.p_evaluateSignal )
       {
          o.psfSignalEstimates = m_psfSignalEstimates;
-         o.psfPowerEstimates = m_psfPowerEstimates;
+         o.psfSignalPowerEstimates = m_psfSignalPowerEstimates;
+         o.psfFluxEstimates = m_psfFluxEstimates;
+         o.psfFluxPowerEstimates = m_psfFluxPowerEstimates;
          o.psfCounts = m_psfCounts;
       }
       if ( m_instance.p_evaluateNoise )
@@ -2512,7 +2520,9 @@ private:
          FMatrix          m_sRGBConversionMatrix;
          IMatrix          m_xtransPatternFilters;
          Vector           m_psfSignalEstimates = Vector( 0.0, 3 );
-         Vector           m_psfPowerEstimates = Vector( 0.0, 3 );
+         Vector           m_psfSignalPowerEstimates = Vector( 0.0, 3 );
+         Vector           m_psfFluxEstimates = Vector( 0.0, 3 );
+         Vector           m_psfFluxPowerEstimates = Vector( 0.0, 3 );
          IVector          m_psfCounts = IVector( 0, 3 );
          Vector           m_noiseEstimates = Vector( 0.0, 3 );
          Vector           m_noiseFractions = Vector( 0.0, 3 );
@@ -2593,7 +2603,8 @@ private:
          DebayerEngine( m_outputImage, m_instance, m_bayerPattern ).Debayer( m_targetImage );
 
       if ( m_instance.p_evaluateNoise || m_instance.p_evaluateSignal )
-         m_instance.EvaluateSignalAndNoise( m_psfSignalEstimates, m_psfPowerEstimates, m_psfCounts,
+         m_instance.EvaluateSignalAndNoise( m_psfSignalEstimates, m_psfSignalPowerEstimates,
+                                            m_psfFluxEstimates, m_psfFluxPowerEstimates, m_psfCounts,
                                             m_noiseEstimates, m_noiseFractions, m_noiseScaleLow, m_noiseScaleHigh,
                                             m_noiseAlgorithms, m_targetImage, m_patternId );
    }
@@ -2650,12 +2661,13 @@ private:
       FITSKeywordArray keywords = m_fileData.keywords;
 
       /*
-       * N.B.: If we have computed signal and noise estimates, remove any
-       * previously existing PSFSGLxx, PSFSGNxx and NOISExx keywords. Only our
-       * newly created keywords must be present in the header.
+       * N.B.: If we have computed signal estimates, remove any previously
+       * existing PSFSGLxx, PSFSGPxx, PSFFLXxx, PSFFLPxx and PSFSGNxx keywords.
+       * Only our newly created keywords must be present in the header.
        */
       for ( size_type i = 0; i < keywords.Length(); )
-         if ( keywords[i].name.StartsWithIC( "NOISE" ) || keywords[i].name.StartsWithIC( "PSFSG" ) )
+         if ( keywords[i].name.StartsWithIC( "NOISE" )
+           || keywords[i].name.StartsWithIC( "PSFSG" ) || keywords[i].name.StartsWithIC( "PSFFL" ) )
             keywords.Remove( keywords.At( i ) );
          else
             ++i;
@@ -2708,8 +2720,12 @@ private:
                keywordsRGB << FITSHeaderKeyword( "HISTORY", IsoString(), "PSF signal evaluation with " + Module->ReadableVersion() )
                            << FITSHeaderKeyword( "HISTORY", IsoString(), IsoString().Format( "Demosaic.psfSignalEstimates: %.4e %.4e %.4e",
                                                             m_psfSignalEstimates[0], m_psfSignalEstimates[1], m_psfSignalEstimates[2] ) )
-                           << FITSHeaderKeyword( "HISTORY", IsoString(), IsoString().Format( "Demosaic.psfPowerEstimates: %.4e %.4e %.4e",
-                                                            m_psfPowerEstimates[0], m_psfPowerEstimates[1], m_psfPowerEstimates[2] ) )
+                           << FITSHeaderKeyword( "HISTORY", IsoString(), IsoString().Format( "Demosaic.psfSignalPowerEstimates: %.4e %.4e %.4e",
+                                                            m_psfSignalPowerEstimates[0], m_psfSignalPowerEstimates[1], m_psfSignalPowerEstimates[2] ) )
+                           << FITSHeaderKeyword( "HISTORY", IsoString(), IsoString().Format( "Demosaic.psfFluxEstimates: %.4e %.4e %.4e",
+                                                            m_psfFluxEstimates[0], m_psfFluxEstimates[1], m_psfFluxEstimates[2] ) )
+                           << FITSHeaderKeyword( "HISTORY", IsoString(), IsoString().Format( "Demosaic.psfFluxPowerEstimates: %.4e %.4e %.4e",
+                                                            m_psfFluxPowerEstimates[0], m_psfFluxPowerEstimates[1], m_psfFluxPowerEstimates[2] ) )
                            << FITSHeaderKeyword( "HISTORY", IsoString(), IsoString().Format( "Demosaic.psfCounts: %d %d %d",
                                                             m_psfCounts[0], m_psfCounts[1], m_psfCounts[2] ) )
                            << FITSHeaderKeyword( "HISTORY", IsoString(), "Demosaic.psfType: "
@@ -2720,8 +2736,14 @@ private:
                                                     IsoString().Format( "%.4e", m_psfSignalEstimates[i] ),
                                                     IsoString().Format( "PSF mean signal estimate, channel #%d", i ) )
                               << FITSHeaderKeyword( IsoString().Format( "PSFSGP%02d", i ),
-                                                    IsoString().Format( "%.4e", m_psfPowerEstimates[i] ),
+                                                    IsoString().Format( "%.4e", m_psfSignalPowerEstimates[i] ),
                                                     IsoString().Format( "PSF mean signal power estimate, channel #%d", i ) )
+                              << FITSHeaderKeyword( IsoString().Format( "PSFFLX%02d", i ),
+                                                    IsoString().Format( "%.4e", m_psfFluxEstimates[i] ),
+                                                    IsoString().Format( "PSF mean flux estimate, channel #%d", i ) )
+                              << FITSHeaderKeyword( IsoString().Format( "PSFFLP%02d", i ),
+                                                    IsoString().Format( "%.4e", m_psfFluxPowerEstimates[i] ),
+                                                    IsoString().Format( "PSF mean flux power estimate, channel #%d", i ) )
                               << FITSHeaderKeyword( IsoString().Format( "PSFSGN%02d", i ),
                                                     IsoString().Format( "%d", m_psfCounts[i] ),
                                                     IsoString().Format( "Number of evaluated PSF fits, channel #%d", i ) );
@@ -2816,8 +2838,12 @@ private:
                   keywordsChn << FITSHeaderKeyword( "HISTORY", IsoString(), "PSF signal evaluation with " + Module->ReadableVersion() )
                               << FITSHeaderKeyword( "HISTORY", IsoString(), IsoString().Format( "Demosaic.psfSignalEstimates: %.4e",
                                                                                                 m_psfSignalEstimates[i] ) )
-                              << FITSHeaderKeyword( "HISTORY", IsoString(), IsoString().Format( "Demosaic.psfPowerEstimates: %.4e",
-                                                                                                m_psfPowerEstimates[i] ) )
+                              << FITSHeaderKeyword( "HISTORY", IsoString(), IsoString().Format( "Demosaic.psfSignalPowerEstimates: %.4e",
+                                                                                                m_psfSignalPowerEstimates[i] ) )
+                              << FITSHeaderKeyword( "HISTORY", IsoString(), IsoString().Format( "Demosaic.psfFluxEstimates: %.4e",
+                                                                                                m_psfFluxEstimates[i] ) )
+                              << FITSHeaderKeyword( "HISTORY", IsoString(), IsoString().Format( "Demosaic.psfFluxPowerEstimates: %.4e",
+                                                                                                m_psfFluxPowerEstimates[i] ) )
                               << FITSHeaderKeyword( "HISTORY", IsoString(), IsoString().Format( "Demosaic.psfCounts: %d",
                                                                                                 m_psfCounts[i] ) )
                               << FITSHeaderKeyword( "HISTORY", IsoString(), "Demosaic.psfType: "
@@ -2826,8 +2852,14 @@ private:
                                                     IsoString().Format( "%.4e", m_psfSignalEstimates[i] ),
                                                     IsoString().Format( "PSF mean signal estimate, channel #%d", i ) )
                               << FITSHeaderKeyword( IsoString().Format( "PSFSGP%02d", i ),
-                                                    IsoString().Format( "%.4e", m_psfPowerEstimates[i] ),
+                                                    IsoString().Format( "%.4e", m_psfSignalPowerEstimates[i] ),
                                                     IsoString().Format( "PSF mean signal power estimate, channel #%d", i ) )
+                               << FITSHeaderKeyword( IsoString().Format( "PSFFLX%02d", i ),
+                                                    IsoString().Format( "%.4e", m_psfFluxEstimates[i] ),
+                                                    IsoString().Format( "PSF mean flux estimate, channel #%d", i ) )
+                              << FITSHeaderKeyword( IsoString().Format( "PSFFLP%02d", i ),
+                                                    IsoString().Format( "%.4e", m_psfFluxPowerEstimates[i] ),
+                                                    IsoString().Format( "PSF mean flux power estimate, channel #%d", i ) )
                               << FITSHeaderKeyword( IsoString().Format( "PSFSGN%02d", i ),
                                                     IsoString().Format( "%d", m_psfCounts[i] ),
                                                     IsoString().Format( "Number of evaluated PSF fits, channel #%d", i ) )
@@ -2920,7 +2952,9 @@ bool DebayerInstance::ExecuteOn( View& view )
    o_imageId.Clear();
    o_channelIds = StringList( 3 );
    o_psfSignalEstimates = Vector( 0.0, 3 );
-   o_psfPowerEstimates = Vector( 0.0, 3 );
+   o_psfSignalPowerEstimates = Vector( 0.0, 3 );
+   o_psfFluxEstimates = Vector( 0.0, 3 );
+   o_psfFluxPowerEstimates = Vector( 0.0, 3 );
    o_psfCounts = IVector( 0, 3 );
    o_noiseEstimates = Vector( 0.0, 3 );
    o_noiseFractions = Vector( 0.0, 3 );
@@ -3001,7 +3035,8 @@ bool DebayerInstance::ExecuteOn( View& view )
 
    if ( p_evaluateNoise || p_evaluateSignal )
    {
-      EvaluateSignalAndNoise( o_psfSignalEstimates, o_psfPowerEstimates, o_psfCounts,
+      EvaluateSignalAndNoise( o_psfSignalEstimates, o_psfSignalPowerEstimates,
+                              o_psfFluxEstimates, o_psfFluxPowerEstimates, o_psfCounts,
                               o_noiseEstimates, o_noiseFractions, o_noiseScaleLow, o_noiseScaleHigh, o_noiseAlgorithms,
                               source, patternId );
 
@@ -3009,8 +3044,12 @@ bool DebayerInstance::ExecuteOn( View& view )
          keywords << FITSHeaderKeyword( "HISTORY", IsoString(), "PSF signal evaluation with " + Module->ReadableVersion() )
                   << FITSHeaderKeyword( "HISTORY", IsoString(), IsoString().Format( "Demosaic.psfSignalEstimates: %.4e %.4e %.4e",
                                                       o_psfSignalEstimates[0], o_psfSignalEstimates[1], o_psfSignalEstimates[2] ) )
-                  << FITSHeaderKeyword( "HISTORY", IsoString(), IsoString().Format( "Demosaic.psfPowerEstimates: %.4e %.4e %.4e",
-                                                      o_psfPowerEstimates[0], o_psfPowerEstimates[1], o_psfPowerEstimates[2] ) )
+                  << FITSHeaderKeyword( "HISTORY", IsoString(), IsoString().Format( "Demosaic.psfSignalPowerEstimates: %.4e %.4e %.4e",
+                                                      o_psfSignalPowerEstimates[0], o_psfSignalPowerEstimates[1], o_psfSignalPowerEstimates[2] ) )
+                  << FITSHeaderKeyword( "HISTORY", IsoString(), IsoString().Format( "Demosaic.psfFluxEstimates: %.4e %.4e %.4e",
+                                                      o_psfFluxEstimates[0], o_psfFluxEstimates[1], o_psfFluxEstimates[2] ) )
+                  << FITSHeaderKeyword( "HISTORY", IsoString(), IsoString().Format( "Demosaic.psfFluxPowerEstimates: %.4e %.4e %.4e",
+                                                      o_psfFluxPowerEstimates[0], o_psfFluxPowerEstimates[1], o_psfFluxPowerEstimates[2] ) )
                   << FITSHeaderKeyword( "HISTORY", IsoString(), IsoString().Format( "Demosaic.psfCounts: %d %d %d",
                                                       o_psfCounts[0], o_psfCounts[1], o_psfCounts[2] ) )
                   << FITSHeaderKeyword( "HISTORY", IsoString(), "Demosaic.psfType: "
@@ -3054,8 +3093,14 @@ bool DebayerInstance::ExecuteOn( View& view )
                                               IsoString().Format( "%.4e", o_psfSignalEstimates[i] ),
                                               IsoString().Format( "PSF mean signal estimate, channel #%d", i ) )
                         << FITSHeaderKeyword( IsoString().Format( "PSFSGP%02d", i ),
-                                              IsoString().Format( "%.4e", o_psfPowerEstimates[i] ),
+                                              IsoString().Format( "%.4e", o_psfSignalPowerEstimates[i] ),
                                               IsoString().Format( "PSF mean signal power estimate, channel #%d", i ) )
+                        << FITSHeaderKeyword( IsoString().Format( "PSFFLX%02d", i ),
+                                              IsoString().Format( "%.4e", o_psfFluxEstimates[i] ),
+                                              IsoString().Format( "PSF mean flux estimate, channel #%d", i ) )
+                        << FITSHeaderKeyword( IsoString().Format( "PSFFLP%02d", i ),
+                                              IsoString().Format( "%.4e", o_psfFluxPowerEstimates[i] ),
+                                              IsoString().Format( "PSF mean flux power estimate, channel #%d", i ) )
                         << FITSHeaderKeyword( IsoString().Format( "PSFSGN%02d", i ),
                                               IsoString().Format( "%d", o_psfCounts[i] ),
                                               IsoString().Format( "Number of evaluated PSF fits, channel #%d", i ) )
@@ -3119,8 +3164,14 @@ bool DebayerInstance::ExecuteOn( View& view )
                                               IsoString().Format( "%.4e", o_psfSignalEstimates[i] ),
                                               IsoString().Format( "PSF mean signal estimate, channel #%d", i ) )
                         << FITSHeaderKeyword( IsoString().Format( "PSFSGP%02d", i ),
-                                              IsoString().Format( "%.4e", o_psfPowerEstimates[i] ),
+                                              IsoString().Format( "%.4e", o_psfSignalPowerEstimates[i] ),
                                               IsoString().Format( "PSF mean signal power estimate, channel #%d", i ) )
+                        << FITSHeaderKeyword( IsoString().Format( "PSFFLX%02d", i ),
+                                              IsoString().Format( "%.4e", o_psfFluxEstimates[i] ),
+                                              IsoString().Format( "PSF mean flux estimate, channel #%d", i ) )
+                        << FITSHeaderKeyword( IsoString().Format( "PSFFLP%02d", i ),
+                                              IsoString().Format( "%.4e", o_psfFluxPowerEstimates[i] ),
+                                              IsoString().Format( "PSF mean flux power estimate, channel #%d", i ) )
                         << FITSHeaderKeyword( IsoString().Format( "PSFSGN%02d", i ),
                                               IsoString().Format( "%d", o_psfCounts[i] ),
                                               IsoString().Format( "Number of evaluated PSF fits, channel #%d", i ) )
@@ -3862,7 +3913,8 @@ FMatrix DebayerInstance::sRGBConversionMatrixFromTargetProperty( const Variant& 
 
 // ----------------------------------------------------------------------------
 
-void DebayerInstance::EvaluateSignalAndNoise( Vector& psfSignalEstimates, Vector& psfPowerEstimates, IVector& psfCounts,
+void DebayerInstance::EvaluateSignalAndNoise( Vector& psfSignalEstimates, Vector& psfSignalPowerEstimates,
+                                              Vector& psfFluxEstimates, Vector& psfFluxPowerEstimates, IVector& psfCounts,
                                               Vector& noiseEstimates, Vector& noiseFractions,
                                               Vector& noiseScaleLow, Vector& noiseScaleHigh, StringList& noiseAlgorithms,
                                               const ImageVariant& image, const IsoString& cfaPattern ) const
@@ -3887,7 +3939,9 @@ void DebayerInstance::EvaluateSignalAndNoise( Vector& psfSignalEstimates, Vector
       for ( int i = 0; i < 3; ++i )
       {
          psfSignalEstimates[i] = threads[i].psfSignalEstimate;
-         psfPowerEstimates[i] = threads[i].psfPowerEstimate;
+         psfSignalPowerEstimates[i] = threads[i].psfSignalPowerEstimate;
+         psfFluxEstimates[i] = threads[i].psfFluxEstimate;
+         psfFluxPowerEstimates[i] = threads[i].psfFluxPowerEstimate;
          psfCounts[i] = threads[i].psfCount;
          noiseEstimates[i] = threads[i].noiseEstimate;
          noiseFractions[i] = threads[i].noiseFraction;
@@ -3905,7 +3959,9 @@ void DebayerInstance::EvaluateSignalAndNoise( Vector& psfSignalEstimates, Vector
          SignalAndNoiseEvaluationThread thread( image, i, *this, cfaPattern, 1/*numberOfSubthreads*/ );
          thread.Run();
          psfSignalEstimates[i] = thread.psfSignalEstimate;
-         psfPowerEstimates[i] = thread.psfPowerEstimate;
+         psfSignalPowerEstimates[i] = thread.psfSignalPowerEstimate;
+         psfFluxEstimates[i] = thread.psfFluxEstimate;
+         psfFluxPowerEstimates[i] = thread.psfFluxPowerEstimate;
          psfCounts[i] = thread.psfCount;
          noiseEstimates[i] = thread.noiseEstimate;
          noiseFractions[i] = thread.noiseFraction;
@@ -3925,8 +3981,10 @@ void DebayerInstance::EvaluateSignalAndNoise( Vector& psfSignalEstimates, Vector
       console.WriteLn( "<end><cbr>PSF signal estimates:" );
       for ( int i = 0; i < 3; ++i )
          if ( psfCounts[i] > 0 )
-            console.WriteLn( String().Format( "ch %d : S = %.4e, S2 = %.4e, %d PSF fits",
-                                              i, psfSignalEstimates[i], psfPowerEstimates[i], psfCounts[i] ) );
+            console.WriteLn( String().Format( "ch %d : S = %.4e, S2 = %.4e, F = %.4e, F2 = %.4e, %d PSF fits",
+                                              i,
+                                              psfSignalEstimates[i], psfSignalPowerEstimates[i],
+                                              psfFluxEstimates[i], psfFluxPowerEstimates[i], psfCounts[i] ) );
          else
             console.WarningLn( String().Format( "** Warning: No valid PSF signal samples (channel %d).", i ) );
    }
@@ -4037,12 +4095,26 @@ void* DebayerInstance::LockParameter( const MetaParameter* p, size_type tableRow
    if ( p == TheDebayerPSFSignalEstimateBParameter )
       return o_psfSignalEstimates.At( 2 );
 
-   if ( p == TheDebayerPSFPowerEstimateRParameter )
-      return o_psfPowerEstimates.At( 0 );
-   if ( p == TheDebayerPSFPowerEstimateGParameter )
-      return o_psfPowerEstimates.At( 1 );
-   if ( p == TheDebayerPSFPowerEstimateBParameter )
-      return o_psfPowerEstimates.At( 2 );
+   if ( p == TheDebayerPSFSignalPowerEstimateRParameter )
+      return o_psfSignalPowerEstimates.At( 0 );
+   if ( p == TheDebayerPSFSignalPowerEstimateGParameter )
+      return o_psfSignalPowerEstimates.At( 1 );
+   if ( p == TheDebayerPSFSignalPowerEstimateBParameter )
+      return o_psfSignalPowerEstimates.At( 2 );
+
+   if ( p == TheDebayerPSFFluxEstimateRParameter )
+      return o_psfFluxEstimates.At( 0 );
+   if ( p == TheDebayerPSFFluxEstimateGParameter )
+      return o_psfFluxEstimates.At( 1 );
+   if ( p == TheDebayerPSFFluxEstimateBParameter )
+      return o_psfFluxEstimates.At( 2 );
+
+   if ( p == TheDebayerPSFFluxPowerEstimateRParameter )
+      return o_psfFluxPowerEstimates.At( 0 );
+   if ( p == TheDebayerPSFFluxPowerEstimateGParameter )
+      return o_psfFluxPowerEstimates.At( 1 );
+   if ( p == TheDebayerPSFFluxPowerEstimateBParameter )
+      return o_psfFluxPowerEstimates.At( 2 );
 
    if ( p == TheDebayerPSFCountRParameter )
       return o_psfCounts.At( 0 );
@@ -4103,12 +4175,26 @@ void* DebayerInstance::LockParameter( const MetaParameter* p, size_type tableRow
    if ( p == TheDebayerOutputFilePSFSignalEstimateBParameter )
       return o_outputFileData[tableRow].psfSignalEstimates.At( 2 );
 
-   if ( p == TheDebayerOutputFilePSFPowerEstimateRParameter )
-      return o_outputFileData[tableRow].psfPowerEstimates.At( 0 );
-   if ( p == TheDebayerOutputFilePSFPowerEstimateGParameter )
-      return o_outputFileData[tableRow].psfPowerEstimates.At( 1 );
-   if ( p == TheDebayerOutputFilePSFPowerEstimateBParameter )
-      return o_outputFileData[tableRow].psfPowerEstimates.At( 2 );
+   if ( p == TheDebayerOutputFilePSFSignalPowerEstimateRParameter )
+      return o_outputFileData[tableRow].psfSignalPowerEstimates.At( 0 );
+   if ( p == TheDebayerOutputFilePSFSignalPowerEstimateGParameter )
+      return o_outputFileData[tableRow].psfSignalPowerEstimates.At( 1 );
+   if ( p == TheDebayerOutputFilePSFSignalPowerEstimateBParameter )
+      return o_outputFileData[tableRow].psfSignalPowerEstimates.At( 2 );
+
+   if ( p == TheDebayerOutputFilePSFFluxEstimateRParameter )
+      return o_outputFileData[tableRow].psfFluxEstimates.At( 0 );
+   if ( p == TheDebayerOutputFilePSFFluxEstimateGParameter )
+      return o_outputFileData[tableRow].psfFluxEstimates.At( 1 );
+   if ( p == TheDebayerOutputFilePSFFluxEstimateBParameter )
+      return o_outputFileData[tableRow].psfFluxEstimates.At( 2 );
+
+   if ( p == TheDebayerOutputFilePSFFluxPowerEstimateRParameter )
+      return o_outputFileData[tableRow].psfFluxPowerEstimates.At( 0 );
+   if ( p == TheDebayerOutputFilePSFFluxPowerEstimateGParameter )
+      return o_outputFileData[tableRow].psfFluxPowerEstimates.At( 1 );
+   if ( p == TheDebayerOutputFilePSFFluxPowerEstimateBParameter )
+      return o_outputFileData[tableRow].psfFluxPowerEstimates.At( 2 );
 
    if ( p == TheDebayerOutputFilePSFCountRParameter )
       return o_outputFileData[tableRow].psfCounts.At( 0 );

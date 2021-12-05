@@ -69,7 +69,9 @@ public:
    double    eccentricity;
    double    eccentricityMeanDev;
    double    psfSignalWeight;
-   double    psfPowerWeight;
+   double    psfSignalPowerWeight;
+   double    psfFlux;
+   double    psfFluxPower;
    double    snrWeight;
    double    median;
    double    medianMeanDev;
@@ -114,12 +116,12 @@ public:
 
    int Version() const override
    {
-      return 7;
+      return 9;
    }
 
    int MinSupportedVersion() const override
    {
-      return 7;
+      return 9;
    }
 
 private:

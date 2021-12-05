@@ -154,7 +154,9 @@ private:
    String     o_imageId;
    StringList o_channelIds = StringList( size_type( 3 ) );
    Vector     o_psfSignalEstimates = Vector( 0.0, 3 );
-   Vector     o_psfPowerEstimates = Vector( 0.0, 3 );
+   Vector     o_psfSignalPowerEstimates = Vector( 0.0, 3 );
+   Vector     o_psfFluxEstimates = Vector( 0.0, 3 );
+   Vector     o_psfFluxPowerEstimates = Vector( 0.0, 3 );
    IVector    o_psfCounts = IVector( 0, 3 );
    Vector     o_noiseEstimates = Vector( 0.0, 3 );
    Vector     o_noiseFractions = Vector( 0.0, 3 );
@@ -168,7 +170,9 @@ private:
       String     filePath;
       StringList channelFilePaths = StringList( size_type( 3 ) );
       Vector     psfSignalEstimates = Vector( 0.0, 3 );
-      Vector     psfPowerEstimates = Vector( 0.0, 3 );
+      Vector     psfSignalPowerEstimates = Vector( 0.0, 3 );
+      Vector     psfFluxEstimates = Vector( 0.0, 3 );
+      Vector     psfFluxPowerEstimates = Vector( 0.0, 3 );
       IVector    psfCounts = IVector( 0, 3 );
       Vector     noiseEstimates = Vector( 0.0, 3 );
       Vector     noiseFractions = Vector( 0.0, 3 );
@@ -199,7 +203,8 @@ private:
    static FMatrix sRGBConversionMatrixFromTarget( FileFormatInstance& );
    static FMatrix sRGBConversionMatrixFromTargetProperty( const Variant& );
 
-   void EvaluateSignalAndNoise( Vector& psfSignalEstimates, Vector& psfPowerEstimates, IVector& psfCounts,
+   void EvaluateSignalAndNoise( Vector& psfSignalEstimates, Vector& psfSignalPowerEstimates,
+                                Vector& psfFluxEstimates, Vector& psfFluxPowerEstimates, IVector& psfCounts,
                                 Vector& noiseEstimates, Vector& noiseFractions,
                                 Vector& noiseScaleLow, Vector& noiseScaleHigh, StringList& noiseAlgorithms,
                                 const ImageVariant&, const IsoString& cfaPattern ) const;

@@ -878,15 +878,18 @@ public:
           EccentricityMeanDev,
           StarResidualMeanDev,
           PSFSignalWeight,
-          PSFPowerWeight,
+          PSFSignalPowerWeight,
           Azimuth,
           Altitude,
+          PSFFlux,
+          PSFFluxPower,
           NumberOfItems,
           Default = Index };
 
    SSSortingProperty( MetaProcess* );
 
    IsoString Id() const override;
+   IsoString ElementAliases() const override;
    size_type NumberOfElements() const override;
    IsoString ElementId( size_type ) const override;
    int ElementValue( size_type ) const override;
@@ -917,15 +920,18 @@ public:
           EccentricityMeanDev,
           StarResidualMeanDev,
           PSFSignalWeight,
-          PSFPowerWeight,
+          PSFSignalPowerWeight,
           Azimuth,
           Altitude,
+          PSFFlux,
+          PSFFluxPower,
           NumberOfItems,
           Default = PSFSignalWeight };
 
    SSGraphProperty( MetaProcess* );
 
    IsoString Id() const override;
+   IsoString ElementAliases() const override;
    size_type NumberOfElements() const override;
    IsoString ElementId( size_type ) const override;
    int ElementValue( size_type ) const override;
@@ -1148,11 +1154,29 @@ extern SSMeasurementPSFSignalWeight* TheSSMeasurementPSFSignalWeightParameter;
 
 // ----------------------------------------------------------------------------
 
-class SSMeasurementPSFPowerWeight : public MetaDouble
+class SSMeasurementPSFSignalPowerWeight : public MetaDouble
 {
 public:
 
-   SSMeasurementPSFPowerWeight( MetaTable* );
+   SSMeasurementPSFSignalPowerWeight( MetaTable* );
+
+   IsoString Id() const override;
+   IsoString Aliases() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   double DefaultValue() const override;
+   bool IsReadOnly() const override;
+};
+
+extern SSMeasurementPSFSignalPowerWeight* TheSSMeasurementPSFSignalPowerWeightParameter;
+
+// ----------------------------------------------------------------------------
+
+class SSMeasurementPSFFlux : public MetaDouble
+{
+public:
+
+   SSMeasurementPSFFlux( MetaTable* );
 
    IsoString Id() const override;
    int Precision() const override;
@@ -1161,7 +1185,24 @@ public:
    bool IsReadOnly() const override;
 };
 
-extern SSMeasurementPSFPowerWeight* TheSSMeasurementPSFPowerWeightParameter;
+extern SSMeasurementPSFFlux* TheSSMeasurementPSFFluxParameter;
+
+// ----------------------------------------------------------------------------
+
+class SSMeasurementPSFFluxPower : public MetaDouble
+{
+public:
+
+   SSMeasurementPSFFluxPower( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   double DefaultValue() const override;
+   bool IsReadOnly() const override;
+};
+
+extern SSMeasurementPSFFluxPower* TheSSMeasurementPSFFluxPowerParameter;
 
 // ----------------------------------------------------------------------------
 

@@ -933,13 +933,13 @@ bool ImageIntegrationInstance::ExecuteGlobal()
                console.Write( String().Format( " %.4e", e*e ) );
             }
 
-            console.Write( "<br>PSF signal weights     :" );
+            console.Write( "<br>PSF signal estimates   :" );
             for ( int c = 0; c < result->NumberOfNominalChannels(); ++c )
             {
                double e = psfSignal[c].mean/noise[c];
                console.Write( String().Format( " %.4e", e ) );
             }
-            console.Write( "<br>PSF power weights      :" );
+            console.Write( "<br>PSF signal power       :" );
             for ( int c = 0; c < result->NumberOfNominalChannels(); ++c )
             {
                double e = psfSignal[c].power/noise[c]/noise[c];

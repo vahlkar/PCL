@@ -327,22 +327,22 @@ IsoString IIWeightMode::ElementId( size_type i ) const
 {
    switch ( i )
    {
-   case DontCare:           return "DontCare";
-   case ExposureTimeWeight: return "ExposureTime";
+   case DontCare:             return "DontCare";
+   case ExposureTimeWeight:   return "ExposureTime";
+   case SNREstimate:          return "SNREstimate";
+   case SignalWeight:         return "SignalWeight";
+   case MedianWeight:         return "MedianWeight";
+   case AverageWeight:        return "AverageWeight";
+   case KeywordWeight:        return "KeywordWeight";
    default:
-   case SNREstimate:        return "SNREstimate";
-   case SignalWeight:       return "SignalWeight";
-   case MedianWeight:       return "MedianWeight";
-   case AverageWeight:      return "AverageWeight";
-   case KeywordWeight:      return "KeywordWeight";
-   case PSFSignalWeight:    return "PSFSignalWeight";
-   case PSFPowerWeight:     return "PSFPowerWeight";
+   case PSFSignalWeight:      return "PSFSignalWeight";
+   case PSFSignalPowerWeight: return "PSFSignalPowerWeight";
    }
 }
 
 IsoString IIWeightMode::ElementAliases() const
 {
-   return "NoiseEvaluation=SNREstimate";
+   return "NoiseEvaluation=SNREstimate,PSFPowerWeight=PSFSignalPowerWeight";
 }
 
 int IIWeightMode::ElementValue( size_type i ) const
@@ -359,16 +359,16 @@ String IIWeightMode::ElementLabel( int index )
 {
    switch ( index )
    {
-   case DontCare:           return "Don't care (all weights = 1)";
-   case ExposureTimeWeight: return "Exposure time";
-   case SNREstimate:        return "SNR estimate";
-   case SignalWeight:       return "Average signal strength";
-   case MedianWeight:       return "Median value";
-   case AverageWeight:      return "Average value";
-   case KeywordWeight:      return "FITS keyword";
+   case DontCare:             return "Don't care (all weights = 1)";
+   case ExposureTimeWeight:   return "Exposure time";
+   case SNREstimate:          return "SNR estimate";
+   case SignalWeight:         return "Average signal strength";
+   case MedianWeight:         return "Median value";
+   case AverageWeight:        return "Average value";
+   case KeywordWeight:        return "FITS keyword";
    default:
-   case PSFSignalWeight:    return "PSF signal";
-   case PSFPowerWeight:     return "PSF power";
+   case PSFSignalWeight:      return "PSF signal";
+   case PSFSignalPowerWeight: return "PSF signal power";
    }
 }
 

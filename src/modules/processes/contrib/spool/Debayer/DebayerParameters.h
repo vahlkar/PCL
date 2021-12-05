@@ -764,43 +764,62 @@ extern DebayerPSFSignalEstimateB* TheDebayerPSFSignalEstimateBParameter;
 
 // ----------------------------------------------------------------------------
 
-class DebayerPSFPowerEstimateR : public MetaDouble
+class DebayerPSFSignalPowerEstimateR : public MetaDouble
 {
 public:
 
-   DebayerPSFPowerEstimateR( MetaProcess* );
+   DebayerPSFSignalPowerEstimateR( MetaProcess* );
 
    IsoString Id() const override;
+   IsoString Aliases() const override;
    int Precision() const override;
    bool ScientificNotation() const override;
    bool IsReadOnly() const override;
 };
 
-extern DebayerPSFPowerEstimateR* TheDebayerPSFPowerEstimateRParameter;
+extern DebayerPSFSignalPowerEstimateR* TheDebayerPSFSignalPowerEstimateRParameter;
 
 // ----------------------------------------------------------------------------
 
-class DebayerPSFPowerEstimateG : public MetaDouble
+class DebayerPSFSignalPowerEstimateG : public MetaDouble
 {
 public:
 
-   DebayerPSFPowerEstimateG( MetaProcess* );
+   DebayerPSFSignalPowerEstimateG( MetaProcess* );
 
    IsoString Id() const override;
+   IsoString Aliases() const override;
    int Precision() const override;
    bool ScientificNotation() const override;
    bool IsReadOnly() const override;
 };
 
-extern DebayerPSFPowerEstimateG* TheDebayerPSFPowerEstimateGParameter;
+extern DebayerPSFSignalPowerEstimateG* TheDebayerPSFSignalPowerEstimateGParameter;
 
 // ----------------------------------------------------------------------------
 
-class DebayerPSFPowerEstimateB : public MetaDouble
+class DebayerPSFSignalPowerEstimateB : public MetaDouble
 {
 public:
 
-   DebayerPSFPowerEstimateB( MetaProcess* );
+   DebayerPSFSignalPowerEstimateB( MetaProcess* );
+
+   IsoString Id() const override;
+   IsoString Aliases() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerPSFSignalPowerEstimateB* TheDebayerPSFSignalPowerEstimateBParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerPSFFluxEstimateR : public MetaDouble
+{
+public:
+
+   DebayerPSFFluxEstimateR( MetaProcess* );
 
    IsoString Id() const override;
    int Precision() const override;
@@ -808,7 +827,87 @@ public:
    bool IsReadOnly() const override;
 };
 
-extern DebayerPSFPowerEstimateB* TheDebayerPSFPowerEstimateBParameter;
+extern DebayerPSFFluxEstimateR* TheDebayerPSFFluxEstimateRParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerPSFFluxEstimateG : public MetaDouble
+{
+public:
+
+   DebayerPSFFluxEstimateG( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerPSFFluxEstimateG* TheDebayerPSFFluxEstimateGParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerPSFFluxEstimateB : public MetaDouble
+{
+public:
+
+   DebayerPSFFluxEstimateB( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerPSFFluxEstimateB* TheDebayerPSFFluxEstimateBParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerPSFFluxPowerEstimateR : public MetaDouble
+{
+public:
+
+   DebayerPSFFluxPowerEstimateR( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerPSFFluxPowerEstimateR* TheDebayerPSFFluxPowerEstimateRParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerPSFFluxPowerEstimateG : public MetaDouble
+{
+public:
+
+   DebayerPSFFluxPowerEstimateG( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerPSFFluxPowerEstimateG* TheDebayerPSFFluxPowerEstimateGParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerPSFFluxPowerEstimateB : public MetaDouble
+{
+public:
+
+   DebayerPSFFluxPowerEstimateB( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerPSFFluxPowerEstimateB* TheDebayerPSFFluxPowerEstimateBParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -1204,11 +1303,11 @@ extern DebayerOutputFilePSFSignalEstimateB* TheDebayerOutputFilePSFSignalEstimat
 
 // ----------------------------------------------------------------------------
 
-class DebayerOutputFilePSFPowerEstimateR : public MetaDouble
+class DebayerOutputFilePSFSignalPowerEstimateR : public MetaDouble
 {
 public:
 
-   DebayerOutputFilePSFPowerEstimateR( MetaTable* );
+   DebayerOutputFilePSFSignalPowerEstimateR( MetaTable* );
 
    IsoString Id() const override;
    int Precision() const override;
@@ -1216,15 +1315,15 @@ public:
    bool IsReadOnly() const override;
 };
 
-extern DebayerOutputFilePSFPowerEstimateR* TheDebayerOutputFilePSFPowerEstimateRParameter;
+extern DebayerOutputFilePSFSignalPowerEstimateR* TheDebayerOutputFilePSFSignalPowerEstimateRParameter;
 
 // ----------------------------------------------------------------------------
 
-class DebayerOutputFilePSFPowerEstimateG : public MetaDouble
+class DebayerOutputFilePSFSignalPowerEstimateG : public MetaDouble
 {
 public:
 
-   DebayerOutputFilePSFPowerEstimateG( MetaTable* );
+   DebayerOutputFilePSFSignalPowerEstimateG( MetaTable* );
 
    IsoString Id() const override;
    int Precision() const override;
@@ -1232,15 +1331,15 @@ public:
    bool IsReadOnly() const override;
 };
 
-extern DebayerOutputFilePSFPowerEstimateG* TheDebayerOutputFilePSFPowerEstimateGParameter;
+extern DebayerOutputFilePSFSignalPowerEstimateG* TheDebayerOutputFilePSFSignalPowerEstimateGParameter;
 
 // ----------------------------------------------------------------------------
 
-class DebayerOutputFilePSFPowerEstimateB : public MetaDouble
+class DebayerOutputFilePSFSignalPowerEstimateB : public MetaDouble
 {
 public:
 
-   DebayerOutputFilePSFPowerEstimateB( MetaTable* );
+   DebayerOutputFilePSFSignalPowerEstimateB( MetaTable* );
 
    IsoString Id() const override;
    int Precision() const override;
@@ -1248,7 +1347,103 @@ public:
    bool IsReadOnly() const override;
 };
 
-extern DebayerOutputFilePSFPowerEstimateB* TheDebayerOutputFilePSFPowerEstimateBParameter;
+extern DebayerOutputFilePSFSignalPowerEstimateB* TheDebayerOutputFilePSFSignalPowerEstimateBParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerOutputFilePSFFluxEstimateR : public MetaDouble
+{
+public:
+
+   DebayerOutputFilePSFFluxEstimateR( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerOutputFilePSFFluxEstimateR* TheDebayerOutputFilePSFFluxEstimateRParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerOutputFilePSFFluxEstimateG : public MetaDouble
+{
+public:
+
+   DebayerOutputFilePSFFluxEstimateG( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerOutputFilePSFFluxEstimateG* TheDebayerOutputFilePSFFluxEstimateGParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerOutputFilePSFFluxEstimateB : public MetaDouble
+{
+public:
+
+   DebayerOutputFilePSFFluxEstimateB( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerOutputFilePSFFluxEstimateB* TheDebayerOutputFilePSFFluxEstimateBParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerOutputFilePSFFluxPowerEstimateR : public MetaDouble
+{
+public:
+
+   DebayerOutputFilePSFFluxPowerEstimateR( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerOutputFilePSFFluxPowerEstimateR* TheDebayerOutputFilePSFFluxPowerEstimateRParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerOutputFilePSFFluxPowerEstimateG : public MetaDouble
+{
+public:
+
+   DebayerOutputFilePSFFluxPowerEstimateG( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerOutputFilePSFFluxPowerEstimateG* TheDebayerOutputFilePSFFluxPowerEstimateGParameter;
+
+// ----------------------------------------------------------------------------
+
+class DebayerOutputFilePSFFluxPowerEstimateB : public MetaDouble
+{
+public:
+
+   DebayerOutputFilePSFFluxPowerEstimateB( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DebayerOutputFilePSFFluxPowerEstimateB* TheDebayerOutputFilePSFFluxPowerEstimateBParameter;
 
 // ----------------------------------------------------------------------------
 

@@ -56,14 +56,14 @@
 #include "SubframeSelectorProcess.h"
 
 #define MODULE_VERSION_MAJOR     1
-#define MODULE_VERSION_MINOR     6
-#define MODULE_VERSION_REVISION  6
+#define MODULE_VERSION_MINOR     7
+#define MODULE_VERSION_REVISION  0
 #define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2021
-#define MODULE_RELEASE_MONTH     11
-#define MODULE_RELEASE_DAY       28
+#define MODULE_RELEASE_MONTH     12
+#define MODULE_RELEASE_DAY       4
 
 namespace pcl
 {
@@ -110,14 +110,14 @@ String SubframeSelectorModule::Company() const
 
 String SubframeSelectorModule::Author() const
 {
-   return "Cameron Leger";
+   return "Cameron Leger / Juan Conejero";
 }
 
 // ----------------------------------------------------------------------------
 
 String SubframeSelectorModule::Copyright() const
 {
-   return "Copyright (c) 2017-2021, Cameron Leger";
+   return "Copyright (c) 2017-2021, Cameron Leger / Juan Conejero";
 }
 
 // ----------------------------------------------------------------------------
