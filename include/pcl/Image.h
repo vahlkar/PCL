@@ -13373,6 +13373,92 @@ __madNextSide:
    }
 
    /*!
+    * Returns a vector of norms for a subset of pixel samples.
+    *
+    * \param maxDegree        Maximum degree &ge; 1 of the computed vector of
+    *          norms. The default value is 2, hence the L1 and L2 norms are
+    *          computed if this parameter is not specified.
+    *
+    * \param maxProcessors    If a value greater than zero is specified, it is
+    *          the maximum number of concurrent threads that this function can
+    *          execute. If zero or a negative value is specified, the current
+    *          thread limit for this image will be used instead (see
+    *          AbstractImage::SetMaxProcessors()). The default value is zero.
+    *
+    * For information on the rest of parameters of this member function, see
+    * the documentation for Fill().
+    *
+    * This function computes a series of image norms, up to \a maxDegree, in a
+    * single multithreaded operation for improved efficiency. The norms are
+    * returned as a vector. The first vector component is the L1 norm, which is
+    * the sum of all selected pixel sample values. The second vector component
+    * is the L2 norm, or the sum of squared pixel sample values, and so on.
+    *
+    * For the sake of performance, this function assumes that no negative
+    * values exist in the selected subset of pixel samples; otherwise, odd
+    * norms will provide meaningless results. All norms are returned expressed
+    * in the normalized range [0,1], irrespective of the sample data type of
+    * the image.
+    *
+    * This function implements a numerically stable summation algorithm to
+    * reduce roundoff errors to the machine's floating point precision.
+    *
+    * See the Norm() and SumOfSquares() member functions for more information
+    * and important implementation details.
+    *
+    * \note Increments the status monitoring object by the number of selected
+    * pixel samples.
+    */
+   Vector Norms( int maxDegree = 2, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1,
+                 int maxProcessors = 0 ) const
+   {
+      PCL_PRECONDITION( maxDegree > 0 )
+      maxDegree = pcl::Max( 1, maxDegree );
+
+      Rect r = rect;
+      if ( !ParseSelection( r, firstChannel, lastChannel ) )
+         return 0;
+
+      size_type N = size_type( r.Width() )*size_type( r.Height() )*(1 + lastChannel - firstChannel);
+      if ( m_status.IsInitializationEnabled() )
+         m_status.Initialize( "Computing norms", N );
+
+      Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors );
+      bool useAffinity = m_parallel && Thread::IsRootThread();
+      ReferenceArray<NormThread> threads;
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         threads.Add( new NormThread( *this, maxDegree, r, firstChannel, lastChannel, n, n + int( L[i] ) ) );
+      if ( threads.Length() > 1 )
+      {
+         int n = 0;
+         for ( NormThread& thread : threads )
+            thread.Start( ThreadPriority::DefaultMax, useAffinity ? n++ : -1 );
+         for ( NormThread& thread : threads )
+            thread.Wait();
+      }
+      else
+         threads[0].Run();
+
+      Vector R( 0.0, maxDegree );
+      Vector e( 0.0, maxDegree );
+      for ( const NormThread& thread : threads )
+         for ( int i = 0; i < maxDegree; ++i )
+         {
+            double y = thread.R[i] - e[i];
+            double t = R[i] + y;
+            e[i] = (t - R[i]) - y;
+            R[i] = t;
+         }
+      for ( int i = 0; i < maxDegree; ++i )
+         if ( 1 + R[i] == 1 ) // don't return insignificant nonzero values
+            R[i] = 0;
+
+      threads.Destroy();
+      m_status += N;
+      return R;
+   }
+
+   /*!
     * Returns a 64-bit non-cryptographic hash value computed for the specified
     * \a channel of this image.
     *
@@ -15825,6 +15911,53 @@ private:
                double v; P::FromSample( v, *f );
                this->SumStep( pcl::Abs( v ) );
             } );
+      }
+   };
+
+   // -------------------------------------------------------------------------
+
+   class NormThread : public RectThreadBase
+   {
+   public:
+
+      Vector R;
+      size_type n;
+
+      NormThread( const GenericImage& image, int degree, const Rect& rect, int ch1, int ch2, int firstRow, int endRow )
+         : RectThreadBase( image, rect, ch1, ch2, firstRow, endRow )
+         , R( degree )
+         , e( degree )
+      {
+      }
+
+      void Run() final
+      {
+         R = e = 0.0;
+         n = 0;
+         this->Execute( [=]( const sample* f )
+            {
+               double v; P::FromSample( v, *f );
+               for ( int i = 0;; )
+               {
+                  NormStep( i, v );
+                  if ( ++i == R.Length() )
+                     break;
+                  v *= v;
+               }
+               ++n;
+            } );
+      }
+
+   protected:
+
+      Vector e;
+
+      void NormStep( int i, double x ) noexcept
+      {
+         double y = x - e[i];
+         double t = R[i] + y;
+         e[i] = (t - R[i]) - y;
+         R[i] = t;
       }
    };
 

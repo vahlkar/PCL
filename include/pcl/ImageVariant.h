@@ -3883,6 +3883,27 @@ public:
 
    // -------------------------------------------------------------------------
 
+#define __NORMS( I ) \
+   result = static_cast<const pcl::I&>( **this ).Norms( maxDegree, rect, firstChannel, lastChannel, maxProcessors )
+
+   /*!
+    * Returns a vector of norms for a subset of pixel samples.
+    *
+    * This member function is a generalized wrapper for GenericImage::Norms()
+    */
+   Vector Norms( int maxDegree, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1,
+                 int maxProcessors = 0 ) const
+   {
+      Vector result;
+      if ( *this )
+         SOLVE_TEMPLATE( __NORMS )
+      return result;
+   }
+
+#undef __NORM
+
+   // -------------------------------------------------------------------------
+
 #define __NORMALIZE( I ) \
    static_cast<pcl::I&>( **this ).Normalize( lowerBound, upperBound, rect, firstChannel, lastChannel )
 
