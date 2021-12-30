@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// ColorManagementSetupInterface.cpp - Released 2021-11-25T11:45:24Z
+// ColorManagementSetupInterface.cpp - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -793,7 +793,7 @@ ColorManagementSetupInterface::GUIData::GUIData( ColorManagementSetupInterface& 
 
    GamutWarningColor_Control.SetScaledMinWidth( 30 );
    GamutWarningColor_Control.SetCursor( StdCursor::UpArrow );
-   GamutWarningColor_Control.SetToolTip(gamutWarningTip );
+   GamutWarningColor_Control.SetToolTip( gamutWarningTip );
    GamutWarningColor_Control.OnPaint( (Control::paint_event_handler)&ColorManagementSetupInterface::e_Paint, w );
    GamutWarningColor_Control.OnMouseRelease( (Control::mouse_button_event_handler)&ColorManagementSetupInterface::e_MouseRelease, w );
 
@@ -914,4 +914,4 @@ ColorManagementSetupInterface::GUIData::GUIData( ColorManagementSetupInterface& 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ColorManagementSetupInterface.cpp - Released 2021-11-25T11:45:24Z
+// EOF ColorManagementSetupInterface.cpp - Released 2021-12-29T20:37:28Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// Standard Debayer Process Module Version 1.10.1
+// Standard Debayer Process Module Version 1.10.2
 // ----------------------------------------------------------------------------
-// DebayerInstance.h - Released 2021-11-25T11:45:24Z
+// DebayerInstance.h - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -124,6 +124,7 @@ private:
    int32      p_minStructureSize;
    pcl_enum   p_psfType;
    float      p_psfRejectionLimit;
+   float      p_psfHighClippingPoint;
    int32      p_maxStars;
 
    // Format hints
@@ -226,4 +227,4 @@ private:
 #endif   // __DebayerInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF DebayerInstance.h - Released 2021-11-25T11:45:24Z
+// EOF DebayerInstance.h - Released 2021-12-29T20:37:28Z

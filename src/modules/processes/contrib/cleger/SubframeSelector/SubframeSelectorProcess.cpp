@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.6.5
+// Standard SubframeSelector Process Module Version 1.7.3
 // ----------------------------------------------------------------------------
-// SubframeSelectorProcess.cpp - Released 2021-11-25T11:45:24Z
+// SubframeSelectorProcess.cpp - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -123,6 +123,7 @@ SubframeSelectorProcess::SubframeSelectorProcess()
 
    new SSSortingProperty( this );
    new SSGraphProperty( this );
+   new SSAuxGraphProperty( this );
 
    new SSUseFileThreads( this );
    new SSFileThreadOverload( this );
@@ -231,4 +232,4 @@ ProcessImplementation* SubframeSelectorProcess::Clone( const ProcessImplementati
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorProcess.cpp - Released 2021-11-25T11:45:24Z
+// EOF SubframeSelectorProcess.cpp - Released 2021-12-29T20:37:28Z

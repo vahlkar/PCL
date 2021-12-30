@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// FilterLibrary.h - Released 2021-11-25T11:45:24Z
+// FilterLibrary.h - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -420,4 +420,4 @@ extern FilterLibrary TheFilterLibrary;
 #endif // __FilterLibrary_h
 
 // ----------------------------------------------------------------------------
-// EOF FilterLibrary.h - Released 2021-11-25T11:45:24Z
+// EOF FilterLibrary.h - Released 2021-12-29T20:37:28Z

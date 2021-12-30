@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.3.6
+// Standard ImageIntegration Process Module Version 1.4.3
 // ----------------------------------------------------------------------------
-// ImageIntegrationParameters.cpp - Released 2021-11-25T11:45:24Z
+// ImageIntegrationParameters.cpp - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -67,6 +67,7 @@ IICombination*                       TheIICombinationParameter = nullptr;
 IIWeightMode*                        TheIIWeightModeParameter = nullptr;
 IIWeightKeyword*                     TheIIWeightKeywordParameter = nullptr;
 IIWeightScale*                       TheIIWeightScaleParameter = nullptr;
+IICSVWeights*                        TheIICSVWeightsParameter = nullptr;
 IIAdaptiveGridSize*                  TheIIAdaptiveGridSizeParameter = nullptr;
 IIAdaptiveNoScale*                   TheIIAdaptiveNoScaleParameter = nullptr;
 IIIgnoreNoiseKeywords*               TheIIIgnoreNoiseKeywordsParameter = nullptr;
@@ -117,7 +118,7 @@ IIROIY0*                             TheIIROIY0Parameter = nullptr;
 IIROIX1*                             TheIIROIX1Parameter = nullptr;
 IIROIY1*                             TheIIROIY1Parameter = nullptr;
 IIUseCache*                          TheIIUseCacheParameter = nullptr;
-IIEvaluateNoise*                     TheIIEvaluateNoiseParameter = nullptr;
+IIEvaluateSNR*                       TheIIEvaluateSNRParameter = nullptr;
 IIMRSMinDataFraction*                TheIIMRSMinDataFractionParameter = nullptr;
 IISubtractPedestals*                 TheIISubtractPedestalsParameter = nullptr;
 IITruncateOnOutOfRange*              TheIITruncateOnOutOfRangeParameter = nullptr;
@@ -158,6 +159,21 @@ IIFinalScaleEstimateB*               TheIIFinalScaleEstimateBParameter = nullptr
 IIFinalLocationEstimateRK*           TheIIFinalLocationEstimateRKParameter = nullptr;
 IIFinalLocationEstimateG*            TheIIFinalLocationEstimateGParameter = nullptr;
 IIFinalLocationEstimateB*            TheIIFinalLocationEstimateBParameter = nullptr;
+IIFinalPSFSignalEstimateRK*          TheIIFinalPSFSignalEstimateRKParameter = nullptr;
+IIFinalPSFSignalEstimateG*           TheIIFinalPSFSignalEstimateGParameter = nullptr;
+IIFinalPSFSignalEstimateB*           TheIIFinalPSFSignalEstimateBParameter = nullptr;
+IIFinalPSFSignalPowerEstimateRK*     TheIIFinalPSFSignalPowerEstimateRKParameter = nullptr;
+IIFinalPSFSignalPowerEstimateG*      TheIIFinalPSFSignalPowerEstimateGParameter = nullptr;
+IIFinalPSFSignalPowerEstimateB*      TheIIFinalPSFSignalPowerEstimateBParameter = nullptr;
+IIFinalPSFFluxEstimateRK*            TheIIFinalPSFFluxEstimateRKParameter = nullptr;
+IIFinalPSFFluxEstimateG*             TheIIFinalPSFFluxEstimateGParameter = nullptr;
+IIFinalPSFFluxEstimateB*             TheIIFinalPSFFluxEstimateBParameter = nullptr;
+IIFinalPSFFluxPowerEstimateRK*       TheIIFinalPSFFluxPowerEstimateRKParameter = nullptr;
+IIFinalPSFFluxPowerEstimateG*        TheIIFinalPSFFluxPowerEstimateGParameter = nullptr;
+IIFinalPSFFluxPowerEstimateB*        TheIIFinalPSFFluxPowerEstimateBParameter = nullptr;
+IIFinalPSFSignalCountRK*             TheIIFinalPSFSignalCountRKParameter = nullptr;
+IIFinalPSFSignalCountG*              TheIIFinalPSFSignalCountGParameter = nullptr;
+IIFinalPSFSignalCountB*              TheIIFinalPSFSignalCountBParameter = nullptr;
 IIReferenceNoiseReductionRK*         TheIIReferenceNoiseReductionRKParameter = nullptr;
 IIReferenceNoiseReductionG*          TheIIReferenceNoiseReductionGParameter = nullptr;
 IIReferenceNoiseReductionB*          TheIIReferenceNoiseReductionBParameter = nullptr;
@@ -367,8 +383,8 @@ String IIWeightMode::ElementLabel( int index )
    case AverageWeight:        return "Average value";
    case KeywordWeight:        return "FITS keyword";
    default:
-   case PSFSignalWeight:      return "PSF signal";
-   case PSFSignalPowerWeight: return "PSF signal power";
+   case PSFSignalWeight:      return "PSF signal weight";
+   case PSFSignalPowerWeight: return "PSF signal power weight";
    }
 }
 
@@ -426,6 +442,18 @@ int IIWeightScale::ElementValue( size_type i ) const
 size_type IIWeightScale::DefaultValueIndex() const
 {
    return size_type( Default );
+}
+
+// ----------------------------------------------------------------------------
+
+IICSVWeights::IICSVWeights( MetaProcess* P ) : MetaString( P )
+{
+   TheIICSVWeightsParameter = this;
+}
+
+IsoString IICSVWeights::Id() const
+{
+   return "csvWeights";
 }
 
 // ----------------------------------------------------------------------------
@@ -1715,17 +1743,22 @@ bool IIUseCache::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-IIEvaluateNoise::IIEvaluateNoise( MetaProcess* P ) : MetaBoolean( P )
+IIEvaluateSNR::IIEvaluateSNR( MetaProcess* P ) : MetaBoolean( P )
 {
-   TheIIEvaluateNoiseParameter = this;
+   TheIIEvaluateSNRParameter = this;
 }
 
-IsoString IIEvaluateNoise::Id() const
+IsoString IIEvaluateSNR::Id() const
 {
-   return "evaluateNoise";
+   return "evaluateSNR";
 }
 
-bool IIEvaluateNoise::DefaultValue() const
+IsoString IIEvaluateSNR::Aliases() const
+{
+   return "evaluateNoise"; // compatibility with module versions < 1.4.2
+}
+
+bool IIEvaluateSNR::DefaultValue() const
 {
    return true;
 }
@@ -2460,7 +2493,7 @@ IsoString IIFinalScaleEstimateRK::Id() const
 
 int IIFinalScaleEstimateRK::Precision() const
 {
-   return 3;
+   return 4;
 }
 
 bool IIFinalScaleEstimateRK::ScientificNotation() const
@@ -2487,7 +2520,7 @@ IsoString IIFinalScaleEstimateG::Id() const
 
 int IIFinalScaleEstimateG::Precision() const
 {
-   return 3;
+   return 4;
 }
 
 bool IIFinalScaleEstimateG::ScientificNotation() const
@@ -2514,7 +2547,7 @@ IsoString IIFinalScaleEstimateB::Id() const
 
 int IIFinalScaleEstimateB::Precision() const
 {
-   return 3;
+   return 4;
 }
 
 bool IIFinalScaleEstimateB::ScientificNotation() const
@@ -2541,7 +2574,7 @@ IsoString IIFinalLocationEstimateRK::Id() const
 
 int IIFinalLocationEstimateRK::Precision() const
 {
-   return 3;
+   return 4;
 }
 
 bool IIFinalLocationEstimateRK::ScientificNotation() const
@@ -2568,7 +2601,7 @@ IsoString IIFinalLocationEstimateG::Id() const
 
 int IIFinalLocationEstimateG::Precision() const
 {
-   return 3;
+   return 4;
 }
 
 bool IIFinalLocationEstimateG::ScientificNotation() const
@@ -2595,7 +2628,7 @@ IsoString IIFinalLocationEstimateB::Id() const
 
 int IIFinalLocationEstimateB::Precision() const
 {
-   return 3;
+   return 4;
 }
 
 bool IIFinalLocationEstimateB::ScientificNotation() const
@@ -2604,6 +2637,381 @@ bool IIFinalLocationEstimateB::ScientificNotation() const
 }
 
 bool IIFinalLocationEstimateB::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+IIFinalPSFSignalEstimateRK::IIFinalPSFSignalEstimateRK( MetaProcess* P ) : MetaDouble( P )
+{
+   TheIIFinalPSFSignalEstimateRKParameter = this;
+}
+
+IsoString IIFinalPSFSignalEstimateRK::Id() const
+{
+   return "finalPSFSignalEstimateRK";
+}
+
+int IIFinalPSFSignalEstimateRK::Precision() const
+{
+   return 4;
+}
+
+bool IIFinalPSFSignalEstimateRK::ScientificNotation() const
+{
+   return true;
+}
+
+bool IIFinalPSFSignalEstimateRK::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+IIFinalPSFSignalEstimateG::IIFinalPSFSignalEstimateG( MetaProcess* P ) : MetaDouble( P )
+{
+   TheIIFinalPSFSignalEstimateGParameter = this;
+}
+
+IsoString IIFinalPSFSignalEstimateG::Id() const
+{
+   return "finalPSFSignalEstimateG";
+}
+
+int IIFinalPSFSignalEstimateG::Precision() const
+{
+   return 4;
+}
+
+bool IIFinalPSFSignalEstimateG::ScientificNotation() const
+{
+   return true;
+}
+
+bool IIFinalPSFSignalEstimateG::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+IIFinalPSFSignalEstimateB::IIFinalPSFSignalEstimateB( MetaProcess* P ) : MetaDouble( P )
+{
+   TheIIFinalPSFSignalEstimateBParameter = this;
+}
+
+IsoString IIFinalPSFSignalEstimateB::Id() const
+{
+   return "finalPSFSignalEstimateB";
+}
+
+int IIFinalPSFSignalEstimateB::Precision() const
+{
+   return 4;
+}
+
+bool IIFinalPSFSignalEstimateB::ScientificNotation() const
+{
+   return true;
+}
+
+bool IIFinalPSFSignalEstimateB::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+IIFinalPSFSignalPowerEstimateRK::IIFinalPSFSignalPowerEstimateRK( MetaProcess* P ) : MetaDouble( P )
+{
+   TheIIFinalPSFSignalPowerEstimateRKParameter = this;
+}
+
+IsoString IIFinalPSFSignalPowerEstimateRK::Id() const
+{
+   return "finalPSFSignalPowerEstimateRK";
+}
+
+int IIFinalPSFSignalPowerEstimateRK::Precision() const
+{
+   return 4;
+}
+
+bool IIFinalPSFSignalPowerEstimateRK::ScientificNotation() const
+{
+   return true;
+}
+
+bool IIFinalPSFSignalPowerEstimateRK::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+IIFinalPSFSignalPowerEstimateG::IIFinalPSFSignalPowerEstimateG( MetaProcess* P ) : MetaDouble( P )
+{
+   TheIIFinalPSFSignalPowerEstimateGParameter = this;
+}
+
+IsoString IIFinalPSFSignalPowerEstimateG::Id() const
+{
+   return "finalPSFSignalPowerEstimateG";
+}
+
+int IIFinalPSFSignalPowerEstimateG::Precision() const
+{
+   return 4;
+}
+
+bool IIFinalPSFSignalPowerEstimateG::ScientificNotation() const
+{
+   return true;
+}
+
+bool IIFinalPSFSignalPowerEstimateG::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+IIFinalPSFSignalPowerEstimateB::IIFinalPSFSignalPowerEstimateB( MetaProcess* P ) : MetaDouble( P )
+{
+   TheIIFinalPSFSignalPowerEstimateBParameter = this;
+}
+
+IsoString IIFinalPSFSignalPowerEstimateB::Id() const
+{
+   return "finalPSFSignalPowerEstimateB";
+}
+
+int IIFinalPSFSignalPowerEstimateB::Precision() const
+{
+   return 4;
+}
+
+bool IIFinalPSFSignalPowerEstimateB::ScientificNotation() const
+{
+   return true;
+}
+
+bool IIFinalPSFSignalPowerEstimateB::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+IIFinalPSFFluxEstimateRK::IIFinalPSFFluxEstimateRK( MetaProcess* P ) : MetaDouble( P )
+{
+   TheIIFinalPSFFluxEstimateRKParameter = this;
+}
+
+IsoString IIFinalPSFFluxEstimateRK::Id() const
+{
+   return "finalPSFFluxEstimateRK";
+}
+
+int IIFinalPSFFluxEstimateRK::Precision() const
+{
+   return 4;
+}
+
+bool IIFinalPSFFluxEstimateRK::ScientificNotation() const
+{
+   return true;
+}
+
+bool IIFinalPSFFluxEstimateRK::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+IIFinalPSFFluxEstimateG::IIFinalPSFFluxEstimateG( MetaProcess* P ) : MetaDouble( P )
+{
+   TheIIFinalPSFFluxEstimateGParameter = this;
+}
+
+IsoString IIFinalPSFFluxEstimateG::Id() const
+{
+   return "finalPSFFluxEstimateG";
+}
+
+int IIFinalPSFFluxEstimateG::Precision() const
+{
+   return 4;
+}
+
+bool IIFinalPSFFluxEstimateG::ScientificNotation() const
+{
+   return true;
+}
+
+bool IIFinalPSFFluxEstimateG::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+IIFinalPSFFluxEstimateB::IIFinalPSFFluxEstimateB( MetaProcess* P ) : MetaDouble( P )
+{
+   TheIIFinalPSFFluxEstimateBParameter = this;
+}
+
+IsoString IIFinalPSFFluxEstimateB::Id() const
+{
+   return "finalPSFFluxEstimateB";
+}
+
+int IIFinalPSFFluxEstimateB::Precision() const
+{
+   return 4;
+}
+
+bool IIFinalPSFFluxEstimateB::ScientificNotation() const
+{
+   return true;
+}
+
+bool IIFinalPSFFluxEstimateB::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+IIFinalPSFFluxPowerEstimateRK::IIFinalPSFFluxPowerEstimateRK( MetaProcess* P ) : MetaDouble( P )
+{
+   TheIIFinalPSFFluxPowerEstimateRKParameter = this;
+}
+
+IsoString IIFinalPSFFluxPowerEstimateRK::Id() const
+{
+   return "finalPSFFluxPowerEstimateRK";
+}
+
+int IIFinalPSFFluxPowerEstimateRK::Precision() const
+{
+   return 4;
+}
+
+bool IIFinalPSFFluxPowerEstimateRK::ScientificNotation() const
+{
+   return true;
+}
+
+bool IIFinalPSFFluxPowerEstimateRK::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+IIFinalPSFFluxPowerEstimateG::IIFinalPSFFluxPowerEstimateG( MetaProcess* P ) : MetaDouble( P )
+{
+   TheIIFinalPSFFluxPowerEstimateGParameter = this;
+}
+
+IsoString IIFinalPSFFluxPowerEstimateG::Id() const
+{
+   return "finalPSFFluxPowerEstimateG";
+}
+
+int IIFinalPSFFluxPowerEstimateG::Precision() const
+{
+   return 4;
+}
+
+bool IIFinalPSFFluxPowerEstimateG::ScientificNotation() const
+{
+   return true;
+}
+
+bool IIFinalPSFFluxPowerEstimateG::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+IIFinalPSFFluxPowerEstimateB::IIFinalPSFFluxPowerEstimateB( MetaProcess* P ) : MetaDouble( P )
+{
+   TheIIFinalPSFFluxPowerEstimateBParameter = this;
+}
+
+IsoString IIFinalPSFFluxPowerEstimateB::Id() const
+{
+   return "finalPSFFluxPowerEstimateB";
+}
+
+int IIFinalPSFFluxPowerEstimateB::Precision() const
+{
+   return 4;
+}
+
+bool IIFinalPSFFluxPowerEstimateB::ScientificNotation() const
+{
+   return true;
+}
+
+bool IIFinalPSFFluxPowerEstimateB::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+IIFinalPSFSignalCountRK::IIFinalPSFSignalCountRK( MetaProcess* P ) : MetaUInt32( P )
+{
+   TheIIFinalPSFSignalCountRKParameter = this;
+}
+
+IsoString IIFinalPSFSignalCountRK::Id() const
+{
+   return "finalPSFSignalCountRK";
+}
+
+bool IIFinalPSFSignalCountRK::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+IIFinalPSFSignalCountG::IIFinalPSFSignalCountG( MetaProcess* P ) : MetaUInt32( P )
+{
+   TheIIFinalPSFSignalCountGParameter = this;
+}
+
+IsoString IIFinalPSFSignalCountG::Id() const
+{
+   return "finalPSFSignalCountG";
+}
+
+bool IIFinalPSFSignalCountG::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+IIFinalPSFSignalCountB::IIFinalPSFSignalCountB( MetaProcess* P ) : MetaUInt32( P )
+{
+   TheIIFinalPSFSignalCountBParameter = this;
+}
+
+IsoString IIFinalPSFSignalCountB::Id() const
+{
+   return "finalPSFSignalCountB";
+}
+
+bool IIFinalPSFSignalCountB::IsReadOnly() const
 {
    return true;
 }
@@ -3062,4 +3470,4 @@ bool IIImageRejectedHighB::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationParameters.cpp - Released 2021-11-25T11:45:24Z
+// EOF ImageIntegrationParameters.cpp - Released 2021-12-29T20:37:28Z

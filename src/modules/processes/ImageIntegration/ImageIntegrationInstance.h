@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.3.6
+// Standard ImageIntegration Process Module Version 1.4.3
 // ----------------------------------------------------------------------------
-// ImageIntegrationInstance.h - Released 2021-11-25T11:45:24Z
+// ImageIntegrationInstance.h - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -111,11 +111,12 @@ private:
 
    pcl_enum    p_combination;   // combination operation: average, median, minimum, maximum
 
-   pcl_enum    p_normalization; // none | additive | multiplicative | additive+scaling | mult.+scaling | local
+   pcl_enum    p_normalization; // none | additive | multiplicative | additive+scaling | mult.+scaling | local | adaptive
 
    pcl_enum    p_weightMode;    // don't care | exposure time | noise | signal | median | mean | keyword
    String      p_weightKeyword;
    pcl_enum    p_weightScale;   // scale estimator used for image weighting
+   String      p_csvWeights;    // prescribed image weights (comma-separated list, not publicly exposed - for development only)
 
    int32       p_adaptiveGridSize;  // adaptive normalization, matrix size
    pcl_bool    p_adaptiveNoScale;   // adaptive normalization, use only adaptive location estimates
@@ -177,11 +178,11 @@ private:
    float       p_autoMemoryLimit;      // maximum fraction of available physical memory we can use
 
    pcl_bool    p_useROI;               // use a region of interest; entire image otherwise
-   Rect        p_roi = Rect( 0 );      // region of interest
+   Rect        p_roi = 0;              // region of interest
 
    pcl_bool    p_useCache;             // use the dynamic file cache
 
-   pcl_bool    p_evaluateNoise;        // perform a MRS Gaussian noise estimation for the resulting image
+   pcl_bool    p_evaluateSNR;          // compute MRS noise and PSF signal estimates for the resulting image
    float       p_mrsMinDataFraction;   // minimum fraction of data for a valid MRS noise evaluation
 
    pcl_bool    p_subtractPedestals;    // subtract PEDESTAL keyword values from input images
@@ -214,20 +215,25 @@ private:
       String          lowRejectionMapImageId;  // identifier of the output low rejection map image
       String          highRejectionMapImageId; // identifier of the output high rejection map image
       String          slopeMapImageId;         // identifier of the output slope map image
-      int32           numberOfChannels         = 0; // number of nominal channels (1 or 3)
-      uint64          numberOfPixels           = 0u; // area of the integrated image in pixels
-      uint64          totalPixels              = 0u; // total integrated pixels (area*numberOfFiles)
+      int32           numberOfChannels             = 0; // number of nominal channels (1 or 3)
+      uint64          numberOfPixels               = 0u; // area of the integrated image in pixels
+      uint64          totalPixels                  = 0u; // total integrated pixels (area*numberOfFiles)
 
       // Per-channel data for the final integrated image
 
-      double          outputRangeLow           = 0; // output range, lower bound
-      double          outputRangeHigh          = 0; // output range, upper bound
-      UI64Vector      totalRejectedLow         = UI64Vector( 0, 3 ); // low rejected pixels
-      UI64Vector      totalRejectedHigh        = UI64Vector( 0, 3 ); // high rejected pixels
-      DVector         finalNoiseEstimates      = DVector( 0, 3 );    // noise estimates for the integrated image
-      scale_estimates finalNoiseScaleEstimates = scale_estimates( 0, 3 ); // noise scale estimates for the integrated image
-      DVector         finalScaleEstimates      = DVector( 0, 3 );    // scale estimates for the integrated image
-      DVector         finalLocationEstimates   = DVector( 0, 3 );    // location estimates for the integrated image
+      double          outputRangeLow               = 0; // output range, lower bound
+      double          outputRangeHigh              = 0; // output range, upper bound
+      UI64Vector      totalRejectedLow             = UI64Vector( 0, 3 ); // low rejected pixels
+      UI64Vector      totalRejectedHigh            = UI64Vector( 0, 3 ); // high rejected pixels
+      DVector         finalNoiseEstimates          = DVector( 0, 3 );    // noise estimates for the integrated image
+      scale_estimates finalNoiseScaleEstimates     = scale_estimates( 0, 3 ); // noise scale estimates for the integrated image
+      DVector         finalScaleEstimates          = DVector( 0, 3 );  // scale estimates for the integrated image
+      DVector         finalLocationEstimates       = DVector( 0, 3 );  // location estimates for the integrated image
+      DVector         finalPSFSignalEstimates      = DVector( 0, 3 );  // PSF signal estimates for the integrated image
+      DVector         finalPSFSignalPowerEstimates = DVector( 0, 3 );  // PSF signal power estimates for the integrated image
+      DVector         finalPSFFluxEstimates        = DVector( 0, 3 );  // PSF flux estimates for the integrated image
+      DVector         finalPSFFluxPowerEstimates   = DVector( 0, 3 );  // PSF flux power estimates for the integrated image
+      UI32Vector      finalPSFSignalCounts         = UI32Vector( 0, 3 ); // Number of PSF signal measurements for the integrated image
 
       // ### DEPRECATED ###
       FVector         referenceNoiseReductions = FVector( 0, 3 );    // noise reduction w.r.t. the reference image
@@ -354,4 +360,4 @@ private:
 #endif   // __ImageIntegrationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationInstance.h - Released 2021-11-25T11:45:24Z
+// EOF ImageIntegrationInstance.h - Released 2021-12-29T20:37:28Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.3.6
+// Standard ImageIntegration Process Module Version 1.4.3
 // ----------------------------------------------------------------------------
-// ImageIntegrationProcess.cpp - Released 2021-11-25T11:45:24Z
+// ImageIntegrationProcess.cpp - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -78,6 +78,7 @@ ImageIntegrationProcess::ImageIntegrationProcess()
    new IIWeightMode( this );
    new IIWeightKeyword( this );
    new IIWeightScale( this );
+   new IICSVWeights( this );
    new IIAdaptiveGridSize( this );
    new IIAdaptiveNoScale( this );
    new IIIgnoreNoiseKeywords( this );
@@ -128,7 +129,7 @@ ImageIntegrationProcess::ImageIntegrationProcess()
    new IIROIX1( this );
    new IIROIY1( this );
    new IIUseCache( this );
-   new IIEvaluateNoise( this );
+   new IIEvaluateSNR( this );
    new IIMRSMinDataFraction( this );
    new IISubtractPedestals( this );
    new IITruncateOnOutOfRange( this );
@@ -140,20 +141,25 @@ ImageIntegrationProcess::ImageIntegrationProcess()
    new IIMaxBufferThreads( this );
 
    new IIIntegrationImageId( this );
+
    new IILowRejectionMapImageId( this );
    new IIHighRejectionMapImageId( this );
    new IISlopeMapImageId( this );
+
    new IINumberOfChannels( this );
    new IINumberOfPixels( this );
    new IITotalPixels( this );
+
    new IIOutputRangeLow( this );
    new IIOutputRangeHigh( this );
+
    new IITotalRejectedLowRK( this );
    new IITotalRejectedLowG( this );
    new IITotalRejectedLowB( this );
    new IITotalRejectedHighRK( this );
    new IITotalRejectedHighG( this );
    new IITotalRejectedHighB( this );
+
    new IIFinalNoiseEstimateRK( this );
    new IIFinalNoiseEstimateG( this );
    new IIFinalNoiseEstimateB( this );
@@ -163,12 +169,31 @@ ImageIntegrationProcess::ImageIntegrationProcess()
    new IIFinalNoiseScaleEstimateHighRK( this );
    new IIFinalNoiseScaleEstimateHighG( this );
    new IIFinalNoiseScaleEstimateHighB( this );
+
    new IIFinalScaleEstimateRK( this );
    new IIFinalScaleEstimateG( this );
    new IIFinalScaleEstimateB( this );
+
    new IIFinalLocationEstimateRK( this );
    new IIFinalLocationEstimateG( this );
    new IIFinalLocationEstimateB( this );
+
+   new IIFinalPSFSignalEstimateRK( this );
+   new IIFinalPSFSignalEstimateG( this );
+   new IIFinalPSFSignalEstimateB( this );
+   new IIFinalPSFSignalPowerEstimateRK( this );
+   new IIFinalPSFSignalPowerEstimateG( this );
+   new IIFinalPSFSignalPowerEstimateB( this );
+   new IIFinalPSFFluxEstimateRK( this );
+   new IIFinalPSFFluxEstimateG( this );
+   new IIFinalPSFFluxEstimateB( this );
+   new IIFinalPSFFluxPowerEstimateRK( this );
+   new IIFinalPSFFluxPowerEstimateG( this );
+   new IIFinalPSFFluxPowerEstimateB( this );
+   new IIFinalPSFSignalCountRK( this );
+   new IIFinalPSFSignalCountG( this );
+   new IIFinalPSFSignalCountB( this );
+
    new IIReferenceNoiseReductionRK( this );
    new IIReferenceNoiseReductionG( this );
    new IIReferenceNoiseReductionB( this );
@@ -181,6 +206,7 @@ ImageIntegrationProcess::ImageIntegrationProcess()
    new IIAverageSNRIncrementRK( this );
    new IIAverageSNRIncrementG( this );
    new IIAverageSNRIncrementB( this );
+
    new IIImageData( this );
    new IIImageWeightRK( TheIIImageDataParameter );
    new IIImageWeightG( TheIIImageDataParameter );
@@ -257,4 +283,4 @@ ProcessImplementation* ImageIntegrationProcess::Clone( const ProcessImplementati
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationProcess.cpp - Released 2021-11-25T11:45:24Z
+// EOF ImageIntegrationProcess.cpp - Released 2021-12-29T20:37:28Z

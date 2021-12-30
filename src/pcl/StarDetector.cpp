@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// pcl/StarDetector.cpp - Released 2021-11-25T11:44:55Z
+// pcl/StarDetector.cpp - Released 2021-12-29T20:37:16Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -361,7 +361,7 @@ public:
          if ( fit )
             if ( DRect( rect ).DeflatedBy( rect.Width()*0.15 ).Includes( fit.psf.c0 ) )
                if ( fit.psf.c0.DistanceTo( d.pos + 0.5 ) < m_tolerance )
-                  stars << StarDetector::Star( fit.psf.c0 - 0.5, rect, fit.psf.flux, fit.psf.meanSignal, fit.psf.mad );
+                  stars << StarDetector::Star( fit.psf.c0 - 0.5, rect, fit.psf.flux, fit.psf.signal, fit.psf.mad );
 
          UPDATE_THREAD_MONITOR( 16 )
       }
@@ -616,7 +616,16 @@ StarDetector::star_list StarDetector::DetectStars( const ImageVariant& image ) c
 {
    Image I;
    ImageVariant V( &I );
-   image.GetIntensity( V );
+   if ( image.NumberOfSelectedChannels() == image.NumberOfNominalChannels() )
+      image.GetIntensity( V );
+   else
+   {
+      image.PushSelections();
+      image.SelectChannel( image.SelectedChannel() );
+      V.AssignImage( image );
+      image.PopSelections();
+   }
+
    I.Status() = image.Status();
    return DetectStars( I );
 }
@@ -627,7 +636,16 @@ Image StarDetector::StructureMap( const ImageVariant& image ) const
 {
    Image I;
    ImageVariant V( &I );
-   image.GetIntensity( V );
+   if ( image.NumberOfSelectedChannels() == image.NumberOfNominalChannels() )
+      image.GetIntensity( V );
+   else
+   {
+      image.PushSelections();
+      image.SelectChannel( image.SelectedChannel() );
+      V.AssignImage( image );
+      image.PopSelections();
+   }
+
    I.Status() = image.Status();
    if ( m_invert )
       I.Invert();
@@ -641,7 +659,16 @@ Image StarDetector::Structures( const ImageVariant& image ) const
 {
    Image I;
    ImageVariant V( &I );
-   image.GetIntensity( V );
+   if ( image.NumberOfSelectedChannels() == image.NumberOfNominalChannels() )
+      image.GetIntensity( V );
+   else
+   {
+      image.PushSelections();
+      image.SelectChannel( image.SelectedChannel() );
+      V.AssignImage( image );
+      image.PopSelections();
+   }
+
    I.Status() = image.Status();
    if ( m_invert )
       I.Invert();
@@ -654,4 +681,4 @@ Image StarDetector::Structures( const ImageVariant& image ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/StarDetector.cpp - Released 2021-11-25T11:44:55Z
+// EOF pcl/StarDetector.cpp - Released 2021-12-29T20:37:16Z

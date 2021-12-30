@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// AdaptiveStretchInstance.h - Released 2021-11-25T11:45:24Z
+// AdaptiveStretchInstance.h - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -136,4 +136,4 @@ private:
 #endif   // __AdaptiveStretchInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF AdaptiveStretchInstance.h - Released 2021-11-25T11:45:24Z
+// EOF AdaptiveStretchInstance.h - Released 2021-12-29T20:37:28Z

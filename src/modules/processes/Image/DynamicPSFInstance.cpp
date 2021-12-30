@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// DynamicPSFInstance.cpp - Released 2021-11-25T11:45:24Z
+// DynamicPSFInstance.cpp - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -283,7 +283,7 @@ void* DynamicPSFInstance::LockParameter( const MetaParameter* p, size_type table
    if ( p == TheDPPSFFluxParameter )
       return &p_psfs[tableRow].flux;
    if ( p == TheDPPSFMeanSignalParameter )
-      return &p_psfs[tableRow].meanSignal;
+      return &p_psfs[tableRow].p_meanSignal;
    if ( p == TheDPPSFMADParameter )
       return &p_psfs[tableRow].mad;
    if ( p == TheDPPSFCentroidRAParameter )
@@ -432,4 +432,4 @@ size_type DynamicPSFInstance::ParameterLength( const MetaParameter* p, size_type
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DynamicPSFInstance.cpp - Released 2021-11-25T11:45:24Z
+// EOF DynamicPSFInstance.cpp - Released 2021-12-29T20:37:28Z

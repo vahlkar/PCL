@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
 // Standard StarNet Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// StarNetParameters.h - Released 2021-11-25T11:45:24Z
+// StarNetParameters.h - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarNet PixInsight module.
 //
@@ -89,4 +89,4 @@ PCL_END_LOCAL
 #endif   // __StarNetParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF StarNetParameters.h - Released 2021-11-25T11:45:24Z
+// EOF StarNetParameters.h - Released 2021-12-29T20:37:28Z

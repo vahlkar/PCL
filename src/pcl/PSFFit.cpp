@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// pcl/PSFFit.cpp - Released 2021-11-25T11:44:55Z
+// pcl/PSFFit.cpp - Released 2021-12-29T20:37:16Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -227,7 +227,7 @@ public:
     */
    static int FitMoffatA( void* p, int m, int n, const double* __restrict__ a, double* __restrict__ fvec, int iflag )
    {
-      E_MOFFAT_IMPL( z*z*z*z*z*z*z*z*z*z )
+      E_MOFFAT_IMPL( PowI10( z ) )
    }
 
    /*
@@ -235,7 +235,7 @@ public:
     */
    static int FitMoffat8( void* p, int m, int n, const double* __restrict__ a, double* __restrict__ fvec, int iflag )
    {
-      E_MOFFAT_IMPL( z*z*z*z*z*z*z*z )
+      E_MOFFAT_IMPL( PowI8( z ) )
    }
 
    /*
@@ -243,7 +243,7 @@ public:
     */
    static int FitMoffat6( void* p, int m, int n, const double* __restrict__ a, double* __restrict__ fvec, int iflag )
    {
-      E_MOFFAT_IMPL( z*z*z*z*z*z )
+      E_MOFFAT_IMPL( PowI6( z ) )
    }
 
    /*
@@ -251,7 +251,7 @@ public:
     */
    static int FitMoffat4( void* p, int m, int n, const double* __restrict__ a, double* __restrict__ fvec, int iflag )
    {
-      E_MOFFAT_IMPL( z*z*z*z )
+      E_MOFFAT_IMPL( PowI4( z ) )
    }
 
    /*
@@ -483,7 +483,7 @@ public:
     */
    static int FitCircularMoffatA( void* p, int m, int n, const double* __restrict__ a, double* __restrict__ fvec, int iflag )
    {
-      C_MOFFAT_IMPL( z*z*z*z*z*z*z*z*z*z )
+      C_MOFFAT_IMPL( PowI10( z ) )
    }
 
    /*
@@ -491,7 +491,7 @@ public:
     */
    static int FitCircularMoffat8( void* p, int m, int n, const double* __restrict__ a, double* __restrict__ fvec, int iflag )
    {
-      C_MOFFAT_IMPL( z*z*z*z*z*z*z*z )
+      C_MOFFAT_IMPL( PowI8( z ) )
    }
 
    /*
@@ -499,7 +499,7 @@ public:
     */
    static int FitCircularMoffat6( void* p, int m, int n, const double* __restrict__ a, double* __restrict__ fvec, int iflag )
    {
-      C_MOFFAT_IMPL( z*z*z*z*z*z )
+      C_MOFFAT_IMPL( PowI6( z ) )
    }
 
    /*
@@ -507,7 +507,7 @@ public:
     */
    static int FitCircularMoffat4( void* p, int m, int n, const double* __restrict__ a, double* __restrict__ fvec, int iflag )
    {
-      C_MOFFAT_IMPL( z*z*z*z )
+      C_MOFFAT_IMPL( PowI4( z ) )
    }
 
    /*
@@ -1062,9 +1062,8 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
          Vector r = GoodnessOfFit( function, true/*circular*/ );
          psf.mad = r[0];
          psf.flux = r[1];
-         psf.meanSignal = r[2];
-         psf.meanSignalSqr = r[3];
-         psf.signalCount = r[4];
+         psf.signal = r[2];
+         psf.signalCount = r[3];
       }
       else
       {
@@ -1080,9 +1079,8 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
             Vector r = GoodnessOfFit( function, false/*circular*/ );
             psf.mad = r[0];
             psf.flux = r[1];
-            psf.meanSignal = r[2];
-            psf.meanSignalSqr= r[3];
-            psf.signalCount = r[4];
+            psf.signal = r[2];
+            psf.signalCount = r[3];
          }
          else
          {
@@ -1131,9 +1129,8 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
             psf.theta = Deg( a[imin] );
             psf.mad = r[0];
             psf.flux = r[1];
-            psf.meanSignal = r[2];
-            psf.meanSignalSqr = r[3];
-            psf.signalCount = r[4];
+            psf.signal = r[2];
+            psf.signalCount = r[3];
          }
       }
 
@@ -1144,7 +1141,7 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
       psf.beta = (function == PSFunction::Gaussian) ? 2.0 : P[ibeta];
 
       // Invalidate measurements with insignificant signal levels.
-      if ( 1 + psf.meanSignal == 1 || 1 + psf.meanSignalSqr == 1 )
+      if ( 1 + psf.signal == 1 )
          psf.status = PSFFitStatus::Invalid;
    }
 }
@@ -1172,10 +1169,9 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
    Vector adev( w*h );
    double flux = 0;
    double signal = 0;
-   double signal2 = 0;
    unsigned nsignal = 0;
    double rx2 = 0;
-   double ry2 = 2;
+   double ry2 = 0;
 
 // Gather goodness-of-fit and signal data
 #define GET_DATA()                        \
@@ -1189,7 +1185,6 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
             if ( dx2/rx2 + dy2/ry2 <= 1 ) \
             {                             \
                signal += d;               \
-               signal2 += d*d;            \
                ++nsignal;                 \
             }                             \
          }                                \
@@ -1228,11 +1223,11 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
          break;
 
 // Circular Moffat with fixed integer shape parameter
-#define C_MOFFAT_TEST( zmul )                      \
+#define C_MOFFAT_TEST( zmul, kfwtm )               \
    {                                               \
       if ( !test )                                 \
       {                                            \
-         rx2 = (Pow( 10.0, 1/beta ) - 1)*sx*sx;    \
+         rx2 = kfwtm*sx*sx;                        \
          ry2 = rx2;                                \
       }                                            \
                                                    \
@@ -1253,19 +1248,19 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
    }
 
       case PSFunction::MoffatA:
-         C_MOFFAT_TEST( z*z*z*z*z*z*z*z*z*z )
+         C_MOFFAT_TEST( PowI10( z ), 0.258925 )
          break;
       case PSFunction::Moffat8:
-         C_MOFFAT_TEST( z*z*z*z*z*z*z*z )
+         C_MOFFAT_TEST( PowI8( z ), 0.333521 )
          break;
       case PSFunction::Moffat6:
-         C_MOFFAT_TEST( z*z*z*z*z*z )
+         C_MOFFAT_TEST( PowI6( z ), 0.467799 )
          break;
       case PSFunction::Moffat4:
-         C_MOFFAT_TEST( z*z*z*z )
+         C_MOFFAT_TEST( PowI4( z ), 0.778279 )
          break;
       case PSFunction::Lorentzian:
-         C_MOFFAT_TEST( z )
+         C_MOFFAT_TEST( z, 9 )
          break;
 
       case PSFunction::Moffat:
@@ -1363,13 +1358,12 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
          break;
 
 // Elliptical Moffat with fixed integer shape parameter
-#define E_MOFFAT_TEST( zmul )                               \
+#define E_MOFFAT_TEST( zmul, kfwtm )                        \
    {                                                        \
       if ( !test )                                          \
       {                                                     \
-         double k = Pow( 10.0, 1/beta ) - 1;                \
-         rx2 = k*sx*sx;                                     \
-         ry2 = k*sy*sy;                                     \
+         rx2 = kfwtm*sx*sx;                                 \
+         ry2 = kfwtm*sy*sy;                                 \
       }                                                     \
                                                             \
       double st, ct;                                        \
@@ -1400,19 +1394,19 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
    }
 
       case PSFunction::MoffatA:
-         E_MOFFAT_TEST( z*z*z*z*z*z*z*z*z*z )
+         E_MOFFAT_TEST( PowI10( z ), 0.258925 )
          break;
       case PSFunction::Moffat8:
-         E_MOFFAT_TEST( z*z*z*z*z*z*z*z )
+         E_MOFFAT_TEST( PowI8( z ), 0.333521 )
          break;
       case PSFunction::Moffat6:
-         E_MOFFAT_TEST( z*z*z*z*z*z )
+         E_MOFFAT_TEST( PowI6( z ), 0.467799 )
          break;
       case PSFunction::Moffat4:
-         E_MOFFAT_TEST( z*z*z*z )
+         E_MOFFAT_TEST( PowI4( z ), 0.778279 )
          break;
       case PSFunction::Lorentzian:
-         E_MOFFAT_TEST( z )
+         E_MOFFAT_TEST( z, 9 )
          break;
 
       case PSFunction::Moffat:
@@ -1501,7 +1495,7 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
    if ( test )
       return Vector( adev.Mean(), 1 );
 
-   Vector R( 5 );
+   Vector R( 4 );
 
    /*
     * The first returned component is a robust estimate of fitting quality.
@@ -1525,21 +1519,15 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
    R[1] = flux;
 
    /*
-    * Estimated signal above the local background, measured from source pixel
-    * data on the PSF region.
+    * Estimated total signal above the local background, measured from source
+    * pixel data on the elliptical PSF region.
     */
    R[2] = signal;
 
    /*
-    * Estimated squared signal above the local background, measured from source
-    * pixel data on the PSF region.
-    */
-   R[3] = signal2;
-
-   /*
     * Number of pixels used for signal evaluation.
     */
-   R[4] = nsignal;
+   R[3] = nsignal;
 
    return R;
 }
@@ -1584,4 +1572,4 @@ String PSFData::StatusText() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFFit.cpp - Released 2021-11-25T11:44:55Z
+// EOF pcl/PSFFit.cpp - Released 2021-12-29T20:37:16Z

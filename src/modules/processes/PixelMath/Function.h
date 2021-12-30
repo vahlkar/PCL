@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.8.4
+// Standard PixelMath Process Module Version 1.8.5
 // ----------------------------------------------------------------------------
-// Function.h - Released 2021-11-25T11:45:24Z
+// Function.h - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -1512,7 +1512,7 @@ public:
    String Id() const override              { return "<p>Median function:</p>"
                                                     "<ol>"
                                                     "<li>Median value of a set of three or more scalar arguments.</li>"
-                                                    "<li>Median pixel sample value in the specified image.</li>"
+                                                    "<li>Median pixel sample value of the specified image.</li>"
                                                     "</ol>"
                                                     "<p>In the second form, the optional <i>x0</i>, <i>y0</i>, <i>w</i>, and <i>h</i> "
                                                     "parameters define a rectangular region of interest (ROI). These parameters are, "
@@ -1622,6 +1622,50 @@ public:
    String Aliases() const override         { return "MTF"; }
    int RequiredArguments() const override  { return 2; }
    int MaximumArguments() const override   { return 2; }
+
+   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+
+   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
+   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+};
+
+// ----------------------------------------------------------------------------
+
+class OrderStatisticFunction : public Function
+{
+public:
+
+   OrderStatisticFunction( int p = 0, int n = 0 ) : Function( p, n ) {}
+
+   Expression* Clone() const override { return new OrderStatisticFunction( *this ); }
+   Expression* Generate( int p ) const override { return new OrderStatisticFunction( p ); }
+
+   String Meta() const override            { return "ostat( k, a, b, c[, ...] )\n"
+                                                    "ostat( k, image[, x0, y0, w, h] )"; }
+   String Id() const override              { return "<p>Order statistic function:</p>"
+                                                    "<ol>"
+                                                    "<li>The <i>k</i>th order statistic of a set of three or more scalar arguments.</li>"
+                                                    "<li>The <i>k</i>th order statistic of the specified image.</li>"
+                                                    "</ol>"
+                                                    "<p>The order <i>k</i> is expected to be expressed in the [0,1] range, where 0 "
+                                                    "represents the first order statistic (or the minimum value of the sample) and 1 "
+                                                    "the last order statistic (or the maximum value of the sample). <i>k</i>=0.5 "
+                                                    "corresponds to the median value of the sample.</p>"
+                                                    "<p>In the second form, the optional <i>x0</i>, <i>y0</i>, <i>w</i>, and <i>h</i> "
+                                                    "parameters define a rectangular region of interest (ROI). These parameters are, "
+                                                    "respectively, the left coordinate, the top coordinate, the width and the height "
+                                                    "of the ROI, all of them expressed in integer pixel units. If a ROI is specified, "
+                                                    "the order statistic will be computed exclusively for pixel samples within the "
+                                                    "intersection between the ROI and the image bounds. If no ROI is specified, the "
+                                                    "order statistic will be computed for the entire image.</p>"
+                                                    "<p>Invariant subexpression: "
+                                                    "When the second argument is an image reference with optional scalar ROI coordinates "
+                                                    "(second form).</p>"; }
+   String Token() const override           { return "ostat"; }
+   int RequiredArguments() const override  { return 1; }
+   int MaximumArguments() const override   { return int_max; }
+
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 
@@ -4327,4 +4371,4 @@ public:
 #endif   // __Function_h
 
 // ----------------------------------------------------------------------------
-// EOF Function.h - Released 2021-11-25T11:45:24Z
+// EOF Function.h - Released 2021-12-29T20:37:28Z

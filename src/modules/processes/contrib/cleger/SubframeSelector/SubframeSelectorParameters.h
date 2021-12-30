@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.6.5
+// Standard SubframeSelector Process Module Version 1.7.3
 // ----------------------------------------------------------------------------
-// SubframeSelectorParameters.h - Released 2021-11-25T11:45:24Z
+// SubframeSelectorParameters.h - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -277,8 +277,9 @@ public:
 
    enum { Electron,
           DataNumber,
+          Normalized,
           NumberOfItems,
-          Default = Electron };
+          Default = Normalized };
 
    SSDataUnit( MetaProcess* );
 
@@ -526,7 +527,6 @@ public:
           Moffat25,
           Moffat15,
           Lorentzian,
-//           VariableShape,
           NumberOfItems,
           Default = Moffat4 };
 
@@ -902,7 +902,7 @@ extern SSSortingProperty* TheSSSortingPropertyParameter;
 
 // ----------------------------------------------------------------------------
 
-class SSGraphProperty : public MetaEnumeration
+class SSGraphPropertyBase : public MetaEnumeration
 {
 public:
 
@@ -928,9 +928,8 @@ public:
           NumberOfItems,
           Default = PSFSignalWeight };
 
-   SSGraphProperty( MetaProcess* );
+   SSGraphPropertyBase( MetaProcess* );
 
-   IsoString Id() const override;
    IsoString ElementAliases() const override;
    size_type NumberOfElements() const override;
    IsoString ElementId( size_type ) const override;
@@ -940,7 +939,27 @@ public:
    IsoString ElementLabel( size_type ) const;
 };
 
+class SSGraphProperty : public SSGraphPropertyBase
+{
+public:
+
+   SSGraphProperty( MetaProcess* );
+
+   IsoString Id() const override;
+};
+
 extern SSGraphProperty* TheSSGraphPropertyParameter;
+
+class SSAuxGraphProperty : public SSGraphPropertyBase
+{
+public:
+
+   SSAuxGraphProperty( MetaProcess* );
+
+   IsoString Id() const override;
+};
+
+extern SSAuxGraphProperty* TheSSAuxGraphPropertyParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -1427,4 +1446,4 @@ PCL_END_LOCAL
 #endif   // __SubframeSelectorParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorParameters.h - Released 2021-11-25T11:45:24Z
+// EOF SubframeSelectorParameters.h - Released 2021-12-29T20:37:28Z

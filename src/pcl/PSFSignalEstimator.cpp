@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// pcl/PSFSignalEstimator.cpp - Released 2021-11-25T11:44:55Z
+// pcl/PSFSignalEstimator.cpp - Released 2021-12-29T20:37:16Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -107,11 +107,9 @@ public:
                      1.0F/*betaMin*/, 4.0F/*betaMax*/,
                      1.0e-06/*tolerance*/, 0.1F/*bkgMaxVar*/ );
          if ( fit )
-            if ( fit.psf.meanSignal > 0 )
-               if ( fit.psf.meanSignalSqr > 0 )
-                  if ( DRect( rect ).DeflatedBy( rect.Width()*0.15 ).Includes( fit.psf.c0 ) )
-                     if ( fit.psf.c0.DistanceTo( star.pos + 0.5 ) < m_tolerance )
-                        psfs << fit.psf;
+            if ( DRect( rect ).DeflatedBy( rect.Width()*0.15 ).Includes( fit.psf.c0 ) )
+               if ( fit.psf.c0.DistanceTo( star.pos + 0.5 ) < m_tolerance )
+                  psfs << fit.psf;
 
          UPDATE_THREAD_MONITOR( 16 )
       }
@@ -180,105 +178,62 @@ PSFSignalEstimator::Estimates PSFSignalEstimator::EstimateSignal( const ImageVar
       if ( !psfs.IsEmpty() )
       {
          /*
-          * Use a robust sigma-clipping scheme for outlier rejection with
-          * bilateral scale estimates. Here we want to reject signal estimates
-          * that are:
-          *
-          * - Too dim, since they can be unreliable because of poor SNR.
-          *
-          * - Too bright, since they can be unreliable because of clipping,
-          *   relative saturation or nonlinearity.
-          *
-          * The resulting set of inliers should be an accurate and robust
-          * sample of the true mean signal gathered in the image.
+          * PSF flux estimates can optionally be weighted by inverse mean
+          * absolute deviations of fitted PSFs with respect to sampled data. In
+          * such case the minimum PSF mean absolute deviation determines the
+          * maximum sample weight.
           */
-         psfs.Sort( []( const PSFData& p, const PSFData& q ){ return p.meanSignal < q.meanSignal; } );
-         int N = int( psfs.Length() );
-         int t1 = 0, t2 = N;
-         for ( TwoSidedEstimate s0 = 0;; )
+         if ( m_weighted )
          {
-            if ( t2 - t1 <= 3 )
-               break;
-            double m = Median( psfs.At( t1 ), psfs.At( t2 ) );
-            TwoSidedEstimate s = TwoSidedAvgDev( psfs.At( t1 ), psfs.At( t2 ), m );
-            double m1 = m - m_rejectionLimit*1.2533*s.low;
-            double m2 = m + m_rejectionLimit*1.2533*s.high;
-            for ( ; psfs[t1].meanSignal < m1; ++t1 ) {}
-            for ( ; psfs[t2-1].meanSignal > m2; --t2 ) {}
-            if ( Abs( double( s ) - double( s0 ) ) < 1.0e-6 )
-               break;
-            s0 = s;
+            double w1 = psfs[0].mad;
+            for ( const PSFData& psf : psfs )
+               if ( psf.mad < w1 )
+                  w1 = psf.mad;
+            for ( PSFData& psf : psfs )
+               psf.signal *= w1/psf.mad;
          }
 
          /*
-          * Compute efficient average signal and squared signal estimates as
-          * trimmed means after sigma clipping.
+          * Reject a prescribed fraction of the brightest signal estimates,
+          * since they tend to be unreliable because of relative saturation and
+          * nonlinearity. Validity of the dimmest measurements is already
+          * ensured by robust star detection.
+          *
+          * The resulting set of inliers should be an accurate and robust
+          * sample representative of the true signal gathered in the image.
           */
-         if ( (E.count = t2 - t1) > 0 )
+         psfs.Sort( []( const PSFData& p, const PSFData& q ){ return double( p ) < double( q ); } );
+         int t = Min( RoundInt( m_rejectionLimit*psfs.Length() ), int( psfs.Length() ) );
+
+         /*
+          * Gather PSF fluxes and accumulate mean flux.
+          */
+         Vector psfFlux( t );
+         Vector psfFlux2( t );
+         Vector psfMean( t );
+         for ( int i = 0; i < t; ++i )
          {
-            /*
-             * PSF flux estimates can optionally be weighted by inverse mean
-             * absolute deviations of fitted PSFs with respect to sampled data.
-             * In such case the minimum PSF mean absolute deviation determines
-             * the maximum sample weight.
-             */
-            double mmin = 0;
-            if ( m_weighted )
-            {
-               mmin = psfs[t1].mad;
-               for ( int i = t1; ++i <= t2; )
-                  if ( psfs[i].mad < mmin )
-                     mmin = psfs[i].mad;
-            }
-
-            /*
-             * Accumulate PSF fluxes and intensities.
-             */
-            double W = 0;
-            double psfNorm = 0;
-            for ( int i = t2; --i >= t1; )
-            {
-               if ( unlikely( m_weighted ) )
-               {
-                  double w = mmin/psfs[i].mad;
-                  E.meanFlux += psfs[i].meanSignal * w;
-                  E.powerFlux += psfs[i].meanSignalSqr * w;
-                  W += w;
-               }
-               else
-               {
-                  E.meanFlux += psfs[i].meanSignal;
-                  E.powerFlux += psfs[i].meanSignalSqr;
-               }
-
-               psfNorm += psfs[i].A + psfs[i].B;
-            }
-
-            /*
-             * Mean PSF flux.
-             */
-            if ( m_weighted )
-            {
-               E.meanFlux /= W;
-               E.powerFlux /= W;
-            }
-            else
-            {
-               E.meanFlux /= E.count;
-               E.powerFlux /= E.count;
-            }
-
-            /*
-             * Mean PSF signal estimates. The penalty function is the ratio of
-             * the total measured PSF intensity to the norm of the image.
-             */
-            image.PushSelections();
-            image.SetRangeClipping( 2.0/65535, 1 - 2.0/65535 );
-            double P = psfNorm/image.Norm();
-            image.PopSelections();
-            E.mean = E.meanFlux * P;
-            E.power = E.powerFlux * P;
+            double s = psfs[i].signal;
+            psfFlux[i] = s;
+            psfFlux2[i] = s*s;
+            psfMean[i] = s/psfs[i].signalCount;
          }
+
+         E.flux = psfFlux.StableSum();
+         E.powerFlux = psfFlux2.StableSum();
+
+         /*
+          * PSF signal estimates. The penalty function is the ratio of the sum
+          * of average PSF intensities to a low norm of the image.
+          */
+         image.PushSelections();
+         image.SetRangeClipping( 0, 0.9 );
+         image.SetRangeClipping( 0, image.OrderStatistic( m_clipHigh ) );
+         double P = psfMean.StableSum()/image.Norm();
+         image.PopSelections();
+         E.mean = E.flux * P;
+         E.power = E.powerFlux * P;
+         E.count = t;
       }
    }
 
@@ -293,4 +248,4 @@ PSFSignalEstimator::Estimates PSFSignalEstimator::EstimateSignal( const ImageVar
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFSignalEstimator.cpp - Released 2021-11-25T11:44:55Z
+// EOF pcl/PSFSignalEstimator.cpp - Released 2021-12-29T20:37:16Z

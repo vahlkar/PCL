@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
 // Standard NoiseGeneration Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// SimplexNoiseParameters.cpp - Released 2021-11-25T11:45:24Z
+// SimplexNoiseParameters.cpp - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NoiseGeneration PixInsight module.
 //
@@ -225,4 +225,4 @@ int SNOperator::ElementValue( size_type i ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SimplexNoiseParameters.cpp - Released 2021-11-25T11:45:24Z
+// EOF SimplexNoiseParameters.cpp - Released 2021-12-29T20:37:28Z

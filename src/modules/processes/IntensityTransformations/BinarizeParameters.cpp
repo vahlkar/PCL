@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// BinarizeParameters.cpp - Released 2021-11-25T11:45:24Z
+// BinarizeParameters.cpp - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -180,4 +180,4 @@ bool BinarizeIsGlobal::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BinarizeParameters.cpp - Released 2021-11-25T11:45:24Z
+// EOF BinarizeParameters.cpp - Released 2021-12-29T20:37:28Z

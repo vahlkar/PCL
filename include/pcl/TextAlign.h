@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// pcl/TextAlign.h - Released 2021-11-25T11:44:47Z
+// pcl/TextAlign.h - Released 2021-12-29T20:37:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -109,4 +109,4 @@ typedef Flags<TextAlign::mask_type> TextAlignmentFlags;
 #endif   // __PCL_TextAlign_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/TextAlign.h - Released 2021-11-25T11:44:47Z
+// EOF pcl/TextAlign.h - Released 2021-12-29T20:37:09Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.6.5
+// Standard SubframeSelector Process Module Version 1.7.3
 // ----------------------------------------------------------------------------
-// SubframeSelectorMeasureData.h - Released 2021-11-25T11:45:24Z
+// SubframeSelectorMeasureData.h - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -237,38 +237,56 @@ struct MeasureItem
 
    double Median( double cameraGain, int cameraResolution, int dataUnit ) const
    {
-      if ( dataUnit == SSDataUnit::Electron )
+      switch ( dataUnit )
+      {
+      default:
+      case SSDataUnit::Normalized:
+         return median;
+      case SSDataUnit::Electron:
          return median * cameraResolution * cameraGain;
-      if ( dataUnit == SSDataUnit::DataNumber )
+      case SSDataUnit::DataNumber:
          return median * cameraResolution;
-      return median;
+      }
    }
 
    double MedianMeanDev( double cameraGain, int cameraResolution, int dataUnit ) const
    {
-      if ( dataUnit == SSDataUnit::Electron )
+      switch ( dataUnit )
+      {
+      default:
+      case SSDataUnit::Normalized:
+         return medianMeanDev;
+      case SSDataUnit::Electron:
          return medianMeanDev * cameraResolution * cameraGain;
-      if ( dataUnit == SSDataUnit::DataNumber )
+      case SSDataUnit::DataNumber:
          return medianMeanDev * cameraResolution;
-      return medianMeanDev;
+      }
    }
 
    double Noise( double cameraGain, int cameraResolution, int dataUnit ) const
    {
-      if ( dataUnit == SSDataUnit::Electron )
+      switch ( dataUnit )
+      {
+      default:
+      case SSDataUnit::Normalized:
+         return noise;
+      case SSDataUnit::Electron:
          return noise * cameraResolution * cameraGain;
-      if ( dataUnit == SSDataUnit::DataNumber )
+      case SSDataUnit::DataNumber:
          return noise * cameraResolution;
-      return noise;
+      }
    }
 
    double FWHMMeanDeviation( double subframeScale, int scaleUnit ) const
    {
-      if ( scaleUnit == SSScaleUnit::ArcSeconds )
+      switch ( scaleUnit )
+      {
+      case SSScaleUnit::ArcSeconds:
          return fwhmMeanDev * subframeScale;
-      if ( scaleUnit == SSScaleUnit::Pixel )
+      default:
+      case SSScaleUnit::Pixel:
          return fwhmMeanDev;
-      return fwhmMeanDev;
+      }
    }
 
    String JavaScriptParameters( double subframeScale, int scaleUnit, double cameraGain,
@@ -284,8 +302,8 @@ struct MeasureItem
       case SSSortingProperty::Eccentricity:         return eccentricity;
       case SSSortingProperty::PSFSignalWeight:      return psfSignalWeight;
       case SSSortingProperty::PSFSignalPowerWeight: return psfSignalPowerWeight;
-      case SSSortingProperty::PSFFlux:        return psfFlux;
-      case SSSortingProperty::PSFFluxPower:   return psfFluxPower;
+      case SSSortingProperty::PSFFlux:              return psfFlux;
+      case SSSortingProperty::PSFFluxPower:         return psfFluxPower;
       case SSSortingProperty::SNRWeight:            return snrWeight;
       case SSSortingProperty::Median:               return median;
       case SSSortingProperty::MedianMeanDev:        return medianMeanDev;
@@ -373,4 +391,4 @@ private:
 #endif   // __SubframeSelectorMeasureData_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorMeasureData.h - Released 2021-11-25T11:45:24Z
+// EOF SubframeSelectorMeasureData.h - Released 2021-12-29T20:37:28Z

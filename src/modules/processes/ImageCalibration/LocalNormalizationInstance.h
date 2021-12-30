@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.7.2
+// Standard ImageCalibration Process Module Version 1.8.0
 // ----------------------------------------------------------------------------
-// LocalNormalizationInstance.h - Released 2021-11-25T11:45:24Z
+// LocalNormalizationInstance.h - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -164,4 +164,4 @@ private:
 #endif   // __LocalNormalizationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationInstance.h - Released 2021-11-25T11:45:24Z
+// EOF LocalNormalizationInstance.h - Released 2021-12-29T20:37:28Z

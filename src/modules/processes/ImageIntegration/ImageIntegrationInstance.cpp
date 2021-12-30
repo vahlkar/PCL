@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.3.6
+// Standard ImageIntegration Process Module Version 1.4.3
 // ----------------------------------------------------------------------------
-// ImageIntegrationInstance.cpp - Released 2021-11-25T11:45:24Z
+// ImageIntegrationInstance.cpp - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -131,7 +131,7 @@ ImageIntegrationInstance::ImageIntegrationInstance( const MetaProcess* m )
    , p_autoMemoryLimit( TheIIAutoMemoryLimitParameter->DefaultValue() )
    , p_useROI( TheIIUseROIParameter->DefaultValue() )
    , p_useCache( TheIIUseCacheParameter->DefaultValue() )
-   , p_evaluateNoise( TheIIEvaluateNoiseParameter->DefaultValue() )
+   , p_evaluateSNR( TheIIEvaluateSNRParameter->DefaultValue() )
    , p_mrsMinDataFraction( TheIIMRSMinDataFractionParameter->DefaultValue() )
    , p_subtractPedestals( TheIISubtractPedestalsParameter->DefaultValue() )
    , p_truncateOnOutOfRange( TheIITruncateOnOutOfRangeParameter->DefaultValue() )
@@ -212,7 +212,7 @@ void ImageIntegrationInstance::Assign( const ProcessImplementation& p )
       p_useROI                            = x->p_useROI;
       p_roi                               = x->p_roi;
       p_useCache                          = x->p_useCache;
-      p_evaluateNoise                     = x->p_evaluateNoise;
+      p_evaluateSNR                     = x->p_evaluateSNR;
       p_mrsMinDataFraction                = x->p_mrsMinDataFraction;
       p_subtractPedestals                 = x->p_subtractPedestals;
       p_truncateOnOutOfRange              = x->p_truncateOnOutOfRange;
@@ -864,10 +864,10 @@ bool ImageIntegrationInstance::ExecuteGlobal()
             }
          }
 
-         if ( p_evaluateNoise )
+         if ( p_evaluateSNR )
          {
             /*
-             * Show noise evaluation info.
+             * Show noise and signal evaluation info.
              */
             console.WriteLn( "<end><cbr>" );
 
@@ -898,61 +898,68 @@ bool ImageIntegrationInstance::ExecuteGlobal()
             result->ResetSelections();
 
             console.Write( "<end><cbr>"
-                           "<br>Scale estimates        :" );
+                           "<br>Scale estimates          :" );
             for ( int c = 0; c < result->NumberOfNominalChannels(); ++c )
             {
                console.Write( String().Format( " (%.6e,%.6e)", 0.991*scale[c].low, 0.991*scale[c].high ) );
                o_output.finalScaleEstimates[c] = 0.991*double( scale[c] );
             }
 
-            console.Write( "<br>Location estimates     :" );
+            console.Write( "<br>Location estimates       :" );
             for ( int c = 0; c < result->NumberOfNominalChannels(); ++c )
             {
                console.Write( String().Format( " %.6e", location[c] ) );
                o_output.finalLocationEstimates[c] = location[c];
             }
 
-            console.Write( "<br>Noise scaling factors  :" );
+            console.Write( "<br>Noise scaling factors    :" );
             for ( int c = 0; c < result->NumberOfNominalChannels(); ++c )
             {
                console.Write( String().Format( " %.6e", noiseScale[c].Total() ) );
                o_output.finalNoiseScaleEstimates[c] = noiseScale[c];
             }
 
-            console.Write( "<br>Scaled noise estimates :" );
+            console.Write( "<br>Scaled noise estimates   :" );
             for ( int c = 0; c < result->NumberOfNominalChannels(); ++c )
             {
                console.Write( String().Format( " %.4e", noise[c]/noiseScale[c].Total() ) );
                o_output.finalNoiseEstimates[c] = noise[c];
             }
 
-            console.Write( "<br>SNR estimates          :" );
+            console.Write( "<br>SNR estimates            :" );
             for ( int c = 0; c < result->NumberOfNominalChannels(); ++c )
             {
                double e = noiseScale[c].Total()/noise[c];
                console.Write( String().Format( " %.4e", e*e ) );
             }
 
-            console.Write( "<br>PSF signal estimates   :" );
+            console.Write( "<br>PSF signal weights       :" );
             for ( int c = 0; c < result->NumberOfNominalChannels(); ++c )
             {
                double e = psfSignal[c].mean/noise[c];
                console.Write( String().Format( " %.4e", e ) );
+               o_output.finalPSFSignalEstimates[c] = psfSignal[c].mean;
+               o_output.finalPSFFluxEstimates[c] = psfSignal[c].flux;
             }
-            console.Write( "<br>PSF signal power       :" );
+            console.Write( "<br>PSF signal power weights :" );
             for ( int c = 0; c < result->NumberOfNominalChannels(); ++c )
             {
                double e = psfSignal[c].power/noise[c]/noise[c];
                console.Write( String().Format( " %.4e", e ) );
+               o_output.finalPSFSignalPowerEstimates[c] = psfSignal[c].power;
+               o_output.finalPSFFluxPowerEstimates[c] = psfSignal[c].powerFlux;
             }
-            console.Write( "<br>PSF fit counts         :" );
+            console.Write( "<br>PSF fit counts           :" );
             for ( int c = 0; c < result->NumberOfNominalChannels(); ++c )
+            {
                console.Write( String().Format( " %d", psfSignal[c].count ) );
+               o_output.finalPSFSignalCounts[c] = psfSignal[c].count;
+            }
 
             console.WriteLn();
             console.WriteLn();
 
-         } // if p_evaluateNoise
+         } // if p_evaluateSNR
       } // if p_generateIntegratedImage
 
       Module->ProcessEvents();
@@ -1032,37 +1039,66 @@ bool ImageIntegrationInstance::ExecuteGlobal()
          keywords << FITSHeaderKeyword( "HISTORY", IsoString(), totalRejectedLow )
                   << FITSHeaderKeyword( "HISTORY", IsoString(), totalRejectedHigh );
 
-         if ( p_evaluateNoise )
+         if ( p_evaluateSNR )
          {
             IsoString finalNoiseEstimates = "ImageIntegration.finalNoiseEstimates:";
             IsoString finalNoiseScaleEstimates = "ImageIntegration.finalNoiseScaleEstimates:";
             IsoString finalScaleEstimates = "ImageIntegration.finalScaleEstimates:";
             IsoString finalLocationEstimates = "ImageIntegration.finalLocationEstimates:";
+            IsoString psfSignalEstimates = "ImageIntegration.psfSignalEstimates:";
+            IsoString psfSignalPowerEstimates = "ImageIntegration.psfSignalPowerEstimates:";
+            IsoString psfFluxEstimates = "ImageIntegration.psfFluxEstimates:";
+            IsoString psfFluxPowerEstimates = "ImageIntegration.psfFluxPowerEstimates:";
+            IsoString psfCounts = "ImageIntegration.psfCounts:";
+
             for ( int j = 0; j < o_output.numberOfChannels; ++j )
             {
                finalNoiseEstimates.AppendFormat( " %.4e", o_output.finalNoiseEstimates[j] );
                finalNoiseScaleEstimates.AppendFormat( " %.6e", double( o_output.finalNoiseScaleEstimates[j] ) );
                finalScaleEstimates.AppendFormat( " %.6e", o_output.finalScaleEstimates[j] );
                finalLocationEstimates.AppendFormat( " %.6e", o_output.finalLocationEstimates[j] );
+               psfSignalEstimates.AppendFormat( " %.4e", o_output.finalPSFSignalEstimates[j] );
+               psfSignalPowerEstimates.AppendFormat( " %.4e", o_output.finalPSFSignalPowerEstimates[j] );
+               psfFluxEstimates.AppendFormat( " %.4e", o_output.finalPSFFluxEstimates[j] );
+               psfFluxPowerEstimates.AppendFormat( " %.4e", o_output.finalPSFFluxPowerEstimates[j] );
+               psfCounts.AppendFormat( " %u", o_output.finalPSFSignalCounts[j] );
             }
             keywords << FITSHeaderKeyword( "HISTORY", IsoString(), finalNoiseEstimates )
                      << FITSHeaderKeyword( "HISTORY", IsoString(), finalNoiseScaleEstimates )
                      << FITSHeaderKeyword( "HISTORY", IsoString(), finalScaleEstimates )
-                     << FITSHeaderKeyword( "HISTORY", IsoString(), finalLocationEstimates );
+                     << FITSHeaderKeyword( "HISTORY", IsoString(), finalLocationEstimates )
+                     << FITSHeaderKeyword( "HISTORY", IsoString(), psfSignalEstimates )
+                     << FITSHeaderKeyword( "HISTORY", IsoString(), psfSignalPowerEstimates )
+                     << FITSHeaderKeyword( "HISTORY", IsoString(), psfFluxEstimates )
+                     << FITSHeaderKeyword( "HISTORY", IsoString(), psfFluxPowerEstimates )
+                     << FITSHeaderKeyword( "HISTORY", IsoString(), psfCounts );
 
             for ( int j = 0; j < o_output.numberOfChannels; ++j )
-            {
                keywords << FITSHeaderKeyword( IsoString().Format( "NOISE%02d", j ),
                                               IsoString().Format( "%.4e", o_output.finalNoiseEstimates[j] ),
-                                              IsoString().Format( "Gaussian noise estimate for channel #%d", j ) )
+                                              IsoString().Format( "Gaussian noise estimate, channel #%d", j ) )
                         << FITSHeaderKeyword( IsoString().Format( "NOISEL%02d", j ),
                                               IsoString().Format( "%.6e", o_output.finalNoiseScaleEstimates[j].low ),
                                               IsoString().Format( "Noise scaling factor, low pixels, channel #%d", j ) )
                         << FITSHeaderKeyword( IsoString().Format( "NOISEH%02d", j ),
                                               IsoString().Format( "%.6e", o_output.finalNoiseScaleEstimates[j].high ),
-                                              IsoString().Format( "Noise scaling factor, high pixels, channel #%d", j ) );
-            }
-         } // if p_evaluateNoise
+                                              IsoString().Format( "Noise scaling factor, high pixels, channel #%d", j ) )
+                        << FITSHeaderKeyword( IsoString().Format( "PSFSGL%02d", j ),
+                                              IsoString().Format( "%.4e", o_output.finalPSFSignalEstimates[j] ),
+                                              IsoString().Format( "PSF signal estimate, channel #%d", j ) )
+                        << FITSHeaderKeyword( IsoString().Format( "PSFSGP%02d", j ),
+                                              IsoString().Format( "%.4e", o_output.finalPSFSignalPowerEstimates[j] ),
+                                              IsoString().Format( "PSF signal power estimate, channel #%d", j ) )
+                        << FITSHeaderKeyword( IsoString().Format( "PSFFLX%02d", j ),
+                                              IsoString().Format( "%.4e", o_output.finalPSFFluxEstimates[j] ),
+                                              IsoString().Format( "PSF flux estimate, channel #%d", j ) )
+                        << FITSHeaderKeyword( IsoString().Format( "PSFFLP%02d", j ),
+                                              IsoString().Format( "%.4e", o_output.finalPSFFluxPowerEstimates[j] ),
+                                              IsoString().Format( "PSF flux power estimate, channel #%d", j ) )
+                        << FITSHeaderKeyword( IsoString().Format( "PSFSGN%02d", j ),
+                                              IsoString().Format( "%d", o_output.finalPSFSignalCounts[j] ),
+                                              IsoString().Format( "Number of evaluated PSF fits, channel #%d", j ) );
+         } // if p_evaluateSNR
 
          if ( !p_subtractPedestals )
             if ( metadata.IsValid() )
@@ -1291,6 +1327,8 @@ void* ImageIntegrationInstance::LockParameter( const MetaParameter* p, size_type
       return &p_weightMode;
    if ( p == TheIIWeightKeywordParameter )
       return p_weightKeyword.Begin();
+   else if ( p == TheIICSVWeightsParameter )
+      return p_csvWeights.Begin();
    if ( p == TheIIWeightScaleParameter )
       return &p_weightScale;
    if ( p == TheIIAdaptiveGridSizeParameter )
@@ -1391,8 +1429,8 @@ void* ImageIntegrationInstance::LockParameter( const MetaParameter* p, size_type
       return &p_roi.y1;
    if ( p == TheIIUseCacheParameter )
       return &p_useCache;
-   if ( p == TheIIEvaluateNoiseParameter )
-      return &p_evaluateNoise;
+   if ( p == TheIIEvaluateSNRParameter )
+      return &p_evaluateSNR;
    if ( p == TheIIMRSMinDataFractionParameter )
       return &p_mrsMinDataFraction;
    if ( p == TheIISubtractPedestalsParameter )
@@ -1480,6 +1518,41 @@ void* ImageIntegrationInstance::LockParameter( const MetaParameter* p, size_type
       return o_output.finalLocationEstimates.At( 1 );
    if ( p == TheIIFinalLocationEstimateBParameter )
       return o_output.finalLocationEstimates.At( 2 );
+
+   if ( p == TheIIFinalPSFSignalEstimateRKParameter )
+      return o_output.finalPSFSignalEstimates.At( 0 );
+   if ( p == TheIIFinalPSFSignalEstimateGParameter )
+      return o_output.finalPSFSignalEstimates.At( 1 );
+   if ( p == TheIIFinalPSFSignalEstimateBParameter )
+      return o_output.finalPSFSignalEstimates.At( 2 );
+
+   if ( p == TheIIFinalPSFSignalPowerEstimateRKParameter )
+      return o_output.finalPSFSignalPowerEstimates.At( 0 );
+   if ( p == TheIIFinalPSFSignalPowerEstimateGParameter )
+      return o_output.finalPSFSignalPowerEstimates.At( 1 );
+   if ( p == TheIIFinalPSFSignalPowerEstimateBParameter )
+      return o_output.finalPSFSignalPowerEstimates.At( 2 );
+
+   if ( p == TheIIFinalPSFFluxEstimateRKParameter )
+      return o_output.finalPSFFluxEstimates.At( 0 );
+   if ( p == TheIIFinalPSFFluxEstimateGParameter )
+      return o_output.finalPSFFluxEstimates.At( 1 );
+   if ( p == TheIIFinalPSFFluxEstimateBParameter )
+      return o_output.finalPSFFluxEstimates.At( 2 );
+
+   if ( p == TheIIFinalPSFFluxPowerEstimateRKParameter )
+      return o_output.finalPSFFluxPowerEstimates.At( 0 );
+   if ( p == TheIIFinalPSFFluxPowerEstimateGParameter )
+      return o_output.finalPSFFluxPowerEstimates.At( 1 );
+   if ( p == TheIIFinalPSFFluxPowerEstimateBParameter )
+      return o_output.finalPSFFluxPowerEstimates.At( 2 );
+
+   if ( p == TheIIFinalPSFSignalCountRKParameter )
+      return o_output.finalPSFSignalCounts.At( 0 );
+   if ( p == TheIIFinalPSFSignalCountGParameter )
+      return o_output.finalPSFSignalCounts.At( 1 );
+   if ( p == TheIIFinalPSFSignalCountBParameter )
+      return o_output.finalPSFSignalCounts.At( 2 );
 
    if ( p == TheIIReferenceNoiseReductionRKParameter )
       return o_output.referenceNoiseReductions.At( 0 );
@@ -1573,6 +1646,12 @@ bool ImageIntegrationInstance::AllocateParameter( size_type sizeOrLength, const 
       if ( sizeOrLength > 0 )
          p_weightKeyword.SetLength( sizeOrLength );
    }
+   else if ( p == TheIICSVWeightsParameter )
+   {
+      p_csvWeights.Clear();
+      if ( sizeOrLength > 0 )
+         p_csvWeights.SetLength( sizeOrLength );
+   }
    else if ( p == TheIIIntegrationImageIdParameter )
    {
       o_output.integrationImageId.Clear();
@@ -1625,6 +1704,8 @@ size_type ImageIntegrationInstance::ParameterLength( const MetaParameter* p, siz
       return p_inputHints.Length();
    if ( p == TheIIWeightKeywordParameter )
       return p_weightKeyword.Length();
+   if ( p == TheIICSVWeightsParameter )
+      return p_csvWeights.Length();
    if ( p == TheIIIntegrationImageIdParameter )
       return o_output.integrationImageId.Length();
    if ( p == TheIILowRejectionMapImageIdParameter )
@@ -1830,4 +1911,4 @@ ImageWindow ImageIntegrationInstance::CreateImageWindow( const IsoString& id, in
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationInstance.cpp - Released 2021-11-25T11:45:24Z
+// EOF ImageIntegrationInstance.cpp - Released 2021-12-29T20:37:28Z

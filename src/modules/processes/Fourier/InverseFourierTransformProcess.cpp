@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
 // Standard Fourier Process Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// InverseFourierTransformProcess.cpp - Released 2021-11-25T11:45:24Z
+// InverseFourierTransformProcess.cpp - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Fourier PixInsight module.
 //
@@ -139,4 +139,4 @@ ProcessImplementation* InverseFourierTransformProcess::Clone( const ProcessImple
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF InverseFourierTransformProcess.cpp - Released 2021-11-25T11:45:24Z
+// EOF InverseFourierTransformProcess.cpp - Released 2021-12-29T20:37:28Z

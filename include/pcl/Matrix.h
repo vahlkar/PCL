@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// pcl/Matrix.h - Released 2021-11-25T11:44:47Z
+// pcl/Matrix.h - Released 2021-12-29T20:37:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -110,7 +110,7 @@ namespace pcl
  * \li Efficient matrix storage and access to matrix elements. %Matrix
  * elements are dynamically allocated as a single, contiguous memory block.
  *
- * \li Support for a comprehensive set matrix operations, including matrix
+ * \li Support for a comprehensive set of matrix operations, including matrix
  * inversion and transposition, scalar-to-matrix and matrix-to-matrix
  * arithmetic operations, and image to/from matrix conversions.
  *
@@ -159,14 +159,15 @@ public:
    /*!
     * Constructs an uninitialized matrix.
     *
-    * \param rows    Number of matrix rows (>= 0).
-    * \param cols    Number of matrix columns (>= 0).
+    * \param rows    Number of matrix rows (&ge; 0).
+    * \param cols    Number of matrix columns (&ge; 0).
     *
     * Matrix elements are not initialized by this constructor; the newly
     * created matrix will contain unpredictable values.
     */
    GenericMatrix( int rows, int cols )
    {
+      PCL_PRECONDITION( rows >= 0 && cols >= 0 )
       m_data = new Data( rows, cols );
    }
 
@@ -174,11 +175,12 @@ public:
     * Constructs a matrix and fills it with a constant value.
     *
     * \param x       Initial value for all matrix elements.
-    * \param rows    Number of matrix rows (>= 0).
-    * \param cols    Number of matrix columns (>= 0).
+    * \param rows    Number of matrix rows (&ge; 0).
+    * \param cols    Number of matrix columns (&ge; 0).
     */
    GenericMatrix( const element& x, int rows, int cols )
    {
+      PCL_PRECONDITION( rows >= 0 && cols >= 0 )
       m_data = new Data( rows, cols );
       pcl::Fill( m_data->Begin(), m_data->End(), x );
    }
@@ -192,13 +194,14 @@ public:
     *                row order (all elements of the first matrix row followed
     *                by all elements of the second row, and so on).
     *
-    * \param rows    Number of matrix rows (>= 0).
+    * \param rows    Number of matrix rows (&ge; 0).
     *
-    * \param cols    Number of matrix columns (>= 0).
+    * \param cols    Number of matrix columns (&ge; 0).
     */
    template <typename T1>
    GenericMatrix( const T1* a, int rows, int cols )
    {
+      PCL_PRECONDITION( rows >= 0 && cols >= 0 )
       m_data = new Data( rows, cols );
       if ( a != nullptr )
       {
@@ -3743,4 +3746,4 @@ typedef F80Matrix                   LDMatrix;
 #endif   // __PCL_Matrix_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Matrix.h - Released 2021-11-25T11:44:47Z
+// EOF pcl/Matrix.h - Released 2021-12-29T20:37:09Z

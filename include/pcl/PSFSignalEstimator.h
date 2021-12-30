@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// pcl/PSFSignalEstimator.h - Released 2021-11-25T11:44:47Z
+// pcl/PSFSignalEstimator.h - Released 2021-12-29T20:37:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -85,8 +85,8 @@ public:
    {
       double mean = 0;      //!< Estimate of the mean signal.
       double power = 0;     //!< Estimate of the mean squared signal.
-      double meanFlux = 0;  //!< Estimate of the mean flux.
-      double powerFlux = 0; //!< Estimate of the mean squared flux.
+      double flux = 0;      //!< Total PSF flux.
+      double powerFlux = 0; //!< Total squared flux.
       int    count = 0;     //!< Number of valid PSF signal estimates.
 
       /*!
@@ -195,15 +195,18 @@ public:
    }
 
    /*!
-    * Returns the rejection limit in sigma units.
+    * Returns the rejection limit parameter of this signal estimator.
     *
-    * The rejection limit controls an iterative sigma-clipping algorithm used
-    * for robust rejection of outliers during the signal estimation process.
-    * Larger values favor the inclusion of more photometric PSF measurements,
-    * which can improve accuracy, but at the risk of including outliers that
-    * can degrade the result.
+    * The rejection limit parameter defines an order statistic, in the [0.5,1]
+    * range, used to exclude a fraction of the brightest PSF signal samples
+    * during the signal estimation process.
     *
-    * The default rejection limit is 5 sigmas.
+    * The brightest signal samples usually tend to be unreliable because of
+    * relative saturation and nonlinearity. Validity of the dimmest
+    * signal measurements is already ensured by robust star detection.
+    *
+    * The default value of this parameter is 0.9, which rejects a 10% of the
+    * highest signal samples.
     */
    float RejectionLimit() const
    {
@@ -211,8 +214,8 @@ public:
    }
 
    /*!
-    * Sets the rejection limit in sigma units. See RejectionLimit() for a
-    * description of this parameter.
+    * Sets a new value of the rejection limit parameter. See RejectionLimit()
+    * for a complete description.
     */
    void SetRejectionLimit( float r )
    {
@@ -283,6 +286,36 @@ public:
    }
 
    /*!
+    * Returns the high clipping point of this signal estimator.
+    *
+    * Bright pixels are rejected for calculation of a robust penalty function
+    * applied to compute PSF signal estimates representative of the whole
+    * image, not just of the measured stars. The high clipping point parameter
+    * defines an order statistic, in the [0.5,1] range, used as a rejection
+    * limit to exclude bright image structures, including most outliers such as
+    * cosmics, plane and satellite trails, uncorrected hot pixels, etc. For
+    * example, by setting this parameter to 0.5 all pixels above the median of
+    * the image would be rejected. The default high clipping point is 0.85,
+    * which works correctly in most practical cases.
+    */
+   float HighClippingPoint() const
+   {
+      return m_clipHigh;
+   }
+
+   /*!
+    * Sets the high clipping point for this signal estimator. The valid range
+    * is [0.5,1.0], whose boundaries correspond to the median and the maximum
+    * pixel sample values of the target image, respectively.
+    *
+    * See HighClippingPoint() for a description of this parameter.
+    */
+   void SetHighClippingPoint( float x )
+   {
+      m_clipHigh = Range( x, 0.5F, 1.0F );
+   }
+
+   /*!
     * Evaluates the mean values of the signal and the signal power for the
     * specified \a image. Returns the estimates as a new
     * PSFSignalEstimator::Estimates object.
@@ -307,7 +340,8 @@ private:
    mutable pcl::StarDetector m_starDetector;
            psf_function      m_psfType = PSFunction::Moffat4;
            float             m_psfCentroidTolerance = 1.5F;
-           float             m_rejectionLimit = 5.0F;
+           float             m_rejectionLimit = 0.9F;
+           float             m_clipHigh = 0.85F;
            int               m_maxStars = 0;
            bool              m_weighted = false;
 };
@@ -319,4 +353,4 @@ private:
 #endif   // __PCL_PSFSignalEstimator_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFSignalEstimator.h - Released 2021-11-25T11:44:47Z
+// EOF pcl/PSFSignalEstimator.h - Released 2021-12-29T20:37:09Z

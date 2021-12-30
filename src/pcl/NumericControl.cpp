@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// pcl/NumericControl.cpp - Released 2021-11-25T11:44:55Z
+// pcl/NumericControl.cpp - Released 2021-12-29T20:37:16Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -490,4 +490,4 @@ void NumericControl::KeyPressed( Control& sender, int key, unsigned modifiers, b
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/NumericControl.cpp - Released 2021-11-25T11:44:55Z
+// EOF pcl/NumericControl.cpp - Released 2021-12-29T20:37:16Z

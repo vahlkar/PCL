@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.6.5
+// Standard SubframeSelector Process Module Version 1.7.3
 // ----------------------------------------------------------------------------
-// SubframeSelectorInstance.h - Released 2021-11-25T11:45:24Z
+// SubframeSelectorInstance.h - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -164,6 +164,7 @@ private:
    // How to view the measured subframes.
    pcl_enum           p_sortingProperty;
    pcl_enum           p_graphProperty;
+   pcl_enum           p_auxGraphProperty;
 
    // High-level parallelism
    pcl_bool           p_useFileThreads;
@@ -208,4 +209,4 @@ private:
 #endif   // __SubframeSelectorInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInstance.h - Released 2021-11-25T11:45:24Z
+// EOF SubframeSelectorInstance.h - Released 2021-12-29T20:37:28Z

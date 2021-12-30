@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// pcl/FileDataCache.h - Released 2021-11-25T11:44:47Z
+// pcl/FileDataCache.h - Released 2021-12-29T20:37:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -55,6 +55,7 @@
 /// \file pcl/FileDataCache.h
 
 #include <pcl/File.h>
+#include <pcl/Matrix.h>
 #include <pcl/MultiVector.h>
 #include <pcl/Mutex.h>
 #include <pcl/ReferenceSortedArray.h>
@@ -200,10 +201,23 @@ protected:
 
    /*!
     * Deserializes a floating-point vector from the specified list of
-    * \a tokens, parsing the necessary tokens from the specified \a start
-    * iterator.
+    * \a tokens, parsing the necessary tokens starting from the specified
+    * \a start iterator.
     */
    static bool GetVector( DVector&, StringList::const_iterator& start, const StringList& tokens );
+
+   /*!
+    * Returns a string serialization of a floating-point matrix. The returned
+    * string can be deserialized with the GetMatrix() static member function.
+    */
+   static String MatrixToString( const DMatrix& );
+
+   /*!
+    * Deserializes a floating-point matrix from the specified list of
+    * \a tokens, parsing the necessary tokens starting from the specified
+    * \a start iterator.
+    */
+   static bool GetMatrix( DMatrix&, StringList::const_iterator& start, const StringList& tokens );
 
    /*!
     * Returns a string serialization of a floating-point multivector. The
@@ -214,10 +228,24 @@ protected:
 
    /*!
     * Deserializes a floating-point vector from the specified list of
-    * \a tokens, parsing the necessary tokens from the specified \a start
-    * iterator.
+    * \a tokens, parsing the necessary tokens starting from the specified
+    * \a start iterator.
     */
    static bool GetMultiVector( DMultiVector&, StringList::const_iterator& start, const StringList& tokens );
+
+   /*!
+    * Returns a string serialization of an array of floating-point matrices.
+    * The returned string can be deserialized with the GetMatrices() static
+    * member function.
+    */
+   static String MatricesToString( const Array<DMatrix>& );
+
+   /*!
+    * Deserializes an array of floating-point matrices from the specified list
+    * of \a tokens, parsing the necessary tokens starting from the specified
+    * \a start iterator.
+    */
+   static bool GetMatrices( Array<DMatrix>&, StringList::const_iterator& start, const StringList& tokens );
 
    /*
     * Special constructor used for cache search operations.
@@ -518,4 +546,4 @@ private:
 #endif   // __PCL_FileDataCache_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FileDataCache.h - Released 2021-11-25T11:44:47Z
+// EOF pcl/FileDataCache.h - Released 2021-12-29T20:37:09Z

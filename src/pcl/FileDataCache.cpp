@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// pcl/FileDataCache.cpp - Released 2021-11-25T11:44:55Z
+// pcl/FileDataCache.cpp - Released 2021-12-29T20:37:16Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -240,8 +240,8 @@ void FileDataCache::Purge() const
 String FileDataCacheItem::VectorToString( const DVector& v )
 {
    String s = String().Format( "\n%d", v.Length() );
-   for ( int i = 0; i < v.Length(); ++i )
-      s.AppendFormat( "\n%.8e", v[i] );
+   for ( double x : v )
+      s.AppendFormat( "\n%.8e", x );
    return s;
 }
 
@@ -252,12 +252,52 @@ bool FileDataCacheItem::GetVector( DVector& v, StringList::const_iterator& i, co
    if ( i == s.End() )
       return false;
    int n = i->ToInt();
-   if ( n < 0 || s.End() - i <= n )
+   ++i;
+   if ( n < 0 || s.End() - i < n )
+      return false;
+   v = DVector( n );
+   for ( double& x : v )
+   {
+      x = i->ToDouble();
+      ++i;
+   }
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+String FileDataCacheItem::MatrixToString( const DMatrix& M )
+{
+   String s = String().Format( "\n%d\n%d", M.Rows(), M.Cols() );
+   for ( double x : M )
+      s.AppendFormat( "\n%.8e", x );
+   return s;
+}
+
+// ----------------------------------------------------------------------------
+
+bool FileDataCacheItem::GetMatrix( DMatrix& M, StringList::const_iterator& i, const StringList& s )
+{
+   if ( i == s.End() )
+      return false;
+   int rows = i->ToInt();
+   if ( rows < 0 )
       return false;
    ++i;
-   v = DVector( n );
-   for ( int j = 0; j < n; ++j, ++i )
-      v[j] = i->ToDouble();
+   if ( i == s.End() )
+      return false;
+   int cols = i->ToInt();
+   if ( cols < 0 )
+      return false;
+   ++i;
+   if ( s.End() - i < rows*cols )
+      return false;
+   M = DMatrix( rows, cols );
+   for ( double& x : M )
+   {
+      x = i->ToDouble();
+      ++i;
+   }
    return true;
 }
 
@@ -267,7 +307,7 @@ String FileDataCacheItem::MultiVectorToString( const DMultiVector& m )
 {
    String s = String().Format( "\n%u", m.Length() );
    for ( const DVector& v : m )
-      s.Append( VectorToString( v ) );
+      s << VectorToString( v );
    return s;
 }
 
@@ -278,15 +318,45 @@ bool FileDataCacheItem::GetMultiVector( DMultiVector& m, StringList::const_itera
    if ( i == s.End() )
       return false;
    int n = i->ToInt();
-   if ( n < 0 || s.End() - i <= n )
-      return false;
    ++i;
+   if ( n < 0 || s.End() - i < n )
+      return false;
    for ( int j = 0; j < n; ++j )
    {
       DVector v;
       if ( !GetVector( v, i, s ) )
          return false;
       m << v;
+   }
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+String FileDataCacheItem::MatricesToString( const Array<DMatrix>& A )
+{
+   String s = String().Format( "\n%u", A.Length() );
+   for ( const DMatrix& M : A )
+      s << MatrixToString( M );
+   return s;
+}
+
+// ----------------------------------------------------------------------------
+
+bool FileDataCacheItem::GetMatrices( Array<DMatrix>& A, StringList::const_iterator& i, const StringList& s )
+{
+   if ( i == s.End() )
+      return false;
+   int n = i->ToInt();
+   ++i;
+   if ( n < 0 || s.End() - i < n )
+      return false;
+   for ( int j = 0; j < n; ++j )
+   {
+      DMatrix M;
+      if ( !GetMatrix( M, i, s ) )
+         return false;
+      A << M;
    }
    return true;
 }
@@ -371,4 +441,4 @@ void FileDataCacheItem::Save( const IsoString& keyPrefix, int index ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FileDataCache.cpp - Released 2021-11-25T11:44:55Z
+// EOF pcl/FileDataCache.cpp - Released 2021-12-29T20:37:16Z

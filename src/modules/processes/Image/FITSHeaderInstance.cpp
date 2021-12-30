@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// FITSHeaderInstance.cpp - Released 2021-11-25T11:45:24Z
+// FITSHeaderInstance.cpp - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -260,4 +260,4 @@ bool FITSHeaderInstance::IsReservedKeyword( const String& id )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITSHeaderInstance.cpp - Released 2021-11-25T11:45:24Z
+// EOF FITSHeaderInstance.cpp - Released 2021-12-29T20:37:28Z

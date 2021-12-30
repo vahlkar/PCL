@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.6.5
+// Standard SubframeSelector Process Module Version 1.7.3
 // ----------------------------------------------------------------------------
-// GraphWebView.h - Released 2021-11-25T11:45:24Z
+// GraphWebView.h - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -65,7 +65,7 @@ struct DataPoint
 {
    double x;
    double data;
-   double weight;
+   double auxData;
    bool   approved;
    bool   locked;
 };
@@ -75,33 +75,13 @@ typedef Array<DataPoint> DataPointArray;
 
 // ----------------------------------------------------------------------------
 
-class DataPointSortingBinaryPredicate
-{
-public:
-
-   DataPointSortingBinaryPredicate( bool y = false ) : m_y( y )
-   {
-   }
-
-   constexpr bool operator()( const DataPoint& s1, const DataPoint& s2 ) const
-   {
-      return m_y ? s1.data < s2.data : s1.x < s2.x;
-   }
-
-private:
-
-   bool m_y;
-};
-
-// ----------------------------------------------------------------------------
-
 class GraphWebView : public WebView
 {
 public:
 
    GraphWebView( Control& parent );
 
-   void SetDataset( const String& dataname, const DataPointVector& dataset );
+   void SetDataset( const String& dataName, const String& auxDataName, const DataPointVector& dataset );
 
    typedef void (Control::*approve_event_handler)( GraphWebView& sender, int index );
    typedef void (Control::*unlock_event_handler)( GraphWebView& sender, int index );
@@ -149,4 +129,4 @@ private:
 #endif   // __GRAPHWEBVIEW_h
 
 // ----------------------------------------------------------------------------
-// EOF GraphWebView.h - Released 2021-11-25T11:45:24Z
+// EOF GraphWebView.h - Released 2021-12-29T20:37:28Z

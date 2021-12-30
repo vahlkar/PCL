@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.6.5
+// Standard SubframeSelector Process Module Version 1.7.3
 // ----------------------------------------------------------------------------
-// GraphWebView.cpp - Released 2021-11-25T11:45:24Z
+// GraphWebView.cpp - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -192,14 +192,14 @@ void GraphWebView::OnUnlock( unlock_event_handler handler, Control& receiver )
 
 // ----------------------------------------------------------------------------
 
-void GraphWebView::SetDataset( const String& dataname, const DataPointVector& dataset )
+void GraphWebView::SetDataset( const String& dataName, const String& auxDataName, const DataPointVector& dataset )
 {
    m_loaded = false;
 
    // Sort the dataset by X values to ensure a proper line
-   DataPointVector datasetSortedX = dataset.Sorted( DataPointSortingBinaryPredicate( false/*y*/ ) );
+   DataPointVector datasetSortedX = dataset.Sorted( []( const DataPoint& a, const DataPoint& b ) { return a.x < b.x; } );
    // Sort the dataset by Y values to make distribution graphs
-   DataPointVector datasetSortedY = dataset.Sorted( DataPointSortingBinaryPredicate( true/*y*/ ) );
+   DataPointVector datasetSortedY = dataset.Sorted( []( const DataPoint& a, const DataPoint& b ) { return a.data < b.data; } );
 
    // Find Median and MAD of the values
    Array<double> values;
@@ -217,6 +217,15 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector& da
       max = datasetSortedY[datasetSortedY.Length()-1].data;
    }
    double range = max - min;
+   double min2 = 0;
+   double max2 = 0;
+   if ( !dataset.IsEmpty() )
+   {
+      min2 = MinItem( dataset.Begin(), dataset.End(),
+                      []( const DataPoint& a, const DataPoint& b ) { return a.auxData < b.auxData; } )->auxData;
+      max2 = MaxItem( dataset.Begin(), dataset.End(),
+                      []( const DataPoint& a, const DataPoint& b ) { return a.auxData < b.auxData; } )->auxData;
+   }
 
    // Determine the # of bins and their width
    int bins = 0;
@@ -273,22 +282,22 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector& da
    for ( const DataPoint& p : datasetSortedX )
    {
       double dataSigma = DeviationNormalize( p.data, median, meanDev );
-      graphingArray += String().Format(
-              "[%.0f, [%.4f, %.4f, %.4f], [%.4f, %.4f, %.4f], [%.4f, %.4f, %.4f], [%.4f, %.4f, %.4f]], ",
+      graphingArray << String().Format(
+              "[%.0f, [%.8e, %.8e, %.8e], [%.8e, %.8e, %.8e], [%.8e, %.8e, %.8e], [%.8e, %.8e, %.8e]], ",
               p.x,
-              p.weight, p.weight, p.weight,
+              p.data, p.data, p.data,
+              p.auxData, p.auxData, p.auxData,
               median - meanDev, median, median + meanDev,
-              median - meanDev*2, median, median + meanDev*2,
-              p.data, p.data, p.data
+              median - 2*meanDev, median, median + 2*meanDev
       );
-      indexedLocks += String().Format( "%.0f:%s, ", p.x, p.locked ? "true" : "false" );
-      indexedApprovals += String().Format( "%.0f:%s, ", p.x, p.approved ? "true" : "false" );
-      indexedSigmas += String().Format( "%.0f:%.4f, ", p.x, dataSigma );
+      indexedLocks << String().Format( "%.0f:%s, ", p.x, p.locked ? "true" : "false" );
+      indexedApprovals << String().Format( "%.0f:%s, ", p.x, p.approved ? "true" : "false" );
+      indexedSigmas << String().Format( "%.0f:%.8e, ", p.x, dataSigma );
    }
-   indexedSigmas += "}";
-   indexedLocks += "}";
-   indexedApprovals += "}";
-   graphingArray += "]";
+   indexedSigmas << "}";
+   indexedLocks << "}";
+   indexedApprovals << "}";
+   graphingArray << "]";
 
    // Create the Graphing arrays and backend objects (Histograph)
    String histographingArray = "[ ";
@@ -304,7 +313,7 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector& da
 
          if ( edf.x < b.x ) // EDF < Bin, add the EDF and remove it later
          {
-            histographingArray += String().Format( "[%.8f, null, %.4f], ", edf.x, edf.data );
+            histographingArray << String().Format( "[%.8e, null, %.8e], ", edf.x, edf.data );
             ++eAdded;
          }
          else if ( edf.x == b.x ) // EDF = Bin, mark the EDF to be merged and remove it later
@@ -318,9 +327,9 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector& da
 
       // If this point aligns with an EDF value, create that joint point
       if ( eMatched >= 0 )
-         histographingArray += String().Format( "[%.8f, %.0f, %.4f], ", b.x, b.data, datasetEDF[eMatched].data );
+         histographingArray << String().Format( "[%.8e, %.0f, %.8e], ", b.x, b.data, datasetEDF[eMatched].data );
       else // Add this bin alone
-         histographingArray += String().Format( "[%.8f, %.0f, null], ", b.x, b.data );
+         histographingArray << String().Format( "[%.8e, %.0f, null], ", b.x, b.data );
 
       // Remove the EDF values that were already added
       if ( eAdded > 0 )
@@ -328,8 +337,8 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector& da
    }
    // Add any EDF values that weren't already
    for ( const DataPoint& e : datasetEDF )
-      histographingArray += String().Format( "[%.8f, null, %.4f], ", e.x, e.data );
-   histographingArray += "]";
+      histographingArray << String().Format( "[%.8e, null, %.8e], ", e.x, e.data );
+   histographingArray << "]";
 
    String html = Header() + R"DELIM(
 <div id="graph"></div>
@@ -350,11 +359,11 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector& da
    datasetHistogram = )DELIM" + histographingArray + R"DELIM(;
 
    // Helpful information for the legend.
-   datasetMin = )DELIM" + String().Format( "%.8f", min ) + R"DELIM(;
-   datasetMax = )DELIM" + String().Format( "%.8f", max ) + R"DELIM(;
-   datasetRange = )DELIM" + String().Format( "%.8f", range ) + R"DELIM(;
-   datasetBinRange = )DELIM" + String().Format( "%.8f", binRange ) + R"DELIM(;
-   datasetMaxValue = )DELIM" + String().Format( "%.8f", maxBins ) + R"DELIM(;
+   datasetMin = )DELIM" + String().Format( "%.8e", min ) + R"DELIM(;
+   datasetMax = )DELIM" + String().Format( "%.8e", max ) + R"DELIM(;
+   datasetRange = )DELIM" + String().Format( "%.8e", range ) + R"DELIM(;
+   datasetBinRange = )DELIM" + String().Format( "%.8e", binRange ) + R"DELIM(;
+   datasetMaxValue = )DELIM" + String().Format( "%.8e", maxBins ) + R"DELIM(;
 
    // For the parent controls to communicate with us, we'll
    // store the indices that have been selected with this interface
@@ -525,20 +534,29 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector& da
    }
 
    graph = new Dygraph(
-      document.getElementById( "graph" ), datasetValues,
+      document.getElementById( "graph" ),
+      datasetValues,
       {
          title: " ", // empty space above graph for our own labels
          xlabel: "Index",
 
          labels: [
             "Index",
-            " Weight", // if Weight is graphed, we need a unique name for this too
-            " Median", " Median NOLEGEND", // above, plus the 'hidden' 2x Sigma version
-            ")DELIM" + dataname + R"DELIM(",
+            ")DELIM" + dataName + R"DELIM(",
+            ")DELIM" + auxDataName + R"DELIM(",
+            " Median",
+            " Median NOLEGEND", // above, plus the 'hidden' 2x Sigma version
          ],
 
          series: {
-            " Weight": {
+            ")DELIM" + dataName + R"DELIM(": {
+               axis: "y",
+               drawPoints: true,
+               drawPointCallback: drawApprovedPoint,
+               strokeWidth: 2,
+               color: "#4394E5",
+            },
+            ")DELIM" + auxDataName + R"DELIM(": {
                axis: "y2",
                strokeWidth: 1,
                strokePattern: Dygraph.DASHED_LINE,
@@ -554,13 +572,6 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector& da
                strokeWidth: 0,
                color: "black",
             },
-            ")DELIM" + dataname + R"DELIM(": {
-               axis: "y",
-               drawPoints: true,
-               drawPointCallback: drawApprovedPoint,
-               strokeWidth: 2,
-               color: "#4394E5",
-            },
          },
 
          // Separate the Axes' Grids
@@ -569,7 +580,7 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector& da
                valueFormatter: function( x )
                {
                   return x.toFixed();
-               },
+               }
             },
             y: {
                independentTicks: true,
@@ -577,10 +588,11 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector& da
                {
                   if ( (x | 0) === x )
                      return (x <= 99999) ? x.toFixed() : x.toExponential( 1 );
-                  if ( Math.abs( x ) < 100 )
+                  if ( Math.abs( x ) < 100 && Math.abs( x ) > 0.01 )
                      return x.toFixed( 3 );
                   return x.toPrecision( 4 );
                },
+               valueRange: [)DELIM" + String().Format( "%.8e", min ) + R"DELIM(,)DELIM" + String().Format( "%.8e", max ) + R"DELIM(]
             },
             y2: {
                independentTicks: true,
@@ -589,10 +601,11 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector& da
                {
                   if ( (x | 0) === x )
                      return (x <= 99999) ? x.toFixed() : x.toExponential( 1 );
-                  if ( Math.abs( x ) < 100 )
+                  if ( Math.abs( x ) < 100 && Math.abs( x ) > 0.01 )
                      return x.toFixed( 3 );
                   return x.toPrecision( 4 );
                },
+               valueRange: [)DELIM" + String().Format( "%.8e", min2 ) + R"DELIM(,)DELIM" + String().Format( "%.8e", max2 ) + R"DELIM(]
             },
          },
 
@@ -621,10 +634,10 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector& da
       document.getElementById( "histograph" ), datasetHistogram,
       {
          title: " ", // empty space above graph for our own labels
-         xlabel: ")DELIM" + dataname + R"DELIM(",
+         xlabel: ")DELIM" + dataName + R"DELIM(",
 
          labels: [
-            ")DELIM" + dataname + R"DELIM(",
+            ")DELIM" + dataName + R"DELIM(",
             "Count",
             "Probability",
          ],
@@ -651,7 +664,7 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector& da
                {
                   if ( (x | 0) === x )
                      return (x <= 99999) ? x.toFixed() : x.toExponential( 1 );
-                  if ( Math.abs( x ) < 100 )
+                  if ( Math.abs( x ) < 100 && Math.abs( x ) > 0.01 )
                      return x.toFixed( 3 );
                   return x.toPrecision( 4 );
                },
@@ -692,14 +705,14 @@ void GraphWebView::SetDataset( const String& dataname, const DataPointVector& da
    var nodeClass = document.createAttribute( "class" );
    nodeClass.value = "label-y1";
    node.attributes.setNamedItem( nodeClass );
-   node.appendChild( document.createTextNode( ")DELIM" + dataname + R"DELIM(" ) );
+   node.appendChild( document.createTextNode( ")DELIM" + dataName + R"DELIM(" ) );
    document.getElementById( "graph" ).appendChild( node );
 
    node = document.createElement( "div" );
    nodeClass = document.createAttribute( "class" );
    nodeClass.value = "label-y2";
    node.attributes.setNamedItem( nodeClass );
-   node.appendChild( document.createTextNode( "Weight" ) );
+   node.appendChild( document.createTextNode( ")DELIM" + auxDataName + R"DELIM(" ) );
    document.getElementById( "graph" ).appendChild( node );
 
    node = document.createElement( "div" );
@@ -863,4 +876,4 @@ void GraphWebView::Cleanup()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GraphWebView.cpp - Released 2021-11-25T11:45:24Z
+// EOF GraphWebView.cpp - Released 2021-12-29T20:37:28Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.7.2
+// Standard ImageCalibration Process Module Version 1.8.0
 // ----------------------------------------------------------------------------
-// ImageCalibrationProcess.cpp - Released 2021-11-25T11:45:24Z
+// ImageCalibrationProcess.cpp - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -120,6 +120,7 @@ ImageCalibrationProcess::ImageCalibrationProcess()
    new ICMinStructureSize( this );
    new ICPSFType( this );
    new ICPSFRejectionLimit( this );
+   new ICPSFHighClippingPoint( this );
    new ICMaxStars( this );
    new ICOutputDirectory( this );
    new ICOutputExtension( this );
@@ -234,4 +235,4 @@ ProcessImplementation* ImageCalibrationProcess::Clone( const ProcessImplementati
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationProcess.cpp - Released 2021-11-25T11:45:24Z
+// EOF ImageCalibrationProcess.cpp - Released 2021-12-29T20:37:28Z

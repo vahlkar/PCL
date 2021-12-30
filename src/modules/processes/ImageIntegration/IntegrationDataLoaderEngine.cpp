@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.3.6
+// Standard ImageIntegration Process Module Version 1.4.3
 // ----------------------------------------------------------------------------
-// IntegrationDataLoaderEngine.cpp - Released 2021-11-25T11:45:24Z
+// IntegrationDataLoaderEngine.cpp - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -114,8 +114,8 @@ void IntegrationDataLoaderEngine::DataLoaderThread::Run()
       for ( int i = 0; i < IntegrationFile::NumberOfFiles(); ++i )
       {
          const float* b = IntegrationFile::FileByIndex( i )[E.m_r+k];
-         for ( int x = 0; x < IntegrationFile::Width(); ++x )
-            R->RowPtr( x )[i].Set( *b++, i );
+         for ( int x = 0; x < IntegrationFile::Width(); ++x, ++b )
+            R->RowPtr( x )[i].Set( *b, i );
       }
 
       // Pixel counters
@@ -139,4 +139,4 @@ void IntegrationDataLoaderEngine::DataLoaderThread::Run()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationDataLoaderEngine.cpp - Released 2021-11-25T11:45:24Z
+// EOF IntegrationDataLoaderEngine.cpp - Released 2021-12-29T20:37:28Z

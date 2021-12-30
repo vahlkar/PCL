@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.6.5
+// Standard SubframeSelector Process Module Version 1.7.3
 // ----------------------------------------------------------------------------
-// SubframeSelectorParameters.cpp - Released 2021-11-25T11:45:24Z
+// SubframeSelectorParameters.cpp - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -112,6 +112,7 @@ SSWeightingExpression*             TheSSWeightingExpressionParameter = nullptr;
 
 SSSortingProperty*                 TheSSSortingPropertyParameter = nullptr;
 SSGraphProperty*                   TheSSGraphPropertyParameter = nullptr;
+SSAuxGraphProperty*                TheSSAuxGraphPropertyParameter = nullptr;
 
 SSUseFileThreads*                  TheSSUseFileThreadsParameter = nullptr;
 SSFileThreadOverload*              TheSSFileThreadOverloadParameter = nullptr;
@@ -542,9 +543,10 @@ IsoString SSDataUnit::ElementId( size_type i ) const
 {
    switch ( i )
    {
-   default:
    case Electron:   return "Electron";
    case DataNumber: return "DataNumber";
+   default:
+   case Normalized: return "Normalized";
    }
 }
 
@@ -557,9 +559,10 @@ IsoString SSDataUnit::ElementLabel( size_type i ) const
 {
    switch ( i )
    {
-   default:
    case Electron:   return "Electrons (e-)";
    case DataNumber: return "Data Numbers (DN)";
+   default:
+   case Normalized: return "Normalized to [0,1]";
    }
 }
 
@@ -922,7 +925,7 @@ double SSUpperLimit::MinimumValue() const
 
 double SSUpperLimit::MaximumValue() const
 {
-   return 100.0;
+   return 1.0;
 }
 
 IsoString SSUpperLimit::Tooltip() const
@@ -1662,11 +1665,11 @@ IsoString SSSortingProperty::ElementLabel( size_type i ) const
    case Weight:               return "Weight";
    case FWHM:                 return "FWHM";
    case Eccentricity:         return "Eccentricity";
-   case PSFSignalWeight:      return "PSF Signal";
-   case PSFSignalPowerWeight: return "PSF Signal Power";
+   case PSFSignalWeight:      return "PSF Signal Weight";
+   case PSFSignalPowerWeight: return "PSF Signal Power Weight";
    case PSFFlux:              return "PSF Flux";
    case PSFFluxPower:         return "PSF Flux Power";
-   case SNRWeight:            return "SNR";
+   case SNRWeight:            return "SNR Weight";
    case Median:               return "Median";
    case MedianMeanDev:        return "Median Mean Dev.";
    case Noise:                return "Noise";
@@ -1688,22 +1691,16 @@ size_type SSSortingProperty::DefaultValueIndex() const
 
 // ----------------------------------------------------------------------------
 
-SSGraphProperty::SSGraphProperty( MetaProcess* P ) : MetaEnumeration( P )
+SSGraphPropertyBase::SSGraphPropertyBase( MetaProcess* P ) : MetaEnumeration( P )
 {
-   TheSSGraphPropertyParameter = this;
 }
 
-IsoString SSGraphProperty::Id() const
-{
-   return "graphProperty";
-}
-
-size_type SSGraphProperty::NumberOfElements() const
+size_type SSGraphPropertyBase::NumberOfElements() const
 {
    return NumberOfItems;
 }
 
-IsoString SSGraphProperty::ElementId( size_type i ) const
+IsoString SSGraphPropertyBase::ElementId( size_type i ) const
 {
    switch ( i )
    {
@@ -1730,17 +1727,17 @@ IsoString SSGraphProperty::ElementId( size_type i ) const
    }
 }
 
-IsoString SSGraphProperty::ElementAliases() const
+IsoString SSGraphPropertyBase::ElementAliases() const
 {
    return "PSFPowerWeight=PSFSignalPowerWeight";
 }
 
-int SSGraphProperty::ElementValue( size_type i ) const
+int SSGraphPropertyBase::ElementValue( size_type i ) const
 {
    return int( i );
 }
 
-IsoString SSGraphProperty::ElementLabel( size_type i ) const
+IsoString SSGraphPropertyBase::ElementLabel( size_type i ) const
 {
    switch ( i )
    {
@@ -1748,11 +1745,11 @@ IsoString SSGraphProperty::ElementLabel( size_type i ) const
    case Weight:               return "Weight";
    case FWHM:                 return "FWHM";
    case Eccentricity:         return "Eccentricity";
-   case PSFSignalWeight:      return "PSF Signal";
-   case PSFSignalPowerWeight: return "PSF Signal Power";
+   case PSFSignalWeight:      return "PSF Signal Weight";
+   case PSFSignalPowerWeight: return "PSF Signal Power Weight";
    case PSFFlux:              return "PSF Flux";
    case PSFFluxPower:         return "PSF Flux Power";
-   case SNRWeight:            return "SNR";
+   case SNRWeight:            return "SNR Weight";
    case Median:               return "Median";
    case MedianMeanDev:        return "Median Mean Dev.";
    case Noise:                return "Noise";
@@ -1767,9 +1764,33 @@ IsoString SSGraphProperty::ElementLabel( size_type i ) const
    }
 }
 
-size_type SSGraphProperty::DefaultValueIndex() const
+size_type SSGraphPropertyBase::DefaultValueIndex() const
 {
    return Default;
+}
+
+// ----------------------------------------------------------------------------
+
+SSGraphProperty::SSGraphProperty( MetaProcess* P ) : SSGraphPropertyBase( P )
+{
+   TheSSGraphPropertyParameter = this;
+}
+
+IsoString SSGraphProperty::Id() const
+{
+   return "graphProperty";
+}
+
+// ----------------------------------------------------------------------------
+
+SSAuxGraphProperty::SSAuxGraphProperty( MetaProcess* P ) : SSGraphPropertyBase( P )
+{
+   TheSSAuxGraphPropertyParameter = this;
+}
+
+IsoString SSAuxGraphProperty::Id() const
+{
+   return "auxGraphProperty";
 }
 
 // ----------------------------------------------------------------------------
@@ -2668,4 +2689,4 @@ bool SSMeasurementAltitude::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorParameters.cpp - Released 2021-11-25T11:45:24Z
+// EOF SubframeSelectorParameters.cpp - Released 2021-12-29T20:37:28Z

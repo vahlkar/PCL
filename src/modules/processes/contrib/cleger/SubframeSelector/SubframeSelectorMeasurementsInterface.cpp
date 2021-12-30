@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.6.5
+// Standard SubframeSelector Process Module Version 1.7.3
 // ----------------------------------------------------------------------------
-// SubframeSelectorMeasurementsInterface.cpp - Released 2021-11-25T11:45:24Z
+// SubframeSelectorMeasurementsInterface.cpp - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -70,19 +70,19 @@ static pcl_enum s_comboBoxItemIndexToSortingProperty[] =
 {
    SSSortingProperty::Index,
    SSSortingProperty::Weight,
+   SSSortingProperty::SNRWeight,
    SSSortingProperty::PSFSignalWeight,
    SSSortingProperty::PSFSignalPowerWeight,
-   SSSortingProperty::PSFFlux,
-   SSSortingProperty::PSFFluxPower,
-   SSSortingProperty::SNRWeight,
    SSSortingProperty::FWHM,
    SSSortingProperty::Eccentricity,
    SSSortingProperty::Stars,
-   SSSortingProperty::StarResidual,
    SSSortingProperty::Altitude,
    SSSortingProperty::Azimuth,
    SSSortingProperty::Noise,
    SSSortingProperty::NoiseRatio,
+   SSSortingProperty::PSFFlux,
+   SSSortingProperty::PSFFluxPower,
+   SSSortingProperty::StarResidual,
    SSSortingProperty::Median,
    SSSortingProperty::FWHMMeanDev,
    SSSortingProperty::EccentricityMeanDev,
@@ -95,19 +95,19 @@ static int s_sortingPropertyToComboBoxItemIndex[ SSSortingProperty::NumberOfItem
 static pcl_enum s_comboBoxItemIndexToGraphProperty[] =
 {
    SSGraphProperty::Weight,
+   SSGraphProperty::SNRWeight,
    SSGraphProperty::PSFSignalWeight,
    SSGraphProperty::PSFSignalPowerWeight,
-   SSGraphProperty::PSFFlux,
-   SSGraphProperty::PSFFluxPower,
-   SSGraphProperty::SNRWeight,
    SSGraphProperty::FWHM,
    SSGraphProperty::Eccentricity,
    SSGraphProperty::Stars,
-   SSGraphProperty::StarResidual,
    SSGraphProperty::Altitude,
    SSGraphProperty::Azimuth,
    SSGraphProperty::Noise,
    SSGraphProperty::NoiseRatio,
+   SSGraphProperty::PSFFlux,
+   SSGraphProperty::PSFFluxPower,
+   SSGraphProperty::StarResidual,
    SSGraphProperty::Median,
    SSGraphProperty::FWHMMeanDev,
    SSGraphProperty::EccentricityMeanDev,
@@ -345,46 +345,46 @@ void SubframeSelectorMeasurementsInterface::UpdateMeasurementNode( MeasurementNo
    node->SetText( 4, String().Format( "%.4e", item->weight ) );
    node->SetAlignment( 4, TextAlign::Center );
 
-   node->SetText( 5, String().Format( "%.4e", item->psfSignalWeight ) );
+   node->SetText( 5, String().Format( "%.4e", item->snrWeight ) );
    node->SetAlignment( 5, TextAlign::Center );
 
-   node->SetText( 6, String().Format( "%.4e", item->psfSignalPowerWeight ) );
+   node->SetText( 6, String().Format( "%.4e", item->psfSignalWeight ) );
    node->SetAlignment( 6, TextAlign::Center );
 
-   node->SetText( 7, String().Format( "%.4e", item->psfFlux ) );
+   node->SetText( 7, String().Format( "%.4e", item->psfSignalPowerWeight ) );
    node->SetAlignment( 7, TextAlign::Center );
 
-   node->SetText( 8, String().Format( "%.4e", item->psfFluxPower ) );
+   node->SetText( 8, String().Format( "%.4f", item->FWHM( m_instance.p_subframeScale, m_instance.p_scaleUnit ) ) );
    node->SetAlignment( 8, TextAlign::Center );
 
-   node->SetText( 9, String().Format( "%.4e", item->snrWeight ) );
+   node->SetText( 9, String().Format( "%.4f", item->eccentricity ) );
    node->SetAlignment( 9, TextAlign::Center );
 
-   node->SetText( 10, String().Format( "%.4f", item->FWHM( m_instance.p_subframeScale, m_instance.p_scaleUnit ) ) );
+   node->SetText( 10, String().Format( "%u", unsigned( item->stars ) ) );
    node->SetAlignment( 10, TextAlign::Center );
 
-   node->SetText( 11, String().Format( "%.4f", item->eccentricity ) );
+   node->SetText( 11, String().Format( "%.4f", item->altitude ) );
    node->SetAlignment( 11, TextAlign::Center );
 
-   node->SetText( 12, String().Format( "%u", unsigned( item->stars ) ) );
+   node->SetText( 12, String().Format( "%.4f", item->azimuth ) );
    node->SetAlignment( 12, TextAlign::Center );
 
-   node->SetText( 13, String().Format( "%.4e", item->starResidual ) );
-   node->SetAlignment( 13, TextAlign::Center );
-
-   node->SetText( 14, String().Format( "%.4f", item->altitude ) );
-   node->SetAlignment( 14, TextAlign::Center );
-
-   node->SetText( 15, String().Format( "%.4f", item->azimuth ) );
-   node->SetAlignment( 15, TextAlign::Center );
-
-   node->SetText( 16, String().Format( "%.4e",
+   node->SetText( 13, String().Format( "%.4e",
             item->Noise( m_instance.p_cameraGain,
                          TheSSCameraResolutionParameter->ElementData( m_instance.p_cameraResolution ),
                          m_instance.p_dataUnit ) ) );
+   node->SetAlignment( 13, TextAlign::Center );
+
+   node->SetText( 14, String().Format( "%.4f", item->noiseRatio ) );
+   node->SetAlignment( 14, TextAlign::Center );
+
+   node->SetText( 15, String().Format( "%.4e", item->psfFlux ) );
+   node->SetAlignment( 15, TextAlign::Center );
+
+   node->SetText( 16, String().Format( "%.4e", item->psfFluxPower ) );
    node->SetAlignment( 16, TextAlign::Center );
 
-   node->SetText( 17, String().Format( "%.4f", item->noiseRatio ) );
+   node->SetText( 17, String().Format( "%.4e", item->starResidual ) );
    node->SetAlignment( 17, TextAlign::Center );
 
    node->SetText( 18, String().Format( "%.4e", item->Median( m_instance.p_cameraGain,
@@ -392,16 +392,16 @@ void SubframeSelectorMeasurementsInterface::UpdateMeasurementNode( MeasurementNo
                                  m_instance.p_dataUnit ) ) );
    node->SetAlignment( 18, TextAlign::Center );
 
-   node->SetText( 19, String().Format( "%.4f", item->FWHMMeanDeviation( m_instance.p_subframeScale, m_instance.p_scaleUnit ) ) );
+   node->SetText( 19, String().Format( "%.4e", item->FWHMMeanDeviation( m_instance.p_subframeScale, m_instance.p_scaleUnit ) ) );
    node->SetAlignment( 19, TextAlign::Center );
 
-   node->SetText( 20, String().Format( "%.4f", item->eccentricityMeanDev ) );
+   node->SetText( 20, String().Format( "%.4e", item->eccentricityMeanDev ) );
    node->SetAlignment( 20, TextAlign::Center );
 
-   node->SetText( 21, String().Format( "%.4f", item->starResidualMeanDev ) );
+   node->SetText( 21, String().Format( "%.4e", item->starResidualMeanDev ) );
    node->SetAlignment( 21, TextAlign::Center );
 
-   node->SetText( 22, String().Format( "%.4f", item->MedianMeanDev( m_instance.p_cameraGain,
+   node->SetText( 22, String().Format( "%.4e", item->MedianMeanDev( m_instance.p_cameraGain,
                                  TheSSCameraResolutionParameter->ElementData( m_instance.p_cameraResolution ),
                                  m_instance.p_dataUnit ) ) );
    node->SetAlignment( 22, TextAlign::Center );
@@ -457,8 +457,10 @@ void SubframeSelectorMeasurementsInterface::UpdateMeasurementTable()
 
 void SubframeSelectorMeasurementsInterface::UpdateMeasurementGraph()
 {
-   GUI->MeasurementGraph_WebViewProperty_ComboBox.SetCurrentItem(
+   GUI->MeasurementGraph_Property_ComboBox.SetCurrentItem(
             s_graphPropertyToComboBoxItemIndex[m_instance.p_graphProperty] );
+   GUI->MeasurementGraph_AuxProperty_ComboBox.SetCurrentItem(
+            s_graphPropertyToComboBoxItemIndex[m_instance.p_auxGraphProperty] );
 
    DataPointVector dataset( int( m_instance.o_measures.Length() ) );
    int i = 0;
@@ -468,79 +470,90 @@ void SubframeSelectorMeasurementsInterface::UpdateMeasurementGraph()
 
       point.x = item.index + 1; // N.B. 1-based table/graph index, 0-based arrays
 
-      switch ( m_instance.p_graphProperty )
+      for ( int j = 0; j < 2; ++j )
       {
-      default: // ?!
-      case SSGraphProperty::Weight:
-         point.data = item.weight;
-         break;
-      case SSGraphProperty::FWHM:
-         point.data = item.FWHM( m_instance.p_subframeScale, m_instance.p_scaleUnit );
-         break;
-      case SSGraphProperty::Eccentricity:
-         point.data = item.eccentricity;
-         break;
-      case SSGraphProperty::PSFSignalWeight:
-         point.data = item.psfSignalWeight;
-         break;
-      case SSGraphProperty::PSFSignalPowerWeight:
-         point.data = item.psfSignalPowerWeight;
-         break;
-      case SSGraphProperty::PSFFlux:
-         point.data = item.psfFlux;
-         break;
-      case SSGraphProperty::PSFFluxPower:
-         point.data = item.psfFluxPower;
-         break;
-      case SSGraphProperty::SNRWeight:
-         point.data = item.snrWeight;
-         break;
-      case SSGraphProperty::Median:
-         point.data = item.Median( m_instance.p_cameraGain,
-                                   TheSSCameraResolutionParameter->ElementData( m_instance.p_cameraResolution ),
-                                   m_instance.p_dataUnit );
-         break;
-      case SSGraphProperty::MedianMeanDev:
-         point.data = item.MedianMeanDev( m_instance.p_cameraGain,
-                                          TheSSCameraResolutionParameter->ElementData( m_instance.p_cameraResolution ),
-                                          m_instance.p_dataUnit );
-         break;
-      case SSGraphProperty::Noise:
-         point.data = item.Noise( m_instance.p_cameraGain,
-                                  TheSSCameraResolutionParameter->ElementData( m_instance.p_cameraResolution ),
-                                  m_instance.p_dataUnit );
-         break;
-      case SSGraphProperty::NoiseRatio:
-         point.data = item.noiseRatio;
-         break;
-      case SSGraphProperty::Stars:
-         point.data = item.stars;
-         break;
-      case SSGraphProperty::StarResidual:
-         point.data = item.starResidual;
-         break;
-      case SSGraphProperty::FWHMMeanDev:
-         point.data = item.FWHMMeanDeviation( m_instance.p_subframeScale, m_instance.p_scaleUnit );
-         break;
-      case SSGraphProperty::EccentricityMeanDev:
-         point.data = item.eccentricityMeanDev;
-         break;
-      case SSGraphProperty::StarResidualMeanDev:
-         point.data = item.starResidualMeanDev;
-         break;
-      case SSGraphProperty::Azimuth:
-         point.data = item.azimuth;
-         break;
-      case SSGraphProperty::Altitude:
-         point.data = item.altitude;
-         break;
+         double data;
+         switch ( (j == 0) ? m_instance.p_graphProperty : m_instance.p_auxGraphProperty )
+         {
+         default: // ?!
+         case SSGraphProperty::Weight:
+            data = item.weight;
+            break;
+         case SSGraphProperty::FWHM:
+            data = item.FWHM( m_instance.p_subframeScale, m_instance.p_scaleUnit );
+            break;
+         case SSGraphProperty::Eccentricity:
+            data = item.eccentricity;
+            break;
+         case SSGraphProperty::PSFSignalWeight:
+            data = item.psfSignalWeight;
+            break;
+         case SSGraphProperty::PSFSignalPowerWeight:
+            data = item.psfSignalPowerWeight;
+            break;
+         case SSGraphProperty::PSFFlux:
+            data = item.psfFlux;
+            break;
+         case SSGraphProperty::PSFFluxPower:
+            data = item.psfFluxPower;
+            break;
+         case SSGraphProperty::SNRWeight:
+            data = item.snrWeight;
+            break;
+         case SSGraphProperty::Median:
+            data = item.Median( m_instance.p_cameraGain,
+                                TheSSCameraResolutionParameter->ElementData( m_instance.p_cameraResolution ),
+                                m_instance.p_dataUnit );
+            break;
+         case SSGraphProperty::MedianMeanDev:
+            data = item.MedianMeanDev( m_instance.p_cameraGain,
+                                       TheSSCameraResolutionParameter->ElementData( m_instance.p_cameraResolution ),
+                                       m_instance.p_dataUnit );
+            break;
+         case SSGraphProperty::Noise:
+            data = item.Noise( m_instance.p_cameraGain,
+                               TheSSCameraResolutionParameter->ElementData( m_instance.p_cameraResolution ),
+                               m_instance.p_dataUnit );
+            break;
+         case SSGraphProperty::NoiseRatio:
+            data = item.noiseRatio;
+            break;
+         case SSGraphProperty::Stars:
+            data = item.stars;
+            break;
+         case SSGraphProperty::StarResidual:
+            data = item.starResidual;
+            break;
+         case SSGraphProperty::FWHMMeanDev:
+            data = item.FWHMMeanDeviation( m_instance.p_subframeScale, m_instance.p_scaleUnit );
+            break;
+         case SSGraphProperty::EccentricityMeanDev:
+            data = item.eccentricityMeanDev;
+            break;
+         case SSGraphProperty::StarResidualMeanDev:
+            data = item.starResidualMeanDev;
+            break;
+         case SSGraphProperty::Azimuth:
+            data = item.azimuth;
+            break;
+         case SSGraphProperty::Altitude:
+            data = item.altitude;
+            break;
+         }
+
+         if ( j == 0 )
+            point.data = data;
+         else
+            point.auxData = data;
       }
-      point.weight = item.weight;
+
       point.approved = item.enabled;
       point.locked = item.locked;
    }
 
-   GUI->MeasurementGraph_WebView.SetDataset( TheSSGraphPropertyParameter->ElementLabel( m_instance.p_graphProperty ), dataset );
+   GUI->MeasurementGraph_WebView.SetDataset( TheSSGraphPropertyParameter->ElementLabel( m_instance.p_graphProperty ),
+                                             TheSSAuxGraphPropertyParameter->ElementLabel( m_instance.p_auxGraphProperty ),
+                                             dataset );
 }
 
 // ----------------------------------------------------------------------------
@@ -549,7 +562,7 @@ void SubframeSelectorMeasurementsInterface::UpdateMeasurementGraph()
 void SubframeSelectorMeasurementsInterface::ExportCSV() const
 {
    SaveFileDialog d;
-   d.SetCaption( "SubframeSelector: Save CSV File" );
+   d.SetCaption( "SubframeSelector: Export CSV File" );
    d.SetFilter( FileFilter( "CSV", ".csv" ) );
    d.EnableOverwritePrompt();
    if ( d.Execute() )
@@ -587,7 +600,7 @@ void SubframeSelectorMeasurementsInterface::ExportCSV() const
             << IsoString().Format( "Circular PSF,%s", m_instance.p_psfFitCircular ? "true" : "false" )
             << "Approval expression,\"" + m_instance.p_approvalExpression + "\""
             << "Weighting expression,\"" + m_instance.p_weightingExpression + "\""
-            << "Index,Approved,Locked,File,Weight,PSF Signal,PSF Signal Power,PSF Flux,PSF Flux Power,SNR,FWHM,"
+            << "Index,Approved,Locked,File,Weight,SNR Weight,PSF Signal Weight,PSF Signal Power Weight,PSF Flux,PSF Flux Power,FWHM,"
                "Eccentricity,Altitude,Azimuth,Median,Median Mean Deviation,Noise,Noise Ratio,Stars,Star Residual,FWHM Mean Deviation,"
                "Eccentricity Mean Deviation,Star Residual Mean Deviation";
 
@@ -597,13 +610,13 @@ void SubframeSelectorMeasurementsInterface::ExportCSV() const
                   (item.enabled ? "true," : "false,") +
                   (item.locked ? "true," : "false,") +
                   '"' + item.path.ToUTF8() + '"' + ',' +
-                  IsoString().Format( "%.6e,%.6e,%.6e,%.6e,%.6e,%.6e,%.4f,%.4f,%.4f,%.4f,%.6e,%.6e,%.4e,%.4f,%d,%.4f,%.4f,%.4f,%.4f",
+                  IsoString().Format( "%.6e,%.6e,%.6e,%.6e,%.6e,%.6e,%.4f,%.4f,%.4f,%.4f,%.6e,%.6e,%.4e,%.4e,%d,%.4e,%.4e,%.4e,%.4e",
                      item.weight,
+                     item.snrWeight,
                      item.psfSignalWeight,
                      item.psfSignalPowerWeight,
                      item.psfFlux,
                      item.psfFluxPower,
-                     item.snrWeight,
                      item.FWHM( m_instance.p_subframeScale, m_instance.p_scaleUnit ),
                      item.eccentricity,
                      item.altitude,
@@ -639,7 +652,7 @@ void SubframeSelectorMeasurementsInterface::ExportCSV() const
 void SubframeSelectorMeasurementsInterface::ExportPDF() const
 {
    SaveFileDialog d;
-   d.SetCaption( "SubframeSelector: Save PDF File" );
+   d.SetCaption( "SubframeSelector: Export PDF File" );
    d.SetFilter( FileFilter( "PDF", ".PDF" ) );
    d.EnableOverwritePrompt();
    if ( d.Execute() )
@@ -723,7 +736,7 @@ void SubframeSelectorMeasurementsInterface::e_NodeActivated( TreeBox& sender, Tr
 
 void SubframeSelectorMeasurementsInterface::e_ButtonClick( Button& sender, bool checked )
 {
-   if ( sender == GUI->MeasurementsTable_ToggleApproved_PushButton )
+   if ( sender == GUI->MeasurementsTable_ToggleApproved_ToolButton )
    {
       for ( int i = 0, n = GUI->MeasurementTable_TreeBox.NumberOfChildren(); i < n; ++i )
       {
@@ -739,7 +752,7 @@ void SubframeSelectorMeasurementsInterface::e_ButtonClick( Button& sender, bool 
       UpdateMeasurementQuantity();
       UpdateMeasurementGraph();
    }
-   else if ( sender == GUI->MeasurementsTable_ToggleLocked_PushButton )
+   else if ( sender == GUI->MeasurementsTable_ToggleLocked_ToolButton )
    {
       for ( int i = 0, n = GUI->MeasurementTable_TreeBox.NumberOfChildren(); i < n; ++i )
       {
@@ -754,12 +767,12 @@ void SubframeSelectorMeasurementsInterface::e_ButtonClick( Button& sender, bool 
       UpdateMeasurementQuantity();
       UpdateMeasurementGraph();
    }
-   else if ( sender == GUI->MeasurementsTable_Invert_PushButton )
+   else if ( sender == GUI->MeasurementsTable_Invert_ToolButton )
    {
       for ( int i = 0, n = GUI->MeasurementTable_TreeBox.NumberOfChildren(); i < n; ++i )
          GUI->MeasurementTable_TreeBox[i]->Select( !GUI->MeasurementTable_TreeBox[i]->IsSelected() );
    }
-   else if ( sender == GUI->MeasurementsTable_Remove_PushButton )
+   else if ( sender == GUI->MeasurementsTable_Remove_ToolButton )
    {
       MeasureItemList newMeasures;
       int selectedNodeIndex = -1;
@@ -786,16 +799,16 @@ void SubframeSelectorMeasurementsInterface::e_ButtonClick( Button& sender, bool 
          }
       }
    }
-   else if ( sender == GUI->MeasurementsTable_Clear_PushButton )
+   else if ( sender == GUI->MeasurementsTable_Reset_ToolButton )
    {
-      m_instance.o_measures.Clear();
+      m_instance.o_measures.Apply( []( MeasureItem& item ){ item.enabled = true; item.locked = false; } );
       UpdateControls();
    }
-   else if ( sender == GUI->MeasurementsTable_ExportCSV_PushButton )
+   else if ( sender == GUI->MeasurementsTable_ExportCSV_ToolButton )
    {
       ExportCSV();
    }
-   else if ( sender == GUI->MeasurementGraph_ExportPDF_PushButton )
+   else if ( sender == GUI->MeasurementGraph_ExportPDF_ToolButton )
    {
       ExportPDF();
    }
@@ -858,9 +871,14 @@ void SubframeSelectorMeasurementsInterface::e_ItemSelected( ComboBox& sender, in
    {
       UpdateMeasurementTable();
    }
-   else if ( sender == GUI->MeasurementGraph_WebViewProperty_ComboBox )
+   else if ( sender == GUI->MeasurementGraph_Property_ComboBox )
    {
       m_instance.p_graphProperty = s_comboBoxItemIndexToGraphProperty[itemIndex];
+      UpdateMeasurementGraph();
+   }
+   else if ( sender == GUI->MeasurementGraph_AuxProperty_ComboBox )
+   {
+      m_instance.p_auxGraphProperty = s_comboBoxItemIndexToGraphProperty[itemIndex];
       UpdateMeasurementGraph();
    }
 }
@@ -872,13 +890,12 @@ SubframeSelectorMeasurementsInterface::GUIData::GUIData( SubframeSelectorMeasure
    : MeasurementGraph_WebView( w )
    , MeasurementDistributionGraph_WebView( w )
 {
-   int buttonWidth1 = w.Font().Width( String( "Toggle Approve" ) + "MM" );
-   String buttonStyleSheet = String().Format( "QPushButton { min-width: %dpx; }", buttonWidth1 );
-
    MeasurementTable_SectionBar.SetTitle( "Measurements Table" );
    MeasurementTable_SectionBar.SetSection( MeasurementTable_Control );
    MeasurementTable_SectionBar.OnToggleSection( (SectionBar::section_event_handler)
                                     &SubframeSelectorMeasurementsInterface::e_ToggleSection, w );
+
+   //
 
    for ( size_type i = 0; i < TheSSSortingPropertyParameter->NumberOfElements(); ++i )
       MeasurementsTable_SortingProperty_ComboBox.AddItem(
@@ -887,61 +904,102 @@ SubframeSelectorMeasurementsInterface::GUIData::GUIData( SubframeSelectorMeasure
    MeasurementsTable_SortingProperty_ComboBox.OnItemSelected( (ComboBox::item_event_handler)
                                     &SubframeSelectorMeasurementsInterface::e_ItemSelected, w );
 
-   MeasurementsTable_SortingMode_ComboBox.AddItem( "Asc." );
-   MeasurementsTable_SortingMode_ComboBox.AddItem( "Desc." );
+   MeasurementsTable_SortingMode_ComboBox.AddItem( "Ascending", Bitmap( w.ScaledResource( ":/icons/sort-down.png" ) ) );
+   MeasurementsTable_SortingMode_ComboBox.AddItem( "Descending", Bitmap( w.ScaledResource( ":/icons/sort-up.png" ) ) );
+
+   MeasurementsTable_SortingMode_ComboBox.SetToolTip( "<p>Sorting direction</p>" );
    MeasurementsTable_SortingMode_ComboBox.OnItemSelected( (ComboBox::item_event_handler)
                                     &SubframeSelectorMeasurementsInterface::e_ItemSelected, w );
 
-   MeasurementsTable_ToggleApproved_PushButton.SetText( "Toggle Approve" );
-   MeasurementsTable_ToggleApproved_PushButton.SetToolTip( "<p>Toggle the approved state of currently selected measurements.</p>" );
-   MeasurementsTable_ToggleApproved_PushButton.SetStyleSheet( buttonStyleSheet );
-   MeasurementsTable_ToggleApproved_PushButton.OnClick( (Button::click_event_handler)
+   MeasurementsTable_TopLeft1_Sizer.SetSpacing( 4 );
+   MeasurementsTable_TopLeft1_Sizer.Add( MeasurementsTable_SortingProperty_ComboBox );
+   MeasurementsTable_TopLeft1_Sizer.Add( MeasurementsTable_SortingMode_ComboBox );
+   MeasurementsTable_TopLeft1_Sizer.AddStretch();
+
+   //
+
+   MeasurementsTable_Quantities_Label.SetMinWidth( w.Font().Width( "999999/999999 Approved (100.00%), 999999 Locked (100.00%)" ) );
+
+   MeasurementsTable_TopLeft2_Sizer.Add( MeasurementsTable_Quantities_Label );
+
+   //
+
+   MeasurementsTable_TopLeft_Sizer.SetSpacing( 4 );
+   MeasurementsTable_TopLeft_Sizer.Add( MeasurementsTable_TopLeft1_Sizer );
+   MeasurementsTable_TopLeft_Sizer.Add( MeasurementsTable_TopLeft2_Sizer );
+
+   //
+
+   MeasurementsTable_ToggleApproved_ToolButton.SetIcon( w.ScaledResource( ":/icons/check.png" ) );
+   MeasurementsTable_ToggleApproved_ToolButton.SetScaledFixedSize( 20, 20 );
+   MeasurementsTable_ToggleApproved_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
+   MeasurementsTable_ToggleApproved_ToolButton.SetToolTip( "<p>Toggle the approved state of currently selected measurements.</p>" );
+   MeasurementsTable_ToggleApproved_ToolButton.OnClick( (Button::click_event_handler)
                                     &SubframeSelectorMeasurementsInterface::e_ButtonClick, w );
 
-   MeasurementsTable_ToggleLocked_PushButton.SetText( "Toggle Lock" );
-   MeasurementsTable_ToggleLocked_PushButton.SetToolTip( "<p>Toggle the locked state of currently selected measurements.</p>" );
-   MeasurementsTable_ToggleLocked_PushButton.SetStyleSheet( buttonStyleSheet );
-   MeasurementsTable_ToggleLocked_PushButton.OnClick( (Button::click_event_handler)
+   MeasurementsTable_ToggleLocked_ToolButton.SetIcon( w.ScaledResource( ":/icons/lock.png" ) );
+   MeasurementsTable_ToggleLocked_ToolButton.SetScaledFixedSize( 20, 20 );
+   MeasurementsTable_ToggleLocked_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
+   MeasurementsTable_ToggleLocked_ToolButton.SetToolTip( "<p>Toggle the locked state of currently selected measurements.</p>" );
+   MeasurementsTable_ToggleLocked_ToolButton.OnClick( (Button::click_event_handler)
                                     &SubframeSelectorMeasurementsInterface::e_ButtonClick, w );
 
-   MeasurementsTable_Invert_PushButton.SetText( "Invert" );
-   MeasurementsTable_Invert_PushButton.SetToolTip( "<p>Invert the current selection of measurements.</p>" );
-   MeasurementsTable_Invert_PushButton.SetStyleSheet( buttonStyleSheet );
-   MeasurementsTable_Invert_PushButton.OnClick( (Button::click_event_handler)
+   MeasurementsTable_Invert_ToolButton.SetIcon( w.ScaledResource( ":/icons/select-invert.png" ) );
+   MeasurementsTable_Invert_ToolButton.SetScaledFixedSize( 20, 20 );
+   MeasurementsTable_Invert_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
+   MeasurementsTable_Invert_ToolButton.SetToolTip( "<p>Invert the current selection of measurements.</p>" );
+   MeasurementsTable_Invert_ToolButton.OnClick( (Button::click_event_handler)
                                     &SubframeSelectorMeasurementsInterface::e_ButtonClick, w );
 
-   MeasurementsTable_Remove_PushButton.SetText( "Remove" );
-   MeasurementsTable_Remove_PushButton.SetToolTip( "<p>Remove the selected measurements.</p>" );
-   MeasurementsTable_Remove_PushButton.SetStyleSheet( buttonStyleSheet );
-   MeasurementsTable_Remove_PushButton.OnClick( (Button::click_event_handler)
+   MeasurementsTable_TopRight1_Sizer.SetSpacing( 12 );
+   MeasurementsTable_TopRight1_Sizer.Add( MeasurementsTable_ToggleApproved_ToolButton );
+   MeasurementsTable_TopRight1_Sizer.Add( MeasurementsTable_ToggleLocked_ToolButton );
+   MeasurementsTable_TopRight1_Sizer.Add( MeasurementsTable_Invert_ToolButton );
+   MeasurementsTable_TopRight1_Sizer.AddStretch();
+
+   //
+
+   MeasurementsTable_Remove_ToolButton.SetIcon( w.ScaledResource( ":/icons/remove.png" ) );
+   MeasurementsTable_Remove_ToolButton.SetScaledFixedSize( 20, 20 );
+   MeasurementsTable_Remove_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
+   MeasurementsTable_Remove_ToolButton.SetToolTip( "<p>Remove the selected measurements.</p>" );
+   MeasurementsTable_Remove_ToolButton.OnClick( (Button::click_event_handler)
                                     &SubframeSelectorMeasurementsInterface::e_ButtonClick, w );
 
-   MeasurementsTable_Clear_PushButton.SetText( "Clear" );
-   MeasurementsTable_Clear_PushButton.SetToolTip( "<p>Clear the list of measurements.</p>" );
-   MeasurementsTable_Clear_PushButton.SetStyleSheet( buttonStyleSheet );
-   MeasurementsTable_Clear_PushButton.OnClick( (Button::click_event_handler)
+   MeasurementsTable_Reset_ToolButton.SetIcon( w.ScaledResource( ":/icons/reload.png" ) );
+   MeasurementsTable_Reset_ToolButton.SetScaledFixedSize( 20, 20 );
+   MeasurementsTable_Reset_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
+   MeasurementsTable_Reset_ToolButton.SetToolTip( "<p>Reset all manually defined approved and locked states.</p>" );
+   MeasurementsTable_Reset_ToolButton.OnClick( (Button::click_event_handler)
                                     &SubframeSelectorMeasurementsInterface::e_ButtonClick, w );
 
-   MeasurementsTable_ExportCSV_PushButton.SetText( "Save CSV" );
-   MeasurementsTable_ExportCSV_PushButton.SetToolTip( "<p>Export the table as a CSV file.</p>" );
-   MeasurementsTable_ExportCSV_PushButton.SetStyleSheet( buttonStyleSheet );
-   MeasurementsTable_ExportCSV_PushButton.OnClick( (Button::click_event_handler)
+   MeasurementsTable_ExportCSV_ToolButton.SetIcon( w.ScaledResource( ":/icons/document-spreadsheet.png" ) );
+   MeasurementsTable_ExportCSV_ToolButton.SetScaledFixedSize( 20, 20 );
+   MeasurementsTable_ExportCSV_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
+   MeasurementsTable_ExportCSV_ToolButton.SetToolTip( "<p>Export the table as a CSV file.</p>" );
+   MeasurementsTable_ExportCSV_ToolButton.OnClick( (Button::click_event_handler)
                                     &SubframeSelectorMeasurementsInterface::e_ButtonClick, w );
 
-   MeasurementsTable_Top1_Sizer.SetSpacing( 4 );
-   MeasurementsTable_Top1_Sizer.Add( MeasurementsTable_SortingProperty_ComboBox );
-   MeasurementsTable_Top1_Sizer.Add( MeasurementsTable_SortingMode_ComboBox );
-   MeasurementsTable_Top1_Sizer.AddStretch( 100 );
-   MeasurementsTable_Top1_Sizer.Add( MeasurementsTable_ToggleApproved_PushButton );
-   MeasurementsTable_Top1_Sizer.Add( MeasurementsTable_ToggleLocked_PushButton );
-   MeasurementsTable_Top1_Sizer.Add( MeasurementsTable_Invert_PushButton );
+   MeasurementsTable_TopRight2_Sizer.SetSpacing( 12 );
+   MeasurementsTable_TopRight2_Sizer.Add( MeasurementsTable_Remove_ToolButton );
+   MeasurementsTable_TopRight2_Sizer.Add( MeasurementsTable_Reset_ToolButton );
+   MeasurementsTable_TopRight2_Sizer.Add( MeasurementsTable_ExportCSV_ToolButton );
+   MeasurementsTable_TopRight2_Sizer.AddStretch();
 
-   MeasurementsTable_Top2_Sizer.SetSpacing( 4 );
-   MeasurementsTable_Top2_Sizer.Add( MeasurementsTable_Quantities_Label );
-   MeasurementsTable_Top2_Sizer.AddStretch( 100 );
-   MeasurementsTable_Top2_Sizer.Add( MeasurementsTable_Remove_PushButton );
-   MeasurementsTable_Top2_Sizer.Add( MeasurementsTable_Clear_PushButton );
-   MeasurementsTable_Top2_Sizer.Add( MeasurementsTable_ExportCSV_PushButton );
+   //
+
+   MeasurementsTable_TopRight_Sizer.SetSpacing( 4 );
+   MeasurementsTable_TopRight_Sizer.Add( MeasurementsTable_TopRight1_Sizer );
+   MeasurementsTable_TopRight_Sizer.Add( MeasurementsTable_TopRight2_Sizer );
+
+   //
+
+   MeasurementsTable_Top_Sizer.SetSpacing( 16 );
+   MeasurementsTable_Top_Sizer.Add( MeasurementsTable_TopLeft_Sizer );
+   MeasurementsTable_Top_Sizer.Add( MeasurementsTable_TopRight_Sizer );
+   MeasurementsTable_Top_Sizer.AddStretch();
+
+   //
 
    MeasurementTable_TreeBox.SetMinHeight( IMAGELIST_MINHEIGHT( w.Font() ) );
    MeasurementTable_TreeBox.SetScaledMinWidth( 400 );
@@ -980,8 +1038,7 @@ SubframeSelectorMeasurementsInterface::GUIData::GUIData( SubframeSelectorMeasure
                                     &SubframeSelectorMeasurementsInterface::e_NodeActivated, w );
 
    MeasurementTable_Sizer.SetSpacing( 4 );
-   MeasurementTable_Sizer.Add( MeasurementsTable_Top1_Sizer );
-   MeasurementTable_Sizer.Add( MeasurementsTable_Top2_Sizer );
+   MeasurementTable_Sizer.Add( MeasurementsTable_Top_Sizer );
    MeasurementTable_Sizer.Add( MeasurementTable_TreeBox, 100 );
 
    MeasurementTable_Control.SetSizer( MeasurementTable_Sizer );
@@ -993,21 +1050,36 @@ SubframeSelectorMeasurementsInterface::GUIData::GUIData( SubframeSelectorMeasure
    MeasurementGraph_SectionBar.OnToggleSection( (SectionBar::section_event_handler)
                                     &SubframeSelectorMeasurementsInterface::e_ToggleSection, w );
 
-   for ( size_type i = 0; i < TheSSGraphPropertyParameter->NumberOfElements(); ++i )
-      MeasurementGraph_WebViewProperty_ComboBox.AddItem(
-            TheSSGraphPropertyParameter->ElementLabel( s_comboBoxItemIndexToGraphProperty[i] ) );
 
-   MeasurementGraph_WebViewProperty_ComboBox.OnItemSelected( (ComboBox::item_event_handler)
+   for ( size_type i = 0; i < SSGraphProperty::NumberOfItems; ++i )
+   {
+      MeasurementGraph_Property_ComboBox.AddItem(
+            TheSSGraphPropertyParameter->ElementLabel( s_comboBoxItemIndexToGraphProperty[i] ) );
+      MeasurementGraph_AuxProperty_ComboBox.AddItem(
+            TheSSAuxGraphPropertyParameter->ElementLabel( s_comboBoxItemIndexToGraphProperty[i] ) );
+   }
+
+   MeasurementGraph_Property_ComboBox.SetToolTip( "<p>Primary graph property</p>" );
+   MeasurementGraph_Property_ComboBox.OnItemSelected( (ComboBox::item_event_handler)
                                     &SubframeSelectorMeasurementsInterface::e_ItemSelected, w );
 
-   MeasurementGraph_ExportPDF_PushButton.SetText( "Save PDF" );
-   MeasurementGraph_ExportPDF_PushButton.SetToolTip( "<p>Export the graph as a PDF file.</p>" );
-   MeasurementGraph_ExportPDF_PushButton.OnClick( (Button::click_event_handler)
+   MeasurementGraph_AuxProperty_ComboBox.SetToolTip( "<p>Auxiliary graph property</p>" );
+   MeasurementGraph_AuxProperty_ComboBox.OnItemSelected( (ComboBox::item_event_handler)
+                                    &SubframeSelectorMeasurementsInterface::e_ItemSelected, w );
+
+   MeasurementGraph_ExportPDF_ToolButton.SetIcon( w.ScaledResource( ":/script-editor/export-pdf.png" ) );
+   MeasurementGraph_ExportPDF_ToolButton.SetScaledFixedSize( 20, 20 );
+   MeasurementGraph_ExportPDF_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
+   MeasurementGraph_ExportPDF_ToolButton.SetToolTip( "<p>Export the graph as a PDF document.</p>" );
+   MeasurementGraph_ExportPDF_ToolButton.OnClick( (Button::click_event_handler)
                                     &SubframeSelectorMeasurementsInterface::e_ButtonClick, w );
 
    MeasurementGraph_Top_Sizer.SetSpacing( 4 );
-   MeasurementGraph_Top_Sizer.Add( MeasurementGraph_WebViewProperty_ComboBox );
-   MeasurementGraph_Top_Sizer.Add( MeasurementGraph_ExportPDF_PushButton );
+   MeasurementGraph_Top_Sizer.Add( MeasurementGraph_Property_ComboBox );
+   MeasurementGraph_Top_Sizer.Add( MeasurementGraph_AuxProperty_ComboBox );
+   MeasurementGraph_Top_Sizer.AddSpacing( 16 );
+   MeasurementGraph_Top_Sizer.Add( MeasurementGraph_ExportPDF_ToolButton );
+   MeasurementGraph_Top_Sizer.AddStretch();
 
    MeasurementGraph_WebView.SetMinHeight( IMAGELIST_MINHEIGHT( w.Font() ) );
    MeasurementGraph_WebView.SetZoomFactor( MeasurementGraph_WebView.DisplayPixelRatio() );
@@ -1020,7 +1092,6 @@ SubframeSelectorMeasurementsInterface::GUIData::GUIData( SubframeSelectorMeasure
    MeasurementGraph_Sizer.SetSpacing( 4 );
    MeasurementGraph_Sizer.Add( MeasurementGraph_Top_Sizer );
    MeasurementGraph_Sizer.Add( MeasurementGraph_WebView, 100 );
-   MeasurementGraph_Sizer.SetAlignment( MeasurementGraph_Top_Sizer, Sizer::item_alignment::Center );
 
    MeasurementGraph_Control.SetSizer( MeasurementGraph_Sizer );
    MeasurementGraph_Control.SetScaledMinSize( 640, 360 );
@@ -1045,4 +1116,4 @@ SubframeSelectorMeasurementsInterface::GUIData::GUIData( SubframeSelectorMeasure
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorMeasurementsInterface.cpp - Released 2021-11-25T11:45:24Z
+// EOF SubframeSelectorMeasurementsInterface.cpp - Released 2021-12-29T20:37:28Z

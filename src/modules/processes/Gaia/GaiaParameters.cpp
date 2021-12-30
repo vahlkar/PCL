@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
 // Standard Gaia Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// GaiaParameters.cpp - Released 2021-11-25T11:45:24Z
+// GaiaParameters.cpp - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Gaia PixInsight module.
 //
@@ -994,4 +994,4 @@ bool GDatabaseMagnitudeHigh::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GaiaParameters.cpp - Released 2021-11-25T11:45:24Z
+// EOF GaiaParameters.cpp - Released 2021-12-29T20:37:28Z

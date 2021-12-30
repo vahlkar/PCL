@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.7.2
+// Standard ImageCalibration Process Module Version 1.8.0
 // ----------------------------------------------------------------------------
-// LocalNormalizationInstance.cpp - Released 2021-11-25T11:45:24Z
+// LocalNormalizationInstance.cpp - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -916,7 +916,7 @@ private:
 
       {
          BicubicFilterPixelInterpolation BF( m_instance.p_scale, m_instance.p_scale, CubicBSplineFilter() );
-         Resample R( BF, 2.0/m_instance.p_scale );
+         Resample R( BF, 4.0/m_instance.p_scale );
          R.EnableUnclippedInterpolation();
          R >> m_A0; m_monitor += m_A0.NumberOfSamples(); // N
          R >> m_A1; m_monitor += m_A1.NumberOfSamples(); // N
@@ -1896,4 +1896,4 @@ size_type LocalNormalizationInstance::ParameterLength( const MetaParameter* p, s
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationInstance.cpp - Released 2021-11-25T11:45:24Z
+// EOF LocalNormalizationInstance.cpp - Released 2021-12-29T20:37:28Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.7.2
+// Standard ImageCalibration Process Module Version 1.8.0
 // ----------------------------------------------------------------------------
-// ImageCalibrationInstance.cpp - Released 2021-11-25T11:45:24Z
+// ImageCalibrationInstance.cpp - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -142,6 +142,7 @@ ImageCalibrationInstance::ImageCalibrationInstance( const MetaProcess* m )
    , p_minStructureSize( TheICMinStructureSizeParameter->DefaultValue() )
    , p_psfType( ICPSFType::Default )
    , p_psfRejectionLimit( TheICPSFRejectionLimitParameter->DefaultValue() )
+   , p_psfHighClippingPoint( TheICPSFHighClippingPointParameter->DefaultValue() )
    , p_maxStars( TheICMaxStarsParameter->DefaultValue() )
    , p_outputDirectory( TheICOutputDirectoryParameter->DefaultValue() )
    , p_outputExtension( TheICOutputExtensionParameter->DefaultValue() )
@@ -206,6 +207,7 @@ void ImageCalibrationInstance::Assign( const ProcessImplementation& p )
       p_minStructureSize              = x->p_minStructureSize;
       p_psfType                       = x->p_psfType;
       p_psfRejectionLimit             = x->p_psfRejectionLimit;
+      p_psfHighClippingPoint          = x->p_psfHighClippingPoint;
       p_maxStars                      = x->p_maxStars;
       p_outputDirectory               = x->p_outputDirectory;
       p_outputExtension               = x->p_outputExtension;
@@ -389,8 +391,7 @@ static void SubtractOneChannelDark( Image& target, int tCh, const Image& dark, i
 static void Calibrate( Image& target,
                        const Image* bias,
                        const Image* dark, const FVector& dScale,
-                       const Image* flat,
-                       float        pedestal = 0 )
+                       const Image* flat )
 {
    static const float TINY = 1.0e-15F; // to prevent divisions by zero flat pixels
 
@@ -408,7 +409,7 @@ static void Calibrate( Image& target,
       const float* __restrict__ b  = (bias != nullptr) ? bias->PixelData( Min( c, nb-1 ) ) : nullptr;
       const float* __restrict__ d  = (dark != nullptr) ? dark->PixelData( Min( c, nd-1 ) ) : nullptr;
       const float* __restrict__ f  = (flat != nullptr) ? flat->PixelData( Min( c, nf-1 ) ) : nullptr;
-            float  k  = (dark != nullptr) ? dScale[c] : 0;
+            float  k  = (dark != nullptr) ? dScale[c] : .0F;
 
       if ( b != nullptr )
       {
@@ -463,17 +464,6 @@ static void Calibrate( Image& target,
          }
       }
    } // for each channel
-
-   /*
-    * Optional pedestal to enforce positivity.
-    */
-   if ( pedestal != 0 )
-      target += pedestal;
-
-   /*
-    * Constrain the calibrated target image to the [0,1] range.
-    */
-   target.Truncate();
 }
 
 #undef LOOP
@@ -1204,14 +1194,10 @@ private:
        * Target frame calibration.
        */
       console.WriteLn( "<end><cbr>* Performing image calibration." );
-      Calibrate( TargetImage(),
-                 m_data.bias,
-                 m_data.dark, m_K,
-                 m_data.flat,
-                 m_data.instance->p_outputPedestal/65535.0 );
+      Calibrate( TargetImage(), m_data.bias, m_data.dark, m_K, m_data.flat );
 
       /*
-       * Noise evaluation.
+       * Signal and noise evaluation.
        */
       if ( m_data.instance->p_evaluateSignal || m_data.instance->p_evaluateNoise )
       {
@@ -1221,6 +1207,17 @@ private:
                                  m_noiseEstimates, m_noiseFractions, m_noiseScaleLow, m_noiseScaleHigh, m_noiseAlgorithms,
                                  TargetImage(), m_data.darkCFAPattern );
       }
+
+      /*
+       * Optional pedestal to enforce positivity.
+       */
+      if ( m_data.instance->p_outputPedestal != 0 )
+         TargetImage() += m_data.instance->p_outputPedestal/65535.0;
+
+      /*
+       * Constrain the calibrated target image to the [0,1] range.
+       */
+      TargetImage().Truncate();
    }
 
    void WriteOutputData()
@@ -1582,16 +1579,16 @@ private:
             for ( int i = 0; i < m_psfSignalEstimates.Length(); ++i )
                keywords << FITSHeaderKeyword( IsoString().Format( "PSFSGL%02d", i ),
                                               IsoString().Format( "%.4e", m_psfSignalEstimates[i] ),
-                                              IsoString().Format( "PSF mean signal estimate, channel #%d", i ) )
+                                              IsoString().Format( "PSF signal estimate, channel #%d", i ) )
                         << FITSHeaderKeyword( IsoString().Format( "PSFSGP%02d", i ),
                                               IsoString().Format( "%.4e", m_psfSignalPowerEstimates[i] ),
-                                              IsoString().Format( "PSF mean signal power estimate, channel #%d", i ) )
+                                              IsoString().Format( "PSF signal power estimate, channel #%d", i ) )
                         << FITSHeaderKeyword( IsoString().Format( "PSFFLX%02d", i ),
                                               IsoString().Format( "%.4e", m_psfFluxEstimates[i] ),
-                                              IsoString().Format( "PSF mean flux estimate, channel #%d", i ) )
+                                              IsoString().Format( "PSF flux estimate, channel #%d", i ) )
                         << FITSHeaderKeyword( IsoString().Format( "PSFFLP%02d", i ),
                                               IsoString().Format( "%.4e", m_psfFluxPowerEstimates[i] ),
-                                              IsoString().Format( "PSF mean flux power estimate, channel #%d", i ) )
+                                              IsoString().Format( "PSF flux power estimate, channel #%d", i ) )
                         << FITSHeaderKeyword( IsoString().Format( "PSFSGN%02d", i ),
                                               IsoString().Format( "%d", m_psfCounts[i] ),
                                               IsoString().Format( "Number of evaluated PSF fits, channel #%d", i ) );
@@ -1747,6 +1744,7 @@ private:
          E.Detector().SetMinStructureSize( m_data.instance->p_minStructureSize );
          E.SetPSFType( ICPSFType::ToPSFFunction( m_data.instance->p_psfType ) );
          E.SetRejectionLimit( m_data.instance->p_psfRejectionLimit );
+         E.SetHighClippingPoint( m_data.instance->p_psfHighClippingPoint );
          E.SetMaxStars( m_data.instance->p_maxStars );
          E.EnableParallelProcessing( m_maxSubThreads > 1, m_maxSubThreads );
 
@@ -1756,7 +1754,7 @@ private:
             PSFSignalEstimator::Estimates e = E( ImageVariant( const_cast<Image*>( &target ) ) );
             psfSignalEstimates[c] = e.mean;
             psfSignalPowerEstimates[c] = e.power;
-            psfFluxEstimates[c] = e.meanFlux;
+            psfFluxEstimates[c] = e.flux;
             psfFluxPowerEstimates[c] = e.powerFlux;
             psfCounts[c] = e.count;
          }
@@ -2370,7 +2368,7 @@ bool ImageCalibrationInstance::ExecuteGlobal()
                      K = FVector( 1.0F, flat->NumberOfChannels() );
 
                Module->ProcessEvents();
-               Calibrate( *flat, bias, dark, K, 0, FVector() );
+               Calibrate( *flat, bias, dark, K, nullptr/*flat*/ );
             }
 
          Module->ProcessEvents();
@@ -2790,6 +2788,8 @@ void* ImageCalibrationInstance::LockParameter( const MetaParameter* p, size_type
       return &p_psfType;
    if ( p == TheICPSFRejectionLimitParameter )
       return &p_psfRejectionLimit;
+   if ( p == TheICPSFHighClippingPointParameter )
+      return &p_psfHighClippingPoint;
    if ( p == TheICMaxStarsParameter )
       return &p_maxStars;
 
@@ -3068,4 +3068,4 @@ size_type ImageCalibrationInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInstance.cpp - Released 2021-11-25T11:45:24Z
+// EOF ImageCalibrationInstance.cpp - Released 2021-12-29T20:37:28Z

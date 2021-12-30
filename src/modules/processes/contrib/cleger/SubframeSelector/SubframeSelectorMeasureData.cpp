@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.6.5
+// Standard SubframeSelector Process Module Version 1.7.3
 // ----------------------------------------------------------------------------
-// SubframeSelectorMeasureData.cpp - Released 2021-11-25T11:45:24Z
+// SubframeSelectorMeasureData.cpp - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -61,23 +61,23 @@ namespace pcl
 void MeasureData::ResetCacheableData()
 {
    fwhm = TheSSMeasurementFWHMParameter->DefaultValue();
-   fwhmMeanDev = 0;
-   eccentricity = TheSSMeasurementEccentricityParameter->DefaultValue();
-   eccentricityMeanDev = 0;
-   psfSignalWeight = TheSSMeasurementPSFSignalWeightParameter->DefaultValue();
+   fwhmMeanDev          = 0;
+   eccentricity         = TheSSMeasurementEccentricityParameter->DefaultValue();
+   eccentricityMeanDev  = 0;
+   psfSignalWeight      = TheSSMeasurementPSFSignalWeightParameter->DefaultValue();
    psfSignalPowerWeight = TheSSMeasurementPSFSignalPowerWeightParameter->DefaultValue();
-   psfFlux = TheSSMeasurementPSFFluxParameter->DefaultValue();
-   psfFluxPower = TheSSMeasurementPSFFluxPowerParameter->DefaultValue();
-   snrWeight = TheSSMeasurementSNRWeightParameter->DefaultValue();
-   median = TheSSMeasurementMedianParameter->DefaultValue();
-   medianMeanDev = 0;
-   noise = TheSSMeasurementNoiseParameter->DefaultValue();
-   noiseRatio = TheSSMeasurementNoiseRatioParameter->DefaultValue();
-   stars = TheSSMeasurementStarsParameter->DefaultValue();
-   starResidual = TheSSMeasurementStarResidualParameter->DefaultValue();
-   starResidualMeanDev = 0;
-   azimuth = TheSSMeasurementAzimuthParameter->DefaultValue();
-   altitude = TheSSMeasurementAltitudeParameter->DefaultValue();
+   psfFlux              = TheSSMeasurementPSFFluxParameter->DefaultValue();
+   psfFluxPower         = TheSSMeasurementPSFFluxPowerParameter->DefaultValue();
+   snrWeight            = TheSSMeasurementSNRWeightParameter->DefaultValue();
+   median               = TheSSMeasurementMedianParameter->DefaultValue();
+   medianMeanDev        = 0;
+   noise                = TheSSMeasurementNoiseParameter->DefaultValue();
+   noiseRatio           = TheSSMeasurementNoiseRatioParameter->DefaultValue();
+   stars                = TheSSMeasurementStarsParameter->DefaultValue();
+   starResidual         = TheSSMeasurementStarResidualParameter->DefaultValue();
+   starResidualMeanDev  = 0;
+   azimuth              = TheSSMeasurementAzimuthParameter->DefaultValue();
+   altitude             = TheSSMeasurementAltitudeParameter->DefaultValue();
 }
 
 // ----------------------------------------------------------------------------
@@ -93,8 +93,8 @@ void MeasureData::AddToCache( const SubframeSelectorInstance& instance ) const
       item.eccentricityMeanDev  = eccentricityMeanDev;
       item.psfSignalWeight      = psfSignalWeight;
       item.psfSignalPowerWeight = psfSignalPowerWeight;
-      item.psfFlux        = psfFlux;
-      item.psfFluxPower   = psfFluxPower;
+      item.psfFlux              = psfFlux;
+      item.psfFluxPower         = psfFluxPower;
       item.snrWeight            = snrWeight;
       item.median               = median;
       item.medianMeanDev        = medianMeanDev;
@@ -127,8 +127,8 @@ bool MeasureData::GetFromCache( const SubframeSelectorInstance& instance )
          eccentricityMeanDev  = item.eccentricityMeanDev;
          psfSignalWeight      = item.psfSignalWeight;
          psfSignalPowerWeight = item.psfSignalPowerWeight;
-         psfFlux        = item.psfFlux;
-         psfFluxPower   = item.psfFluxPower;
+         psfFlux              = item.psfFlux;
+         psfFluxPower         = item.psfFluxPower;
          snrWeight            = item.snrWeight;
          median               = item.median;
          medianMeanDev        = item.medianMeanDev;
@@ -443,4 +443,4 @@ void MeasureUtils::MeasureProperties( const MeasureItemList& measures, double su
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorMeasureData.cpp - Released 2021-11-25T11:45:24Z
+// EOF SubframeSelectorMeasureData.cpp - Released 2021-12-29T20:37:28Z

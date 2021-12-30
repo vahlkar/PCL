@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.3.6
+// Standard ImageIntegration Process Module Version 1.4.3
 // ----------------------------------------------------------------------------
-// ImageIntegrationInterface.cpp - Released 2021-11-25T11:45:24Z
+// ImageIntegrationInterface.cpp - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -372,8 +372,8 @@ void ImageIntegrationInterface::UpdateIntegrationControls()
    GUI->TruncateOnOutOfRange_CheckBox.SetChecked( m_instance.p_truncateOnOutOfRange );
    GUI->TruncateOnOutOfRange_CheckBox.Enable( m_instance.p_generateIntegratedImage );
 
-   GUI->EvaluateNoise_CheckBox.SetChecked( m_instance.p_evaluateNoise );
-   GUI->EvaluateNoise_CheckBox.Enable( m_instance.p_generateIntegratedImage );
+   GUI->EvaluateSNR_CheckBox.SetChecked( m_instance.p_evaluateSNR );
+   GUI->EvaluateSNR_CheckBox.Enable( m_instance.p_generateIntegratedImage );
 
    GUI->ClosePreviousImages_CheckBox.SetChecked( m_instance.p_closePreviousImages );
 
@@ -932,8 +932,8 @@ void ImageIntegrationInterface::e_Integration_Click( Button& sender, bool checke
       m_instance.p_subtractPedestals = checked;
    else if ( sender == GUI->TruncateOnOutOfRange_CheckBox )
       m_instance.p_truncateOnOutOfRange = checked;
-   else if ( sender == GUI->EvaluateNoise_CheckBox )
-      m_instance.p_evaluateNoise = checked;
+   else if ( sender == GUI->EvaluateSNR_CheckBox )
+      m_instance.p_evaluateSNR = checked;
    else if ( sender == GUI->ClosePreviousImages_CheckBox )
       m_instance.p_closePreviousImages = checked;
    else if ( sender == GUI->AutoMemorySize_CheckBox )
@@ -1438,10 +1438,11 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
       "files must be associated with input integration files. This option should normally be used when local normalization "
       "is also used for pixel rejection.</p>"
 
-      "<p><b>Adaptive normalization</b> applies per-pixel additive/scaling normalization functions, computed by surface "
-      "spline interpolation from matrices of location and two-sided scale estimates calculated for each integrated image. "
-      "This algorithm is an alternative to local normalization that does not require auxiliary files. See also the "
-      "information provided for adaptive rejection normalization.</p>"
+      "<p><b>Adaptive normalization</b> is an alternative local normalization that doesn't require auxiliary files. The "
+      "adaptive normalization algorithm calculates matrices of location and two-sided scale estimates for each integrated "
+      "image, then it applies per-pixel linear normalization functions by thin plate spline interpolation. As happens with "
+      "local normalization, when one of these algorithms is selected for integration output the same option should also be "
+      "selected for pixel rejection under normal working conditions.</p>"
 
       "<p>The default option is additive normalization with scaling.</p>";
 
@@ -1515,8 +1516,8 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
 
    const char* weightModeToolTip = "<p>Image weighting method.</p>"
 
-      "<p>The <b>PSF signal</b> and <b>PSF signal power</b> algorithms are based on robust estimates of mean signal and "
-      "mean squared signal computed by PSF photometry, as well as noise estimates computed using multiscale analysis "
+      "<p>The <b>PSF signal</b> and <b>PSF signal power</b> weighting algorithms are based on robust estimates of mean signal "
+      "and mean squared signal computed by PSF photometry, as well as noise estimates computed using multiscale analysis "
       "techniques. These methods are robust and accurate. The PSF signal method is currently the default option."
 
       "<p>The <b>SNR estimate</b> option uses multiscale noise evaluation techniques to compute noise "
@@ -1700,19 +1701,21 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    TruncateOnOutOfRange_Sizer.Add( TruncateOnOutOfRange_CheckBox );
    TruncateOnOutOfRange_Sizer.AddStretch();
 
-   EvaluateNoise_CheckBox.SetText( "Evaluate noise" );
-   EvaluateNoise_CheckBox.SetToolTip( "<p>Generate noise and SNR estimates for the final integrated image.</p>"
-      "<p>When this option is enabled, the multiresolution support noise evaluation algorithm (MRS) will be "
-      "used to compute the standard deviation of the noise in the integrated result, assuming a normal noise "
-      "distribution. These estimates are typically to within 1% accuracy.</p>"
-      "<p>This option is useful to compare the results of different integration procedures. For example, by "
-      "comparing SNR estimates you can know which image normalization and weighting criteria lead to the best "
-      "results in terms of noise reduction and SNR increment.</p>" );
-   EvaluateNoise_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Integration_Click, w );
+   EvaluateSNR_CheckBox.SetText( "Evaluate SNR" );
+   EvaluateSNR_CheckBox.SetToolTip( "<p>Generate noise, SNR and PSF signal weight estimates for the final "
+      "integrated image.</p>"
+      "<p>When this option is enabled, the multiresolution support noise evaluation algorithm (MRS) will be used to "
+      "compute the standard deviation of the noise in the integrated result, assuming a normal noise distribution. "
+      "These estimates are typically to within 1% accuracy. Besides noise estimates, a final report will be generated "
+      "with per-channel robust descriptive statistics, SNR and PSF signal weight estimates.</p>"
+      "<p>This option is useful to compare the results of different integration procedures. For example, by comparing "
+      "SNR and PSF signal weight estimates you can know which image normalization and weighting criteria lead to the "
+      "best results in terms of noise reduction and SNR increment.</p>" );
+   EvaluateSNR_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Integration_Click, w );
 
-   EvaluateNoise_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
-   EvaluateNoise_Sizer.Add( EvaluateNoise_CheckBox );
-   EvaluateNoise_Sizer.AddStretch();
+   EvaluateSNR_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   EvaluateSNR_Sizer.Add( EvaluateSNR_CheckBox );
+   EvaluateSNR_Sizer.AddStretch();
 
    ClosePreviousImages_CheckBox.SetText( "Close previous images" );
    ClosePreviousImages_CheckBox.SetToolTip( "<p>Select this option to close existing integration and rejection "
@@ -1828,7 +1831,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    Integration_Sizer.Add( GenerateDrizzleData_Sizer );
    Integration_Sizer.Add( SubtractPedestals_Sizer );
    Integration_Sizer.Add( TruncateOnOutOfRange_Sizer );
-   Integration_Sizer.Add( EvaluateNoise_Sizer );
+   Integration_Sizer.Add( EvaluateSNR_Sizer );
    Integration_Sizer.Add( ClosePreviousImages_Sizer );
    Integration_Sizer.Add( AutoMemorySize_Sizer );
    Integration_Sizer.Add( BufferSize_Sizer );
@@ -1847,7 +1850,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
 
       "<p>The <b>iterative sigma clipping</b> algorithm is usually a good option to integrate more than "
       "10 or 15 images. Keep in mind that for sigma clipping to work, the standard deviation must be a good "
-      "estimate of dispersion, which requires a sufficient number of pixels per stack (the more images the "
+      "estimator of dispersion, which requires a sufficient number of pixels per stack (the more images the "
       "better).</p>"
 
       "<p><b>Winsorized sigma clipping</b> is similar to the normal sigma clipping algorithm, but uses a "
@@ -1861,13 +1864,13 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
       "additive sky gradients of varying intensity and spatial distribution. For the best performance, use "
       "this algorithm for large sets of at least 15 images. Five images is the minimum required.</p>"
 
-      "<p>The <b>Generalized Extreme Studentized Deviate (ESD) Test</b> rejection algorithm is an implementation "
+      "<p>The <b>Generalized Extreme Studentized Deviate (ESD)</b> rejection algorithm is an implementation "
       "of the method described by Bernard Rosner in his 1983 paper <i>Percentage Points for a Generalized ESD "
       "Many-Outlier procedure</i>, adapted to the image integration task. The ESD algorithm assumes that each "
       "pixel stack, in absence of outliers, follows an approximately normal (Gaussian) distribution. It aims at "
       "avoiding <i>masking</i>, a serious issue that occurs when an outlier goes undetected because its value is "
-      "similar to another outlier. The performance of this algorithm can be excellent for large data sets of 25 "
-      "or more images, and especially for very large sets of 50 or more frames. The minimum required is 3 images.</p>"
+      "similar to another outlier. The performance of this algorithm is usually excellent for data sets of 20 "
+      "or more images. The minimum required is 3 images.</p>"
 
       "<p><b>Percentile clipping</b> rejection is excellent to integrate reduced sets of images, such as "
       "3 to 6 images. This is a single-pass algorithm that rejects pixels outside a fixed range of values "
@@ -1900,7 +1903,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    RejectionAlgorithm_ComboBox.AddItem( "Averaged Sigma Clipping" );
    RejectionAlgorithm_ComboBox.AddItem( "Linear Fit Clipping" );
    RejectionAlgorithm_ComboBox.AddItem( "CCD Noise Model" );
-   RejectionAlgorithm_ComboBox.AddItem( "Generalized Extreme Studentized Deviate (ESD) Test" );
+   RejectionAlgorithm_ComboBox.AddItem( "Generalized Extreme Studentized Deviate (ESD)" );
    RejectionAlgorithm_ComboBox.SetToolTip( rejectionAlgorithmToolTip );
    RejectionAlgorithm_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ImageIntegrationInterface::e_Rejection_ItemSelected, w );
 
@@ -1926,21 +1929,19 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
       "strong gradients.</p>"
 
       "<p><b>Local normalization</b> applies per-pixel linear normalization functions previously calculated and stored "
-      "in XNML files (.xnml file name suffix) by the LocalNormalization process. To apply this option, existing XNML "
-      "files must be associated with input integration files. Local normalization can be the most accurate and robust "
+      "in XNML files (.xnml file name suffix), e.g. by the LocalNormalization process. To apply this option, existing "
+      "XNML files must be associated with input integration files. Local normalization is the most accurate and robust "
       "option for rejection normalization of data sets with large variations, such as those caused by varying "
       "acquisition conditions, strong gradients with different orientations and intensities, or data acquired with "
       "different instruments. In such cases, global normalization techniques based on statistical properties of the "
       "whole image may be unable to make the data statistically compatible with the required locality, leading to "
       "inaccurate pixel rejection.</p>"
 
-      "<p><b>Adaptive normalization</b> applies per-pixel additive/scaling normalization functions, computed by surface "
-      "spline interpolation from matrices of location and two-sided scale estimates calculated for each integrated image. "
-      "This algorithm is an alternative to local normalization that does not require auxiliary files. Adaptive "
-      "normalization is intended to solve the same problems described for local normalization: data with strong local "
-      "variations, especially strong gradients of varying orientations and intensities. Although local normalization is "
-      "much more accurate and can be necessary to solve difficult problems, adaptive normalization is much easier to use "
-      "and works well in most practical cases.</p>";
+      "<p><b>Adaptive normalization</b> is an alternative local normalization that doesn't require auxiliary files. The "
+      "adaptive normalization algorithm calculates matrices of location and two-sided scale estimates for each integrated "
+      "image, then it applies per-pixel linear normalization functions by thin plate spline interpolation. This normalization "
+      "algorithm is intended to solve the same problems described for local normalization: data with strong local variations, "
+      "especially strong gradients of varying orientations and intensities.</p>";
 
    RejectionNormalization_Label.SetText( "Normalization:" );
    RejectionNormalization_Label.SetFixedWidth( labelWidth1 );
@@ -2551,4 +2552,4 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationInterface.cpp - Released 2021-11-25T11:45:24Z
+// EOF ImageIntegrationInterface.cpp - Released 2021-12-29T20:37:28Z

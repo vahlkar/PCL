@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// Standard Debayer Process Module Version 1.10.1
+// Standard Debayer Process Module Version 1.10.2
 // ----------------------------------------------------------------------------
-// DebayerInterface.h - Released 2021-11-25T11:45:24Z
+// DebayerInterface.h - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -174,6 +174,7 @@ private:
                Label             PSFType_Label;
                ComboBox          PSFType_ComboBox;
             NumericControl    PSFRejectionLimit_NumericControl;
+            NumericControl    PSFHighClippingPoint_NumericControl;
             HorizontalSizer   MaxStars_Sizer;
                Label             MaxStars_Label;
                SpinBox           MaxStars_SpinBox;
@@ -226,4 +227,4 @@ PCL_END_LOCAL
 #endif   // __DebayerInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF DebayerInterface.h - Released 2021-11-25T11:45:24Z
+// EOF DebayerInterface.h - Released 2021-12-29T20:37:28Z

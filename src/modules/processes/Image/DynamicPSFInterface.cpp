@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// DynamicPSFInterface.cpp - Released 2021-11-25T11:45:24Z
+// DynamicPSFInterface.cpp - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -275,7 +275,7 @@ public:
                theta += (*signedAngles && psf.theta > 90) ? psf.theta - 180 : psf.theta;
                beta += psf.beta;
                flux += psf.flux;
-               meanSignal += psf.meanSignal;
+               meanSignal += psf.signal/psf.signalCount;
                mad += psf.mad;
                ++N;
             }
@@ -546,7 +546,7 @@ public:
 
          SetText( 14, String().Format( "%5.2f", psf->beta ) );
          SetText( 15, String().Format( "%.3e", psf->flux ) );
-         SetText( 16, String().Format( "%.3e", psf->meanSignal ) );
+         SetText( 16, String().Format( "%.3e", psf->signal/psf->signalCount ) );
          SetText( 17, String().Format( "%.3e", psf->mad ) );
 
          for ( int i = 2; i <= 17; ++i )
@@ -1940,7 +1940,7 @@ void DynamicPSFInterface::ExportCSV( const String& filePath )
                                              (*signedAngles && psf.theta > 90) ? psf.theta - 180 : psf.theta,
                                              psf.beta,
                                              psf.flux,
-                                             psf.meanSignal,
+                                             psf.signal/psf.signalCount,
                                              psf.mad ) );
          }
       }
@@ -2384,10 +2384,10 @@ double DynamicPSFInterface::Star::SortingValue( DynamicPSFInterface::SortingCrit
 
    case DynamicPSFInterface::SortByMeanSignal:
       {
-         double meanSignal = psfs[0].meanSignal;
+         double meanSignal = psfs[0].signal/psfs[0].signalCount;
          for ( const PSF& psf : psfs )
-            if ( psf.meanSignal < meanSignal )
-               meanSignal = psf.meanSignal;
+            if ( psf.signal/psf.signalCount < meanSignal )
+               meanSignal = psf.signal/psf.signalCount;
          return meanSignal;
       }
 
@@ -3153,4 +3153,4 @@ DynamicPSFInterface::GUIData::GUIData( DynamicPSFInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DynamicPSFInterface.cpp - Released 2021-11-25T11:45:24Z
+// EOF DynamicPSFInterface.cpp - Released 2021-12-29T20:37:28Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// Standard Debayer Process Module Version 1.10.1
+// Standard Debayer Process Module Version 1.10.2
 // ----------------------------------------------------------------------------
-// DebayerInterface.cpp - Released 2021-11-25T11:45:24Z
+// DebayerInterface.cpp - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -303,6 +303,7 @@ void DebayerInterface::UpdateSignalAndNoiseEvaluationControls()
    GUI->NoiseReductionFilterRadius_SpinBox.SetValue( m_instance.p_noiseReductionFilterRadius );
    GUI->PSFType_ComboBox.SetCurrentItem( m_instance.p_psfType );
    GUI->PSFRejectionLimit_NumericControl.SetValue( m_instance.p_psfRejectionLimit );
+   GUI->PSFHighClippingPoint_NumericControl.SetValue( m_instance.p_psfHighClippingPoint );
    GUI->MaxStars_SpinBox.SetValue( m_instance.p_maxStars );
 
    GUI->NoiseEvaluation_SectionBar.SetChecked( m_instance.p_evaluateNoise );
@@ -512,6 +513,8 @@ void DebayerInterface::e_ValueUpdated( NumericEdit& sender, double value )
 {
    if ( sender == GUI->PSFRejectionLimit_NumericControl )
       m_instance.p_psfRejectionLimit = value;
+   else if ( sender == GUI->PSFHighClippingPoint_NumericControl )
+      m_instance.p_psfHighClippingPoint = value;
 }
 
 // ----------------------------------------------------------------------------
@@ -897,8 +900,8 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
    SignalEvaluation_SectionBar.OnCheck( (SectionBar::check_event_handler)&DebayerInterface::e_CheckSection, w );
 
    const char* structureLayersToolTip =
-   "<p>Number of wavelet layers used for structure detection.</p>"
-   "<p>With more wavelet layers, larger stars (and perhaps also some nonstellar objects) will be detected.</p>";
+      "<p>Number of wavelet layers used for structure detection.</p>"
+      "<p>With more wavelet layers, larger stars (and perhaps also some nonstellar objects) will be detected.</p>";
 
    StructureLayers_Label.SetText( "Detection scales:" );
    StructureLayers_Label.SetFixedWidth( labelWidth1 );
@@ -916,10 +919,10 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
    StructureLayers_Sizer.AddStretch();
 
    const char* noiseLayersToolTip =
-   "<p>Number of wavelet layers used for noise reduction.</p>"
-   "<p>Noise reduction prevents detection of bright noise structures as false stars, including hot pixels and "
-   "cosmic rays. This parameter can also be used to control the sizes of the smallest detected stars (increase "
-   "to exclude more stars), although the <i>minimum structure size</i> parameter can be more efficient for this purpose.</p>";
+      "<p>Number of wavelet layers used for noise reduction.</p>"
+      "<p>Noise reduction prevents detection of bright noise structures as false stars, including hot pixels and "
+      "cosmic rays. This parameter can also be used to control the sizes of the smallest detected stars (increase "
+      "to exclude more stars), although the <i>minimum structure size</i> parameter can be more efficient for this purpose.</p>";
 
    NoiseLayers_Label.SetText( "Noise scales:" );
    NoiseLayers_Label.SetFixedWidth( labelWidth1 );
@@ -937,13 +940,13 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
    NoiseLayers_Sizer.AddStretch();
 
    const char* minStructureSizeToolTip =
-   "<p>Minimum size of a detectable star structure in square pixels.</p>"
-   "<p>This parameter can be used to prevent detection of small and bright image artifacts as stars, when "
-   "such artifacts cannot be removed with a median filter (i.e., the <i>Hot pixel removal</i> parameter).</p>"
-   "<p>Changing the default zero value of this parameter should not be necessary with correctly acquired and "
-   "calibrated data. It may help, however, when working with poor quality data such as poorly tracked, poorly "
-   "focused, wrongly calibrated, low-SNR raw frames, for which our star detection algorithms have not been "
-   "designed specifically.</p>";
+      "<p>Minimum size of a detectable star structure in square pixels.</p>"
+      "<p>This parameter can be used to prevent detection of small and bright image artifacts as stars, when "
+      "such artifacts cannot be removed with a median filter (i.e., the <i>Hot pixel removal</i> parameter).</p>"
+      "<p>Changing the default zero value of this parameter should not be necessary with correctly acquired and "
+      "calibrated data. It may help, however, when working with poor quality data such as poorly tracked, poorly "
+      "focused, wrongly calibrated, low-SNR raw frames, for which our star detection algorithms have not been "
+      "designed specifically.</p>";
 
    MinStructureSize_Label.SetText( "Minimum structure size:" );
    MinStructureSize_Label.SetFixedWidth( labelWidth1 );
@@ -961,11 +964,11 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
    MinStructureSize_Sizer.AddStretch();
 
    const char* hotPixelFilterRadiusToolTip =
-   "<p>Size of the hot pixel removal filter.</p>"
-   "<p>This is the radius in pixels of a median filter applied by the star detector before the structure "
-   "detection phase. A median filter is very efficient to remove <i>hot pixels</i>. Hot pixels will be "
-   "identified as false stars, and if present in large amounts, can prevent a valid signal evaluation.</p>"
-   "<p>To disable hot pixel removal, set this parameter to zero.</p>";
+      "<p>Size of the hot pixel removal filter.</p>"
+      "<p>This is the radius in pixels of a median filter applied by the star detector before the structure "
+      "detection phase. A median filter is very efficient to remove <i>hot pixels</i>. Hot pixels will be "
+      "identified as false stars, and if present in large amounts, can prevent a valid signal evaluation.</p>"
+      "<p>To disable hot pixel removal, set this parameter to zero.</p>";
 
    HotPixelFilterRadius_Label.SetText( "Hot pixel removal:" );
    HotPixelFilterRadius_Label.SetFixedWidth( labelWidth1 );
@@ -983,11 +986,11 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
    HotPixelFilterRadius_Sizer.AddStretch();
 
    const char* noiseReductionFilterRadiusToolTip =
-   "<p>Size of the noise reduction filter.</p>"
-   "<p>This is the radius in pixels of a Gaussian convolution filter applied to the working image used for star "
-   "detection. Use it only for very low SNR images, where the star detector cannot find reliable stars with its "
-   "default parameters.</p>"
-   "<p>To disable noise reduction, set this parameter to zero.</p>";
+      "<p>Size of the noise reduction filter.</p>"
+      "<p>This is the radius in pixels of a Gaussian convolution filter applied to the working image used for star "
+      "detection. Use it only for very low SNR images, where the star detector cannot find reliable stars with its "
+      "default parameters.</p>"
+      "<p>To disable noise reduction, set this parameter to zero.</p>";
 
    NoiseReductionFilterRadius_Label.SetText( "Noise reduction:" );
    NoiseReductionFilterRadius_Label.SetFixedWidth( labelWidth1 );
@@ -1033,24 +1036,43 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
 
    PSFRejectionLimit_NumericControl.label.SetText( "Rejection limit:" );
    PSFRejectionLimit_NumericControl.label.SetFixedWidth( labelWidth1 );
-   PSFRejectionLimit_NumericControl.slider.SetRange( 0, 200 );
+   PSFRejectionLimit_NumericControl.slider.SetRange( 0, 250 );
    PSFRejectionLimit_NumericControl.SetReal();
    PSFRejectionLimit_NumericControl.SetRange( TheDebayerPSFRejectionLimitParameter->MinimumValue(), TheDebayerPSFRejectionLimitParameter->MaximumValue() );
    PSFRejectionLimit_NumericControl.SetPrecision( TheDebayerPSFRejectionLimitParameter->Precision() );
    PSFRejectionLimit_NumericControl.edit.SetFixedWidth( editWidth2 );
    PSFRejectionLimit_NumericControl.SetToolTip( "<p>PSF rejection limit in sigma units.</p>"
-      "<p>This rejection limit controls an iterative sigma-clipping algorithm used for robust rejection of outliers "
-      "during the signal estimation process. Larger values favor the inclusion of more photometric PSF measurements, "
-      "which can improve accuracy, but at the risk of including outliers that can degrade the result.</p>" );
+      "<p>The rejection limit parameter defines an order statistic, in the [0.5,1] range, used to exclude a fraction of the "
+      "brightest PSF signal samples during the signal estimation process.</p>"
+      "<p>The brightest signal samples often tend to be unreliable because of relative saturation and nonlinearity. Validity "
+      "of the dimmest signal measurements is already ensured by robust star detection. The default value of this parameter is "
+      "0.9, which rejects a 10% of the highest signal samples. This is normally sufficient to provide an accurate sample "
+      "representative of the true signal gathered in the image.</p>" );
    PSFRejectionLimit_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&DebayerInterface::e_ValueUpdated, w );
 
+   PSFHighClippingPoint_NumericControl.label.SetText( "High clipping point:" );
+   PSFHighClippingPoint_NumericControl.label.SetFixedWidth( labelWidth1 );
+   PSFHighClippingPoint_NumericControl.slider.SetRange( 0, 250 );
+   PSFHighClippingPoint_NumericControl.SetReal();
+   PSFHighClippingPoint_NumericControl.SetRange( TheDebayerPSFHighClippingPointParameter->MinimumValue(), TheDebayerPSFHighClippingPointParameter->MaximumValue() );
+   PSFHighClippingPoint_NumericControl.SetPrecision( TheDebayerPSFHighClippingPointParameter->Precision() );
+   PSFHighClippingPoint_NumericControl.edit.SetFixedWidth( editWidth2 );
+   PSFHighClippingPoint_NumericControl.SetToolTip( "<p>High clipping point for the PSF signal estimator.</p>"
+      "<p>Bright pixels are rejected for calculation of a robust penalty function applied to compute PSF signal estimates "
+      "representative of the whole image, not just of the measured stars. The high clipping point parameter defines an order "
+      "statistic, in the [0.5,1] range, used as a rejection limit to exclude bright image structures, including most "
+      "outliers such as cosmics, plane and satellite trails, uncorrected hot pixels, etc. For example, by setting this "
+      "parameter to 0.5 all pixels above the median of the image would be rejected. The default high clipping point is 0.85, "
+      "which works correctly in most practical cases.</p>" );
+   PSFHighClippingPoint_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&DebayerInterface::e_ValueUpdated, w );
+
    const char* maxStarsToolTip =
-   "<p>The maximum number of stars that can be measured to compute mean signal estimates.</p>"
-   "<p>PSF photometry will be performed for no more than the specified number of stars. The subset of measured stars "
-   "will always start at the beginning of the set of detected stars, sorted by brightness in descending order.</p>"
-   "<p>The default value imposes a generous limit of 24K stars. Limiting the number of photometric samples can improve "
-   "performance for demosaicing of wide-field frames, where the number of detected stars can be very large. However, "
-   "reducing the set of measured sources too much will damage the accuracy of signal estimation.</p>";
+      "<p>The maximum number of stars that can be measured to compute mean signal estimates.</p>"
+      "<p>PSF photometry will be performed for no more than the specified number of stars. The subset of measured stars "
+      "will always start at the beginning of the set of detected stars, sorted by brightness in descending order.</p>"
+      "<p>The default value imposes a generous limit of 24K stars. Limiting the number of photometric samples can improve "
+      "performance for demosaicing of wide-field frames, where the number of detected stars can be very large. However, "
+      "reducing the set of measured sources too much will damage the accuracy of signal estimation.</p>";
 
    MaxStars_Label.SetText( "Maximum stars:" );
    MaxStars_Label.SetFixedWidth( labelWidth1 );
@@ -1075,6 +1097,7 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
    SignalEvaluation_Sizer.Add( NoiseReductionFilterRadius_Sizer );
    SignalEvaluation_Sizer.Add( PSFType_Sizer );
    SignalEvaluation_Sizer.Add( PSFRejectionLimit_NumericControl );
+   SignalEvaluation_Sizer.Add( PSFHighClippingPoint_NumericControl );
    SignalEvaluation_Sizer.Add( MaxStars_Sizer );
 
    SignalEvaluation_Control.SetSizer( SignalEvaluation_Sizer );
@@ -1162,4 +1185,4 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DebayerInterface.cpp - Released 2021-11-25T11:45:24Z
+// EOF DebayerInterface.cpp - Released 2021-12-29T20:37:28Z

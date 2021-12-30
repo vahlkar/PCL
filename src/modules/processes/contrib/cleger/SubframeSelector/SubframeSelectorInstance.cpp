@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.6.5
+// Standard SubframeSelector Process Module Version 1.7.3
 // ----------------------------------------------------------------------------
-// SubframeSelectorInstance.cpp - Released 2021-11-25T11:45:24Z
+// SubframeSelectorInstance.cpp - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -138,6 +138,7 @@ SubframeSelectorInstance::SubframeSelectorInstance( const MetaProcess* m )
    , p_onError( SSOnError::Default )
    , p_sortingProperty( SSSortingProperty::Default )
    , p_graphProperty( SSGraphProperty::Default )
+   , p_auxGraphProperty( SSGraphProperty::Weight )
    , p_useFileThreads( TheSSUseFileThreadsParameter->DefaultValue() )
    , p_fileThreadOverload( TheSSFileThreadOverloadParameter->DefaultValue() )
    , p_maxFileReadThreads( int32( TheSSMaxFileReadThreadsParameter->DefaultValue() ) )
@@ -201,6 +202,7 @@ void SubframeSelectorInstance::Assign( const ProcessImplementation& p )
       p_weightingExpression        = x->p_weightingExpression;
       p_sortingProperty            = x->p_sortingProperty;
       p_graphProperty              = x->p_graphProperty;
+      p_auxGraphProperty           = x->p_auxGraphProperty;
       p_useFileThreads             = x->p_useFileThreads;
       p_fileThreadOverload         = x->p_fileThreadOverload;
       p_maxFileReadThreads         = x->p_maxFileReadThreads;
@@ -532,7 +534,7 @@ private:
             PSFSignalEstimator::Estimates e = E( m_subframe );
             psfSignal = e.mean;
             psfSignalPower = e.power;
-            psfFlux = e.meanFlux;
+            psfFlux = e.flux;
             psfFluxPower = e.powerFlux;
          }
 
@@ -741,7 +743,7 @@ private:
          PSFSignalEstimator::Estimates e = E( m_subframe );
          m_outputData.psfSignalWeight = e.mean/m_outputData.noise;
          m_outputData.psfSignalPowerWeight = e.power/m_outputData.noise/m_outputData.noise;
-         m_outputData.psfFlux = e.meanFlux;
+         m_outputData.psfFlux = e.flux;
          m_outputData.psfFluxPower = e.powerFlux;
       }
 
@@ -2200,6 +2202,8 @@ void* SubframeSelectorInstance::LockParameter( const MetaParameter* p, size_type
       return &p_sortingProperty;
    if ( p == TheSSGraphPropertyParameter )
       return &p_graphProperty;
+   if ( p == TheSSAuxGraphPropertyParameter )
+      return &p_auxGraphProperty;
 
    if ( p == TheSSUseFileThreadsParameter )
       return &p_useFileThreads;
@@ -2401,4 +2405,4 @@ size_type SubframeSelectorInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInstance.cpp - Released 2021-11-25T11:45:24Z
+// EOF SubframeSelectorInstance.cpp - Released 2021-12-29T20:37:28Z

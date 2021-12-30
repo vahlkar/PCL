@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.3.6
+// Standard ImageIntegration Process Module Version 1.4.3
 // ----------------------------------------------------------------------------
-// IntegrationFile.cpp - Released 2021-11-25T11:45:24Z
+// IntegrationFile.cpp - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -106,6 +106,13 @@ void IntegrationFile::UpdateBuffers( int startRow, int channel, int maxThreads )
 
 // ----------------------------------------------------------------------------
 
+void IntegrationFile::CloseAll()
+{
+   s_files.Destroy();
+}
+
+// ----------------------------------------------------------------------------
+
 void IntegrationFile::OpenFiles( const ImageIntegrationInstance& instance )
 {
    CloseAll();
@@ -131,6 +138,7 @@ void IntegrationFile::OpenFiles( const ImageIntegrationInstance& instance )
       if ( pendingItems.Length() < 5 )
          throw Error( "Linear fit rejection requires at least five images; only " +
                         String( pendingItems.Length() ) + " images have been selected." );
+
 
    for ( size_type i = 0; i < pendingItems.Length(); ++i )
       s_files << new IntegrationFile;
@@ -249,10 +257,22 @@ void IntegrationFile::OpenFiles( const ImageIntegrationInstance& instance )
       }
    }
 
-   if ( instance.p_weightMode != IIWeightMode::DontCare )
+   if ( instance.p_weightMode != IIWeightMode::DontCare || !instance.p_csvWeights.IsEmpty() )
       if ( instance.p_generateIntegratedImage && instance.p_combination == IICombination::Average
         || instance.p_generateDrizzleData )
       {
+         if ( !instance.p_csvWeights.IsEmpty() )
+         {
+            StringList tokens;
+            instance.p_csvWeights.Break( tokens, ',' );
+            if ( tokens.Length() != s_files.Length() * s_numberOfChannels )
+               throw Error( String().Format( "Invalid CSV weights list: expected %u items; got %u",
+                                             s_files.Length() * s_numberOfChannels, tokens.Length() ) );
+            for ( size_type i = 0, k = 0; i < s_files.Length(); ++i )
+               for ( int j = 0; j < s_numberOfChannels; ++j, ++k )
+                  s_files[i]->m_weights[j] = tokens[k].ToDouble();
+         }
+
          NormalizeImageWeights();
          console.NoteLn( "<end><cbr>Normalized image weights:" );
          int i = 0;
@@ -359,7 +379,8 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
          if ( !format.CanReadIncrementally() )
             throw Error( "Invalid combination of file formats with and without incremental file read capabilities: " + format.Name() );
          else if ( !m_file->CanReadIncrementally() )
-            throw Error( "Incremental file reads have been enabled, but they cannot be performed on this file: " + m_file->FilePath() );
+            throw Error( "Incremental file reads have been enabled, but they cannot be performed on this file: "
+                         "<raw>" + m_file->FilePath() + "</raw>" );
 
       if ( s_width != images[0].info.width ||
            s_height != images[0].info.height ||
@@ -418,15 +439,19 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
    }
 
    bool generateOutput = instance.p_generateIntegratedImage || instance.p_generateDrizzleData;
-   bool evaluateNoise = instance.p_generateIntegratedImage && instance.p_evaluateNoise;
+   bool evaluateSNR = instance.p_generateIntegratedImage && instance.p_evaluateSNR;
+
+   bool hasWeightsList = !instance.p_csvWeights.IsEmpty();
 
    bool needNoise =               instance.p_generateIntegratedImage &&
-                                 (instance.p_evaluateNoise ||
+                                 (instance.p_evaluateSNR ||
                                   instance.p_combination == IICombination::Average &&
+                                  !hasWeightsList &&
                                   (instance.p_weightMode == IIWeightMode::SNREstimate ||
                                    instance.p_weightMode == IIWeightMode::PSFSignalWeight ||
                                    instance.p_weightMode == IIWeightMode::PSFSignalPowerWeight))
                                || instance.p_generateDrizzleData &&
+                                  !hasWeightsList &&
                                   (instance.p_weightMode == IIWeightMode::SNREstimate ||
                                    instance.p_weightMode == IIWeightMode::PSFSignalWeight ||
                                    instance.p_weightMode == IIWeightMode::PSFSignalPowerWeight);
@@ -440,16 +465,19 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
 
    bool needMedian = needScale || generateOutput &&
                                  (instance.p_normalization != IINormalization::NoNormalization ||
-                                  instance.p_weightMode == IIWeightMode::SignalWeight ||
-                                  instance.p_weightMode == IIWeightMode::MedianWeight)
+                                  !hasWeightsList &&
+                                  (instance.p_weightMode == IIWeightMode::SignalWeight ||
+                                   instance.p_weightMode == IIWeightMode::MedianWeight))
                                || instance.p_rejection != IIRejection::NoRejection &&
                                   instance.p_rejectionNormalization == IIRejectionNormalization::EqualizeFluxes;
 
    bool needAvgDev =              instance.p_weightScale == IIWeightScale::AvgDev
                                || generateOutput &&
+                                  !hasWeightsList &&
                                   instance.p_weightMode == IIWeightMode::SignalWeight;
 
    bool needMean =                generateOutput &&
+                                  !hasWeightsList &&
                                   instance.p_weightMode == IIWeightMode::AverageWeight;
 
    bool needAdaptive =            instance.p_generateIntegratedImage &&
@@ -459,7 +487,7 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
 
    bool doMean     = m_mean.IsEmpty()           && needMean;
    bool doAvgDev   = m_avgDev.IsEmpty()         && needAvgDev;
-   bool doBWMV     = m_bwmv.IsEmpty()           && (instance.p_weightScale == IIWeightScale::BWMV || evaluateNoise);
+   bool doBWMV     = m_bwmv.IsEmpty()           && (instance.p_weightScale == IIWeightScale::BWMV || evaluateSNR);
    bool doMAD      = m_mad.IsEmpty()            && (instance.p_weightScale == IIWeightScale::MAD || doBWMV);
    bool doMedian   = m_median.IsEmpty()         && (needMedian || doAvgDev || doMAD || doBWMV) ;
    bool doNoise    = (m_noiseEstimates.IsEmpty() ||
@@ -802,7 +830,7 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
        * Image weighting only makes sense for average combination. It is also
        * required for generation of drizzle integration data files.
        */
-      if ( instance.p_weightMode != IIWeightMode::DontCare &&
+      if ( instance.p_weightMode != IIWeightMode::DontCare && !hasWeightsList &&
            (instance.p_generateDrizzleData || instance.p_combination == IICombination::Average) )
       {
          switch ( instance.p_weightMode )
@@ -812,7 +840,7 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
             for ( int c = 0; c < s_numberOfChannels; ++c )
             {
                /*
-                * Weighting by signal-to-noise ratio with mean PSF signal estimates
+                * Weighting by signal-to-noise ratio with PSF signal estimates
                 */
                double w_psf = PSFSignalEstimate( c )/NoiseEstimate( c );
                if ( !IsFinite( w_psf ) || 1 + w_psf == 1 )
@@ -824,7 +852,7 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
             for ( int c = 0; c < s_numberOfChannels; ++c )
             {
                /*
-                * Weighting by signal-to-noise ratio with mean PSF signal power estimates
+                * Weighting by signal-to-noise ratio with PSF signal power estimates
                 */
                double w_psf2 = PSFSignalPowerEstimate( c )/NoiseEstimate( c )/NoiseEstimate( c );
                if ( !IsFinite( w_psf2 ) || 1 + w_psf2 == 1 )
@@ -1263,4 +1291,4 @@ void IntegrationFile::OpenFileThread::Run()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationFile.cpp - Released 2021-11-25T11:45:24Z
+// EOF IntegrationFile.cpp - Released 2021-12-29T20:37:28Z

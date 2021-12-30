@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.6.5
+// Standard SubframeSelector Process Module Version 1.7.3
 // ----------------------------------------------------------------------------
-// SubframeSelectorMeasurementsInterface.h - Released 2021-11-25T11:45:24Z
+// SubframeSelectorMeasurementsInterface.h - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -56,7 +56,7 @@
 #include <pcl/ComboBox.h>
 #include <pcl/Label.h>
 #include <pcl/ProcessInterface.h>
-#include <pcl/PushButton.h>
+#include <pcl/ToolButton.h>
 #include <pcl/SectionBar.h>
 #include <pcl/Sizer.h>
 #include <pcl/TreeBox.h>
@@ -102,25 +102,31 @@ private:
       SectionBar        MeasurementTable_SectionBar;
       Control           MeasurementTable_Control;
       VerticalSizer     MeasurementTable_Sizer;
-         HorizontalSizer   MeasurementsTable_Top1_Sizer;
-            ComboBox          MeasurementsTable_SortingProperty_ComboBox;
-            ComboBox          MeasurementsTable_SortingMode_ComboBox;
-            PushButton        MeasurementsTable_ToggleApproved_PushButton;
-            PushButton        MeasurementsTable_ToggleLocked_PushButton;
-            PushButton        MeasurementsTable_Invert_PushButton;
-         HorizontalSizer   MeasurementsTable_Top2_Sizer;
-            Label             MeasurementsTable_Quantities_Label;
-            PushButton        MeasurementsTable_Remove_PushButton;
-            PushButton        MeasurementsTable_Clear_PushButton;
-            PushButton        MeasurementsTable_ExportCSV_PushButton;
+         HorizontalSizer   MeasurementsTable_Top_Sizer;
+            VerticalSizer     MeasurementsTable_TopLeft_Sizer;
+               HorizontalSizer   MeasurementsTable_TopLeft1_Sizer;
+                  ComboBox          MeasurementsTable_SortingProperty_ComboBox;
+                  ComboBox          MeasurementsTable_SortingMode_ComboBox;
+               HorizontalSizer   MeasurementsTable_TopLeft2_Sizer;
+                  Label             MeasurementsTable_Quantities_Label;
+            VerticalSizer     MeasurementsTable_TopRight_Sizer;
+               HorizontalSizer   MeasurementsTable_TopRight1_Sizer;
+                  ToolButton        MeasurementsTable_ToggleApproved_ToolButton;
+                  ToolButton        MeasurementsTable_ToggleLocked_ToolButton;
+                  ToolButton        MeasurementsTable_Invert_ToolButton;
+               HorizontalSizer   MeasurementsTable_TopRight2_Sizer;
+                  ToolButton        MeasurementsTable_Remove_ToolButton;
+                  ToolButton        MeasurementsTable_Reset_ToolButton;
+                  ToolButton        MeasurementsTable_ExportCSV_ToolButton;
          TreeBox           MeasurementTable_TreeBox;
 
       SectionBar        MeasurementGraph_SectionBar;
       Control           MeasurementGraph_Control;
       VerticalSizer     MeasurementGraph_Sizer;
          HorizontalSizer   MeasurementGraph_Top_Sizer;
-            ComboBox          MeasurementGraph_WebViewProperty_ComboBox;
-            PushButton        MeasurementGraph_ExportPDF_PushButton;
+            ComboBox          MeasurementGraph_Property_ComboBox;
+            ComboBox          MeasurementGraph_AuxProperty_ComboBox;
+            ToolButton        MeasurementGraph_ExportPDF_ToolButton;
          HorizontalSizer   MeasurementGraph_Bottom_Sizer;
             GraphWebView      MeasurementGraph_WebView;
             GraphWebView      MeasurementDistributionGraph_WebView;
@@ -167,4 +173,4 @@ PCL_END_LOCAL
 #endif   // e_SubframeSelectorMeasurementsInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorMeasurementsInterface.h - Released 2021-11-25T11:45:24Z
+// EOF SubframeSelectorMeasurementsInterface.h - Released 2021-12-29T20:37:28Z

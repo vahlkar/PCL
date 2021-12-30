@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.8.4
+// Standard PixelMath Process Module Version 1.8.5
 // ----------------------------------------------------------------------------
-// Function.cpp - Released 2021-11-25T11:45:24Z
+// Function.cpp - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -182,6 +182,7 @@ void Function::InitializeList( function_set& functions, function_index& index )
              << new OpSoftLightFunction
              << new OpSubFunction
              << new OpVividLightFunction
+             << new OrderStatisticFunction
              << new PAngleFunction
              << new PBMVFunction
              << new PiFunction
@@ -2224,6 +2225,95 @@ void MTFFunction::operator()( Pixel& r, component_list::const_iterator i, compon
    r.SetAs( x );
    for ( int c = 0; c < r.Length(); ++c )
       r[c] = HistogramTransformation::MTF( m[c], x[c] );
+}
+
+// ----------------------------------------------------------------------------
+
+bool OrderStatisticFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
+{
+   // ostat( k, a, b, c[, ...] )
+   // ostat( k, image[, x0, y0, w, h] )
+
+   if ( Distance( i, j ) < 2 )
+   {
+      info = "ostat() takes an order specifier argument followed by an image reference or a set of 2 or more arguments";
+      if ( Distance( i, j ) > 0 )
+         arg = *i;
+      return false;
+   }
+
+   if ( (*i)->IsSample() )
+      if ( S->Value() < 0 || S->Value() > 1 )
+      {
+         info = "ostat(): Literal order specifiers must be in the [0,1] range";
+         arg = *i;
+         return false;
+      }
+
+   return ValidateStatisticalFunctionArguments( "ostat", info, arg, ++i, j );
+}
+
+void OrderStatisticFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+{
+   Pixel k = *i;
+   ++i;
+   distance_type n = Distance( i, j );
+   DVector v( n );
+   for ( int c = 0; c < r.Length(); ++c )
+   {
+      DVector::iterator a = v.Begin();
+      for ( pixel_set::const_iterator l = i; l < j; ++l, ++a )
+         *a = (*l)[c];
+      r[c] = v.OrderStatistic( RoundInt( k[c] * (n - 1) ) );
+   }
+}
+
+bool OrderStatisticFunction::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
+{
+   return CheckInvariantStatisticalFunction( ++i, j );
+}
+
+void OrderStatisticFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
+{
+   Pixel k;
+   if ( (*i)->IsSample() )
+      k.SetSamples( S->Value() );
+   else if ( (*i)->IsPixel() )
+   {
+      k.SetAs( P->PixelValue() );
+      k.CopySamples( P->PixelValue() );
+   }
+   else
+      throw ParseError( "ostat(): Internal parser error" );
+
+   ++i;
+   const ImageReference* ref = dynamic_cast<ImageReference*>( *i );
+   if ( ref == nullptr )
+      throw ParseError( "ostat(): Internal parser error" );
+
+   ref->Image()->PushSelections();
+   ref->Image()->SetRangeClipping( 0, 1 );
+
+   ++i;
+   Rect rect = (i == j) ? Rect( 0 ) : GetStatisticalFunctionROIArguments( "ostat", i, j );
+   int c = ref->ChannelIndex();
+   if ( c >= 0 )
+   {
+      if ( c >= ref->Image()->NumberOfChannels() )
+         throw ParseError( ("ostat(): Channel index out of range: " + ref->Id()).AppendFormat( "[%d]", c ) );
+      r.SetSamples( ref->Image()->OrderStatistic( k[c], rect, c, c ) );
+   }
+   else
+   {
+      if ( ref->Image()->NumberOfChannels() < 3 )
+         r.SetSamples( ref->Image()->OrderStatistic( k[0], rect, 0, 0 ) );
+      else
+         r.SetSamples( ref->Image()->OrderStatistic( k[0], rect, 0, 0 ),
+                       ref->Image()->OrderStatistic( k[1], rect, 1, 1 ),
+                       ref->Image()->OrderStatistic( k[2], rect, 2, 2 ) );
+   }
+
+   ref->Image()->PopSelections();
 }
 
 // ----------------------------------------------------------------------------
@@ -4339,4 +4429,4 @@ Expression::component_list InlineSwitchFunction::Optimized() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Function.cpp - Released 2021-11-25T11:45:24Z
+// EOF Function.cpp - Released 2021-12-29T20:37:28Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// Standard Debayer Process Module Version 1.10.1
+// Standard Debayer Process Module Version 1.10.2
 // ----------------------------------------------------------------------------
-// DebayerProcess.cpp - Released 2021-11-25T11:45:24Z
+// DebayerProcess.cpp - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -92,6 +92,7 @@ DebayerProcess::DebayerProcess()
    new DebayerMinStructureSize( this );
    new DebayerPSFType( this );
    new DebayerPSFRejectionLimit( this );
+   new DebayerPSFHighClippingPoint( this );
    new DebayerMaxStars( this );
    new DebayerInputHints( this );
    new DebayerOutputHints( this );
@@ -343,4 +344,4 @@ int DebayerProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DebayerProcess.cpp - Released 2021-11-25T11:45:24Z
+// EOF DebayerProcess.cpp - Released 2021-12-29T20:37:28Z

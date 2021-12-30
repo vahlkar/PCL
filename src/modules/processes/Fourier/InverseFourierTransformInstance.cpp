@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
 // Standard Fourier Process Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// InverseFourierTransformInstance.cpp - Released 2021-11-25T11:45:24Z
+// InverseFourierTransformInstance.cpp - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Fourier PixInsight module.
 //
@@ -525,4 +525,4 @@ size_type InverseFourierTransformInstance::ParameterLength( const MetaParameter*
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF InverseFourierTransformInstance.cpp - Released 2021-11-25T11:45:24Z
+// EOF InverseFourierTransformInstance.cpp - Released 2021-12-29T20:37:28Z

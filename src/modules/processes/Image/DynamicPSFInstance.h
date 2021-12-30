@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// DynamicPSFInstance.h - Released 2021-11-25T11:45:24Z
+// DynamicPSFInstance.h - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -120,10 +120,13 @@ private:
 
       // Core API-compatible enumerated and Boolean parameters.
       // Used exclusively for parameter lock/unlock calls.
-      pcl_enum p_function  = PSFunction::Invalid;
-      pcl_bool p_circular  = false;
-      pcl_enum p_status    = PSFFitStatus::NotFitted;
-      pcl_bool p_celestial = false;
+      pcl_enum p_function   = PSFunction::Invalid;
+      pcl_bool p_circular   = false;
+      pcl_enum p_status     = PSFFitStatus::NotFitted;
+      pcl_bool p_celestial  = false;
+
+      // Synthesized mean signal estimate.
+      double   p_meanSignal = 0;
 
       PSF() = default;
       PSF( const PSF& ) = default;
@@ -136,6 +139,8 @@ private:
          , p_status( data.status )
          , p_celestial( data.celestial )
       {
+         if ( signalCount > 0 )
+            p_meanSignal = signal/signalCount;
       }
    };
    Array<PSF>     p_psfs;
@@ -220,4 +225,4 @@ private:
 #endif   // __DynamicPSFInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF DynamicPSFInstance.h - Released 2021-11-25T11:45:24Z
+// EOF DynamicPSFInstance.h - Released 2021-12-29T20:37:28Z

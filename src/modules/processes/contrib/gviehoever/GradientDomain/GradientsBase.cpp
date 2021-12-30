@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsBase.cpp - Released 2021-11-25T11:45:24Z
+// GradientsBase.cpp - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
@@ -447,4 +447,4 @@ GradientsBase::TimeMessage::~TimeMessage()
 }; // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF GradientsBase.cpp - Released 2021-11-25T11:45:24Z
+// EOF GradientsBase.cpp - Released 2021-12-29T20:37:28Z

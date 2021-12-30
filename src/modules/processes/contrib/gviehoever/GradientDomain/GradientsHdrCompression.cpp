@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsHdrCompression.cpp - Released 2021-11-25T11:45:24Z
+// GradientsHdrCompression.cpp - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
@@ -179,4 +179,4 @@ void GradientsHdrCompression::hdrCompression( realType_t maxGradient_p, realType
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF GradientsHdrCompression.cpp - Released 2021-11-25T11:45:24Z
+// EOF GradientsHdrCompression.cpp - Released 2021-12-29T20:37:28Z

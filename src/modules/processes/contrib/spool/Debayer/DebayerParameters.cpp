@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// Standard Debayer Process Module Version 1.10.1
+// Standard Debayer Process Module Version 1.10.2
 // ----------------------------------------------------------------------------
-// DebayerParameters.cpp - Released 2021-11-25T11:45:24Z
+// DebayerParameters.cpp - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -78,6 +78,7 @@ DebayerNoiseReductionFilterRadius*        TheDebayerNoiseReductionFilterRadiusPa
 DebayerMinStructureSize*                  TheDebayerMinStructureSizeParameter = nullptr;
 DebayerPSFType*                           TheDebayerPSFTypeParameter = nullptr;
 DebayerPSFRejectionLimit*                 TheDebayerPSFRejectionLimitParameter = nullptr;
+DebayerPSFHighClippingPoint*              TheDebayerPSFHighClippingPointParameter = nullptr;
 DebayerMaxStars*                          TheDebayerMaxStarsParameter = nullptr;
 
 DebayerInputHints*                        TheDebayerInputHintsParameter = nullptr;
@@ -654,17 +655,49 @@ int DebayerPSFRejectionLimit::Precision() const
 
 double DebayerPSFRejectionLimit::DefaultValue() const
 {
-   return 5.00;
+   return 0.90;
 }
 
 double DebayerPSFRejectionLimit::MinimumValue() const
 {
-   return 0.00;
+   return 0.50;
 }
 
 double DebayerPSFRejectionLimit::MaximumValue() const
 {
-   return 10.0;
+   return 1.00;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerPSFHighClippingPoint::DebayerPSFHighClippingPoint( MetaProcess* P ) : MetaFloat( P )
+{
+   TheDebayerPSFHighClippingPointParameter = this;
+}
+
+IsoString DebayerPSFHighClippingPoint::Id() const
+{
+   return "psfHighClippingPoint";
+}
+
+int DebayerPSFHighClippingPoint::Precision() const
+{
+   return 2;
+}
+
+double DebayerPSFHighClippingPoint::DefaultValue() const
+{
+   return 0.85;
+}
+
+double DebayerPSFHighClippingPoint::MinimumValue() const
+{
+   return 0.50;
+}
+
+double DebayerPSFHighClippingPoint::MaximumValue() const
+{
+   return 1.00;
 }
 
 // ----------------------------------------------------------------------------
@@ -2670,4 +2703,4 @@ bool DebayerOutputFileNoiseAlgorithmB::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DebayerParameters.cpp - Released 2021-11-25T11:45:24Z
+// EOF DebayerParameters.cpp - Released 2021-12-29T20:37:28Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.7.2
+// Standard ImageCalibration Process Module Version 1.8.0
 // ----------------------------------------------------------------------------
-// ImageCalibrationInterface.h - Released 2021-11-25T11:45:24Z
+// ImageCalibrationInterface.h - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -175,6 +175,7 @@ private:
             Label             PSFType_Label;
             ComboBox          PSFType_ComboBox;
          NumericControl    PSFRejectionLimit_NumericControl;
+         NumericControl    PSFHighClippingPoint_NumericControl;
          HorizontalSizer   MaxStars_Sizer;
             Label             MaxStars_Label;
             SpinBox           MaxStars_SpinBox;
@@ -352,4 +353,4 @@ PCL_END_LOCAL
 #endif   // __ImageCalibrationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInterface.h - Released 2021-11-25T11:45:24Z
+// EOF ImageCalibrationInterface.h - Released 2021-12-29T20:37:28Z

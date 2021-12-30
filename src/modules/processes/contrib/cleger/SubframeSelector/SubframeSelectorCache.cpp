@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.6.5
+// Standard SubframeSelector Process Module Version 1.7.3
 // ----------------------------------------------------------------------------
-// SubframeSelectorCache.cpp - Released 2021-11-25T11:45:24Z
+// SubframeSelectorCache.cpp - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -70,8 +70,8 @@ void SubframeSelectorCacheItem::AssignData( const FileDataCacheItem& item )
    eccentricityMeanDev  = src.eccentricityMeanDev;
    psfSignalWeight      = src.psfSignalWeight;
    psfSignalPowerWeight = src.psfSignalPowerWeight;
-   psfFlux        = src.psfFlux;
-   psfFluxPower   = src.psfFluxPower;
+   psfFlux              = src.psfFlux;
+   psfFluxPower         = src.psfFluxPower;
    snrWeight            = src.snrWeight;
    median               = src.median;
    medianMeanDev        = src.medianMeanDev;
@@ -244,4 +244,4 @@ SubframeSelectorCache::~SubframeSelectorCache()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorCache.cpp - Released 2021-11-25T11:45:24Z
+// EOF SubframeSelectorCache.cpp - Released 2021-12-29T20:37:28Z

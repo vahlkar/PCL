@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
 // Standard APASS Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// APASSParameters.cpp - Released 2021-11-25T11:45:24Z
+// APASSParameters.cpp - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard APASS PixInsight module.
 //
@@ -1140,4 +1140,4 @@ bool ADatabaseMagnitudeHigh::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF APASSParameters.cpp - Released 2021-11-25T11:45:24Z
+// EOF APASSParameters.cpp - Released 2021-12-29T20:37:28Z

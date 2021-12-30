@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// pcl/IndirectArray.h - Released 2021-11-25T11:44:47Z
+// pcl/IndirectArray.h - Released 2021-12-29T20:37:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -2020,4 +2020,4 @@ IndirectArray<T,A>& operator <<( IndirectArray<T,A>&& x1, const IndirectArray<T,
 #endif  // __PCL_IndirectArray_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/IndirectArray.h - Released 2021-11-25T11:44:47Z
+// EOF pcl/IndirectArray.h - Released 2021-12-29T20:37:09Z

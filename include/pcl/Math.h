@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// pcl/Math.h - Released 2021-11-25T11:44:47Z
+// pcl/Math.h - Released 2021-12-29T20:37:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -1725,7 +1725,7 @@ template <typename T> inline constexpr T Pow2( T x ) noexcept
 
 /*!
  * \class Pow2I
- * \brief Exponential function 2**n, n being a signed integer.
+ * \brief Exponential function 2**n, \a n being a signed integer.
  *
  * Example of use:
  *
@@ -1755,20 +1755,64 @@ template <typename T> struct PCL_CLASS Pow2I
 template <typename T> inline T PowI( T x, int n ) noexcept
 {
    if ( n == 0 )
-      return 1;
+      return T( 1 );
 
-   int i = Abs( n );
    T r = x;
+   int i = ::abs( n );
    if ( i > 1 )
    {
       do
          r *= r;
-      while ( (i >>= 1) >= 2 );
-
-      if ( (n & 1) != 0 )
+      while ( (i >>= 1) > 1 );
+      if ( n & 1 )
          r *= x;
    }
-   return (n >= 0) ? r : 1/r;
+   return (n > 0) ? r : T( 1/r );
+}
+
+/*!
+ * Returns \a x raised to the 4th power.
+ * \ingroup mathematical_functions
+ */
+template <typename T> inline T PowI4( T x ) noexcept
+{
+   x *= x; return x*x;
+}
+
+/*!
+ * Returns \a x raised to the 6th power.
+ * \ingroup mathematical_functions
+ */
+template <typename T> inline T PowI6( T x ) noexcept
+{
+   x *= x*x; return x*x;
+}
+
+/*!
+ * Returns \a x raised to the 8th power.
+ * \ingroup mathematical_functions
+ */
+template <typename T> inline T PowI8( T x ) noexcept
+{
+   x *= x*x*x; return x*x;
+}
+
+/*!
+ * Returns \a x raised to the 10th power.
+ * \ingroup mathematical_functions
+ */
+template <typename T> inline T PowI10( T x ) noexcept
+{
+   x *= x*x*x*x; return x*x;
+}
+
+/*!
+ * Returns \a x raised to the 12th power.
+ * \ingroup mathematical_functions
+ */
+template <typename T> inline T PowI12( T x ) noexcept
+{
+   x *= x*x*x*x*x; return x*x;
 }
 
 // ----------------------------------------------------------------------------
@@ -4835,4 +4879,4 @@ inline uint32 Hash32( const void* data, size_type size, uint32 seed = 0 ) noexce
 #endif   // __PCL_Math_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Math.h - Released 2021-11-25T11:44:47Z
+// EOF pcl/Math.h - Released 2021-12-29T20:37:09Z

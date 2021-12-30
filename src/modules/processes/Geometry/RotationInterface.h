@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.4
 // ----------------------------------------------------------------------------
-// RotationInterface.h - Released 2021-11-25T11:45:24Z
+// RotationInterface.h - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -167,4 +167,4 @@ PCL_END_LOCAL
 #endif   // __RotationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF RotationInterface.h - Released 2021-11-25T11:45:24Z
+// EOF RotationInterface.h - Released 2021-12-29T20:37:28Z

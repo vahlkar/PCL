@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.124
+# PixInsight Makefile Generator Script v1.125
 # Copyright (C) 2009-2021 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2021-11-25T15:45:04.327Z
+# Generated on .... 2021-12-30T19:41:03.710Z
 # Project id ...... RestorationFilters
 # Project type .... Module
 # Platform ........ FreeBSD/g++

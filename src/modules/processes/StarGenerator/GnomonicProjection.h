@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
 // Standard StarGenerator Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// GnomonicProjection.h - Released 2021-11-25T11:45:24Z
+// GnomonicProjection.h - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarGenerator PixInsight module.
 //
@@ -112,4 +112,4 @@ private:
 #endif   // __GnomonicProjection_h
 
 // ----------------------------------------------------------------------------
-// EOF GnomonicProjection.h - Released 2021-11-25T11:45:24Z
+// EOF GnomonicProjection.h - Released 2021-12-29T20:37:28Z

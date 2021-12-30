@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// pcl/PSFFit.h - Released 2021-11-25T11:44:47Z
+// pcl/PSFFit.h - Released 2021-12-29T20:37:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -156,6 +156,12 @@ struct PSFData
     */
    typedef PSFFitStatus::value_type    psf_fit_status;
 
+   /*!
+    * Represents a component of a centroid position vector (required for
+    * QuadTree compatibility).
+    */
+   typedef DPoint::component           component;
+
    psf_function   function = PSFunction::Invalid;   //!< Point spread function type (PSFunction namespace).
    bool           circular = false;                 //!< Circular or elliptical PSF.
    psf_fit_status status = PSFFitStatus::NotFitted; //!< Status code (PSFFitStatus namespace).
@@ -169,8 +175,7 @@ struct PSFData
    double         theta = 0;  //!< Rotation angle of the sx axis in degrees, in the [0,180) range.
    double         beta = 0;   //!< Moffat beta or shape parameter (dimensionless).
    double         flux = 0;   //!< Total flux above the local background, measured on source image pixels within the fitting region.
-   double         meanSignal = 0; //!< Estimated signal over the PSF region.
-   double         meanSignalSqr = 0; //!< Estimated squared signal over the PSF region.
+   double         signal = 0; //!< Total signal measured over the elliptical PSF region.
    unsigned       signalCount = 0; //!< Number of pixels used for signal evaluation.
    double         mad = 0;    /*!< Goodness of fit estimate. A robust, normalized mean absolute difference between
                                    the estimated PSF and the sample of source image pixels over the fitting region. */
@@ -211,13 +216,24 @@ struct PSFData
    }
 
    /*!
-    * Conversion to double operator. Returns the mean signal estimate if
+    * Conversion to double operator. Returns the PSF signal estimate if
     * nonzero, or the total flux otherwise. Useful for sorting and statistics
     * calculations.
     */
    operator double() const
    {
-      return (meanSignal != 0) ? meanSignal : flux;
+      return (signal != 0) ? signal : flux;
+   }
+
+   /*!
+    * Returns a centroid coordinate. Returns the X centroid coordinate if the
+    * specified index \a i is zero, or the Y coordinate otherwise.
+    *
+    * \note This operator provides compatibility with the QuadTree class.
+    */
+   double operator []( int i ) const noexcept
+   {
+      return (i == 0) ? c0.x : c0.y;
    }
 
    /*!
@@ -255,6 +271,15 @@ struct PSFData
    double FWHMy() const
    {
       return FWHM( function, sy, beta );
+   }
+
+   /*!
+    * Returns the double integral of the PSF, or the estimated volume over the
+    * XY plane for z > B.
+    */
+   double Volume() const
+   {
+      return A*Volume( function, sx, sy, beta );
    }
 
    /*!
@@ -324,6 +349,43 @@ struct PSFData
       case PSFunction::Lorentzian:    return 2 * sigma;
       case PSFunction::VariableShape: return 2 * sigma * Pow( beta*0.6931471805599453, 1/beta );
       default:                        return 0; // ?!
+      }
+   }
+
+   /*!
+    * Returns the double integral of a supported elliptical function with the
+    * specified parameters.
+    *
+    * \param function   The type of point spread function. See the PSFunction
+    *                   namespace for supported functions.
+    *
+    * \param sigma_x    Estimated function width on the X axis.
+    *
+    * \param sigma_y    Estimated function width on the Y axis.
+    *
+    * \param beta       Moffat beta or VariableShape shape parameter.
+    *                   Must be > 0. Must be > 1 for Moffat and Lorentzian
+    *                   functions.
+    *
+    * The returned value is the volume of the PSF over the XY plane, or zero if
+    * an invalid or unsupported function type has been specified, or if the
+    * \a beta parameter is invalid for the type of PSF specified.
+    */
+   static double Volume( psf_function function, double sigma_x, double sigma_y, double beta = 2 )
+   {
+      PCL_PRECONDITION( beta > 0 )
+      PCL_PRECONDITION( function != PSFunction::Lorentzian && (function != PSFunction::Moffat || beta > 1) )
+      switch ( function )
+      {
+      case PSFunction::Gaussian: return 6.2831853071795862 * sigma_x*sigma_y;
+      case PSFunction::Moffat:   return 3.1415926535897931 * sigma_x*sigma_y/(beta - 1);
+      case PSFunction::MoffatA:  return 0.3490658503988659 * sigma_x*sigma_y;
+      case PSFunction::Moffat8:  return 0.4487989505128276 * sigma_x*sigma_y;
+      case PSFunction::Moffat6:  return 0.6283185307179586 * sigma_x*sigma_y;
+      case PSFunction::Moffat4:  return 1.0471975511965976 * sigma_x*sigma_y;
+      case PSFunction::Moffat25: return 2.0943951023931953 * sigma_x*sigma_y;
+      case PSFunction::Moffat15: return 6.2831853071795862 * sigma_x*sigma_y;
+      default:                   return 0; // ?!
       }
    }
 };
@@ -477,4 +539,4 @@ private:
 #endif   // __PCL_PSFFit_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFFit.h - Released 2021-11-25T11:44:47Z
+// EOF pcl/PSFFit.h - Released 2021-12-29T20:37:09Z

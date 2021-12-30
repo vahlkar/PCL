@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// pcl/MetaFileFormat.h - Released 2021-11-25T11:44:47Z
+// pcl/MetaFileFormat.h - Released 2021-12-29T20:37:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -892,4 +892,4 @@ private:
 #endif   // __PCL_MetaFileFormat_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MetaFileFormat.h - Released 2021-11-25T11:44:47Z
+// EOF pcl/MetaFileFormat.h - Released 2021-12-29T20:37:09Z

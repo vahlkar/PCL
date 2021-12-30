@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
-// pcl/Vector.h - Released 2021-11-25T11:44:47Z
+// pcl/Vector.h - Released 2021-12-29T20:37:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -139,13 +139,14 @@ public:
    /*!
     * Constructs an uninitialized vector of the specified length.
     *
-    * \param len     Number of vector components (>= 0).
+    * \param len     Number of vector components (&ge; 0).
     *
     * This constructor does not initialize vector components. The newly created
     * vector will contain unpredictable values.
     */
    GenericVector( int len )
    {
+      PCL_PRECONDITION( len >= 0 )
       m_data = new Data( len );
    }
 
@@ -153,10 +154,11 @@ public:
     * Constructs a vector and fills it with a constant component value.
     *
     * \param x       Initial value for all vector components.
-    * \param len     Number of vector components (>= 0).
+    * \param len     Number of vector components (&ge; 0).
     */
    GenericVector( const component& x, int len )
    {
+      PCL_PRECONDITION( len >= 0 )
       m_data = new Data( len );
             iterator __restrict__ i = m_data->Begin();
       const_iterator __restrict__ j = m_data->End();
@@ -173,11 +175,12 @@ public:
     *                initialization of vector components. The array must provide
     *                at least \a len consecutive items.
     *
-    * \param len     Number of vector components (>= 0).
+    * \param len     Number of vector components (&ge; 0).
     */
    template <typename T1>
    GenericVector( const T1* a, int len )
    {
+      PCL_PRECONDITION( len >= 0 )
       m_data = new Data( len );
       if ( a != nullptr )
       {
@@ -3319,4 +3322,4 @@ typedef F80Vector                   LDVector;
 #endif   // __PCL_Vector_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Vector.h - Released 2021-11-25T11:44:47Z
+// EOF pcl/Vector.h - Released 2021-12-29T20:37:09Z

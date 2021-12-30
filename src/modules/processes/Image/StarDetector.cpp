@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.15
+// /_/     \____//_____/   PCL 2.4.17
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// StarDetector.cpp - Released 2021-11-25T11:45:24Z
+// StarDetector.cpp - Released 2021-12-29T20:37:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -266,4 +266,4 @@ StarDetector::StarDetector( const Image& image, int channel,
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF StarDetector.cpp - Released 2021-11-25T11:45:24Z
+// EOF StarDetector.cpp - Released 2021-12-29T20:37:28Z
