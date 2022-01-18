@@ -2,9 +2,9 @@
 <!--
 ######################################################################
 # PixInsight Makefile Generator Script v1.125
-# Copyright (C) 2009-2021 Pleiades Astrophoto
+# Copyright (C) 2009-2022 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2021-12-30T19:40:18.979Z
+# Generated on .... 2022-01-18T11:04:07.153Z
 # Project id ...... PCL
 # Project type .... StaticLibrary
 # Platform ........ Windows/vc16
@@ -30,7 +30,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{E79DFAAC-B48D-4442-9EBE-B1111EAB6546}</ProjectGuid>
+    <ProjectGuid>{651D420C-7AB3-43DC-86A2-AFE8B64A7FAE}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -293,7 +293,9 @@
     <ClCompile Include="..\..\NumericControl.cpp"/>
     <ClCompile Include="..\..\OnlineObjectSearchDialog.cpp"/>
     <ClCompile Include="..\..\OrthographicProjection.cpp"/>
+    <ClCompile Include="..\..\PSFEstimator.cpp"/>
     <ClCompile Include="..\..\PSFFit.cpp"/>
+    <ClCompile Include="..\..\PSFScaleEstimator.cpp"/>
     <ClCompile Include="..\..\PSFSignalEstimator.cpp"/>
     <ClCompile Include="..\..\Pen.cpp"/>
     <ClCompile Include="..\..\PolarTransform.cpp"/>

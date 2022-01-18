@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.18
 // ----------------------------------------------------------------------------
-// pcl/LocalNormalizationData.cpp - Released 2021-12-29T20:37:16Z
+// pcl/LocalNormalizationData.cpp - Released 2022-01-18T11:02:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -68,6 +68,7 @@ void LocalNormalizationData::InitInterpolations()
         m_B.IsEmpty() ||
         m_A.Bounds() != m_B.Bounds() ||
         m_A.NumberOfChannels() != m_B.NumberOfChannels() ||
+        !m_C.IsEmpty() && m_C.Length() != m_B.NumberOfChannels() ||
         m_referenceWidth < m_A.Width() ||
         m_referenceHeight < m_A.Height() )
       throw Error( "LocalNormalizationData::InitInterpolations(): Uninitialized or invalid local normalization data." );
@@ -85,6 +86,8 @@ void LocalNormalizationData::InitInterpolations()
       B.Initialize( m_B[c], m_B.Width(), m_B.Height() );
       m_UB << B;
    }
+   if ( m_C.IsEmpty() )
+      m_C = Vector( 0.0, m_A.NumberOfChannels() );
 }
 
 // ----------------------------------------------------------------------------
@@ -96,8 +99,12 @@ void LocalNormalizationData::Clear()
    m_scale = m_referenceWidth = m_referenceHeight = -1;
    m_A.FreeData();
    m_B.FreeData();
+   m_C.Clear();
    m_UA.Clear();
    m_UB.Clear();
+   m_Rc.Clear();
+   m_Tc.Clear();
+   m_S.Clear();
    m_sx = m_sy = 0;
    m_creationTime = TimePoint();
 }
@@ -147,6 +154,42 @@ static void WarnOnUnknownChildElement( const XMLElement& element, const String& 
          "Parsing " + parsingWhatElement + " element",
          "Skipping unknown \'" + element.Name() + "\' child element." );
    Console().WarningLn( "<end><cbr>** Warning: " + e.Message() );
+}
+
+static bool TryToDouble( double& value, IsoString::const_iterator p )
+{
+   IsoString::iterator endptr = nullptr;
+   errno = 0;
+   double val = ::strtod( p, &endptr );
+   if ( errno == 0 && (endptr == nullptr || *endptr == '\0') )
+   {
+      value = val;
+      return true;
+   }
+   return false;
+}
+
+static Vector ParseVector( const XMLElement& element, size_type maxCount = 256 )
+{
+   IsoString text = IsoString( element.Text().Trimmed() );
+   Array<double> v;
+   for ( size_type i = 0, j, end = text.Length(); i < end; ++i )
+   {
+      for ( j = i; j < end; ++j )
+         if ( text[j] == ',' )
+            break;
+      text[j] = '\0';
+      double x;
+      if ( !TryToDouble( x, text.At( i ) ) )
+         throw Error( "Parsing vector components: Invalid floating point numeric literal \'" + IsoString( text.At( i ) ) + "\'" );
+      if ( v.Length() == maxCount )
+         throw Error( "Parsing vector components: Too many items." );
+      v << x;
+      i = j;
+   }
+   if ( v.Length() < 1 )
+      throw Error( "Parsing vector: Empty vector." );
+   return Vector( v.Begin(), int( v.Length() ) );
 }
 
 void LocalNormalizationData::Parse( const XMLElement& root, bool ignoreNormalizationData )
@@ -211,6 +254,8 @@ void LocalNormalizationData::Parse( const XMLElement& root, bool ignoreNormaliza
                      ParseNormalizationMatrices( m_A, element );
                   else if ( element.Name() == "ZeroOffset" )
                      ParseNormalizationMatrices( m_B, element );
+                  else if ( element.Name() == "Bias" )
+                     m_C = ParseVector( element );
                   else
                      WarnOnUnknownChildElement( element, "LocalNormalization" );
                }
@@ -219,6 +264,41 @@ void LocalNormalizationData::Parse( const XMLElement& root, bool ignoreNormaliza
                   throw Error( "Missing local normalization scale matrices." );
                if ( m_B.IsEmpty() )
                   throw Error( "Missing local normalization zero offset matrices." );
+               if ( !m_C.IsEmpty() )
+                  if ( m_C.Length() != m_A.NumberOfChannels() )
+                     throw Error( "Wrong number of bias vector components." );
+            }
+         }
+         else if ( element.Name() == "GlobalNormalization" )
+         {
+            if ( !ignoreNormalizationData )
+            {
+               for ( const XMLNode& node : element )
+               {
+                  if ( !node.IsElement() )
+                  {
+                     WarnOnUnexpectedChildNode( node, "GlobalNormalization" );
+                     continue;
+                  }
+
+                  const XMLElement& element = static_cast<const XMLElement&>( node );
+
+                  if ( element.Name() == "Scale" )
+                     m_S = ParseVector( element );
+                  else if ( element.Name() == "ReferenceLocation" )
+                     m_Rc = ParseVector( element );
+                  else if ( element.Name() == "TargetLocation" )
+                     m_Tc = ParseVector( element );
+                  else
+                     WarnOnUnknownChildElement( element, "GlobalNormalization" );
+               }
+
+               if ( m_S.IsEmpty() )
+                  throw Error( "Missing global normalization scale vector." );
+               if ( m_Rc.IsEmpty() )
+                  throw Error( "Missing global normalization reference location vector." );
+               if ( m_Tc.IsEmpty() )
+                  throw Error( "Missing global normalization target location vector." );
             }
          }
          else if ( element.Name() == "CreationTime" )
@@ -259,8 +339,14 @@ void LocalNormalizationData::Parse( const XMLElement& root, bool ignoreNormaliza
          throw Error( "Incongruent local normalization matrices." );
 
       if ( m_referenceWidth < m_scale || m_referenceHeight < m_scale ||
-         m_referenceWidth < m_A.Width() || m_referenceHeight < m_A.Height() )
+           m_referenceWidth < m_A.Width() || m_referenceHeight < m_A.Height() )
          throw Error( "Invalid reference dimensions." );
+
+      if ( !m_S.IsEmpty() )
+         if ( m_S.Length() != m_B.NumberOfChannels() ||
+              m_Rc.Length() != m_B.NumberOfChannels() ||
+              m_Tc.Length() != m_B.NumberOfChannels() )
+            throw Error( "Incongruent global normalization vectors." );
 
       InitInterpolations();
    }
@@ -278,6 +364,7 @@ XMLDocument* LocalNormalizationData::Serialize() const
         m_B.IsEmpty() ||
         m_A.Bounds() != m_B.Bounds() ||
         m_A.NumberOfChannels() != m_B.NumberOfChannels() ||
+        !m_C.IsEmpty() && m_C.Length() != m_B.NumberOfChannels() ||
         m_referenceWidth < m_A.Width() ||
         m_referenceHeight < m_A.Height() )
       throw Error( "LocalNormalizationData::Serialize(): Uninitialized or invalid local normalization data." );
@@ -312,6 +399,17 @@ XMLDocument* LocalNormalizationData::Serialize() const
 
    SerializeNormalizationMatrices( new XMLElement( *ln, "Scale" ), m_A );
    SerializeNormalizationMatrices( new XMLElement( *ln, "ZeroOffset" ), m_B );
+   if ( !m_C.IsEmpty() )
+      *(new XMLElement( *ln, "Bias" )) << new XMLText( String().ToCommaSeparated( m_C ) );
+
+   if ( !m_S.IsEmpty() && !m_Rc.IsEmpty() && !m_Tc.IsEmpty() )
+   {
+      XMLElement* gn = new XMLElement( *root, "GlobalNormalization" );
+
+      *(new XMLElement( *gn, "Scale" )) << new XMLText( String().ToCommaSeparated( m_S ) );
+      *(new XMLElement( *gn, "ReferenceLocation" )) << new XMLText( String().ToCommaSeparated( m_Rc ) );
+      *(new XMLElement( *gn, "TargetLocation" )) << new XMLText( String().ToCommaSeparated( m_Tc ) );
+   }
 
    return xml.Release();
 }
@@ -351,9 +449,12 @@ void LocalNormalizationData::ParseNormalizationMatrices( normalization_matrices&
    if ( numberOfChannels < 1 )
       throw Error( "Invalid " + root.Name() + " numberOfChannels attribute value '" + s + '\'' );
 
+   bool fp64 = false;
    s = root.AttributeValue( "sampleFormat" );
    if ( !s.IsEmpty() )
-      if ( s != "Float64" )
+      if ( s == "Float64" )
+         fp64 = true;
+      else if ( s != "Float32" )
          throw Error( "Invalid or unsupported " + root.Name() + " sampleFormat attribute value '" + s + '\'' );
 
    M.AllocateData( width, height, numberOfChannels );
@@ -434,12 +535,22 @@ void LocalNormalizationData::ParseNormalizationMatrices( normalization_matrices&
             channelData = IsoString( element.Text().Trimmed() ).FromBase64();
          }
 
-         if ( channelData.Size() != M.ChannelSize() )
+         if ( channelData.Size() == M.ChannelSize() )
+         {
+            ::memcpy( M[channel], channelData.Begin(), channelData.Size() );
+         }
+         else if ( fp64 && channelData.Size() == sizeof( double )/normalization_matrices::BytesPerSample()*M.ChannelSize() )
+         {
+            normalization_matrices::sample_iterator j( M, channel );
+            for ( ByteArray::const_iterator i = channelData.Begin(); i != channelData.End(); i += sizeof( double ), ++j )
+               *j = normalization_matrices::sample( *reinterpret_cast<const double*>( i ) );
+         }
+         else
+         {
             throw Error( "Parsing xnml " + root.Name() + " ChannelData element: Invalid channel data size: "
-               "Expected " + String( M.ChannelSize() ) + " bytes, "
+               "Expected " + String( M.ChannelSize() * (fp64 ? 2 : 1) ) + " bytes, "
                "got " + String( channelData.Size() ) + " bytes." );
-
-         ::memcpy( M[channel], channelData.Begin(), channelData.Size() );
+         }
 
          ++channel;
       }
@@ -460,7 +571,7 @@ void LocalNormalizationData::SerializeNormalizationMatrices( XMLElement* root, c
    root->SetAttribute( "width", String( M.Width() ) );
    root->SetAttribute( "height", String( M.Height() ) );
    root->SetAttribute( "numberOfChannels", String( M.NumberOfChannels() ) );
-   root->SetAttribute( "sampleFormat", "Float64" );
+   root->SetAttribute( "sampleFormat", "Float32" );
 
    for ( int c = 0; c < M.NumberOfChannels(); ++c )
    {
@@ -493,4 +604,4 @@ void LocalNormalizationData::SerializeNormalizationMatrices( XMLElement* root, c
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/LocalNormalizationData.cpp - Released 2021-12-29T20:37:16Z
+// EOF pcl/LocalNormalizationData.cpp - Released 2022-01-18T11:02:48Z

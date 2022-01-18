@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.18
 // ----------------------------------------------------------------------------
-// pcl/Thread.cpp - Released 2021-12-29T20:37:16Z
+// pcl/Thread.cpp - Released 2022-01-18T11:02:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -204,7 +204,11 @@ Thread& Thread::Null()
 
 void Thread::Start( Thread::priority p, int processor )
 {
-   m_processorIndex = Range( processor, -1, PCL_MAX_PROCESSORS );
+   m_processorIndex = -1;
+   if ( processor >= 0 )
+      if ( processor <= PCL_MAX_PROCESSORS )
+         if ( Thread::IsRootThread() )
+            m_processorIndex = processor;
    (*API->Thread->StartThread)( handle, p );
 }
 
@@ -542,4 +546,4 @@ void PCL_FUNC Sleep( unsigned ms )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Thread.cpp - Released 2021-12-29T20:37:16Z
+// EOF pcl/Thread.cpp - Released 2022-01-18T11:02:48Z

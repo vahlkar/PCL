@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.18
 // ----------------------------------------------------------------------------
-// pcl/LocalNormalizationData.h - Released 2021-12-29T20:37:09Z
+// pcl/LocalNormalizationData.h - Released 2022-01-18T11:02:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -88,21 +88,32 @@ class PCL_CLASS XMLElement;
  * For a channel index c and position vector i on a given input image, the
  * local normalization function is:
  *
- * v'(c,i) = U(A(c,i))*v(c,i) + U(B(c,i))
+ * v'(c,i) = U(A(c,i))*(v(c,i) - C(c)) + U(B(c,i))
  *
  * where A(c) is the matrix of scaling coefficients, B(c) is the matrix of zero
- * offset coefficients, U() is a scale-dependent interpolation functional, v is
- * an input pixel value, and v' is the normalized pixel value. Local
- * normalization matrices are conveniently stored as multichannel,
- * two-dimensional images, which facilitates two-dimensional interpolation with
- * smooth pixel interpolation algorithms.
+ * offset coefficients, C(c) is the bias level (C = 0 by default), U() is a
+ * scale-dependent interpolation functional, v is an input pixel value, and v'
+ * is the normalized pixel value.
  *
- * Normalization matrices are normally much smaller than the reference image
- * dimensions. This happens because we define local normalization functions at
- * a specific dimensional scale, which typically corresponds to a large dyadic
- * wavelet scale of 64, 128, or 256 pixels. For this reason, normalization
- * matrices require a smooth interpolation to compute normalization
- * coefficients at reference image coordinates.
+ * This implementation can also apply an optional global normalization function
+ * after the local normalization. If the corresponding parameters are defined,
+ * the global normalization functio is:
+ *
+ * v''(c,i) = S(c)*(v'(c,i) - T(c)) + R(c)
+ *
+ * where S is a vector of global scaling factors, T is a vector of target
+ * locations, and R is a vector of reference locations. v' is the locally
+ * normalized pixel value, as defined above, and v'' is the output value after
+ * local and global normalization.
+ *
+ * Local normalization matrices are conveniently stored as multichannel,
+ * two-dimensional images, which facilitates two-dimensional interpolation with
+ * smooth pixel interpolation algorithms. Normalization matrices are normally
+ * much smaller than the reference image dimensions. This happens because we
+ * define local normalization functions at a specific dimensional scale, which
+ * typically corresponds to a large dyadic scale of 64, 128, or 256 pixels. For
+ * this reason, normalization matrices require a smooth interpolation to
+ * compute normalization coefficients at reference image coordinates.
  *
  * \sa DrizzleData
  */
@@ -113,7 +124,7 @@ public:
    /*!
     * Represents a per-channel set of local image normalization matrices.
     */
-   typedef DImage                            normalization_matrices;
+   typedef Image                             normalization_matrices;
 
    /*!
     * Represents a local normalization function coefficient.
@@ -354,7 +365,7 @@ public:
     * See the class description for detailed information on local normalization
     * functions.
     *
-    * \sa Scale(), SetNormalizationMatrices(), NormalizationScale()
+    * \sa Scale(), SetLocalNormalizationParameters(), NormalizationScale()
     */
    const normalization_matrices& ZeroOffset() const
    {
@@ -368,7 +379,7 @@ public:
     * See the class description for detailed information on local normalization
     * functions.
     *
-    * \sa ZeroOffset(), SetNormalizationMatrices(), NormalizationScale()
+    * \sa ZeroOffset(), SetLocalNormalizationParameters(), NormalizationScale()
     */
    const normalization_matrices& Scale() const
    {
@@ -376,7 +387,22 @@ public:
    }
 
    /*!
-    * Sets new local normalization function matrices.
+    * Returns a reference to the vector of per-channel bias levels. Each bias
+    * is a constant scalar subtracted from input pixel sample values before
+    * applying the local normalization function. This allows to remove any
+    * systematic offset or additive pedestal that could be present in the data
+    * to be normalized. The possibility to remove a constant value also adds
+    * flexibility to the local normalization function.
+    *
+    * If not specified, the target bias is always zero by default.
+    */
+   const Vector& Bias() const
+   {
+      return m_C;
+   }
+
+   /*!
+    * Sets new local normalization function parameters.
     *
     * \param A          Reference to an image storing the matrices of scaling
     *                   normalization coefficients.
@@ -384,17 +410,99 @@ public:
     * \param B          Reference to an image storing the matrices of zero
     *                   offset normalization coefficients.
     *
+    * \param C          Reference to an optional vector of per-channel biases.
+    *                   If not specified, the bias will be set to zero for each
+    *                   channel by default.
+    *
     * See the class description for detailed information on local normalization
     * functions.
     *
-    * \sa ZeroOffset(), Scale()
+    * This function throws an Error exception if some of the specified local
+    * normalization parameters are invalid or incongruent.
+    *
+    * \sa ZeroOffset(), Scale(), Bias(), SetGlobalNormalizationParameters()
     */
-   void SetNormalizationMatrices( const normalization_matrices& A, const normalization_matrices& B )
+   void SetLocalNormalizationParameters( const normalization_matrices& A, const normalization_matrices& B, const Vector& C = Vector() )
    {
-      if ( A.Bounds() != B.Bounds() || A.NumberOfChannels() != B.NumberOfChannels() )
-         throw Error( "LocalNormalizationData::SetNormalizationMatrices(): Incompatible matrix dimensions." );
+      if ( A.Bounds() != B.Bounds() )
+         throw Error( "LocalNormalizationData::SetLocalNormalizationParameters(): Incompatible matrix dimensions." );
+      if ( A.NumberOfChannels() != B.NumberOfChannels() )
+         throw Error( "LocalNormalizationData::SetLocalNormalizationParameters(): Incompatible number of normalization matrices." );
       m_A = A;
       m_B = B;
+      if ( !C.IsEmpty() )
+      {
+         if ( C.Length() != A.NumberOfChannels() )
+            throw Error( "LocalNormalizationData::SetLocalNormalizationParameters(): Incompatible bias vector length." );
+         m_C = C;
+      }
+   }
+
+   /*!
+    * Returns a reference to the vector of per-channel global reference
+    * locations (or zero-offsets).
+    *
+    * \sa GlobalTargetLocation(), GlobalScalingFactors(),
+    * SetGlobalNormalizationParameters()
+    */
+   const Vector& GlobalReferenceLocation() const
+   {
+      return m_Rc;
+   }
+
+   /*!
+    * Returns a reference to the vector of per-channel global target locations
+    * (or zero-offsets).
+    *
+    * \sa GlobalReferenceLocation(), GlobalScalingFactors(),
+    * SetGlobalNormalizationParameters()
+    */
+   const Vector& GlobalTargetLocation() const
+   {
+      return m_Rc;
+   }
+
+   /*!
+    * Returns a reference to the vector of per-channel global scaling factors.
+    *
+    * \sa GlobalReferenceLocation(), GlobalTargetLocation(),
+    * SetGlobalNormalizationParameters()
+    */
+   const Vector& GlobalScalingFactors() const
+   {
+      return m_S;
+   }
+
+   /*!
+    * Sets new global normalization vectors.
+    *
+    * \param Rc         Reference to a vector of per-channel reference global
+    *                   locations.
+    *
+    * \param Tc         Reference to a vector of per-channel target global
+    *                   locations.
+    *
+    * \param S          Reference to a vector of per-channel global scaling
+    *                   factors.
+    *
+    * See the class description for detailed information on local normalization
+    * functions.
+    *
+    * This function throws an Error exception if some of the specified global
+    * normalization parameters are invalid or incongruent.
+    *
+    * \sa GlobalReferenceLocation(), GlobalTargetLocation(),
+    * GlobalScalingFactors(), SetLocalNormalizationParameters()
+    */
+   void SetGlobalNormalizationParameters( const Vector& Rc, const Vector& Tc, const Vector& S )
+   {
+      if ( m_B.IsEmpty() )
+         throw Error( "LocalNormalizationData::SetGlobalNormalizationParameters(): No zero offset coefficient matrix has been defined." );
+      if ( Rc.Length() != m_B.NumberOfChannels() || Tc.Length() != m_B.NumberOfChannels() || S.Length() != m_B.NumberOfChannels() )
+         throw Error( "LocalNormalizationData::SetGlobalNormalizationParameters(): Incompatible vector lengths." );
+      m_Rc = Rc;
+      m_Tc = Tc;
+      m_S = S;
    }
 
    /*!
@@ -408,7 +516,7 @@ public:
     * since in this case the internal interpolators are always initialized
     * automatically. This function must be called, however, for newly defined
     * normalization data set by calling SetReferenceDimensions() and
-    * SetNormalizationMatrices().
+    * SetLocalNormalizationParameters().
     *
     * If this object has not been initialized with valid local normalization
     * data, this member function throws an Error exception.
@@ -445,14 +553,17 @@ public:
     * not, calling this operator will most likely lead to a crash.
     * Interpolation data are automatically initialized when a valid XNML file
     * or %XML element is loaded and parsed. For newly constructed objects, make
-    * sure you define the reference dimensions and normalization matrices. Then
-    * call InitInterpolations() before starting to call this operator.
+    * sure you define the required reference dimensions and normalization
+    * matrices. Then call InitInterpolations() before starting to call this
+    * operator.
     */
    double operator()( double z, int x, int y, int c = 0 ) const
    {
       double sx = m_sx*x;
       double sy = m_sy*y;
-      return m_UA[c]( sx, sy )*z + m_UB[c]( sx, sy );
+      if ( likely( !m_S.IsEmpty() ) )
+         return (m_UA[c]( sx, sy )*(z - m_C[c]) + m_UB[c]( sx, sy ) - m_Tc[c])*m_S[c] + m_Rc[c];
+      return m_UA[c]( sx, sy )*(z - m_C[c]) + m_UB[c]( sx, sy );
    }
 
    /*!
@@ -601,8 +712,12 @@ private:
    int                    m_referenceHeight = -1; // reference image height in px
    normalization_matrices m_A;                    // scaling coefficients
    normalization_matrices m_B;                    // zero offset coefficients
+   Vector                 m_C;                    // input bias
    matrix_interpolations  m_UA;                   // interpolators for m_A
    matrix_interpolations  m_UB;                   // interpolators for m_B
+   Vector                 m_Rc;                   // global normalization, reference center
+   Vector                 m_Tc;                   // global normalization, target center
+   Vector                 m_S;                    // global normalization, scale factor
    double                 m_sx;                   // coordinate scaling factor, X axis
    double                 m_sy;                   // coordinate scaling factor, Y axis
    TimePoint              m_creationTime;
@@ -619,4 +734,4 @@ private:
 #endif   // __PCL_LocalNormalizationData_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/LocalNormalizationData.h - Released 2021-12-29T20:37:09Z
+// EOF pcl/LocalNormalizationData.h - Released 2022-01-18T11:02:40Z

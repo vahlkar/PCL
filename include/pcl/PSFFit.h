@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.18
 // ----------------------------------------------------------------------------
-// pcl/PSFFit.h - Released 2021-12-29T20:37:09Z
+// pcl/PSFFit.h - Released 2022-01-18T11:02:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -174,8 +174,8 @@ struct PSFData
    double         sy = 0;     //!< Function width in pixels on the Y axis, sx >= sy.
    double         theta = 0;  //!< Rotation angle of the sx axis in degrees, in the [0,180) range.
    double         beta = 0;   //!< Moffat beta or shape parameter (dimensionless).
-   double         flux = 0;   //!< Total flux above the local background, measured on source image pixels within the fitting region.
-   double         signal = 0; //!< Total signal measured over the elliptical PSF region.
+   double         flux = 0;   //!< Total flux above the local background, measured over the rectangular fitting region.
+   double         signal = 0; //!< Total flux above the local background, measured over the elliptical PSF region.
    unsigned       signalCount = 0; //!< Number of pixels used for signal evaluation.
    double         mad = 0;    /*!< Goodness of fit estimate. A robust, normalized mean absolute difference between
                                    the estimated PSF and the sample of source image pixels over the fitting region. */
@@ -539,4 +539,4 @@ private:
 #endif   // __PCL_PSFFit_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFFit.h - Released 2021-12-29T20:37:09Z
+// EOF pcl/PSFFit.h - Released 2022-01-18T11:02:40Z

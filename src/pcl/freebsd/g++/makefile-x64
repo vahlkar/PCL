@@ -1,8 +1,8 @@
 ######################################################################
 # PixInsight Makefile Generator Script v1.125
-# Copyright (C) 2009-2021 Pleiades Astrophoto
+# Copyright (C) 2009-2022 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2021-12-30T19:40:18.612Z
+# Generated on .... 2022-01-18T11:04:06.690Z
 # Project id ...... PCL
 # Project type .... StaticLibrary
 # Platform ........ FreeBSD/g++
@@ -121,7 +121,9 @@ SRC_FILES= \
 ../../NumericControl.cpp \
 ../../OnlineObjectSearchDialog.cpp \
 ../../OrthographicProjection.cpp \
+../../PSFEstimator.cpp \
 ../../PSFFit.cpp \
+../../PSFScaleEstimator.cpp \
 ../../PSFSignalEstimator.cpp \
 ../../Pen.cpp \
 ../../PolarTransform.cpp \
@@ -308,7 +310,9 @@ OBJ_FILES= \
 ./x64/Release/NumericControl.o \
 ./x64/Release/OnlineObjectSearchDialog.o \
 ./x64/Release/OrthographicProjection.o \
+./x64/Release/PSFEstimator.o \
 ./x64/Release/PSFFit.o \
+./x64/Release/PSFScaleEstimator.o \
 ./x64/Release/PSFSignalEstimator.o \
 ./x64/Release/Pen.o \
 ./x64/Release/PolarTransform.o \
@@ -495,7 +499,9 @@ DEP_FILES= \
 ./x64/Release/NumericControl.d \
 ./x64/Release/OnlineObjectSearchDialog.d \
 ./x64/Release/OrthographicProjection.d \
+./x64/Release/PSFEstimator.d \
 ./x64/Release/PSFFit.d \
+./x64/Release/PSFScaleEstimator.d \
 ./x64/Release/PSFSignalEstimator.d \
 ./x64/Release/Pen.d \
 ./x64/Release/PolarTransform.d \

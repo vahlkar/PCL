@@ -1,0 +1,214 @@
+//     ____   ______ __
+//    / __ \ / ____// /
+//   / /_/ // /    / /
+//  / ____// /___ / /___   PixInsight Class Library
+// /_/     \____//_____/   PCL 2.4.18
+// ----------------------------------------------------------------------------
+// pcl/PSFScaleEstimator.h - Released 2022-01-18T11:02:40Z
+// ----------------------------------------------------------------------------
+// This file is part of the PixInsight Class Library (PCL).
+// PCL is a multiplatform C++ framework for development of PixInsight modules.
+//
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+//
+// Redistribution and use in both source and binary forms, with or without
+// modification, is permitted provided that the following conditions are met:
+//
+// 1. All redistributions of source code must retain the above copyright
+//    notice, this list of conditions and the following disclaimer.
+//
+// 2. All redistributions in binary form must reproduce the above copyright
+//    notice, this list of conditions and the following disclaimer in the
+//    documentation and/or other materials provided with the distribution.
+//
+// 3. Neither the names "PixInsight" and "Pleiades Astrophoto", nor the names
+//    of their contributors, may be used to endorse or promote products derived
+//    from this software without specific prior written permission. For written
+//    permission, please contact info@pixinsight.com.
+//
+// 4. All products derived from this software, in any form whatsoever, must
+//    reproduce the following acknowledgment in the end-user documentation
+//    and/or other materials provided with the product:
+//
+//    "This product is based on software from the PixInsight project, developed
+//    by Pleiades Astrophoto and its contributors (https://pixinsight.com/)."
+//
+//    Alternatively, if that is where third-party acknowledgments normally
+//    appear, this acknowledgment must be reproduced in the product itself.
+//
+// THIS SOFTWARE IS PROVIDED BY PLEIADES ASTROPHOTO AND ITS CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+// TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+// PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL PLEIADES ASTROPHOTO OR ITS
+// CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+// EXEMPLARY OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, BUSINESS
+// INTERRUPTION; PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; AND LOSS OF USE,
+// DATA OR PROFITS) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+// CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+// POSSIBILITY OF SUCH DAMAGE.
+// ----------------------------------------------------------------------------
+
+#ifndef __PCL_PSFScaleEstimator_h
+#define __PCL_PSFScaleEstimator_h
+
+/// \file pcl/PSFScaleEstimator.h
+
+#include <pcl/Defs.h>
+
+#include <pcl/PSFEstimator.h>
+
+namespace pcl
+{
+
+// ----------------------------------------------------------------------------
+
+/*!
+ * \class PSFScaleEstimator
+ * \brief Estimation of relative image scale based on PSF photometry
+ * \sa PSFEstimator, PSFSignalEstimator, StarDetector, PSFFit
+ */
+class PCL_CLASS PSFScaleEstimator : public PSFEstimator
+{
+public:
+
+   /*!
+    * Represents a point spread function type.
+    */
+   typedef PSFEstimator::psf_function  psf_function;
+
+   /*!
+    * \struct pcl::PSFScaleEstimator::Estimate
+    * \brief Structure to hold a PSF relative scale estimate.
+    */
+   struct Estimate
+   {
+      double scale = 0; //!< Estimate of the mean relative scale with respect to the reference image.
+      int    count = 0; //!< Number of valid PSF signal measurements used for scale evaluation.
+
+      /*!
+       * Conversion to double operator.
+       */
+      operator double() const
+      {
+         return scale;
+      }
+   };
+
+   /*!
+    * Default constructor.
+    */
+   PSFScaleEstimator() = default;
+
+   /*!
+    * Copy constructor.
+    */
+   PSFScaleEstimator( const PSFScaleEstimator& ) = default;
+
+   /*!
+    * Virtual destructor.
+    */
+   virtual ~PSFScaleEstimator()
+   {
+   }
+
+   /*!
+    * Copy assignment operator. Returns a reference to this object.
+    */
+   PSFScaleEstimator& operator =( const PSFScaleEstimator& ) = default;
+
+   /*!
+    * Returns the search tolerance in pixels.
+    *
+    * For evaluation of relative scale finding a set of matched pairs of PSF
+    * measurements, i.e. matched stars, is necessary to ensure robustness of
+    * the computed scale estimate. The search tolerance is the half side in
+    * pixels of a square region around each fitted PSF used to find matched
+    * pairs of stars by proximity search.
+    *
+    * In theory a very small search tolerance (about 0.01 - 0.05 pixels,
+    * depending on the scale of the image) should be applicable, since the
+    * reference and target images are assumed to be registered and our standard
+    * image registration processes, such as StarAlignment for example, sport
+    * centipixel accuracy. However, in practice we may have to deal with larger
+    * registration errors, especially for wide field images if the user has not
+    * defined the necessary parameters to apply distortion corrections.
+    *
+    * The default search tolerance is 1 pixel.
+    */
+   float PSFSearchTolerance() const
+   {
+      return m_psfSearchTolerance;
+   }
+
+   /*!
+    * Sets the search tolerance in pixels. See PSFSearchTolerance() for a
+    * description of this parameter.
+    */
+   void SetPSFSearchTolerance( float t )
+   {
+      PCL_PRECONDITION( t >= 0 )
+      m_psfSearchTolerance = Max( 0.0F, t );
+   }
+
+   /*!
+    * Sets a new reference image for relative scale estimation.
+    *
+    * This function performs the star detection and PSF fitting tasks for the
+    * specified image. The resulting set of PSF signal measurements will be
+    * stored in this object for relative scale evaluation by subsequent calls
+    * to EstimateScale().
+    *
+    * Returns the number of valid PSF signal measurements gathered for the
+    * specified reference \a image.
+    */
+   int SetReference( const ImageVariant& image );
+
+   /*!
+    * Evaluates the mean relative scaling factor of the currently selected
+    * reference image with respect to the specified target \a image.
+    *
+    * A successful call to SetReference() is required to select a reference
+    * image \e before calling this function; otherwise an Error exception will
+    * be thrown. The specified target \a image must be accurately registered
+    * with respect to the reference image.
+    *
+    * The returned object contains the estimated mean ratio of the reference
+    * signal to the target signal, as well as the number of PSF measurements
+    * used for scale evaluation. All PSF signal measurements exclude local
+    * background estimates.
+    *
+    * \note This function is thread-safe.
+    */
+   Estimate EstimateScale( const ImageVariant& image ) const;
+
+   /*!
+    * Evaluates the mean relative scaling factor of the currently selected
+    * reference image with respect to the specified target \a image.
+    *
+    * This operator is equivalent to the
+    * EstimateScale( const ImageVariant& ) const member function.
+    *
+    * \note This function is thread-safe.
+    */
+   Estimate operator()( const ImageVariant& image ) const
+   {
+      return EstimateScale( image );
+   }
+
+private:
+
+   Array<PSFData> m_psfReference;
+   float          m_psfSearchTolerance = 1.0F;
+
+   Array<PSFData> FitStars( const ImageVariant& ) const;
+};
+
+// ----------------------------------------------------------------------------
+
+} // pcl
+
+#endif   // __PCL_PSFScaleEstimator_h
+
+// ----------------------------------------------------------------------------
+// EOF pcl/PSFScaleEstimator.h - Released 2022-01-18T11:02:40Z
