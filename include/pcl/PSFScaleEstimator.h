@@ -78,12 +78,13 @@ public:
    typedef PSFEstimator::psf_function  psf_function;
 
    /*!
-    * \struct pcl::PSFScaleEstimator::Estimate
+    * \struct pcl::PSFScaleEstimator::Estimates
     * \brief Structure to hold a PSF relative scale estimate.
     */
-   struct Estimate
+   struct Estimates
    {
       double scale = 0; //!< Estimate of the mean relative scale with respect to the reference image.
+      int    total = 0; //!< Number of valid PSF fits
       int    count = 0; //!< Number of valid PSF signal measurements used for scale evaluation.
 
       /*!
@@ -92,6 +93,14 @@ public:
       operator double() const
       {
          return scale;
+      }
+
+      /*!
+       * Returns true iff this is a valid scale estimate.
+       */
+      bool IsValid() const
+      {
+         return count > 0 && 1 + scale != 1;
       }
    };
 
@@ -134,7 +143,7 @@ public:
     * registration errors, especially for wide field images if the user has not
     * defined the necessary parameters to apply distortion corrections.
     *
-    * The default search tolerance is 1 pixel.
+    * The default search tolerance is 4 pixels.
     */
    float PSFSearchTolerance() const
    {
@@ -180,7 +189,7 @@ public:
     *
     * \note This function is thread-safe.
     */
-   Estimate EstimateScale( const ImageVariant& image ) const;
+   Estimates EstimateScale( const ImageVariant& image ) const;
 
    /*!
     * Evaluates the mean relative scaling factor of the currently selected
@@ -191,7 +200,7 @@ public:
     *
     * \note This function is thread-safe.
     */
-   Estimate operator()( const ImageVariant& image ) const
+   Estimates operator()( const ImageVariant& image ) const
    {
       return EstimateScale( image );
    }
@@ -199,9 +208,7 @@ public:
 private:
 
    Array<PSFData> m_psfReference;
-   float          m_psfSearchTolerance = 1.0F;
-
-   Array<PSFData> FitStars( const ImageVariant& ) const;
+   float          m_psfSearchTolerance = 4.0F;
 };
 
 // ----------------------------------------------------------------------------

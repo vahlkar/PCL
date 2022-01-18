@@ -96,6 +96,14 @@ public:
       {
          return mean;
       }
+
+      /*!
+       * Returns true iff this object contains valid signal estimates.
+       */
+      bool IsValid() const
+      {
+         return count > 0 && 1 + mean != 1 && 1 + flux != 1;
+      }
    };
 
    /*!

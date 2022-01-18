@@ -65,12 +65,12 @@ int PSFScaleEstimator::SetReference( const ImageVariant& image )
 
 // ----------------------------------------------------------------------------
 
-PSFScaleEstimator::Estimate PSFScaleEstimator::EstimateScale( const ImageVariant& image ) const
+PSFScaleEstimator::Estimates PSFScaleEstimator::EstimateScale( const ImageVariant& image ) const
 {
    if ( m_psfReference.IsEmpty() )
       throw Error( "PSFScaleEstimator::EstimateScale(): Internal error: No reference image has been defined" );
 
-   Estimate E;
+   Estimates E;
 
    Array<PSFData> psfs = FitStars( image );
 
@@ -113,6 +113,7 @@ PSFScaleEstimator::Estimate PSFScaleEstimator::EstimateScale( const ImageVariant
          D[i] = P1[i].signal/P2[i].signal;
 
       E.scale = D.Median();
+      E.total = int( psfs.Length() );
       E.count = D.Length();
    }
 

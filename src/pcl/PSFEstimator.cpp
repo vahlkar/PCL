@@ -136,10 +136,16 @@ Array<PSFData> PSFEstimator::FitStars( const ImageVariant& image ) const
    /*
     * Perform star detection
     */
+
+   StatusCallback* status = image.Status().Callback();
+   image.SetStatusCallback( nullptr );
+
    m_starDetector.DisablePSFFitting();
    m_starDetector.EnableParallelProcessing( IsParallelProcessingEnabled() );
    m_starDetector.SetMaxProcessors( MaxProcessors() );
    StarDetector::star_list stars = m_starDetector.DetectStars( image );
+
+   image.SetStatusCallback( status );
 
    if ( !stars.IsEmpty() )
    {
@@ -202,6 +208,9 @@ Array<PSFData> PSFEstimator::FitStars( const ImageVariant& image ) const
          psfs.Resize( Min( RoundInt( m_rejectionLimit*psfs.Length() ), int( psfs.Length() ) ) );
       }
    }
+
+   if ( initializeStatus )
+      image.Status().EnableInitialization();
 
    return psfs;
 }
