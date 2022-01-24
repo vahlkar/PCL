@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.18
+// /_/     \____//_____/   PCL 2.4.19
 // ----------------------------------------------------------------------------
-// pcl/PSFEstimator.cpp - Released 2022-01-18T11:02:48Z
+// pcl/PSFEstimator.cpp - Released 2022-01-24T22:43:35Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -141,6 +141,8 @@ Array<PSFData> PSFEstimator::FitStars( const ImageVariant& image ) const
    image.SetStatusCallback( nullptr );
 
    m_starDetector.DisablePSFFitting();
+   m_starDetector.SetUpperLimit( m_saturationRelative ? m_saturationThreshold*image.MaximumSampleValue()
+                                                      : double( m_saturationThreshold ) );
    m_starDetector.EnableParallelProcessing( IsParallelProcessingEnabled() );
    m_starDetector.SetMaxProcessors( MaxProcessors() );
    StarDetector::star_list stars = m_starDetector.DetectStars( image );
@@ -220,4 +222,4 @@ Array<PSFData> PSFEstimator::FitStars( const ImageVariant& image ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFEstimator.cpp - Released 2022-01-18T11:02:48Z
+// EOF pcl/PSFEstimator.cpp - Released 2022-01-24T22:43:35Z

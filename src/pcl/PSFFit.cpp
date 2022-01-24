@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.18
+// /_/     \____//_____/   PCL 2.4.19
 // ----------------------------------------------------------------------------
-// pcl/PSFFit.cpp - Released 2022-01-18T11:02:48Z
+// pcl/PSFFit.cpp - Released 2022-01-24T22:43:35Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -1048,6 +1048,8 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
       psf.B = Max( 0.0, P[0] );
       // Estimated function maximum.
       psf.A = P[1];
+      // Barycenter coordinates from star detection.
+      psf.b0 = pos;
       // Centroid coordinates.
       psf.c0.x = P[2] + r0.x;
       psf.c0.y = P[3] + r0.y;
@@ -1572,4 +1574,4 @@ String PSFData::StatusText() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFFit.cpp - Released 2022-01-18T11:02:48Z
+// EOF pcl/PSFFit.cpp - Released 2022-01-24T22:43:35Z

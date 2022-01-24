@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.18
+// /_/     \____//_____/   PCL 2.4.19
 // ----------------------------------------------------------------------------
-// pcl/PSFEstimator.h - Released 2022-01-18T11:02:40Z
+// pcl/PSFEstimator.h - Released 2022-01-24T22:43:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -176,6 +176,67 @@ public:
    }
 
    /*!
+    * Returns the saturation threshold for PSF flux measurements.
+    *
+    * Detected stars with one or more pixels with values above this threshold
+    * will be excluded to perform the PSF estimation task.
+    *
+    * The returned value is expressed in the [0,1] range. It can applied either
+    * as an absolute pixel sample value in the normalized [0,1] range, or as a
+    * value relative to the maximum pixel sample value of the measured image.
+    * See IsRelativeSaturationEnabled() for more information.
+    *
+    * The default saturation threshold is 0.75.
+    */
+   float SaturationThreshold() const
+   {
+      return m_saturationThreshold;
+   }
+
+   /*!
+    * Sets the saturation threshold in the [0,1] range. The minimum acceptable
+    * value \a t is 0.1. See SaturationThreshold() for a description of this
+    * parameter.
+    */
+   void SetSaturationThreshold( float t )
+   {
+      PCL_PRECONDITION( t >= 0.1 && t <= 1.0 )
+      m_saturationThreshold = Range( t, 0.1F, 1.0F );
+   }
+
+   /*!
+    * The saturation threshold parameter can be applied either as an absolute
+    * pixel sample value in the normalized [0,1] range, or as a value relative
+    * to the maximum pixel sample value of the measured image.
+    *
+    * The relative saturation threshold option is enabled by default.
+    */
+   bool IsRelativeSaturationEnabled() const
+   {
+      return m_saturationRelative;
+   }
+
+   /*!
+    * Enables the relative saturation threshold option. See
+    * SaturationThreshold() and IsRelativeSaturationEnabled() for complete
+    * information on these parameters.
+    */
+   void EnableRelativeSaturation( bool enable = true )
+   {
+      m_saturationRelative = enable;
+   }
+
+   /*!
+    * Disables the relative saturation threshold option. See
+    * SaturationThreshold() and IsRelativeSaturationEnabled() for complete
+    * information on these parameters.
+    */
+   void DisableRelativeSaturation( bool disable = true )
+   {
+      EnableRelativeSaturation( !disable );
+   }
+
+   /*!
     * Returns the rejection limit parameter of this estimator.
     *
     * The rejection limit parameter defines an order statistic, in the [0.5,1]
@@ -183,11 +244,15 @@ public:
     * during the estimation process.
     *
     * The brightest signal samples usually tend to be unreliable because of
-    * relative saturation and nonlinearity. Validity of the dimmest signal
-    * measurements is already ensured by robust star detection.
+    * relative saturation and nonlinearity. However, reliability of PSF flux
+    * measurements is normally ensured by robust star detection, where the
+    * source detection algorithm excludes too dim stars, and the saturation
+    * threshold parameter should impose a reliable upper limit in most
+    * practical cases. So this parameter should not be necessary under normal
+    * working conditions.
     *
-    * The default value of this parameter is 0.9, which rejects a 10% of the
-    * highest signal samples.
+    * The default value of this parameter is 1.0, meaning that the sample of
+    * PSF flux measurements is not clipped by default.
     */
    float RejectionLimit() const
    {
@@ -195,13 +260,13 @@ public:
    }
 
    /*!
-    * Sets a new value of the rejection limit parameter. See RejectionLimit()
-    * for a complete description.
+    * Sets a new value of the rejection limit parameter in the [0.5,1] range.
+    * See RejectionLimit() for a complete description of this parameter.
     */
    void SetRejectionLimit( float r )
    {
-      PCL_PRECONDITION( r >= 0 )
-      m_rejectionLimit = Max( 0.0F, r );
+      PCL_PRECONDITION( r >= 0.5 && r <= 1 )
+      m_rejectionLimit = Range( r, 0.5F, 1.0F );
    }
 
    /*!
@@ -270,7 +335,9 @@ protected:
    mutable pcl::StarDetector m_starDetector;
            psf_function      m_psfType = PSFunction::Moffat4;
            float             m_psfCentroidTolerance = 1.5F;
-           float             m_rejectionLimit = 0.9F;
+           float             m_saturationThreshold = 0.75;
+           bool              m_saturationRelative = true;
+           float             m_rejectionLimit = 1.0F;
            int               m_maxStars = 0;
            bool              m_weighted = false;
 
@@ -288,4 +355,4 @@ protected:
 #endif   // __PCL_PSFEstimator_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFEstimator.h - Released 2022-01-18T11:02:40Z
+// EOF pcl/PSFEstimator.h - Released 2022-01-24T22:43:24Z

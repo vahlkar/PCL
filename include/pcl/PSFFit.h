@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.18
+// /_/     \____//_____/   PCL 2.4.19
 // ----------------------------------------------------------------------------
-// pcl/PSFFit.h - Released 2022-01-18T11:02:40Z
+// pcl/PSFFit.h - Released 2022-01-24T22:43:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -168,7 +168,8 @@ struct PSFData
    bool           celestial = false;   //!< True iff equatorial coordinates are available.
    double         B = 0;      //!< Local background estimate in pixel value units.
    double         A = 0;      //!< Function amplitude (or estimated maximum) in pixel value units.
-   DPoint         c0 = 0.0;   //!< Centroid position in image coordinates.
+   DPoint         b0 = 0.0;   //!< Barycenter position (initial star detection position) in image coordinates.
+   DPoint         c0 = 0.0;   //!< Fitted centroid position in image coordinates.
    DPoint         q0 = 0.0;   //!< Centroid equatorial coordinates, when celestial=true.
    double         sx = 0;     //!< Function width in pixels on the X axis, sx >= sy.
    double         sy = 0;     //!< Function width in pixels on the Y axis, sx >= sy.
@@ -539,4 +540,4 @@ private:
 #endif   // __PCL_PSFFit_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFFit.h - Released 2022-01-18T11:02:40Z
+// EOF pcl/PSFFit.h - Released 2022-01-24T22:43:24Z

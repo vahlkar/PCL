@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.18
+// /_/     \____//_____/   PCL 2.4.19
 // ----------------------------------------------------------------------------
-// pcl/SurfaceSimplifier.cpp - Released 2022-01-18T11:02:48Z
+// pcl/SurfaceSimplifier.cpp - Released 2022-01-24T22:43:35Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -488,4 +488,4 @@ SurfaceSimplifier::point_list SurfaceSimplifier::ConvexHull( point_list& P )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SurfaceSimplifier.cpp - Released 2022-01-18T11:02:48Z
+// EOF pcl/SurfaceSimplifier.cpp - Released 2022-01-24T22:43:35Z

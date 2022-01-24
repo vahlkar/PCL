@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.18
+// /_/     \____//_____/   PCL 2.4.19
 // ----------------------------------------------------------------------------
-// pcl/PSFScaleEstimator.h - Released 2022-01-18T11:02:40Z
+// pcl/PSFScaleEstimator.h - Released 2022-01-24T22:43:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -105,6 +105,18 @@ public:
    };
 
    /*!
+    * \enum pcl::PSFScaleEstimator::FittingMethod
+    */
+   enum FittingMethod
+   {
+      ChauvenetSigmaClipping,
+      SigmaClipping,
+      OneStepRejection,
+      LineFit,
+      Default = ChauvenetSigmaClipping
+   };
+
+   /*!
     * Default constructor.
     */
    PSFScaleEstimator() = default;
@@ -161,6 +173,49 @@ public:
    }
 
    /*!
+    *
+    */
+   FittingMethod ScaleFittingMethod() const
+   {
+      return m_psfFittingMethod;
+   }
+
+   /*!
+    *
+    */
+   void SetScaleFittingMethod( FittingMethod method )
+   {
+      m_psfFittingMethod = method;
+   }
+
+   /*!
+    * Returns the rejection threshold in sigma units.
+    *
+    * Once the task has gathered a sample of PSF flux measurements from matched
+    * pairs of detected sources, a simple outlier rejection procedure is
+    * applied before linear fitting in order to exclude measurements deviating
+    * abnormally from the central value of the sample. This parameter defines
+    * a rejection threshold in sigma units to perform this outlier rejection.
+    *
+    * The default rejection threshold is 3 sigmas.
+    */
+   float PSFRejectionThreshold() const
+   {
+      return m_psfRejectionThreshold;
+   }
+
+   /*!
+    * Sets the rejection threshold in sigma units. The minimum acceptable value
+    * is one sigma. See PSFRejectionThreshold() for a description of this
+    * parameter.
+    */
+   void SetPSFRejectionThreshold( float t )
+   {
+      PCL_PRECONDITION( t >= 1 )
+      m_psfRejectionThreshold = Max( 1.0F, t );
+   }
+
+   /*!
     * Sets a new reference image for relative scale estimation.
     *
     * This function performs the star detection and PSF fitting tasks for the
@@ -208,7 +263,9 @@ public:
 private:
 
    Array<PSFData> m_psfReference;
-   float          m_psfSearchTolerance = 4.0F;
+   float          m_psfSearchTolerance = 4.0F;    // px
+   float          m_psfRejectionThreshold = 3.0F; // sigma units, not used for Chauvenet s.c.
+   FittingMethod  m_psfFittingMethod = ChauvenetSigmaClipping;
 };
 
 // ----------------------------------------------------------------------------
@@ -218,4 +275,4 @@ private:
 #endif   // __PCL_PSFScaleEstimator_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFScaleEstimator.h - Released 2022-01-18T11:02:40Z
+// EOF pcl/PSFScaleEstimator.h - Released 2022-01-24T22:43:24Z

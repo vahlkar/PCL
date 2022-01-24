@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.18
+// /_/     \____//_____/   PCL 2.4.19
 // ----------------------------------------------------------------------------
-// pcl/LocalNormalizationData.h - Released 2022-01-18T11:02:40Z
+// pcl/LocalNormalizationData.h - Released 2022-01-24T22:43:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -97,7 +97,7 @@ class PCL_CLASS XMLElement;
  *
  * This implementation can also apply an optional global normalization function
  * after the local normalization. If the corresponding parameters are defined,
- * the global normalization functio is:
+ * the global normalization function is:
  *
  * v''(c,i) = S(c)*(v'(c,i) - T(c)) + R(c)
  *
@@ -734,4 +734,4 @@ private:
 #endif   // __PCL_LocalNormalizationData_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/LocalNormalizationData.h - Released 2022-01-18T11:02:40Z
+// EOF pcl/LocalNormalizationData.h - Released 2022-01-24T22:43:24Z
