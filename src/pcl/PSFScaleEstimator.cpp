@@ -86,6 +86,15 @@ inline static double QF( double x )
 }
 
 /*
+ * Correction factor for 68.3-percentile deviations to avoid overaggressive
+ * rejection for small samples.
+ */
+inline static double FN( int N )
+{
+   return 1/(1 - 2.9442*Pow( double( N ), -1.073 ));
+}
+
+/*
  * The 68.3-percentile value from the distribution of absolute deviations.
  */
 inline static double SampleDeviation( const Vector& R, int i, int j, double m )
@@ -94,8 +103,7 @@ inline static double SampleDeviation( const Vector& R, int i, int j, double m )
    Vector D( N );
    for ( int k = 0; i < j; ++i, ++k )
       D[k] = Abs( R[i] - m );
-   return 1/(1 - 2.9442*Pow( double( N ), -1.073 ))
-        * *pcl::Select( D.Begin(), D.End(), TruncInt( 0.683*D.Length() ) );
+   return FN( N ) * *pcl::Select( D.Begin(), D.End(), TruncInt( 0.683*D.Length() ) );
 }
 
 /*
@@ -122,72 +130,12 @@ inline static double LineFitDeviation( const Vector& R, int i, int j, double m )
    double s;
    LinearFit f( x, y );
    if ( f.IsValid() )
-      s = 1/(1 - 2.9442*Pow( double( N ), -1.073 )) * f( 1.0 );
+      s = FN( N ) * f( 1.0 );
    else
       s = SampleDeviation( R, i, j, m );
 
    return s;
 }
-
-// inline static double BrokenLineFitDeviation( const Vector& R, int i, int j, double m )
-// {
-// std::cout << IsoString().Format( "s0 = %.8f\n", SampleDeviation( R, i, j, m ) );
-//
-//    int N = j - i;
-//    if ( N < 50 )
-//       return SampleDeviation( R, i, j, m );
-//
-//    Vector y( N );
-//    for ( int k = 0; i < j; ++i, ++k )
-//       y[k] = Abs( R[i] - m );
-//    y.Sort();
-//    int n = int( 0.683*N + 0.317 );
-//    y = Vector( y.Begin(), n );
-//
-//    Vector x( n );
-//    for ( int i = 0; i < n; ++i )
-//       x[i] = SQRT2 * ErfInv( (i + 1 - 0.317)/N );
-//
-//    double dmin = DBL_MAX;
-//    double s = 0;
-//    for ( int i = 1; i < 8; ++i )
-//    {
-//       double p = i * 1.0/8;
-//       Array<double> xl, yl, xh, yh;
-//       for ( int j = 0; j < n; ++j )
-//          if ( x[j] <= p )
-//          {
-//             xl << x[j];
-//             yl << y[j];
-//          }
-//          else
-//          {
-//             xh << x[j];
-//             yh << y[j];
-//          }
-//
-//       if ( xl.Length() > 1 && xh.Length() > 1 )
-//       {
-//          LinearFit fl( xl, yl );
-//          LinearFit fh( xh, yh );
-//          if ( fl.IsValid() && fh.IsValid() )
-//          {
-//             double d = 0;
-//             for ( int j = 0; j < n; ++j )
-//                d += Abs( ((x[j] <= p) ? fl( x[j] ) : fh( x[j] )) - y[j] );
-//             if ( d < dmin )
-//             {
-//                dmin = d;
-//                s = fl( p );
-//             }
-//          }
-//       }
-//    }
-//
-// std::cout << IsoString().Format( "s1 = %.8f\n", s );
-//
-//    return s;
-// }
 
 PSFScaleEstimator::Estimates PSFScaleEstimator::EstimateScale( const ImageVariant& image ) const
 {
@@ -264,177 +212,60 @@ PSFScaleEstimator::Estimates PSFScaleEstimator::EstimateScale( const ImageVarian
    }
 
    if ( !P1.IsEmpty() )
-      switch ( m_psfFittingMethod )
-      {
-      default:
-      case ChauvenetSigmaClipping:
+   {
+      Vector R( P1.Length() );
+      for ( size_type i = 0; i < P1.Length(); ++i )
+         R[i] = P1[i].signal/P2[i].signal;
+
+      /*
+       * Robust Chauvenet rejection.
+       */
+      R.Sort();
+      int i = 0;
+      int j = R.Length();
+      double m, s;
+
+      for ( int phase = 0; phase < 3; ++phase )
+         for ( ;; )
          {
-            /*
-             * Robust iterative sigma clipping with Chauvenet rejection
-             * criterion. The rejection threshold parameter is not
-             * necessary/used when this option is selected.
-             */
-            Vector R( P1.Length() );
-            for ( size_type i = 0; i < P1.Length(); ++i )
-               R[i] = P1[i].signal/P2[i].signal;
-            int i = 0;
-            int j = R.Length();
-            double m = R.Median();
-            double s = LineFitDeviation( R, i, j, m );
-            R.Sort();
-            for ( ;; )
+            switch ( phase )
             {
-               if ( 1 + s == 1 )
-                  goto __bad_sigma;
-               int n = j - i;
-               int c = 0;
-               if ( n*QF( (m - R[i])/s ) < 0.5 )
-                  ++i, ++c;
-               if ( n*QF( (R[j-1] - m)/s ) < 0.5 )
-                  --j, ++c;
-               if ( c == 0 )
-                  break;
+            case 0: // + robustness / - precision
                m = Median( R.At( i ), R.At( j ) );
-               if ( j - i < 3 )
-                  goto __bad_sigma;
                s = LineFitDeviation( R, i, j, m );
-            }
-
-            s = SampleDeviation( R, i, j, m );
-            for ( ;; )
-            {
-               if ( 1 + s == 1 )
-                  goto __bad_sigma;
-               int n = j - i;
-               int c = 0;
-               if ( n*QF( (m - R[i])/s ) < 0.5 )
-                  ++i, ++c;
-               if ( n*QF( (R[j-1] - m)/s ) < 0.5 )
-                  --j, ++c;
-               if ( c == 0 )
-                  break;
+               break;
+            case 1: // = robustness / = precision
                m = Median( R.At( i ), R.At( j ) );
-               if ( j - i < 3 )
-                  goto __bad_sigma;
                s = SampleDeviation( R, i, j, m );
-            }
-
-            m = Mean( R.At( i ), R.At( j ) );
-            s = StdDev( R.At( i ), R.At( j ), m );
-            for ( ;; )
-            {
-               if ( 1 + s == 1 )
-                  goto __bad_sigma;
-               int n = j - i;
-               int c = 0;
-               if ( n*QF( (m - R[i])/s ) < 0.5 )
-                  ++i, ++c;
-               if ( n*QF( (R[j-1] - m)/s ) < 0.5 )
-                  --j, ++c;
-               if ( c == 0 )
-                  break;
+               break;
+            case 2: // - robustness / + precision
                m = Mean( R.At( i ), R.At( j ) );
-               if ( j - i < 3 )
-                  goto __bad_sigma;
                s = StdDev( R.At( i ), R.At( j ), m );
-            }
-__bad_sigma:
-            E.scale = m;
-            E.total = int( psfs.Length() );
-            E.count = j - i;
-         }
-         break;
-
-      case SigmaClipping:
-         {
-            /*
-             * Iterative sigma clipping with fixed rejection threshold.
-             */
-            Vector R( P1.Length() );
-            for ( size_type i = 0; i < P1.Length(); ++i )
-               R[i] = P1[i].signal/P2[i].signal;
-            int i = 0;
-            int j = R.Length();
-            double m = R.Median();
-            double s = m_psfRejectionThreshold*SampleDeviation( R, i, j, m );
-            R.Sort();
-            for ( ;; )
-            {
-               int c = 0;
-               for ( ; m - R[i] > s; ++i ) { ++c; };
-               for ( ; R[j-1] - m > s; --j ) { ++c; };
-               if ( c == 0 )
-                  break;
-               m = Median( R.At( i ), R.At( j ) );
-               if ( j - i < 3 )
-                  break;
-               s = m_psfRejectionThreshold*SampleDeviation( R, i, j, m );
+               break;
             }
 
-            E.scale = m;
-            E.total = int( psfs.Length() );
-            E.count = j - i;
-         }
-         break;
+            if ( 1 + s == 1 )
+               goto __rcr_end;
 
-      case OneStepRejection:
-         {
-            /*
-             * One-step rejection with fixed rejection threshold.
-             */
-            Vector R( P1.Length() );
-            for ( size_type i = 0; i < P1.Length(); ++i )
-               R[i] = P1[i].signal/P2[i].signal;
-            double m = R.Median();
-            double s = m_psfRejectionThreshold*2.2219*R.Qn();
-            Array<double> x;
-            for ( double r : R )
-               if ( Abs( r - m ) < s )
-                  x << r;
-            E.scale = Median( x.Begin(), x.End() );
-            E.total = int( psfs.Length() );
-            E.count = x.Length();
-         }
-         break;
+            int n = j - i;
+            if ( n < 3 )
+               goto __rcr_end;
 
-      case LineFit:
-         {
-            /*
-             * Robust line fitting by minimization of absolute deviation from
-             * the median.
-             */
-            Vector D1( P1.Length() );
-            Vector D2( P2.Length() );
-            for ( size_type i = 0; i < P1.Length(); ++i )
-            {
-               D1[i] = P1[i].signal;
-               D2[i] = P2[i].signal;
-            }
-            double mx = D2.Median();
-            double my = D1.Median();
-            double sx = m_psfRejectionThreshold*2.2219*D2.Qn();
-            double sy = m_psfRejectionThreshold*2.2219*D1.Qn();
-            Array<double> x1, y1;
-            for ( int i = 0; i < D2.Length(); ++i )
-               if ( Abs( D2[i] - mx ) < sx )
-                  if ( Abs( D1[i] - my ) < sy )
-                  {
-                     x1 << D2[i];
-                     y1 << D1[i];
-                  }
-            if ( x1.Length() < 5 )
-               E.scale = 0;
+            double d0 = n*QF( (m - R[i])/s );
+            double d1 = n*QF( (R[j-1] - m)/s );
+            if ( d0 >= 0.5 && d1 >= 0.5 )
+               break;
+            if ( d1 < d0 )
+               --j;
             else
-            {
-               LinearFit L( x1, y1 );
-               E.scale = (IsFinite( L.b ) && 1 + L.b != 1) ? L.b : 0.0;
-            }
-
-            E.total = int( psfs.Length() );
-            E.count = x1.Length();
+               ++i;
          }
-         break;
-      }
+__rcr_end:
+      E.scale = m;
+      E.sigma = s;
+      E.total = int( psfs.Length() );
+      E.count = j - i;
+   }
 
    return E;
 }
