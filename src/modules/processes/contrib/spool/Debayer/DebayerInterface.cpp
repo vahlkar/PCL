@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard Debayer Process Module Version 1.10.2
+// Standard Debayer Process Module Version 1.11.0
 // ----------------------------------------------------------------------------
-// DebayerInterface.cpp - Released 2021-12-29T20:37:28Z
+// DebayerInterface.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -297,13 +297,14 @@ void DebayerInterface::UpdateSignalAndNoiseEvaluationControls()
    GUI->SignalEvaluation_SectionBar.SetChecked( m_instance.p_evaluateSignal );
 
    GUI->StructureLayers_SpinBox.SetValue( m_instance.p_structureLayers );
+   GUI->SaturationThreshold_NumericControl.SetValue( m_instance.p_saturationThreshold );
+   GUI->SaturationRelative_CheckBox.SetChecked( m_instance.p_saturationRelative );
    GUI->NoiseLayers_SpinBox.SetValue( m_instance.p_noiseLayers );
    GUI->MinStructureSize_SpinBox.SetValue( m_instance.p_minStructureSize );
    GUI->HotPixelFilterRadius_SpinBox.SetValue( m_instance.p_hotPixelFilterRadius );
    GUI->NoiseReductionFilterRadius_SpinBox.SetValue( m_instance.p_noiseReductionFilterRadius );
    GUI->PSFType_ComboBox.SetCurrentItem( m_instance.p_psfType );
-   GUI->PSFRejectionLimit_NumericControl.SetValue( m_instance.p_psfRejectionLimit );
-   GUI->PSFHighClippingPoint_NumericControl.SetValue( m_instance.p_psfHighClippingPoint );
+   GUI->PSFGrowth_NumericControl.SetValue( m_instance.p_psfGrowth );
    GUI->MaxStars_SpinBox.SetValue( m_instance.p_maxStars );
 
    GUI->NoiseEvaluation_SectionBar.SetChecked( m_instance.p_evaluateNoise );
@@ -441,6 +442,10 @@ void DebayerInterface::e_Click( Button& sender, bool checked )
    {
       m_instance.p_overwriteExistingFiles = checked;
    }
+   else if ( sender == GUI->SaturationRelative_CheckBox )
+   {
+      m_instance.p_saturationRelative = checked;
+   }
 }
 
 // ----------------------------------------------------------------------------
@@ -511,10 +516,10 @@ void DebayerInterface::e_SpinValueUpdated( SpinBox& sender, int value )
 
 void DebayerInterface::e_ValueUpdated( NumericEdit& sender, double value )
 {
-   if ( sender == GUI->PSFRejectionLimit_NumericControl )
-      m_instance.p_psfRejectionLimit = value;
-   else if ( sender == GUI->PSFHighClippingPoint_NumericControl )
-      m_instance.p_psfHighClippingPoint = value;
+   if ( sender == GUI->SaturationThreshold_NumericControl )
+      m_instance.p_saturationThreshold = value;
+   else if ( sender == GUI->PSFGrowth_NumericControl )
+      m_instance.p_psfGrowth = value;
 }
 
 // ----------------------------------------------------------------------------
@@ -886,14 +891,13 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
    //
 
    SignalEvaluation_SectionBar.SetTitle( "Signal Evaluation" );
-   SignalEvaluation_SectionBar.SetToolTip( "<p>Compute estimates of the mean signal present in target calibration frames. "
-      "Our current implementation uses PSF photometry to generate accurate and robust estimates of mean signal and mean "
-      "squared signal. These estimates, along with estimates of the standard deviation of the noise, can be used for image "
-      "weighting with the SubframeSelector and ImageIntegration processes.</p>"
-      "<p>The signal evaluation result will be stored as PSFSGLxx, PSFSGPxx and PSFSGNxx FITS header keywords, "
-      "respectively for mean signal estimates, mean squared signal estimates, and number of valid PSF fits used, where 'xx' "
-      "is a zero-padded decimal representation of the zero-based channel index (typically in the 0 to 2 range).</p>"
-      "<p><b>This option should always be enabled for demosaicing of deep-sky raw frames.</b></p>" );
+   SignalEvaluation_SectionBar.SetToolTip( "<p>Compute standardized estimates of the signal present in target frames.</p>"
+      "<p>Our current implementation uses PSF photometry to generate robust and accurate measures of total and mean flux from detected "
+      "and fitted sources. These estimates, along with estimates of the standard deviation of the noise, can be used for image "
+      "grading and weighting with the SubframeSelector and ImageIntegration processes.</p>"
+      "<p>The signal evaluation result will be stored as a set of custom, per-channel XISF properties and FITS header keywords that "
+      "other processes and scripts can use for specialized image analysis purposes.</p>"
+      "<p><b>This option should always be enabled for demosaicing of deep-sky raw light frames.</b></p>" );
    SignalEvaluation_SectionBar.SetSection( SignalEvaluation_Control );
    SignalEvaluation_SectionBar.EnableTitleCheckBox();
    SignalEvaluation_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&DebayerInterface::e_ToggleSection, w );
@@ -918,10 +922,37 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
    StructureLayers_Sizer.Add( StructureLayers_SpinBox );
    StructureLayers_Sizer.AddStretch();
 
+   SaturationThreshold_NumericControl.label.SetText( "Saturation threshold:" );
+   SaturationThreshold_NumericControl.label.SetFixedWidth( labelWidth1 );
+   SaturationThreshold_NumericControl.slider.SetRange( 0, 250 );
+   SaturationThreshold_NumericControl.SetReal();
+   SaturationThreshold_NumericControl.SetRange( TheDebayerSaturationThresholdParameter->MinimumValue(), TheDebayerSaturationThresholdParameter->MaximumValue() );
+   SaturationThreshold_NumericControl.SetPrecision( TheDebayerSaturationThresholdParameter->Precision() );
+   SaturationThreshold_NumericControl.edit.SetFixedWidth( editWidth1 );
+   SaturationThreshold_NumericControl.SetToolTip( "<p>Saturation threshold in the [0,1] range.</p>"
+      "<p>Detected stars with one or more pixels with values above this threshold will be excluded for signal evaluation. "
+      "This parameter is expressed in the [0,1] range. It can applied either as an absolute pixel sample value in the "
+      "normalized [0,1] range, or as a value relative to the maximum pixel sample value of the measured image (see the <i>Relative "
+      "saturation threshold</i> parameter).</p>"
+      "<p>The default saturation threshold is 1.0. For signal evaluation, the implemented star detection and outlier rejection "
+      "routines are normally able to avoid contamination from saturated sources, so the default value of this parameter should "
+      "not be changed under normal conditions.</p>" );
+   SaturationThreshold_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&DebayerInterface::e_ValueUpdated, w );
+
+   SaturationRelative_CheckBox.SetText( "Relative saturation threshold" );
+   SaturationRelative_CheckBox.SetToolTip( "<p>The saturation threshold parameter can be applied either as an absolute pixel "
+      "sample value in the normalized [0,1] range, or as a value relative to the maximum pixel sample value of the measured image.</p>"
+      "The relative saturation threshold option is enabled by default.</p>" );
+   SaturationRelative_CheckBox.OnClick( (Button::click_event_handler)&DebayerInterface::e_Click, w );
+
+   SaturationRelative_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   SaturationRelative_Sizer.Add( SaturationRelative_CheckBox );
+   SaturationRelative_Sizer.AddStretch();
+
    const char* noiseLayersToolTip =
       "<p>Number of wavelet layers used for noise reduction.</p>"
       "<p>Noise reduction prevents detection of bright noise structures as false stars, including hot pixels and "
-      "cosmic rays. This parameter can also be used to control the sizes of the smallest detected stars (increase "
+      "cosmic rays. This parameter can also be used to control the sizes of the smallest detected stars (increase it "
       "to exclude more stars), although the <i>minimum structure size</i> parameter can be more efficient for this purpose.</p>";
 
    NoiseLayers_Label.SetText( "Noise scales:" );
@@ -966,8 +997,8 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
    const char* hotPixelFilterRadiusToolTip =
       "<p>Size of the hot pixel removal filter.</p>"
       "<p>This is the radius in pixels of a median filter applied by the star detector before the structure "
-      "detection phase. A median filter is very efficient to remove <i>hot pixels</i>. Hot pixels will be "
-      "identified as false stars, and if present in large amounts, can prevent a valid signal evaluation.</p>"
+      "detection phase. A median filter is very efficient to remove <i>hot pixels</i>. If not removed, hot pixels "
+      "will be identified as stars, and if present in large amounts, can prevent a valid signal evaluation.</p>"
       "<p>To disable hot pixel removal, set this parameter to zero.</p>";
 
    HotPixelFilterRadius_Label.SetText( "Hot pixel removal:" );
@@ -1007,14 +1038,16 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
    NoiseReductionFilterRadius_Sizer.Add( NoiseReductionFilterRadius_SpinBox );
    NoiseReductionFilterRadius_Sizer.AddStretch();
 
-   const char* psfTypeToolTip = "<p>Point spread function type used for PSF fitting and photometry.</p>"
+   const char* psfTypeToolTip =
+      "<p>Point spread function type used for PSF fitting and photometry.</p>"
       "<p>In all cases elliptical functions are fitted to detected star structures, and PSF sampling regions are "
-      "computed adaptively using a median stabilization algorithm.</p>"
-      "<p>Variable shape functions can lead to optimal PSF fits in terms of minimization of absolute deviation "
-      "between fitted point spread functions and image pixel samples for each detected source, which improves "
-      "accuracy of PSF photometry. However, fitting variable shape functions is computationally expensive.</p>"
-      "<p>The default option is a Moffat function with a fixed shape parameter <i>beta</i>=4, which usually works well "
-      "for signal estimation on most deep-sky images.</p>";
+      "defined adaptively using a median stabilization algorithm.</p>"
+      "<p>When the <b>Auto</b> option is selected, a series of different PSFs will be fitted for each source, and "
+      "the fit that leads to the least absolute difference among function values and sampled pixel values will be "
+      "used for flux measurement. Currently the following functions are tested in this special automatic mode: "
+      "Moffat functions with <i>beta</i> shape parameters equal to 2.5, 4, 6 and 10.</p>"
+      "<p>The rest of options select a fixed PSF type for all detected sources, which improves execution times at "
+      "the cost of a less adaptive, and hence potentially less accurate, signal estimation process.</p>";
 
    PSFType_Label.SetText( "PSF type:" );
    PSFType_Label.SetFixedWidth( labelWidth1 );
@@ -1022,10 +1055,12 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
    PSFType_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
 
    PSFType_ComboBox.AddItem( "Gaussian" );
-   PSFType_ComboBox.AddItem( "Moffat4" );
-   PSFType_ComboBox.AddItem( "Moffat6" );
-   PSFType_ComboBox.AddItem( "Moffat8" );
-   PSFType_ComboBox.AddItem( "VariableShape" );
+   PSFType_ComboBox.AddItem( "Moffat beta = 1.5" );
+   PSFType_ComboBox.AddItem( "Moffat beta = 4" );
+   PSFType_ComboBox.AddItem( "Moffat beta = 6" );
+   PSFType_ComboBox.AddItem( "Moffat beta = 8" );
+   PSFType_ComboBox.AddItem( "Moffat beta = 10" );
+   PSFType_ComboBox.AddItem( "Auto" );
    PSFType_ComboBox.SetToolTip( psfTypeToolTip );
    PSFType_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&DebayerInterface::e_ItemSelected, w );
 
@@ -1034,45 +1069,28 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
    PSFType_Sizer.Add( PSFType_ComboBox );
    PSFType_Sizer.AddStretch();
 
-   PSFRejectionLimit_NumericControl.label.SetText( "Rejection limit:" );
-   PSFRejectionLimit_NumericControl.label.SetFixedWidth( labelWidth1 );
-   PSFRejectionLimit_NumericControl.slider.SetRange( 0, 250 );
-   PSFRejectionLimit_NumericControl.SetReal();
-   PSFRejectionLimit_NumericControl.SetRange( TheDebayerPSFRejectionLimitParameter->MinimumValue(), TheDebayerPSFRejectionLimitParameter->MaximumValue() );
-   PSFRejectionLimit_NumericControl.SetPrecision( TheDebayerPSFRejectionLimitParameter->Precision() );
-   PSFRejectionLimit_NumericControl.edit.SetFixedWidth( editWidth2 );
-   PSFRejectionLimit_NumericControl.SetToolTip( "<p>PSF rejection limit in sigma units.</p>"
-      "<p>The rejection limit parameter defines an order statistic, in the [0.5,1] range, used to exclude a fraction of the "
-      "brightest PSF signal samples during the signal estimation process.</p>"
-      "<p>The brightest signal samples often tend to be unreliable because of relative saturation and nonlinearity. Validity "
-      "of the dimmest signal measurements is already ensured by robust star detection. The default value of this parameter is "
-      "0.9, which rejects a 10% of the highest signal samples. This is normally sufficient to provide an accurate sample "
-      "representative of the true signal gathered in the image.</p>" );
-   PSFRejectionLimit_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&DebayerInterface::e_ValueUpdated, w );
-
-   PSFHighClippingPoint_NumericControl.label.SetText( "High clipping point:" );
-   PSFHighClippingPoint_NumericControl.label.SetFixedWidth( labelWidth1 );
-   PSFHighClippingPoint_NumericControl.slider.SetRange( 0, 250 );
-   PSFHighClippingPoint_NumericControl.SetReal();
-   PSFHighClippingPoint_NumericControl.SetRange( TheDebayerPSFHighClippingPointParameter->MinimumValue(), TheDebayerPSFHighClippingPointParameter->MaximumValue() );
-   PSFHighClippingPoint_NumericControl.SetPrecision( TheDebayerPSFHighClippingPointParameter->Precision() );
-   PSFHighClippingPoint_NumericControl.edit.SetFixedWidth( editWidth2 );
-   PSFHighClippingPoint_NumericControl.SetToolTip( "<p>High clipping point for the PSF signal estimator.</p>"
-      "<p>Bright pixels are rejected for calculation of a robust penalty function applied to compute PSF signal estimates "
-      "representative of the whole image, not just of the measured stars. The high clipping point parameter defines an order "
-      "statistic, in the [0.5,1] range, used as a rejection limit to exclude bright image structures, including most "
-      "outliers such as cosmics, plane and satellite trails, uncorrected hot pixels, etc. For example, by setting this "
-      "parameter to 0.5 all pixels above the median of the image would be rejected. The default high clipping point is 0.85, "
-      "which works correctly in most practical cases.</p>" );
-   PSFHighClippingPoint_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&DebayerInterface::e_ValueUpdated, w );
+   PSFGrowth_NumericControl.label.SetText( "Growth factor:" );
+   PSFGrowth_NumericControl.label.SetFixedWidth( labelWidth1 );
+   PSFGrowth_NumericControl.slider.SetRange( 0, 250 );
+   PSFGrowth_NumericControl.SetReal();
+   PSFGrowth_NumericControl.SetRange( TheDebayerPSFGrowthParameter->MinimumValue(), TheDebayerPSFGrowthParameter->MaximumValue() );
+   PSFGrowth_NumericControl.SetPrecision( TheDebayerPSFGrowthParameter->Precision() );
+   PSFGrowth_NumericControl.edit.SetFixedWidth( editWidth1 );
+   PSFGrowth_NumericControl.SetToolTip( "<p>Growing factor for expansion/contraction of the PSF flux measurement region for "
+      "each source, in units of the Full Width at Tenth Maximum (FWTM).</p>"
+      "<p>The default value of this parameter is 1.0, meaning that flux is measured exclusively for pixels within the elliptical "
+      "region defined at one tenth of the fitted PSF maximum. Increasing this parameter can inprove accuracy of PSF flux "
+      "measurements for undersampled images, where PSF fitting uncertainty is relatively large. Decreasing it can be beneficial "
+      "in some cases working with very noisy data to restrict flux evaluation to star cores.</p>" );
+   PSFGrowth_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&DebayerInterface::e_ValueUpdated, w );
 
    const char* maxStarsToolTip =
       "<p>The maximum number of stars that can be measured to compute mean signal estimates.</p>"
       "<p>PSF photometry will be performed for no more than the specified number of stars. The subset of measured stars "
       "will always start at the beginning of the set of detected stars, sorted by brightness in descending order.</p>"
       "<p>The default value imposes a generous limit of 24K stars. Limiting the number of photometric samples can improve "
-      "performance for demosaicing of wide-field frames, where the number of detected stars can be very large. However, "
-      "reducing the set of measured sources too much will damage the accuracy of signal estimation.</p>";
+      "performance for wide-field frames, where the number of detected stars can be very large. However, reducing the set "
+      "of measured sources too much will damage the accuracy of signal estimation.</p>";
 
    MaxStars_Label.SetText( "Maximum stars:" );
    MaxStars_Label.SetFixedWidth( labelWidth1 );
@@ -1091,13 +1109,14 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
 
    SignalEvaluation_Sizer.SetSpacing( 4 );
    SignalEvaluation_Sizer.Add( StructureLayers_Sizer );
+   SignalEvaluation_Sizer.Add( SaturationThreshold_NumericControl );
+   SignalEvaluation_Sizer.Add( SaturationRelative_Sizer );
    SignalEvaluation_Sizer.Add( NoiseLayers_Sizer );
    SignalEvaluation_Sizer.Add( MinStructureSize_Sizer );
    SignalEvaluation_Sizer.Add( HotPixelFilterRadius_Sizer );
    SignalEvaluation_Sizer.Add( NoiseReductionFilterRadius_Sizer );
    SignalEvaluation_Sizer.Add( PSFType_Sizer );
-   SignalEvaluation_Sizer.Add( PSFRejectionLimit_NumericControl );
-   SignalEvaluation_Sizer.Add( PSFHighClippingPoint_NumericControl );
+   SignalEvaluation_Sizer.Add( PSFGrowth_NumericControl );
    SignalEvaluation_Sizer.Add( MaxStars_Sizer );
 
    SignalEvaluation_Control.SetSizer( SignalEvaluation_Sizer );
@@ -1106,14 +1125,12 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
 
    NoiseEvaluation_SectionBar.SetTitle( "Noise Evaluation" );
    NoiseEvaluation_SectionBar.SetToolTip( "<p>Compute per-channel estimates of the standard deviation of the noise "
-      "and noise scaling factors for each target image using a wavelet-based algorithm (MRS noise evaluation by "
-      "default). Noise estimates will be stored as NOISExx FITS header keywords in the output files, where 'xx' is "
-      "a zero-padded decimal representation of the zero-based channel index (typically in the 0 to 2 range). Noise "
-      "scaling factors will be stored as NOISELxx and NOISEHxx keywords, respectively for the low and high components "
-      "of a bilateral statistical scale estimate.</p>"
-      "<p>These estimates can be used later by several processes and scripts, most notably by the ImageIntegration "
-      "tool, which uses them by default for robust image weighting based on inverse noise variance and robust signal "
-      "evaluation. Noise estimates will always be computed from uninterpolated, raw calibrated data.</p>"
+      "and noise scaling factors for each target image, using a selected multiscale algorithm (MRS noise estimator "
+      "by default). Noise estimates will be stored as a set of custom XISF properties and FITS header keywords in the "
+      "output files.</p>"
+      "<p>These estimates can be used later by several processes and scripts for specialized image analysis purposes, "
+      "most notably by SubframeSelector and ImageIntegration for image grading and weighting. Noise estimates will "
+      "always be computed from uninterpolated, raw calibrated data.</p>"
       "<p><b>This option should always be enabled under normal working conditions.</b></p>" );
    NoiseEvaluation_SectionBar.SetSection( NoiseEvaluation_Control );
    NoiseEvaluation_SectionBar.EnableTitleCheckBox();
@@ -1121,24 +1138,29 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
    NoiseEvaluation_SectionBar.OnCheck( (SectionBar::check_event_handler)&DebayerInterface::e_CheckSection, w );
 
    const char* noiseEvaluationToolTip = "<p>Noise evaluation algorithm. This option selects an algorithm for automatic "
-      "estimation of the standard deviation of the noise in the calibrated images. In all cases noise estimates assume "
-      "a Gaussian distribution of the noise.</p>"
+      "estimation of the standard deviation of the noise in the calibrated images.</p>"
       "<p>The multiresolution support (MRS) noise estimation routine implements the iterative algorithm described by "
       "Jean-Luc Starck and Fionn Murtagh in their paper <em>Automatic Noise Estimation from the Multiresolution Support</em> "
       "(Publications of the Royal Astronomical Society of the Pacific, vol. 110, pp. 193-199). In our implementation, the "
-      "standard deviation of the noise is evaluated on the first four wavelet layers. This is the most accurate algorithm "
-      "available, and hence the default option.</p>"
+      "standard deviation of the noise is evaluated on the first four wavelet layers, assuming a Gaussian noise distribution. "
+      "MRS is a remarkably accurate and robust algorithm and the default option for noise evaluation.</p>"
       "<p>The iterative k-sigma clipping algorithm can be used as a last-resort option in cases where the MRS algorithm "
-      "does not converge systematically. This can happen on images with no detectable small-scale noise; for example, "
-      "images that have been smoothed as a result of bilinear demosaicing interpolation.</p>";
+      "does not converge systematically. This can happen on images with no detectable small-scale noise; for example, images "
+      "that have been smoothed as a result of bilinear demosaicing interpolation.</p>"
+      "<p>The N* robust noise estimator extracts a subset of residual pixels by comparison with a large-scale model of "
+      "the local background of the image, generated with the multiscale median transform (MMT). Since the MMT is remarkably "
+      "efficient at isolating image structures, it can be used to detect pixels that cannot contribute to significant structures. "
+      "N* is an accurate and robust, alternative estimator of the standard deviation of the noise that does not assume or require "
+      "any particular statistical distribution in the analyzed data.</p>";
 
    NoiseEvaluationAlgorithm_Label.SetText( "Evaluation algorithm:" );
    NoiseEvaluationAlgorithm_Label.SetFixedWidth( labelWidth1 );
    NoiseEvaluationAlgorithm_Label.SetToolTip( noiseEvaluationToolTip );
    NoiseEvaluationAlgorithm_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
 
-   NoiseEvaluationAlgorithm_ComboBox.AddItem( "Iterative K-Sigma Clipping" );
-   NoiseEvaluationAlgorithm_ComboBox.AddItem( "Multiresolution Support" );
+   NoiseEvaluationAlgorithm_ComboBox.AddItem( "Iterative k-sigma clipping" );
+   NoiseEvaluationAlgorithm_ComboBox.AddItem( "Multiresolution support" );
+   NoiseEvaluationAlgorithm_ComboBox.AddItem( "N* robust noise estimator" );
    NoiseEvaluationAlgorithm_ComboBox.SetToolTip( noiseEvaluationToolTip );
    NoiseEvaluationAlgorithm_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&DebayerInterface::e_ItemSelected, w );
 
@@ -1185,4 +1207,4 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DebayerInterface.cpp - Released 2021-12-29T20:37:28Z
+// EOF DebayerInterface.cpp - Released 2022-03-12T18:59:53Z

@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.4.3
+// Standard ImageIntegration Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// DrizzleIntegrationParameters.cpp - Released 2021-12-29T20:37:28Z
+// DrizzleIntegrationParameters.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -519,7 +519,7 @@ IsoString DZEnableLocalNormalization::Id() const
 
 bool DZEnableLocalNormalization::DefaultValue() const
 {
-   return false;
+   return true;
 }
 
 // ----------------------------------------------------------------------------
@@ -1461,4 +1461,4 @@ bool DZImageOutputData::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DrizzleIntegrationParameters.cpp - Released 2021-12-29T20:37:28Z
+// EOF DrizzleIntegrationParameters.cpp - Released 2022-03-12T18:59:53Z

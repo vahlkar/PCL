@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.8.5
+// Standard PixelMath Process Module Version 1.9.2
 // ----------------------------------------------------------------------------
-// Expression.cpp - Released 2021-12-29T20:37:28Z
+// Expression.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -65,11 +65,11 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-static Operator::operator_set   s_operators;
-static Operator::operator_index s_operatorIndex;
+static OperatorList  s_operators;
+static OperatorIndex s_operatorIndex;
 
-static Function::function_set   s_functions;
-static Function::function_index s_functionIndex;
+static FunctionList  s_functions;
+static FunctionIndex s_functionIndex;
 
 // ----------------------------------------------------------------------------
 
@@ -151,7 +151,7 @@ public:
    String Token() const override      { return token; }
    int    Precedence() const override { return -1; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override
    {
    }
 
@@ -161,38 +161,34 @@ public:
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-void Expression::Parse( component_list& x, const String& s )
+void Expression::Parse( component_list& expressions, TokenSet& tokens, const String& text )
 {
    if ( s_operators.IsEmpty() )
       Operator::InitializeList( s_operators, s_operatorIndex );
    if ( s_functions.IsEmpty() )
       Function::InitializeList( s_functions, s_functionIndex );
 
-   x.Destroy();
-
-   token_set tokens;
+   expressions.Destroy();
 
    try
    {
-      Tokenize( tokens, s );
+      s_beingParsed = text;
 
-      s_beingParsed = s;
-
-      for ( token_list& l : tokens )
+      for ( TokenList& l : tokens )
       {
          Expression* xpr = Parse( l );
          if ( xpr != nullptr )
          {
             if ( dynamic_cast<Arguments*>( xpr ) != nullptr )
                throw ParseError( "Invalid comma expression", s_beingParsed, xpr->TokenPosition() );
-            x << xpr;
+            expressions << xpr;
          }
       }
    }
    catch ( ... )
    {
-      x.Destroy();
-      for ( token_list& l : tokens )
+      expressions.Destroy();
+      for ( TokenList& l : tokens )
          l.Destroy();
       tokens.Clear();
       throw;
@@ -242,7 +238,7 @@ const char* NameOfBracket( char d )
 /*
  * Parser First Pass: Syntactical analysis and expression tree generation.
  */
-Expression* Expression::Parse( token_list& tokens )
+Expression* Expression::Parse( TokenList& tokens )
 {
    if ( tokens.IsEmpty() )
       return nullptr;
@@ -297,7 +293,7 @@ Expression* Expression::Parse( token_list& tokens )
          char rb = RightBracketForLeftBracket( t->AsSeparator() );
          if ( rb != '\0' )
          {
-            token_list::iterator j = tokens.Begin();
+            TokenList::iterator j = tokens.Begin();
             for ( int n = 1; ; )
             {
                if ( ++j == tokens.End() )
@@ -323,18 +319,17 @@ Expression* Expression::Parse( token_list& tokens )
                ObjectReference* r = dynamic_cast<ObjectReference*>( components.Last() );
                if ( r == nullptr )
                   throw ParseError( "A channel index specification must follow an image or variable identifier", s_beingParsed, pos );
-
                if ( r->ChannelIndex() >= 0 )
                   throw ParseError( "A channel index specification has already been defined here. Missing object identifier?", s_beingParsed, pos );
             }
 
-            token_list subList( tokens.Begin()+1, j );
+            TokenList subList( tokens.Begin()+1, j );
 
             tokens.Delete( tokens.Begin() );
             tokens.Delete( j );
             tokens.Remove( tokens.Begin(), j+1 );
 
-            Expression* x;
+            Expression* x = nullptr;
             try
             {
                x = Parse( subList );
@@ -352,10 +347,11 @@ Expression* Expression::Parse( token_list& tokens )
 
                Sample* s = dynamic_cast<Sample*>( x );
                if ( s == nullptr )
-                  throw ParseError( "Channel indexes must be immediate positive integrals", s_beingParsed, pos );
-
-               if ( Frac( s->Value() ) != 0 || s->Value() < 0 )
-                  throw ParseError( "Channel indexes must be positive integers", s_beingParsed, pos );
+                  throw ParseError( "A channel index must be a positive integer literal", s_beingParsed, pos );
+               if ( Frac( s->Value() ) != 0 )
+                  throw ParseError( "Expected integer literal", s_beingParsed, pos );
+               if ( s->Value() < 0 )
+                  throw ParseError( "Expected positive or zero integer literal", s_beingParsed, pos );
 
                dynamic_cast<ObjectReference*>( components.Last() )->SetChannelIndex( int( s->Value() ) );
 
@@ -371,7 +367,7 @@ Expression* Expression::Parse( token_list& tokens )
 
                   String funcId = r->Id();
 
-                  Function::function_index::const_iterator fx = s_functionIndex.Search( Function::IndexNode( funcId ) );
+                  FunctionIndex::const_iterator fx = s_functionIndex.Search( Function::IndexNode( funcId ) );
                   if ( fx == s_functionIndex.End() )
                      throw ParseError( "Unknown function '" + funcId + "'", s_beingParsed, r->TokenPosition() );
 
@@ -461,14 +457,14 @@ Expression* Expression::Parse( token_list& tokens )
             else
             {
                String opToken = t->AsSeparator();
-               token_list::iterator j = tokens.Begin();
+               TokenList::iterator j = tokens.Begin();
                for ( ; ++j != tokens.End(); )
                   if ( (*j)->IsSeparator() )
                      opToken += (*j)->AsSeparator();
                   else
                      break;
 
-               Operator::operator_index::const_iterator ox = s_operatorIndex.Search( Operator::IndexNode( opToken ) );
+               OperatorIndex::const_iterator ox = s_operatorIndex.Search( Operator::IndexNode( opToken ) );
                if ( ox == s_operatorIndex.End() )
                {
                   while ( opToken.Length() > 1 )
@@ -484,7 +480,7 @@ Expression* Expression::Parse( token_list& tokens )
                      throw ParseError( "Unknown operator '" + opToken + "'", s_beingParsed, pos );
                }
 
-               Operator::operator_index::const_iterator o1 = ox;
+               OperatorIndex::const_iterator o1 = ox;
                while ( o1 != s_operatorIndex.Begin() )
                   if ( (--o1)->token != opToken )
                   {
@@ -492,7 +488,7 @@ Expression* Expression::Parse( token_list& tokens )
                      break;
                   }
 
-               Operator::operator_index::const_iterator o2 = ox;
+               OperatorIndex::const_iterator o2 = ox;
                while ( ++o2 != s_operatorIndex.End() )
                   if ( o2->token != opToken )
                      break;
@@ -604,7 +600,7 @@ Expression* Expression::Parse( component_list& components )
                      if ( o->IsAssignment() )
                      {
                         if ( !(*i)->IsLValue() )
-                           throw ParseError( "Expected lvalue operand", s_beingParsed, (*i)->TokenPosition() );
+                           throw ParseError( "Expected lvalue (variable) operand", s_beingParsed, (*i)->TokenPosition() );
 
                         if ( (*i)->IsVariableReference() )
                         {
@@ -664,4 +660,4 @@ Expression* Expression::Parse( component_list& components )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Expression.cpp - Released 2021-12-29T20:37:28Z
+// EOF Expression.cpp - Released 2022-03-12T18:59:53Z

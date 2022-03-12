@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.4.3
+// Standard ImageIntegration Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// IntegrationRejectionEngine.h - Released 2021-12-29T20:37:28Z
+// IntegrationRejectionEngine.h - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -54,6 +54,7 @@
 #define __IntegrationRejectionEngine_h
 
 #include <pcl/AutoPointer.h>
+#include <pcl/LinearFit.h>
 
 #include "ImageIntegrationInstance.h"
 #include "IntegrationEngineBase.h"
@@ -119,6 +120,28 @@ public:
       for ( int i = 0; i < n; ++i )
       {
          double d = r[i].value - mean;
+         var += d*d;
+         eps += d;
+      }
+      return Sqrt( (var - (eps*eps)/n)/(n - 1) );
+   }
+
+   /*
+    * Standard deviation of a pixel sample with respect to a specified central
+    * value.
+    *
+    * r  The sample of rejection items.
+    * n  Number of unrejected items (sample length).
+    * m  The central value.
+    */
+   static double RejectionSigma( const RejectionDataItem* r, int n, double m )
+   {
+      if ( n < 2 )
+         return 0;
+      double var = 0, eps = 0;
+      for ( int i = 0; i < n; ++i )
+      {
+         double d = r[i].value - m;
          var += d*d;
          eps += d;
       }
@@ -325,6 +348,65 @@ public:
       return t*(n - i - 1)/Sqrt( (n - i - 2 + t*t)*(n - i) );
    }
 
+   /*
+    * The Q-function: the probability for a value from a normal distribution of
+    * being more than x standard deviations from the mean.
+    */
+   static double QF( double x )
+   {
+      return 0.5*(1 - Erf( x/Const<double>::sqrt2() ));
+   }
+
+   /*
+    * RCR: Correction factor for 68.3-percentile deviations to compensate for
+    * overaggressive rejection in small samples.
+    */
+   static double FN( int N )
+   {
+      return 1/(1 - 2.9442*Pow( double( N ), -1.073 ));
+   }
+
+   /*
+    * RCR: The 68.3-percentile value from the sample of absolute deviations.
+    */
+   static double SampleDeviation( const RejectionDataItem* r, int n, double m )
+   {
+      Vector D( n );
+      for ( int i = 0; i < n; ++i )
+         D[i] = Abs( r[i].value - m );
+      return FN( n ) * *pcl::Select( D.Begin(), D.End(), TruncInt( 0.683*n ) );
+   }
+
+   /*
+    * RCR: 68.3-percentile deviation by fitting a zero-intercept line to the
+    * vector of absolute differences.
+    */
+   static double LineFitDeviation( const RejectionDataItem* r, int n, double m )
+   {
+      int n_ = TruncInt( 0.683*n + 0.317 );
+      if ( n_ < 8 )
+         return SampleDeviation( r, n, m );
+
+      Vector y( n );
+      for ( int i = 0; i < n; ++i )
+         y[i] = Abs( r[i].value - m );
+      y.Sort();
+      y = Vector( y.Begin(), n_ );
+
+      Vector x( n_ );
+      for ( int i = 0; i < n_; ++i )
+         x[i] = Const<double>::sqrt2() * ErfInv( (i + 1 - 0.317)/n );
+
+      double s;
+      LinearFit f( x, y );
+      if ( f.IsValid() )
+         s = FN( n ) * f( 1.0 );
+      else
+         s = SampleDeviation( r, n, m );
+
+      return s;
+   }
+
 private:
 
    class RejectionThreadPrivate
@@ -491,6 +573,18 @@ private:
       void Run() override;
    };
 
+   class RCRRejectionThread : public RejectionThread
+   {
+   public:
+
+      RCRRejectionThread( IntegrationRejectionEngine& engine, int firstStack, int endStack )
+         : RejectionThread( engine, firstStack, endStack )
+      {
+      }
+
+      void Run() override;
+   };
+
    class CCDClipRejectionThread : public RejectionThread
    {
    public:
@@ -539,6 +633,7 @@ private:
    friend class AveragedSigmaClipRejectionThread;
    friend class LinearFitRejectionThread;
    friend class ESDRejectionThread;
+   friend class RCRRejectionThread;
    friend class CCDClipRejectionThread;
 };
 
@@ -549,4 +644,4 @@ private:
 #endif   // __IntegrationRejectionEngine_h
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationRejectionEngine.h - Released 2021-12-29T20:37:28Z
+// EOF IntegrationRejectionEngine.h - Released 2022-03-12T18:59:53Z

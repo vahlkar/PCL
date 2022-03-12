@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.4.3
+// Standard ImageIntegration Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// IntegrationEngine.cpp - Released 2021-12-29T20:37:28Z
+// IntegrationEngine.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -151,7 +151,8 @@ void IntegrationEngine::IntegrationThread::Run()
          default:
          case IINormalization::Additive:
             for ( int i = 0; i < n; ++i )
-               r[i].raw += d[r[i].index];
+               if ( r[i].raw != 0 )
+                  r[i].raw += d[r[i].index];
             break;
          case IINormalization::Multiplicative:
             for ( int i = 0; i < n; ++i )
@@ -159,7 +160,8 @@ void IntegrationEngine::IntegrationThread::Run()
             break;
          case IINormalization::AdditiveWithScaling:
             for ( int i = 0; i < n; ++i )
-               r[i].raw = (double( r[i].raw ) - m[r[i].index])*double( s[r[i].index] ) + m[0];
+               if ( r[i].raw != 0 )
+                  r[i].raw = (double( r[i].raw ) - m[r[i].index])*double( s[r[i].index] ) + m[0];
             break;
          case IINormalization::MultiplicativeWithScaling:
             for ( int i = 0; i < n; ++i )
@@ -276,4 +278,4 @@ void IntegrationEngine::IntegrationThread::Run()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationEngine.cpp - Released 2021-12-29T20:37:28Z
+// EOF IntegrationEngine.cpp - Released 2022-03-12T18:59:53Z

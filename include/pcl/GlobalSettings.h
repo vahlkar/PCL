@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.19
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// pcl/GlobalSettings.h - Released 2022-01-24T22:43:24Z
+// pcl/GlobalSettings.h - Released 2022-03-12T18:59:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -112,7 +112,7 @@ namespace GlobalVariableType
  * pcl::GlobalVariableType namespace for more details.
  *
  * Below is a complete list of all global settings available in current
- * versions of the PixInsight platform (updated as of core version 1.8.8-11).
+ * versions of the PixInsight platform (updated as of core version 1.8.8-13).
  *
  * <h3>PixInsight Public Global Variables</h3>
  *
@@ -158,6 +158,7 @@ namespace GlobalVariableType
  * <tr><td>ImageWindow/TouchEvents</td><td></td></tr>
  * <tr><td>ImageWindow/UseFileNamesAsImageIdentifiers</td><td></td></tr>
  * <tr><td>ImageWindow/VerboseNetworkOperations</td><td>Not available on Windows.</td></tr>
+ * <tr><td>ImageWindow/ZoomAtCursor</td><td></td></tr>
  * <tr><td>MainWindow/AcceptDroppedFiles</td><td></td></tr>
  * <tr><td>MainWindow/AnimateCombo</td><td></td></tr>
  * <tr><td>MainWindow/AnimateMenu</td><td></td></tr>
@@ -518,4 +519,4 @@ public:
 #endif   // __PCL_GlobalSettings_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/GlobalSettings.h - Released 2022-01-24T22:43:24Z
+// EOF pcl/GlobalSettings.h - Released 2022-03-12T18:59:29Z

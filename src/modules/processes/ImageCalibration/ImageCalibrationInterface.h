@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.8.0
+// Standard ImageCalibration Process Module Version 1.9.1
 // ----------------------------------------------------------------------------
-// ImageCalibrationInterface.h - Released 2021-12-29T20:37:28Z
+// ImageCalibrationInterface.h - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -144,6 +144,10 @@ private:
          HorizontalSizer   OutputSampleFormat_Sizer;
             Label             OutputSampleFormat_Label;
             ComboBox          OutputSampleFormat_ComboBox;
+         HorizontalSizer   OutputPedestalMode_Sizer;
+            Label             OutputPedestalMode_Label;
+            ComboBox          OutputPedestalMode_ComboBox;
+         NumericEdit       AutoPedestalThreshold_NumericEdit;
          HorizontalSizer   OutputPedestal_Sizer;
             Label             OutputPedestal_Label;
             SpinBox           OutputPedestal_SpinBox;
@@ -159,6 +163,9 @@ private:
          HorizontalSizer   StructureLayers_Sizer;
             Label             StructureLayers_Label;
             SpinBox           StructureLayers_SpinBox;
+         NumericControl    SaturationThreshold_NumericControl;
+         HorizontalSizer   SaturationRelative_Sizer;
+            CheckBox          SaturationRelative_CheckBox;
          HorizontalSizer   NoiseLayers_Sizer;
             Label             NoiseLayers_Label;
             SpinBox           NoiseLayers_SpinBox;
@@ -174,8 +181,7 @@ private:
          HorizontalSizer   PSFType_Sizer;
             Label             PSFType_Label;
             ComboBox          PSFType_ComboBox;
-         NumericControl    PSFRejectionLimit_NumericControl;
-         NumericControl    PSFHighClippingPoint_NumericControl;
+         NumericControl    PSFGrowth_NumericControl;
          HorizontalSizer   MaxStars_Sizer;
             Label             MaxStars_Label;
             SpinBox           MaxStars_SpinBox;
@@ -353,4 +359,4 @@ PCL_END_LOCAL
 #endif   // __ImageCalibrationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInterface.h - Released 2021-12-29T20:37:28Z
+// EOF ImageCalibrationInterface.h - Released 2022-03-12T18:59:53Z

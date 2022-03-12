@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.19
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// pcl/LocalNormalizationData.cpp - Released 2022-01-24T22:43:35Z
+// pcl/LocalNormalizationData.cpp - Released 2022-03-12T18:59:36Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -105,8 +105,10 @@ void LocalNormalizationData::Clear()
    m_Rc.Clear();
    m_Tc.Clear();
    m_S.Clear();
+   m_relScale.Clear();
    m_sx = m_sy = 0;
    m_creationTime = TimePoint();
+   m_version = 0;
 }
 
 // ----------------------------------------------------------------------------
@@ -240,6 +242,10 @@ void LocalNormalizationData::Parse( const XMLElement& root, bool ignoreNormaliza
                if ( m_scale < MIN_NORMALIZATION_SCALE )
                   throw Error( "Invalid local normalization scale attribute value '" + scale + '\'' );
 
+               String version = element.AttributeValue( "version" );
+               if ( !version.IsEmpty() )
+                  m_version = version.ToInt();
+
                for ( const XMLNode& node : element )
                {
                   if ( !node.IsElement() )
@@ -301,6 +307,10 @@ void LocalNormalizationData::Parse( const XMLElement& root, bool ignoreNormaliza
                   throw Error( "Missing global normalization target location vector." );
             }
          }
+         else if ( element.Name() == "RelativeScaleFactors" )
+         {
+            m_relScale = ParseVector( element );
+         }
          else if ( element.Name() == "CreationTime" )
          {
             m_creationTime = TimePoint( element.Text().Trimmed() );
@@ -347,6 +357,10 @@ void LocalNormalizationData::Parse( const XMLElement& root, bool ignoreNormaliza
               m_Rc.Length() != m_B.NumberOfChannels() ||
               m_Tc.Length() != m_B.NumberOfChannels() )
             throw Error( "Incongruent global normalization vectors." );
+
+      if ( !m_relScale.IsEmpty() )
+         if ( m_relScale.Length() != m_B.NumberOfChannels() )
+            throw Error( "Incongruent relative scale vector." );
 
       InitInterpolations();
    }
@@ -395,7 +409,8 @@ XMLDocument* LocalNormalizationData::Serialize() const
       << XMLAttribute( "numberOfChannels", String( m_A.NumberOfChannels() ) ) );
 
    XMLElement* ln = new XMLElement( *root, "LocalNormalization", XMLAttributeList()
-      << XMLAttribute( "scale", String( m_scale ) ) );
+      << XMLAttribute( "scale", String( m_scale ) )
+      << XMLAttribute( "version", String( Max( 1, m_version ) ) ) );
 
    SerializeNormalizationMatrices( new XMLElement( *ln, "Scale" ), m_A );
    SerializeNormalizationMatrices( new XMLElement( *ln, "ZeroOffset" ), m_B );
@@ -410,6 +425,9 @@ XMLDocument* LocalNormalizationData::Serialize() const
       *(new XMLElement( *gn, "ReferenceLocation" )) << new XMLText( String().ToCommaSeparated( m_Rc ) );
       *(new XMLElement( *gn, "TargetLocation" )) << new XMLText( String().ToCommaSeparated( m_Tc ) );
    }
+
+   if ( !m_relScale.IsEmpty() )
+      *(new XMLElement( *root, "RelativeScaleFactors" )) << new XMLText( String().ToCommaSeparated( m_relScale ) );
 
    return xml.Release();
 }
@@ -604,4 +622,4 @@ void LocalNormalizationData::SerializeNormalizationMatrices( XMLElement* root, c
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/LocalNormalizationData.cpp - Released 2022-01-24T22:43:35Z
+// EOF pcl/LocalNormalizationData.cpp - Released 2022-03-12T18:59:36Z

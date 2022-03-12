@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.4.3
+// Standard ImageIntegration Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// MapIntegrationEngine.cpp - Released 2021-12-29T20:37:28Z
+// MapIntegrationEngine.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -163,7 +163,8 @@ void MapIntegrationEngine::IntegrationThread::Run()
          default:
          case IINormalization::Additive:
             for ( int i = 0; i < n; ++i )
-               stack[i] += d[index[i]];
+               if ( stack[i] != 0 )
+                  stack[i] += d[index[i]];
             break;
          case IINormalization::Multiplicative:
             for ( int i = 0; i < n; ++i )
@@ -171,7 +172,8 @@ void MapIntegrationEngine::IntegrationThread::Run()
             break;
          case IINormalization::AdditiveWithScaling:
             for ( int i = 0; i < n; ++i )
-               stack[i] = (stack[i] - m[index[i]])*double( s[index[i]] ) + m[0];
+               if ( stack[i] != 0 )
+                  stack[i] = (stack[i] - m[index[i]])*double( s[index[i]] ) + m[0];
             break;
          case IINormalization::MultiplicativeWithScaling:
             for ( int i = 0; i < n; ++i )
@@ -289,4 +291,4 @@ void MapIntegrationEngine::IntegrationThread::Run()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF MapIntegrationEngine.cpp - Released 2021-12-29T20:37:28Z
+// EOF MapIntegrationEngine.cpp - Released 2022-03-12T18:59:53Z

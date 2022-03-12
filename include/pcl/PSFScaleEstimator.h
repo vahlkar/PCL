@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.19
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// pcl/PSFScaleEstimator.h - Released 2022-01-24T22:43:24Z
+// pcl/PSFScaleEstimator.h - Released 2022-03-12T18:59:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -57,6 +57,7 @@
 #include <pcl/Defs.h>
 
 #include <pcl/PSFEstimator.h>
+#include <pcl/SurfaceSpline.h>
 
 namespace pcl
 {
@@ -77,16 +78,19 @@ public:
     */
    typedef PSFEstimator::psf_function  psf_function;
 
+   typedef SurfaceSpline<double>       local_model;
+
    /*!
     * \struct pcl::PSFScaleEstimator::Estimates
     * \brief Structure to hold a PSF relative scale estimate.
     */
    struct Estimates
    {
-      double scale = 1; //!< Estimate of the mean relative scale with respect to the reference image.
-      double sigma = 0; //!< Standard deviation of the sample of scale measurements used for evaluation.
-      int    total = 0; //!< Number of valid PSF fits.
-      int    count = 0; //!< Number of valid PSF flux measurements used for scale evaluation.
+      double      scale = 1; //!< Estimate of the mean relative scale with respect to the reference image.
+      double      sigma = 0; //!< Standard deviation of the sample of scale measurements used for evaluation.
+      int         total = 0; //!< Number of valid PSF fits.
+      int         count = 0; //!< Number of valid PSF flux measurements used for scale evaluation.
+      local_model local;     //!< 2-D model of local scale variations.
 
       /*!
        * Conversion to double operator.
@@ -175,6 +179,35 @@ public:
    int SetReference( const ImageVariant& image );
 
    /*!
+    * Returns true iff generation of models of local relative scale variations
+    * is enabled for this object.
+    *
+    * When this option is enabled, local scale variations are modeled with an
+    * approximating thin plate spline during relative scale estimation. This
+    * feature is disabled by default.
+    */
+   bool IsLocalModelEnabled() const
+   {
+      return m_enableLocalModel;
+   }
+
+   /*!
+    * Enables generation of local scale variation models.
+    */
+   void EnableLocalModel( bool enable = true )
+   {
+      m_enableLocalModel = enable;
+   }
+
+   /*!
+    * Disables generation of local scale variation models.
+    */
+   void DisableLocalModel( bool disable = true )
+   {
+      EnableLocalModel( !disable );
+   }
+
+   /*!
     * Evaluates the mean relative scaling factor of the currently selected
     * reference image with respect to the specified target \a image.
     *
@@ -210,6 +243,27 @@ private:
 
    Array<PSFData> m_psfReference;
    float          m_psfSearchTolerance = 4.0F; // px
+   bool           m_enableLocalModel = false;
+
+   /*
+    * Auxiliary structure for generation of first-order local scale models.
+    */
+   struct Sample
+   {
+      double x, y, z;
+
+      operator double() const
+      {
+         return z;
+      }
+
+      bool operator <( const Sample& s ) const
+      {
+         return z < s.z;
+      }
+   };
+
+   typedef GenericVector<Sample> sample_vector;
 };
 
 // ----------------------------------------------------------------------------
@@ -219,4 +273,4 @@ private:
 #endif   // __PCL_PSFScaleEstimator_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFScaleEstimator.h - Released 2022-01-24T22:43:24Z
+// EOF pcl/PSFScaleEstimator.h - Released 2022-03-12T18:59:29Z

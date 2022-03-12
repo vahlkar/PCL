@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard Debayer Process Module Version 1.10.2
+// Standard Debayer Process Module Version 1.11.0
 // ----------------------------------------------------------------------------
-// DebayerInstance.h - Released 2021-12-29T20:37:28Z
+// DebayerInstance.h - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -116,15 +116,16 @@ private:
    pcl_enum   p_noiseEvaluationAlgorithm;
 
    // PSF signal estimates
-   pcl_bool   p_evaluateSignal;  // perform signal evaluation with PSF photometry
+   pcl_bool   p_evaluateSignal;
    int32      p_structureLayers;
+   float      p_saturationThreshold;
+   pcl_bool   p_saturationRelative;
    int32      p_noiseLayers;
    int32      p_hotPixelFilterRadius;
    int32      p_noiseReductionFilterRadius;
    int32      p_minStructureSize;
    pcl_enum   p_psfType;
-   float      p_psfRejectionLimit;
-   float      p_psfHighClippingPoint;
+   float      p_psfGrowth;
    int32      p_maxStars;
 
    // Format hints
@@ -154,10 +155,12 @@ private:
    // Read-only output properties, view execution.
    String     o_imageId;
    StringList o_channelIds = StringList( size_type( 3 ) );
-   Vector     o_psfSignalEstimates = Vector( 0.0, 3 );
-   Vector     o_psfSignalPowerEstimates = Vector( 0.0, 3 );
-   Vector     o_psfFluxEstimates = Vector( 0.0, 3 );
-   Vector     o_psfFluxPowerEstimates = Vector( 0.0, 3 );
+   Vector     o_psfTotalFluxEstimates = Vector( 0.0, 3 );
+   Vector     o_psfTotalPowerFluxEstimates = Vector( 0.0, 3 );
+   Vector     o_psfTotalMeanFluxEstimates = Vector( 0.0, 3 );
+   Vector     o_psfTotalMeanPowerFluxEstimates = Vector( 0.0, 3 );
+   Vector     o_psfMStarEstimates = Vector( 0.0, 3 );
+   Vector     o_psfNStarEstimates = Vector( 0.0, 3 );
    IVector    o_psfCounts = IVector( 0, 3 );
    Vector     o_noiseEstimates = Vector( 0.0, 3 );
    Vector     o_noiseFractions = Vector( 0.0, 3 );
@@ -170,10 +173,12 @@ private:
    {
       String     filePath;
       StringList channelFilePaths = StringList( size_type( 3 ) );
-      Vector     psfSignalEstimates = Vector( 0.0, 3 );
-      Vector     psfSignalPowerEstimates = Vector( 0.0, 3 );
-      Vector     psfFluxEstimates = Vector( 0.0, 3 );
-      Vector     psfFluxPowerEstimates = Vector( 0.0, 3 );
+      Vector     psfTotalFluxEstimates = Vector( 0.0, 3 );
+      Vector     psfTotalPowerFluxEstimates = Vector( 0.0, 3 );
+      Vector     psfTotalMeanFluxEstimates = Vector( 0.0, 3 );
+      Vector     psfTotalMeanPowerFluxEstimates = Vector( 0.0, 3 );
+      Vector     psfMStarEstimates = Vector( 0.0, 3 );
+      Vector     psfNStarEstimates = Vector( 0.0, 3 );
       IVector    psfCounts = IVector( 0, 3 );
       Vector     noiseEstimates = Vector( 0.0, 3 );
       Vector     noiseFractions = Vector( 0.0, 3 );
@@ -204,8 +209,9 @@ private:
    static FMatrix sRGBConversionMatrixFromTarget( FileFormatInstance& );
    static FMatrix sRGBConversionMatrixFromTargetProperty( const Variant& );
 
-   void EvaluateSignalAndNoise( Vector& psfSignalEstimates, Vector& psfSignalPowerEstimates,
-                                Vector& psfFluxEstimates, Vector& psfFluxPowerEstimates, IVector& psfCounts,
+   void EvaluateSignalAndNoise( Vector& psfTotalFluxEstimates, Vector& psfTotalPowerFluxEstimates,
+                                Vector& psfTotalMeanFluxEstimates, Vector& psfTotalMeanPowerFluxEstimates,
+                                Vector& psfMStarEstimates, Vector& psfNStarEstimates, IVector& psfCounts,
                                 Vector& noiseEstimates, Vector& noiseFractions,
                                 Vector& noiseScaleLow, Vector& noiseScaleHigh, StringList& noiseAlgorithms,
                                 const ImageVariant&, const IsoString& cfaPattern ) const;
@@ -227,4 +233,4 @@ private:
 #endif   // __DebayerInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF DebayerInstance.h - Released 2021-12-29T20:37:28Z
+// EOF DebayerInstance.h - Released 2022-03-12T18:59:53Z

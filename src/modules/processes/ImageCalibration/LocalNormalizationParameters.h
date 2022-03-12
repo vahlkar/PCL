@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.8.0
+// Standard ImageCalibration Process Module Version 1.9.1
 // ----------------------------------------------------------------------------
-// LocalNormalizationParameters.h - Released 2021-12-29T20:37:28Z
+// LocalNormalizationParameters.h - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -54,6 +54,7 @@
 #define __LocalNormalizationParameters_h
 
 #include <pcl/MetaParameter.h>
+#include <pcl/PSFScaleEstimator.h>
 
 namespace pcl
 {
@@ -92,6 +93,20 @@ extern LNNoScale* TheLNNoScaleParameter;
 
 // ----------------------------------------------------------------------------
 
+class LNGlobalLocationNormalization : public MetaBoolean
+{
+public:
+
+   LNGlobalLocationNormalization( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern LNGlobalLocationNormalization* TheLNGlobalLocationNormalizationParameter;
+
+// ----------------------------------------------------------------------------
+
 class LNRejection : public MetaBoolean
 {
 public:
@@ -103,6 +118,36 @@ public:
 };
 
 extern LNRejection* TheLNRejectionParameter;
+
+// ----------------------------------------------------------------------------
+
+class LNTruncate : public MetaBoolean
+{
+public:
+
+   LNTruncate( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern LNTruncate* TheLNTruncateParameter;
+
+// ----------------------------------------------------------------------------
+
+class LNBackgroundSamplingDelta : public MetaInt32
+{
+public:
+
+   LNBackgroundSamplingDelta( MetaProcess* );
+
+   IsoString Id() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
+};
+
+extern LNBackgroundSamplingDelta* TheLNBackgroundSamplingDeltaParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -186,6 +231,247 @@ public:
 };
 
 extern LNNoiseReductionFilterRadius* TheLNNoiseReductionFilterRadiusParameter;
+
+// ----------------------------------------------------------------------------
+
+class LNModelScalingFactor : public MetaFloat
+{
+public:
+
+   LNModelScalingFactor( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern LNModelScalingFactor* TheLNModelScalingFactorParameter;
+
+// ----------------------------------------------------------------------------
+
+class LNScaleEvaluationMethod : public MetaEnumeration
+{
+public:
+
+   enum { PSFSignal,
+          MultiscaleAnalysis,
+          NumberOfItems,
+          Default = PSFSignal };
+
+   LNScaleEvaluationMethod( MetaProcess* );
+
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
+};
+
+extern LNScaleEvaluationMethod* TheLNScaleEvaluationMethodParameter;
+
+// ----------------------------------------------------------------------------
+
+class LNLocalScaleCorrections : public MetaBoolean
+{
+public:
+
+   LNLocalScaleCorrections( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern LNLocalScaleCorrections* TheLNLocalScaleCorrectionsParameter;
+
+// ----------------------------------------------------------------------------
+
+class LNStructureLayers : public MetaInt32
+{
+public:
+
+   LNStructureLayers( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern LNStructureLayers* TheLNStructureLayersParameter;
+
+// ----------------------------------------------------------------------------
+
+class LNSaturationThreshold : public MetaFloat
+{
+public:
+
+   LNSaturationThreshold( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern LNSaturationThreshold* TheLNSaturationThresholdParameter;
+
+// ----------------------------------------------------------------------------
+
+class LNSaturationRelative : public MetaBoolean
+{
+public:
+
+   LNSaturationRelative( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern LNSaturationRelative* TheLNSaturationRelativeParameter;
+
+// ----------------------------------------------------------------------------
+
+class LNPSFNoiseLayers : public MetaInt32
+{
+public:
+
+   LNPSFNoiseLayers( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern LNPSFNoiseLayers* TheLNPSFNoiseLayersParameter;
+
+// ----------------------------------------------------------------------------
+
+class LNPSFHotPixelFilterRadius : public MetaInt32
+{
+public:
+
+   LNPSFHotPixelFilterRadius( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern LNPSFHotPixelFilterRadius* TheLNPSFHotPixelFilterRadiusParameter;
+
+// ----------------------------------------------------------------------------
+
+class LNPSFNoiseReductionFilterRadius : public MetaInt32
+{
+public:
+
+   LNPSFNoiseReductionFilterRadius( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern LNPSFNoiseReductionFilterRadius* TheLNPSFNoiseReductionFilterRadiusParameter;
+
+// ----------------------------------------------------------------------------
+
+class LNPSFMinStructureSize : public MetaInt32
+{
+public:
+
+   LNPSFMinStructureSize( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern LNPSFMinStructureSize* TheLNPSFMinStructureSizeParameter;
+
+// ----------------------------------------------------------------------------
+
+class LNPSFType : public MetaEnumeration
+{
+public:
+
+   enum { Gaussian,
+          Moffat15,
+          Moffat4,
+          Moffat6,
+          Moffat8,
+          MoffatA,
+          Auto,
+          NumberOfItems,
+          Default = Auto };
+
+   LNPSFType( MetaProcess* );
+
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
+
+   static PSFScaleEstimator::psf_function ToPSFFunction( pcl_enum x )
+   {
+      switch ( x )
+      {
+      case Gaussian: return PSFunction::Gaussian;
+      case Moffat15: return PSFunction::Moffat15;
+      case Moffat4:  return PSFunction::Moffat4;
+      case Moffat6:  return PSFunction::Moffat6;
+      case Moffat8:  return PSFunction::Moffat8;
+      case MoffatA:  return PSFunction::MoffatA;
+      default:
+      case Auto:       return PSFunction::Auto;
+      }
+   }
+
+   static IsoString FunctionName( pcl_enum );
+};
+
+extern LNPSFType* TheLNPSFTypeParameter;
+
+// ----------------------------------------------------------------------------
+
+class LNPSFGrowth : public MetaFloat
+{
+public:
+
+   LNPSFGrowth( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern LNPSFGrowth* TheLNPSFGrowthParameter;
+
+// ----------------------------------------------------------------------------
+
+class LNPSFMaxStars : public MetaInt32
+{
+public:
+
+   LNPSFMaxStars( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern LNPSFMaxStars* TheLNPSFMaxStarsParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -334,6 +620,20 @@ extern LNShowBackgroundModels* TheLNShowBackgroundModelsParameter;
 
 // ----------------------------------------------------------------------------
 
+class LNShowLocalScaleModels : public MetaBoolean
+{
+public:
+
+   LNShowLocalScaleModels( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern LNShowLocalScaleModels* TheLNShowLocalScaleModelsParameter;
+
+// ----------------------------------------------------------------------------
+
 class LNShowRejectionMaps : public MetaBoolean
 {
 public:
@@ -348,6 +648,20 @@ extern LNShowRejectionMaps* TheLNShowRejectionMapsParameter;
 
 // ----------------------------------------------------------------------------
 
+class LNShowStructureMaps : public MetaBoolean
+{
+public:
+
+   LNShowStructureMaps( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern LNShowStructureMaps* TheLNShowStructureMapsParameter;
+
+// ----------------------------------------------------------------------------
+
 class LNPlotNormalizationFunctions : public MetaEnumeration
 {
 public:
@@ -357,7 +671,7 @@ public:
           Palette3D,
           Map3D,
           NumberOfModes,
-          Default = Palette3D };
+          Default = DontPlot };
 
    LNPlotNormalizationFunctions( MetaProcess* );
 
@@ -383,6 +697,23 @@ public:
 };
 
 extern LNNoGUIMessages* TheLNNoGUIMessagesParameter;
+
+// ----------------------------------------------------------------------------
+
+class LNAutoMemoryLimit : public MetaFloat
+{
+public:
+
+   LNAutoMemoryLimit( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern LNAutoMemoryLimit* TheLNAutoMemoryLimitParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -616,6 +947,97 @@ public:
 extern LNGraphOutputDirectory* TheLNGraphOutputDirectoryParameter;
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+// Output properties
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+
+class LNOutputData : public MetaTable
+{
+public:
+
+   LNOutputData( MetaProcess* );
+
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
+};
+
+extern LNOutputData* TheLNOutputDataParameter;
+
+// ----------------------------------------------------------------------------
+
+class LNOutputFilePathXNML : public MetaString
+{
+public:
+
+   LNOutputFilePathXNML( MetaTable* );
+
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
+};
+
+extern LNOutputFilePathXNML* TheLNOutputFilePathXNMLParameter;
+
+// ----------------------------------------------------------------------------
+
+class LNOutputFilePath : public MetaString
+{
+public:
+
+   LNOutputFilePath( MetaTable* );
+
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
+};
+
+extern LNOutputFilePath* TheLNOutputFilePathParameter;
+
+// ----------------------------------------------------------------------------
+
+class LNScaleFactorRK : public MetaFloat
+{
+public:
+
+   LNScaleFactorRK( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool IsReadOnly() const override;
+};
+
+extern LNScaleFactorRK* TheLNScaleFactorRKParameter;
+
+// ----------------------------------------------------------------------------
+
+class LNScaleFactorG : public MetaFloat
+{
+public:
+
+   LNScaleFactorG( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool IsReadOnly() const override;
+};
+
+extern LNScaleFactorG* TheLNScaleFactorGParameter;
+
+// ----------------------------------------------------------------------------
+
+class LNScaleFactorB : public MetaFloat
+{
+public:
+
+   LNScaleFactorB( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool IsReadOnly() const override;
+};
+
+extern LNScaleFactorB* TheLNScaleFactorBParameter;
+
+// ----------------------------------------------------------------------------
 
 PCL_END_LOCAL
 
@@ -624,4 +1046,4 @@ PCL_END_LOCAL
 #endif   // __LocalNormalizationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationParameters.h - Released 2021-12-29T20:37:28Z
+// EOF LocalNormalizationParameters.h - Released 2022-03-12T18:59:53Z

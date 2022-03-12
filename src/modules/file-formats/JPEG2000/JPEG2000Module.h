@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
 // Standard JPEG2000 File Format Module Version 1.0.3
 // ----------------------------------------------------------------------------
-// JPEG2000Module.h - Released 2021-12-29T20:37:37Z
+// JPEG2000Module.h - Released 2022-03-12T18:59:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG2000 PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -84,4 +84,4 @@ public:
 #endif   // __JPEG2000Module_h
 
 // ----------------------------------------------------------------------------
-// EOF JPEG2000Module.h - Released 2021-12-29T20:37:37Z
+// EOF JPEG2000Module.h - Released 2022-03-12T18:59:44Z

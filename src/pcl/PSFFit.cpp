@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.19
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// pcl/PSFFit.cpp - Released 2022-01-24T22:43:35Z
+// pcl/PSFFit.cpp - Released 2022-03-12T18:59:36Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -610,7 +610,7 @@ public:
 
    PCL_VSFitThread( const ImageVariant& image, const DPoint& pos, const DRect& rect, bool circular,
                     double betaFirst, double betaLast, double betaStep,
-                    double tolerance, float bkgMaxVar )
+                    double tolerance, float bkgMaxVar, float growthForFlux )
       : m_image( image )
       , m_pos( pos )
       , m_rect( rect )
@@ -620,6 +620,7 @@ public:
       , m_betaStep( betaStep )
       , m_tolerance( tolerance )
       , m_bkgMaxVar( bkgMaxVar )
+      , m_growthForFlux( growthForFlux )
    {
    }
 
@@ -628,7 +629,7 @@ public:
       for ( double beta = m_betaFirst; beta <= m_betaLast; beta += m_betaStep )
       {
          PSFFit F( m_image, m_pos, m_rect, PSFunction::VariableShape, m_circular,
-                   beta, beta, m_tolerance, m_bkgMaxVar );
+                   beta, beta, m_tolerance, m_bkgMaxVar, m_growthForFlux );
          if ( F )
             fits << F;
       }
@@ -643,13 +644,15 @@ private:
          double        m_betaFirst, m_betaLast, m_betaStep;
          double        m_tolerance;
          float         m_bkgMaxVar;
+         float         m_growthForFlux;
 };
 
 typedef int (*cminpack_callback)( void*, int, int, const double*, double*, int );
 
 PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
                 psf_function function, bool circular,
-                float betaMin, float betaMax, double tolerance, float bkgMaxVar )
+                float betaMin, float betaMax, double tolerance, float bkgMaxVar,
+                float growthForFlux )
 {
    if ( !image )
       return;
@@ -672,7 +675,7 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
             double betaFirst = betaMin + n*betaStep;
             double betaLast = betaMin + (n + int( L[i] ) - 1)*betaStep;
             threads << new PCL_VSFitThread( image, pos, rect, circular,
-                                            betaFirst, betaLast, betaStep, tolerance, bkgMaxVar );
+                              betaFirst, betaLast, betaStep, tolerance, bkgMaxVar, growthForFlux );
          }
          if ( threads.Length() > 1 )
          {
@@ -783,7 +786,8 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
              * Fit this PSF using the estimated optimal beta parameter value.
              */
             float beta = Range( float( (f1 < f2) ? x1 : x2 ), betaMin, betaMax );
-            PSFFit F( image, pos, rect, PSFunction::VariableShape, circular, beta, beta, tolerance, bkgMaxVar );
+            PSFFit F( image, pos, rect, PSFunction::VariableShape,
+                      circular, beta, beta, tolerance, bkgMaxVar, growthForFlux );
             if ( F )
                psf = F.psf;
          }
@@ -825,6 +829,7 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
    tolerance = Range( tolerance, 1.0e-12, 1.0e-03 );
 
    m_bkgMaxVar = Range( bkgMaxVar, 0.01F, 1.0F );
+   m_growthForFlux = Range( growthForFlux, 0.1F, 10.0F );
 
    /*
     * Setup CMINPACK working parameters and data.
@@ -1136,9 +1141,6 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
          }
       }
 
-      // Normalize mean absolute deviation with respect to PSF amplitude.
-      psf.mad /= psf.A;
-
       // Moffat/VariableShape beta parameter.
       psf.beta = (function == PSFunction::Gaussian) ? 2.0 : P[ibeta];
 
@@ -1203,9 +1205,9 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
          {
             if ( !test )
             {
-               // PSF squared radius at tenth maximum height
-               rx2 = 4.60517*sx*sx;
-               ry2 = rx2;
+               // PSF squared radius at tenth maximum height + tolerance
+               double rx = 2.145966 * m_growthForFlux*sx + 1;
+               rx2 = ry2 = rx*rx;
             }
 
             double twosx2 = 2*sx*sx;
@@ -1225,55 +1227,59 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
          break;
 
 // Circular Moffat with fixed integer shape parameter
-#define C_MOFFAT_TEST( zmul, kfwtm )               \
-   {                                               \
-      if ( !test )                                 \
-      {                                            \
-         rx2 = kfwtm*sx*sx;                        \
-         ry2 = rx2;                                \
-      }                                            \
-                                                   \
-      double sx2 = sx*sx;                          \
-      for ( int y = 0, i = 0; y < h; ++y )         \
-      {                                            \
-         double dy  = y - h2y0;                    \
-         double dy2 = dy*dy;                       \
-         for ( int x = 0; x < w; ++x, ++i, ++s )   \
-         {                                         \
-            double dx  = x - w2x0;                 \
-            double dx2 = dx*dx;                    \
-            double z   = 1 + (dx2 + dy2)/sx2;      \
-            z = 1/(zmul);                          \
-            GET_DATA()                             \
-         }                                         \
-      }                                            \
+#define C_MOFFAT_TEST( zmul, kfwtm )                  \
+   {                                                  \
+      if ( !test )                                    \
+      {                                               \
+         double rx = kfwtm * m_growthForFlux*sx + 1;  \
+         rx2 = ry2 = rx*rx;                           \
+      }                                               \
+                                                      \
+      double sx2 = sx*sx;                             \
+      for ( int y = 0, i = 0; y < h; ++y )            \
+      {                                               \
+         double dy  = y - h2y0;                       \
+         double dy2 = dy*dy;                          \
+         for ( int x = 0; x < w; ++x, ++i, ++s )      \
+         {                                            \
+            double dx  = x - w2x0;                    \
+            double dx2 = dx*dx;                       \
+            double z   = 1 + (dx2 + dy2)/sx2;         \
+            z = 1/(zmul);                             \
+            GET_DATA()                                \
+         }                                            \
+      }                                               \
    }
 
       case PSFunction::MoffatA:
-         C_MOFFAT_TEST( PowI10( z ), 0.258925 )
+         C_MOFFAT_TEST( PowI10( z ), 0.508847 )
          break;
       case PSFunction::Moffat8:
-         C_MOFFAT_TEST( PowI8( z ), 0.333521 )
+         C_MOFFAT_TEST( PowI8( z ), 0.577513 )
          break;
       case PSFunction::Moffat6:
-         C_MOFFAT_TEST( PowI6( z ), 0.467799 )
+         C_MOFFAT_TEST( PowI6( z ), 0.683959 )
          break;
       case PSFunction::Moffat4:
-         C_MOFFAT_TEST( PowI4( z ), 0.778279 )
+         C_MOFFAT_TEST( PowI4( z ), 0.882201 )
+         break;
+      case PSFunction::Moffat25:
+         C_MOFFAT_TEST( Pow( z, 2.5 ), 1.229588 )
+         break;
+      case PSFunction::Moffat15:
+         C_MOFFAT_TEST( Pow( z, 1.5 ), 1.908295 )
          break;
       case PSFunction::Lorentzian:
          C_MOFFAT_TEST( z, 9 )
          break;
 
       case PSFunction::Moffat:
-      case PSFunction::Moffat25:
-      case PSFunction::Moffat15:
          {
             if ( !test )
             {
-               // PSF squared radius at tenth maximum height
-               rx2 = (Pow( 10.0, 1/beta ) - 1)*sx*sx;
-               ry2 = rx2;
+               // PSF squared radius at tenth maximum height + tolerance
+               double rx = Sqrt( Pow( 10.0, 1/beta ) - 1 ) * m_growthForFlux*sx + 1;
+               rx2 = ry2 = rx*rx;
             }
 
             double sx2 = sx*sx;
@@ -1294,6 +1300,13 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
 
       case PSFunction::VariableShape:
          {
+            if ( !test )
+            {
+               // PSF squared radius at tenth maximum height + tolerance
+               double rx = Pow( beta*2.302585, 1/beta ) * m_growthForFlux*sx + 1;
+               rx2 = ry2 = rx*rx;
+            }
+
             double ksxk = beta*Pow( Abs( sx ), beta );
             for ( int y = 0, i = 0; y < h; ++y )
             {
@@ -1327,9 +1340,12 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
          {
             if ( !test )
             {
-               // PSF squared radii at tenth maximum height
-               rx2 = 4.60517*sx*sx;
-               ry2 = 4.60517*sy*sy;
+               // PSF squared radii at tenth maximum height + tolerance
+               double k = 2.145966 * m_growthForFlux;
+               double rx = k*sx + 1;
+               double ry = k*sy + 1;
+               rx2 = rx*rx;
+               ry2 = ry*ry;
             }
 
             double st, ct;
@@ -1364,8 +1380,11 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
    {                                                        \
       if ( !test )                                          \
       {                                                     \
-         rx2 = kfwtm*sx*sx;                                 \
-         ry2 = kfwtm*sy*sy;                                 \
+         double k = kfwtm * m_growthForFlux;                \
+         double rx = k*sx + 1;                              \
+         double ry = k*sy + 1;                              \
+         rx2 = rx*rx;                                       \
+         ry2 = ry*ry;                                       \
       }                                                     \
                                                             \
       double st, ct;                                        \
@@ -1396,31 +1415,37 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
    }
 
       case PSFunction::MoffatA:
-         E_MOFFAT_TEST( PowI10( z ), 0.258925 )
+         E_MOFFAT_TEST( PowI10( z ), 0.508847 )
          break;
       case PSFunction::Moffat8:
-         E_MOFFAT_TEST( PowI8( z ), 0.333521 )
+         E_MOFFAT_TEST( PowI8( z ), 0.577513 )
          break;
       case PSFunction::Moffat6:
-         E_MOFFAT_TEST( PowI6( z ), 0.467799 )
+         E_MOFFAT_TEST( PowI6( z ), 0.683959 )
          break;
       case PSFunction::Moffat4:
-         E_MOFFAT_TEST( PowI4( z ), 0.778279 )
+         E_MOFFAT_TEST( PowI4( z ), 0.882201 )
+         break;
+      case PSFunction::Moffat25:
+         C_MOFFAT_TEST( Pow( z, 2.5 ), 1.229588 )
+         break;
+      case PSFunction::Moffat15:
+         C_MOFFAT_TEST( Pow( z, 1.5 ), 1.908295 )
          break;
       case PSFunction::Lorentzian:
          E_MOFFAT_TEST( z, 9 )
          break;
 
       case PSFunction::Moffat:
-      case PSFunction::Moffat25:
-      case PSFunction::Moffat15:
          {
             if ( !test )
             {
-               // PSF squared radii at tenth maximum height
-               double k = Pow( 10.0, 1/beta ) - 1;
-               rx2 = k*sx*sx;
-               ry2 = k*sy*sy;
+               // PSF squared radii at tenth maximum height + tolerance
+               double k = Sqrt( Pow( 10.0, 1/beta ) - 1 ) * m_growthForFlux;
+               double rx = k*sx + 1;
+               double ry = k*sy + 1;
+               rx2 = rx*rx;
+               ry2 = ry*ry;
             }
 
             double st, ct;
@@ -1452,6 +1477,16 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular, bool test ) 
 
       case PSFunction::VariableShape:
          {
+            if ( !test )
+            {
+               // PSF squared radius at tenth maximum height + tolerance
+               double k = Pow( beta*2.302585, 1/beta ) * m_growthForFlux;
+               double rx = k*sx + 1;
+               double ry = k*sy + 1;
+               rx2 = rx*rx;
+               ry2 = ry*ry;
+            }
+
             double st, ct;
             SinCos( theta, st, ct );
             double ksxk = beta*Pow( Abs( sx ), beta );
@@ -1574,4 +1609,4 @@ String PSFData::StatusText() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFFit.cpp - Released 2022-01-24T22:43:35Z
+// EOF pcl/PSFFit.cpp - Released 2022-03-12T18:59:36Z

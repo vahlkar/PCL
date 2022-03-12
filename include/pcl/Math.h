@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.19
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// pcl/Math.h - Released 2022-01-24T22:43:24Z
+// pcl/Math.h - Released 2022-03-12T18:59:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -4690,7 +4690,7 @@ template <typename T> inline constexpr T ErfInv( T x ) noexcept
   }
 
   long double r = Sqrt( Ln2() - Ln( 1 - abs_x ) );
-  long double num, den;
+  long double num = 0, den = 0;
   if ( r <= 5 )
   {
     r = r - 1.6L;
@@ -4993,4 +4993,4 @@ inline uint32 Hash32( const void* data, size_type size, uint32 seed = 0 ) noexce
 #endif   // __PCL_Math_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Math.h - Released 2022-01-24T22:43:24Z
+// EOF pcl/Math.h - Released 2022-03-12T18:59:29Z

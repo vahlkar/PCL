@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.8.5
+// Standard PixelMath Process Module Version 1.9.2
 // ----------------------------------------------------------------------------
-// PixelMathModule.cpp - Released 2021-12-29T20:37:28Z
+// PixelMathModule.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -51,14 +51,14 @@
 // ----------------------------------------------------------------------------
 
 #define MODULE_VERSION_MAJOR     1
-#define MODULE_VERSION_MINOR     8
-#define MODULE_VERSION_REVISION  5
+#define MODULE_VERSION_MINOR     9
+#define MODULE_VERSION_REVISION  2
 #define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
-#define MODULE_RELEASE_YEAR      2021
-#define MODULE_RELEASE_MONTH     12
-#define MODULE_RELEASE_DAY       29
+#define MODULE_RELEASE_YEAR      2022
+#define MODULE_RELEASE_MONTH     3
+#define MODULE_RELEASE_DAY       12
 
 #include "PixelMathInterface.h"
 #include "PixelMathModule.h"
@@ -116,7 +116,7 @@ String PixelMathModule::Author() const
 
 String PixelMathModule::Copyright() const
 {
-   return "Copyright (c) 2006-2021 Pleiades Astrophoto";
+   return "Copyright (c) 2006-2022 Pleiades Astrophoto";
 }
 
 // ----------------------------------------------------------------------------
@@ -173,4 +173,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF PixelMathModule.cpp - Released 2021-12-29T20:37:28Z
+// EOF PixelMathModule.cpp - Released 2022-03-12T18:59:53Z

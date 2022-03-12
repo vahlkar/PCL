@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.19
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// pcl/ChebyshevFit.h - Released 2022-01-24T22:43:24Z
+// pcl/ChebyshevFit.h - Released 2022-03-12T18:59:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -942,4 +942,4 @@ typedef F80ScalarChebyshevFit                         LDScalarChebyshevFit;
 #endif  // __PCL_ChebyshevFit_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ChebyshevFit.h - Released 2022-01-24T22:43:24Z
+// EOF pcl/ChebyshevFit.h - Released 2022-03-12T18:59:29Z

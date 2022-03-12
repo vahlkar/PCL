@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
 // Standard SplitCFA Process Module Version 1.0.6
 // ----------------------------------------------------------------------------
-// SplitCFAInstance.cpp - Released 2021-12-29T20:37:28Z
+// SplitCFAInstance.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SplitCFA PixInsight module.
 //
@@ -654,13 +654,13 @@ void SplitCFAInstance::SaveImage( const SplitCFAThread* t )
          outputFile.WriteFITSKeywords( keywords );
       }
       else if ( !data.keywords.IsEmpty() )
-         console.WarningLn( "** Warning: The output format cannot store FITS keywords - original keywords not embedded." );
+         console.WarningLn( "** Warning: The output format cannot store FITS keywords - original keywords not embedded" );
 
       if ( data.profile.IsProfile() )
          if ( outputFormat.CanStoreICCProfiles() )
             outputFile.WriteICCProfile( data.profile );
          else
-            console.WarningLn( "** Warning: The output format cannot store ICC profiles - original profile not embedded." );
+            console.WarningLn( "** Warning: The output format cannot store ICC profiles - original profile not embedded" );
 
       SaveImageFile( *t->TargetImage( i ), outputFile );
 
@@ -964,4 +964,4 @@ size_type SplitCFAInstance::ParameterLength( const MetaParameter* p, size_type t
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF SplitCFAInstance.cpp - Released 2021-12-29T20:37:28Z
+// EOF SplitCFAInstance.cpp - Released 2022-03-12T18:59:53Z

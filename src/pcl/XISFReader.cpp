@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.19
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// pcl/XISFReader.cpp - Released 2022-01-24T22:43:35Z
+// pcl/XISFReader.cpp - Released 2022-03-12T18:59:36Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -1072,7 +1072,7 @@ public:
       FITSKeywordArray keywords = m_images[m_currentImage].keywords;
       if ( m_xisfOptions.verbosity > 0 )
          if ( !keywords.IsEmpty() )
-            LogLn( String( keywords.Length() ) + " FITS keyword(s) extracted." );
+            LogLn( String( keywords.Length() ) + " FITS keyword(s) extracted" );
       return keywords;
    }
 
@@ -1120,7 +1120,7 @@ public:
       ICCProfile icc( data );
       if ( m_xisfOptions.verbosity > 0 )
          if ( icc.IsProfile() )
-            LogLn( "ICC profile extracted: \'" + icc.Description() + "\', " + String( icc.ProfileSize() ) + " bytes." );
+            LogLn( "ICC profile extracted: \'" + icc.Description() + "\', " + String( icc.ProfileSize() ) + " bytes" );
       return icc;
    }
 
@@ -2333,7 +2333,7 @@ private:
       }
 
       if ( m_xisfOptions.verbosity > 1 )
-         LogLn( "Property '" + i->id + "' (" + XISF::PropertyTypeId( i->type ) + ") extracted." );
+         LogLn( "Property '" + i->id + "' (" + XISF::PropertyTypeId( i->type ) + ") extracted" );
 
       return i->value;
    }
@@ -3043,4 +3043,4 @@ XMLDocument* XISFReader::ExtractHeader( const String& path, XMLParserOptions opt
 } //pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/XISFReader.cpp - Released 2022-01-24T22:43:35Z
+// EOF pcl/XISFReader.cpp - Released 2022-03-12T18:59:36Z

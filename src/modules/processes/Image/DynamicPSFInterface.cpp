@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// DynamicPSFInterface.cpp - Released 2021-12-29T20:37:28Z
+// DynamicPSFInterface.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -900,7 +900,7 @@ bool DynamicPSFInterface::DynamicKeyPress( View& view, int key, unsigned modifie
    case KeyCode::Delete:
    case KeyCode::Backspace:
       // Simulate a button click
-      __Click( GUI->DeleteStar_ToolButton, false );
+      e_Click( GUI->DeleteStar_ToolButton, false );
       break;
 
    case KeyCode::Escape:
@@ -945,7 +945,7 @@ bool DynamicPSFInterface::RequiresDynamicUpdate( const View& view, const DRect& 
             break;
          }
 
-         Rect srect = window.ImageToViewport( star.rect ).TruncatedToInt().InflatedBy( 1 );
+         Rect srect = window.ImageToViewport( star.drawRect ).TruncatedToInt().InflatedBy( 1 );
          if ( vrect.Intersects( srect ) )
             return true;
       }
@@ -1106,6 +1106,9 @@ void DynamicPSFInterface::UpdateControls()
    GUI->CircularPSF_CheckBox.SetChecked( instance.p_psfOptions.circular );
    GUI->SignedAngles_CheckBox.SetChecked( instance.p_signedAngles );
    GUI->AutoVariableShapePSF_CheckBox.SetChecked( instance.p_psfOptions.autoVariableShapePSF );
+   GUI->ShowFWHM_CheckBox.SetChecked( m_showFWHM );
+   GUI->ShowFWTM_CheckBox.SetChecked( m_showFWTM );
+   GUI->ShowBestFit_CheckBox.SetChecked( m_showBestFit );
 
    GUI->SearchRadius_SpinBox.SetValue( instance.p_searchRadius );
    GUI->Threshold_NumericEdit.SetValue( instance.p_threshold );
@@ -1295,7 +1298,7 @@ void DynamicPSFInterface::SetPSFunction( PSFData::psf_function f, bool onOff )
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-void DynamicPSFInterface::__CurrentNodeUpdated( TreeBox& sender, TreeBox::Node& current, TreeBox::Node& oldCurrent )
+void DynamicPSFInterface::e_CurrentNodeUpdated( TreeBox& sender, TreeBox::Node& current, TreeBox::Node& oldCurrent )
 {
    UpdateStarInfo();
 
@@ -1305,7 +1308,7 @@ void DynamicPSFInterface::__CurrentNodeUpdated( TreeBox& sender, TreeBox::Node& 
 
 // ----------------------------------------------------------------------------
 
-void DynamicPSFInterface::__NodeActivated( TreeBox& sender, TreeBox::Node& node, int col )
+void DynamicPSFInterface::e_NodeActivated( TreeBox& sender, TreeBox::Node& node, int col )
 {
    Star* star = StarFromTreeBoxNode( node );
    if ( star != nullptr )
@@ -1326,27 +1329,27 @@ void DynamicPSFInterface::__NodeActivated( TreeBox& sender, TreeBox::Node& node,
 
 // ----------------------------------------------------------------------------
 
-void DynamicPSFInterface::__NodeDoubleClicked( TreeBox& sender, TreeBox::Node& node, int col )
+void DynamicPSFInterface::e_NodeDoubleClicked( TreeBox& sender, TreeBox::Node& node, int col )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-void DynamicPSFInterface::__NodeExpanded( TreeBox& sender, TreeBox::Node& node )
+void DynamicPSFInterface::e_NodeExpanded( TreeBox& sender, TreeBox::Node& node )
 {
    AdjustDataTreeColumns();
 }
 
 // ----------------------------------------------------------------------------
 
-void DynamicPSFInterface::__NodeCollapsed( TreeBox& sender, TreeBox::Node& node )
+void DynamicPSFInterface::e_NodeCollapsed( TreeBox& sender, TreeBox::Node& node )
 {
    // Placeholder
 }
 
 // ----------------------------------------------------------------------------
 
-void DynamicPSFInterface::__NodeSelectionUpdated( TreeBox& sender )
+void DynamicPSFInterface::e_NodeSelectionUpdated( TreeBox& sender )
 {
    star_list stars;
    IndirectArray<TreeBox::Node> selectedNodes = sender.SelectedNodes();
@@ -1362,7 +1365,7 @@ void DynamicPSFInterface::__NodeSelectionUpdated( TreeBox& sender )
 
 // ----------------------------------------------------------------------------
 
-void DynamicPSFInterface::__Click( Button& sender, bool checked )
+void DynamicPSFInterface::e_Click( Button& sender, bool checked )
 {
    if ( sender == GUI->EnlargeFont_ToolButton )
    {
@@ -1727,11 +1730,26 @@ void DynamicPSFInterface::__Click( Button& sender, bool checked )
       instance.p_psfOptions.autoVariableShapePSF = checked;
    else if ( sender == GUI->AutoAperture_CheckBox )
       instance.p_autoAperture = checked;
+   else if ( sender == GUI->ShowFWHM_CheckBox )
+   {
+      m_showFWHM = checked;
+      Update();
+   }
+   else if ( sender == GUI->ShowFWTM_CheckBox )
+   {
+      m_showFWTM = checked;
+      Update();
+   }
+   else if ( sender == GUI->ShowBestFit_CheckBox )
+   {
+      m_showBestFit = checked;
+      Update();
+   }
 }
 
 // ----------------------------------------------------------------------------
 
-void DynamicPSFInterface::__NumericEdit_ValueUpdated( NumericEdit& sender, double value )
+void DynamicPSFInterface::e_NumericEdit_ValueUpdated( NumericEdit& sender, double value )
 {
    if ( sender == GUI->Threshold_NumericEdit )
       instance.p_threshold = value;
@@ -1745,7 +1763,7 @@ void DynamicPSFInterface::__NumericEdit_ValueUpdated( NumericEdit& sender, doubl
 
 // ----------------------------------------------------------------------------
 
-void DynamicPSFInterface::__SpinBox_ValueUpdated( SpinBox& sender, int value )
+void DynamicPSFInterface::e_SpinBox_ValueUpdated( SpinBox& sender, int value )
 {
    if ( sender == GUI->SearchRadius_SpinBox )
       instance.p_searchRadius = value;
@@ -1753,7 +1771,7 @@ void DynamicPSFInterface::__SpinBox_ValueUpdated( SpinBox& sender, int value )
 
 // ----------------------------------------------------------------------------
 
-void DynamicPSFInterface::__ItemSelected( ComboBox& sender, int itemIndex )
+void DynamicPSFInterface::e_ItemSelected( ComboBox& sender, int itemIndex )
 {
    if ( sender == GUI->ScaleMode_ComboBox )
    {
@@ -1765,7 +1783,7 @@ void DynamicPSFInterface::__ItemSelected( ComboBox& sender, int itemIndex )
 
 // ----------------------------------------------------------------------------
 
-void DynamicPSFInterface::__EditCompleted( Edit& sender )
+void DynamicPSFInterface::e_EditCompleted( Edit& sender )
 {
    if ( sender == GUI->ScaleKeyword_Edit )
    {
@@ -1777,7 +1795,7 @@ void DynamicPSFInterface::__EditCompleted( Edit& sender )
 
 // ----------------------------------------------------------------------------
 
-void DynamicPSFInterface::__ToggleSection( SectionBar& sender, Control& section, bool start )
+void DynamicPSFInterface::e_ToggleSection( SectionBar& sender, Control& section, bool start )
 {
    if ( start )
       GUI->Data_TreeBox.SetFixedHeight();
@@ -1951,37 +1969,84 @@ void DynamicPSFInterface::ExportCSV( const String& filePath )
 
 // ----------------------------------------------------------------------------
 
-void DynamicPSFInterface::DrawStar( VectorGraphics& g, double penWidth, const Star& star,
-                                    ImageWindow& window, const Rect& r0 ) const
+void DynamicPSFInterface::DrawPSF( VectorGraphics& g, double penWidth,
+                                   const Star& star, const PSF& psf, ImageWindow& window ) const
 {
-   DRect rect = window.ImageToViewport( star.rect );
-   if ( r0.Intersects( rect ) )
+   DPoint d = window.ImageToViewport( psf.c0 );
+   g.TranslateTransformation( d.x, d.y );
+   g.RotateTransformation( Rad( psf.theta ) );
+   double dr = penWidth * CENTER_RADIUS;
+   g.DrawLine( -dr, 0, +dr, 0 );
+   g.DrawLine( 0, -dr, 0, +dr );
+
+   if ( m_showFWHM )
    {
+      double hx2 = psf.FWHMx()/2;
+      double hy2 = psf.FWHMy()/2;
+      double rx = window.ImageScalarToViewport( hx2 );
+      double ry = window.ImageScalarToViewport( hy2 );
+      if ( rx > 0.5 && ry > 0.5 )
+         g.StrokeEllipse( -rx, -ry, +rx, +ry );
+
+      star.drawRect.x0 = Min( star.rect.x0, psf.c0.x - hx2 );
+      star.drawRect.y0 = Min( star.rect.y0, psf.c0.y - hx2 );
+      star.drawRect.x1 = Max( star.rect.x1, psf.c0.x + hx2 );
+      star.drawRect.y1 = Max( star.rect.y1, psf.c0.y + hx2 );
+   }
+
+   if ( m_showFWTM )
+   {
+      double tx2 = psf.FWTMx()/2;
+      double ty2 = psf.FWTMy()/2;
+      double rx = window.ImageScalarToViewport( tx2 );
+      double ry = window.ImageScalarToViewport( ty2 );
+      if ( rx > 0.5 && ry > 0.5 )
+         g.StrokeEllipse( -rx, -ry, +rx, +ry,
+               Pen( star.selected ? instance.p_selectedStarColor : instance.p_starColor,
+                  penWidth, PenStyle::Dash ) );
+
+      star.drawRect.x0 = Min( star.rect.x0, psf.c0.x - tx2 );
+      star.drawRect.y0 = Min( star.rect.y0, psf.c0.y - tx2 );
+      star.drawRect.x1 = Max( star.rect.x1, psf.c0.x + tx2 );
+      star.drawRect.y1 = Max( star.rect.y1, psf.c0.y + tx2 );
+   }
+
+   g.ResetTransformation();
+}
+
+// ----------------------------------------------------------------------------
+
+void DynamicPSFInterface::DrawStar( VectorGraphics& g, double penWidth,
+                                    const Star& star, ImageWindow& window, const Rect& r0 ) const
+{
+   if ( r0.Intersects( window.ImageToViewport( star.drawRect ) ) )
+   {
+      DRect rect = window.ImageToViewport( star.rect );
+
       g.SetPen( star.selected ? instance.p_selectedStarColor : instance.p_starColor, penWidth );
 
       if ( star )
       {
          g.DisableAntialiasing();
-
          g.StrokeRect( rect );
-
          g.EnableAntialiasing();
 
-         for ( const PSF& psf : star.psfs )
+         if ( m_showBestFit )
          {
-            DPoint d = window.ImageToViewport( psf.c0 );
-            g.TranslateTransformation( d.x, d.y );
-            g.RotateTransformation( Rad( psf.theta ) );
-            double dr = penWidth * CENTER_RADIUS;
-            g.DrawLine( -dr, 0, +dr, 0 );
-            g.DrawLine( 0, -dr, 0, +dr );
-
-            double rx = window.ImageScalarToViewport( psf.FWHMx() );
-            double ry = window.ImageScalarToViewport( psf.FWHMy() );
-            if ( rx > 0.5 && ry > 0.5 )
-               g.StrokeEllipse( -rx, -ry, +rx, +ry );
-
-            g.ResetTransformation();
+            if ( !star.psfs.IsEmpty() )
+            {
+               double mad = star.psfs[0].mad;
+               int j = 0;
+               for ( size_type i = 1; i < star.psfs.Length(); ++i )
+                  if ( star.psfs[i].mad < mad )
+                     mad = star.psfs[j = i].mad;
+               DrawPSF( g, penWidth, star, star.psfs[j], window );
+            }
+         }
+         else
+         {
+            for ( const PSF& psf : star.psfs )
+               DrawPSF( g, penWidth, star, psf, window );
          }
       }
       else
@@ -2530,7 +2595,7 @@ void DynamicPSFInterface::PSFCollection::Update()
          Rect visibleRect = window.VisibleViewportRect();
          for ( const Star& star : stars )
          {
-            Rect rect = window.ImageToViewport( star.rect ).RoundedToInt().InflatedBy( 1 );
+            Rect rect = window.ImageToViewport( star.drawRect ).RoundedToInt().InflatedBy( 1 );
             if ( visibleRect.Intersects( rect ) )
                window.UpdateViewportRect( rect );
          }
@@ -2549,9 +2614,9 @@ void DynamicPSFInterface::PSFCollection::Update( const Rect& rect )
       {
          Rect visibleRect = window.VisibleViewportRect();
          for ( const Star& star : stars )
-            if ( rect.Intersects( star.rect ) )
+            if ( rect.Intersects( star.drawRect ) )
             {
-               Rect rect = window.ImageToViewport( star.rect ).RoundedToInt().InflatedBy( 1 );
+               Rect rect = window.ImageToViewport( star.drawRect ).RoundedToInt().InflatedBy( 1 );
                if ( visibleRect.Intersects( rect ) )
                   window.UpdateViewportRect( rect );
             }
@@ -2729,12 +2794,12 @@ DynamicPSFInterface::GUIData::GUIData( DynamicPSFInterface& w )
    Data_TreeBox.EnableAlternateRowColor();
    Data_TreeBox.EnableMultipleSelections();
 
-   Data_TreeBox.OnCurrentNodeUpdated( (TreeBox::node_navigation_event_handler)&DynamicPSFInterface::__CurrentNodeUpdated, w );
-   Data_TreeBox.OnNodeActivated( (TreeBox::node_event_handler)&DynamicPSFInterface::__NodeActivated, w );
-   Data_TreeBox.OnNodeDoubleClicked( (TreeBox::node_event_handler)&DynamicPSFInterface::__NodeDoubleClicked, w );
-   Data_TreeBox.OnNodeExpanded( (TreeBox::node_expand_event_handler)&DynamicPSFInterface::__NodeExpanded, w );
-   Data_TreeBox.OnNodeCollapsed( (TreeBox::node_expand_event_handler)&DynamicPSFInterface::__NodeCollapsed, w );
-   Data_TreeBox.OnNodeSelectionUpdated( (TreeBox::tree_event_handler)&DynamicPSFInterface::__NodeSelectionUpdated, w );
+   Data_TreeBox.OnCurrentNodeUpdated( (TreeBox::node_navigation_event_handler)&DynamicPSFInterface::e_CurrentNodeUpdated, w );
+   Data_TreeBox.OnNodeActivated( (TreeBox::node_event_handler)&DynamicPSFInterface::e_NodeActivated, w );
+   Data_TreeBox.OnNodeDoubleClicked( (TreeBox::node_event_handler)&DynamicPSFInterface::e_NodeDoubleClicked, w );
+   Data_TreeBox.OnNodeExpanded( (TreeBox::node_expand_event_handler)&DynamicPSFInterface::e_NodeExpanded, w );
+   Data_TreeBox.OnNodeCollapsed( (TreeBox::node_expand_event_handler)&DynamicPSFInterface::e_NodeCollapsed, w );
+   Data_TreeBox.OnNodeSelectionUpdated( (TreeBox::tree_event_handler)&DynamicPSFInterface::e_NodeSelectionUpdated, w );
 
    //
 
@@ -2747,75 +2812,75 @@ DynamicPSFInterface::GUIData::GUIData( DynamicPSFInterface& w )
    EnlargeFont_ToolButton.SetScaledFixedSize( 24, 24 );
    EnlargeFont_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    EnlargeFont_ToolButton.SetToolTip( "<p>Enlarge font.</p>" );
-   EnlargeFont_ToolButton.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::__Click, w );
+   EnlargeFont_ToolButton.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::e_Click, w );
 
    ShrinkFont_ToolButton.SetIcon( w.ScaledResource( ":/icons/font-shrink.png" ) );
    ShrinkFont_ToolButton.SetScaledFixedSize( 24, 24 );
    ShrinkFont_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    ShrinkFont_ToolButton.SetToolTip( "<p>Shrink font.</p>" );
-   ShrinkFont_ToolButton.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::__Click, w );
+   ShrinkFont_ToolButton.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::e_Click, w );
 
    ExpandAll_ToolButton.SetIcon( w.ScaledResource( ":/browser/expand.png" ) );
    ExpandAll_ToolButton.SetScaledFixedSize( 24, 24 );
    ExpandAll_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    ExpandAll_ToolButton.SetToolTip( "<p>Expand all tree nodes.</p>" );
-   ExpandAll_ToolButton.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::__Click, w );
+   ExpandAll_ToolButton.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::e_Click, w );
 
    CollapseAll_ToolButton.SetIcon( w.ScaledResource( ":/browser/collapse.png" ) );
    CollapseAll_ToolButton.SetScaledFixedSize( 24, 24 );
    CollapseAll_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    CollapseAll_ToolButton.SetToolTip( "<p>Collapse selected or all tree nodes.</p>" );
-   CollapseAll_ToolButton.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::__Click, w );
+   CollapseAll_ToolButton.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::e_Click, w );
 
    DeleteStar_ToolButton.SetIcon( w.ScaledResource( ":/icons/remove.png" ) );
    DeleteStar_ToolButton.SetScaledFixedSize( 24, 24 );
    DeleteStar_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    DeleteStar_ToolButton.SetToolTip( "<p>Delete selected item(s).</p>" );
-   DeleteStar_ToolButton.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::__Click, w );
+   DeleteStar_ToolButton.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::e_Click, w );
 
    TrackStars_ToolButton.SetIcon( w.ScaledResource( ":/icons/goto-next.png" ) );
    TrackStars_ToolButton.SetScaledFixedSize( 24, 24 );
    TrackStars_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    TrackStars_ToolButton.SetToolTip( "<p>Track star positions on source views.</p>" );
    TrackStars_ToolButton.SetCheckable();
-   TrackStars_ToolButton.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::__Click, w );
+   TrackStars_ToolButton.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::e_Click, w );
 
    Regenerate_ToolButton.SetIcon( w.ScaledResource( ":/icons/redo.png" ) );
    Regenerate_ToolButton.SetScaledFixedSize( 24, 24 );
    Regenerate_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    Regenerate_ToolButton.SetToolTip( "<p>Regenerate the selected star(s) with the current fitting parameters.</p>" );
-   Regenerate_ToolButton.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::__Click, w );
+   Regenerate_ToolButton.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::e_Click, w );
 
    RegenerateAll_ToolButton.SetIcon( w.ScaledResource( ":/icons/reload.png" ) );
    RegenerateAll_ToolButton.SetScaledFixedSize( 24, 24 );
    RegenerateAll_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    RegenerateAll_ToolButton.SetToolTip( "<p>Regenerate all stars with the current fitting parameters.</p>" );
-   RegenerateAll_ToolButton.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::__Click, w );
+   RegenerateAll_ToolButton.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::e_Click, w );
 
    Sort_ToolButton.SetIcon( w.ScaledResource( ":/icons/sort-down.png" ) );
    Sort_ToolButton.SetScaledFixedSize( 24, 24 );
    Sort_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    Sort_ToolButton.SetToolTip( "<p>Sort the list of stars by selectable criteria.</p>" );
-   Sort_ToolButton.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::__Click, w );
+   Sort_ToolButton.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::e_Click, w );
 
    ExportPSF_ToolButton.SetIcon( w.ScaledResource( ":/icons/camera.png" ) );
    ExportPSF_ToolButton.SetScaledFixedSize( 24, 24 );
    ExportPSF_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    ExportPSF_ToolButton.SetToolTip( "<p>Export a synthetic PSF function as a new image window. The synthetic PSF "
       "will be computed as the normalized average of the fitted functions for the selected star(s).</p>" );
-   ExportPSF_ToolButton.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::__Click, w );
+   ExportPSF_ToolButton.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::e_Click, w );
 
    AverageStars_ToolButton.SetIcon( w.ScaledResource( ":/icons/document-math.png" ) );
    AverageStars_ToolButton.SetScaledFixedSize( 24, 24 );
    AverageStars_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    AverageStars_ToolButton.SetToolTip( "<p>Average PSF parameters for selected stars.</p>" );
-   AverageStars_ToolButton.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::__Click, w );
+   AverageStars_ToolButton.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::e_Click, w );
 
-   ExportCSV_ToolButton.SetIcon( w.ScaledResource( ":/icons/document-text-export.png" ) );
+   ExportCSV_ToolButton.SetIcon( w.ScaledResource( ":/icons/document-csv.png" ) );
    ExportCSV_ToolButton.SetScaledFixedSize( 24, 24 );
    ExportCSV_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    ExportCSV_ToolButton.SetToolTip( "<p>Export data in Comma Separated Value (CSV) file format.</p>" );
-   ExportCSV_ToolButton.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::__Click, w );
+   ExportCSV_ToolButton.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::e_Click, w );
 
    StarTools_Sizer.SetSpacing( 4 );
    StarTools_Sizer.Add( StarInfo_Label, 100 );
@@ -2841,7 +2906,7 @@ DynamicPSFInterface::GUIData::GUIData( DynamicPSFInterface& w )
 
    PSFModels_SectionBar.SetTitle( "PSF Models" );
    PSFModels_SectionBar.SetSection( PSFModels_Control );
-   PSFModels_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&DynamicPSFInterface::__ToggleSection, w );
+   PSFModels_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&DynamicPSFInterface::e_ToggleSection, w );
 
    AutoPSF_CheckBox.SetText( "Auto" );
    AutoPSF_CheckBox.SetToolTip( "<p>Find the PSF model function that best approximates actual image data.</p>"
@@ -2849,12 +2914,12 @@ DynamicPSFInterface::GUIData::GUIData( DynamicPSFInterface& w )
       "option, variable shape model functions will also be fitted and selected when they minimize residuals among "
       "PSF models and sampled image data.</p>" );
    AutoPSF_CheckBox.SetChecked();
-   AutoPSF_CheckBox.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::__Click, w );
+   AutoPSF_CheckBox.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::e_Click, w );
 
    Gaussian_CheckBox.SetText( "Gaussian" );
    Gaussian_CheckBox.SetToolTip( "<p>A Gaussian PSF model function.</p>" );
    Gaussian_CheckBox.SetChecked();
-   Gaussian_CheckBox.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::__Click, w );
+   Gaussian_CheckBox.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::e_Click, w );
 
    VariableShape_CheckBox.SetText( "VarShape" );
    VariableShape_CheckBox.SetToolTip( "<p>A variable shape PSF model function.</p>"
@@ -2864,39 +2929,39 @@ DynamicPSFInterface::GUIData::GUIData( DynamicPSFInterface& w )
       "<li>beta &lt; 2: leptokurtic (peaked).</li>"
       "<li>beta &gt; 2: platykurtic (flat).</li>"
       "</ul>" );
-   VariableShape_CheckBox.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::__Click, w );
+   VariableShape_CheckBox.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::e_Click, w );
 
    Moffat_CheckBox.SetText( "Moffat" );
    Moffat_CheckBox.SetToolTip( "<p>A Moffat PSF model function with variable beta exponent.</p>" );
-   Moffat_CheckBox.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::__Click, w );
+   Moffat_CheckBox.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::e_Click, w );
 
    MoffatA_CheckBox.SetText( "Moffat10" );
    MoffatA_CheckBox.SetToolTip( "<p>A Moffat PSF model function with fixed beta=10</p>" );
-   MoffatA_CheckBox.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::__Click, w );
+   MoffatA_CheckBox.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::e_Click, w );
 
    Moffat8_CheckBox.SetText( "Moffat8" );
    Moffat8_CheckBox.SetToolTip( "<p>A Moffat PSF model function with fixed beta=8</p>" );
-   Moffat8_CheckBox.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::__Click, w );
+   Moffat8_CheckBox.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::e_Click, w );
 
    Moffat6_CheckBox.SetText( "Moffat6" );
    Moffat6_CheckBox.SetToolTip( "<p>A Moffat PSF model function with fixed beta=6</p>" );
-   Moffat6_CheckBox.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::__Click, w );
+   Moffat6_CheckBox.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::e_Click, w );
 
    Moffat4_CheckBox.SetText( "Moffat4" );
    Moffat4_CheckBox.SetToolTip( "<p>A Moffat PSF model function with fixed beta=4</p>" );
-   Moffat4_CheckBox.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::__Click, w );
+   Moffat4_CheckBox.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::e_Click, w );
 
    Moffat25_CheckBox.SetText( "Moffat25" );
    Moffat25_CheckBox.SetToolTip( "<p>A Moffat PSF model function with fixed beta=2.5</p>" );
-   Moffat25_CheckBox.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::__Click, w );
+   Moffat25_CheckBox.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::e_Click, w );
 
    Moffat15_CheckBox.SetText( "Moffat15" );
    Moffat15_CheckBox.SetToolTip( "<p>A Moffat PSF model function with fixed beta=1.5</p>" );
-   Moffat15_CheckBox.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::__Click, w );
+   Moffat15_CheckBox.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::e_Click, w );
 
    Lorentzian_CheckBox.SetText( "Lorentzian" );
    Lorentzian_CheckBox.SetToolTip( "<p>A Lorentzian PSF model function. This is equivalent to a Moffat function with fixed beta=1.</p>" );
-   Lorentzian_CheckBox.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::__Click, w );
+   Lorentzian_CheckBox.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::e_Click, w );
 
    CircularPSF_CheckBox.SetText( "Circular PSF" );
    CircularPSF_CheckBox.SetToolTip( "<p>Enable this option to fit circular PSF functions. Disable it to fit elliptical "
@@ -2907,7 +2972,7 @@ DynamicPSFInterface::GUIData::GUIData( DynamicPSFInterface& w )
       "noise levels also affect complex function fittings adversely. In such cases a circular function can provide more "
       "robust results.</p>"
       "<p>Elliptical PSF functions are fitted by default.</p>" );
-   CircularPSF_CheckBox.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::__Click, w );
+   CircularPSF_CheckBox.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::e_Click, w );
 
    SignedAngles_CheckBox.SetText( "Signed angles" );
    SignedAngles_CheckBox.SetToolTip( "<p>When this option is enabled, rotation angles are shown in the [-90&deg;,+90&deg;] "
@@ -2920,7 +2985,7 @@ DynamicPSFInterface::GUIData::GUIData( DynamicPSFInterface& w )
       "would be a value close to zero degrees.</p>"
       "<p>This option is enabled by default, so rotation angles are represented as signed quantities in the "
       "(-90&deg;,+90&deg;] range.</p>" );
-   SignedAngles_CheckBox.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::__Click, w );
+   SignedAngles_CheckBox.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::e_Click, w );
 
    PSFModels1_Sizer.SetSpacing( 4 );
    PSFModels1_Sizer.Add( AutoPSF_CheckBox );
@@ -2975,15 +3040,36 @@ DynamicPSFInterface::GUIData::GUIData( DynamicPSFInterface& w )
       "<p>In many cases, variable shape model functions will lead to optimal PSF fits in terms of minimization of absolute deviation "
       "between fitted point spread functions and source image pixel samples for each selected object. Since variable shape PSF models "
       "are nonstandard and relatively experimental, they are not included in automatic optimal fits by default.</p>" );
-   AutoVariableShapePSF_CheckBox.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::__Click, w );
+   AutoVariableShapePSF_CheckBox.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::e_Click, w );
 
    AutoVariableShapePSF_Sizer.Add( AutoVariableShapePSF_CheckBox );
    AutoVariableShapePSF_Sizer.AddStretch();
+
+   ShowFWHM_CheckBox.SetText( "Draw FWHM" );
+   ShowFWHM_CheckBox.SetToolTip( "<p>Draw ellipses corresponding to the full width at half maximum (FWHM) for each fitted PSF. "
+      "FWHM ellipses are drawn with a continuous line style.</p>" );
+   ShowFWHM_CheckBox.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::e_Click, w );
+
+   ShowFWTM_CheckBox.SetText( "Draw FWTM" );
+   ShowFWTM_CheckBox.SetToolTip( "<p>Draw ellipses corresponding to the full width at tenth maximum (FWTM) for each fitted PSF. "
+      "FWTM ellipses are drawn with a dashed line style.</p>" );
+   ShowFWTM_CheckBox.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::e_Click, w );
+
+   ShowBestFit_CheckBox.SetText( "Show best fits" );
+   ShowBestFit_CheckBox.SetToolTip( "<p>Draw only the fitted PSFs with the smallest MAD residuals for each star.</p>" );
+   ShowBestFit_CheckBox.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::e_Click, w );
+
+   DrawEllipses_Sizer.SetSpacing( 16 );
+   DrawEllipses_Sizer.Add( ShowFWHM_CheckBox );
+   DrawEllipses_Sizer.Add( ShowFWTM_CheckBox );
+   DrawEllipses_Sizer.Add( ShowBestFit_CheckBox );
+   DrawEllipses_Sizer.AddStretch();
 
    PSFModels_Sizer.SetMargin( 4 );
    PSFModels_Sizer.SetSpacing( 4 );
    PSFModels_Sizer.Add( PSFModelsTop_Sizer );
    PSFModels_Sizer.Add( AutoVariableShapePSF_Sizer );
+   PSFModels_Sizer.Add( DrawEllipses_Sizer );
 
    PSFModels_Control.SetSizer( PSFModels_Sizer );
 
@@ -2991,7 +3077,7 @@ DynamicPSFInterface::GUIData::GUIData( DynamicPSFInterface& w )
 
    StarDetectionParameters_SectionBar.SetTitle( "Star Detection" );
    StarDetectionParameters_SectionBar.SetSection( StarDetectionParameters_Control );
-   StarDetectionParameters_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&DynamicPSFInterface::__ToggleSection, w );
+   StarDetectionParameters_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&DynamicPSFInterface::e_ToggleSection, w );
 
    static const char* searchRadiusToolTip =
    "<p>This parameter determines the size in pixels of the initial search box used to detect stars when you clic on "
@@ -3007,7 +3093,7 @@ DynamicPSFInterface::GUIData::GUIData( DynamicPSFInterface& w )
    SearchRadius_SpinBox.SetRange( int( TheDPSearchRadiusParameter->MinimumValue() ),
                                   int( TheDPSearchRadiusParameter->MaximumValue() ) );
    SearchRadius_SpinBox.SetToolTip( searchRadiusToolTip );
-   SearchRadius_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&DynamicPSFInterface::__SpinBox_ValueUpdated, w );
+   SearchRadius_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&DynamicPSFInterface::e_SpinBox_ValueUpdated, w );
 
    SearchRadius_Sizer.SetSpacing( 4 );
    SearchRadius_Sizer.Add( SearchRadius_Label );
@@ -3027,7 +3113,7 @@ DynamicPSFInterface::GUIData::GUIData( DynamicPSFInterface& w )
       "very faint objects. On the other hand, a higher threshold allows you to isolate very small and faint objects, "
       "which may or may not be desirable, depending on what you want to do.</p>"
       "<p>The default value of one sigma is normally appropriate in most cases.</p>" );
-   Threshold_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicPSFInterface::__NumericEdit_ValueUpdated, w );
+   Threshold_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicPSFInterface::e_NumericEdit_ValueUpdated, w );
 
    AutoAperture_CheckBox.SetText( "Automatic aperture" );
    AutoAperture_CheckBox.SetToolTip( "<p>Compute optimal sampling dimensions adaptively for each fitted star.</p>"
@@ -3037,7 +3123,7 @@ DynamicPSFInterface::GUIData::GUIData( DynamicPSFInterface& w )
       "times grow unnecessarily. The automatic aperture feature of DynamicPSF implements a robust algorithm to find "
       "the smallest sampling region necessary to minimize uncertainty in the evaluation of the local background.</p>"
       "<p>This option is enabled by default. Disabling it is not recommended under normal working conditions.</p>" );
-   AutoAperture_CheckBox.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::__Click, w );
+   AutoAperture_CheckBox.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::e_Click, w );
 
    AutoAperture_Sizer.AddUnscaledSpacing( labelWidth1 + w.LogicalPixelsToPhysical( 4 ) );
    AutoAperture_Sizer.Add( AutoAperture_CheckBox );
@@ -3055,7 +3141,7 @@ DynamicPSFInterface::GUIData::GUIData( DynamicPSFInterface& w )
 
    Scale_SectionBar.SetTitle( "Image Scale" );
    Scale_SectionBar.SetSection( Scale_Control );
-   Scale_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&DynamicPSFInterface::__ToggleSection, w );
+   Scale_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&DynamicPSFInterface::e_ToggleSection, w );
 
    const char* scaleModeTip = "<p>This parameter tells DynamicPSF how to compute the image scale to show "
       "full width at half maximum (FWHM) values:</p>"
@@ -3083,7 +3169,7 @@ DynamicPSFInterface::GUIData::GUIData( DynamicPSFInterface& w )
    ScaleMode_ComboBox.AddItem( "Literal value" );
    ScaleMode_ComboBox.AddItem( "Custom FITS keyword" );
    ScaleMode_ComboBox.SetToolTip( scaleModeTip );
-   ScaleMode_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&DynamicPSFInterface::__ItemSelected, w );
+   ScaleMode_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&DynamicPSFInterface::e_ItemSelected, w );
 
    ScaleMode_Sizer.SetSpacing( 4 );
    ScaleMode_Sizer.Add( ScaleMode_Label );
@@ -3100,7 +3186,7 @@ DynamicPSFInterface::GUIData::GUIData( DynamicPSFInterface& w )
    ScaleValue_NumericEdit.SetPrecision( TheDPScaleValueParameter->Precision() );
    ScaleValue_NumericEdit.sizer.AddStretch();
    ScaleValue_NumericEdit.SetToolTip( scaleValueTip );
-   ScaleValue_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicPSFInterface::__NumericEdit_ValueUpdated, w );
+   ScaleValue_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicPSFInterface::e_NumericEdit_ValueUpdated, w );
 
    const char* scaleKeywordTip = "<p>When <i>scale mode</i> has been set to <i>custom FITS keyword</i>, this is "
       "the name of a FITS header keyword whose value is the image scale in arcseconds per pixel.</p>";
@@ -3112,7 +3198,7 @@ DynamicPSFInterface::GUIData::GUIData( DynamicPSFInterface& w )
 
    ScaleKeyword_Edit.SetMinWidth( editWidth1 );
    ScaleKeyword_Edit.SetToolTip( scaleKeywordTip );
-   ScaleKeyword_Edit.OnEditCompleted( (Edit::edit_event_handler)&DynamicPSFInterface::__EditCompleted, w );
+   ScaleKeyword_Edit.OnEditCompleted( (Edit::edit_event_handler)&DynamicPSFInterface::e_EditCompleted, w );
 
    ScaleKeyword_Sizer.SetSpacing( 4 );
    ScaleKeyword_Sizer.Add( ScaleKeyword_Label );
@@ -3153,4 +3239,4 @@ DynamicPSFInterface::GUIData::GUIData( DynamicPSFInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DynamicPSFInterface.cpp - Released 2021-12-29T20:37:28Z
+// EOF DynamicPSFInterface.cpp - Released 2022-03-12T18:59:53Z

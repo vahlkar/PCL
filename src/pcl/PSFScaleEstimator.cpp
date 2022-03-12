@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.19
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// pcl/PSFScaleEstimator.cpp - Released 2022-01-24T22:43:35Z
+// pcl/PSFScaleEstimator.cpp - Released 2022-03-12T18:59:35Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -49,11 +49,11 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
+#include <pcl/Constants.h>
 #include <pcl/LinearFit.h>
 #include <pcl/PSFScaleEstimator.h>
 #include <pcl/QuadTree.h>
-
-#define SQRT2  1.414213562373095
+#include <pcl/SurfaceSimplifier.h>
 
 namespace pcl
 {
@@ -82,7 +82,7 @@ int PSFScaleEstimator::SetReference( const ImageVariant& image )
  */
 inline static double QF( double x )
 {
-   return 0.5*(1 - Erf( x/SQRT2 ));
+   return 0.5*(1 - Erf( x/Const<double>::sqrt2() ));
 }
 
 /*
@@ -97,12 +97,13 @@ inline static double FN( int N )
 /*
  * The 68.3-percentile value from the distribution of absolute deviations.
  */
-inline static double SampleDeviation( const Vector& R, int i, int j, double m )
+template <class sample>
+inline static double SampleDeviation( const sample& R, int i, int j, double m )
 {
    int N = j - i;
    Vector D( N );
    for ( int k = 0; i < j; ++i, ++k )
-      D[k] = Abs( R[i] - m );
+      D[k] = Abs( double( R[i] ) - m );
    return FN( N ) * *pcl::Select( D.Begin(), D.End(), TruncInt( 0.683*D.Length() ) );
 }
 
@@ -110,7 +111,8 @@ inline static double SampleDeviation( const Vector& R, int i, int j, double m )
  * 68.3-percentile deviation by fitting a zero-intercept line to the vector of
  * absolute differences.
  */
-inline static double LineFitDeviation( const Vector& R, int i, int j, double m )
+template <class sample>
+inline static double LineFitDeviation( const sample& R, int i, int j, double m )
 {
    int N = j - i;
    int n = int( 0.683*N + 0.317 );
@@ -119,13 +121,13 @@ inline static double LineFitDeviation( const Vector& R, int i, int j, double m )
 
    Vector y( N );
    for ( int k = 0, ii = i; ii < j; ++ii, ++k )
-      y[k] = Abs( R[ii] - m );
+      y[k] = Abs( double( R[ii] ) - m );
    y.Sort();
    y = Vector( y.Begin(), n );
 
    Vector x( n );
    for ( int i = 0; i < n; ++i )
-      x[i] = SQRT2 * ErfInv( (i + 1 - 0.317)/N );
+      x[i] = Const<double>::sqrt2() * ErfInv( (i + 1 - 0.317)/N );
 
    double s;
    LinearFit f( x, y );
@@ -144,6 +146,9 @@ PSFScaleEstimator::Estimates PSFScaleEstimator::EstimateScale( const ImageVarian
 
    Estimates E;
 
+   /*
+    * Detect sources and fit PSF models.
+    */
    Array<PSFData> psfs = FitStars( image );
 
    /*
@@ -213,9 +218,16 @@ PSFScaleEstimator::Estimates PSFScaleEstimator::EstimateScale( const ImageVarian
 
    if ( !P1.IsEmpty() )
    {
-      Vector R( P1.Length() );
-      for ( size_type i = 0; i < P1.Length(); ++i )
-         R[i] = P1[i].signal/P2[i].signal;
+      /*
+       * Gather relative scale samples.
+       */
+      sample_vector R( int( P1.Length() ) );
+      for ( int i = 0; i < R.Length(); ++i )
+      {
+         R[i].x = P1[i].c0.x;
+         R[i].y = P1[i].c0.y;
+         R[i].z = P1[i].signal/P2[i].signal;
+      }
 
       /*
        * Robust Chauvenet rejection.
@@ -251,8 +263,8 @@ PSFScaleEstimator::Estimates PSFScaleEstimator::EstimateScale( const ImageVarian
             if ( n < 3 )
                goto __rcr_end;
 
-            double d0 = n*QF( (m - R[i])/s );
-            double d1 = n*QF( (R[j-1] - m)/s );
+            double d0 = n*QF( (m - double( R[i] ))/s );
+            double d1 = n*QF( (double( R[j-1] ) - m)/s );
             if ( d0 >= 0.5 && d1 >= 0.5 )
                break;
             if ( d1 < d0 )
@@ -265,6 +277,35 @@ __rcr_end:
       E.sigma = s;
       E.total = int( psfs.Length() );
       E.count = j - i;
+
+      if ( m_enableLocalModel )
+      {
+         Array<double> x, y, z;
+         for ( int k = i, n = 0; k < j; ++k, ++n )
+         {
+            x << R[i+n].x;
+            y << R[i+n].y;
+            z << R[i+n].z - E.scale;
+         }
+
+         double zs = StdDev( z.Begin(), z.End() );
+
+         SurfaceSimplifier SS;
+         SS.EnableRejection();
+         SS.SetRejectFraction( 0.1 );
+         SS.EnableCentroidInclusion();
+
+         Array<double> sx, sy, sz;
+         SS.SetTolerance( 3*zs );
+         SS.Simplify( sx, sy, sz, x, y, z );
+
+         if ( sx.Length() > 3 )
+            if ( sx.Length() <= 2100 )
+            {
+               E.local.SetSmoothing( 5*zs );
+               E.local.Initialize( sx.Begin(), sy.Begin(), sz.Begin(), int( sx.Length() ) );
+            }
+      }
    }
 
    return E;
@@ -275,4 +316,4 @@ __rcr_end:
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFScaleEstimator.cpp - Released 2022-01-24T22:43:35Z
+// EOF pcl/PSFScaleEstimator.cpp - Released 2022-03-12T18:59:35Z

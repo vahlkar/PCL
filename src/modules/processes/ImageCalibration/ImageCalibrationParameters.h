@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.8.0
+// Standard ImageCalibration Process Module Version 1.9.1
 // ----------------------------------------------------------------------------
-// ImageCalibrationParameters.h - Released 2021-12-29T20:37:28Z
+// ImageCalibrationParameters.h - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -709,6 +709,7 @@ public:
 
    enum { KSigma,
           MRS,
+          NStar,
           NumberOfItems,
           Default = MRS };
 
@@ -752,6 +753,37 @@ public:
 };
 
 extern ICStructureLayers* TheICStructureLayersParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICSaturationThreshold : public MetaFloat
+{
+public:
+
+   ICSaturationThreshold( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern ICSaturationThreshold* TheICSaturationThresholdParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICSaturationRelative : public MetaBoolean
+{
+public:
+
+   ICSaturationRelative( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern ICSaturationRelative* TheICSaturationRelativeParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -824,10 +856,12 @@ class ICPSFType : public MetaEnumeration
 public:
 
    enum { Gaussian,
+          Moffat15,
           Moffat4,
           Moffat6,
           Moffat8,
-          VariableShape,
+          MoffatA,
+          Auto,
           NumberOfItems,
           Default = Moffat4 };
 
@@ -843,12 +877,14 @@ public:
    {
       switch ( x )
       {
-      case Gaussian:      return PSFunction::Gaussian;
+      case Gaussian: return PSFunction::Gaussian;
+      case Moffat15: return PSFunction::Moffat15;
       default:
-      case Moffat4:       return PSFunction::Moffat4;
-      case Moffat6:       return PSFunction::Moffat6;
-      case Moffat8:       return PSFunction::Moffat8;
-      case VariableShape: return PSFunction::VariableShape;
+      case Moffat4:  return PSFunction::Moffat4;
+      case Moffat6:  return PSFunction::Moffat6;
+      case Moffat8:  return PSFunction::Moffat8;
+      case MoffatA:  return PSFunction::MoffatA;
+      case Auto:       return PSFunction::Auto;
       }
    }
 
@@ -859,11 +895,11 @@ extern ICPSFType* TheICPSFTypeParameter;
 
 // ----------------------------------------------------------------------------
 
-class ICPSFRejectionLimit : public MetaFloat
+class ICPSFGrowth : public MetaFloat
 {
 public:
 
-   ICPSFRejectionLimit( MetaProcess* );
+   ICPSFGrowth( MetaProcess* );
 
    IsoString Id() const override;
    int Precision() const override;
@@ -872,24 +908,7 @@ public:
    double MaximumValue() const override;
 };
 
-extern ICPSFRejectionLimit* TheICPSFRejectionLimitParameter;
-
-// ----------------------------------------------------------------------------
-
-class ICPSFHighClippingPoint : public MetaFloat
-{
-public:
-
-   ICPSFHighClippingPoint( MetaProcess* );
-
-   IsoString Id() const override;
-   int Precision() const override;
-   double DefaultValue() const override;
-   double MinimumValue() const override;
-   double MaximumValue() const override;
-};
-
-extern ICPSFHighClippingPoint* TheICPSFHighClippingPointParameter;
+extern ICPSFGrowth* TheICPSFGrowthParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -1001,6 +1020,45 @@ public:
 };
 
 extern ICOutputPedestal* TheICOutputPedestalParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICOutputPedestalMode : public MetaEnumeration
+{
+public:
+
+   enum { Literal,
+          Auto,
+          NumberOfItems,
+          Default = Literal };
+
+   ICOutputPedestalMode( MetaProcess* );
+
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
+};
+
+extern ICOutputPedestalMode* TheICOutputPedestalModeParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICAutoPedestalThreshold : public MetaFloat
+{
+public:
+
+   ICAutoPedestalThreshold( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern ICAutoPedestalThreshold* TheICAutoPedestalThresholdParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -1196,11 +1254,11 @@ extern ICDarkScalingFactorB* TheICDarkScalingFactorBParameter;
 
 // ----------------------------------------------------------------------------
 
-class ICPSFSignalEstimateRK : public MetaDouble
+class ICPSFTotalFluxEstimateRK : public MetaDouble
 {
 public:
 
-   ICPSFSignalEstimateRK( MetaTable* );
+   ICPSFTotalFluxEstimateRK( MetaTable* );
 
    IsoString Id() const override;
    int Precision() const override;
@@ -1208,16 +1266,15 @@ public:
    bool IsReadOnly() const override;
 };
 
-extern ICPSFSignalEstimateRK* TheICPSFSignalEstimateRKParameter;
-
+extern ICPSFTotalFluxEstimateRK* TheICPSFTotalFluxEstimateRKParameter;
 
 // ----------------------------------------------------------------------------
 
-class ICPSFSignalEstimateG : public MetaDouble
+class ICPSFTotalFluxEstimateG : public MetaDouble
 {
 public:
 
-   ICPSFSignalEstimateG( MetaTable* );
+   ICPSFTotalFluxEstimateG( MetaTable* );
 
    IsoString Id() const override;
    int Precision() const override;
@@ -1225,15 +1282,15 @@ public:
    bool IsReadOnly() const override;
 };
 
-extern ICPSFSignalEstimateG* TheICPSFSignalEstimateGParameter;
+extern ICPSFTotalFluxEstimateG* TheICPSFTotalFluxEstimateGParameter;
 
 // ----------------------------------------------------------------------------
 
-class ICPSFSignalEstimateB : public MetaDouble
+class ICPSFTotalFluxEstimateB : public MetaDouble
 {
 public:
 
-   ICPSFSignalEstimateB( MetaTable* );
+   ICPSFTotalFluxEstimateB( MetaTable* );
 
    IsoString Id() const override;
    int Precision() const override;
@@ -1241,15 +1298,15 @@ public:
    bool IsReadOnly() const override;
 };
 
-extern ICPSFSignalEstimateB* TheICPSFSignalEstimateBParameter;
+extern ICPSFTotalFluxEstimateB* TheICPSFTotalFluxEstimateBParameter;
 
 // ----------------------------------------------------------------------------
 
-class ICPSFSignalPowerEstimateRK : public MetaDouble
+class ICPSFTotalPowerFluxEstimateRK : public MetaDouble
 {
 public:
 
-   ICPSFSignalPowerEstimateRK( MetaTable* );
+   ICPSFTotalPowerFluxEstimateRK( MetaTable* );
 
    IsoString Id() const override;
    IsoString Aliases() const override;
@@ -1258,15 +1315,15 @@ public:
    bool IsReadOnly() const override;
 };
 
-extern ICPSFSignalPowerEstimateRK* TheICPSFSignalPowerEstimateRKParameter;
+extern ICPSFTotalPowerFluxEstimateRK* TheICPSFTotalPowerFluxEstimateRKParameter;
 
 // ----------------------------------------------------------------------------
 
-class ICPSFSignalPowerEstimateG : public MetaDouble
+class ICPSFTotalPowerFluxEstimateG : public MetaDouble
 {
 public:
 
-   ICPSFSignalPowerEstimateG( MetaTable* );
+   ICPSFTotalPowerFluxEstimateG( MetaTable* );
 
    IsoString Id() const override;
    IsoString Aliases() const override;
@@ -1275,15 +1332,15 @@ public:
    bool IsReadOnly() const override;
 };
 
-extern ICPSFSignalPowerEstimateG* TheICPSFSignalPowerEstimateGParameter;
+extern ICPSFTotalPowerFluxEstimateG* TheICPSFTotalPowerFluxEstimateGParameter;
 
 // ----------------------------------------------------------------------------
 
-class ICPSFSignalPowerEstimateB : public MetaDouble
+class ICPSFTotalPowerFluxEstimateB : public MetaDouble
 {
 public:
 
-   ICPSFSignalPowerEstimateB( MetaTable* );
+   ICPSFTotalPowerFluxEstimateB( MetaTable* );
 
    IsoString Id() const override;
    IsoString Aliases() const override;
@@ -1292,15 +1349,15 @@ public:
    bool IsReadOnly() const override;
 };
 
-extern ICPSFSignalPowerEstimateB* TheICPSFSignalPowerEstimateBParameter;
+extern ICPSFTotalPowerFluxEstimateB* TheICPSFTotalPowerFluxEstimateBParameter;
 
 // ----------------------------------------------------------------------------
 
-class ICPSFFluxEstimateRK : public MetaDouble
+class ICPSFTotalMeanFluxEstimateRK : public MetaDouble
 {
 public:
 
-   ICPSFFluxEstimateRK( MetaTable* );
+   ICPSFTotalMeanFluxEstimateRK( MetaTable* );
 
    IsoString Id() const override;
    int Precision() const override;
@@ -1308,16 +1365,15 @@ public:
    bool IsReadOnly() const override;
 };
 
-extern ICPSFFluxEstimateRK* TheICPSFFluxEstimateRKParameter;
-
+extern ICPSFTotalMeanFluxEstimateRK* TheICPSFTotalMeanFluxEstimateRKParameter;
 
 // ----------------------------------------------------------------------------
 
-class ICPSFFluxEstimateG : public MetaDouble
+class ICPSFTotalMeanFluxEstimateG : public MetaDouble
 {
 public:
 
-   ICPSFFluxEstimateG( MetaTable* );
+   ICPSFTotalMeanFluxEstimateG( MetaTable* );
 
    IsoString Id() const override;
    int Precision() const override;
@@ -1325,15 +1381,15 @@ public:
    bool IsReadOnly() const override;
 };
 
-extern ICPSFFluxEstimateG* TheICPSFFluxEstimateGParameter;
+extern ICPSFTotalMeanFluxEstimateG* TheICPSFTotalMeanFluxEstimateGParameter;
 
 // ----------------------------------------------------------------------------
 
-class ICPSFFluxEstimateB : public MetaDouble
+class ICPSFTotalMeanFluxEstimateB : public MetaDouble
 {
 public:
 
-   ICPSFFluxEstimateB( MetaTable* );
+   ICPSFTotalMeanFluxEstimateB( MetaTable* );
 
    IsoString Id() const override;
    int Precision() const override;
@@ -1341,15 +1397,15 @@ public:
    bool IsReadOnly() const override;
 };
 
-extern ICPSFFluxEstimateB* TheICPSFFluxEstimateBParameter;
+extern ICPSFTotalMeanFluxEstimateB* TheICPSFTotalMeanFluxEstimateBParameter;
 
 // ----------------------------------------------------------------------------
 
-class ICPSFFluxPowerEstimateRK : public MetaDouble
+class ICPSFTotalMeanPowerFluxEstimateRK : public MetaDouble
 {
 public:
 
-   ICPSFFluxPowerEstimateRK( MetaTable* );
+   ICPSFTotalMeanPowerFluxEstimateRK( MetaTable* );
 
    IsoString Id() const override;
    int Precision() const override;
@@ -1357,15 +1413,15 @@ public:
    bool IsReadOnly() const override;
 };
 
-extern ICPSFFluxPowerEstimateRK* TheICPSFFluxPowerEstimateRKParameter;
+extern ICPSFTotalMeanPowerFluxEstimateRK* TheICPSFTotalMeanPowerFluxEstimateRKParameter;
 
 // ----------------------------------------------------------------------------
 
-class ICPSFFluxPowerEstimateG : public MetaDouble
+class ICPSFTotalMeanPowerFluxEstimateG : public MetaDouble
 {
 public:
 
-   ICPSFFluxPowerEstimateG( MetaTable* );
+   ICPSFTotalMeanPowerFluxEstimateG( MetaTable* );
 
    IsoString Id() const override;
    int Precision() const override;
@@ -1373,15 +1429,15 @@ public:
    bool IsReadOnly() const override;
 };
 
-extern ICPSFFluxPowerEstimateG* TheICPSFFluxPowerEstimateGParameter;
+extern ICPSFTotalMeanPowerFluxEstimateG* TheICPSFTotalMeanPowerFluxEstimateGParameter;
 
 // ----------------------------------------------------------------------------
 
-class ICPSFFluxPowerEstimateB : public MetaDouble
+class ICPSFTotalMeanPowerFluxEstimateB : public MetaDouble
 {
 public:
 
-   ICPSFFluxPowerEstimateB( MetaTable* );
+   ICPSFTotalMeanPowerFluxEstimateB( MetaTable* );
 
    IsoString Id() const override;
    int Precision() const override;
@@ -1389,7 +1445,103 @@ public:
    bool IsReadOnly() const override;
 };
 
-extern ICPSFFluxPowerEstimateB* TheICPSFFluxPowerEstimateBParameter;
+extern ICPSFTotalMeanPowerFluxEstimateB* TheICPSFTotalMeanPowerFluxEstimateBParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICPSFMStarEstimateRK : public MetaDouble
+{
+public:
+
+   ICPSFMStarEstimateRK( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern ICPSFMStarEstimateRK* TheICPSFMStarEstimateRKParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICPSFMStarEstimateG : public MetaDouble
+{
+public:
+
+   ICPSFMStarEstimateG( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern ICPSFMStarEstimateG* TheICPSFMStarEstimateGParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICPSFMStarEstimateB : public MetaDouble
+{
+public:
+
+   ICPSFMStarEstimateB( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern ICPSFMStarEstimateB* TheICPSFMStarEstimateBParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICPSFNStarEstimateRK : public MetaDouble
+{
+public:
+
+   ICPSFNStarEstimateRK( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern ICPSFNStarEstimateRK* TheICPSFNStarEstimateRKParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICPSFNStarEstimateG : public MetaDouble
+{
+public:
+
+   ICPSFNStarEstimateG( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern ICPSFNStarEstimateG* TheICPSFNStarEstimateGParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICPSFNStarEstimateB : public MetaDouble
+{
+public:
+
+   ICPSFNStarEstimateB( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern ICPSFNStarEstimateB* TheICPSFNStarEstimateBParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -1673,4 +1825,4 @@ PCL_END_LOCAL
 #endif   // __ImageCalibrationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationParameters.h - Released 2021-12-29T20:37:28Z
+// EOF ImageCalibrationParameters.h - Released 2022-03-12T18:59:53Z

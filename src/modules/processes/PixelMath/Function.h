@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.8.5
+// Standard PixelMath Process Module Version 1.9.2
 // ----------------------------------------------------------------------------
-// Function.h - Released 2021-12-29T20:37:28Z
+// Function.h - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -67,7 +67,7 @@ class Function : public Functional
 {
 public:
 
-   typedef IndirectArray<Function>  function_set;
+   typedef IndirectArray<Function>  function_list;
 
    struct IndexNode
    {
@@ -108,7 +108,7 @@ public:
       return arguments.IsEmpty() ? m_numberOfArguments : int( arguments.Length() );
    }
 
-   virtual bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const
+   virtual bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const
    {
       return true;
    }
@@ -126,7 +126,7 @@ public:
    }
 
    // Returns internal image key
-   virtual IsoString GenerateImage( component_list::const_iterator, component_list::const_iterator ) const
+   virtual IsoString GenerateImage( ExpressionList::const_iterator, ExpressionList::const_iterator ) const
    {
       return IsoString();
    }
@@ -152,12 +152,17 @@ public:
 
    String ToString() const override;
 
-   static void InitializeList( function_set&, function_index& );
+   static void InitializeList( function_list&, function_index& );
 
 private:
 
    int m_numberOfArguments;
 };
+
+// ----------------------------------------------------------------------------
+
+typedef Function::function_list  FunctionList;
+typedef Function::function_index FunctionIndex;
 
 // ----------------------------------------------------------------------------
 
@@ -180,10 +185,10 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -207,10 +212,10 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -234,10 +239,10 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -261,10 +266,10 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -288,10 +293,10 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -315,10 +320,10 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 2; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -342,10 +347,10 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -381,12 +386,12 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return int_max; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -424,12 +429,12 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return int_max; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -467,12 +472,12 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return int_max; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -508,12 +513,12 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return int_max; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -549,12 +554,12 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return int_max; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -591,12 +596,12 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return int_max; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -633,12 +638,12 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return int_max; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -674,12 +679,12 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return int_max; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -715,12 +720,12 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return int_max; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -756,12 +761,12 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return int_max; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -797,12 +802,12 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return int_max; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -823,9 +828,9 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 class CIEaFunction : public Function
@@ -844,9 +849,9 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 class CIEbFunction : public Function
@@ -865,9 +870,9 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 class CIEcFunction : public Function
@@ -886,9 +891,9 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 class CIEhFunction : public Function
@@ -907,9 +912,9 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 class CIEhrFunction : public Function
@@ -928,9 +933,9 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 class CIEhdFunction : public Function
@@ -949,9 +954,9 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 class CIEXFunction : public Function
@@ -969,9 +974,9 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 class CIEYFunction : public Function
@@ -989,9 +994,9 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 class CIEZFunction : public Function
@@ -1009,9 +1014,9 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1035,10 +1040,10 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1062,10 +1067,10 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1089,10 +1094,10 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1116,10 +1121,10 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1143,10 +1148,10 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1170,10 +1175,10 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1194,9 +1199,9 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 class HrFunction : public Function
@@ -1215,9 +1220,9 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 class HdFunction : public Function
@@ -1236,9 +1241,9 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1258,9 +1263,9 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1280,9 +1285,9 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1302,9 +1307,9 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1324,9 +1329,9 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1351,10 +1356,10 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1378,10 +1383,10 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1405,10 +1410,10 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1444,12 +1449,12 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return int_max; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1470,7 +1475,7 @@ public:
    int RequiredArguments() const override  { return 3; }
    int MaximumArguments() const override   { return int_max; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1491,9 +1496,9 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1529,12 +1534,12 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return int_max; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1570,12 +1575,12 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return int_max; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1596,9 +1601,9 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1623,10 +1628,10 @@ public:
    int RequiredArguments() const override  { return 2; }
    int MaximumArguments() const override   { return 2; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1665,12 +1670,12 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return int_max; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1692,10 +1697,10 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 0; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1718,7 +1723,7 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 0; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1746,7 +1751,7 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 0; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1772,9 +1777,9 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1797,9 +1802,9 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 2; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1821,9 +1826,9 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1845,9 +1850,9 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1869,9 +1874,9 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return int_max; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1895,12 +1900,12 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 2; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1929,10 +1934,10 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1956,10 +1961,10 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1983,10 +1988,10 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -2010,10 +2015,10 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -2049,12 +2054,12 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return int_max; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -2075,7 +2080,7 @@ public:
    int RequiredArguments() const override  { return 2; }
    int MaximumArguments() const override   { return int_max; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -2099,10 +2104,10 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -2126,10 +2131,10 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -2153,10 +2158,10 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -2192,12 +2197,12 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return int_max; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -2220,12 +2225,12 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -2248,12 +2253,12 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -2275,12 +2280,12 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -2304,12 +2309,12 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -2332,12 +2337,12 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -2359,8 +2364,8 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 0; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -2381,8 +2386,8 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 0; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -2404,8 +2409,8 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 0; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -2426,8 +2431,8 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 0; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -2455,12 +2460,12 @@ public:
    int RequiredArguments() const override  { return 3; }
    int MaximumArguments() const override   { return 3; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -2493,12 +2498,12 @@ public:
    int RequiredArguments() const override  { return 3; }
    int MaximumArguments() const override   { return 3; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -2526,12 +2531,12 @@ public:
    int RequiredArguments() const override  { return 3; }
    int MaximumArguments() const override   { return 3; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -2553,9 +2558,9 @@ public:
    int RequiredArguments() const override  { return 4; }
    int MaximumArguments() const override   { return 4; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -2577,9 +2582,9 @@ public:
    int RequiredArguments() const override  { return 4; }
    int MaximumArguments() const override   { return 4; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -2602,9 +2607,9 @@ public:
    int RequiredArguments() const override  { return 4; }
    int MaximumArguments() const override   { return 4; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -2627,9 +2632,9 @@ public:
    int RequiredArguments() const override  { return 4; }
    int MaximumArguments() const override   { return 4; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -2652,9 +2657,9 @@ public:
    int RequiredArguments() const override  { return 4; }
    int MaximumArguments() const override   { return 4; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -2679,9 +2684,9 @@ public:
    int RequiredArguments() const override  { return 4; }
    int MaximumArguments() const override   { return 4; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -2706,9 +2711,9 @@ public:
    int RequiredArguments() const override  { return 4; }
    int MaximumArguments() const override   { return 4; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -2731,9 +2736,9 @@ public:
    int RequiredArguments() const override  { return 4; }
    int MaximumArguments() const override   { return 4; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -2758,9 +2763,9 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 2; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -2785,9 +2790,9 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 2; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -2812,12 +2817,12 @@ public:
    int RequiredArguments() const override  { return 3; }
    int MaximumArguments() const override   { return 4; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -2845,10 +2850,10 @@ public:
    int RequiredArguments() const override  { return 3; }
    int MaximumArguments() const override   { return 3; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -2877,10 +2882,10 @@ public:
    int RequiredArguments() const override  { return 3; }
    int MaximumArguments() const override   { return 3; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -2907,13 +2912,13 @@ public:
    int RequiredArguments() const override  { return 3; }
    int MaximumArguments() const override   { return 3; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
    bool CanOptimize() const override       { return true; }
-   component_list Optimized() const override;
+   ExpressionList Optimized() const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -2944,15 +2949,15 @@ public:
    int RequiredArguments() const override  { return 3; }
    int MaximumArguments() const override   { return int_max; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
    bool CanOptimize() const override       { return true; }
-   component_list Optimized() const override;
+   ExpressionList Optimized() const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -2982,16 +2987,16 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 5; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
    bool IsImageGenerator() const override
    {
       return true;
    }
 
-   IsoString GenerateImage( component_list::const_iterator, component_list::const_iterator ) const override;
+   IsoString GenerateImage( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -3011,16 +3016,16 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 2; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
    bool IsImageGenerator() const override
    {
       return true;
    }
 
-   IsoString GenerateImage( component_list::const_iterator, component_list::const_iterator ) const override;
+   IsoString GenerateImage( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -3049,16 +3054,16 @@ public:
    int RequiredArguments() const override  { return 10; }
    int MaximumArguments() const override   { return int_max; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
    bool IsImageGenerator() const override
    {
       return true;
    }
 
-   IsoString GenerateImage( component_list::const_iterator, component_list::const_iterator ) const override;
+   IsoString GenerateImage( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -3082,16 +3087,16 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 3; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
    bool IsImageGenerator() const override
    {
       return true;
    }
 
-   IsoString GenerateImage( component_list::const_iterator, component_list::const_iterator ) const override;
+   IsoString GenerateImage( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -3116,16 +3121,16 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 3; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
    bool IsImageGenerator() const override
    {
       return true;
    }
 
-   IsoString GenerateImage( component_list::const_iterator, component_list::const_iterator ) const override;
+   IsoString GenerateImage( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -3150,16 +3155,16 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 3; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
    bool IsImageGenerator() const override
    {
       return true;
    }
 
-   IsoString GenerateImage( component_list::const_iterator, component_list::const_iterator ) const override;
+   IsoString GenerateImage( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -3191,10 +3196,10 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 0; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -3227,10 +3232,10 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 0; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -3261,10 +3266,10 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 0; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -3295,10 +3300,10 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 0; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -3331,10 +3336,10 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 0; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -3371,10 +3376,10 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 0; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -3395,16 +3400,16 @@ public:
    int RequiredArguments() const override  { return 3; }
    int MaximumArguments() const override   { return 3; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
    bool IsImageGenerator() const override
    {
       return true;
    }
 
-   IsoString GenerateImage( component_list::const_iterator, component_list::const_iterator ) const override;
+   IsoString GenerateImage( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -3427,16 +3432,16 @@ public:
    int RequiredArguments() const override  { return 2; }
    int MaximumArguments() const override   { return 4; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
    bool IsImageGenerator() const override
    {
       return true;
    }
 
-   IsoString GenerateImage( component_list::const_iterator, component_list::const_iterator ) const override;
+   IsoString GenerateImage( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -3461,16 +3466,16 @@ public:
    int RequiredArguments() const override  { return 2; }
    int MaximumArguments() const override   { return 2; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
    bool IsImageGenerator() const override
    {
       return true;
    }
 
-   IsoString GenerateImage( component_list::const_iterator, component_list::const_iterator ) const override;
+   IsoString GenerateImage( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -3490,16 +3495,16 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
    bool IsImageGenerator() const override
    {
       return true;
    }
 
-   IsoString GenerateImage( component_list::const_iterator, component_list::const_iterator ) const override;
+   IsoString GenerateImage( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -3519,16 +3524,16 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
    bool IsImageGenerator() const override
    {
       return true;
    }
 
-   IsoString GenerateImage( component_list::const_iterator, component_list::const_iterator ) const override;
+   IsoString GenerateImage( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -3554,16 +3559,16 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 3; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
    bool IsImageGenerator() const override
    {
       return true;
    }
 
-   IsoString GenerateImage( component_list::const_iterator, component_list::const_iterator ) const override;
+   IsoString GenerateImage( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -3590,16 +3595,16 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 3; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
    bool IsImageGenerator() const override
    {
       return true;
    }
 
-   IsoString GenerateImage( component_list::const_iterator, component_list::const_iterator ) const override;
+   IsoString GenerateImage( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -3625,16 +3630,16 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 2; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
    bool IsImageGenerator() const override
    {
       return true;
    }
 
-   IsoString GenerateImage( component_list::const_iterator, component_list::const_iterator ) const override;
+   IsoString GenerateImage( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -3672,16 +3677,16 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 3; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
    bool IsImageGenerator() const override
    {
       return true;
    }
 
-   IsoString GenerateImage( component_list::const_iterator, component_list::const_iterator ) const override;
+   IsoString GenerateImage( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -3712,10 +3717,10 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 0; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -3750,10 +3755,10 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 0; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -3777,16 +3782,16 @@ public:
    int RequiredArguments() const override  { return 3; }
    int MaximumArguments() const override   { return 3; }
 
-   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
    bool IsImageGenerator() const override
    {
       return true;
    }
 
-   IsoString GenerateImage( component_list::const_iterator, component_list::const_iterator ) const override;
+   IsoString GenerateImage( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -3807,10 +3812,10 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 0; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -3831,10 +3836,10 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 0; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -3855,10 +3860,10 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 0; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -3879,10 +3884,10 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 0; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -3903,10 +3908,10 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 0; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -3927,10 +3932,10 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 0; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -3951,10 +3956,10 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 0; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -3975,10 +3980,10 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 0; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -3999,10 +4004,10 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 0; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -4033,10 +4038,10 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 0; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -4062,10 +4067,10 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 0; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -4091,10 +4096,10 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 0; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -4120,10 +4125,10 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 0; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -4149,10 +4154,10 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 0; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -4179,10 +4184,10 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 0; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -4209,10 +4214,10 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 0; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -4239,10 +4244,10 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 0; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -4269,10 +4274,10 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 0; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -4299,10 +4304,10 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 0; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -4329,10 +4334,10 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 0; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -4358,10 +4363,10 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 0; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -4371,4 +4376,4 @@ public:
 #endif   // __Function_h
 
 // ----------------------------------------------------------------------------
-// EOF Function.h - Released 2021-12-29T20:37:28Z
+// EOF Function.h - Released 2022-03-12T18:59:53Z

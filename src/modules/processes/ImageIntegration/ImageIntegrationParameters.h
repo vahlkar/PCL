@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.4.3
+// Standard ImageIntegration Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// ImageIntegrationParameters.h - Released 2021-12-29T20:37:28Z
+// ImageIntegrationParameters.h - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -54,6 +54,7 @@
 #define __ImageIntegrationParameters_h
 
 #include <pcl/MetaParameter.h>
+#include <pcl/PSFSignalEstimator.h>
 
 namespace pcl
 {
@@ -172,13 +173,13 @@ public:
 
    enum { DontCare,             // weight = 1
           ExposureTimeWeight,   // EXPTIME keyword or ImageOptions::exposure
-          SNREstimate,          // Scaled inverse noise variance with MRS noise estimates
+          SNREstimate,          // Scaled inverse noise variance
           SignalWeight,         // mean - median distance
           MedianWeight,         // median
           AverageWeight,        // mean
           KeywordWeight,        // user-specified keyword
-          PSFSignalWeight,      // PSF signal weight estimates
-          PSFSignalPowerWeight, // PSF signal power weight estimates
+          PSFSignalWeight,      // PSF signal weight (PSFSW) estimates
+          PSFSNR,               // PSF SNR (PSFSNR) estimates
           NumberOfItems,
           Default = PSFSignalWeight };
 
@@ -335,6 +336,7 @@ public:
           LinearFit,
           CCDClip,
           ESD,
+          RCR,
           NumberOfItems,
           Default = NoRejection };
 
@@ -573,6 +575,23 @@ public:
 };
 
 extern IIESDLowRelaxation* TheIIESDLowRelaxationParameter;
+
+// ----------------------------------------------------------------------------
+
+class IIRCRLimit : public MetaFloat
+{
+public:
+
+   IIRCRLimit( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern IIRCRLimit* TheIIRCRLimitParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -1078,6 +1097,29 @@ extern IIEvaluateSNR* TheIIEvaluateSNRParameter;
 
 // ----------------------------------------------------------------------------
 
+class IINoiseEvaluationAlgorithm : public MetaEnumeration
+{
+public:
+
+   enum { KSigma,
+          MRS,
+          NStar,
+          NumberOfItems,
+          Default = MRS };
+
+   IINoiseEvaluationAlgorithm( MetaProcess* );
+
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
+};
+
+extern IINoiseEvaluationAlgorithm* TheIINoiseEvaluationAlgorithmParameter;
+
+// ----------------------------------------------------------------------------
+
 class IIMRSMinDataFraction : public MetaFloat
 {
 public:
@@ -1092,6 +1134,66 @@ public:
 };
 
 extern IIMRSMinDataFraction* TheIIMRSMinDataFractionParameter;
+
+// ----------------------------------------------------------------------------
+
+class IIPSFStructureLayers : public MetaInt32
+{
+public:
+
+   IIPSFStructureLayers( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern IIPSFStructureLayers* TheIIPSFStructureLayersParameter;
+
+// ----------------------------------------------------------------------------
+
+class IIPSFType : public MetaEnumeration
+{
+public:
+
+   enum { Gaussian,
+          Moffat15,
+          Moffat4,
+          Moffat6,
+          Moffat8,
+          MoffatA,
+          Auto,
+          NumberOfItems,
+          Default = Moffat4 };
+
+   IIPSFType( MetaProcess* );
+
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
+
+   static PSFSignalEstimator::psf_function ToPSFFunction( pcl_enum x )
+   {
+      switch ( x )
+      {
+      case Gaussian: return PSFunction::Gaussian;
+      case Moffat15: return PSFunction::Moffat15;
+      default:
+      case Moffat4:  return PSFunction::Moffat4;
+      case Moffat6:  return PSFunction::Moffat6;
+      case Moffat8:  return PSFunction::Moffat8;
+      case MoffatA:  return PSFunction::MoffatA;
+      case Auto:     return PSFunction::Auto;
+      }
+   }
+
+   static IsoString FunctionName( pcl_enum );
+};
+
+extern IIPSFType* TheIIPSFTypeParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -1575,6 +1677,48 @@ extern IIFinalNoiseScaleEstimateHighB* TheIIFinalNoiseScaleEstimateHighBParamete
 
 // ----------------------------------------------------------------------------
 
+class IIFinalNoiseAlgorithmRK : public MetaString
+{
+public:
+
+   IIFinalNoiseAlgorithmRK( MetaProcess* );
+
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
+};
+
+extern IIFinalNoiseAlgorithmRK* TheIIFinalNoiseAlgorithmRKParameter;
+
+// ----------------------------------------------------------------------------
+
+class IIFinalNoiseAlgorithmG : public MetaString
+{
+public:
+
+   IIFinalNoiseAlgorithmG( MetaProcess* );
+
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
+};
+
+extern IIFinalNoiseAlgorithmG* TheIIFinalNoiseAlgorithmGParameter;
+
+// ----------------------------------------------------------------------------
+
+class IIFinalNoiseAlgorithmB : public MetaString
+{
+public:
+
+   IIFinalNoiseAlgorithmB( MetaProcess* );
+
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
+};
+
+extern IIFinalNoiseAlgorithmB* TheIIFinalNoiseAlgorithmBParameter;
+
+// ----------------------------------------------------------------------------
+
 class IIFinalScaleEstimateRK : public MetaDouble
 {
 public:
@@ -1671,11 +1815,11 @@ extern IIFinalLocationEstimateB* TheIIFinalLocationEstimateBParameter;
 
 // ----------------------------------------------------------------------------
 
-class IIFinalPSFSignalEstimateRK : public MetaDouble
+class IIFinalPSFTotalFluxEstimateRK : public MetaDouble
 {
 public:
 
-   IIFinalPSFSignalEstimateRK( MetaProcess* );
+   IIFinalPSFTotalFluxEstimateRK( MetaProcess* );
 
    IsoString Id() const override;
    int Precision() const override;
@@ -1683,15 +1827,15 @@ public:
    bool IsReadOnly() const override;
 };
 
-extern IIFinalPSFSignalEstimateRK* TheIIFinalPSFSignalEstimateRKParameter;
+extern IIFinalPSFTotalFluxEstimateRK* TheIIFinalPSFTotalFluxEstimateRKParameter;
 
 // ----------------------------------------------------------------------------
 
-class IIFinalPSFSignalEstimateG : public MetaDouble
+class IIFinalPSFTotalFluxEstimateG : public MetaDouble
 {
 public:
 
-   IIFinalPSFSignalEstimateG( MetaProcess* );
+   IIFinalPSFTotalFluxEstimateG( MetaProcess* );
 
    IsoString Id() const override;
    int Precision() const override;
@@ -1699,15 +1843,15 @@ public:
    bool IsReadOnly() const override;
 };
 
-extern IIFinalPSFSignalEstimateG* TheIIFinalPSFSignalEstimateGParameter;
+extern IIFinalPSFTotalFluxEstimateG* TheIIFinalPSFTotalFluxEstimateGParameter;
 
 // ----------------------------------------------------------------------------
 
-class IIFinalPSFSignalEstimateB : public MetaDouble
+class IIFinalPSFTotalFluxEstimateB : public MetaDouble
 {
 public:
 
-   IIFinalPSFSignalEstimateB( MetaProcess* );
+   IIFinalPSFTotalFluxEstimateB( MetaProcess* );
 
    IsoString Id() const override;
    int Precision() const override;
@@ -1715,15 +1859,15 @@ public:
    bool IsReadOnly() const override;
 };
 
-extern IIFinalPSFSignalEstimateB* TheIIFinalPSFSignalEstimateBParameter;
+extern IIFinalPSFTotalFluxEstimateB* TheIIFinalPSFTotalFluxEstimateBParameter;
 
 // ----------------------------------------------------------------------------
 
-class IIFinalPSFSignalPowerEstimateRK : public MetaDouble
+class IIFinalPSFTotalPowerFluxEstimateRK : public MetaDouble
 {
 public:
 
-   IIFinalPSFSignalPowerEstimateRK( MetaProcess* );
+   IIFinalPSFTotalPowerFluxEstimateRK( MetaProcess* );
 
    IsoString Id() const override;
    int Precision() const override;
@@ -1731,15 +1875,15 @@ public:
    bool IsReadOnly() const override;
 };
 
-extern IIFinalPSFSignalPowerEstimateRK* TheIIFinalPSFSignalPowerEstimateRKParameter;
+extern IIFinalPSFTotalPowerFluxEstimateRK* TheIIFinalPSFTotalPowerFluxEstimateRKParameter;
 
 // ----------------------------------------------------------------------------
 
-class IIFinalPSFSignalPowerEstimateG : public MetaDouble
+class IIFinalPSFTotalPowerFluxEstimateG : public MetaDouble
 {
 public:
 
-   IIFinalPSFSignalPowerEstimateG( MetaProcess* );
+   IIFinalPSFTotalPowerFluxEstimateG( MetaProcess* );
 
    IsoString Id() const override;
    int Precision() const override;
@@ -1747,15 +1891,15 @@ public:
    bool IsReadOnly() const override;
 };
 
-extern IIFinalPSFSignalPowerEstimateG* TheIIFinalPSFSignalPowerEstimateGParameter;
+extern IIFinalPSFTotalPowerFluxEstimateG* TheIIFinalPSFTotalPowerFluxEstimateGParameter;
 
 // ----------------------------------------------------------------------------
 
-class IIFinalPSFSignalPowerEstimateB : public MetaDouble
+class IIFinalPSFTotalPowerFluxEstimateB : public MetaDouble
 {
 public:
 
-   IIFinalPSFSignalPowerEstimateB( MetaProcess* );
+   IIFinalPSFTotalPowerFluxEstimateB( MetaProcess* );
 
    IsoString Id() const override;
    int Precision() const override;
@@ -1763,15 +1907,15 @@ public:
    bool IsReadOnly() const override;
 };
 
-extern IIFinalPSFSignalPowerEstimateB* TheIIFinalPSFSignalPowerEstimateBParameter;
+extern IIFinalPSFTotalPowerFluxEstimateB* TheIIFinalPSFTotalPowerFluxEstimateBParameter;
 
 // ----------------------------------------------------------------------------
 
-class IIFinalPSFFluxEstimateRK : public MetaDouble
+class IIFinalPSFTotalMeanFluxEstimateRK : public MetaDouble
 {
 public:
 
-   IIFinalPSFFluxEstimateRK( MetaProcess* );
+   IIFinalPSFTotalMeanFluxEstimateRK( MetaProcess* );
 
    IsoString Id() const override;
    int Precision() const override;
@@ -1779,15 +1923,15 @@ public:
    bool IsReadOnly() const override;
 };
 
-extern IIFinalPSFFluxEstimateRK* TheIIFinalPSFFluxEstimateRKParameter;
+extern IIFinalPSFTotalMeanFluxEstimateRK* TheIIFinalPSFTotalMeanFluxEstimateRKParameter;
 
 // ----------------------------------------------------------------------------
 
-class IIFinalPSFFluxEstimateG : public MetaDouble
+class IIFinalPSFTotalMeanFluxEstimateG : public MetaDouble
 {
 public:
 
-   IIFinalPSFFluxEstimateG( MetaProcess* );
+   IIFinalPSFTotalMeanFluxEstimateG( MetaProcess* );
 
    IsoString Id() const override;
    int Precision() const override;
@@ -1795,15 +1939,15 @@ public:
    bool IsReadOnly() const override;
 };
 
-extern IIFinalPSFFluxEstimateG* TheIIFinalPSFFluxEstimateGParameter;
+extern IIFinalPSFTotalMeanFluxEstimateG* TheIIFinalPSFTotalMeanFluxEstimateGParameter;
 
 // ----------------------------------------------------------------------------
 
-class IIFinalPSFFluxEstimateB : public MetaDouble
+class IIFinalPSFTotalMeanFluxEstimateB : public MetaDouble
 {
 public:
 
-   IIFinalPSFFluxEstimateB( MetaProcess* );
+   IIFinalPSFTotalMeanFluxEstimateB( MetaProcess* );
 
    IsoString Id() const override;
    int Precision() const override;
@@ -1811,15 +1955,15 @@ public:
    bool IsReadOnly() const override;
 };
 
-extern IIFinalPSFFluxEstimateB* TheIIFinalPSFFluxEstimateBParameter;
+extern IIFinalPSFTotalMeanFluxEstimateB* TheIIFinalPSFTotalMeanFluxEstimateBParameter;
 
 // ----------------------------------------------------------------------------
 
-class IIFinalPSFFluxPowerEstimateRK : public MetaDouble
+class IIFinalPSFTotalMeanPowerFluxEstimateRK : public MetaDouble
 {
 public:
 
-   IIFinalPSFFluxPowerEstimateRK( MetaProcess* );
+   IIFinalPSFTotalMeanPowerFluxEstimateRK( MetaProcess* );
 
    IsoString Id() const override;
    int Precision() const override;
@@ -1827,15 +1971,15 @@ public:
    bool IsReadOnly() const override;
 };
 
-extern IIFinalPSFFluxPowerEstimateRK* TheIIFinalPSFFluxPowerEstimateRKParameter;
+extern IIFinalPSFTotalMeanPowerFluxEstimateRK* TheIIFinalPSFTotalMeanPowerFluxEstimateRKParameter;
 
 // ----------------------------------------------------------------------------
 
-class IIFinalPSFFluxPowerEstimateG : public MetaDouble
+class IIFinalPSFTotalMeanPowerFluxEstimateG : public MetaDouble
 {
 public:
 
-   IIFinalPSFFluxPowerEstimateG( MetaProcess* );
+   IIFinalPSFTotalMeanPowerFluxEstimateG( MetaProcess* );
 
    IsoString Id() const override;
    int Precision() const override;
@@ -1843,15 +1987,15 @@ public:
    bool IsReadOnly() const override;
 };
 
-extern IIFinalPSFFluxPowerEstimateG* TheIIFinalPSFFluxPowerEstimateGParameter;
+extern IIFinalPSFTotalMeanPowerFluxEstimateG* TheIIFinalPSFTotalMeanPowerFluxEstimateGParameter;
 
 // ----------------------------------------------------------------------------
 
-class IIFinalPSFFluxPowerEstimateB : public MetaDouble
+class IIFinalPSFTotalMeanPowerFluxEstimateB : public MetaDouble
 {
 public:
 
-   IIFinalPSFFluxPowerEstimateB( MetaProcess* );
+   IIFinalPSFTotalMeanPowerFluxEstimateB( MetaProcess* );
 
    IsoString Id() const override;
    int Precision() const override;
@@ -1859,49 +2003,145 @@ public:
    bool IsReadOnly() const override;
 };
 
-extern IIFinalPSFFluxPowerEstimateB* TheIIFinalPSFFluxPowerEstimateBParameter;
+extern IIFinalPSFTotalMeanPowerFluxEstimateB* TheIIFinalPSFTotalMeanPowerFluxEstimateBParameter;
 
 // ----------------------------------------------------------------------------
 
-class IIFinalPSFSignalCountRK : public MetaUInt32
+class IIFinalPSFMStarEstimateRK : public MetaDouble
 {
 public:
 
-   IIFinalPSFSignalCountRK( MetaProcess* );
+   IIFinalPSFMStarEstimateRK( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern IIFinalPSFMStarEstimateRK* TheIIFinalPSFMStarEstimateRKParameter;
+
+// ----------------------------------------------------------------------------
+
+class IIFinalPSFMStarEstimateG : public MetaDouble
+{
+public:
+
+   IIFinalPSFMStarEstimateG( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern IIFinalPSFMStarEstimateG* TheIIFinalPSFMStarEstimateGParameter;
+
+// ----------------------------------------------------------------------------
+
+class IIFinalPSFMStarEstimateB : public MetaDouble
+{
+public:
+
+   IIFinalPSFMStarEstimateB( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern IIFinalPSFMStarEstimateB* TheIIFinalPSFMStarEstimateBParameter;
+
+// ----------------------------------------------------------------------------
+
+class IIFinalPSFNStarEstimateRK : public MetaDouble
+{
+public:
+
+   IIFinalPSFNStarEstimateRK( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern IIFinalPSFNStarEstimateRK* TheIIFinalPSFNStarEstimateRKParameter;
+
+// ----------------------------------------------------------------------------
+
+class IIFinalPSFNStarEstimateG : public MetaDouble
+{
+public:
+
+   IIFinalPSFNStarEstimateG( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern IIFinalPSFNStarEstimateG* TheIIFinalPSFNStarEstimateGParameter;
+
+// ----------------------------------------------------------------------------
+
+class IIFinalPSFNStarEstimateB : public MetaDouble
+{
+public:
+
+   IIFinalPSFNStarEstimateB( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern IIFinalPSFNStarEstimateB* TheIIFinalPSFNStarEstimateBParameter;
+
+// ----------------------------------------------------------------------------
+
+class IIFinalPSFCountRK : public MetaUInt32
+{
+public:
+
+   IIFinalPSFCountRK( MetaProcess* );
 
    IsoString Id() const override;
    bool IsReadOnly() const override;
 };
 
-extern IIFinalPSFSignalCountRK* TheIIFinalPSFSignalCountRKParameter;
+extern IIFinalPSFCountRK* TheIIFinalPSFCountRKParameter;
 
 // ----------------------------------------------------------------------------
 
-class IIFinalPSFSignalCountG : public MetaUInt32
+class IIFinalPSFCountG : public MetaUInt32
 {
 public:
 
-   IIFinalPSFSignalCountG( MetaProcess* );
+   IIFinalPSFCountG( MetaProcess* );
 
    IsoString Id() const override;
    bool IsReadOnly() const override;
 };
 
-extern IIFinalPSFSignalCountG* TheIIFinalPSFSignalCountGParameter;
+extern IIFinalPSFCountG* TheIIFinalPSFCountGParameter;
 
 // ----------------------------------------------------------------------------
 
-class IIFinalPSFSignalCountB : public MetaUInt32
+class IIFinalPSFCountB : public MetaUInt32
 {
 public:
 
-   IIFinalPSFSignalCountB( MetaProcess* );
+   IIFinalPSFCountB( MetaProcess* );
 
    IsoString Id() const override;
    bool IsReadOnly() const override;
 };
 
-extern IIFinalPSFSignalCountB* TheIIFinalPSFSignalCountBParameter;
+extern IIFinalPSFCountB* TheIIFinalPSFCountBParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -2235,4 +2475,4 @@ PCL_END_LOCAL
 #endif   // __ImageIntegrationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationParameters.h - Released 2021-12-29T20:37:28Z
+// EOF ImageIntegrationParameters.h - Released 2022-03-12T18:59:53Z

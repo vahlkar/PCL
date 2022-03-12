@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.7.3
+// Standard SubframeSelector Process Module Version 1.8.0
 // ----------------------------------------------------------------------------
-// SubframeSelectorParameters.cpp - Released 2021-12-29T20:37:28Z
+// SubframeSelectorParameters.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -57,92 +57,101 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-SSRoutine*                         TheSSRoutineParameter = nullptr;
-SSNonInteractive*                  TheSSNonInteractiveParameter = nullptr;
+SSRoutine*                          TheSSRoutineParameter = nullptr;
+SSNonInteractive*                   TheSSNonInteractiveParameter = nullptr;
 
-SSSubframes*                       TheSSSubframesParameter = nullptr;
-SSSubframeEnabled*                 TheSSSubframeEnabledParameter = nullptr;
-SSSubframePath*                    TheSSSubframePathParameter = nullptr;
+SSSubframes*                        TheSSSubframesParameter = nullptr;
+SSSubframeEnabled*                  TheSSSubframeEnabledParameter = nullptr;
+SSSubframePath*                     TheSSSubframePathParameter = nullptr;
+SSLocalNormalizationDataPath*       TheSSLocalNormalizationDataPathParameter = nullptr;
+SSDrizzlePath*                      TheSSDrizzlePathParameter = nullptr;
 
-SSFileCache*                       TheSSFileCacheParameter = nullptr;
+SSFileCache*                        TheSSFileCacheParameter = nullptr;
 
-SSSubframeScale*                   TheSSSubframeScaleParameter = nullptr;
-SSCameraGain*                      TheSSCameraGainParameter = nullptr;
-SSCameraResolution*                TheSSCameraResolutionParameter = nullptr;
-SSSiteLocalMidnight*               TheSSSiteLocalMidnightParameter = nullptr;
-SSScaleUnit*                       TheSSScaleUnitParameter = nullptr;
-SSDataUnit*                        TheSSDataUnitParameter = nullptr;
-SSTrimmingFactor*                  TheSSTrimmingFactorParameter = nullptr;
+SSSubframeScale*                    TheSSSubframeScaleParameter = nullptr;
+SSCameraGain*                       TheSSCameraGainParameter = nullptr;
+SSCameraResolution*                 TheSSCameraResolutionParameter = nullptr;
+SSSiteLocalMidnight*                TheSSSiteLocalMidnightParameter = nullptr;
+SSScaleUnit*                        TheSSScaleUnitParameter = nullptr;
+SSDataUnit*                         TheSSDataUnitParameter = nullptr;
+SSTrimmingFactor*                   TheSSTrimmingFactorParameter = nullptr;
 
-SSStructureLayers*                 TheSSStructureLayersParameter = nullptr;
-SSNoiseLayers*                     TheSSNoiseLayersParameter = nullptr;
-SSHotPixelFilterRadius*            TheSSHotPixelFilterRadiusParameter = nullptr;
-SSApplyHotPixelFilter*             TheSSApplyHotPixelFilterParameter = nullptr;
-SSNoiseReductionFilterRadius*      TheSSNoiseReductionFilterRadiusParameter = nullptr;
-SSSensitivity*                     TheSSSensitivityParameter = nullptr;
-SSPeakResponse*                    TheSSPeakResponseParameter = nullptr;
-SSMaxDistortion*                   TheSSMaxDistortionParameter = nullptr;
-SSUpperLimit*                      TheSSUpperLimitParameter = nullptr;
-SSBackgroundExpansion*             TheSSBackgroundExpansionParameter = nullptr;
-SSXYStretch*                       TheSSXYStretchParameter = nullptr;
-SSPSFFit*                          TheSSPSFFitParameter = nullptr;
-SSPSFFitCircular*                  TheSSPSFFitCircularParameter = nullptr;
-SSROIX0*                           TheSSROIX0Parameter = nullptr;
-SSROIY0*                           TheSSROIY0Parameter = nullptr;
-SSROIX1*                           TheSSROIX1Parameter = nullptr;
-SSROIY1*                           TheSSROIY1Parameter = nullptr;
+SSStructureLayers*                  TheSSStructureLayersParameter = nullptr;
+SSNoiseLayers*                      TheSSNoiseLayersParameter = nullptr;
+SSHotPixelFilterRadius*             TheSSHotPixelFilterRadiusParameter = nullptr;
+SSApplyHotPixelFilter*              TheSSApplyHotPixelFilterParameter = nullptr;
+SSNoiseReductionFilterRadius*       TheSSNoiseReductionFilterRadiusParameter = nullptr;
+SSSensitivity*                      TheSSSensitivityParameter = nullptr;
+SSPeakResponse*                     TheSSPeakResponseParameter = nullptr;
+SSMaxDistortion*                    TheSSMaxDistortionParameter = nullptr;
+SSUpperLimit*                       TheSSUpperLimitParameter = nullptr;
+SSBackgroundExpansion*              TheSSBackgroundExpansionParameter = nullptr;
+SSXYStretch*                        TheSSXYStretchParameter = nullptr;
+SSPSFFit*                           TheSSPSFFitParameter = nullptr;
+SSPSFFitCircular*                   TheSSPSFFitCircularParameter = nullptr;
+SSROIX0*                            TheSSROIX0Parameter = nullptr;
+SSROIY0*                            TheSSROIY0Parameter = nullptr;
+SSROIX1*                            TheSSROIX1Parameter = nullptr;
+SSROIY1*                            TheSSROIY1Parameter = nullptr;
 
-SSPedestalMode*                    TheSSPedestalModeParameter = nullptr;
-SSPedestal*                        TheSSPedestalParameter = nullptr;
-SSPedestalKeyword*                 TheSSPedestalKeywordParameter = nullptr;
+SSPedestalMode*                     TheSSPedestalModeParameter = nullptr;
+SSPedestal*                         TheSSPedestalParameter = nullptr;
+SSPedestalKeyword*                  TheSSPedestalKeywordParameter = nullptr;
 
-SSInputHints*                      TheSSInputHintsParameter = nullptr;
-SSOutputHints*                     TheSSOutputHintsParameter = nullptr;
+SSInputHints*                       TheSSInputHintsParameter = nullptr;
+SSOutputHints*                      TheSSOutputHintsParameter = nullptr;
 
-SSOutputDirectory*                 TheSSOutputDirectoryParameter = nullptr;
-SSOutputExtension*                 TheSSOutputExtensionParameter = nullptr;
-SSOutputPrefix*                    TheSSOutputPrefixParameter = nullptr;
-SSOutputPostfix*                   TheSSOutputPostfixParameter = nullptr;
-SSOutputKeyword*                   TheSSOutputKeywordParameter = nullptr;
-SSOverwriteExistingFiles*          TheSSOverwriteExistingFilesParameter = nullptr;
-SSOnError*                         TheSSOnErrorParameter = nullptr;
+SSOutputDirectory*                  TheSSOutputDirectoryParameter = nullptr;
+SSOutputExtension*                  TheSSOutputExtensionParameter = nullptr;
+SSOutputPrefix*                     TheSSOutputPrefixParameter = nullptr;
+SSOutputPostfix*                    TheSSOutputPostfixParameter = nullptr;
+SSOutputKeyword*                    TheSSOutputKeywordParameter = nullptr;
+SSOverwriteExistingFiles*           TheSSOverwriteExistingFilesParameter = nullptr;
+SSOnError*                          TheSSOnErrorParameter = nullptr;
 
-SSApprovalExpression*              TheSSApprovalExpressionParameter = nullptr;
-SSWeightingExpression*             TheSSWeightingExpressionParameter = nullptr;
+SSApprovalExpression*               TheSSApprovalExpressionParameter = nullptr;
+SSWeightingExpression*              TheSSWeightingExpressionParameter = nullptr;
 
-SSSortingProperty*                 TheSSSortingPropertyParameter = nullptr;
-SSGraphProperty*                   TheSSGraphPropertyParameter = nullptr;
-SSAuxGraphProperty*                TheSSAuxGraphPropertyParameter = nullptr;
+SSSortingProperty*                  TheSSSortingPropertyParameter = nullptr;
+SSGraphProperty*                    TheSSGraphPropertyParameter = nullptr;
+SSAuxGraphProperty*                 TheSSAuxGraphPropertyParameter = nullptr;
 
-SSUseFileThreads*                  TheSSUseFileThreadsParameter = nullptr;
-SSFileThreadOverload*              TheSSFileThreadOverloadParameter = nullptr;
-SSMaxFileReadThreads*              TheSSMaxFileReadThreadsParameter = nullptr;
-SSMaxFileWriteThreads*             TheSSMaxFileWriteThreadsParameter = nullptr;
+SSUseFileThreads*                   TheSSUseFileThreadsParameter = nullptr;
+SSFileThreadOverload*               TheSSFileThreadOverloadParameter = nullptr;
+SSMaxFileReadThreads*               TheSSMaxFileReadThreadsParameter = nullptr;
+SSMaxFileWriteThreads*              TheSSMaxFileWriteThreadsParameter = nullptr;
 
-SSMeasurements*                    TheSSMeasurementsParameter = nullptr;
-SSMeasurementIndex*                TheSSMeasurementIndexParameter = nullptr;
-SSMeasurementEnabled*              TheSSMeasurementEnabledParameter = nullptr;
-SSMeasurementLocked*               TheSSMeasurementLockedParameter = nullptr;
-SSMeasurementPath*                 TheSSMeasurementPathParameter = nullptr;
-SSMeasurementWeight*               TheSSMeasurementWeightParameter = nullptr;
-SSMeasurementFWHM*                 TheSSMeasurementFWHMParameter = nullptr;
-SSMeasurementEccentricity*         TheSSMeasurementEccentricityParameter = nullptr;
-SSMeasurementPSFSignalWeight*      TheSSMeasurementPSFSignalWeightParameter = nullptr;
-SSMeasurementPSFSignalPowerWeight* TheSSMeasurementPSFSignalPowerWeightParameter = nullptr;
-SSMeasurementPSFFlux*              TheSSMeasurementPSFFluxParameter = nullptr;
-SSMeasurementPSFFluxPower*         TheSSMeasurementPSFFluxPowerParameter = nullptr;
-SSMeasurementSNRWeight*            TheSSMeasurementSNRWeightParameter = nullptr;
-SSMeasurementMedian*               TheSSMeasurementMedianParameter = nullptr;
-SSMeasurementMedianMeanDev*        TheSSMeasurementMedianMeanDevParameter = nullptr;
-SSMeasurementNoise*                TheSSMeasurementNoiseParameter = nullptr;
-SSMeasurementNoiseRatio*           TheSSMeasurementNoiseRatioParameter = nullptr;
-SSMeasurementStars*                TheSSMeasurementStarsParameter = nullptr;
-SSMeasurementStarResidual*         TheSSMeasurementStarResidualParameter = nullptr;
-SSMeasurementFWHMMeanDev*          TheSSMeasurementFWHMMeanDevParameter = nullptr;
-SSMeasurementEccentricityMeanDev*  TheSSMeasurementEccentricityMeanDevParameter = nullptr;
-SSMeasurementStarResidualMeanDev*  TheSSMeasurementStarResidualMeanDevParameter = nullptr;
-SSMeasurementAzimuth*              TheSSMeasurementAzimuthParameter = nullptr;
-SSMeasurementAltitude*             TheSSMeasurementAltitudeParameter = nullptr;
+SSMeasurements*                     TheSSMeasurementsParameter = nullptr;
+SSMeasurementIndex*                 TheSSMeasurementIndexParameter = nullptr;
+SSMeasurementEnabled*               TheSSMeasurementEnabledParameter = nullptr;
+SSMeasurementLocked*                TheSSMeasurementLockedParameter = nullptr;
+SSMeasurementPath*                  TheSSMeasurementPathParameter = nullptr;
+SSMeasurementWeight*                TheSSMeasurementWeightParameter = nullptr;
+SSMeasurementFWHM*                  TheSSMeasurementFWHMParameter = nullptr;
+SSMeasurementEccentricity*          TheSSMeasurementEccentricityParameter = nullptr;
+SSMeasurementPSFSignalWeight*       TheSSMeasurementPSFSignalWeightParameter = nullptr;
+SSMeasurementPSFSNR*                TheSSMeasurementPSFSNRParameter = nullptr;
+SSMeasurementPSFFlux*               TheSSMeasurementPSFFluxParameter = nullptr;
+SSMeasurementPSFFluxPower*          TheSSMeasurementPSFFluxPowerParameter = nullptr;
+SSMeasurementPSFTotalMeanFlux*      TheSSMeasurementPSFTotalMeanFluxParameter = nullptr;
+SSMeasurementPSFTotalMeanPowerFlux* TheSSMeasurementPSFTotalMeanPowerFluxParameter = nullptr;
+SSMeasurementPSFCount*              TheSSMeasurementPSFCountParameter = nullptr;
+SSMeasurementMStar*                 TheSSMeasurementMStarParameter;
+SSMeasurementNStar*                 TheSSMeasurementNStarParameter;
+SSMeasurementSNRWeight*             TheSSMeasurementSNRWeightParameter = nullptr;
+SSMeasurementMedian*                TheSSMeasurementMedianParameter = nullptr;
+SSMeasurementMedianMeanDev*         TheSSMeasurementMedianMeanDevParameter = nullptr;
+SSMeasurementNoise*                 TheSSMeasurementNoiseParameter = nullptr;
+SSMeasurementNoiseRatio*            TheSSMeasurementNoiseRatioParameter = nullptr;
+SSMeasurementStars*                 TheSSMeasurementStarsParameter = nullptr;
+SSMeasurementStarResidual*          TheSSMeasurementStarResidualParameter = nullptr;
+SSMeasurementFWHMMeanDev*           TheSSMeasurementFWHMMeanDevParameter = nullptr;
+SSMeasurementEccentricityMeanDev*   TheSSMeasurementEccentricityMeanDevParameter = nullptr;
+SSMeasurementStarResidualMeanDev*   TheSSMeasurementStarResidualMeanDevParameter = nullptr;
+SSMeasurementAzimuth*               TheSSMeasurementAzimuthParameter = nullptr;
+SSMeasurementAltitude*              TheSSMeasurementAltitudeParameter = nullptr;
+
+SSMeasurementUnused01*              TheSSMeasurementUnused01Parameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -259,6 +268,30 @@ SSSubframePath::SSSubframePath( MetaTable* T ) : MetaString( T )
 IsoString SSSubframePath::Id() const
 {
    return "subframePath";
+}
+
+// ----------------------------------------------------------------------------
+
+SSLocalNormalizationDataPath::SSLocalNormalizationDataPath( MetaTable* T ) : MetaString( T )
+{
+   TheSSLocalNormalizationDataPathParameter = this;
+}
+
+IsoString SSLocalNormalizationDataPath::Id() const
+{
+   return "localNormalizationDataPath";
+}
+
+// ----------------------------------------------------------------------------
+
+SSDrizzlePath::SSDrizzlePath( MetaTable* T ) : MetaString( T )
+{
+   TheSSDrizzlePathParameter = this;
+}
+
+IsoString SSDrizzlePath::Id() const
+{
+   return "drizzlePath";
 }
 
 // ----------------------------------------------------------------------------
@@ -1037,7 +1070,6 @@ IsoString SSPSFFit::ElementId( size_type i ) const
    case Moffat25:      return "Moffat25";
    case Moffat15:      return "Moffat15";
    case Lorentzian:    return "Lorentzian";
-//    case VariableShape: return "VariableShape";
    }
 }
 
@@ -1051,15 +1083,14 @@ IsoString SSPSFFit::ElementLabel( size_type i ) const
    switch ( i )
    {
    case Gaussian:      return "Gaussian";
-   case Moffat10:      return "Moffat10";
-   case Moffat8:       return "Moffat8";
-   case Moffat6:       return "Moffat6";
+   case Moffat10:      return "Moffat beta = 10";
+   case Moffat8:       return "Moffat beta = 8";
+   case Moffat6:       return "Moffat beta = 6";
    default:
-   case Moffat4:       return "Moffat4";
-   case Moffat25:      return "Moffat2.5";
-   case Moffat15:      return "Moffat1.5";
+   case Moffat4:       return "Moffat beta = 4";
+   case Moffat25:      return "Moffat beta = 2.5";
+   case Moffat15:      return "Moffat beta = 1.5";
    case Lorentzian:    return "Lorentzian";
-//    case VariableShape: return "VariableShape";
    }
 }
 
@@ -1252,9 +1283,9 @@ IsoString SSPedestalMode::Tooltip() const
 {
    return
    "<p>The <i>pedestal mode</i> option specifies how to retrieve a (usually small) quantity that is subtracted "
-   "from input images as the very first calibration step. This quantity is known as <i>pedestal</i>, and must "
-   "be expressed in the 16-bit unsigned integer range (from 0 to 65535). If present, a pedestal has been added "
-   "by a previous calibration process to ensure positivity of the result.</p>"
+   "from input images as the very first step before measurement. This quantity is known as <i>pedestal</i>, and "
+   "must be expressed in the 16-bit unsigned integer range (from 0 to 65535). If present, a pedestal has been "
+   "added by a previous calibration process to ensure positivity of the result.</p>"
    "<p><b>Literal value</b> lets you specify a pedestal value that will be subtracted from all input frames. "
    "You usually don't need this option, except in very special cases.</p>"
    "<p><b>Default FITS keyword</b> is the default mode. When this mode is selected, SubframeSelector will "
@@ -1556,17 +1587,17 @@ IsoString SSApprovalExpression::Tooltip() const
    return "<p>Subframe approval expression, a boolean combination of constraints. A blank "
           "expression will approve all subframes. This is technically JavaScript, and although "
           "some characters are limited to prevent misuse, many things are possible such as "
-          "<i>Math.abs(FWHMSigma)</i> or using <i>//</i> to comment the end of the line. "
+          "<i>Math.abs(FWHMSigma)</i> or using <i>//</i> to comment the end of the line, etc. "
           "Please see the documentation for more information.</p>"
           "<p>A <i>property</i> can be one of:</p>"
-          "<p>Index | Weight | PSFSignal = PSFSignalWeight | PSFSignalPower = PSFSignalPowerWeight | "
-          "SNR = SNRWeight | PSFFlux | PSFFluxPower | "
-          "FWHM | Eccentricity | Altitude | Azimuth | Median | MedianMeanDev | Noise | NoiseRatio | "
-          "Stars | StarResidual | FWHMMeanDev | EccentricityMeanDev | StarResidualMeanDev</p>"
+          "<p>Altitude | Azimuth | Eccentricity | EccentricityMeanDev | FWHM | FWHMMeanDev | Index | "
+          "MStar | Median | MedianMeanDev | NStar | Noise | NoiseRatio | PSFCount | PSFFlux | "
+          "PSFFluxPower | PSFSignalWeight = PSFSignal | PSFSNR | PSFTotalMeanFlux | PSFTotalMeanPowerFlux | "
+          "SNR = SNRWeight | StarResidual | StarResidualMeanDev | Stars | Weight</p>"
           "<p>Each <i>property</i> (excluding <i>Index</i>) also has a Median, Min, and Max version, "
           "e.g. <i>FWHMMin</i>, which are computed across all subframes.</p>"
           "<p>Each <i>property</i> (excluding <i>Index</i>) also has a Sigma version, "
-          "e.g. <i>SNRWeightSigma</i>, where the value is represented in sigma units of the "
+          "e.g. <i>PSFSignalSigma</i>, where the value is represented in sigma units of the "
           "mean absolute deviation from the median.</p>";
 }
 
@@ -1587,17 +1618,17 @@ IsoString SSWeightingExpression::Tooltip() const
    return "<p>Subframe weighting expression, an arithmetic combination of properties. A blank "
           "expression will assign a zero weight to all subframes. This is technically JavaScript, "
           "and although some characters are limited to prevent misuse, many things are possible such as "
-          "<i>Math.abs(FWHMSigma)</i> or using <i>//</i> to comment the end of the line. "
+          "<i>Math.abs(FWHMSigma)</i> or using <i>//</i> to comment the end of the line, etc. "
           "Please see the documentation for more information.</p>"
           "<p>A <i>property</i> can be one of:<p>"
-          "<p>Index | PSFSignal = PSFSignalWeight | PSFSignalPower = PSFSignalPowerWeight | "
-          "SNR = SNRWeight | PSFFlux | PSFFluxPower | "
-          "FWHM | Eccentricity | Altitude | Azimuth | Median | MedianMeanDev | Noise | NoiseRatio | "
-          "Stars | StarResidual | FWHMMeanDev | EccentricityMeanDev | StarResidualMeanDev</p>"
+          "<p>Altitude | Azimuth | Eccentricity | EccentricityMeanDev | FWHM | FWHMMeanDev | Index | "
+          "MStar | Median | MedianMeanDev | NStar | Noise | NoiseRatio | PSFCount | PSFFlux | "
+          "PSFFluxPower | PSFSignalWeight = PSFSignal | PSFSNR | PSFTotalMeanFlux | PSFTotalMeanPowerFlux | "
+          "SNR = SNRWeight | StarResidual | StarResidualMeanDev | Stars</p>"
           "<p>Each <i>property</i> (excluding <i>Index</i>) also has a Median, Min, and Max version, "
           "e.g. <i>FWHMMin</i>, which are computed across all subframes.</p>"
           "<p>Each <i>property</i> (excluding <i>Index</i>) also has a Sigma version, "
-          "e.g. <i>SNRWeightSigma</i>, where the value is represented in sigma units of the "
+          "e.g. <i>PSFSignalSigma</i>, where the value is represented in sigma units of the "
           "mean absolute deviation from the median.</p>";
 }
 
@@ -1623,32 +1654,37 @@ IsoString SSSortingProperty::ElementId( size_type i ) const
    switch ( i )
    {
    default:
-   case Index:                return "Index";
-   case Weight:               return "Weight";
-   case FWHM:                 return "FWHM";
-   case Eccentricity:         return "Eccentricity";
-   case PSFSignalWeight:      return "PSFSignalWeight";
-   case PSFSignalPowerWeight: return "PSFSignalPowerWeight";
-   case PSFFlux:              return "PSFFlux";
-   case PSFFluxPower:         return "PSFFluxPower";
-   case SNRWeight:            return "SNRWeight";
-   case Median:               return "Median";
-   case MedianMeanDev:        return "MedianMeanDev";
-   case Noise:                return "Noise";
-   case NoiseRatio:           return "NoiseRatio";
-   case Stars:                return "Stars";
-   case StarResidual:         return "StarResidual";
-   case FWHMMeanDev:          return "FWHMMeanDev";
-   case EccentricityMeanDev:  return "EccentricityMeanDev";
-   case StarResidualMeanDev:  return "StarResidualMeanDev";
-   case Azimuth:              return "Azimuth";
-   case Altitude:             return "Altitude";
+   case Index:                 return "Index";
+   case Weight:                return "Weight";
+   case FWHM:                  return "FWHM";
+   case Eccentricity:          return "Eccentricity";
+   case SNRWeight:             return "SNR";
+   case Median:                return "Median";
+   case MedianMeanDev:         return "MedianMeanDev";
+   case Noise:                 return "Noise";
+   case NoiseRatio:            return "NoiseRatio";
+   case Stars:                 return "Stars";
+   case StarResidual:          return "StarResidual";
+   case FWHMMeanDev:           return "FWHMMeanDev";
+   case EccentricityMeanDev:   return "EccentricityMeanDev";
+   case StarResidualMeanDev:   return "StarResidualMeanDev";
+   case PSFSignalWeight:       return "PSFSignalWeight";
+   case PSFSNR:                return "PSFSNR";
+   case Azimuth:               return "Azimuth";
+   case Altitude:              return "Altitude";
+   case PSFFlux:               return "PSFFlux";
+   case PSFFluxPower:          return "PSFFluxPower";
+   case PSFTotalMeanFlux:      return "PSFTotalMeanFlux";
+   case PSFTotalMeanPowerFlux: return "PSFTotalMeanPowerFlux";
+   case PSFCount:              return "PSFCount";
+   case MStar:                 return "MStar";
+   case NStar:                 return "NStar";
    }
 }
 
 IsoString SSSortingProperty::ElementAliases() const
 {
-   return "PSFPowerWeight=PSFSignalPowerWeight";
+   return "SNRWeight=SNR";
 }
 
 int SSSortingProperty::ElementValue( size_type i ) const
@@ -1661,26 +1697,31 @@ IsoString SSSortingProperty::ElementLabel( size_type i ) const
    switch ( i )
    {
    default:
-   case Index:                return "Index";
-   case Weight:               return "Weight";
-   case FWHM:                 return "FWHM";
-   case Eccentricity:         return "Eccentricity";
-   case PSFSignalWeight:      return "PSF Signal Weight";
-   case PSFSignalPowerWeight: return "PSF Signal Power Weight";
-   case PSFFlux:              return "PSF Flux";
-   case PSFFluxPower:         return "PSF Flux Power";
-   case SNRWeight:            return "SNR Weight";
-   case Median:               return "Median";
-   case MedianMeanDev:        return "Median Mean Dev.";
-   case Noise:                return "Noise";
-   case NoiseRatio:           return "Noise Ratio";
-   case Stars:                return "Stars";
-   case StarResidual:         return "Star Residual";
-   case FWHMMeanDev:          return "FWHM Mean Dev.";
-   case EccentricityMeanDev:  return "Eccentricity Mean Dev.";
-   case StarResidualMeanDev:  return "Star Residual Mean Dev.";
-   case Azimuth:              return "Azimuth";
-   case Altitude:             return "Altitude";
+   case Index:                 return "Index";
+   case Weight:                return "Weight";
+   case FWHM:                  return "FWHM";
+   case Eccentricity:          return "Eccentricity";
+   case SNRWeight:             return "SNR";
+   case Median:                return "Median";
+   case MedianMeanDev:         return "Median Mean Dev.";
+   case Noise:                 return "Noise";
+   case NoiseRatio:            return "Noise Ratio";
+   case Stars:                 return "Stars";
+   case StarResidual:          return "Star Residual";
+   case FWHMMeanDev:           return "FWHM Mean Dev.";
+   case EccentricityMeanDev:   return "Eccentricity Mean Dev.";
+   case StarResidualMeanDev:   return "StarResidual Mean Dev.";
+   case PSFSignalWeight:       return "PSF Signal Weight";
+   case PSFSNR:                return "PSF SNR";
+   case Azimuth:               return "Azimuth";
+   case Altitude:              return "Altitude";
+   case PSFFlux:               return "PSF Flux";
+   case PSFFluxPower:          return "PSF Flux Power";
+   case PSFTotalMeanFlux:      return "PSF Total Mean Flux";
+   case PSFTotalMeanPowerFlux: return "PSF Total Mean Power Flux";
+   case PSFCount:              return "PSF Count";
+   case MStar:                 return "M*";
+   case NStar:                 return "N*";
    }
 }
 
@@ -1705,31 +1746,36 @@ IsoString SSGraphPropertyBase::ElementId( size_type i ) const
    switch ( i )
    {
    default:
-   case Weight:               return "Weight";
-   case FWHM:                 return "FWHM";
-   case Eccentricity:         return "Eccentricity";
-   case PSFSignalWeight:      return "PSFSignalWeight";
-   case PSFSignalPowerWeight: return "PSFSignalPowerWeight";
-   case PSFFlux:              return "PSFFlux";
-   case PSFFluxPower:         return "PSFFluxPower";
-   case SNRWeight:            return "SNRWeight";
-   case Median:               return "Median";
-   case MedianMeanDev:        return "MedianMeanDev";
-   case Noise:                return "Noise";
-   case NoiseRatio:           return "NoiseRatio";
-   case Stars:                return "Stars";
-   case StarResidual:         return "StarResidual";
-   case FWHMMeanDev:          return "FWHMMeanDev";
-   case EccentricityMeanDev:  return "EccentricityMeanDev";
-   case StarResidualMeanDev:  return "StarResidualMeanDev";
-   case Azimuth:              return "Azimuth";
-   case Altitude:             return "Altitude";
+   case Weight:                return "Weight";
+   case FWHM:                  return "FWHM";
+   case Eccentricity:          return "Eccentricity";
+   case SNRWeight:             return "SNR";
+   case Median:                return "Median";
+   case MedianMeanDev:         return "MedianMeanDev";
+   case Noise:                 return "Noise";
+   case NoiseRatio:            return "NoiseRatio";
+   case Stars:                 return "Stars";
+   case StarResidual:          return "StarResidual";
+   case FWHMMeanDev:           return "FWHMMeanDev";
+   case EccentricityMeanDev:   return "EccentricityMeanDev";
+   case StarResidualMeanDev:   return "StarResidualMeanDev";
+   case PSFSignalWeight:       return "PSFSignalWeight";
+   case PSFSNR:                return "PSFSNR";
+   case Azimuth:               return "Azimuth";
+   case Altitude:              return "Altitude";
+   case PSFFlux:               return "PSFFlux";
+   case PSFFluxPower:          return "PSFFluxPower";
+   case PSFTotalMeanFlux:      return "PSFTotalMeanFlux";
+   case PSFTotalMeanPowerFlux: return "PSFTotalMeanPowerFlux";
+   case PSFCount:              return "PSFCount";
+   case MStar:                 return "MStar";
+   case NStar:                 return "NStar";
    }
 }
 
 IsoString SSGraphPropertyBase::ElementAliases() const
 {
-   return "PSFPowerWeight=PSFSignalPowerWeight";
+   return "SNRWeight=SNR";
 }
 
 int SSGraphPropertyBase::ElementValue( size_type i ) const
@@ -1742,25 +1788,30 @@ IsoString SSGraphPropertyBase::ElementLabel( size_type i ) const
    switch ( i )
    {
    default:
-   case Weight:               return "Weight";
-   case FWHM:                 return "FWHM";
-   case Eccentricity:         return "Eccentricity";
-   case PSFSignalWeight:      return "PSF Signal Weight";
-   case PSFSignalPowerWeight: return "PSF Signal Power Weight";
-   case PSFFlux:              return "PSF Flux";
-   case PSFFluxPower:         return "PSF Flux Power";
-   case SNRWeight:            return "SNR Weight";
-   case Median:               return "Median";
-   case MedianMeanDev:        return "Median Mean Dev.";
-   case Noise:                return "Noise";
-   case NoiseRatio:           return "Noise Ratio";
-   case Stars:                return "Stars";
-   case StarResidual:         return "Star Residual";
-   case FWHMMeanDev:          return "FWHM Mean Dev.";
-   case EccentricityMeanDev:  return "Eccentricity Mean Dev.";
-   case StarResidualMeanDev:  return "Star Residual Mean Dev.";
-   case Azimuth:              return "Azimuth";
-   case Altitude:             return "Altitude";
+   case Weight:                return "Weight";
+   case FWHM:                  return "FWHM";
+   case Eccentricity:          return "Eccentricity";
+   case SNRWeight:             return "SNR";
+   case Median:                return "Median";
+   case MedianMeanDev:         return "Median Mean Dev.";
+   case Noise:                 return "Noise";
+   case NoiseRatio:            return "Noise Ratio";
+   case Stars:                 return "Stars";
+   case StarResidual:          return "Star Residual";
+   case FWHMMeanDev:           return "FWHM Mean Dev.";
+   case EccentricityMeanDev:   return "Eccentricity Mean Dev.";
+   case StarResidualMeanDev:   return "Star Residual Mean Dev.";
+   case PSFSignalWeight:       return "PSF Signal Weight";
+   case PSFSNR:                return "PSF SNR";
+   case Azimuth:               return "Azimuth";
+   case Altitude:              return "Altitude";
+   case PSFFlux:               return "PSF Flux";
+   case PSFFluxPower:          return "PSF Flux Power";
+   case PSFTotalMeanFlux:      return "PSF Total Mean Flux";
+   case PSFTotalMeanPowerFlux: return "PSF Total Mean Power Flux";
+   case PSFCount:              return "PSF Count";
+   case MStar:                 return "M*";
+   case NStar:                 return "N*";
    }
 }
 
@@ -2151,37 +2202,32 @@ bool SSMeasurementPSFSignalWeight::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-SSMeasurementPSFSignalPowerWeight::SSMeasurementPSFSignalPowerWeight( MetaTable* T ) : MetaDouble( T )
+SSMeasurementPSFSNR::SSMeasurementPSFSNR( MetaTable* T ) : MetaDouble( T )
 {
-   TheSSMeasurementPSFSignalPowerWeightParameter = this;
+   TheSSMeasurementPSFSNRParameter = this;
 }
 
-IsoString SSMeasurementPSFSignalPowerWeight::Id() const
+IsoString SSMeasurementPSFSNR::Id() const
 {
-   return "measurementPSFSignalPowerWeight";
+   return "measurementPSFSNR";
 }
 
-IsoString SSMeasurementPSFSignalPowerWeight::Aliases() const
-{
-   return "measurementPSFPowerWeight";
-}
-
-int SSMeasurementPSFSignalPowerWeight::Precision() const
+int SSMeasurementPSFSNR::Precision() const
 {
    return 4;
 }
 
-bool SSMeasurementPSFSignalPowerWeight::ScientificNotation() const
+bool SSMeasurementPSFSNR::ScientificNotation() const
 {
    return true;
 }
 
-double SSMeasurementPSFSignalPowerWeight::DefaultValue() const
+double SSMeasurementPSFSNR::DefaultValue() const
 {
    return 0.0;
 }
 
-bool SSMeasurementPSFSignalPowerWeight::IsReadOnly() const
+bool SSMeasurementPSFSNR::IsReadOnly() const
 {
    return true;
 }
@@ -2246,6 +2292,166 @@ double SSMeasurementPSFFluxPower::DefaultValue() const
 }
 
 bool SSMeasurementPSFFluxPower::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+SSMeasurementPSFTotalMeanFlux::SSMeasurementPSFTotalMeanFlux( MetaTable* T ) : MetaDouble( T )
+{
+   TheSSMeasurementPSFTotalMeanFluxParameter = this;
+}
+
+IsoString SSMeasurementPSFTotalMeanFlux::Id() const
+{
+   return "measurementPSFTotalMeanFlux";
+}
+
+int SSMeasurementPSFTotalMeanFlux::Precision() const
+{
+   return 4;
+}
+
+bool SSMeasurementPSFTotalMeanFlux::ScientificNotation() const
+{
+   return true;
+}
+
+double SSMeasurementPSFTotalMeanFlux::DefaultValue() const
+{
+   return 0.0;
+}
+
+bool SSMeasurementPSFTotalMeanFlux::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+SSMeasurementPSFTotalMeanPowerFlux::SSMeasurementPSFTotalMeanPowerFlux( MetaTable* T ) : MetaDouble( T )
+{
+   TheSSMeasurementPSFTotalMeanPowerFluxParameter = this;
+}
+
+IsoString SSMeasurementPSFTotalMeanPowerFlux::Id() const
+{
+   return "measurementPSFTotalMeanPowerFlux";
+}
+
+int SSMeasurementPSFTotalMeanPowerFlux::Precision() const
+{
+   return 4;
+}
+
+bool SSMeasurementPSFTotalMeanPowerFlux::ScientificNotation() const
+{
+   return true;
+}
+
+double SSMeasurementPSFTotalMeanPowerFlux::DefaultValue() const
+{
+   return 0.0;
+}
+
+bool SSMeasurementPSFTotalMeanPowerFlux::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+SSMeasurementPSFCount::SSMeasurementPSFCount( MetaTable* T ) : MetaUInt32( T )
+{
+   TheSSMeasurementPSFCountParameter = this;
+}
+
+IsoString SSMeasurementPSFCount::Id() const
+{
+   return "measurementPSFCount";
+}
+
+double SSMeasurementPSFCount::DefaultValue() const
+{
+   return 0;
+}
+
+double SSMeasurementPSFCount::MinimumValue() const
+{
+   return 0;
+}
+
+double SSMeasurementPSFCount::MaximumValue() const
+{
+   return uint32_max;
+}
+
+bool SSMeasurementPSFCount::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+SSMeasurementMStar::SSMeasurementMStar( MetaTable* T ) : MetaDouble( T )
+{
+   TheSSMeasurementMStarParameter = this;
+}
+
+IsoString SSMeasurementMStar::Id() const
+{
+   return "measurementMStar";
+}
+
+int SSMeasurementMStar::Precision() const
+{
+   return 4;
+}
+
+bool SSMeasurementMStar::ScientificNotation() const
+{
+   return true;
+}
+
+double SSMeasurementMStar::DefaultValue() const
+{
+   return 0.0;
+}
+
+bool SSMeasurementMStar::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+SSMeasurementNStar::SSMeasurementNStar( MetaTable* T ) : MetaDouble( T )
+{
+   TheSSMeasurementNStarParameter = this;
+}
+
+IsoString SSMeasurementNStar::Id() const
+{
+   return "measurementNStar";
+}
+
+int SSMeasurementNStar::Precision() const
+{
+   return 4;
+}
+
+bool SSMeasurementNStar::ScientificNotation() const
+{
+   return true;
+}
+
+double SSMeasurementNStar::DefaultValue() const
+{
+   return 0.0;
+}
+
+bool SSMeasurementNStar::IsReadOnly() const
 {
    return true;
 }
@@ -2686,7 +2892,34 @@ bool SSMeasurementAltitude::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
+SSMeasurementUnused01::SSMeasurementUnused01( MetaTable* T ) : MetaDouble( T )
+{
+   TheSSMeasurementUnused01Parameter = this;
+}
+
+IsoString SSMeasurementUnused01::Id() const
+{
+   return "measurementUnused01";
+}
+
+int SSMeasurementUnused01::Precision() const
+{
+   return 0;
+}
+
+double SSMeasurementUnused01::DefaultValue() const
+{
+   return 0;
+}
+
+bool SSMeasurementUnused01::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorParameters.cpp - Released 2021-12-29T20:37:28Z
+// EOF SubframeSelectorParameters.cpp - Released 2022-03-12T18:59:53Z

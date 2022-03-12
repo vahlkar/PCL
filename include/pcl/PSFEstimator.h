@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.19
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// pcl/PSFEstimator.h - Released 2022-01-24T22:43:24Z
+// pcl/PSFEstimator.h - Released 2022-03-12T18:59:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -130,6 +130,14 @@ public:
    /*!
     * Returns the type of point spread function (PSF) used by this estimator.
     * Elliptical PSFs are always used for PSF-based evaluation.
+    *
+    * This implementation supports the special PSFunction::Auto PSF type. When
+    * this type is selected, a series of different PSFs will be fitted for each
+    * source, and the fit that leads to the least absolute difference among
+    * function values and sampled pixel values will be used for estimation.
+    * Currently the following functions are tested in this special mode:
+    * Gaussian, Lorentzian, and Moffat functions with beta shape parameters of
+    * 1.5, 4 and 10.
     *
     * The default PSF type is PSFunction::Moffat4.
     */
@@ -270,6 +278,31 @@ public:
    }
 
    /*!
+    * Returns the growing factor for expansion/contraction of the PSF flux
+    * measurement region, in units of the Full Width at Tenth Maximum (FWTM),
+    * assuming a normalized PSF of unit height.
+    *
+    * The default value of this parameter is 1.0, meaning that flux is measured
+    * exclusively for pixels within the elliptical region defined at one tenth
+    * of the fitted PSF maximum.
+    */
+   float GrowthFactorForFluxMeasurement() const
+   {
+      return m_growthForFlux;
+   }
+
+   /*!
+    * Sets a new value of the growing factor for the PSF flux measurement
+    * region. See GrowthFactorForFluxMeasurement() for a description of this
+    * parameter. The valid range for the specified factor \a k is [0.5,2.0].
+    */
+   void SetGrowthFactorForFluxMeasurement( float k )
+   {
+      PCL_PRECONDITION( k >= 0.5 && k <= 2.0 )
+      m_growthForFlux = Range( k, 0.5F, 2.0F );
+   }
+
+   /*!
     * Returns the maximum number of stars that will be measured. Returns zero
     * if no limit has been set on the maximum number of PSF measurements.
     *
@@ -335,9 +368,10 @@ protected:
    mutable pcl::StarDetector m_starDetector;
            psf_function      m_psfType = PSFunction::Moffat4;
            float             m_psfCentroidTolerance = 1.5F;
-           float             m_saturationThreshold = 0.75;
+           float             m_saturationThreshold = 0.75F;
            bool              m_saturationRelative = true;
            float             m_rejectionLimit = 1.0F;
+           float             m_growthForFlux = 1.0F;
            int               m_maxStars = 0;
            bool              m_weighted = false;
 
@@ -355,4 +389,4 @@ protected:
 #endif   // __PCL_PSFEstimator_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFEstimator.h - Released 2022-01-24T22:43:24Z
+// EOF pcl/PSFEstimator.h - Released 2022-03-12T18:59:29Z

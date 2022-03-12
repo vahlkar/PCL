@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.19
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// pcl/MetaModule.h - Released 2022-01-24T22:43:24Z
+// pcl/MetaModule.h - Released 2022-03-12T18:59:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -662,6 +662,23 @@ public:
     */
    Variant EvaluateScript( const String& sourceCode, const IsoString& language = IsoString() );
 
+   /*!
+    * Returns true iff the module has the specified security \a entitlement.
+    *
+    * Entitlements are special permissions granted to installed modules by the
+    * PixInsight core application, as part of the implemented code security
+    * infrastructure.
+    *
+    * An entitlement may be necessary to perform certain operations considered
+    * potentially dangerous, either for the user or for the PixInsight
+    * platform. Entitlements can also be required by running process and format
+    * instances to perform specific actions.
+    *
+    * String representations of entitlements normally follow the inverse URL
+    * format. For example: "com.pixinsight.security.pcl.experimental-features".
+    */
+   bool HasEntitlement( const IsoString& entitlement );
+
 private:
 
    void PerformAPIDefinitions() const override;
@@ -1017,4 +1034,4 @@ namespace InstallMode
 #endif   // __PCL_MetaModule_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MetaModule.h - Released 2022-01-24T22:43:24Z
+// EOF pcl/MetaModule.h - Released 2022-03-12T18:59:29Z

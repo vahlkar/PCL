@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// DynamicPSFInterface.h - Released 2021-12-29T20:37:28Z
+// DynamicPSFInterface.h - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -121,6 +121,10 @@ private:
 
    DynamicPSFInstance instance;
 
+   bool m_showFWHM = true;
+   bool m_showFWTM = true;
+   bool m_showBestFit = true;
+
    struct GUIData
    {
       GUIData( DynamicPSFInterface& );
@@ -167,6 +171,10 @@ private:
                      CheckBox          Lorentzian_CheckBox;
                HorizontalSizer   AutoVariableShapePSF_Sizer;
                   CheckBox          AutoVariableShapePSF_CheckBox;
+               HorizontalSizer   DrawEllipses_Sizer;
+                  CheckBox          ShowFWHM_CheckBox;
+                  CheckBox          ShowFWTM_CheckBox;
+                  CheckBox          ShowBestFit_CheckBox;
 
          SectionBar        StarDetectionParameters_SectionBar;
          Control           StarDetectionParameters_Control;
@@ -201,18 +209,18 @@ private:
 
    void SetPSFunction( PSFData::psf_function, bool );
 
-   void __CurrentNodeUpdated( TreeBox& sender, TreeBox::Node& current, TreeBox::Node& oldCurrent );
-   void __NodeActivated( TreeBox& sender, TreeBox::Node& node, int col );
-   void __NodeDoubleClicked( TreeBox& sender, TreeBox::Node& node, int col );
-   void __NodeExpanded( TreeBox& sender, TreeBox::Node& node );
-   void __NodeCollapsed( TreeBox& sender, TreeBox::Node& node );
-   void __NodeSelectionUpdated( TreeBox& sender );
-   void __Click( Button& sender, bool checked );
-   void __NumericEdit_ValueUpdated( NumericEdit& sender, double value );
-   void __SpinBox_ValueUpdated( SpinBox& sender, int value );
-   void __ToggleSection( SectionBar& sender, Control& section, bool start );
-   void __ItemSelected( ComboBox& sender, int itemIndex );
-   void __EditCompleted( Edit& sender );
+   void e_CurrentNodeUpdated( TreeBox& sender, TreeBox::Node& current, TreeBox::Node& oldCurrent );
+   void e_NodeActivated( TreeBox& sender, TreeBox::Node& node, int col );
+   void e_NodeDoubleClicked( TreeBox& sender, TreeBox::Node& node, int col );
+   void e_NodeExpanded( TreeBox& sender, TreeBox::Node& node );
+   void e_NodeCollapsed( TreeBox& sender, TreeBox::Node& node );
+   void e_NodeSelectionUpdated( TreeBox& sender );
+   void e_Click( Button& sender, bool checked );
+   void e_NumericEdit_ValueUpdated( NumericEdit& sender, double value );
+   void e_SpinBox_ValueUpdated( SpinBox& sender, int value );
+   void e_ToggleSection( SectionBar& sender, Control& section, bool start );
+   void e_ItemSelected( ComboBox& sender, int itemIndex );
+   void e_EditCompleted( Edit& sender );
 
    // -------------------------------------------------------------------------
 
@@ -539,6 +547,7 @@ private:
          collection.Update();
    }
 
+   void DrawPSF( VectorGraphics& g, double penWidth, const Star&, const PSF& psf, ImageWindow& ) const;
    void DrawStar( VectorGraphics&, double penWidth, const Star&, ImageWindow&, const Rect& r0 ) const;
 
    Star* StarFromTreeBoxNode( TreeBox::Node& );
@@ -568,4 +577,4 @@ PCL_END_LOCAL
 #endif   // __DynamicPSFInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF DynamicPSFInterface.h - Released 2021-12-29T20:37:28Z
+// EOF DynamicPSFInterface.h - Released 2022-03-12T18:59:53Z

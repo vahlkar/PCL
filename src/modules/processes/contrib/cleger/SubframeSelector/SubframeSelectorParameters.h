@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.7.3
+// Standard SubframeSelector Process Module Version 1.8.0
 // ----------------------------------------------------------------------------
-// SubframeSelectorParameters.h - Released 2021-12-29T20:37:28Z
+// SubframeSelectorParameters.h - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -142,6 +142,32 @@ public:
 };
 
 extern SSSubframePath* TheSSSubframePathParameter;
+
+// ----------------------------------------------------------------------------
+
+class SSLocalNormalizationDataPath : public MetaString
+{
+public:
+
+   SSLocalNormalizationDataPath( MetaTable* );
+
+   IsoString Id() const override;
+};
+
+extern SSLocalNormalizationDataPath* TheSSLocalNormalizationDataPathParameter;
+
+// ----------------------------------------------------------------------------
+
+class SSDrizzlePath : public MetaString
+{
+public:
+
+   SSDrizzlePath( MetaTable* );
+
+   IsoString Id() const override;
+};
+
+extern SSDrizzlePath* TheSSDrizzlePathParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -878,20 +904,25 @@ public:
           EccentricityMeanDev,
           StarResidualMeanDev,
           PSFSignalWeight,
-          PSFSignalPowerWeight,
           Azimuth,
           Altitude,
           PSFFlux,
           PSFFluxPower,
+          PSFTotalMeanFlux,
+          PSFTotalMeanPowerFlux,
+          PSFCount,
+          MStar,
+          NStar,
+          PSFSNR,
           NumberOfItems,
           Default = Index };
 
    SSSortingProperty( MetaProcess* );
 
    IsoString Id() const override;
-   IsoString ElementAliases() const override;
    size_type NumberOfElements() const override;
    IsoString ElementId( size_type ) const override;
+   IsoString ElementAliases() const override;
    int ElementValue( size_type ) const override;
    size_type DefaultValueIndex() const override;
 
@@ -920,19 +951,24 @@ public:
           EccentricityMeanDev,
           StarResidualMeanDev,
           PSFSignalWeight,
-          PSFSignalPowerWeight,
           Azimuth,
           Altitude,
           PSFFlux,
           PSFFluxPower,
+          PSFTotalMeanFlux,
+          PSFTotalMeanPowerFlux,
+          PSFCount,
+          MStar,
+          NStar,
+          PSFSNR,
           NumberOfItems,
           Default = PSFSignalWeight };
 
    SSGraphPropertyBase( MetaProcess* );
 
-   IsoString ElementAliases() const override;
    size_type NumberOfElements() const override;
    IsoString ElementId( size_type ) const override;
+   IsoString ElementAliases() const override;
    int ElementValue( size_type ) const override;
    size_type DefaultValueIndex() const override;
 
@@ -1173,21 +1209,20 @@ extern SSMeasurementPSFSignalWeight* TheSSMeasurementPSFSignalWeightParameter;
 
 // ----------------------------------------------------------------------------
 
-class SSMeasurementPSFSignalPowerWeight : public MetaDouble
+class SSMeasurementPSFSNR : public MetaDouble
 {
 public:
 
-   SSMeasurementPSFSignalPowerWeight( MetaTable* );
+   SSMeasurementPSFSNR( MetaTable* );
 
    IsoString Id() const override;
-   IsoString Aliases() const override;
    int Precision() const override;
    bool ScientificNotation() const override;
    double DefaultValue() const override;
    bool IsReadOnly() const override;
 };
 
-extern SSMeasurementPSFSignalPowerWeight* TheSSMeasurementPSFSignalPowerWeightParameter;
+extern SSMeasurementPSFSNR* TheSSMeasurementPSFSNRParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -1222,6 +1257,91 @@ public:
 };
 
 extern SSMeasurementPSFFluxPower* TheSSMeasurementPSFFluxPowerParameter;
+
+// ----------------------------------------------------------------------------
+
+class SSMeasurementPSFTotalMeanFlux : public MetaDouble
+{
+public:
+
+   SSMeasurementPSFTotalMeanFlux( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   double DefaultValue() const override;
+   bool IsReadOnly() const override;
+};
+
+extern SSMeasurementPSFTotalMeanFlux* TheSSMeasurementPSFTotalMeanFluxParameter;
+
+// ----------------------------------------------------------------------------
+
+class SSMeasurementPSFTotalMeanPowerFlux : public MetaDouble
+{
+public:
+
+   SSMeasurementPSFTotalMeanPowerFlux( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   double DefaultValue() const override;
+   bool IsReadOnly() const override;
+};
+
+extern SSMeasurementPSFTotalMeanPowerFlux* TheSSMeasurementPSFTotalMeanPowerFluxParameter;
+
+// ----------------------------------------------------------------------------
+
+class SSMeasurementPSFCount : public MetaUInt32
+{
+public:
+
+   SSMeasurementPSFCount( MetaTable* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   bool IsReadOnly() const override;
+};
+
+extern SSMeasurementPSFCount* TheSSMeasurementPSFCountParameter;
+
+// ----------------------------------------------------------------------------
+
+class SSMeasurementMStar : public MetaDouble
+{
+public:
+
+   SSMeasurementMStar( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   double DefaultValue() const override;
+   bool IsReadOnly() const override;
+};
+
+extern SSMeasurementMStar* TheSSMeasurementMStarParameter;
+
+// ----------------------------------------------------------------------------
+
+class SSMeasurementNStar : public MetaDouble
+{
+public:
+
+   SSMeasurementNStar( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   double DefaultValue() const override;
+   bool IsReadOnly() const override;
+};
+
+extern SSMeasurementNStar* TheSSMeasurementNStarParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -1439,6 +1559,22 @@ extern SSMeasurementAltitude* TheSSMeasurementAltitudeParameter;
 
 // ----------------------------------------------------------------------------
 
+class SSMeasurementUnused01 : public MetaDouble
+{
+public:
+
+   SSMeasurementUnused01( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   bool IsReadOnly() const override;
+};
+
+extern SSMeasurementUnused01* TheSSMeasurementUnused01Parameter;
+
+// ----------------------------------------------------------------------------
+
 PCL_END_LOCAL
 
 } // pcl
@@ -1446,4 +1582,4 @@ PCL_END_LOCAL
 #endif   // __SubframeSelectorParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorParameters.h - Released 2021-12-29T20:37:28Z
+// EOF SubframeSelectorParameters.h - Released 2022-03-12T18:59:53Z

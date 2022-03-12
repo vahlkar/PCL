@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.7.3
+// Standard SubframeSelector Process Module Version 1.8.0
 // ----------------------------------------------------------------------------
-// SubframeSelectorInstance.cpp - Released 2021-12-29T20:37:28Z
+// SubframeSelectorInstance.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -53,12 +53,14 @@
 #include <pcl/ATrousWaveletTransform.h>
 #include <pcl/Console.h>
 #include <pcl/Cryptography.h>
+#include <pcl/DrizzleData.h>
 #include <pcl/ElapsedTime.h>
 #include <pcl/ErrorHandler.h>
 #include <pcl/FileFormat.h>
 #include <pcl/FileFormatInstance.h>
 #include <pcl/Graphics.h>
 #include <pcl/ICCProfile.h>
+#include <pcl/LocalNormalizationData.h>
 #include <pcl/MessageBox.h>
 #include <pcl/MetaModule.h>
 #include <pcl/PSFFit.h>
@@ -303,12 +305,18 @@ private:
          size_type                 m_index;
          String                    m_filePath;
          ImageVariant              m_subframe;
+         double                    m_pedestal = 0; // 16-bit DN
          double                    m_noise = 0;
          double                    m_noiseRatio = 0;
          double                    m_psfSignalWeight = 0;
-         double                    m_psfSignalPowerWeight = 0;
+         double                    m_psfSNR = 0;
          double                    m_psfFlux = 0;
          double                    m_psfFluxPower = 0;
+         double                    m_psfTotalMeanFlux = 0;
+         double                    m_psfTotalMeanPowerFlux = 0;
+         unsigned                  m_psfCount = 0;
+         double                    m_MStar;
+         double                    m_NStar;
          double                    m_snrWeight = 0;
          MeasureData               m_outputData;
          bool                      m_success = false;
@@ -320,7 +328,7 @@ private:
       Console console;
       console.WriteLn( "<end><cbr>* Loading subframe file: <raw>" + m_filePath + "</raw>" );
 
-      FileFormat format( File::ExtractExtension( m_filePath ), true, false );
+      FileFormat format( File::ExtractExtension( m_filePath ), true/*read*/, false/*write*/ );
       FileFormatInstance file( format );
 
       ImageDescriptionArray images;
@@ -362,16 +370,12 @@ private:
       }
 
       /*
-       * Optional pedestal subtraction.
+       * Optional pedestal.
        */
       switch ( m_instance.p_pedestalMode )
       {
       case SSPedestalMode::Literal:
-         if ( m_instance.p_pedestal != 0 )
-         {
-            console.NoteLn( String().Format( "* Subtracting pedestal: %d DN", m_instance.p_pedestal ) );
-            m_subframe.Apply( m_instance.p_pedestal/65535.0, ImageOp::Sub );
-         }
+         m_pedestal = m_instance.p_pedestal;
          break;
       case SSPedestalMode::Keyword:
       case SSPedestalMode::CustomKeyword:
@@ -379,24 +383,22 @@ private:
          {
             IsoString keyName( (m_instance.p_pedestalMode == SSPedestalMode::Keyword) ?
                                     "PEDESTAL" : m_instance.p_pedestalKeyword );
-            double d = 0;
             for ( const FITSHeaderKeyword& keyword : keywords )
                if ( !keyword.name.CompareIC( keyName ) )
                   if ( keyword.IsNumeric() )
-                     if ( keyword.GetNumericValue( d ) ) // GetNumericValue() sets d=0 if keyword cannot be converted
+                     if ( keyword.GetNumericValue( m_pedestal ) ) // GetNumericValue() sets m_pedestal=0 if keyword cannot be converted
                         break;
-            if ( d != 0 )
+            if ( m_pedestal != 0 )
             {
                /*
                 * Silently be compatible with acquisition applications that
                 * write negative PEDESTAL keyword values.
                 */
                if ( m_instance.p_pedestalMode == SSPedestalMode::Keyword )
-                  if ( d < 0 )
-                     d = -d;
+                  if ( m_pedestal < 0 )
+                     m_pedestal = -m_pedestal;
 
-               console.NoteLn( String().Format( "* Subtracting pedestal keyword '%s': %.4f DN", keyName.c_str(), d ) );
-               m_subframe.Apply( d/65535.0, ImageOp::Sub );
+               console.NoteLn( String().Format( "* Retrieved pedestal keyword '%s': %.4f DN", keyName.c_str(), m_pedestal ) );
             }
          }
          break;
@@ -409,10 +411,14 @@ private:
       DVector noiseRatios( 0.0, m_subframe.NumberOfNominalChannels() );
       DVector noiseScaleLows( 0.0, m_subframe.NumberOfNominalChannels() );
       DVector noiseScaleHighs( 0.0, m_subframe.NumberOfNominalChannels() );
-      DVector psfSignalEstimates( 0.0, m_subframe.NumberOfNominalChannels() );
-      DVector psfSignalPowerEstimates( 0.0, m_subframe.NumberOfNominalChannels() );
-      DVector psfFluxEstimates( 0.0, m_subframe.NumberOfNominalChannels() );
-      DVector psfFluxPowerEstimates( 0.0, m_subframe.NumberOfNominalChannels() );
+      DVector psfTotalFluxEstimates( 0.0, m_subframe.NumberOfNominalChannels() );
+      DVector psfTotalPowerFluxEstimates( 0.0, m_subframe.NumberOfNominalChannels() );
+      DVector psfTotalMeanFluxEstimates( 0.0, m_subframe.NumberOfNominalChannels() );
+      DVector psfTotalMeanPowerFluxEstimates( 0.0, m_subframe.NumberOfNominalChannels() );
+      UIVector psfCounts( 0, m_subframe.NumberOfNominalChannels() );
+      DVector MStarEstimates( 0.0, m_subframe.NumberOfNominalChannels() );
+      DVector NStarEstimates( 0.0, m_subframe.NumberOfNominalChannels() );
+
       for ( int c = 0; c < m_subframe.NumberOfNominalChannels(); ++c )
       {
          IsoString keyName = IsoString().Format( "NOISE%02d", c + cfaSourceChannel );
@@ -451,30 +457,12 @@ private:
                break;
             }
 
-         keyName = IsoString().Format( "PSFSGL%02d", c + cfaSourceChannel );
-         for ( const FITSHeaderKeyword& keyword : keywords )
-            if ( !keyword.name.CompareIC( keyName ) )
-            {
-               if ( keyword.IsNumeric() )
-                  keyword.GetNumericValue( psfSignalEstimates[c] );
-               break;
-            }
-
-         keyName = IsoString().Format( "PSFSGP%02d", c + cfaSourceChannel );
-         for ( const FITSHeaderKeyword& keyword : keywords )
-            if ( !keyword.name.CompareIC( keyName ) )
-            {
-               if ( keyword.IsNumeric() )
-                  keyword.GetNumericValue( psfSignalPowerEstimates[c] );
-               break;
-            }
-
          keyName = IsoString().Format( "PSFFLX%02d", c + cfaSourceChannel );
          for ( const FITSHeaderKeyword& keyword : keywords )
             if ( !keyword.name.CompareIC( keyName ) )
             {
                if ( keyword.IsNumeric() )
-                  keyword.GetNumericValue( psfFluxEstimates[c] );
+                  keyword.GetNumericValue( psfTotalFluxEstimates[c] );
                break;
             }
 
@@ -483,7 +471,56 @@ private:
             if ( !keyword.name.CompareIC( keyName ) )
             {
                if ( keyword.IsNumeric() )
-                  keyword.GetNumericValue( psfFluxPowerEstimates[c] );
+                  keyword.GetNumericValue( psfTotalPowerFluxEstimates[c] );
+               break;
+            }
+
+         keyName = IsoString().Format( "PSFMFL%02d", c + cfaSourceChannel );
+         for ( const FITSHeaderKeyword& keyword : keywords )
+            if ( !keyword.name.CompareIC( keyName ) )
+            {
+               if ( keyword.IsNumeric() )
+                  keyword.GetNumericValue( psfTotalMeanFluxEstimates[c] );
+               break;
+            }
+
+         keyName = IsoString().Format( "PSFMFP%02d", c + cfaSourceChannel );
+         for ( const FITSHeaderKeyword& keyword : keywords )
+            if ( !keyword.name.CompareIC( keyName ) )
+            {
+               if ( keyword.IsNumeric() )
+                  keyword.GetNumericValue( psfTotalMeanPowerFluxEstimates[c] );
+               break;
+            }
+
+         keyName = IsoString().Format( "PSFSGN%02d", c + cfaSourceChannel );
+         for ( const FITSHeaderKeyword& keyword : keywords )
+            if ( !keyword.name.CompareIC( keyName ) )
+            {
+               if ( keyword.IsNumeric() )
+               {
+                  double x;
+                  keyword.GetNumericValue( x );
+                  psfCounts[c] = unsigned( x );
+               }
+               break;
+            }
+
+         keyName = IsoString().Format( "PSFMST%02d", c + cfaSourceChannel );
+         for ( const FITSHeaderKeyword& keyword : keywords )
+            if ( !keyword.name.CompareIC( keyName ) )
+            {
+               if ( keyword.IsNumeric() )
+                  keyword.GetNumericValue( MStarEstimates[c] );
+               break;
+            }
+
+         keyName = IsoString().Format( "PSFNST%02d", c + cfaSourceChannel );
+         for ( const FITSHeaderKeyword& keyword : keywords )
+            if ( !keyword.name.CompareIC( keyName ) )
+            {
+               if ( keyword.IsNumeric() )
+                  keyword.GetNumericValue( NStarEstimates[c] );
                break;
             }
       }
@@ -493,17 +530,22 @@ private:
        * noise estimates if available. For color images, extract the HSI
        * intensity component and provide coherent estimates if available.
        */
-      double psfSignal, psfSignalPower, psfFlux, psfFluxPower, noiseScaleLow, noiseScaleHigh;
+      double psfTotalFlux, psfTotalPowerFlux, psfTotalMeanFlux, psfTotalMeanPowerFlux,
+             MStar, NStar, noiseScaleLow, noiseScaleHigh;
+      unsigned psfCount;
       if ( m_subframe.NumberOfNominalChannels() == 1 )
       {
          m_noise = noiseEstimates[0];
          m_noiseRatio = noiseRatios[0];
          noiseScaleLow = noiseScaleLows[0];
          noiseScaleHigh = noiseScaleHighs[0];
-         psfSignal = psfSignalEstimates[0];
-         psfSignalPower = psfSignalPowerEstimates[0];
-         psfFlux = psfFluxEstimates[0];
-         psfFluxPower = psfFluxPowerEstimates[0];
+         psfTotalFlux = psfTotalFluxEstimates[0];
+         psfTotalPowerFlux = psfTotalPowerFluxEstimates[0];
+         psfTotalMeanFlux = psfTotalMeanFluxEstimates[0];
+         psfTotalMeanPowerFlux = psfTotalMeanPowerFluxEstimates[0];
+         psfCount = psfCounts[0];
+         MStar = MStarEstimates[0];
+         NStar = NStarEstimates[0];
       }
       else
       {
@@ -515,10 +557,13 @@ private:
          m_noiseRatio = 0.5*(noiseRatios.MinComponent() + noiseRatios.MaxComponent());
          noiseScaleLow = 0.5*(noiseScaleLows.MinComponent() + noiseScaleLows.MaxComponent());
          noiseScaleHigh = 0.5*(noiseScaleHighs.MinComponent() + noiseScaleHighs.MaxComponent());
-         psfSignal = 0.5*(psfSignalEstimates.MinComponent() + psfSignalEstimates.MaxComponent());
-         psfSignalPower = 0.5*(psfSignalPowerEstimates.MinComponent() + psfSignalPowerEstimates.MaxComponent());
-         psfFlux = 0.5*(psfFluxEstimates.MinComponent() + psfFluxEstimates.MaxComponent());
-         psfFluxPower = 0.5*(psfFluxPowerEstimates.MinComponent() + psfFluxPowerEstimates.MaxComponent());
+         psfTotalFlux = 0.5*(psfTotalFluxEstimates.MinComponent() + psfTotalFluxEstimates.MaxComponent());
+         psfTotalPowerFlux = 0.5*(psfTotalPowerFluxEstimates.MinComponent() + psfTotalPowerFluxEstimates.MaxComponent());
+         psfTotalMeanFlux = 0.5*(psfTotalMeanFluxEstimates.MinComponent() + psfTotalMeanFluxEstimates.MaxComponent());
+         psfTotalMeanPowerFlux = 0.5*(psfTotalMeanPowerFluxEstimates.MinComponent() + psfTotalMeanPowerFluxEstimates.MaxComponent());
+         psfCount = RoundInt( 0.5*(psfCounts.MinComponent() + psfCounts.MaxComponent()) );
+         MStar = 0.5*(MStarEstimates.MinComponent() + MStarEstimates.MaxComponent());
+         NStar = 0.5*(NStarEstimates.MinComponent() + NStarEstimates.MaxComponent());
       }
 
       if ( 1 + m_noise != 1 )
@@ -526,22 +571,35 @@ private:
          /*
           * Compute PSF signal estimates if not available.
           */
-         if ( psfSignal == 0 || psfSignalPower == 0 || psfFlux == 0 || psfFluxPower == 0 )
+         if ( psfTotalFlux <= 0 || psfTotalPowerFlux <= 0 ||
+              psfTotalMeanFlux <= 0 || psfTotalMeanPowerFlux <= 0 ||
+              MStar <= 0 || NStar <= 0 || psfCount < 1 )
          {
             Console().WarningLn( "<end><cbr>** Warning: PSF signal estimates are not available in the image metadata and are being "
-                                 "calculated from possibly non-raw or uncalibrated data. Image weights can be wrong or inaccurate." );
+                                 "calculated from possibly non-raw or uncalibrated data. Image weights can be inaccurate." );
             PSFSignalEstimator E;
             PSFSignalEstimator::Estimates e = E( m_subframe );
-            psfSignal = e.mean;
-            psfSignalPower = e.power;
-            psfFlux = e.flux;
-            psfFluxPower = e.powerFlux;
+            psfTotalFlux = e.totalFlux;
+            psfTotalPowerFlux = e.totalPowerFlux;
+            psfTotalMeanFlux = e.totalMeanFlux;
+            psfTotalMeanPowerFlux = e.totalMeanPowerFlux;
+            psfCount = e.count;
+            MStar = e.MStar;
+            NStar = e.NStar;
          }
 
-         m_psfSignalWeight = psfSignal/m_noise;
-         m_psfSignalPowerWeight = psfSignalPower/m_noise/m_noise;
-         m_psfFlux = psfFlux;
-         m_psfFluxPower = psfFluxPower;
+         PSFSignalEstimator::Estimates E{ psfTotalFlux, psfTotalPowerFlux,
+                                          psfTotalMeanFlux, psfTotalMeanPowerFlux,
+                                          MStar, NStar, int( psfCount ) };
+         m_psfSignalWeight = PSFSignalEstimator::PSFSignalWeight( E, m_noise );
+         m_psfSNR = PSFSignalEstimator::PSFSNR( E, m_noise );
+         m_psfFlux = psfTotalFlux;
+         m_psfFluxPower = psfTotalPowerFlux;
+         m_psfTotalMeanFlux = psfTotalMeanFlux;
+         m_psfTotalMeanPowerFlux = psfTotalMeanPowerFlux;
+         m_psfCount = psfCount;
+         m_MStar = MStar;
+         m_NStar = NStar;
 
          /*
           * Compute noise scaling factors if not available.
@@ -549,7 +607,7 @@ private:
          if ( noiseScaleLow == 0 || noiseScaleHigh == 0 )
          {
             Console().WarningLn( "<end><cbr>** Warning: Noise scaling factors are not available in the image metadata and are being "
-                                 "calculated from possibly non-raw or uncalibrated data. Image weights can be wrong or inaccurate." );
+                                 "calculated from possibly non-raw or uncalibrated data. Image weights can be inaccurate." );
 
             const double clipLow = 2.0/65535;
             const double clipHigh = 1.0 - 2.0/65535;
@@ -573,7 +631,7 @@ private:
          /*
           * SNR estimate
           */
-         double e = (noiseScaleLow + noiseScaleHigh)/m_noise;
+         double e = double( TwoSidedEstimate( noiseScaleLow, noiseScaleHigh ) )/m_noise;
          if ( IsFinite( e ) && 1 + e*e != 1 )
             m_snrWeight = e*e;
       }
@@ -692,7 +750,7 @@ private:
       else
       {
          Console().WarningLn( "<end><cbr>** Warning: Noise estimates are not available in the image metadata and are being "
-                              "calculated from possibly non-raw or uncalibrated data. Image weights can be wrong or inaccurate." );
+                              "calculated from possibly non-raw or uncalibrated data. Image weights can be inaccurate." );
          double noiseEstimate = 0;
          double noiseFraction = 0;
          double noiseEstimateKS = 0;
@@ -728,23 +786,34 @@ private:
          m_outputData.noiseRatio = noiseFraction;
       }
 
-      if ( m_psfSignalWeight > 0 && m_psfSignalPowerWeight > 0 && m_psfFlux > 0 && m_psfFluxPower > 0 )
+      if ( m_psfSignalWeight > 0 && m_psfSNR > 0 && m_psfFlux > 0 && m_psfFluxPower > 0 &&
+           m_psfTotalMeanFlux > 0 && m_psfTotalMeanPowerFlux > 0 && m_psfCount > 0 )
       {
          m_outputData.psfSignalWeight = m_psfSignalWeight;
-         m_outputData.psfSignalPowerWeight = m_psfSignalPowerWeight;
+         m_outputData.psfSNR = m_psfSNR;
          m_outputData.psfFlux = m_psfFlux;
          m_outputData.psfFluxPower = m_psfFluxPower;
+         m_outputData.psfTotalMeanFlux = m_psfTotalMeanFlux;
+         m_outputData.psfTotalMeanPowerFlux = m_psfTotalMeanPowerFlux;
+         m_outputData.psfCount = m_psfCount;
+         m_outputData.MStar = m_MStar;
+         m_outputData.NStar = m_NStar;
       }
       else
       {
          Console().WarningLn( "<end><cbr>** Warning: PSF signal estimates are not available in the image metadata and are being "
-                              "calculated from possibly non-raw or uncalibrated data. Image weights can be wrong or inaccurate." );
+                              "calculated from possibly non-raw or uncalibrated data. Image weights can be inaccurate." );
          PSFSignalEstimator E;
          PSFSignalEstimator::Estimates e = E( m_subframe );
-         m_outputData.psfSignalWeight = e.mean/m_outputData.noise;
-         m_outputData.psfSignalPowerWeight = e.power/m_outputData.noise/m_outputData.noise;
-         m_outputData.psfFlux = e.flux;
-         m_outputData.psfFluxPower = e.powerFlux;
+         m_outputData.psfSignalWeight = PSFSignalEstimator::PSFSignalWeight( e, m_noise );
+         m_outputData.psfSNR = PSFSignalEstimator::PSFSNR( e, m_noise );
+         m_outputData.psfFlux = e.totalFlux;
+         m_outputData.psfFluxPower = e.totalPowerFlux;
+         m_outputData.psfTotalMeanFlux = e.totalMeanFlux;
+         m_outputData.psfTotalMeanPowerFlux = e.totalMeanPowerFlux;
+         m_outputData.psfCount = e.count;
+         m_outputData.MStar = e.MStar;
+         m_outputData.NStar = e.NStar;
       }
 
       if ( m_snrWeight > 0 )
@@ -757,7 +826,7 @@ private:
           * Noise scaling factors
           */
          Console().WarningLn( "<end><cbr>** Warning: Noise scaling factors are not available in the image metadata and are being "
-                              "calculated from possibly non-raw or uncalibrated data. Image weights can be wrong or inaccurate." );
+                              "calculated from possibly non-raw or uncalibrated data. Image weights can be inaccurate." );
 
          const double clipLow = 2.0/65535;
          const double clipHigh = 1.0 - 2.0/65535;
@@ -788,18 +857,12 @@ private:
 
    void MeasureImage()
    {
+      /*
+       * Reject saturated areas for median calculation. Clipping points are
+       * relative to extreme sample values.
+       */
       double min, max;
       m_subframe.GetExtremeSampleValues( min, max );
-
-      /*
-       * Reject saturated areas for median calculation.
-       *
-       * After pedestal subtraction we may have a statistically significant
-       * amount of negative pixel samples, so the clipping points must be
-       * relative to extreme sample values. This can happen e.g. with very low
-       * SNR calibrated data, where output pedestals have been added with
-       * ImageCalibration.
-       */
       m_subframe.SetRangeClipping( min + 1.0/65535, max - 1.0/65535 );
 
       /*
@@ -817,7 +880,13 @@ private:
       m_subframe.ResetRangeClipping();
 
       /*
-       * Robust noise estimate: Multiresolution support algorithm (MRS)
+       * Subtract a possibly nonzero additive pedestal from the location
+       * estimate. The medianMeanDev property is location-invariant.
+       */
+      m_outputData.median -= m_pedestal/65535.0;
+
+      /*
+       * Robust signal and noise estimates.
        */
       EvaluateSignalAndNoise();
    }
@@ -1084,7 +1153,7 @@ void SubframeSelectorInstance::Measure()
       m_maxFileWriteThreads = Max( 1, PixInsightSettings::GlobalInteger( "Process/MaxFileWriteThreads" ) );
 
    /*
-    * Allow the user to abort the calibration process.
+    * Allow the user to abort the process.
     */
    Console console;
    console.EnableAbort();
@@ -1456,7 +1525,8 @@ public:
 
    SubframeSelectorOutputThread( const SubframeSelectorInstance& instance, size_type itemIndex )
       : m_instance( instance )
-      , m_item( m_instance.o_measures[itemIndex] )
+      , m_item( m_instance.p_subframes[m_instance.o_measures[itemIndex].index] )
+      , m_weight( m_instance.o_measures[itemIndex].weight )
    {
    }
 
@@ -1503,10 +1573,11 @@ public:
 
 private:
 
-   const SubframeSelectorInstance& m_instance;
-   const MeasureItem&              m_item;
-         String                    m_errorInfo;       // last error message
-         bool                      m_success = false; // true if the thread completed execution successfully
+   const SubframeSelectorInstance&               m_instance;
+   const SubframeSelectorInstance::SubframeItem& m_item;
+         double                                  m_weight;
+         String                                  m_errorInfo;
+         bool                                    m_success = false;
 
    void Perform()
    {
@@ -1551,16 +1622,34 @@ private:
          throw Error( m_item.path + ": Unable to determine an output file name." );
 
       /*
-       * Output file path.
+       * Output file paths.
        */
       String outputFilePath = fileDir + fileName + outputFileExtension;
 
+      String outputFilePathXNML;
+      if ( !m_item.nmlPath.IsEmpty() )
+         outputFilePathXNML = fileDir + fileName + ".xnml";
+
+      String outputFilePathXDRZ;
+      if ( !m_item.drzPath.IsEmpty() )
+         outputFilePathXDRZ = fileDir + fileName + ".xdrz";
+
       console.WriteLn( "<end><cbr><br>Input  : <raw>" + m_item.path + "</raw>" );
       console.WriteLn(               "Output : <raw>" + outputFilePath + "</raw>" );
+      if ( !outputFilePathXNML.IsEmpty() )
+      {
+         console.WriteLn(            "Input  : <raw>" + m_item.nmlPath + "</raw>" );
+         console.WriteLn(            "Output : <raw>" + outputFilePathXNML + "</raw>" );
+      }
+      if ( !outputFilePathXDRZ.IsEmpty() )
+      {
+         console.WriteLn(            "Input  : <raw>" + m_item.drzPath + "</raw>" );
+         console.WriteLn(            "Output : <raw>" + outputFilePathXDRZ + "</raw>" );
+      }
 
       /*
-       * Check for an already existing file, and either overwrite it (but show
-       * a warning message if that happens), or find a unique file name,
+       * Check for already existing files, and either overwrite them (but show
+       * warning messages if that happens), or find unique file names,
        * depending on the overwriteExistingFiles parameter.
        */
       UniqueFileChecks checks = File::EnsureNewUniqueFile( outputFilePath, m_instance.p_overwriteExistingFiles );
@@ -1576,6 +1665,32 @@ private:
       }
       else if ( checks.exists )
          console.NoteLn( "* File already exists, writing to: <raw>" + outputFilePath + "</raw>" );
+
+      if ( !outputFilePathXNML.IsEmpty() )
+      {
+         checks = File::EnsureNewUniqueFile( outputFilePathXNML, m_instance.p_overwriteExistingFiles );
+         if ( checks.overwrite )
+         {
+            if ( File::SameFile( m_item.nmlPath, outputFilePathXNML ) )
+               throw Error( "Blocked attempt to overwrite an input file: " + m_item.nmlPath );
+            console.WarningLn( "** Warning: Overwriting existing file." );
+         }
+         else if ( checks.exists )
+            console.NoteLn( "* File already exists, writing to: <raw>" + outputFilePathXNML + "</raw>" );
+      }
+
+      if ( !outputFilePathXDRZ.IsEmpty() )
+      {
+         checks = File::EnsureNewUniqueFile( outputFilePathXDRZ, m_instance.p_overwriteExistingFiles );
+         if ( checks.overwrite )
+         {
+            if ( File::SameFile( m_item.drzPath, outputFilePathXDRZ ) )
+               throw Error( "Blocked attempt to overwrite an input file: " + m_item.drzPath );
+            console.WarningLn( "** Warning: Overwriting existing file." );
+         }
+         else if ( checks.exists )
+            console.NoteLn( "* File already exists, writing to: <raw>" + outputFilePathXDRZ + "</raw>" );
+      }
 
       /*
        * Find installed file formats able to perform the requested read/write
@@ -1684,13 +1799,13 @@ private:
 
          if ( !m_instance.p_outputKeyword.IsEmpty() )
             newKeywords << FITSHeaderKeyword( m_instance.p_outputKeyword,
-                                             String().Format( "%.6f", m_item.weight ),
+                                             String().Format( "%.6f", m_weight ),
                                              "SubframeSelector.weight" );
 
          outputFile.WriteFITSKeywords( newKeywords );
       }
       else
-         console.WarningLn( "** Warning: The output format cannot store FITS header keywords - subframe weight metadata not embedded." );
+         console.WarningLn( "** Warning: The output format cannot store FITS header keywords - subframe weight metadata not embedded" );
 
       /*
        * Preserve an existing ICC profile if possible.
@@ -1703,7 +1818,7 @@ private:
             if ( outputFormat.CanStoreICCProfiles() )
                outputFile.WriteICCProfile( inputProfile );
             else
-               console.WarningLn( "** Warning: The output format cannot store color profiles - original ICC profile not embedded." );
+               console.WarningLn( "** Warning: The output format cannot store color profiles - original ICC profile not embedded" );
       }
 
       /*
@@ -1724,6 +1839,46 @@ private:
          image.ResetSelections();
          if ( !outputFile.WriteImage( image ) || !outputFile.Close() )
             throw CaughtException();
+      }
+
+      if ( !outputFilePathXNML.IsEmpty() )
+      {
+         LocalNormalizationData nml;
+         {
+            static Mutex mutex;
+            static AtomicInt count;
+            volatile AutoLockCounter lock( mutex, count, m_instance.m_maxFileReadThreads );
+            nml.Parse( m_item.nmlPath );
+         }
+
+         nml.SetTargetFilePath( outputFilePath );
+
+         {
+            static Mutex mutex;
+            static AtomicInt count;
+            volatile AutoLockCounter lock( mutex, count, m_instance.m_maxFileWriteThreads );
+            nml.SerializeToFile( outputFilePathXNML );
+         }
+      }
+
+      if ( !outputFilePathXDRZ.IsEmpty() )
+      {
+         DrizzleData drz;
+         {
+            static Mutex mutex;
+            static AtomicInt count;
+            volatile AutoLockCounter lock( mutex, count, m_instance.m_maxFileReadThreads );
+            drz.Parse( m_item.drzPath );
+         }
+
+         drz.SetAlignmentTargetFilePath( outputFilePath );
+
+         {
+            static Mutex mutex;
+            static AtomicInt count;
+            volatile AutoLockCounter lock( mutex, count, m_instance.m_maxFileWriteThreads );
+            drz.SerializeToFile( outputFilePathXDRZ );
+         }
       }
    }
 };
@@ -1751,6 +1906,18 @@ void SubframeSelectorInstance::Output()
             if ( !File::Exists( item.path ) )
                throw Error( "No such file exists on the local filesystem: " + item.path );
             fileNames << File::ExtractNameAndSuffix( item.path );
+            if ( !p_subframes[item.index].nmlPath.IsEmpty() )
+            {
+               if ( !File::Exists( p_subframes[item.index].nmlPath ) )
+                  throw Error( "No such file exists on the local filesystem: " + p_subframes[item.index].nmlPath );
+               fileNames << File::ExtractNameAndSuffix( p_subframes[item.index].nmlPath );
+            }
+            if ( !p_subframes[item.index].drzPath.IsEmpty() )
+            {
+               if ( !File::Exists( p_subframes[item.index].drzPath ) )
+                  throw Error( "No such file exists on the local filesystem: " + p_subframes[item.index].drzPath );
+               fileNames << File::ExtractNameAndSuffix( p_subframes[item.index].drzPath );
+            }
          }
       fileNames.Sort();
       for ( size_type i = 1; i < fileNames.Length(); ++i )
@@ -2078,6 +2245,8 @@ bool SubframeSelectorInstance::ExecuteGlobal()
                throw Error( "No such file exists on the local filesystem: " + subframe.path );
    }
 
+   Console().ResetStatus();
+
    /*
     * Perform the selected routine.
     */
@@ -2112,6 +2281,10 @@ void* SubframeSelectorInstance::LockParameter( const MetaParameter* p, size_type
       return &p_subframes[tableRow].enabled;
    if ( p == TheSSSubframePathParameter )
       return p_subframes[tableRow].path.Begin();
+   if ( p == TheSSLocalNormalizationDataPathParameter )
+      return p_subframes[tableRow].nmlPath.Begin();
+   if ( p == TheSSDrizzlePathParameter )
+      return p_subframes[tableRow].drzPath.Begin();
 
    if ( p == TheSSFileCacheParameter )
       return &p_fileCache;
@@ -2230,12 +2403,22 @@ void* SubframeSelectorInstance::LockParameter( const MetaParameter* p, size_type
       return &o_measures[tableRow].eccentricity;
    if ( p == TheSSMeasurementPSFSignalWeightParameter )
       return &o_measures[tableRow].psfSignalWeight;
-   if ( p == TheSSMeasurementPSFSignalPowerWeightParameter )
-      return &o_measures[tableRow].psfSignalPowerWeight;
+   if ( p == TheSSMeasurementPSFSNRParameter )
+      return &o_measures[tableRow].psfSNR;
    if ( p == TheSSMeasurementPSFFluxParameter )
       return &o_measures[tableRow].psfFlux;
    if ( p == TheSSMeasurementPSFFluxPowerParameter )
       return &o_measures[tableRow].psfFluxPower;
+   if ( p == TheSSMeasurementPSFTotalMeanFluxParameter )
+      return &o_measures[tableRow].psfTotalMeanFlux;
+   if ( p == TheSSMeasurementPSFTotalMeanPowerFluxParameter )
+      return &o_measures[tableRow].psfTotalMeanPowerFlux;
+   if ( p == TheSSMeasurementPSFCountParameter )
+      return &o_measures[tableRow].psfCount;
+   if ( p == TheSSMeasurementMStarParameter )
+      return &o_measures[tableRow].MStar;
+   if ( p == TheSSMeasurementNStarParameter )
+      return &o_measures[tableRow].NStar;
    if ( p == TheSSMeasurementSNRWeightParameter )
       return &o_measures[tableRow].snrWeight;
    if ( p == TheSSMeasurementMedianParameter )
@@ -2260,6 +2443,8 @@ void* SubframeSelectorInstance::LockParameter( const MetaParameter* p, size_type
       return &o_measures[tableRow].azimuth;
    if ( p == TheSSMeasurementAltitudeParameter )
       return &o_measures[tableRow].altitude;
+   if ( p == TheSSMeasurementUnused01Parameter )
+      return &o_measures[tableRow].unused01;
 
    return nullptr;
 }
@@ -2279,6 +2464,18 @@ bool SubframeSelectorInstance::AllocateParameter( size_type sizeOrLength, const 
       p_subframes[tableRow].path.Clear();
       if ( sizeOrLength > 0 )
          p_subframes[tableRow].path.SetLength( sizeOrLength );
+   }
+   else if ( p == TheSSLocalNormalizationDataPathParameter )
+   {
+      p_subframes[tableRow].nmlPath.Clear();
+      if ( sizeOrLength > 0 )
+         p_subframes[tableRow].nmlPath.SetLength( sizeOrLength );
+   }
+   else if ( p == TheSSDrizzlePathParameter )
+   {
+      p_subframes[tableRow].drzPath.Clear();
+      if ( sizeOrLength > 0 )
+         p_subframes[tableRow].drzPath.SetLength( sizeOrLength );
    }
    else if ( p == TheSSPedestalKeywordParameter )
    {
@@ -2367,6 +2564,10 @@ size_type SubframeSelectorInstance::ParameterLength( const MetaParameter* p, siz
       return p_subframes.Length();
    if ( p == TheSSSubframePathParameter )
       return p_subframes[tableRow].path.Length();
+   if ( p == TheSSLocalNormalizationDataPathParameter )
+      return p_subframes[tableRow].nmlPath.Length();
+   if ( p == TheSSDrizzlePathParameter )
+      return p_subframes[tableRow].drzPath.Length();
 
    if ( p == TheSSPedestalKeywordParameter )
       return p_pedestalKeyword.Length();
@@ -2405,4 +2606,4 @@ size_type SubframeSelectorInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInstance.cpp - Released 2021-12-29T20:37:28Z
+// EOF SubframeSelectorInstance.cpp - Released 2022-03-12T18:59:53Z

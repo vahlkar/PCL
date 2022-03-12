@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.8.5
+// Standard PixelMath Process Module Version 1.9.2
 // ----------------------------------------------------------------------------
-// PixelMathInstance.h - Released 2021-12-29T20:37:28Z
+// PixelMathInstance.h - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -69,8 +69,7 @@ class PixelMathInstance : public ProcessImplementation
 {
 public:
 
-   typedef Expression::component_list  component_list;
-   typedef Array<component_list>       rpn_set;
+   typedef Array<ExpressionList> rpn_set;
 
    PixelMathInstance( const MetaProcess* );
    PixelMathInstance( const PixelMathInstance& );
@@ -147,11 +146,16 @@ private:
    static bool s_targetIsColor;
    static RGBColorSystem* s_targetRGBWS;
 
+   void ProcessDirectives( const DirectiveList[] );
+   static void ValidateDirectives( const DirectiveList&, const String& );
+
    void SolveInvariants( rpn_set [], const ImageWindow& targetWindow = ImageWindow::Null() );
    void SolveBranchTargets( rpn_set [] );
 
    void Execute( ImageVariant&, int x0, int y0, int w0, int h0, const rpn_set RPN[] );
    void Execute( int width, int height, int numberOfChannels, const rpn_set RPN[] );
+
+   void Unpragmatize();
 
    friend class PixelMathProcess;
    friend class PixelMathInterface;
@@ -165,4 +169,4 @@ private:
 #endif   // __PixelMathInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF PixelMathInstance.h - Released 2021-12-29T20:37:28Z
+// EOF PixelMathInstance.h - Released 2022-03-12T18:59:53Z

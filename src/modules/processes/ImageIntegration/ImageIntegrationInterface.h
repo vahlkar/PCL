@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.4.3
+// Standard ImageIntegration Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// ImageIntegrationInterface.h - Released 2021-12-29T20:37:28Z
+// ImageIntegrationInterface.h - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -136,22 +136,20 @@ private:
          HorizontalSizer   Normalization_Sizer;
             Label             Normalization_Label;
             ComboBox          Normalization_ComboBox;
-         HorizontalSizer   AdaptiveGridSize_Sizer;
-            Label             AdaptiveGridSize_Label;
-            SpinBox           AdaptiveGridSize_SpinBox;
-         HorizontalSizer   AdaptiveNoScale_Sizer;
-            CheckBox          AdaptiveNoScale_CheckBox;
+//          HorizontalSizer   AdaptiveGridSize_Sizer;
+//             Label             AdaptiveGridSize_Label;
+//             SpinBox           AdaptiveGridSize_SpinBox;
+//          HorizontalSizer   AdaptiveNoScale_Sizer;
+//             CheckBox          AdaptiveNoScale_CheckBox;
          HorizontalSizer   WeightMode_Sizer;
             Label             WeightMode_Label;
             ComboBox          WeightMode_ComboBox;
          HorizontalSizer   WeightKeyword_Sizer;
             Label             WeightKeyword_Label;
             Edit              WeightKeyword_Edit;
-         HorizontalSizer   WeightScale_Sizer;
-            Label             WeightScale_Label;
-            ComboBox          WeightScale_ComboBox;
-         HorizontalSizer   IgnoreNoiseKeywords_Sizer;
-            CheckBox          IgnoreNoiseKeywords_CheckBox;
+//          HorizontalSizer   WeightScale_Sizer;
+//             Label             WeightScale_Label;
+//             ComboBox          WeightScale_ComboBox;
          HorizontalSizer   GenerateIntegratedImage_Sizer;
             CheckBox          GenerateIntegratedImage_CheckBox;
          HorizontalSizer   Generate64BitResult_Sizer;
@@ -162,8 +160,6 @@ private:
             CheckBox          SubtractPedestals_CheckBox;
          HorizontalSizer   TruncateOnOutOfRange_Sizer;
             CheckBox          TruncateOnOutOfRange_CheckBox;
-         HorizontalSizer   EvaluateSNR_Sizer;
-            CheckBox          EvaluateSNR_CheckBox;
          HorizontalSizer   ClosePreviousImages_Sizer;
             CheckBox          ClosePreviousImages_CheckBox;
          HorizontalSizer   AutoMemorySize_Sizer;
@@ -219,7 +215,8 @@ private:
          NumericControl    LinearFitHigh_NumericControl;
          NumericControl    ESDOutliersFraction_NumericControl;
          NumericControl    ESDAlpha_NumericControl;
-         NumericControl    ESDLowRelaxation_NumericControl;
+//          NumericControl    ESDLowRelaxation_NumericControl;
+         NumericControl    RCRLimit_NumericControl;
          NumericControl    RangeLow_NumericControl;
          NumericControl    RangeHigh_NumericControl;
 
@@ -250,6 +247,19 @@ private:
             Label             GrowthHigh_Label;
             SpinBox           GrowthHigh_SpinBox;
 
+      SectionBar        SNREvaluation_SectionBar;
+      Control           SNREvaluation_Control;
+      VerticalSizer     SNREvaluation_Sizer;
+         HorizontalSizer   NoiseEvaluationAlgorithm_Sizer;
+            Label             NoiseEvaluationAlgorithm_Label;
+            ComboBox          NoiseEvaluationAlgorithm_ComboBox;
+         HorizontalSizer   StructureLayers_Sizer;
+            Label             StructureLayers_Label;
+            SpinBox           StructureLayers_SpinBox;
+         HorizontalSizer   PSFType_Sizer;
+            Label             PSFType_Label;
+            ComboBox          PSFType_ComboBox;
+
       SectionBar        ROI_SectionBar;
       Control           ROI_Control;
       VerticalSizer     ROI_Sizer;
@@ -277,24 +287,21 @@ private:
    void UpdateFormatHintsControls();
    void UpdateIntegrationControls();
    void UpdateRejectionControls();
+   void UpdateSNREvaluationControls();
    void UpdateROIControls();
 
    void e_InputImages_CurrentNodeUpdated( TreeBox& sender, TreeBox::Node& current, TreeBox::Node& oldCurrent );
    void e_InputImages_NodeActivated( TreeBox& sender, TreeBox::Node& node, int col );
    void e_InputImages_NodeSelectionUpdated( TreeBox& sender );
    void e_InputImages_Click( Button& sender, bool checked );
-   void e_FormatHints_EditCompleted( Edit& sender );
-   void e_Integration_ItemSelected( ComboBox& sender, int itemIndex );
-   void e_Integration_EditCompleted( Edit& sender );
-   void e_Integration_SpinValueUpdated( SpinBox& sender, int value );
+   void e_EditCompleted( Edit& sender );
+   void e_ItemSelected( ComboBox& sender, int itemIndex );
+   void e_SpinValueUpdated( SpinBox& sender, int value );
    void e_Integration_Click( Button& sender, bool checked );
-   void e_Rejection_ItemSelected( ComboBox& sender, int itemIndex );
-   void e_Rejection_SpinValueUpdated( SpinBox& sender, int value );
-   void e_Rejection_EditValueUpdated( NumericEdit& sender, double value );
    void e_Rejection_Click( Button& sender, bool checked );
-   void e_ROI_Check( SectionBar& sender, bool checked );
-   void e_ROI_SpinValueUpdated( SpinBox& sender, int value );
-   void e_ROI_Click( Button& sender, bool checked );
+   void e_Click( Button& sender, bool checked );
+   void e_EditValueUpdated( NumericEdit& sender, double value );
+   void e_SectionBar_Check( SectionBar& sender, bool checked );
    void e_ToggleSection( SectionBar& sender, Control& section, bool start );
    void e_FileDrag( Control& sender, const Point& pos, const StringList& files, unsigned modifiers, bool& wantsFiles );
    void e_FileDrop( Control& sender, const Point& pos, const StringList& files, unsigned modifiers );
@@ -320,4 +327,4 @@ PCL_END_LOCAL
 #endif   // __ImageIntegrationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationInterface.h - Released 2021-12-29T20:37:28Z
+// EOF ImageIntegrationInterface.h - Released 2022-03-12T18:59:53Z

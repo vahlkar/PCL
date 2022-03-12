@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard Debayer Process Module Version 1.10.2
+// Standard Debayer Process Module Version 1.11.0
 // ----------------------------------------------------------------------------
-// DebayerProcess.cpp - Released 2021-12-29T20:37:28Z
+// DebayerProcess.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -86,13 +86,14 @@ DebayerProcess::DebayerProcess()
    new DebayerNoiseEvaluationAlgorithm( this );
    new DebayerEvaluateSignal( this );
    new DebayerStructureLayers( this );
+   new DebayerSaturationThreshold( this );
+   new DebayerSaturationRelative( this );
    new DebayerNoiseLayers( this );
    new DebayerHotPixelFilterRadius( this );
    new DebayerNoiseReductionFilterRadius( this );
    new DebayerMinStructureSize( this );
    new DebayerPSFType( this );
-   new DebayerPSFRejectionLimit( this );
-   new DebayerPSFHighClippingPoint( this );
+   new DebayerPSFGrowth( this );
    new DebayerMaxStars( this );
    new DebayerInputHints( this );
    new DebayerOutputHints( this );
@@ -115,18 +116,24 @@ DebayerProcess::DebayerProcess()
    new DebayerOutputChannelImageR( this );
    new DebayerOutputChannelImageG( this );
    new DebayerOutputChannelImageB( this );
-   new DebayerPSFSignalEstimateR( this );
-   new DebayerPSFSignalEstimateG( this );
-   new DebayerPSFSignalEstimateB( this );
-   new DebayerPSFSignalPowerEstimateR( this );
-   new DebayerPSFSignalPowerEstimateG( this );
-   new DebayerPSFSignalPowerEstimateB( this );
-   new DebayerPSFFluxEstimateR( this );
-   new DebayerPSFFluxEstimateG( this );
-   new DebayerPSFFluxEstimateB( this );
-   new DebayerPSFFluxPowerEstimateR( this );
-   new DebayerPSFFluxPowerEstimateG( this );
-   new DebayerPSFFluxPowerEstimateB( this );
+   new DebayerPSFTotalFluxEstimateR( this );
+   new DebayerPSFTotalFluxEstimateG( this );
+   new DebayerPSFTotalFluxEstimateB( this );
+   new DebayerPSFTotalPowerFluxEstimateR( this );
+   new DebayerPSFTotalPowerFluxEstimateG( this );
+   new DebayerPSFTotalPowerFluxEstimateB( this );
+   new DebayerPSFTotalMeanFluxEstimateR( this );
+   new DebayerPSFTotalMeanFluxEstimateG( this );
+   new DebayerPSFTotalMeanFluxEstimateB( this );
+   new DebayerPSFTotalMeanPowerFluxEstimateR( this );
+   new DebayerPSFTotalMeanPowerFluxEstimateG( this );
+   new DebayerPSFTotalMeanPowerFluxEstimateB( this );
+   new DebayerPSFMStarEstimateR( this );
+   new DebayerPSFMStarEstimateG( this );
+   new DebayerPSFMStarEstimateB( this );
+   new DebayerPSFNStarEstimateR( this );
+   new DebayerPSFNStarEstimateG( this );
+   new DebayerPSFNStarEstimateB( this );
    new DebayerPSFCountR( this );
    new DebayerPSFCountG( this );
    new DebayerPSFCountB( this );
@@ -148,18 +155,24 @@ DebayerProcess::DebayerProcess()
 
    new DebayerOutputFileData( this );
    new DebayerOutputFilePath( TheDebayerOutputFileDataParameter );
-   new DebayerOutputFilePSFSignalEstimateR( TheDebayerOutputFileDataParameter );
-   new DebayerOutputFilePSFSignalEstimateG( TheDebayerOutputFileDataParameter );
-   new DebayerOutputFilePSFSignalEstimateB( TheDebayerOutputFileDataParameter );
-   new DebayerOutputFilePSFSignalPowerEstimateR( TheDebayerOutputFileDataParameter );
-   new DebayerOutputFilePSFSignalPowerEstimateG( TheDebayerOutputFileDataParameter );
-   new DebayerOutputFilePSFSignalPowerEstimateB( TheDebayerOutputFileDataParameter );
-   new DebayerOutputFilePSFFluxEstimateR( TheDebayerOutputFileDataParameter );
-   new DebayerOutputFilePSFFluxEstimateG( TheDebayerOutputFileDataParameter );
-   new DebayerOutputFilePSFFluxEstimateB( TheDebayerOutputFileDataParameter );
-   new DebayerOutputFilePSFFluxPowerEstimateR( TheDebayerOutputFileDataParameter );
-   new DebayerOutputFilePSFFluxPowerEstimateG( TheDebayerOutputFileDataParameter );
-   new DebayerOutputFilePSFFluxPowerEstimateB( TheDebayerOutputFileDataParameter );
+   new DebayerOutputFilePSFTotalFluxEstimateR( TheDebayerOutputFileDataParameter );
+   new DebayerOutputFilePSFTotalFluxEstimateG( TheDebayerOutputFileDataParameter );
+   new DebayerOutputFilePSFTotalFluxEstimateB( TheDebayerOutputFileDataParameter );
+   new DebayerOutputFilePSFTotalPowerFluxEstimateR( TheDebayerOutputFileDataParameter );
+   new DebayerOutputFilePSFTotalPowerFluxEstimateG( TheDebayerOutputFileDataParameter );
+   new DebayerOutputFilePSFTotalPowerFluxEstimateB( TheDebayerOutputFileDataParameter );
+   new DebayerOutputFilePSFTotalMeanFluxEstimateR( TheDebayerOutputFileDataParameter );
+   new DebayerOutputFilePSFTotalMeanFluxEstimateG( TheDebayerOutputFileDataParameter );
+   new DebayerOutputFilePSFTotalMeanFluxEstimateB( TheDebayerOutputFileDataParameter );
+   new DebayerOutputFilePSFTotalMeanPowerFluxEstimateR( TheDebayerOutputFileDataParameter );
+   new DebayerOutputFilePSFTotalMeanPowerFluxEstimateG( TheDebayerOutputFileDataParameter );
+   new DebayerOutputFilePSFTotalMeanPowerFluxEstimateB( TheDebayerOutputFileDataParameter );
+   new DebayerOutputFilePSFMStarEstimateR( TheDebayerOutputFileDataParameter );
+   new DebayerOutputFilePSFMStarEstimateG( TheDebayerOutputFileDataParameter );
+   new DebayerOutputFilePSFMStarEstimateB( TheDebayerOutputFileDataParameter );
+   new DebayerOutputFilePSFNStarEstimateR( TheDebayerOutputFileDataParameter );
+   new DebayerOutputFilePSFNStarEstimateG( TheDebayerOutputFileDataParameter );
+   new DebayerOutputFilePSFNStarEstimateB( TheDebayerOutputFileDataParameter );
    new DebayerOutputFilePSFCountR( TheDebayerOutputFileDataParameter );
    new DebayerOutputFilePSFCountG( TheDebayerOutputFileDataParameter );
    new DebayerOutputFilePSFCountB( TheDebayerOutputFileDataParameter );
@@ -344,4 +357,4 @@ int DebayerProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DebayerProcess.cpp - Released 2021-12-29T20:37:28Z
+// EOF DebayerProcess.cpp - Released 2022-03-12T18:59:53Z

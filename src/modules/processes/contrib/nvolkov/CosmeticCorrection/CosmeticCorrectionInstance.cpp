@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
 // Standard CosmeticCorrection Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// CosmeticCorrectionInstance.cpp - Released 2021-12-29T20:37:28Z
+// CosmeticCorrectionInstance.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CosmeticCorrection PixInsight module.
 //
@@ -945,7 +945,7 @@ void CosmeticCorrectionInstance::SaveImage( const CCThread* t )
       if ( outputFormat.CanStoreImageProperties() )
          outputFile.WriteImageProperties( inputData.properties );
       else
-         console.WarningLn( "** Warning: The output format cannot store image properties - existing properties not embedded." );
+         console.WarningLn( "** Warning: The output format cannot store image properties - existing properties not embedded" );
 
    if ( outputFormat.CanStoreKeywords() )
    {
@@ -956,13 +956,13 @@ void CosmeticCorrectionInstance::SaveImage( const CCThread* t )
       outputFile.WriteFITSKeywords( keywords );
    }
    else if ( !inputData.keywords.IsEmpty() )
-      console.WarningLn( "** Warning: The output format cannot store FITS keywords - existing keywords not embedded." );
+      console.WarningLn( "** Warning: The output format cannot store FITS keywords - existing keywords not embedded" );
 
    if ( inputData.profile.IsProfile() )
       if ( outputFormat.CanStoreICCProfiles() )
          outputFile.WriteICCProfile( inputData.profile );
       else
-         console.WarningLn( "** Warning: The output format cannot store ICC profiles - existing profile not embedded." );
+         console.WarningLn( "** Warning: The output format cannot store ICC profiles - existing profile not embedded" );
 
    if ( !outputFile.WriteImage( *t->TargetImage() ) || !outputFile.Close() )
       throw CaughtException();
@@ -1301,4 +1301,4 @@ size_type CosmeticCorrectionInstance::ParameterLength( const MetaParameter* p, s
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF CosmeticCorrectionInstance.cpp - Released 2021-12-29T20:37:28Z
+// EOF CosmeticCorrectionInstance.cpp - Released 2022-03-12T18:59:53Z

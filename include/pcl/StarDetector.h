@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.19
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// pcl/StarDetector.h - Released 2022-01-24T22:43:24Z
+// pcl/StarDetector.h - Released 2022-03-12T18:59:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -98,8 +98,8 @@ public:
       float  flux = 0;      //!< Total flux minus local background.
       float  signal = 0;    /*!< Estimated mean signal over the local background within the PSF
                                  fitting region. Nonzero only when PSF fitting is enabled. */
-      float  mad = 0;       /*!< Average absolute deviation of the fitted PSF with respect to
-                                 sampled image data. */
+      float  mad = 0;       /*!< Robust average absolute deviation of the fitted PSF with respect
+                                 to sampled image data. */
       Star*  ref = nullptr; //!< Referenced star, useful for cross-referencing applications.
 
       /*!
@@ -661,4 +661,4 @@ private:
 #endif   // __PCL_StarDetector_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/StarDetector.h - Released 2022-01-24T22:43:24Z
+// EOF pcl/StarDetector.h - Released 2022-03-12T18:59:29Z

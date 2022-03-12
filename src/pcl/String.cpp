@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.19
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// pcl/String.cpp - Released 2022-01-24T22:43:35Z
+// pcl/String.cpp - Released 2022-03-12T18:59:35Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -2598,4 +2598,4 @@ IsoString IsoString::CurrentLocalISO8601DateTime( const ISO8601ConversionOptions
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/String.cpp - Released 2022-01-24T22:43:35Z
+// EOF pcl/String.cpp - Released 2022-03-12T18:59:35Z

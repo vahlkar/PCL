@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.8.0
+// Standard ImageCalibration Process Module Version 1.9.1
 // ----------------------------------------------------------------------------
-// ImageCalibrationInstance.cpp - Released 2021-12-29T20:37:28Z
+// ImageCalibrationInstance.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -55,6 +55,7 @@
 
 #include <pcl/ATrousWaveletTransform.h>
 #include <pcl/AutoPointer.h>
+#include <pcl/AutoStatusCallbackRestorer.h>
 #include <pcl/ErrorHandler.h>
 #include <pcl/GlobalSettings.h>
 #include <pcl/IntegerResample.h>
@@ -62,6 +63,7 @@
 #include <pcl/MetaModule.h>
 #include <pcl/MuteStatus.h>
 #include <pcl/PSFSignalEstimator.h>
+#include <pcl/RobustChauvenetRejection.h>
 #include <pcl/SeparableConvolution.h>
 #include <pcl/SpinStatus.h>
 #include <pcl/Version.h>
@@ -94,6 +96,15 @@ static const float g_5x5B3Spline_hv[] = { 0.0625F, 0.25F, 0.375F, 0.25F, 0.0625F
 static const float g_5x5B3Spline_kj[] =
 { 0.8907F, 0.2007F, 0.0856F, 0.0413F, 0.0205F, 0.0103F, 0.0052F, 0.0026F, 0.0013F, 0.0007F };
 
+// ----------------------------------------------------------------------------
+
+/*
+ * PSF signal evaluation keyword prefixes.
+ */
+static const char* s_psfPrefixes[] = { "PSFFLX", "PSFFLP", "PSFMFL", "PSFMFP", "PSFMST", "PSFNST", "PSFSGN", "PSFSGTYP" };
+
+// ----------------------------------------------------------------------------
+
 /*
  * Maximum dark scaling factor to issue a 'no correlation' warning.
  */
@@ -110,6 +121,11 @@ static const float g_5x5B3Spline_kj[] =
  * disable dark frame optimization.
  */
 #define DARK_COUNT_SMALL      16
+
+/*
+ * The largest automatic pedestal allowed for sanity.
+ */
+#define HUGE_PEDESTAL         1000
 
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
@@ -136,13 +152,14 @@ ImageCalibrationInstance::ImageCalibrationInstance( const MetaProcess* m )
    , p_noiseEvaluationAlgorithm( ICNoiseEvaluationAlgorithm::Default )
    , p_evaluateSignal( TheICEvaluateSignalParameter->DefaultValue() )
    , p_structureLayers( TheICStructureLayersParameter->DefaultValue() )
+   , p_saturationThreshold( TheICSaturationThresholdParameter->DefaultValue() )
+   , p_saturationRelative( TheICSaturationRelativeParameter->DefaultValue() )
    , p_noiseLayers( TheICNoiseLayersParameter->DefaultValue() )
    , p_hotPixelFilterRadius( TheICHotPixelFilterRadiusParameter->DefaultValue() )
    , p_noiseReductionFilterRadius( TheICNoiseReductionFilterRadiusParameter->DefaultValue() )
    , p_minStructureSize( TheICMinStructureSizeParameter->DefaultValue() )
    , p_psfType( ICPSFType::Default )
-   , p_psfRejectionLimit( TheICPSFRejectionLimitParameter->DefaultValue() )
-   , p_psfHighClippingPoint( TheICPSFHighClippingPointParameter->DefaultValue() )
+   , p_psfGrowth( TheICPSFGrowthParameter->DefaultValue() )
    , p_maxStars( TheICMaxStarsParameter->DefaultValue() )
    , p_outputDirectory( TheICOutputDirectoryParameter->DefaultValue() )
    , p_outputExtension( TheICOutputExtensionParameter->DefaultValue() )
@@ -150,6 +167,8 @@ ImageCalibrationInstance::ImageCalibrationInstance( const MetaProcess* m )
    , p_outputPostfix( TheICOutputPostfixParameter->DefaultValue() )
    , p_outputSampleFormat( ICOutputSampleFormat::Default )
    , p_outputPedestal( TheICOutputPedestalParameter->DefaultValue() )
+   , p_outputPedestalMode( ICOutputPedestalMode::Default )
+   , p_autoPedestalThreshold( TheICAutoPedestalThresholdParameter->DefaultValue() )
    , p_overwriteExistingFiles( TheICOverwriteExistingFilesParameter->DefaultValue() )
    , p_onError( ICOnError::Default )
    , p_noGUIMessages( TheICNoGUIMessagesParameter->DefaultValue() ) // ### DEPRECATED
@@ -201,13 +220,14 @@ void ImageCalibrationInstance::Assign( const ProcessImplementation& p )
       p_noiseEvaluationAlgorithm      = x->p_noiseEvaluationAlgorithm;
       p_evaluateSignal                = x->p_evaluateSignal;
       p_structureLayers               = x->p_structureLayers;
+      p_saturationThreshold           = x->p_saturationThreshold;
+      p_saturationRelative            = x->p_saturationRelative;
       p_noiseLayers                   = x->p_noiseLayers;
       p_hotPixelFilterRadius          = x->p_hotPixelFilterRadius;
       p_noiseReductionFilterRadius    = x->p_noiseReductionFilterRadius;
       p_minStructureSize              = x->p_minStructureSize;
       p_psfType                       = x->p_psfType;
-      p_psfRejectionLimit             = x->p_psfRejectionLimit;
-      p_psfHighClippingPoint          = x->p_psfHighClippingPoint;
+      p_psfGrowth                     = x->p_psfGrowth;
       p_maxStars                      = x->p_maxStars;
       p_outputDirectory               = x->p_outputDirectory;
       p_outputExtension               = x->p_outputExtension;
@@ -215,6 +235,8 @@ void ImageCalibrationInstance::Assign( const ProcessImplementation& p )
       p_outputPostfix                 = x->p_outputPostfix;
       p_outputSampleFormat            = x->p_outputSampleFormat;
       p_outputPedestal                = x->p_outputPedestal;
+      p_outputPedestalMode            = x->p_outputPedestalMode;
+      p_autoPedestalThreshold         = x->p_autoPedestalThreshold;
       p_overwriteExistingFiles        = x->p_overwriteExistingFiles;
       p_onError                       = x->p_onError;
       p_noGUIMessages                 = x->p_noGUIMessages;
@@ -668,7 +690,7 @@ static void BracketDarkOptimization( float& ax, float& bx, float& cx, const Imag
    monitor.SetCallback( &spin );
    monitor.Initialize( "Bracketing" );
 
-   static const float GOLD = 1.618034;
+   static const float GOLD = 1.618034F;
    static const int GLIMIT = 10;
    static const float TINY = 1.0e-20F;
 
@@ -1008,10 +1030,12 @@ public:
       if ( m_data.instance->p_evaluateSignal )
          for ( int i = 0; i < Min( 3, m_noiseEstimates.Length() ); ++i )
          {
-            o.psfSignalEstimates[i] = m_psfSignalEstimates[i];
-            o.psfSignalPowerEstimates[i] = m_psfSignalPowerEstimates[i];
-            o.psfFluxEstimates[i] = m_psfFluxEstimates[i];
-            o.psfFluxPowerEstimates[i] = m_psfFluxPowerEstimates[i];
+            o.psfTotalFluxEstimates[i] = m_psfTotalFluxEstimates[i];
+            o.psfTotalPowerFluxEstimates[i] = m_psfTotalPowerFluxEstimates[i];
+            o.psfTotalMeanFluxEstimates[i] = m_psfTotalMeanFluxEstimates[i];
+            o.psfTotalMeanPowerFluxEstimates[i] = m_psfTotalMeanPowerFluxEstimates[i];
+            o.psfMStarEstimates[i] = m_psfMStarEstimates[i];
+            o.psfNStarEstimates[i] = m_psfNStarEstimates[i];
             o.psfCounts[i] = m_psfCounts[i];
          }
       if ( m_data.instance->p_evaluateNoise )
@@ -1066,16 +1090,21 @@ private:
     */
 
    // Full path to the generated output file
-   String m_outputFilePath;
+   String     m_outputFilePath;
 
    // Optimized dark scaling factors
-   FVector m_K;
+   FVector    m_K;
+
+   // Automatic or prescribed pedestal, in 16-bit DN.
+   int        m_outputPedestal = 0;
 
    // Signal estimates
-   Vector     m_psfSignalEstimates;
-   Vector     m_psfSignalPowerEstimates;
-   Vector     m_psfFluxEstimates;
-   Vector     m_psfFluxPowerEstimates;
+   Vector     m_psfTotalFluxEstimates;
+   Vector     m_psfTotalPowerFluxEstimates;
+   Vector     m_psfTotalMeanFluxEstimates;
+   Vector     m_psfTotalMeanPowerFluxEstimates;
+   Vector     m_psfMStarEstimates;
+   Vector     m_psfNStarEstimates;
    IVector    m_psfCounts;
 
    // Noise estimates
@@ -1197,27 +1226,71 @@ private:
       Calibrate( TargetImage(), m_data.bias, m_data.dark, m_K, m_data.flat );
 
       /*
-       * Signal and noise evaluation.
-       */
-      if ( m_data.instance->p_evaluateSignal || m_data.instance->p_evaluateNoise )
-      {
-         console.WriteLn( "<end><cbr>* Performing signal and noise evaluation." );
-         EvaluateSignalAndNoise( m_psfSignalEstimates, m_psfSignalPowerEstimates,
-                                 m_psfFluxEstimates, m_psfFluxPowerEstimates, m_psfCounts,
-                                 m_noiseEstimates, m_noiseFractions, m_noiseScaleLow, m_noiseScaleHigh, m_noiseAlgorithms,
-                                 TargetImage(), m_data.darkCFAPattern );
-      }
-
-      /*
        * Optional pedestal to enforce positivity.
        */
-      if ( m_data.instance->p_outputPedestal != 0 )
-         TargetImage() += m_data.instance->p_outputPedestal/65535.0;
+      switch ( m_data.instance->p_outputPedestalMode )
+      {
+      default: // ?!
+      case ICOutputPedestalMode::Literal:
+         m_outputPedestal = m_data.instance->p_outputPedestal;
+         break;
+      case ICOutputPedestalMode::Auto:
+         {
+            float m = TargetImage().MinimumSampleValue( Rect( 0 ), 0, TargetImage().NumberOfChannels()-1 );
+            if ( m < 2*std::numeric_limits<float>::epsilon() )
+            {
+               Array<float> A;
+               for ( int c = 0; c < TargetImage().NumberOfChannels(); ++c )
+                  for ( Image::const_sample_iterator i( TargetImage(), c ); i; ++i )
+                     if ( *i < 2*std::numeric_limits<float>::epsilon() )
+                        A << *i;
+               if ( double( A.Length() )/TargetImage().NumberOfPixels() >= m_data.instance->p_autoPedestalThreshold )
+               {
+                  double mean, sigma;
+                  size_type i, j;
+                  RobustChauvenetRejection()( i, j, mean, sigma, A );
+                  if ( mean < 2*std::numeric_limits<float>::epsilon() )
+                  {
+                     m_outputPedestal = Max( 1, RoundInt( 65535*(Abs( mean ) + sigma) ) );
+                     console.WarningLn( String().Format( "<end><cbr>** Warning: negative or insignificant "
+                        "pixel sample values detected after calibration.<br>"
+                        "Estimated average low value: %+.6e, sigma = %.4e, %llu samples<br>"
+                        "Applying automatic pedestal: %d DN%s",
+                        mean, sigma, j - i, Min( m_outputPedestal, HUGE_PEDESTAL ), (m_outputPedestal > HUGE_PEDESTAL) ? " (huge!)" : "" ) );
+                     if ( m_outputPedestal > HUGE_PEDESTAL )
+                        m_outputPedestal = HUGE_PEDESTAL;
+                  }
+               }
+            }
+         }
+         break;
+      }
+      if ( m_outputPedestal != 0 )
+         TargetImage() += m_outputPedestal/65535.0;
+
+      {
+         double mn, mx;
+         TargetImage().GetExtremeSampleValues( mn, mx, Rect( 0 ), 0, TargetImage().NumberOfChannels()-1 );
+         console.WriteLn( String().Format( "<end><cbr>Calibration range: [%.6e,%.6e]%s", mn, mx, (mx >= 1) ? " (truncated)" : "" ) );
+      }
 
       /*
        * Constrain the calibrated target image to the [0,1] range.
        */
       TargetImage().Truncate();
+
+      /*
+       * Signal and noise evaluation.
+       */
+      if ( m_data.instance->p_evaluateSignal || m_data.instance->p_evaluateNoise )
+      {
+         console.WriteLn( "<end><cbr>* Performing signal and noise evaluation." );
+         EvaluateSignalAndNoise( m_psfTotalFluxEstimates, m_psfTotalPowerFluxEstimates,
+                                 m_psfTotalMeanFluxEstimates, m_psfTotalMeanPowerFluxEstimates,
+                                 m_psfMStarEstimates, m_psfNStarEstimates, m_psfCounts,
+                                 m_noiseEstimates, m_noiseFractions, m_noiseScaleLow, m_noiseScaleHigh, m_noiseAlgorithms,
+                                 m_target, m_data.darkCFAPattern );
+      }
    }
 
    void WriteOutputData()
@@ -1285,12 +1358,12 @@ private:
          if ( m_psfCounts.Sum() > 0 )
          {
             console.WriteLn( "<end><cbr>PSF signal estimates:" );
-            for ( int i = 0; i < m_psfSignalEstimates.Length(); ++i )
+            for ( int i = 0; i < m_psfCounts.Length(); ++i )
                if ( m_psfCounts[i] > 0 )
-                  console.WriteLn( String().Format( "ch %d : S = %.4e, S2 = %.4e, F = %.4e, F2 = %.4e, %d PSF fits",
+                  console.WriteLn( String().Format( "ch %d : TFlux = %.4e, TMeanFlux = %.4e, M* = %.4e, N* = %.4e, %d PSF fits",
                                                     i,
-                                                    m_psfSignalEstimates[i], m_psfSignalPowerEstimates[i],
-                                                    m_psfFluxEstimates[i], m_psfFluxPowerEstimates[i], m_psfCounts[i] ) );
+                                                    m_psfTotalFluxEstimates[i], m_psfTotalMeanFluxEstimates[i],
+                                                    m_psfMStarEstimates[i], m_psfNStarEstimates[i], m_psfCounts[i] ) );
                else
                   console.WarningLn( String().Format( "** Warning: No valid PSF signal samples (channel %d).", i ) );
          }
@@ -1303,14 +1376,14 @@ private:
        */
       if ( m_data.instance->p_evaluateNoise )
       {
-         console.WriteLn( "Gaussian noise estimates:" );
+         console.WriteLn( "Noise estimates:" );
          for ( int i = 0; i < m_noiseEstimates.Length(); ++i )
-            console.WriteLn( String().Format( "ch %d : s = %.4e, %.2f%% pixels ", i, m_noiseEstimates[i], m_noiseFractions[i]*100 )
+            console.WriteLn( String().Format( "ch %d : sigma_n = %.4e, %.2f%% pixels ", i, m_noiseEstimates[i], m_noiseFractions[i]*100 )
                              + '(' + m_noiseAlgorithms[i] + ')' );
 
          console.WriteLn( "Noise scaling factors:" );
          for ( int i = 0; i < m_noiseEstimates.Length(); ++i )
-            console.WriteLn( String().Format( "ch %d : l = %.6e, h = %.6e", i, m_noiseScaleLow[i], m_noiseScaleHigh[i] ) );
+            console.WriteLn( String().Format( "ch %d : sigma_low = %.6e, sigma_high = %.6e", i, m_noiseScaleLow[i], m_noiseScaleHigh[i] ) );
       }
 
       console.WriteLn( "<end><cbr>* Writing output file: <raw>" + m_outputFilePath + "</raw>" );
@@ -1407,7 +1480,7 @@ private:
          if ( outputFormat.CanStoreImageProperties() && outputFormat.SupportsViewProperties() )
             outputFile.WriteImageProperties( m_outputData.properties );
          else
-            console.WarningLn( "** Warning: The output format cannot store image properties - existing properties not embedded." );
+            console.WarningLn( "** Warning: The output format cannot store image properties - existing properties not embedded" );
 
       /*
        * Add FITS header keywords and preserve existing ones, if possible.
@@ -1419,9 +1492,9 @@ private:
          FITSKeywordArray keywords = m_outputData.keywords;
 
          /*
-         * Remove previously existing PEDESTAL keywords, since we already have
-         * subtracted the appropriate pedestal value before calibration.
-         */
+          * Remove previously existing PEDESTAL keywords, since we already have
+          * subtracted the appropriate pedestal value before calibration.
+          */
          for ( size_type i = 0; i < keywords.Length(); )
             if ( !keywords[i].name.CompareIC( "PEDESTAL" ) )
                keywords.Remove( keywords.At( i ) );
@@ -1535,38 +1608,53 @@ private:
          if ( m_data.instance->p_evaluateSignal )
          {
             /*
-             * N.B.: If we have computed signal estimates, remove any
-             * previously existing PSFSGLxx, PSFSGPxx, PSFFLXxx, PSFFLPxx and
-             * PSFSGNxx keywords. Only our newly created keywords must be
-             * present in the header.
+             * N.B.: If we already have computed signal estimates, remove any
+             * previously existing PSF signal keywords. Only our newly created
+             * keywords must be present in the header.
              */
             for ( size_type i = 0; i < keywords.Length(); )
-               if ( keywords[i].name.StartsWithIC( "PSFSG" ) || keywords[i].name.StartsWithIC( "PSFFL" ) )
-                  keywords.Remove( keywords.At( i ) );
-               else
-                  ++i;
+            {
+               if ( keywords[i].name.StartsWithIC( "PSF" ) )
+                  for ( size_type j = 0; j < ItemsInArray( s_psfPrefixes ); ++j )
+                     if ( keywords[i].name.StartsWithIC( s_psfPrefixes[j] ) )
+                     {
+                        keywords.Remove( keywords.At( i ) );
+                        continue;
+                     }
+               ++i;
+            }
 
             keywords << FITSHeaderKeyword( "HISTORY", IsoString(), "PSF signal evaluation with " + Module->ReadableVersion() );
 
-            IsoString psfSignalEstimates = "ImageCalibration.psfSignalEstimates:";
-            for ( int i = 0; i < m_psfSignalEstimates.Length(); ++i )
-               psfSignalEstimates.AppendFormat( " %.4e", m_psfSignalEstimates[i] );
-            keywords << FITSHeaderKeyword( "HISTORY", IsoString(), psfSignalEstimates );
+            IsoString psfTotalFluxEstimates = "ImageCalibration.psfTotalFluxEstimates:";
+            for ( int i = 0; i < m_psfTotalFluxEstimates.Length(); ++i )
+               psfTotalFluxEstimates.AppendFormat( " %.4e", m_psfTotalFluxEstimates[i] );
+            keywords << FITSHeaderKeyword( "HISTORY", IsoString(), psfTotalFluxEstimates );
 
-            IsoString psfSignalPowerEstimates = "ImageCalibration.psfSignalPowerEstimates:";
-            for ( int i = 0; i < m_psfSignalPowerEstimates.Length(); ++i )
-               psfSignalPowerEstimates.AppendFormat( " %.4e", m_psfSignalPowerEstimates[i] );
-            keywords << FITSHeaderKeyword( "HISTORY", IsoString(), psfSignalPowerEstimates );
+            IsoString psfTotalPowerFluxEstimates = "ImageCalibration.psfTotalPowerFluxEstimates:";
+            for ( int i = 0; i < m_psfTotalPowerFluxEstimates.Length(); ++i )
+               psfTotalPowerFluxEstimates.AppendFormat( " %.4e", m_psfTotalPowerFluxEstimates[i] );
+            keywords << FITSHeaderKeyword( "HISTORY", IsoString(), psfTotalPowerFluxEstimates );
 
-            IsoString psfFluxEstimates = "ImageCalibration.psfFluxEstimates:";
-            for ( int i = 0; i < m_psfFluxEstimates.Length(); ++i )
-               psfFluxEstimates.AppendFormat( " %.4e", m_psfFluxEstimates[i] );
-            keywords << FITSHeaderKeyword( "HISTORY", IsoString(), psfFluxEstimates );
+            IsoString psfTotalMeanFluxEstimates = "ImageCalibration.psfTotalMeanFluxEstimates:";
+            for ( int i = 0; i < m_psfTotalMeanFluxEstimates.Length(); ++i )
+               psfTotalMeanFluxEstimates.AppendFormat( " %.4e", m_psfTotalMeanFluxEstimates[i] );
+            keywords << FITSHeaderKeyword( "HISTORY", IsoString(), psfTotalMeanFluxEstimates );
 
-            IsoString psfFluxPowerEstimates = "ImageCalibration.psfFluxPowerEstimates:";
-            for ( int i = 0; i < m_psfFluxPowerEstimates.Length(); ++i )
-               psfFluxPowerEstimates.AppendFormat( " %.4e", m_psfFluxPowerEstimates[i] );
-            keywords << FITSHeaderKeyword( "HISTORY", IsoString(), psfFluxPowerEstimates );
+            IsoString psfTotalMeanPowerFluxEstimates = "ImageCalibration.psfTotalMeanPowerFluxEstimates:";
+            for ( int i = 0; i < m_psfTotalMeanPowerFluxEstimates.Length(); ++i )
+               psfTotalMeanPowerFluxEstimates.AppendFormat( " %.4e", m_psfTotalMeanPowerFluxEstimates[i] );
+            keywords << FITSHeaderKeyword( "HISTORY", IsoString(), psfTotalMeanPowerFluxEstimates );
+
+            IsoString psfMStarEstimates = "ImageCalibration.psfMStarEstimates:";
+            for ( int i = 0; i < m_psfMStarEstimates.Length(); ++i )
+               psfMStarEstimates.AppendFormat( " %.4e", m_psfMStarEstimates[i] );
+            keywords << FITSHeaderKeyword( "HISTORY", IsoString(), psfMStarEstimates );
+
+            IsoString psfNStarEstimates = "ImageCalibration.psfNStarEstimates:";
+            for ( int i = 0; i < m_psfNStarEstimates.Length(); ++i )
+               psfNStarEstimates.AppendFormat( " %.4e", m_psfNStarEstimates[i] );
+            keywords << FITSHeaderKeyword( "HISTORY", IsoString(), psfNStarEstimates );
 
             IsoString psfCounts = "ImageCalibration.psfCounts:";
             for ( int i = 0; i < m_psfCounts.Length(); ++i )
@@ -1576,22 +1664,28 @@ private:
             keywords << FITSHeaderKeyword( "HISTORY", IsoString(), "ImageCalibration.psfType: "
                                              + ICPSFType::FunctionName( m_data.instance->p_psfType ) );
 
-            for ( int i = 0; i < m_psfSignalEstimates.Length(); ++i )
-               keywords << FITSHeaderKeyword( IsoString().Format( "PSFSGL%02d", i ),
-                                              IsoString().Format( "%.4e", m_psfSignalEstimates[i] ),
-                                              IsoString().Format( "PSF signal estimate, channel #%d", i ) )
-                        << FITSHeaderKeyword( IsoString().Format( "PSFSGP%02d", i ),
-                                              IsoString().Format( "%.4e", m_psfSignalPowerEstimates[i] ),
-                                              IsoString().Format( "PSF signal power estimate, channel #%d", i ) )
-                        << FITSHeaderKeyword( IsoString().Format( "PSFFLX%02d", i ),
-                                              IsoString().Format( "%.4e", m_psfFluxEstimates[i] ),
-                                              IsoString().Format( "PSF flux estimate, channel #%d", i ) )
+            for ( int i = 0; i < m_psfCounts.Length(); ++i )
+               keywords << FITSHeaderKeyword( IsoString().Format( "PSFFLX%02d", i ),
+                                              IsoString().Format( "%.4e", m_psfTotalFluxEstimates[i] ),
+                                              IsoString().Format( "Sum of PSF flux estimates, channel #%d", i ) )
                         << FITSHeaderKeyword( IsoString().Format( "PSFFLP%02d", i ),
-                                              IsoString().Format( "%.4e", m_psfFluxPowerEstimates[i] ),
-                                              IsoString().Format( "PSF flux power estimate, channel #%d", i ) )
+                                              IsoString().Format( "%.4e", m_psfTotalPowerFluxEstimates[i] ),
+                                              IsoString().Format( "Sum of squared PSF flux estimates, channel #%d", i ) )
+                        << FITSHeaderKeyword( IsoString().Format( "PSFMFL%02d", i ),
+                                              IsoString().Format( "%.4e", m_psfTotalMeanFluxEstimates[i] ),
+                                              IsoString().Format( "Sum of mean PSF flux estimates, channel #%d", i ) )
+                        << FITSHeaderKeyword( IsoString().Format( "PSFMFP%02d", i ),
+                                              IsoString().Format( "%.4e", m_psfTotalMeanPowerFluxEstimates[i] ),
+                                              IsoString().Format( "Sum of mean squared PSF flux estimates, channel #%d", i ) )
+                        << FITSHeaderKeyword( IsoString().Format( "PSFMST%02d", i ),
+                                              IsoString().Format( "%.4e", m_psfMStarEstimates[i] ),
+                                              IsoString().Format( "M* mean background estimate, channel #%d", i ) )
+                        << FITSHeaderKeyword( IsoString().Format( "PSFNST%02d", i ),
+                                              IsoString().Format( "%.4e", m_psfNStarEstimates[i] ),
+                                              IsoString().Format( "N* noise estimate, channel #%d", i ) )
                         << FITSHeaderKeyword( IsoString().Format( "PSFSGN%02d", i ),
                                               IsoString().Format( "%d", m_psfCounts[i] ),
-                                              IsoString().Format( "Number of evaluated PSF fits, channel #%d", i ) );
+                                              IsoString().Format( "Number of valid PSF flux estimates, channel #%d", i ) );
 
             keywords << FITSHeaderKeyword( "PSFSGTYP",
                                            ICPSFType::FunctionName( m_data.instance->p_psfType ).SingleQuoted(),
@@ -1601,9 +1695,9 @@ private:
          if ( m_data.instance->p_evaluateNoise )
          {
             /*
-             * N.B.: If we have computed noise estimates, remove any previously
-             * existing NOISExx keywords. Only our newly created keywords must
-             * be present in the header.
+             * N.B.: If we already have computed noise estimates, remove any
+             * previously existing NOISExx keywords. Only our newly created
+             * keywords must be present in the header.
              */
             for ( size_type i = 0; i < keywords.Length(); )
                if ( keywords[i].name.StartsWithIC( "NOISE" ) )
@@ -1631,7 +1725,7 @@ private:
             for ( int i = 0; i < m_noiseEstimates.Length(); ++i )
                keywords << FITSHeaderKeyword( IsoString().Format( "NOISE%02d", i ),
                                               IsoString().Format( "%.4e", m_noiseEstimates[i] ),
-                                              IsoString().Format( "Gaussian noise estimate, channel #%d", i ) )
+                                              IsoString().Format( "Noise estimate, channel #%d", i ) )
                         << FITSHeaderKeyword( IsoString().Format( "NOISEF%02d", i ),
                                               IsoString().Format( "%.3f", m_noiseFractions[i] ),
                                               IsoString().Format( "Fraction of noise pixels, channel #%d", i ) )
@@ -1646,13 +1740,13 @@ private:
                                               IsoString().Format( "Noise evaluation algorithm, channel #%d", i ) );
          }
 
-         if ( m_data.instance->p_outputPedestal != 0 )
+         if ( m_outputPedestal != 0 )
          {
             keywords << FITSHeaderKeyword( "HISTORY",
                                            IsoString(),
-                                           IsoString().Format( "ImageCalibration.outputPedestal: %d", m_data.instance->p_outputPedestal ) )
+                                           IsoString().Format( "ImageCalibration.outputPedestal: %d", m_outputPedestal ) )
                      << FITSHeaderKeyword( "PEDESTAL",
-                                           IsoString( m_data.instance->p_outputPedestal ),
+                                           IsoString( m_outputPedestal ),
                                            "Value in DN added to enforce positivity" );
          }
 
@@ -1660,7 +1754,7 @@ private:
       }
       else
       {
-         console.WarningLn( "** Warning: The output format cannot store FITS header keywords - calibration metadata not embedded." );
+         console.WarningLn( "** Warning: The output format cannot store FITS header keywords - calibration metadata not embedded" );
       }
 
       /*
@@ -1670,7 +1764,7 @@ private:
          if ( outputFormat.CanStoreICCProfiles() )
             outputFile.WriteICCProfile( m_outputData.profile );
          else
-            console.WarningLn( "** Warning: The output format cannot store color profiles - original ICC profile not embedded." );
+            console.WarningLn( "** Warning: The output format cannot store color profiles - original ICC profile not embedded" );
 
       Module->ProcessEvents();
 
@@ -1701,39 +1795,45 @@ private:
     * - Automatically iterate to find the highest wavelet layer where noise can
     *   be successfully evaluated, in the [1,3] range.
     */
-   void EvaluateSignalAndNoise( Vector& psfSignalEstimates, Vector& psfSignalPowerEstimates,
-                                Vector& psfFluxEstimates, Vector& psfFluxPowerEstimates, IVector& psfCounts,
+   void EvaluateSignalAndNoise( Vector& psfTotalFluxEstimates, Vector& psfTotalPowerFluxEstimates,
+                                Vector& psfTotalMeanFluxEstimates, Vector& psfTotalMeanPowerFluxEstimates,
+                                Vector& psfMStarEstimates, Vector& psfNStarEstimates, IVector& psfCounts,
                                 Vector& noiseEstimates, Vector& noiseFractions,
                                 Vector& noiseScaleLow, Vector& noiseScaleHigh, StringList& noiseAlgorithms,
-                                const Image& target, const IsoString& cfaPattern = IsoString() ) const
+                                const ImageVariant& target, const IsoString& cfaPattern = IsoString() ) const
    {
+      volatile AutoStatusCallbackRestorer saveStatus( target.Status() );
       MuteStatus status;
       target.SetStatusCallback( &status );
       target.Status().DisableInitialization();
 
+      target.ResetSelections();
+
       if ( !cfaPattern.IsEmpty() )
       {
-         Image evaluationTarget( target );
+         ImageVariant evaluationTarget;
+         evaluationTarget.CopyImage( target );
          IntegerResample( -DownsamplingFactorForCFAPattern( cfaPattern ) ) >> evaluationTarget;
-         EvaluateSignalAndNoise( psfSignalEstimates, psfSignalPowerEstimates,
-                                 psfFluxEstimates, psfFluxPowerEstimates, psfCounts,
+         EvaluateSignalAndNoise( psfTotalFluxEstimates, psfTotalPowerFluxEstimates,
+                                 psfTotalMeanFluxEstimates, psfTotalMeanPowerFluxEstimates,
+                                 psfMStarEstimates, psfNStarEstimates, psfCounts,
                                  noiseEstimates, noiseFractions,
                                  noiseScaleLow, noiseScaleHigh, noiseAlgorithms,
                                  evaluationTarget );
          return;
       }
 
-      target.ResetSelections();
-
       /*
        * Signal estimation by PSF photometry
        */
       if ( m_data.instance->p_evaluateSignal )
       {
-         psfSignalEstimates = Vector( 0.0, target.NumberOfChannels() );
-         psfSignalPowerEstimates = Vector( 0.0, target.NumberOfChannels() );
-         psfFluxEstimates = Vector( 0.0, target.NumberOfChannels() );
-         psfFluxPowerEstimates = Vector( 0.0, target.NumberOfChannels() );
+         psfTotalFluxEstimates = Vector( 0.0, target.NumberOfChannels() );
+         psfTotalPowerFluxEstimates = Vector( 0.0, target.NumberOfChannels() );
+         psfTotalMeanFluxEstimates = Vector( 0.0, target.NumberOfChannels() );
+         psfTotalMeanPowerFluxEstimates = Vector( 0.0, target.NumberOfChannels() );
+         psfMStarEstimates = Vector( 0.0, target.NumberOfChannels() );
+         psfNStarEstimates = Vector( 0.0, target.NumberOfChannels() );
          psfCounts = IVector( 0, target.NumberOfChannels() );
 
          PSFSignalEstimator E;
@@ -1743,19 +1843,24 @@ private:
          E.Detector().SetNoiseReductionFilterRadius( m_data.instance->p_noiseReductionFilterRadius );
          E.Detector().SetMinStructureSize( m_data.instance->p_minStructureSize );
          E.SetPSFType( ICPSFType::ToPSFFunction( m_data.instance->p_psfType ) );
-         E.SetRejectionLimit( m_data.instance->p_psfRejectionLimit );
-         E.SetHighClippingPoint( m_data.instance->p_psfHighClippingPoint );
+         E.SetSaturationThreshold( m_data.instance->p_saturationThreshold );
+         E.EnableRelativeSaturation( m_data.instance->p_saturationRelative );
+         E.SetGrowthFactorForFluxMeasurement( m_data.instance->p_psfGrowth );
          E.SetMaxStars( m_data.instance->p_maxStars );
          E.EnableParallelProcessing( m_maxSubThreads > 1, m_maxSubThreads );
 
          for ( int c = 0; c < target.NumberOfChannels(); ++c )
          {
             target.SelectChannel( c );
-            PSFSignalEstimator::Estimates e = E( ImageVariant( const_cast<Image*>( &target ) ) );
-            psfSignalEstimates[c] = e.mean;
-            psfSignalPowerEstimates[c] = e.power;
-            psfFluxEstimates[c] = e.flux;
-            psfFluxPowerEstimates[c] = e.powerFlux;
+
+            PSFSignalEstimator::Estimates e = E( target );
+
+            psfTotalFluxEstimates[c] = e.totalFlux;
+            psfTotalPowerFluxEstimates[c] = e.totalPowerFlux;
+            psfTotalMeanFluxEstimates[c] = e.totalMeanFlux;
+            psfTotalMeanPowerFluxEstimates[c] = e.totalMeanPowerFlux;
+            psfMStarEstimates[c] = e.MStar;
+            psfNStarEstimates[c] = e.NStar;
             psfCounts[c] = e.count;
          }
       }
@@ -1772,10 +1877,14 @@ private:
          noiseAlgorithms = StringList( target.NumberOfChannels(), String() );
 
          ATrousWaveletTransform::WaveletScalingFunction H;
-         if ( SeparableConvolution::FasterThanNonseparableFilterSize( m_maxSubThreads ) > 5 )
-            H.Set( KernelFilter( g_5x5B3Spline, 5 ) );
-         else
-            H.Set( SeparableFilter( g_5x5B3Spline_hv, g_5x5B3Spline_hv, 5 ) );
+         if ( m_data.instance->p_noiseEvaluationAlgorithm == ICNoiseEvaluationAlgorithm::KSigma ||
+              m_data.instance->p_noiseEvaluationAlgorithm == ICNoiseEvaluationAlgorithm::MRS )
+         {
+            if ( SeparableConvolution::FasterThanNonseparableFilterSize( m_maxSubThreads ) > 5 )
+               H.Set( KernelFilter( g_5x5B3Spline, 5 ) );
+            else
+               H.Set( SeparableFilter( g_5x5B3Spline_hv, g_5x5B3Spline_hv, 5 ) );
+         }
 
          for ( int c = 0; c < target.NumberOfChannels(); ++c )
          {
@@ -1820,11 +1929,11 @@ private:
                   noiseAlgorithms[c] = "K-Sigma";
                }
                break;
-            default:
+
             case ICNoiseEvaluationAlgorithm::MRS:
                {
                   double s0 = 0, f0 = 0;
-                  for ( int n = 4; ; )
+                  for ( int n = 4;; )
                   {
                      Module->ProcessEvents();
 
@@ -1838,7 +1947,7 @@ private:
                         s0 = W.NoiseKSigma( 0, 3, 0.01, 10, &N )/g_5x5B3Spline_kj[0];
                         f0 = double( N )/target.NumberOfPixels();
                      }
-                     noiseEstimates[c] = W.NoiseMRS( ImageVariant( const_cast<Image*>( &target ) ), g_5x5B3Spline_kj, s0, 3, &N );
+                     noiseEstimates[c] = W.NoiseMRS( target, g_5x5B3Spline_kj, s0, 3, &N );
                      noiseFractions[c] = double( N )/target.NumberOfPixels();
 
                      if ( noiseEstimates[c] > 0 && noiseFractions[c] >= 0.01 )
@@ -1856,6 +1965,19 @@ private:
                      }
                   }
                }
+               break;
+
+            default:
+            case ICNoiseEvaluationAlgorithm::NStar:
+               if ( m_data.instance->p_evaluateSignal )
+                  noiseEstimates[c] = psfNStarEstimates[c];
+               else
+               {
+                  Array<float> R = PSFSignalEstimator::LocalBackgroundResidual( target );
+                  noiseEstimates[c] = 2.05435 * Sn( R.Begin(), R.End() );
+               }
+               noiseFractions[c] = 1.0;
+               noiseAlgorithms[c] = "N-star";
                break;
             }
          }
@@ -2776,6 +2898,10 @@ void* ImageCalibrationInstance::LockParameter( const MetaParameter* p, size_type
       return &p_evaluateSignal;
    if ( p == TheICStructureLayersParameter )
       return &p_structureLayers;
+   if ( p == TheICSaturationThresholdParameter )
+      return &p_saturationThreshold;
+   if ( p == TheICSaturationRelativeParameter )
+      return &p_saturationRelative;
    if ( p == TheICNoiseLayersParameter )
       return &p_noiseLayers;
    if ( p == TheICHotPixelFilterRadiusParameter )
@@ -2786,10 +2912,8 @@ void* ImageCalibrationInstance::LockParameter( const MetaParameter* p, size_type
       return &p_minStructureSize;
    if ( p == TheICPSFTypeParameter )
       return &p_psfType;
-   if ( p == TheICPSFRejectionLimitParameter )
-      return &p_psfRejectionLimit;
-   if ( p == TheICPSFHighClippingPointParameter )
-      return &p_psfHighClippingPoint;
+   if ( p == TheICPSFGrowthParameter )
+      return &p_psfGrowth;
    if ( p == TheICMaxStarsParameter )
       return &p_maxStars;
 
@@ -2805,6 +2929,10 @@ void* ImageCalibrationInstance::LockParameter( const MetaParameter* p, size_type
       return &p_outputSampleFormat;
    if ( p == TheICOutputPedestalParameter )
       return &p_outputPedestal;
+   if ( p == TheICOutputPedestalModeParameter )
+      return &p_outputPedestalMode;
+   if ( p == TheICAutoPedestalThresholdParameter )
+      return &p_autoPedestalThreshold;
    if ( p == TheICOverwriteExistingFilesParameter )
       return &p_overwriteExistingFiles;
    if ( p == TheICOnErrorParameter )
@@ -2831,33 +2959,47 @@ void* ImageCalibrationInstance::LockParameter( const MetaParameter* p, size_type
    if ( p == TheICDarkScalingFactorBParameter )
       return o_output[tableRow].darkScalingFactors.At( 2 );
 
-   if ( p == TheICPSFSignalEstimateRKParameter )
-      return o_output[tableRow].psfSignalEstimates.At( 0 );
-   if ( p == TheICPSFSignalEstimateGParameter )
-      return o_output[tableRow].psfSignalEstimates.At( 1 );
-   if ( p == TheICPSFSignalEstimateBParameter )
-      return o_output[tableRow].psfSignalEstimates.At( 2 );
+   if ( p == TheICPSFTotalFluxEstimateRKParameter )
+      return o_output[tableRow].psfTotalFluxEstimates.At( 0 );
+   if ( p == TheICPSFTotalFluxEstimateGParameter )
+      return o_output[tableRow].psfTotalFluxEstimates.At( 1 );
+   if ( p == TheICPSFTotalFluxEstimateBParameter )
+      return o_output[tableRow].psfTotalFluxEstimates.At( 2 );
 
-   if ( p == TheICPSFSignalPowerEstimateRKParameter )
-      return o_output[tableRow].psfSignalPowerEstimates.At( 0 );
-   if ( p == TheICPSFSignalPowerEstimateGParameter )
-      return o_output[tableRow].psfSignalPowerEstimates.At( 1 );
-   if ( p == TheICPSFSignalPowerEstimateBParameter )
-      return o_output[tableRow].psfSignalPowerEstimates.At( 2 );
+   if ( p == TheICPSFTotalPowerFluxEstimateRKParameter )
+      return o_output[tableRow].psfTotalPowerFluxEstimates.At( 0 );
+   if ( p == TheICPSFTotalPowerFluxEstimateGParameter )
+      return o_output[tableRow].psfTotalPowerFluxEstimates.At( 1 );
+   if ( p == TheICPSFTotalPowerFluxEstimateBParameter )
+      return o_output[tableRow].psfTotalPowerFluxEstimates.At( 2 );
 
-   if ( p == TheICPSFFluxEstimateRKParameter )
-      return o_output[tableRow].psfFluxEstimates.At( 0 );
-   if ( p == TheICPSFFluxEstimateGParameter )
-      return o_output[tableRow].psfFluxEstimates.At( 1 );
-   if ( p == TheICPSFFluxEstimateBParameter )
-      return o_output[tableRow].psfFluxEstimates.At( 2 );
+   if ( p == TheICPSFTotalMeanFluxEstimateRKParameter )
+      return o_output[tableRow].psfTotalMeanFluxEstimates.At( 0 );
+   if ( p == TheICPSFTotalMeanFluxEstimateGParameter )
+      return o_output[tableRow].psfTotalMeanFluxEstimates.At( 1 );
+   if ( p == TheICPSFTotalMeanFluxEstimateBParameter )
+      return o_output[tableRow].psfTotalMeanFluxEstimates.At( 2 );
 
-   if ( p == TheICPSFFluxPowerEstimateRKParameter )
-      return o_output[tableRow].psfFluxPowerEstimates.At( 0 );
-   if ( p == TheICPSFFluxPowerEstimateGParameter )
-      return o_output[tableRow].psfFluxPowerEstimates.At( 1 );
-   if ( p == TheICPSFFluxPowerEstimateBParameter )
-      return o_output[tableRow].psfFluxPowerEstimates.At( 2 );
+   if ( p == TheICPSFTotalMeanPowerFluxEstimateRKParameter )
+      return o_output[tableRow].psfTotalMeanPowerFluxEstimates.At( 0 );
+   if ( p == TheICPSFTotalMeanPowerFluxEstimateGParameter )
+      return o_output[tableRow].psfTotalMeanPowerFluxEstimates.At( 1 );
+   if ( p == TheICPSFTotalMeanPowerFluxEstimateBParameter )
+      return o_output[tableRow].psfTotalMeanPowerFluxEstimates.At( 2 );
+
+   if ( p == TheICPSFMStarEstimateRKParameter )
+      return o_output[tableRow].psfMStarEstimates.At( 0 );
+   if ( p == TheICPSFMStarEstimateGParameter )
+      return o_output[tableRow].psfMStarEstimates.At( 1 );
+   if ( p == TheICPSFMStarEstimateBParameter )
+      return o_output[tableRow].psfMStarEstimates.At( 2 );
+
+   if ( p == TheICPSFNStarEstimateRKParameter )
+      return o_output[tableRow].psfNStarEstimates.At( 0 );
+   if ( p == TheICPSFNStarEstimateGParameter )
+      return o_output[tableRow].psfNStarEstimates.At( 1 );
+   if ( p == TheICPSFNStarEstimateBParameter )
+      return o_output[tableRow].psfNStarEstimates.At( 2 );
 
    if ( p == TheICPSFCountRKParameter )
       return o_output[tableRow].psfCounts.At( 0 );
@@ -3068,4 +3210,4 @@ size_type ImageCalibrationInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInstance.cpp - Released 2021-12-29T20:37:28Z
+// EOF ImageCalibrationInstance.cpp - Released 2022-03-12T18:59:53Z

@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard Debayer Process Module Version 1.10.2
+// Standard Debayer Process Module Version 1.11.0
 // ----------------------------------------------------------------------------
-// DebayerParameters.cpp - Released 2021-12-29T20:37:28Z
+// DebayerParameters.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -57,117 +57,130 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-DebayerBayerPatternParameter*	            TheDebayerBayerPatternParameter = nullptr;
-DebayerMethodParameter*                   TheDebayerMethodParameter = nullptr;
-DebayerFBDDNoiseReduction*                TheDebayerFBDDNoiseReductionParameter = nullptr;
-DebayerShowImages*                        TheDebayerShowImagesParameter = nullptr;
-DebayerCFASourceFilePath*                 TheDebayerCFASourceFilePathParameter = nullptr;
-DebayerTargetItems*                       TheDebayerTargetItemsParameter = nullptr;
-DebayerTargetEnabled*                     TheDebayerTargetEnabledParameter = nullptr;
-DebayerTargetImage*                       TheDebayerTargetImageParameter = nullptr;
-DebayerNoGUIMessages*                     TheDebayerNoGUIMessagesParameter = nullptr;
+DebayerBayerPatternParameter*	                   TheDebayerBayerPatternParameter = nullptr;
+DebayerMethodParameter*                          TheDebayerMethodParameter = nullptr;
+DebayerFBDDNoiseReduction*                       TheDebayerFBDDNoiseReductionParameter = nullptr;
+DebayerShowImages*                               TheDebayerShowImagesParameter = nullptr;
+DebayerCFASourceFilePath*                        TheDebayerCFASourceFilePathParameter = nullptr;
+DebayerTargetItems*                              TheDebayerTargetItemsParameter = nullptr;
+DebayerTargetEnabled*                            TheDebayerTargetEnabledParameter = nullptr;
+DebayerTargetImage*                              TheDebayerTargetImageParameter = nullptr;
+DebayerNoGUIMessages*                            TheDebayerNoGUIMessagesParameter = nullptr;
 
-DebayerEvaluateNoise*                     TheDebayerEvaluateNoiseParameter = nullptr;
-DebayerNoiseEvaluationAlgorithm*          TheDebayerNoiseEvaluationAlgorithmParameter = nullptr;
+DebayerEvaluateNoise*                            TheDebayerEvaluateNoiseParameter = nullptr;
+DebayerNoiseEvaluationAlgorithm*                 TheDebayerNoiseEvaluationAlgorithmParameter = nullptr;
 
-DebayerEvaluateSignal*                    TheDebayerEvaluateSignalParameter = nullptr;
-DebayerStructureLayers*                   TheDebayerStructureLayersParameter = nullptr;
-DebayerNoiseLayers*                       TheDebayerNoiseLayersParameter = nullptr;
-DebayerHotPixelFilterRadius*              TheDebayerHotPixelFilterRadiusParameter = nullptr;
-DebayerNoiseReductionFilterRadius*        TheDebayerNoiseReductionFilterRadiusParameter = nullptr;
-DebayerMinStructureSize*                  TheDebayerMinStructureSizeParameter = nullptr;
-DebayerPSFType*                           TheDebayerPSFTypeParameter = nullptr;
-DebayerPSFRejectionLimit*                 TheDebayerPSFRejectionLimitParameter = nullptr;
-DebayerPSFHighClippingPoint*              TheDebayerPSFHighClippingPointParameter = nullptr;
-DebayerMaxStars*                          TheDebayerMaxStarsParameter = nullptr;
+DebayerEvaluateSignal*                           TheDebayerEvaluateSignalParameter = nullptr;
+DebayerStructureLayers*                          TheDebayerStructureLayersParameter = nullptr;
+DebayerSaturationThreshold*                      TheDebayerSaturationThresholdParameter = nullptr;
+DebayerSaturationRelative*                       TheDebayerSaturationRelativeParameter = nullptr;
+DebayerNoiseLayers*                              TheDebayerNoiseLayersParameter = nullptr;
+DebayerHotPixelFilterRadius*                     TheDebayerHotPixelFilterRadiusParameter = nullptr;
+DebayerNoiseReductionFilterRadius*               TheDebayerNoiseReductionFilterRadiusParameter = nullptr;
+DebayerMinStructureSize*                         TheDebayerMinStructureSizeParameter = nullptr;
+DebayerPSFType*                                  TheDebayerPSFTypeParameter = nullptr;
+DebayerPSFGrowth*                                TheDebayerPSFGrowthParameter = nullptr;
+DebayerMaxStars*                                 TheDebayerMaxStarsParameter = nullptr;
 
-DebayerInputHints*                        TheDebayerInputHintsParameter = nullptr;
-DebayerOutputHints*                       TheDebayerOutputHintsParameter = nullptr;
-DebayerOutputRGBImages*                   TheDebayerOutputRGBImagesParameter = nullptr;
-DebayerOutputSeparateChannels*            TheDebayerOutputSeparateChannelsParameter = nullptr;
-DebayerOutputDirectory*                   TheDebayerOutputDirectoryParameter = nullptr;
-DebayerOutputExtension*                   TheDebayerOutputExtensionParameter = nullptr;
-DebayerOutputPrefix*                      TheDebayerOutputPrefixParameter = nullptr;
-DebayerOutputPostfix*                     TheDebayerOutputPostfixParameter = nullptr;
-DebayerOverwriteExistingFiles*            TheDebayerOverwriteExistingFilesParameter = nullptr;
-DebayerOnError*                           TheDebayerOnErrorParameter = nullptr;
-DebayerUseFileThreads*                    TheDebayerUseFileThreadsParameter = nullptr;
-DebayerFileThreadOverload*                TheDebayerFileThreadOverloadParameter = nullptr;
-DebayerMaxFileReadThreads*                TheDebayerMaxFileReadThreadsParameter = nullptr;
-DebayerMaxFileWriteThreads*               TheDebayerMaxFileWriteThreadsParameter = nullptr;
-DebayerMemoryLoadControl*                 TheDebayerMemoryLoadControlParameter = nullptr;
-DebayerMemoryLoadLimit*                   TheDebayerMemoryLoadLimitParameter = nullptr;
+DebayerInputHints*                               TheDebayerInputHintsParameter = nullptr;
+DebayerOutputHints*                              TheDebayerOutputHintsParameter = nullptr;
+DebayerOutputRGBImages*                          TheDebayerOutputRGBImagesParameter = nullptr;
+DebayerOutputSeparateChannels*                   TheDebayerOutputSeparateChannelsParameter = nullptr;
+DebayerOutputDirectory*                          TheDebayerOutputDirectoryParameter = nullptr;
+DebayerOutputExtension*                          TheDebayerOutputExtensionParameter = nullptr;
+DebayerOutputPrefix*                             TheDebayerOutputPrefixParameter = nullptr;
+DebayerOutputPostfix*                            TheDebayerOutputPostfixParameter = nullptr;
+DebayerOverwriteExistingFiles*                   TheDebayerOverwriteExistingFilesParameter = nullptr;
+DebayerOnError*                                  TheDebayerOnErrorParameter = nullptr;
+DebayerUseFileThreads*                           TheDebayerUseFileThreadsParameter = nullptr;
+DebayerFileThreadOverload*                       TheDebayerFileThreadOverloadParameter = nullptr;
+DebayerMaxFileReadThreads*                       TheDebayerMaxFileReadThreadsParameter = nullptr;
+DebayerMaxFileWriteThreads*                      TheDebayerMaxFileWriteThreadsParameter = nullptr;
+DebayerMemoryLoadControl*                        TheDebayerMemoryLoadControlParameter = nullptr;
+DebayerMemoryLoadLimit*                          TheDebayerMemoryLoadLimitParameter = nullptr;
 
-DebayerOutputImage*                       TheDebayerOutputImageParameter = nullptr;
-DebayerOutputChannelImageR*               TheDebayerOutputChannelImageRParameter = nullptr;
-DebayerOutputChannelImageG*               TheDebayerOutputChannelImageGParameter = nullptr;
-DebayerOutputChannelImageB*               TheDebayerOutputChannelImageBParameter = nullptr;
-DebayerPSFSignalEstimateR*                TheDebayerPSFSignalEstimateRParameter = nullptr;
-DebayerPSFSignalEstimateG*                TheDebayerPSFSignalEstimateGParameter = nullptr;
-DebayerPSFSignalEstimateB*                TheDebayerPSFSignalEstimateBParameter = nullptr;
-DebayerPSFSignalPowerEstimateR*           TheDebayerPSFSignalPowerEstimateRParameter = nullptr;
-DebayerPSFSignalPowerEstimateG*           TheDebayerPSFSignalPowerEstimateGParameter = nullptr;
-DebayerPSFSignalPowerEstimateB*           TheDebayerPSFSignalPowerEstimateBParameter = nullptr;
-DebayerPSFFluxEstimateR*                  TheDebayerPSFFluxEstimateRParameter = nullptr;
-DebayerPSFFluxEstimateG*                  TheDebayerPSFFluxEstimateGParameter = nullptr;
-DebayerPSFFluxEstimateB*                  TheDebayerPSFFluxEstimateBParameter = nullptr;
-DebayerPSFFluxPowerEstimateR*             TheDebayerPSFFluxPowerEstimateRParameter = nullptr;
-DebayerPSFFluxPowerEstimateG*             TheDebayerPSFFluxPowerEstimateGParameter = nullptr;
-DebayerPSFFluxPowerEstimateB*             TheDebayerPSFFluxPowerEstimateBParameter = nullptr;
-DebayerPSFCountR*                         TheDebayerPSFCountRParameter = nullptr;
-DebayerPSFCountG*                         TheDebayerPSFCountGParameter = nullptr;
-DebayerPSFCountB*                         TheDebayerPSFCountBParameter = nullptr;
-DebayerNoiseEstimateR*                    TheDebayerNoiseEstimateRParameter = nullptr;
-DebayerNoiseEstimateG*                    TheDebayerNoiseEstimateGParameter = nullptr;
-DebayerNoiseEstimateB*                    TheDebayerNoiseEstimateBParameter = nullptr;
-DebayerNoiseFractionR*                    TheDebayerNoiseFractionRParameter = nullptr;
-DebayerNoiseFractionG*                    TheDebayerNoiseFractionGParameter = nullptr;
-DebayerNoiseFractionB*                    TheDebayerNoiseFractionBParameter = nullptr;
-DebayerNoiseScaleLowR*                    TheDebayerNoiseScaleLowRParameter = nullptr;
-DebayerNoiseScaleLowG*                    TheDebayerNoiseScaleLowGParameter = nullptr;
-DebayerNoiseScaleLowB*                    TheDebayerNoiseScaleLowBParameter = nullptr;
-DebayerNoiseScaleHighR*                   TheDebayerNoiseScaleHighRParameter = nullptr;
-DebayerNoiseScaleHighG*                   TheDebayerNoiseScaleHighGParameter = nullptr;
-DebayerNoiseScaleHighB*                   TheDebayerNoiseScaleHighBParameter = nullptr;
-DebayerNoiseAlgorithmR*                   TheDebayerNoiseAlgorithmRParameter = nullptr;
-DebayerNoiseAlgorithmG*                   TheDebayerNoiseAlgorithmGParameter = nullptr;
-DebayerNoiseAlgorithmB*                   TheDebayerNoiseAlgorithmBParameter = nullptr;
+DebayerOutputImage*                              TheDebayerOutputImageParameter = nullptr;
+DebayerOutputChannelImageR*                      TheDebayerOutputChannelImageRParameter = nullptr;
+DebayerOutputChannelImageG*                      TheDebayerOutputChannelImageGParameter = nullptr;
+DebayerOutputChannelImageB*                      TheDebayerOutputChannelImageBParameter = nullptr;
+DebayerPSFTotalFluxEstimateR*                    TheDebayerPSFTotalFluxEstimateRParameter = nullptr;
+DebayerPSFTotalFluxEstimateG*                    TheDebayerPSFTotalFluxEstimateGParameter = nullptr;
+DebayerPSFTotalFluxEstimateB*                    TheDebayerPSFTotalFluxEstimateBParameter = nullptr;
+DebayerPSFTotalPowerFluxEstimateR*               TheDebayerPSFTotalPowerFluxEstimateRParameter = nullptr;
+DebayerPSFTotalPowerFluxEstimateG*               TheDebayerPSFTotalPowerFluxEstimateGParameter = nullptr;
+DebayerPSFTotalPowerFluxEstimateB*               TheDebayerPSFTotalPowerFluxEstimateBParameter = nullptr;
+DebayerPSFTotalMeanFluxEstimateR*                TheDebayerPSFTotalMeanFluxEstimateRParameter = nullptr;
+DebayerPSFTotalMeanFluxEstimateG*                TheDebayerPSFTotalMeanFluxEstimateGParameter = nullptr;
+DebayerPSFTotalMeanFluxEstimateB*                TheDebayerPSFTotalMeanFluxEstimateBParameter = nullptr;
+DebayerPSFTotalMeanPowerFluxEstimateR*           TheDebayerPSFTotalMeanPowerFluxEstimateRParameter = nullptr;
+DebayerPSFTotalMeanPowerFluxEstimateG*           TheDebayerPSFTotalMeanPowerFluxEstimateGParameter = nullptr;
+DebayerPSFTotalMeanPowerFluxEstimateB*           TheDebayerPSFTotalMeanPowerFluxEstimateBParameter = nullptr;
+DebayerPSFMStarEstimateR*                        TheDebayerPSFMStarEstimateRParameter = nullptr;
+DebayerPSFMStarEstimateG*                        TheDebayerPSFMStarEstimateGParameter = nullptr;
+DebayerPSFMStarEstimateB*                        TheDebayerPSFMStarEstimateBParameter = nullptr;
+DebayerPSFNStarEstimateR*                        TheDebayerPSFNStarEstimateRParameter = nullptr;
+DebayerPSFNStarEstimateG*                        TheDebayerPSFNStarEstimateGParameter = nullptr;
+DebayerPSFNStarEstimateB*                        TheDebayerPSFNStarEstimateBParameter = nullptr;
+DebayerPSFCountR*                                TheDebayerPSFCountRParameter = nullptr;
+DebayerPSFCountG*                                TheDebayerPSFCountGParameter = nullptr;
+DebayerPSFCountB*                                TheDebayerPSFCountBParameter = nullptr;
+DebayerNoiseEstimateR*                           TheDebayerNoiseEstimateRParameter = nullptr;
+DebayerNoiseEstimateG*                           TheDebayerNoiseEstimateGParameter = nullptr;
+DebayerNoiseEstimateB*                           TheDebayerNoiseEstimateBParameter = nullptr;
+DebayerNoiseFractionR*                           TheDebayerNoiseFractionRParameter = nullptr;
+DebayerNoiseFractionG*                           TheDebayerNoiseFractionGParameter = nullptr;
+DebayerNoiseFractionB*                           TheDebayerNoiseFractionBParameter = nullptr;
+DebayerNoiseScaleLowR*                           TheDebayerNoiseScaleLowRParameter = nullptr;
+DebayerNoiseScaleLowG*                           TheDebayerNoiseScaleLowGParameter = nullptr;
+DebayerNoiseScaleLowB*                           TheDebayerNoiseScaleLowBParameter = nullptr;
+DebayerNoiseScaleHighR*                          TheDebayerNoiseScaleHighRParameter = nullptr;
+DebayerNoiseScaleHighG*                          TheDebayerNoiseScaleHighGParameter = nullptr;
+DebayerNoiseScaleHighB*                          TheDebayerNoiseScaleHighBParameter = nullptr;
+DebayerNoiseAlgorithmR*                          TheDebayerNoiseAlgorithmRParameter = nullptr;
+DebayerNoiseAlgorithmG*                          TheDebayerNoiseAlgorithmGParameter = nullptr;
+DebayerNoiseAlgorithmB*                          TheDebayerNoiseAlgorithmBParameter = nullptr;
 
-DebayerOutputFileData*                    TheDebayerOutputFileDataParameter = nullptr;
-DebayerOutputFilePath*                    TheDebayerOutputFilePathParameter = nullptr;
-DebayerOutputChannelFilePathR*            TheDebayerOutputChannelFilePathRParameter = nullptr;
-DebayerOutputChannelFilePathG*            TheDebayerOutputChannelFilePathGParameter = nullptr;
-DebayerOutputChannelFilePathB*            TheDebayerOutputChannelFilePathBParameter = nullptr;
-DebayerOutputFilePSFSignalEstimateR*      TheDebayerOutputFilePSFSignalEstimateRParameter = nullptr;
-DebayerOutputFilePSFSignalEstimateG*      TheDebayerOutputFilePSFSignalEstimateGParameter = nullptr;
-DebayerOutputFilePSFSignalEstimateB*      TheDebayerOutputFilePSFSignalEstimateBParameter = nullptr;
-DebayerOutputFilePSFSignalPowerEstimateR* TheDebayerOutputFilePSFSignalPowerEstimateRParameter = nullptr;
-DebayerOutputFilePSFSignalPowerEstimateG* TheDebayerOutputFilePSFSignalPowerEstimateGParameter = nullptr;
-DebayerOutputFilePSFSignalPowerEstimateB* TheDebayerOutputFilePSFSignalPowerEstimateBParameter = nullptr;
-DebayerOutputFilePSFFluxEstimateR*        TheDebayerOutputFilePSFFluxEstimateRParameter = nullptr;
-DebayerOutputFilePSFFluxEstimateG*        TheDebayerOutputFilePSFFluxEstimateGParameter = nullptr;
-DebayerOutputFilePSFFluxEstimateB*        TheDebayerOutputFilePSFFluxEstimateBParameter = nullptr;
-DebayerOutputFilePSFFluxPowerEstimateR*   TheDebayerOutputFilePSFFluxPowerEstimateRParameter = nullptr;
-DebayerOutputFilePSFFluxPowerEstimateG*   TheDebayerOutputFilePSFFluxPowerEstimateGParameter = nullptr;
-DebayerOutputFilePSFFluxPowerEstimateB*   TheDebayerOutputFilePSFFluxPowerEstimateBParameter = nullptr;
-DebayerOutputFilePSFCountR*               TheDebayerOutputFilePSFCountRParameter = nullptr;
-DebayerOutputFilePSFCountG*               TheDebayerOutputFilePSFCountGParameter = nullptr;
-DebayerOutputFilePSFCountB*               TheDebayerOutputFilePSFCountBParameter = nullptr;
-DebayerOutputFileNoiseEstimateR*          TheDebayerOutputFileNoiseEstimateRParameter = nullptr;
-DebayerOutputFileNoiseEstimateG*          TheDebayerOutputFileNoiseEstimateGParameter = nullptr;
-DebayerOutputFileNoiseEstimateB*          TheDebayerOutputFileNoiseEstimateBParameter = nullptr;
-DebayerOutputFileNoiseFractionR*          TheDebayerOutputFileNoiseFractionRParameter = nullptr;
-DebayerOutputFileNoiseFractionG*          TheDebayerOutputFileNoiseFractionGParameter = nullptr;
-DebayerOutputFileNoiseFractionB*          TheDebayerOutputFileNoiseFractionBParameter = nullptr;
-DebayerOutputFileNoiseScaleLowR*          TheDebayerOutputFileNoiseScaleLowRParameter = nullptr;
-DebayerOutputFileNoiseScaleLowG*          TheDebayerOutputFileNoiseScaleLowGParameter = nullptr;
-DebayerOutputFileNoiseScaleLowB*          TheDebayerOutputFileNoiseScaleLowBParameter = nullptr;
-DebayerOutputFileNoiseScaleHighR*         TheDebayerOutputFileNoiseScaleHighRParameter = nullptr;
-DebayerOutputFileNoiseScaleHighG*         TheDebayerOutputFileNoiseScaleHighGParameter = nullptr;
-DebayerOutputFileNoiseScaleHighB*         TheDebayerOutputFileNoiseScaleHighBParameter = nullptr;
-DebayerOutputFileNoiseAlgorithmR*         TheDebayerOutputFileNoiseAlgorithmRParameter = nullptr;
-DebayerOutputFileNoiseAlgorithmG*         TheDebayerOutputFileNoiseAlgorithmGParameter = nullptr;
-DebayerOutputFileNoiseAlgorithmB*         TheDebayerOutputFileNoiseAlgorithmBParameter = nullptr;
+DebayerOutputFileData*                           TheDebayerOutputFileDataParameter = nullptr;
+DebayerOutputFilePath*                           TheDebayerOutputFilePathParameter = nullptr;
+DebayerOutputChannelFilePathR*                   TheDebayerOutputChannelFilePathRParameter = nullptr;
+DebayerOutputChannelFilePathG*                   TheDebayerOutputChannelFilePathGParameter = nullptr;
+DebayerOutputChannelFilePathB*                   TheDebayerOutputChannelFilePathBParameter = nullptr;
+DebayerOutputFilePSFTotalFluxEstimateR*          TheDebayerOutputFilePSFTotalFluxEstimateRParameter = nullptr;
+DebayerOutputFilePSFTotalFluxEstimateG*          TheDebayerOutputFilePSFTotalFluxEstimateGParameter = nullptr;
+DebayerOutputFilePSFTotalFluxEstimateB*          TheDebayerOutputFilePSFTotalFluxEstimateBParameter = nullptr;
+DebayerOutputFilePSFTotalPowerFluxEstimateR*     TheDebayerOutputFilePSFTotalPowerFluxEstimateRParameter = nullptr;
+DebayerOutputFilePSFTotalPowerFluxEstimateG*     TheDebayerOutputFilePSFTotalPowerFluxEstimateGParameter = nullptr;
+DebayerOutputFilePSFTotalPowerFluxEstimateB*     TheDebayerOutputFilePSFTotalPowerFluxEstimateBParameter = nullptr;
+DebayerOutputFilePSFTotalMeanFluxEstimateR*      TheDebayerOutputFilePSFTotalMeanFluxEstimateRParameter = nullptr;
+DebayerOutputFilePSFTotalMeanFluxEstimateG*      TheDebayerOutputFilePSFTotalMeanFluxEstimateGParameter = nullptr;
+DebayerOutputFilePSFTotalMeanFluxEstimateB*      TheDebayerOutputFilePSFTotalMeanFluxEstimateBParameter = nullptr;
+DebayerOutputFilePSFTotalMeanPowerFluxEstimateR* TheDebayerOutputFilePSFTotalMeanPowerFluxEstimateRParameter = nullptr;
+DebayerOutputFilePSFTotalMeanPowerFluxEstimateG* TheDebayerOutputFilePSFTotalMeanPowerFluxEstimateGParameter = nullptr;
+DebayerOutputFilePSFTotalMeanPowerFluxEstimateB* TheDebayerOutputFilePSFTotalMeanPowerFluxEstimateBParameter = nullptr;
+DebayerOutputFilePSFMStarEstimateR*              TheDebayerOutputFilePSFMStarEstimateRParameter = nullptr;
+DebayerOutputFilePSFMStarEstimateG*              TheDebayerOutputFilePSFMStarEstimateGParameter = nullptr;
+DebayerOutputFilePSFMStarEstimateB*              TheDebayerOutputFilePSFMStarEstimateBParameter = nullptr;
+DebayerOutputFilePSFNStarEstimateR*              TheDebayerOutputFilePSFNStarEstimateRParameter = nullptr;
+DebayerOutputFilePSFNStarEstimateG*              TheDebayerOutputFilePSFNStarEstimateGParameter = nullptr;
+DebayerOutputFilePSFNStarEstimateB*              TheDebayerOutputFilePSFNStarEstimateBParameter = nullptr;
+DebayerOutputFilePSFCountR*                      TheDebayerOutputFilePSFCountRParameter = nullptr;
+DebayerOutputFilePSFCountG*                      TheDebayerOutputFilePSFCountGParameter = nullptr;
+DebayerOutputFilePSFCountB*                      TheDebayerOutputFilePSFCountBParameter = nullptr;
+DebayerOutputFileNoiseEstimateR*                 TheDebayerOutputFileNoiseEstimateRParameter = nullptr;
+DebayerOutputFileNoiseEstimateG*                 TheDebayerOutputFileNoiseEstimateGParameter = nullptr;
+DebayerOutputFileNoiseEstimateB*                 TheDebayerOutputFileNoiseEstimateBParameter = nullptr;
+DebayerOutputFileNoiseFractionR*                 TheDebayerOutputFileNoiseFractionRParameter = nullptr;
+DebayerOutputFileNoiseFractionG*                 TheDebayerOutputFileNoiseFractionGParameter = nullptr;
+DebayerOutputFileNoiseFractionB*                 TheDebayerOutputFileNoiseFractionBParameter = nullptr;
+DebayerOutputFileNoiseScaleLowR*                 TheDebayerOutputFileNoiseScaleLowRParameter = nullptr;
+DebayerOutputFileNoiseScaleLowG*                 TheDebayerOutputFileNoiseScaleLowGParameter = nullptr;
+DebayerOutputFileNoiseScaleLowB*                 TheDebayerOutputFileNoiseScaleLowBParameter = nullptr;
+DebayerOutputFileNoiseScaleHighR*                TheDebayerOutputFileNoiseScaleHighRParameter = nullptr;
+DebayerOutputFileNoiseScaleHighG*                TheDebayerOutputFileNoiseScaleHighGParameter = nullptr;
+DebayerOutputFileNoiseScaleHighB*                TheDebayerOutputFileNoiseScaleHighBParameter = nullptr;
+DebayerOutputFileNoiseAlgorithmR*                TheDebayerOutputFileNoiseAlgorithmRParameter = nullptr;
+DebayerOutputFileNoiseAlgorithmG*                TheDebayerOutputFileNoiseAlgorithmGParameter = nullptr;
+DebayerOutputFileNoiseAlgorithmB*                TheDebayerOutputFileNoiseAlgorithmBParameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -418,6 +431,7 @@ IsoString DebayerNoiseEvaluationAlgorithm::ElementId( size_type i ) const
    case KSigma: return "NoiseEvaluation_KSigma";
    default:
    case MRS:    return "NoiseEvaluation_MRS";
+   case NStar:  return "NoiseEvaluation_NStar";
    }
 }
 
@@ -473,6 +487,55 @@ double DebayerStructureLayers::MinimumValue() const
 double DebayerStructureLayers::MaximumValue() const
 {
    return 8;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerSaturationThreshold::DebayerSaturationThreshold( MetaProcess* P ) : MetaFloat( P )
+{
+   TheDebayerSaturationThresholdParameter = this;
+}
+
+IsoString DebayerSaturationThreshold::Id() const
+{
+   return "saturationThreshold";
+}
+
+int DebayerSaturationThreshold::Precision() const
+{
+   return 2;
+}
+
+double DebayerSaturationThreshold::DefaultValue() const
+{
+   return 1.00;
+}
+
+double DebayerSaturationThreshold::MinimumValue() const
+{
+   return 0.10;
+}
+
+double DebayerSaturationThreshold::MaximumValue() const
+{
+   return 1.00;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerSaturationRelative::DebayerSaturationRelative( MetaProcess* P ) : MetaBoolean( P )
+{
+   TheDebayerSaturationRelativeParameter = this;
+}
+
+IsoString DebayerSaturationRelative::Id() const
+{
+   return "saturationRelative";
+}
+
+bool DebayerSaturationRelative::DefaultValue() const
+{
+   return false;
 }
 
 // ----------------------------------------------------------------------------
@@ -604,12 +667,14 @@ IsoString DebayerPSFType::ElementId( size_type i ) const
 {
    switch ( i )
    {
-   case Gaussian:      return "PSFType_Gaussian";
+   case Gaussian: return "PSFType_Gaussian";
+   case Moffat15: return "PSFType_Moffat15";
    default:
-   case Moffat4:       return "PSFType_Moffat4";
-   case Moffat6:       return "PSFType_Moffat6";
-   case Moffat8:       return "PSFType_Moffat8";
-   case VariableShape: return "PSFType_VariableShape";
+   case Moffat4:  return "PSFType_Moffat4";
+   case Moffat6:  return "PSFType_Moffat6";
+   case Moffat8:  return "PSFType_Moffat8";
+   case MoffatA:  return "PSFType_MoffatA";
+   case Auto:     return "PSFType_Auto";
    }
 }
 
@@ -617,12 +682,14 @@ IsoString DebayerPSFType::FunctionName( pcl_enum i )
 {
    switch ( i )
    {
-   case Gaussian:      return "Gaussian";
+   case Gaussian: return "Gaussian";
+   case Moffat15: return "Moffat15";
    default:
-   case Moffat4:       return "Moffat4";
-   case Moffat6:       return "Moffat6";
-   case Moffat8:       return "Moffat8";
-   case VariableShape: return "VariableShape";
+   case Moffat4:  return "Moffat4";
+   case Moffat6:  return "Moffat6";
+   case Moffat8:  return "Moffat8";
+   case MoffatA:  return "MoffatA";
+   case Auto:     return "Auto";
    }
 }
 
@@ -638,66 +705,34 @@ size_type DebayerPSFType::DefaultValueIndex() const
 
 // ----------------------------------------------------------------------------
 
-DebayerPSFRejectionLimit::DebayerPSFRejectionLimit( MetaProcess* P ) : MetaFloat( P )
+DebayerPSFGrowth::DebayerPSFGrowth( MetaProcess* P ) : MetaFloat( P )
 {
-   TheDebayerPSFRejectionLimitParameter = this;
+   TheDebayerPSFGrowthParameter = this;
 }
 
-IsoString DebayerPSFRejectionLimit::Id() const
+IsoString DebayerPSFGrowth::Id() const
 {
-   return "psfRejectionLimit";
+   return "psfGrowth";
 }
 
-int DebayerPSFRejectionLimit::Precision() const
+int DebayerPSFGrowth::Precision() const
 {
    return 2;
 }
 
-double DebayerPSFRejectionLimit::DefaultValue() const
+double DebayerPSFGrowth::DefaultValue() const
 {
-   return 0.90;
+   return 1.0;
 }
 
-double DebayerPSFRejectionLimit::MinimumValue() const
+double DebayerPSFGrowth::MinimumValue() const
 {
-   return 0.50;
+   return 0.5;
 }
 
-double DebayerPSFRejectionLimit::MaximumValue() const
+double DebayerPSFGrowth::MaximumValue() const
 {
-   return 1.00;
-}
-
-// ----------------------------------------------------------------------------
-
-DebayerPSFHighClippingPoint::DebayerPSFHighClippingPoint( MetaProcess* P ) : MetaFloat( P )
-{
-   TheDebayerPSFHighClippingPointParameter = this;
-}
-
-IsoString DebayerPSFHighClippingPoint::Id() const
-{
-   return "psfHighClippingPoint";
-}
-
-int DebayerPSFHighClippingPoint::Precision() const
-{
-   return 2;
-}
-
-double DebayerPSFHighClippingPoint::DefaultValue() const
-{
-   return 0.85;
-}
-
-double DebayerPSFHighClippingPoint::MinimumValue() const
-{
-   return 0.50;
-}
-
-double DebayerPSFHighClippingPoint::MaximumValue() const
-{
-   return 1.00;
+   return 4.0;
 }
 
 // ----------------------------------------------------------------------------
@@ -1130,339 +1165,486 @@ bool DebayerOutputChannelImageB::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-DebayerPSFSignalEstimateR::DebayerPSFSignalEstimateR( MetaProcess* P ) : MetaDouble( P )
+DebayerPSFTotalFluxEstimateR::DebayerPSFTotalFluxEstimateR( MetaProcess* P ) : MetaDouble( P )
 {
-   TheDebayerPSFSignalEstimateRParameter = this;
+   TheDebayerPSFTotalFluxEstimateRParameter = this;
 }
 
-IsoString DebayerPSFSignalEstimateR::Id() const
+IsoString DebayerPSFTotalFluxEstimateR::Id() const
 {
-   return "psfSignalEstimateR";
+   return "psfTotalFluxEstimateR";
 }
 
-int DebayerPSFSignalEstimateR::Precision() const
+int DebayerPSFTotalFluxEstimateR::Precision() const
 {
    return 4;
 }
 
-bool DebayerPSFSignalEstimateR::ScientificNotation() const
+bool DebayerPSFTotalFluxEstimateR::ScientificNotation() const
 {
    return true;
 }
 
-bool DebayerPSFSignalEstimateR::IsReadOnly() const
+bool DebayerPSFTotalFluxEstimateR::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-DebayerPSFSignalEstimateG::DebayerPSFSignalEstimateG( MetaProcess* P ) : MetaDouble( P )
+DebayerPSFTotalFluxEstimateG::DebayerPSFTotalFluxEstimateG( MetaProcess* P ) : MetaDouble( P )
 {
-   TheDebayerPSFSignalEstimateGParameter = this;
+   TheDebayerPSFTotalFluxEstimateGParameter = this;
 }
 
-IsoString DebayerPSFSignalEstimateG::Id() const
+IsoString DebayerPSFTotalFluxEstimateG::Id() const
 {
-   return "psfSignalEstimateG";
+   return "psfTotalFluxEstimateG";
 }
 
-int DebayerPSFSignalEstimateG::Precision() const
+int DebayerPSFTotalFluxEstimateG::Precision() const
 {
    return 4;
 }
 
-bool DebayerPSFSignalEstimateG::ScientificNotation() const
+bool DebayerPSFTotalFluxEstimateG::ScientificNotation() const
 {
    return true;
 }
 
-bool DebayerPSFSignalEstimateG::IsReadOnly() const
+bool DebayerPSFTotalFluxEstimateG::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-DebayerPSFSignalEstimateB::DebayerPSFSignalEstimateB( MetaProcess* P ) : MetaDouble( P )
+DebayerPSFTotalFluxEstimateB::DebayerPSFTotalFluxEstimateB( MetaProcess* P ) : MetaDouble( P )
 {
-   TheDebayerPSFSignalEstimateBParameter = this;
+   TheDebayerPSFTotalFluxEstimateBParameter = this;
 }
 
-IsoString DebayerPSFSignalEstimateB::Id() const
+IsoString DebayerPSFTotalFluxEstimateB::Id() const
 {
-   return "psfSignalEstimateB";
+   return "psfTotalFluxEstimateB";
 }
 
-int DebayerPSFSignalEstimateB::Precision() const
+int DebayerPSFTotalFluxEstimateB::Precision() const
 {
    return 4;
 }
 
-bool DebayerPSFSignalEstimateB::ScientificNotation() const
+bool DebayerPSFTotalFluxEstimateB::ScientificNotation() const
 {
    return true;
 }
 
-bool DebayerPSFSignalEstimateB::IsReadOnly() const
+bool DebayerPSFTotalFluxEstimateB::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-DebayerPSFSignalPowerEstimateR::DebayerPSFSignalPowerEstimateR( MetaProcess* P ) : MetaDouble( P )
+DebayerPSFTotalPowerFluxEstimateR::DebayerPSFTotalPowerFluxEstimateR( MetaProcess* P ) : MetaDouble( P )
 {
-   TheDebayerPSFSignalPowerEstimateRParameter = this;
+   TheDebayerPSFTotalPowerFluxEstimateRParameter = this;
 }
 
-IsoString DebayerPSFSignalPowerEstimateR::Id() const
+IsoString DebayerPSFTotalPowerFluxEstimateR::Id() const
 {
-   return "psfSignalPowerEstimateR";
+   return "psfTotalPowerFluxEstimateR";
 }
 
-IsoString DebayerPSFSignalPowerEstimateR::Aliases() const
-{
-   return "psfPowerEstimateR";
-}
-
-int DebayerPSFSignalPowerEstimateR::Precision() const
+int DebayerPSFTotalPowerFluxEstimateR::Precision() const
 {
    return 4;
 }
 
-bool DebayerPSFSignalPowerEstimateR::ScientificNotation() const
+bool DebayerPSFTotalPowerFluxEstimateR::ScientificNotation() const
 {
    return true;
 }
 
-bool DebayerPSFSignalPowerEstimateR::IsReadOnly() const
+bool DebayerPSFTotalPowerFluxEstimateR::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-DebayerPSFSignalPowerEstimateG::DebayerPSFSignalPowerEstimateG( MetaProcess* P ) : MetaDouble( P )
+DebayerPSFTotalPowerFluxEstimateG::DebayerPSFTotalPowerFluxEstimateG( MetaProcess* P ) : MetaDouble( P )
 {
-   TheDebayerPSFSignalPowerEstimateGParameter = this;
+   TheDebayerPSFTotalPowerFluxEstimateGParameter = this;
 }
 
-IsoString DebayerPSFSignalPowerEstimateG::Id() const
+IsoString DebayerPSFTotalPowerFluxEstimateG::Id() const
 {
-   return "psfSignalPowerEstimateG";
+   return "psfTotalPowerFluxEstimateG";
 }
 
-IsoString DebayerPSFSignalPowerEstimateG::Aliases() const
-{
-   return "psfPowerEstimateG";
-}
-
-int DebayerPSFSignalPowerEstimateG::Precision() const
+int DebayerPSFTotalPowerFluxEstimateG::Precision() const
 {
    return 4;
 }
 
-bool DebayerPSFSignalPowerEstimateG::ScientificNotation() const
+bool DebayerPSFTotalPowerFluxEstimateG::ScientificNotation() const
 {
    return true;
 }
 
-bool DebayerPSFSignalPowerEstimateG::IsReadOnly() const
+bool DebayerPSFTotalPowerFluxEstimateG::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-DebayerPSFSignalPowerEstimateB::DebayerPSFSignalPowerEstimateB( MetaProcess* P ) : MetaDouble( P )
+DebayerPSFTotalPowerFluxEstimateB::DebayerPSFTotalPowerFluxEstimateB( MetaProcess* P ) : MetaDouble( P )
 {
-   TheDebayerPSFSignalPowerEstimateBParameter = this;
+   TheDebayerPSFTotalPowerFluxEstimateBParameter = this;
 }
 
-IsoString DebayerPSFSignalPowerEstimateB::Id() const
+IsoString DebayerPSFTotalPowerFluxEstimateB::Id() const
 {
-   return "psfSignalPowerEstimateB";
+   return "psfTotalPowerFluxEstimateB";
 }
 
-IsoString DebayerPSFSignalPowerEstimateB::Aliases() const
-{
-   return "psfPowerEstimateB";
-}
-
-int DebayerPSFSignalPowerEstimateB::Precision() const
+int DebayerPSFTotalPowerFluxEstimateB::Precision() const
 {
    return 4;
 }
 
-bool DebayerPSFSignalPowerEstimateB::ScientificNotation() const
+bool DebayerPSFTotalPowerFluxEstimateB::ScientificNotation() const
 {
    return true;
 }
 
-bool DebayerPSFSignalPowerEstimateB::IsReadOnly() const
+bool DebayerPSFTotalPowerFluxEstimateB::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-DebayerPSFFluxEstimateR::DebayerPSFFluxEstimateR( MetaProcess* P ) : MetaDouble( P )
+DebayerPSFTotalMeanFluxEstimateR::DebayerPSFTotalMeanFluxEstimateR( MetaProcess* P ) : MetaDouble( P )
 {
-   TheDebayerPSFFluxEstimateRParameter = this;
+   TheDebayerPSFTotalMeanFluxEstimateRParameter = this;
 }
 
-IsoString DebayerPSFFluxEstimateR::Id() const
+IsoString DebayerPSFTotalMeanFluxEstimateR::Id() const
 {
-   return "psfFluxEstimateR";
+   return "psfTotalMeanFluxEstimateR";
 }
 
-int DebayerPSFFluxEstimateR::Precision() const
+int DebayerPSFTotalMeanFluxEstimateR::Precision() const
 {
    return 4;
 }
 
-bool DebayerPSFFluxEstimateR::ScientificNotation() const
+bool DebayerPSFTotalMeanFluxEstimateR::ScientificNotation() const
 {
    return true;
 }
 
-bool DebayerPSFFluxEstimateR::IsReadOnly() const
+bool DebayerPSFTotalMeanFluxEstimateR::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-DebayerPSFFluxEstimateG::DebayerPSFFluxEstimateG( MetaProcess* P ) : MetaDouble( P )
+DebayerPSFTotalMeanFluxEstimateG::DebayerPSFTotalMeanFluxEstimateG( MetaProcess* P ) : MetaDouble( P )
 {
-   TheDebayerPSFFluxEstimateGParameter = this;
+   TheDebayerPSFTotalMeanFluxEstimateGParameter = this;
 }
 
-IsoString DebayerPSFFluxEstimateG::Id() const
+IsoString DebayerPSFTotalMeanFluxEstimateG::Id() const
 {
-   return "psfFluxEstimateG";
+   return "psfTotalMeanFluxEstimateG";
 }
 
-int DebayerPSFFluxEstimateG::Precision() const
+int DebayerPSFTotalMeanFluxEstimateG::Precision() const
 {
    return 4;
 }
 
-bool DebayerPSFFluxEstimateG::ScientificNotation() const
+bool DebayerPSFTotalMeanFluxEstimateG::ScientificNotation() const
 {
    return true;
 }
 
-bool DebayerPSFFluxEstimateG::IsReadOnly() const
+bool DebayerPSFTotalMeanFluxEstimateG::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-DebayerPSFFluxEstimateB::DebayerPSFFluxEstimateB( MetaProcess* P ) : MetaDouble( P )
+DebayerPSFTotalMeanFluxEstimateB::DebayerPSFTotalMeanFluxEstimateB( MetaProcess* P ) : MetaDouble( P )
 {
-   TheDebayerPSFFluxEstimateBParameter = this;
+   TheDebayerPSFTotalMeanFluxEstimateBParameter = this;
 }
 
-IsoString DebayerPSFFluxEstimateB::Id() const
+IsoString DebayerPSFTotalMeanFluxEstimateB::Id() const
 {
-   return "psfFluxEstimateB";
+   return "psfTotalMeanFluxEstimateB";
 }
 
-int DebayerPSFFluxEstimateB::Precision() const
+int DebayerPSFTotalMeanFluxEstimateB::Precision() const
 {
    return 4;
 }
 
-bool DebayerPSFFluxEstimateB::ScientificNotation() const
+bool DebayerPSFTotalMeanFluxEstimateB::ScientificNotation() const
 {
    return true;
 }
 
-bool DebayerPSFFluxEstimateB::IsReadOnly() const
+bool DebayerPSFTotalMeanFluxEstimateB::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-DebayerPSFFluxPowerEstimateR::DebayerPSFFluxPowerEstimateR( MetaProcess* P ) : MetaDouble( P )
+DebayerPSFTotalMeanPowerFluxEstimateR::DebayerPSFTotalMeanPowerFluxEstimateR( MetaProcess* P ) : MetaDouble( P )
 {
-   TheDebayerPSFFluxPowerEstimateRParameter = this;
+   TheDebayerPSFTotalMeanPowerFluxEstimateRParameter = this;
 }
 
-IsoString DebayerPSFFluxPowerEstimateR::Id() const
+IsoString DebayerPSFTotalMeanPowerFluxEstimateR::Id() const
 {
-   return "psfFluxPowerEstimateR";
+   return "psfTotalMeanPowerFluxEstimateR";
 }
 
-int DebayerPSFFluxPowerEstimateR::Precision() const
+int DebayerPSFTotalMeanPowerFluxEstimateR::Precision() const
 {
    return 4;
 }
 
-bool DebayerPSFFluxPowerEstimateR::ScientificNotation() const
+bool DebayerPSFTotalMeanPowerFluxEstimateR::ScientificNotation() const
 {
    return true;
 }
 
-bool DebayerPSFFluxPowerEstimateR::IsReadOnly() const
+bool DebayerPSFTotalMeanPowerFluxEstimateR::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-DebayerPSFFluxPowerEstimateG::DebayerPSFFluxPowerEstimateG( MetaProcess* P ) : MetaDouble( P )
+DebayerPSFTotalMeanPowerFluxEstimateG::DebayerPSFTotalMeanPowerFluxEstimateG( MetaProcess* P ) : MetaDouble( P )
 {
-   TheDebayerPSFFluxPowerEstimateGParameter = this;
+   TheDebayerPSFTotalMeanPowerFluxEstimateGParameter = this;
 }
 
-IsoString DebayerPSFFluxPowerEstimateG::Id() const
+IsoString DebayerPSFTotalMeanPowerFluxEstimateG::Id() const
 {
-   return "psfFluxPowerEstimateG";
+   return "psfTotalMeanPowerFluxEstimateG";
 }
 
-int DebayerPSFFluxPowerEstimateG::Precision() const
+int DebayerPSFTotalMeanPowerFluxEstimateG::Precision() const
 {
    return 4;
 }
 
-bool DebayerPSFFluxPowerEstimateG::ScientificNotation() const
+bool DebayerPSFTotalMeanPowerFluxEstimateG::ScientificNotation() const
 {
    return true;
 }
 
-bool DebayerPSFFluxPowerEstimateG::IsReadOnly() const
+bool DebayerPSFTotalMeanPowerFluxEstimateG::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-DebayerPSFFluxPowerEstimateB::DebayerPSFFluxPowerEstimateB( MetaProcess* P ) : MetaDouble( P )
+DebayerPSFTotalMeanPowerFluxEstimateB::DebayerPSFTotalMeanPowerFluxEstimateB( MetaProcess* P ) : MetaDouble( P )
 {
-   TheDebayerPSFFluxPowerEstimateBParameter = this;
+   TheDebayerPSFTotalMeanPowerFluxEstimateBParameter = this;
 }
 
-IsoString DebayerPSFFluxPowerEstimateB::Id() const
+IsoString DebayerPSFTotalMeanPowerFluxEstimateB::Id() const
 {
-   return "psfFluxPowerEstimateB";
+   return "psfTotalMeanPowerFluxEstimateB";
 }
 
-int DebayerPSFFluxPowerEstimateB::Precision() const
+int DebayerPSFTotalMeanPowerFluxEstimateB::Precision() const
 {
    return 4;
 }
 
-bool DebayerPSFFluxPowerEstimateB::ScientificNotation() const
+bool DebayerPSFTotalMeanPowerFluxEstimateB::ScientificNotation() const
 {
    return true;
 }
 
-bool DebayerPSFFluxPowerEstimateB::IsReadOnly() const
+bool DebayerPSFTotalMeanPowerFluxEstimateB::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerPSFMStarEstimateR::DebayerPSFMStarEstimateR( MetaProcess* P ) : MetaDouble( P )
+{
+   TheDebayerPSFMStarEstimateRParameter = this;
+}
+
+IsoString DebayerPSFMStarEstimateR::Id() const
+{
+   return "psfMStarEstimateR";
+}
+
+int DebayerPSFMStarEstimateR::Precision() const
+{
+   return 4;
+}
+
+bool DebayerPSFMStarEstimateR::ScientificNotation() const
+{
+   return true;
+}
+
+bool DebayerPSFMStarEstimateR::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerPSFMStarEstimateG::DebayerPSFMStarEstimateG( MetaProcess* P ) : MetaDouble( P )
+{
+   TheDebayerPSFMStarEstimateGParameter = this;
+}
+
+IsoString DebayerPSFMStarEstimateG::Id() const
+{
+   return "psfMStarEstimateG";
+}
+
+int DebayerPSFMStarEstimateG::Precision() const
+{
+   return 4;
+}
+
+bool DebayerPSFMStarEstimateG::ScientificNotation() const
+{
+   return true;
+}
+
+bool DebayerPSFMStarEstimateG::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerPSFMStarEstimateB::DebayerPSFMStarEstimateB( MetaProcess* P ) : MetaDouble( P )
+{
+   TheDebayerPSFMStarEstimateBParameter = this;
+}
+
+IsoString DebayerPSFMStarEstimateB::Id() const
+{
+   return "psfMStarEstimateB";
+}
+
+int DebayerPSFMStarEstimateB::Precision() const
+{
+   return 4;
+}
+
+bool DebayerPSFMStarEstimateB::ScientificNotation() const
+{
+   return true;
+}
+
+bool DebayerPSFMStarEstimateB::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerPSFNStarEstimateR::DebayerPSFNStarEstimateR( MetaProcess* P ) : MetaDouble( P )
+{
+   TheDebayerPSFNStarEstimateRParameter = this;
+}
+
+IsoString DebayerPSFNStarEstimateR::Id() const
+{
+   return "psfNStarEstimateR";
+}
+
+int DebayerPSFNStarEstimateR::Precision() const
+{
+   return 4;
+}
+
+bool DebayerPSFNStarEstimateR::ScientificNotation() const
+{
+   return true;
+}
+
+bool DebayerPSFNStarEstimateR::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerPSFNStarEstimateG::DebayerPSFNStarEstimateG( MetaProcess* P ) : MetaDouble( P )
+{
+   TheDebayerPSFNStarEstimateGParameter = this;
+}
+
+IsoString DebayerPSFNStarEstimateG::Id() const
+{
+   return "psfNStarEstimateG";
+}
+
+int DebayerPSFNStarEstimateG::Precision() const
+{
+   return 4;
+}
+
+bool DebayerPSFNStarEstimateG::ScientificNotation() const
+{
+   return true;
+}
+
+bool DebayerPSFNStarEstimateG::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerPSFNStarEstimateB::DebayerPSFNStarEstimateB( MetaProcess* P ) : MetaDouble( P )
+{
+   TheDebayerPSFNStarEstimateBParameter = this;
+}
+
+IsoString DebayerPSFNStarEstimateB::Id() const
+{
+   return "psfNStarEstimateB";
+}
+
+int DebayerPSFNStarEstimateB::Precision() const
+{
+   return 4;
+}
+
+bool DebayerPSFNStarEstimateB::ScientificNotation() const
+{
+   return true;
+}
+
+bool DebayerPSFNStarEstimateB::IsReadOnly() const
 {
    return true;
 }
@@ -1965,324 +2147,486 @@ bool DebayerOutputChannelFilePathB::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-DebayerOutputFilePSFSignalEstimateR::DebayerOutputFilePSFSignalEstimateR( MetaTable* T ) : MetaDouble( T )
+DebayerOutputFilePSFTotalFluxEstimateR::DebayerOutputFilePSFTotalFluxEstimateR( MetaTable* T ) : MetaDouble( T )
 {
-   TheDebayerOutputFilePSFSignalEstimateRParameter = this;
+   TheDebayerOutputFilePSFTotalFluxEstimateRParameter = this;
 }
 
-IsoString DebayerOutputFilePSFSignalEstimateR::Id() const
+IsoString DebayerOutputFilePSFTotalFluxEstimateR::Id() const
 {
-   return "psfSignalEstimateR";
+   return "psfTotalFluxEstimateR";
 }
 
-int DebayerOutputFilePSFSignalEstimateR::Precision() const
+int DebayerOutputFilePSFTotalFluxEstimateR::Precision() const
 {
    return 4;
 }
 
-bool DebayerOutputFilePSFSignalEstimateR::ScientificNotation() const
+bool DebayerOutputFilePSFTotalFluxEstimateR::ScientificNotation() const
 {
    return true;
 }
 
-bool DebayerOutputFilePSFSignalEstimateR::IsReadOnly() const
+bool DebayerOutputFilePSFTotalFluxEstimateR::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-DebayerOutputFilePSFSignalEstimateG::DebayerOutputFilePSFSignalEstimateG( MetaTable* T ) : MetaDouble( T )
+DebayerOutputFilePSFTotalFluxEstimateG::DebayerOutputFilePSFTotalFluxEstimateG( MetaTable* T ) : MetaDouble( T )
 {
-   TheDebayerOutputFilePSFSignalEstimateGParameter = this;
+   TheDebayerOutputFilePSFTotalFluxEstimateGParameter = this;
 }
 
-IsoString DebayerOutputFilePSFSignalEstimateG::Id() const
+IsoString DebayerOutputFilePSFTotalFluxEstimateG::Id() const
 {
-   return "psfSignalEstimateG";
+   return "psfTotalFluxEstimateG";
 }
 
-int DebayerOutputFilePSFSignalEstimateG::Precision() const
+int DebayerOutputFilePSFTotalFluxEstimateG::Precision() const
 {
    return 4;
 }
 
-bool DebayerOutputFilePSFSignalEstimateG::ScientificNotation() const
+bool DebayerOutputFilePSFTotalFluxEstimateG::ScientificNotation() const
 {
    return true;
 }
 
-bool DebayerOutputFilePSFSignalEstimateG::IsReadOnly() const
+bool DebayerOutputFilePSFTotalFluxEstimateG::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-DebayerOutputFilePSFSignalEstimateB::DebayerOutputFilePSFSignalEstimateB( MetaTable* T ) : MetaDouble( T )
+DebayerOutputFilePSFTotalFluxEstimateB::DebayerOutputFilePSFTotalFluxEstimateB( MetaTable* T ) : MetaDouble( T )
 {
-   TheDebayerOutputFilePSFSignalEstimateBParameter = this;
+   TheDebayerOutputFilePSFTotalFluxEstimateBParameter = this;
 }
 
-IsoString DebayerOutputFilePSFSignalEstimateB::Id() const
+IsoString DebayerOutputFilePSFTotalFluxEstimateB::Id() const
 {
-   return "psfSignalEstimateB";
+   return "psfTotalFluxEstimateB";
 }
 
-int DebayerOutputFilePSFSignalEstimateB::Precision() const
+int DebayerOutputFilePSFTotalFluxEstimateB::Precision() const
 {
    return 4;
 }
 
-bool DebayerOutputFilePSFSignalEstimateB::ScientificNotation() const
+bool DebayerOutputFilePSFTotalFluxEstimateB::ScientificNotation() const
 {
    return true;
 }
 
-bool DebayerOutputFilePSFSignalEstimateB::IsReadOnly() const
+bool DebayerOutputFilePSFTotalFluxEstimateB::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-DebayerOutputFilePSFSignalPowerEstimateR::DebayerOutputFilePSFSignalPowerEstimateR( MetaTable* T ) : MetaDouble( T )
+DebayerOutputFilePSFTotalPowerFluxEstimateR::DebayerOutputFilePSFTotalPowerFluxEstimateR( MetaTable* T ) : MetaDouble( T )
 {
-   TheDebayerOutputFilePSFSignalPowerEstimateRParameter = this;
+   TheDebayerOutputFilePSFTotalPowerFluxEstimateRParameter = this;
 }
 
-IsoString DebayerOutputFilePSFSignalPowerEstimateR::Id() const
+IsoString DebayerOutputFilePSFTotalPowerFluxEstimateR::Id() const
 {
-   return "psfSignalPowerEstimateR";
+   return "psfTotalPowerFluxEstimateR";
 }
 
-int DebayerOutputFilePSFSignalPowerEstimateR::Precision() const
+int DebayerOutputFilePSFTotalPowerFluxEstimateR::Precision() const
 {
    return 4;
 }
 
-bool DebayerOutputFilePSFSignalPowerEstimateR::ScientificNotation() const
+bool DebayerOutputFilePSFTotalPowerFluxEstimateR::ScientificNotation() const
 {
    return true;
 }
 
-bool DebayerOutputFilePSFSignalPowerEstimateR::IsReadOnly() const
+bool DebayerOutputFilePSFTotalPowerFluxEstimateR::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-DebayerOutputFilePSFSignalPowerEstimateG::DebayerOutputFilePSFSignalPowerEstimateG( MetaTable* T ) : MetaDouble( T )
+DebayerOutputFilePSFTotalPowerFluxEstimateG::DebayerOutputFilePSFTotalPowerFluxEstimateG( MetaTable* T ) : MetaDouble( T )
 {
-   TheDebayerOutputFilePSFSignalPowerEstimateGParameter = this;
+   TheDebayerOutputFilePSFTotalPowerFluxEstimateGParameter = this;
 }
 
-IsoString DebayerOutputFilePSFSignalPowerEstimateG::Id() const
+IsoString DebayerOutputFilePSFTotalPowerFluxEstimateG::Id() const
 {
-   return "psfSignalPowerEstimateG";
+   return "psfTotalPowerFluxEstimateG";
 }
 
-int DebayerOutputFilePSFSignalPowerEstimateG::Precision() const
+int DebayerOutputFilePSFTotalPowerFluxEstimateG::Precision() const
 {
    return 4;
 }
 
-bool DebayerOutputFilePSFSignalPowerEstimateG::ScientificNotation() const
+bool DebayerOutputFilePSFTotalPowerFluxEstimateG::ScientificNotation() const
 {
    return true;
 }
 
-bool DebayerOutputFilePSFSignalPowerEstimateG::IsReadOnly() const
+bool DebayerOutputFilePSFTotalPowerFluxEstimateG::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-DebayerOutputFilePSFSignalPowerEstimateB::DebayerOutputFilePSFSignalPowerEstimateB( MetaTable* T ) : MetaDouble( T )
+DebayerOutputFilePSFTotalPowerFluxEstimateB::DebayerOutputFilePSFTotalPowerFluxEstimateB( MetaTable* T ) : MetaDouble( T )
 {
-   TheDebayerOutputFilePSFSignalPowerEstimateBParameter = this;
+   TheDebayerOutputFilePSFTotalPowerFluxEstimateBParameter = this;
 }
 
-IsoString DebayerOutputFilePSFSignalPowerEstimateB::Id() const
+IsoString DebayerOutputFilePSFTotalPowerFluxEstimateB::Id() const
 {
-   return "psfSignalPowerEstimateB";
+   return "psfTotalPowerFluxEstimateB";
 }
 
-int DebayerOutputFilePSFSignalPowerEstimateB::Precision() const
+int DebayerOutputFilePSFTotalPowerFluxEstimateB::Precision() const
 {
    return 4;
 }
 
-bool DebayerOutputFilePSFSignalPowerEstimateB::ScientificNotation() const
+bool DebayerOutputFilePSFTotalPowerFluxEstimateB::ScientificNotation() const
 {
    return true;
 }
 
-bool DebayerOutputFilePSFSignalPowerEstimateB::IsReadOnly() const
+bool DebayerOutputFilePSFTotalPowerFluxEstimateB::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-DebayerOutputFilePSFFluxEstimateR::DebayerOutputFilePSFFluxEstimateR( MetaTable* T ) : MetaDouble( T )
+DebayerOutputFilePSFTotalMeanFluxEstimateR::DebayerOutputFilePSFTotalMeanFluxEstimateR( MetaTable* T ) : MetaDouble( T )
 {
-   TheDebayerOutputFilePSFFluxEstimateRParameter = this;
+   TheDebayerOutputFilePSFTotalMeanFluxEstimateRParameter = this;
 }
 
-IsoString DebayerOutputFilePSFFluxEstimateR::Id() const
+IsoString DebayerOutputFilePSFTotalMeanFluxEstimateR::Id() const
 {
-   return "psfFluxEstimateR";
+   return "psfTotalMeanFluxEstimateR";
 }
 
-int DebayerOutputFilePSFFluxEstimateR::Precision() const
+int DebayerOutputFilePSFTotalMeanFluxEstimateR::Precision() const
 {
    return 4;
 }
 
-bool DebayerOutputFilePSFFluxEstimateR::ScientificNotation() const
+bool DebayerOutputFilePSFTotalMeanFluxEstimateR::ScientificNotation() const
 {
    return true;
 }
 
-bool DebayerOutputFilePSFFluxEstimateR::IsReadOnly() const
+bool DebayerOutputFilePSFTotalMeanFluxEstimateR::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-DebayerOutputFilePSFFluxEstimateG::DebayerOutputFilePSFFluxEstimateG( MetaTable* T ) : MetaDouble( T )
+DebayerOutputFilePSFTotalMeanFluxEstimateG::DebayerOutputFilePSFTotalMeanFluxEstimateG( MetaTable* T ) : MetaDouble( T )
 {
-   TheDebayerOutputFilePSFFluxEstimateGParameter = this;
+   TheDebayerOutputFilePSFTotalMeanFluxEstimateGParameter = this;
 }
 
-IsoString DebayerOutputFilePSFFluxEstimateG::Id() const
+IsoString DebayerOutputFilePSFTotalMeanFluxEstimateG::Id() const
 {
-   return "psfFluxEstimateG";
+   return "psfTotalMeanFluxEstimateG";
 }
 
-int DebayerOutputFilePSFFluxEstimateG::Precision() const
+int DebayerOutputFilePSFTotalMeanFluxEstimateG::Precision() const
 {
    return 4;
 }
 
-bool DebayerOutputFilePSFFluxEstimateG::ScientificNotation() const
+bool DebayerOutputFilePSFTotalMeanFluxEstimateG::ScientificNotation() const
 {
    return true;
 }
 
-bool DebayerOutputFilePSFFluxEstimateG::IsReadOnly() const
+bool DebayerOutputFilePSFTotalMeanFluxEstimateG::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-DebayerOutputFilePSFFluxEstimateB::DebayerOutputFilePSFFluxEstimateB( MetaTable* T ) : MetaDouble( T )
+DebayerOutputFilePSFTotalMeanFluxEstimateB::DebayerOutputFilePSFTotalMeanFluxEstimateB( MetaTable* T ) : MetaDouble( T )
 {
-   TheDebayerOutputFilePSFFluxEstimateBParameter = this;
+   TheDebayerOutputFilePSFTotalMeanFluxEstimateBParameter = this;
 }
 
-IsoString DebayerOutputFilePSFFluxEstimateB::Id() const
+IsoString DebayerOutputFilePSFTotalMeanFluxEstimateB::Id() const
 {
-   return "psfFluxEstimateB";
+   return "psfTotalMeanFluxEstimateB";
 }
 
-int DebayerOutputFilePSFFluxEstimateB::Precision() const
+int DebayerOutputFilePSFTotalMeanFluxEstimateB::Precision() const
 {
    return 4;
 }
 
-bool DebayerOutputFilePSFFluxEstimateB::ScientificNotation() const
+bool DebayerOutputFilePSFTotalMeanFluxEstimateB::ScientificNotation() const
 {
    return true;
 }
 
-bool DebayerOutputFilePSFFluxEstimateB::IsReadOnly() const
+bool DebayerOutputFilePSFTotalMeanFluxEstimateB::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-DebayerOutputFilePSFFluxPowerEstimateR::DebayerOutputFilePSFFluxPowerEstimateR( MetaTable* T ) : MetaDouble( T )
+DebayerOutputFilePSFTotalMeanPowerFluxEstimateR::DebayerOutputFilePSFTotalMeanPowerFluxEstimateR( MetaTable* T ) : MetaDouble( T )
 {
-   TheDebayerOutputFilePSFFluxPowerEstimateRParameter = this;
+   TheDebayerOutputFilePSFTotalMeanPowerFluxEstimateRParameter = this;
 }
 
-IsoString DebayerOutputFilePSFFluxPowerEstimateR::Id() const
+IsoString DebayerOutputFilePSFTotalMeanPowerFluxEstimateR::Id() const
 {
-   return "psfFluxPowerEstimateR";
+   return "psfTotalMeanPowerFluxEstimateR";
 }
 
-int DebayerOutputFilePSFFluxPowerEstimateR::Precision() const
+int DebayerOutputFilePSFTotalMeanPowerFluxEstimateR::Precision() const
 {
    return 4;
 }
 
-bool DebayerOutputFilePSFFluxPowerEstimateR::ScientificNotation() const
+bool DebayerOutputFilePSFTotalMeanPowerFluxEstimateR::ScientificNotation() const
 {
    return true;
 }
 
-bool DebayerOutputFilePSFFluxPowerEstimateR::IsReadOnly() const
+bool DebayerOutputFilePSFTotalMeanPowerFluxEstimateR::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-DebayerOutputFilePSFFluxPowerEstimateG::DebayerOutputFilePSFFluxPowerEstimateG( MetaTable* T ) : MetaDouble( T )
+DebayerOutputFilePSFTotalMeanPowerFluxEstimateG::DebayerOutputFilePSFTotalMeanPowerFluxEstimateG( MetaTable* T ) : MetaDouble( T )
 {
-   TheDebayerOutputFilePSFFluxPowerEstimateGParameter = this;
+   TheDebayerOutputFilePSFTotalMeanPowerFluxEstimateGParameter = this;
 }
 
-IsoString DebayerOutputFilePSFFluxPowerEstimateG::Id() const
+IsoString DebayerOutputFilePSFTotalMeanPowerFluxEstimateG::Id() const
 {
-   return "psfFluxPowerEstimateG";
+   return "psfTotalMeanPowerFluxEstimateG";
 }
 
-int DebayerOutputFilePSFFluxPowerEstimateG::Precision() const
+int DebayerOutputFilePSFTotalMeanPowerFluxEstimateG::Precision() const
 {
    return 4;
 }
 
-bool DebayerOutputFilePSFFluxPowerEstimateG::ScientificNotation() const
+bool DebayerOutputFilePSFTotalMeanPowerFluxEstimateG::ScientificNotation() const
 {
    return true;
 }
 
-bool DebayerOutputFilePSFFluxPowerEstimateG::IsReadOnly() const
+bool DebayerOutputFilePSFTotalMeanPowerFluxEstimateG::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-DebayerOutputFilePSFFluxPowerEstimateB::DebayerOutputFilePSFFluxPowerEstimateB( MetaTable* T ) : MetaDouble( T )
+DebayerOutputFilePSFTotalMeanPowerFluxEstimateB::DebayerOutputFilePSFTotalMeanPowerFluxEstimateB( MetaTable* T ) : MetaDouble( T )
 {
-   TheDebayerOutputFilePSFFluxPowerEstimateBParameter = this;
+   TheDebayerOutputFilePSFTotalMeanPowerFluxEstimateBParameter = this;
 }
 
-IsoString DebayerOutputFilePSFFluxPowerEstimateB::Id() const
+IsoString DebayerOutputFilePSFTotalMeanPowerFluxEstimateB::Id() const
 {
-   return "psfFluxPowerEstimateB";
+   return "psfTotalMeanPowerFluxEstimateB";
 }
 
-int DebayerOutputFilePSFFluxPowerEstimateB::Precision() const
+int DebayerOutputFilePSFTotalMeanPowerFluxEstimateB::Precision() const
 {
    return 4;
 }
 
-bool DebayerOutputFilePSFFluxPowerEstimateB::ScientificNotation() const
+bool DebayerOutputFilePSFTotalMeanPowerFluxEstimateB::ScientificNotation() const
 {
    return true;
 }
 
-bool DebayerOutputFilePSFFluxPowerEstimateB::IsReadOnly() const
+bool DebayerOutputFilePSFTotalMeanPowerFluxEstimateB::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerOutputFilePSFMStarEstimateR::DebayerOutputFilePSFMStarEstimateR( MetaTable* T ) : MetaDouble( T )
+{
+   TheDebayerOutputFilePSFMStarEstimateRParameter = this;
+}
+
+IsoString DebayerOutputFilePSFMStarEstimateR::Id() const
+{
+   return "psfMStarEstimateR";
+}
+
+int DebayerOutputFilePSFMStarEstimateR::Precision() const
+{
+   return 4;
+}
+
+bool DebayerOutputFilePSFMStarEstimateR::ScientificNotation() const
+{
+   return true;
+}
+
+bool DebayerOutputFilePSFMStarEstimateR::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerOutputFilePSFMStarEstimateG::DebayerOutputFilePSFMStarEstimateG( MetaTable* T ) : MetaDouble( T )
+{
+   TheDebayerOutputFilePSFMStarEstimateGParameter = this;
+}
+
+IsoString DebayerOutputFilePSFMStarEstimateG::Id() const
+{
+   return "psfMStarEstimateG";
+}
+
+int DebayerOutputFilePSFMStarEstimateG::Precision() const
+{
+   return 4;
+}
+
+bool DebayerOutputFilePSFMStarEstimateG::ScientificNotation() const
+{
+   return true;
+}
+
+bool DebayerOutputFilePSFMStarEstimateG::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerOutputFilePSFMStarEstimateB::DebayerOutputFilePSFMStarEstimateB( MetaTable* T ) : MetaDouble( T )
+{
+   TheDebayerOutputFilePSFMStarEstimateBParameter = this;
+}
+
+IsoString DebayerOutputFilePSFMStarEstimateB::Id() const
+{
+   return "psfMStarEstimateB";
+}
+
+int DebayerOutputFilePSFMStarEstimateB::Precision() const
+{
+   return 4;
+}
+
+bool DebayerOutputFilePSFMStarEstimateB::ScientificNotation() const
+{
+   return true;
+}
+
+bool DebayerOutputFilePSFMStarEstimateB::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerOutputFilePSFNStarEstimateR::DebayerOutputFilePSFNStarEstimateR( MetaTable* T ) : MetaDouble( T )
+{
+   TheDebayerOutputFilePSFNStarEstimateRParameter = this;
+}
+
+IsoString DebayerOutputFilePSFNStarEstimateR::Id() const
+{
+   return "psfNStarEstimateR";
+}
+
+int DebayerOutputFilePSFNStarEstimateR::Precision() const
+{
+   return 4;
+}
+
+bool DebayerOutputFilePSFNStarEstimateR::ScientificNotation() const
+{
+   return true;
+}
+
+bool DebayerOutputFilePSFNStarEstimateR::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerOutputFilePSFNStarEstimateG::DebayerOutputFilePSFNStarEstimateG( MetaTable* T ) : MetaDouble( T )
+{
+   TheDebayerOutputFilePSFNStarEstimateGParameter = this;
+}
+
+IsoString DebayerOutputFilePSFNStarEstimateG::Id() const
+{
+   return "psfNStarEstimateG";
+}
+
+int DebayerOutputFilePSFNStarEstimateG::Precision() const
+{
+   return 4;
+}
+
+bool DebayerOutputFilePSFNStarEstimateG::ScientificNotation() const
+{
+   return true;
+}
+
+bool DebayerOutputFilePSFNStarEstimateG::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DebayerOutputFilePSFNStarEstimateB::DebayerOutputFilePSFNStarEstimateB( MetaTable* T ) : MetaDouble( T )
+{
+   TheDebayerOutputFilePSFNStarEstimateBParameter = this;
+}
+
+IsoString DebayerOutputFilePSFNStarEstimateB::Id() const
+{
+   return "psfNStarEstimateB";
+}
+
+int DebayerOutputFilePSFNStarEstimateB::Precision() const
+{
+   return 4;
+}
+
+bool DebayerOutputFilePSFNStarEstimateB::ScientificNotation() const
+{
+   return true;
+}
+
+bool DebayerOutputFilePSFNStarEstimateB::IsReadOnly() const
 {
    return true;
 }
@@ -2703,4 +3047,4 @@ bool DebayerOutputFileNoiseAlgorithmB::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DebayerParameters.cpp - Released 2021-12-29T20:37:28Z
+// EOF DebayerParameters.cpp - Released 2022-03-12T18:59:53Z

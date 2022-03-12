@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.4.3
+// Standard ImageIntegration Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// IntegrationCache.cpp - Released 2021-12-29T20:37:28Z
+// IntegrationCache.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -107,11 +107,15 @@ static bool GetSignalEstimates( IntegrationFile::signal_estimates& v,
    {
       StringList tokens;
       i->Break( tokens, ',' );
-      if ( tokens.Length() != 3 )
+      if ( tokens.Length() != 7 )
          throw ParseError( "Parsing signal estimate: wrong number of components" );
-      v[j].mean = tokens[0].ToDouble();
-      v[j].power = tokens[1].ToDouble();
-      v[j].count = Max( 0, int( tokens[2].ToInt() ) );
+      v[j].totalFlux = tokens[0].ToDouble();
+      v[j].totalPowerFlux = tokens[1].ToDouble();
+      v[j].totalMeanFlux = tokens[2].ToDouble();
+      v[j].totalMeanPowerFlux = tokens[3].ToDouble();
+      v[j].MStar = tokens[4].ToDouble();
+      v[j].NStar = tokens[5].ToDouble();
+      v[j].count = Max( 0, int( tokens[6].ToInt() ) );
    }
    return true;
 }
@@ -120,7 +124,10 @@ static String SignalEstimatesToString( const IntegrationFile::signal_estimates& 
 {
    String s = String().Format( "\n%d", v.Length() );
    for ( int i = 0; i < v.Length(); ++i )
-      s.AppendFormat( "\n%.8e,%.8e,%d", v[i].mean, v[i].power, v[i].count );
+      s.AppendFormat( "\n%.8e,%.8e,%.8e,%.8e,%.8e,%.8e,%d",
+                      v[i].totalFlux, v[i].totalPowerFlux,
+                      v[i].totalMeanFlux, v[i].totalMeanPowerFlux,
+                      v[i].MStar, v[i].NStar, v[i].count );
    return s;
 }
 
@@ -323,4 +330,4 @@ IntegrationCache::~IntegrationCache()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationCache.cpp - Released 2021-12-29T20:37:28Z
+// EOF IntegrationCache.cpp - Released 2022-03-12T18:59:53Z

@@ -2,9 +2,9 @@
 <!--
 ######################################################################
 # PixInsight Makefile Generator Script v1.125
-# Copyright (C) 2009-2021 Pleiades Astrophoto
+# Copyright (C) 2009-2022 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2021-12-30T19:40:46.437Z
+# Generated on .... 2022-03-12T19:02:43.498Z
 # Project id ...... Convolution
 # Project type .... Module
 # Platform ........ Windows/vc16
@@ -16,13 +16,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>19a213fd-7f74-462a-bddd-499bdf34584a</UniqueIdentifier>
+      <UniqueIdentifier>81558cf3-649f-4901-b210-12c63df2a038</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>046909c9-fab6-49f9-81bd-71de40d0b0d5</UniqueIdentifier>
+      <UniqueIdentifier>ed3890ba-06ed-4f6d-ba83-66879fd37de6</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>53c07e5d-bb01-4ecd-a07e-b218e18e5789</UniqueIdentifier>
+      <UniqueIdentifier>f16fe909-f9e2-4063-9612-f46cea51961f</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

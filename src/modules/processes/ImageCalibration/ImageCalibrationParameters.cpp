@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.8.0
+// Standard ImageCalibration Process Module Version 1.9.1
 // ----------------------------------------------------------------------------
-// ImageCalibrationParameters.cpp - Released 2021-12-29T20:37:28Z
+// ImageCalibrationParameters.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -59,127 +59,138 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-ICTargetFrames*                  TheICTargetFramesParameter = nullptr;
-ICTargetFrameEnabled*            TheICTargetFrameEnabledParameter = nullptr;
-ICTargetFramePath*               TheICTargetFramePathParameter = nullptr;
+ICTargetFrames*                    TheICTargetFramesParameter = nullptr;
+ICTargetFrameEnabled*              TheICTargetFrameEnabledParameter = nullptr;
+ICTargetFramePath*                 TheICTargetFramePathParameter = nullptr;
 
-ICEnableCFA*                     TheICEnableCFAParameter = nullptr;
-ICCFAPattern*                    TheICCFAPatternParameter = nullptr;
+ICEnableCFA*                       TheICEnableCFAParameter = nullptr;
+ICCFAPattern*                      TheICCFAPatternParameter = nullptr;
 
-ICInputHints*                    TheICInputHintsParameter = nullptr;
-ICOutputHints*                   TheICOutputHintsParameter = nullptr;
+ICInputHints*                      TheICInputHintsParameter = nullptr;
+ICOutputHints*                     TheICOutputHintsParameter = nullptr;
 
-ICPedestal*                      TheICPedestalParameter = nullptr;
-ICPedestalMode*                  TheICPedestalModeParameter = nullptr;
-ICPedestalKeyword*               TheICPedestalKeywordParameter = nullptr;
+ICPedestal*                        TheICPedestalParameter = nullptr;
+ICPedestalMode*                    TheICPedestalModeParameter = nullptr;
+ICPedestalKeyword*                 TheICPedestalKeywordParameter = nullptr;
 
-ICOverscanEnabled*               TheICOverscanEnabledParameter = nullptr;
+ICOverscanEnabled*                 TheICOverscanEnabledParameter = nullptr;
 
-ICOverscanImageX0*               TheICOverscanImageX0Parameter = nullptr;
-ICOverscanImageY0*               TheICOverscanImageY0Parameter = nullptr;
-ICOverscanImageX1*               TheICOverscanImageX1Parameter = nullptr;
-ICOverscanImageY1*               TheICOverscanImageY1Parameter = nullptr;
+ICOverscanImageX0*                 TheICOverscanImageX0Parameter = nullptr;
+ICOverscanImageY0*                 TheICOverscanImageY0Parameter = nullptr;
+ICOverscanImageX1*                 TheICOverscanImageX1Parameter = nullptr;
+ICOverscanImageY1*                 TheICOverscanImageY1Parameter = nullptr;
 
-ICOverscanRegions*               TheICOverscanRegionsParameter = nullptr;
+ICOverscanRegions*                 TheICOverscanRegionsParameter = nullptr;
 
-ICOverscanRegionEnabled*         TheICOverscanRegionEnabledParameter = nullptr;
+ICOverscanRegionEnabled*           TheICOverscanRegionEnabledParameter = nullptr;
 
-ICOverscanSourceX0*              TheICOverscanSourceX0Parameter = nullptr;
-ICOverscanSourceY0*              TheICOverscanSourceY0Parameter = nullptr;
-ICOverscanSourceX1*              TheICOverscanSourceX1Parameter = nullptr;
-ICOverscanSourceY1*              TheICOverscanSourceY1Parameter = nullptr;
+ICOverscanSourceX0*                TheICOverscanSourceX0Parameter = nullptr;
+ICOverscanSourceY0*                TheICOverscanSourceY0Parameter = nullptr;
+ICOverscanSourceX1*                TheICOverscanSourceX1Parameter = nullptr;
+ICOverscanSourceY1*                TheICOverscanSourceY1Parameter = nullptr;
 
-ICOverscanTargetX0*              TheICOverscanTargetX0Parameter = nullptr;
-ICOverscanTargetY0*              TheICOverscanTargetY0Parameter = nullptr;
-ICOverscanTargetX1*              TheICOverscanTargetX1Parameter = nullptr;
-ICOverscanTargetY1*              TheICOverscanTargetY1Parameter = nullptr;
+ICOverscanTargetX0*                TheICOverscanTargetX0Parameter = nullptr;
+ICOverscanTargetY0*                TheICOverscanTargetY0Parameter = nullptr;
+ICOverscanTargetX1*                TheICOverscanTargetX1Parameter = nullptr;
+ICOverscanTargetY1*                TheICOverscanTargetY1Parameter = nullptr;
 
-ICMasterBiasEnabled*             TheICMasterBiasEnabledParameter = nullptr;
-ICMasterBiasPath*                TheICMasterBiasPathParameter = nullptr;
+ICMasterBiasEnabled*               TheICMasterBiasEnabledParameter = nullptr;
+ICMasterBiasPath*                  TheICMasterBiasPathParameter = nullptr;
 
-ICMasterDarkEnabled*             TheICMasterDarkEnabledParameter = nullptr;
-ICMasterDarkPath*                TheICMasterDarkPathParameter = nullptr;
+ICMasterDarkEnabled*               TheICMasterDarkEnabledParameter = nullptr;
+ICMasterDarkPath*                  TheICMasterDarkPathParameter = nullptr;
 
-ICMasterFlatEnabled*             TheICMasterFlatEnabledParameter = nullptr;
-ICMasterFlatPath*                TheICMasterFlatPathParameter = nullptr;
+ICMasterFlatEnabled*               TheICMasterFlatEnabledParameter = nullptr;
+ICMasterFlatPath*                  TheICMasterFlatPathParameter = nullptr;
 
-ICCalibrateBias*                 TheICCalibrateBiasParameter = nullptr;
-ICCalibrateDark*                 TheICCalibrateDarkParameter = nullptr;
-ICCalibrateFlat*                 TheICCalibrateFlatParameter = nullptr;
+ICCalibrateBias*                   TheICCalibrateBiasParameter = nullptr;
+ICCalibrateDark*                   TheICCalibrateDarkParameter = nullptr;
+ICCalibrateFlat*                   TheICCalibrateFlatParameter = nullptr;
 
-ICOptimizeDarks*                 TheICOptimizeDarksParameter = nullptr;
-ICDarkOptimizationThreshold*     TheICDarkOptimizationThresholdParameter = nullptr;
-ICDarkOptimizationLow*           TheICDarkOptimizationLowParameter = nullptr;
-ICDarkOptimizationWindow*        TheICDarkOptimizationWindowParameter = nullptr;
-ICDarkCFADetectionMode*          TheICDarkCFADetectionModeParameter = nullptr;
+ICOptimizeDarks*                   TheICOptimizeDarksParameter = nullptr;
+ICDarkOptimizationThreshold*       TheICDarkOptimizationThresholdParameter = nullptr;
+ICDarkOptimizationLow*             TheICDarkOptimizationLowParameter = nullptr;
+ICDarkOptimizationWindow*          TheICDarkOptimizationWindowParameter = nullptr;
+ICDarkCFADetectionMode*            TheICDarkCFADetectionModeParameter = nullptr;
 
-ICSeparateCFAFlatScalingFactors* TheICSeparateCFAFlatScalingFactorsParameter = nullptr;
-ICFlatScaleClippingFactor*       TheICFlatScaleClippingFactorParameter = nullptr;
+ICSeparateCFAFlatScalingFactors*   TheICSeparateCFAFlatScalingFactorsParameter = nullptr;
+ICFlatScaleClippingFactor*         TheICFlatScaleClippingFactorParameter = nullptr;
 
-ICEvaluateNoise*                 TheICEvaluateNoiseParameter = nullptr;
-ICNoiseEvaluationAlgorithm*      TheICNoiseEvaluationAlgorithmParameter = nullptr;
+ICEvaluateNoise*                   TheICEvaluateNoiseParameter = nullptr;
+ICNoiseEvaluationAlgorithm*        TheICNoiseEvaluationAlgorithmParameter = nullptr;
 
-ICEvaluateSignal*                TheICEvaluateSignalParameter = nullptr;
-ICStructureLayers*               TheICStructureLayersParameter = nullptr;
-ICNoiseLayers*                   TheICNoiseLayersParameter = nullptr;
-ICHotPixelFilterRadius*          TheICHotPixelFilterRadiusParameter = nullptr;
-ICNoiseReductionFilterRadius*    TheICNoiseReductionFilterRadiusParameter = nullptr;
-ICMinStructureSize*              TheICMinStructureSizeParameter = nullptr;
-ICPSFType*                       TheICPSFTypeParameter = nullptr;
-ICPSFRejectionLimit*             TheICPSFRejectionLimitParameter = nullptr;
-ICPSFHighClippingPoint*          TheICPSFHighClippingPointParameter = nullptr;
-ICMaxStars*                      TheICMaxStarsParameter = nullptr;
+ICEvaluateSignal*                  TheICEvaluateSignalParameter = nullptr;
+ICStructureLayers*                 TheICStructureLayersParameter = nullptr;
+ICSaturationThreshold*             TheICSaturationThresholdParameter = nullptr;
+ICSaturationRelative*              TheICSaturationRelativeParameter = nullptr;
+ICNoiseLayers*                     TheICNoiseLayersParameter = nullptr;
+ICHotPixelFilterRadius*            TheICHotPixelFilterRadiusParameter = nullptr;
+ICNoiseReductionFilterRadius*      TheICNoiseReductionFilterRadiusParameter = nullptr;
+ICMinStructureSize*                TheICMinStructureSizeParameter = nullptr;
+ICPSFType*                         TheICPSFTypeParameter = nullptr;
+ICPSFGrowth*                       TheICPSFGrowthParameter = nullptr;
+ICMaxStars*                        TheICMaxStarsParameter = nullptr;
 
-ICOutputDirectory*               TheICOutputDirectoryParameter = nullptr;
-ICOutputExtension*               TheICOutputExtensionParameter = nullptr;
-ICOutputPrefix*                  TheICOutputPrefixParameter = nullptr;
-ICOutputPostfix*                 TheICOutputPostfixParameter = nullptr;
-ICOutputSampleFormat*            TheICOutputSampleFormatParameter = nullptr;
-ICOutputPedestal*                TheICOutputPedestalParameter = nullptr;
-ICOverwriteExistingFiles*        TheICOverwriteExistingFilesParameter = nullptr;
-ICOnError*                       TheICOnErrorParameter = nullptr;
-ICNoGUIMessages*                 TheICNoGUIMessagesParameter = nullptr;
+ICOutputDirectory*                 TheICOutputDirectoryParameter = nullptr;
+ICOutputExtension*                 TheICOutputExtensionParameter = nullptr;
+ICOutputPrefix*                    TheICOutputPrefixParameter = nullptr;
+ICOutputPostfix*                   TheICOutputPostfixParameter = nullptr;
+ICOutputSampleFormat*              TheICOutputSampleFormatParameter = nullptr;
+ICOutputPedestal*                  TheICOutputPedestalParameter = nullptr;
+ICOutputPedestalMode*              TheICOutputPedestalModeParameter = nullptr;
+ICAutoPedestalThreshold*         TheICAutoPedestalThresholdParameter = nullptr;
+ICOverwriteExistingFiles*          TheICOverwriteExistingFilesParameter = nullptr;
+ICOnError*                         TheICOnErrorParameter = nullptr;
+ICNoGUIMessages*                   TheICNoGUIMessagesParameter = nullptr;
 
-ICUseFileThreads*                TheICUseFileThreadsParameter = nullptr;
-ICFileThreadOverload*            TheICFileThreadOverloadParameter = nullptr;
-ICMaxFileReadThreads*            TheICMaxFileReadThreadsParameter = nullptr;
-ICMaxFileWriteThreads*           TheICMaxFileWriteThreadsParameter = nullptr;
+ICUseFileThreads*                  TheICUseFileThreadsParameter = nullptr;
+ICFileThreadOverload*              TheICFileThreadOverloadParameter = nullptr;
+ICMaxFileReadThreads*              TheICMaxFileReadThreadsParameter = nullptr;
+ICMaxFileWriteThreads*             TheICMaxFileWriteThreadsParameter = nullptr;
 
-ICOutputData*                    TheICOutputDataParameter = nullptr;
-ICOutputFilePath*                TheICOutputFilePathParameter = nullptr;
-ICDarkScalingFactorRK*           TheICDarkScalingFactorRKParameter = nullptr;
-ICDarkScalingFactorG*            TheICDarkScalingFactorGParameter = nullptr;
-ICDarkScalingFactorB*            TheICDarkScalingFactorBParameter = nullptr;
-ICPSFSignalEstimateRK*           TheICPSFSignalEstimateRKParameter = nullptr;
-ICPSFSignalEstimateG*            TheICPSFSignalEstimateGParameter = nullptr;
-ICPSFSignalEstimateB*            TheICPSFSignalEstimateBParameter = nullptr;
-ICPSFSignalPowerEstimateRK*      TheICPSFSignalPowerEstimateRKParameter = nullptr;
-ICPSFSignalPowerEstimateG*       TheICPSFSignalPowerEstimateGParameter = nullptr;
-ICPSFSignalPowerEstimateB*       TheICPSFSignalPowerEstimateBParameter = nullptr;
-ICPSFFluxEstimateRK*             TheICPSFFluxEstimateRKParameter = nullptr;
-ICPSFFluxEstimateG*              TheICPSFFluxEstimateGParameter = nullptr;
-ICPSFFluxEstimateB*              TheICPSFFluxEstimateBParameter = nullptr;
-ICPSFFluxPowerEstimateRK*        TheICPSFFluxPowerEstimateRKParameter = nullptr;
-ICPSFFluxPowerEstimateG*         TheICPSFFluxPowerEstimateGParameter = nullptr;
-ICPSFFluxPowerEstimateB*         TheICPSFFluxPowerEstimateBParameter = nullptr;
-ICPSFCountRK*                    TheICPSFCountRKParameter = nullptr;
-ICPSFCountG*                     TheICPSFCountGParameter = nullptr;
-ICPSFCountB*                     TheICPSFCountBParameter = nullptr;
-ICNoiseEstimateRK*               TheICNoiseEstimateRKParameter = nullptr;
-ICNoiseEstimateG*                TheICNoiseEstimateGParameter = nullptr;
-ICNoiseEstimateB*                TheICNoiseEstimateBParameter = nullptr;
-ICNoiseFractionRK*               TheICNoiseFractionRKParameter = nullptr;
-ICNoiseFractionG*                TheICNoiseFractionGParameter = nullptr;
-ICNoiseFractionB*                TheICNoiseFractionBParameter = nullptr;
-ICNoiseScaleLowRK*               TheICNoiseScaleLowRKParameter = nullptr;
-ICNoiseScaleLowG*                TheICNoiseScaleLowGParameter = nullptr;
-ICNoiseScaleLowB*                TheICNoiseScaleLowBParameter = nullptr;
-ICNoiseScaleHighRK*              TheICNoiseScaleHighRKParameter = nullptr;
-ICNoiseScaleHighG*               TheICNoiseScaleHighGParameter = nullptr;
-ICNoiseScaleHighB*               TheICNoiseScaleHighBParameter = nullptr;
-ICNoiseAlgorithmRK*              TheICNoiseAlgorithmRKParameter = nullptr;
-ICNoiseAlgorithmG*               TheICNoiseAlgorithmGParameter = nullptr;
-ICNoiseAlgorithmB*               TheICNoiseAlgorithmBParameter = nullptr;
+ICOutputData*                      TheICOutputDataParameter = nullptr;
+ICOutputFilePath*                  TheICOutputFilePathParameter = nullptr;
+ICDarkScalingFactorRK*             TheICDarkScalingFactorRKParameter = nullptr;
+ICDarkScalingFactorG*              TheICDarkScalingFactorGParameter = nullptr;
+ICDarkScalingFactorB*              TheICDarkScalingFactorBParameter = nullptr;
+
+ICPSFTotalFluxEstimateRK*          TheICPSFTotalFluxEstimateRKParameter = nullptr;
+ICPSFTotalFluxEstimateG*           TheICPSFTotalFluxEstimateGParameter = nullptr;
+ICPSFTotalFluxEstimateB*           TheICPSFTotalFluxEstimateBParameter = nullptr;
+ICPSFTotalPowerFluxEstimateRK*     TheICPSFTotalPowerFluxEstimateRKParameter = nullptr;
+ICPSFTotalPowerFluxEstimateG*      TheICPSFTotalPowerFluxEstimateGParameter = nullptr;
+ICPSFTotalPowerFluxEstimateB*      TheICPSFTotalPowerFluxEstimateBParameter = nullptr;
+ICPSFTotalMeanFluxEstimateRK*      TheICPSFTotalMeanFluxEstimateRKParameter = nullptr;
+ICPSFTotalMeanFluxEstimateG*       TheICPSFTotalMeanFluxEstimateGParameter = nullptr;
+ICPSFTotalMeanFluxEstimateB*       TheICPSFTotalMeanFluxEstimateBParameter = nullptr;
+ICPSFTotalMeanPowerFluxEstimateRK* TheICPSFTotalMeanPowerFluxEstimateRKParameter = nullptr;
+ICPSFTotalMeanPowerFluxEstimateG*  TheICPSFTotalMeanPowerFluxEstimateGParameter = nullptr;
+ICPSFTotalMeanPowerFluxEstimateB*  TheICPSFTotalMeanPowerFluxEstimateBParameter = nullptr;
+ICPSFMStarEstimateRK*              TheICPSFMStarEstimateRKParameter = nullptr;
+ICPSFMStarEstimateG*               TheICPSFMStarEstimateGParameter = nullptr;
+ICPSFMStarEstimateB*               TheICPSFMStarEstimateBParameter = nullptr;
+ICPSFNStarEstimateRK*              TheICPSFNStarEstimateRKParameter = nullptr;
+ICPSFNStarEstimateG*               TheICPSFNStarEstimateGParameter = nullptr;
+ICPSFNStarEstimateB*               TheICPSFNStarEstimateBParameter = nullptr;
+ICPSFCountRK*                      TheICPSFCountRKParameter = nullptr;
+ICPSFCountG*                       TheICPSFCountGParameter = nullptr;
+ICPSFCountB*                       TheICPSFCountBParameter = nullptr;
+
+ICNoiseEstimateRK*                 TheICNoiseEstimateRKParameter = nullptr;
+ICNoiseEstimateG*                  TheICNoiseEstimateGParameter = nullptr;
+ICNoiseEstimateB*                  TheICNoiseEstimateBParameter = nullptr;
+ICNoiseFractionRK*                 TheICNoiseFractionRKParameter = nullptr;
+ICNoiseFractionG*                  TheICNoiseFractionGParameter = nullptr;
+ICNoiseFractionB*                  TheICNoiseFractionBParameter = nullptr;
+ICNoiseScaleLowRK*                 TheICNoiseScaleLowRKParameter = nullptr;
+ICNoiseScaleLowG*                  TheICNoiseScaleLowGParameter = nullptr;
+ICNoiseScaleLowB*                  TheICNoiseScaleLowBParameter = nullptr;
+ICNoiseScaleHighRK*                TheICNoiseScaleHighRKParameter = nullptr;
+ICNoiseScaleHighG*                 TheICNoiseScaleHighGParameter = nullptr;
+ICNoiseScaleHighB*                 TheICNoiseScaleHighBParameter = nullptr;
+ICNoiseAlgorithmRK*                TheICNoiseAlgorithmRKParameter = nullptr;
+ICNoiseAlgorithmG*                 TheICNoiseAlgorithmGParameter = nullptr;
+ICNoiseAlgorithmB*                 TheICNoiseAlgorithmBParameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -1084,6 +1095,7 @@ IsoString ICNoiseEvaluationAlgorithm::ElementId( size_type i ) const
    case KSigma: return "NoiseEvaluation_KSigma";
    default:
    case MRS:    return "NoiseEvaluation_MRS";
+   case NStar:  return "NoiseEvaluation_NStar";
    }
 }
 
@@ -1139,6 +1151,55 @@ double ICStructureLayers::MinimumValue() const
 double ICStructureLayers::MaximumValue() const
 {
    return 8;
+}
+
+// ----------------------------------------------------------------------------
+
+ICSaturationThreshold::ICSaturationThreshold( MetaProcess* P ) : MetaFloat( P )
+{
+   TheICSaturationThresholdParameter = this;
+}
+
+IsoString ICSaturationThreshold::Id() const
+{
+   return "saturationThreshold";
+}
+
+int ICSaturationThreshold::Precision() const
+{
+   return 2;
+}
+
+double ICSaturationThreshold::DefaultValue() const
+{
+   return 1.00;
+}
+
+double ICSaturationThreshold::MinimumValue() const
+{
+   return 0.10;
+}
+
+double ICSaturationThreshold::MaximumValue() const
+{
+   return 1.00;
+}
+
+// ----------------------------------------------------------------------------
+
+ICSaturationRelative::ICSaturationRelative( MetaProcess* P ) : MetaBoolean( P )
+{
+   TheICSaturationRelativeParameter = this;
+}
+
+IsoString ICSaturationRelative::Id() const
+{
+   return "saturationRelative";
+}
+
+bool ICSaturationRelative::DefaultValue() const
+{
+   return false;
 }
 
 // ----------------------------------------------------------------------------
@@ -1270,12 +1331,14 @@ IsoString ICPSFType::ElementId( size_type i ) const
 {
    switch ( i )
    {
-   case Gaussian:      return "PSFType_Gaussian";
+   case Gaussian: return "PSFType_Gaussian";
+   case Moffat15: return "PSFType_Moffat15";
    default:
-   case Moffat4:       return "PSFType_Moffat4";
-   case Moffat6:       return "PSFType_Moffat6";
-   case Moffat8:       return "PSFType_Moffat8";
-   case VariableShape: return "PSFType_VariableShape";
+   case Moffat4:  return "PSFType_Moffat4";
+   case Moffat6:  return "PSFType_Moffat6";
+   case Moffat8:  return "PSFType_Moffat8";
+   case MoffatA:  return "PSFType_MoffatA";
+   case Auto:     return "PSFType_Auto";
    }
 }
 
@@ -1283,12 +1346,14 @@ IsoString ICPSFType::FunctionName( pcl_enum i )
 {
    switch ( i )
    {
-   case Gaussian:      return "Gaussian";
+   case Gaussian: return "Gaussian";
+   case Moffat15: return "Moffat15";
    default:
-   case Moffat4:       return "Moffat4";
-   case Moffat6:       return "Moffat6";
-   case Moffat8:       return "Moffat8";
-   case VariableShape: return "VariableShape";
+   case Moffat4:  return "Moffat4";
+   case Moffat6:  return "Moffat6";
+   case Moffat8:  return "Moffat8";
+   case MoffatA:  return "MoffatA";
+   case Auto:     return "Auto";
    }
 }
 
@@ -1304,66 +1369,34 @@ size_type ICPSFType::DefaultValueIndex() const
 
 // ----------------------------------------------------------------------------
 
-ICPSFRejectionLimit::ICPSFRejectionLimit( MetaProcess* P ) : MetaFloat( P )
+ICPSFGrowth::ICPSFGrowth( MetaProcess* P ) : MetaFloat( P )
 {
-   TheICPSFRejectionLimitParameter = this;
+   TheICPSFGrowthParameter = this;
 }
 
-IsoString ICPSFRejectionLimit::Id() const
+IsoString ICPSFGrowth::Id() const
 {
-   return "psfRejectionLimit";
+   return "psfGrowth";
 }
 
-int ICPSFRejectionLimit::Precision() const
+int ICPSFGrowth::Precision() const
 {
    return 2;
 }
 
-double ICPSFRejectionLimit::DefaultValue() const
+double ICPSFGrowth::DefaultValue() const
 {
-   return 0.90;
+   return 1.0;
 }
 
-double ICPSFRejectionLimit::MinimumValue() const
+double ICPSFGrowth::MinimumValue() const
 {
-   return 0.50;
+   return 0.5;
 }
 
-double ICPSFRejectionLimit::MaximumValue() const
+double ICPSFGrowth::MaximumValue() const
 {
-   return 1.00;
-}
-
-// ----------------------------------------------------------------------------
-
-ICPSFHighClippingPoint::ICPSFHighClippingPoint( MetaProcess* P ) : MetaFloat( P )
-{
-   TheICPSFHighClippingPointParameter = this;
-}
-
-IsoString ICPSFHighClippingPoint::Id() const
-{
-   return "psfHighClippingPoint";
-}
-
-int ICPSFHighClippingPoint::Precision() const
-{
-   return 2;
-}
-
-double ICPSFHighClippingPoint::DefaultValue() const
-{
-   return 0.85;
-}
-
-double ICPSFHighClippingPoint::MinimumValue() const
-{
-   return 0.50;
-}
-
-double ICPSFHighClippingPoint::MaximumValue() const
-{
-   return 1.00;
+   return 4.0;
 }
 
 // ----------------------------------------------------------------------------
@@ -1520,6 +1553,75 @@ double ICOutputPedestal::MinimumValue() const
 double ICOutputPedestal::MaximumValue() const
 {
    return 1000;
+}
+
+// ----------------------------------------------------------------------------
+
+ICOutputPedestalMode::ICOutputPedestalMode( MetaProcess* P ) : MetaEnumeration( P )
+{
+   TheICOutputPedestalModeParameter = this;
+}
+
+IsoString ICOutputPedestalMode::Id() const
+{
+   return "outputPedestalMode";
+}
+
+size_type ICOutputPedestalMode::NumberOfElements() const
+{
+   return NumberOfItems;
+}
+
+IsoString ICOutputPedestalMode::ElementId( size_type i ) const
+{
+   switch ( i )
+   {
+   default:
+   case Literal: return "OutputPedestal_Literal";
+   case Auto:    return "OutputPedestal_Auto";
+   }
+}
+
+int ICOutputPedestalMode::ElementValue( size_type i ) const
+{
+   return int( i );
+}
+
+size_type ICOutputPedestalMode::DefaultValueIndex() const
+{
+   return size_type( Default );
+}
+
+// ----------------------------------------------------------------------------
+
+ICAutoPedestalThreshold::ICAutoPedestalThreshold( MetaProcess* P ) : MetaFloat( P )
+{
+   TheICAutoPedestalThresholdParameter = this;
+}
+
+IsoString ICAutoPedestalThreshold::Id() const
+{
+   return "autoPedestalThreshold";
+}
+
+int ICAutoPedestalThreshold::Precision() const
+{
+   return 4;
+}
+
+double ICAutoPedestalThreshold::DefaultValue() const
+{
+   return 0.001;
+}
+
+double ICAutoPedestalThreshold::MinimumValue() const
+{
+   return 0.0;
+}
+
+double ICAutoPedestalThreshold::MaximumValue() const
+{
+   return 0.1;
 }
 
 // ----------------------------------------------------------------------------
@@ -1801,339 +1903,501 @@ bool ICDarkScalingFactorB::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICPSFSignalEstimateRK::ICPSFSignalEstimateRK( MetaTable* T ) : MetaDouble( T )
+ICPSFTotalFluxEstimateRK::ICPSFTotalFluxEstimateRK( MetaTable* T ) : MetaDouble( T )
 {
-   TheICPSFSignalEstimateRKParameter = this;
+   TheICPSFTotalFluxEstimateRKParameter = this;
 }
 
-IsoString ICPSFSignalEstimateRK::Id() const
+IsoString ICPSFTotalFluxEstimateRK::Id() const
 {
-   return "psfSignalEstimateRK";
+   return "psfTotalFluxEstimateRK";
 }
 
-int ICPSFSignalEstimateRK::Precision() const
+int ICPSFTotalFluxEstimateRK::Precision() const
 {
    return 4;
 }
 
-bool ICPSFSignalEstimateRK::ScientificNotation() const
+bool ICPSFTotalFluxEstimateRK::ScientificNotation() const
 {
    return true;
 }
 
-bool ICPSFSignalEstimateRK::IsReadOnly() const
+bool ICPSFTotalFluxEstimateRK::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-ICPSFSignalEstimateG::ICPSFSignalEstimateG( MetaTable* T ) : MetaDouble( T )
+ICPSFTotalFluxEstimateG::ICPSFTotalFluxEstimateG( MetaTable* T ) : MetaDouble( T )
 {
-   TheICPSFSignalEstimateGParameter = this;
+   TheICPSFTotalFluxEstimateGParameter = this;
 }
 
-IsoString ICPSFSignalEstimateG::Id() const
+IsoString ICPSFTotalFluxEstimateG::Id() const
 {
-   return "psfSignalEstimateG";
+   return "psfTotalFluxEstimateG";
 }
 
-int ICPSFSignalEstimateG::Precision() const
+int ICPSFTotalFluxEstimateG::Precision() const
 {
    return 4;
 }
 
-bool ICPSFSignalEstimateG::ScientificNotation() const
+bool ICPSFTotalFluxEstimateG::ScientificNotation() const
 {
    return true;
 }
 
-bool ICPSFSignalEstimateG::IsReadOnly() const
+bool ICPSFTotalFluxEstimateG::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-ICPSFSignalEstimateB::ICPSFSignalEstimateB( MetaTable* T ) : MetaDouble( T )
+ICPSFTotalFluxEstimateB::ICPSFTotalFluxEstimateB( MetaTable* T ) : MetaDouble( T )
 {
-   TheICPSFSignalEstimateBParameter = this;
+   TheICPSFTotalFluxEstimateBParameter = this;
 }
 
-IsoString ICPSFSignalEstimateB::Id() const
+IsoString ICPSFTotalFluxEstimateB::Id() const
 {
-   return "psfSignalEstimateB";
+   return "psfTotalFluxEstimateB";
 }
 
-int ICPSFSignalEstimateB::Precision() const
+int ICPSFTotalFluxEstimateB::Precision() const
 {
    return 4;
 }
 
-bool ICPSFSignalEstimateB::ScientificNotation() const
+bool ICPSFTotalFluxEstimateB::ScientificNotation() const
 {
    return true;
 }
 
-bool ICPSFSignalEstimateB::IsReadOnly() const
+bool ICPSFTotalFluxEstimateB::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-ICPSFSignalPowerEstimateRK::ICPSFSignalPowerEstimateRK( MetaTable* T ) : MetaDouble( T )
+ICPSFTotalPowerFluxEstimateRK::ICPSFTotalPowerFluxEstimateRK( MetaTable* T ) : MetaDouble( T )
 {
-   TheICPSFSignalPowerEstimateRKParameter = this;
+   TheICPSFTotalPowerFluxEstimateRKParameter = this;
 }
 
-IsoString ICPSFSignalPowerEstimateRK::Id() const
+IsoString ICPSFTotalPowerFluxEstimateRK::Id() const
 {
-   return "psfSignalPowerEstimateRK";
+   return "psfTotalPowerFluxEstimateRK";
 }
 
-IsoString ICPSFSignalPowerEstimateRK::Aliases() const
+IsoString ICPSFTotalPowerFluxEstimateRK::Aliases() const
 {
    return "psfPowerEstimateRK";
 }
 
-int ICPSFSignalPowerEstimateRK::Precision() const
+int ICPSFTotalPowerFluxEstimateRK::Precision() const
 {
    return 4;
 }
 
-bool ICPSFSignalPowerEstimateRK::ScientificNotation() const
+bool ICPSFTotalPowerFluxEstimateRK::ScientificNotation() const
 {
    return true;
 }
 
-bool ICPSFSignalPowerEstimateRK::IsReadOnly() const
+bool ICPSFTotalPowerFluxEstimateRK::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-ICPSFSignalPowerEstimateG::ICPSFSignalPowerEstimateG( MetaTable* T ) : MetaDouble( T )
+ICPSFTotalPowerFluxEstimateG::ICPSFTotalPowerFluxEstimateG( MetaTable* T ) : MetaDouble( T )
 {
-   TheICPSFSignalPowerEstimateGParameter = this;
+   TheICPSFTotalPowerFluxEstimateGParameter = this;
 }
 
-IsoString ICPSFSignalPowerEstimateG::Id() const
+IsoString ICPSFTotalPowerFluxEstimateG::Id() const
 {
-   return "psfSignalPowerEstimateG";
+   return "psfTotalPowerFluxEstimateG";
 }
 
-IsoString ICPSFSignalPowerEstimateG::Aliases() const
+IsoString ICPSFTotalPowerFluxEstimateG::Aliases() const
 {
    return "psfPowerEstimateG";
 }
 
-int ICPSFSignalPowerEstimateG::Precision() const
+int ICPSFTotalPowerFluxEstimateG::Precision() const
 {
    return 4;
 }
 
-bool ICPSFSignalPowerEstimateG::ScientificNotation() const
+bool ICPSFTotalPowerFluxEstimateG::ScientificNotation() const
 {
    return true;
 }
 
-bool ICPSFSignalPowerEstimateG::IsReadOnly() const
+bool ICPSFTotalPowerFluxEstimateG::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-ICPSFSignalPowerEstimateB::ICPSFSignalPowerEstimateB( MetaTable* T ) : MetaDouble( T )
+ICPSFTotalPowerFluxEstimateB::ICPSFTotalPowerFluxEstimateB( MetaTable* T ) : MetaDouble( T )
 {
-   TheICPSFSignalPowerEstimateBParameter = this;
+   TheICPSFTotalPowerFluxEstimateBParameter = this;
 }
 
-IsoString ICPSFSignalPowerEstimateB::Id() const
+IsoString ICPSFTotalPowerFluxEstimateB::Id() const
 {
-   return "psfSignalPowerEstimateB";
+   return "psfTotalPowerFluxEstimateB";
 }
 
-IsoString ICPSFSignalPowerEstimateB::Aliases() const
+IsoString ICPSFTotalPowerFluxEstimateB::Aliases() const
 {
    return "psfPowerEstimateB";
 }
 
-int ICPSFSignalPowerEstimateB::Precision() const
+int ICPSFTotalPowerFluxEstimateB::Precision() const
 {
    return 4;
 }
 
-bool ICPSFSignalPowerEstimateB::ScientificNotation() const
+bool ICPSFTotalPowerFluxEstimateB::ScientificNotation() const
 {
    return true;
 }
 
-bool ICPSFSignalPowerEstimateB::IsReadOnly() const
+bool ICPSFTotalPowerFluxEstimateB::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-ICPSFFluxEstimateRK::ICPSFFluxEstimateRK( MetaTable* T ) : MetaDouble( T )
+ICPSFTotalMeanFluxEstimateRK::ICPSFTotalMeanFluxEstimateRK( MetaTable* T ) : MetaDouble( T )
 {
-   TheICPSFFluxEstimateRKParameter = this;
+   TheICPSFTotalMeanFluxEstimateRKParameter = this;
 }
 
-IsoString ICPSFFluxEstimateRK::Id() const
+IsoString ICPSFTotalMeanFluxEstimateRK::Id() const
 {
-   return "psfFluxEstimateRK";
+   return "psfTotalMeanFluxEstimateRK";
 }
 
-int ICPSFFluxEstimateRK::Precision() const
+int ICPSFTotalMeanFluxEstimateRK::Precision() const
 {
    return 4;
 }
 
-bool ICPSFFluxEstimateRK::ScientificNotation() const
+bool ICPSFTotalMeanFluxEstimateRK::ScientificNotation() const
 {
    return true;
 }
 
-bool ICPSFFluxEstimateRK::IsReadOnly() const
+bool ICPSFTotalMeanFluxEstimateRK::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-ICPSFFluxEstimateG::ICPSFFluxEstimateG( MetaTable* T ) : MetaDouble( T )
+ICPSFTotalMeanFluxEstimateG::ICPSFTotalMeanFluxEstimateG( MetaTable* T ) : MetaDouble( T )
 {
-   TheICPSFFluxEstimateGParameter = this;
+   TheICPSFTotalMeanFluxEstimateGParameter = this;
 }
 
-IsoString ICPSFFluxEstimateG::Id() const
+IsoString ICPSFTotalMeanFluxEstimateG::Id() const
 {
-   return "psfFluxEstimateG";
+   return "psfTotalMeanFluxEstimateG";
 }
 
-int ICPSFFluxEstimateG::Precision() const
+int ICPSFTotalMeanFluxEstimateG::Precision() const
 {
    return 4;
 }
 
-bool ICPSFFluxEstimateG::ScientificNotation() const
+bool ICPSFTotalMeanFluxEstimateG::ScientificNotation() const
 {
    return true;
 }
 
-bool ICPSFFluxEstimateG::IsReadOnly() const
+bool ICPSFTotalMeanFluxEstimateG::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-ICPSFFluxEstimateB::ICPSFFluxEstimateB( MetaTable* T ) : MetaDouble( T )
+ICPSFTotalMeanFluxEstimateB::ICPSFTotalMeanFluxEstimateB( MetaTable* T ) : MetaDouble( T )
 {
-   TheICPSFFluxEstimateBParameter = this;
+   TheICPSFTotalMeanFluxEstimateBParameter = this;
 }
 
-IsoString ICPSFFluxEstimateB::Id() const
+IsoString ICPSFTotalMeanFluxEstimateB::Id() const
 {
-   return "psfFluxEstimateB";
+   return "psfTotalMeanFluxEstimateB";
 }
 
-int ICPSFFluxEstimateB::Precision() const
+int ICPSFTotalMeanFluxEstimateB::Precision() const
 {
    return 4;
 }
 
-bool ICPSFFluxEstimateB::ScientificNotation() const
+bool ICPSFTotalMeanFluxEstimateB::ScientificNotation() const
 {
    return true;
 }
 
-bool ICPSFFluxEstimateB::IsReadOnly() const
+bool ICPSFTotalMeanFluxEstimateB::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-ICPSFFluxPowerEstimateRK::ICPSFFluxPowerEstimateRK( MetaTable* T ) : MetaDouble( T )
+ICPSFTotalMeanPowerFluxEstimateRK::ICPSFTotalMeanPowerFluxEstimateRK( MetaTable* T ) : MetaDouble( T )
 {
-   TheICPSFFluxPowerEstimateRKParameter = this;
+   TheICPSFTotalMeanPowerFluxEstimateRKParameter = this;
 }
 
-IsoString ICPSFFluxPowerEstimateRK::Id() const
+IsoString ICPSFTotalMeanPowerFluxEstimateRK::Id() const
 {
-   return "psfFluxPowerEstimateRK";
+   return "psfTotalMeanPowerFluxEstimateRK";
 }
 
-int ICPSFFluxPowerEstimateRK::Precision() const
+int ICPSFTotalMeanPowerFluxEstimateRK::Precision() const
 {
    return 4;
 }
 
-bool ICPSFFluxPowerEstimateRK::ScientificNotation() const
+bool ICPSFTotalMeanPowerFluxEstimateRK::ScientificNotation() const
 {
    return true;
 }
 
-bool ICPSFFluxPowerEstimateRK::IsReadOnly() const
+bool ICPSFTotalMeanPowerFluxEstimateRK::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-ICPSFFluxPowerEstimateG::ICPSFFluxPowerEstimateG( MetaTable* T ) : MetaDouble( T )
+ICPSFTotalMeanPowerFluxEstimateG::ICPSFTotalMeanPowerFluxEstimateG( MetaTable* T ) : MetaDouble( T )
 {
-   TheICPSFFluxPowerEstimateGParameter = this;
+   TheICPSFTotalMeanPowerFluxEstimateGParameter = this;
 }
 
-IsoString ICPSFFluxPowerEstimateG::Id() const
+IsoString ICPSFTotalMeanPowerFluxEstimateG::Id() const
 {
-   return "psfFluxPowerEstimateG";
+   return "psfTotalMeanPowerFluxEstimateG";
 }
 
-int ICPSFFluxPowerEstimateG::Precision() const
+int ICPSFTotalMeanPowerFluxEstimateG::Precision() const
 {
    return 4;
 }
 
-bool ICPSFFluxPowerEstimateG::ScientificNotation() const
+bool ICPSFTotalMeanPowerFluxEstimateG::ScientificNotation() const
 {
    return true;
 }
 
-bool ICPSFFluxPowerEstimateG::IsReadOnly() const
+bool ICPSFTotalMeanPowerFluxEstimateG::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-ICPSFFluxPowerEstimateB::ICPSFFluxPowerEstimateB( MetaTable* T ) : MetaDouble( T )
+ICPSFTotalMeanPowerFluxEstimateB::ICPSFTotalMeanPowerFluxEstimateB( MetaTable* T ) : MetaDouble( T )
 {
-   TheICPSFFluxPowerEstimateBParameter = this;
+   TheICPSFTotalMeanPowerFluxEstimateBParameter = this;
 }
 
-IsoString ICPSFFluxPowerEstimateB::Id() const
+IsoString ICPSFTotalMeanPowerFluxEstimateB::Id() const
 {
-   return "psfFluxPowerEstimateB";
+   return "psfTotalMeanPowerFluxEstimateB";
 }
 
-int ICPSFFluxPowerEstimateB::Precision() const
+int ICPSFTotalMeanPowerFluxEstimateB::Precision() const
 {
    return 4;
 }
 
-bool ICPSFFluxPowerEstimateB::ScientificNotation() const
+bool ICPSFTotalMeanPowerFluxEstimateB::ScientificNotation() const
 {
    return true;
 }
 
-bool ICPSFFluxPowerEstimateB::IsReadOnly() const
+bool ICPSFTotalMeanPowerFluxEstimateB::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+ICPSFMStarEstimateRK::ICPSFMStarEstimateRK( MetaTable* T ) : MetaDouble( T )
+{
+   TheICPSFMStarEstimateRKParameter = this;
+}
+
+IsoString ICPSFMStarEstimateRK::Id() const
+{
+   return "psfMStarEstimateRK";
+}
+
+int ICPSFMStarEstimateRK::Precision() const
+{
+   return 4;
+}
+
+bool ICPSFMStarEstimateRK::ScientificNotation() const
+{
+   return true;
+}
+
+bool ICPSFMStarEstimateRK::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+ICPSFMStarEstimateG::ICPSFMStarEstimateG( MetaTable* T ) : MetaDouble( T )
+{
+   TheICPSFMStarEstimateGParameter = this;
+}
+
+IsoString ICPSFMStarEstimateG::Id() const
+{
+   return "psfMStarEstimateG";
+}
+
+int ICPSFMStarEstimateG::Precision() const
+{
+   return 4;
+}
+
+bool ICPSFMStarEstimateG::ScientificNotation() const
+{
+   return true;
+}
+
+bool ICPSFMStarEstimateG::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+ICPSFMStarEstimateB::ICPSFMStarEstimateB( MetaTable* T ) : MetaDouble( T )
+{
+   TheICPSFMStarEstimateBParameter = this;
+}
+
+IsoString ICPSFMStarEstimateB::Id() const
+{
+   return "psfMStarEstimateB";
+}
+
+int ICPSFMStarEstimateB::Precision() const
+{
+   return 4;
+}
+
+bool ICPSFMStarEstimateB::ScientificNotation() const
+{
+   return true;
+}
+
+bool ICPSFMStarEstimateB::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+ICPSFNStarEstimateRK::ICPSFNStarEstimateRK( MetaTable* T ) : MetaDouble( T )
+{
+   TheICPSFNStarEstimateRKParameter = this;
+}
+
+IsoString ICPSFNStarEstimateRK::Id() const
+{
+   return "psfNStarEstimateRK";
+}
+
+int ICPSFNStarEstimateRK::Precision() const
+{
+   return 4;
+}
+
+bool ICPSFNStarEstimateRK::ScientificNotation() const
+{
+   return true;
+}
+
+bool ICPSFNStarEstimateRK::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+ICPSFNStarEstimateG::ICPSFNStarEstimateG( MetaTable* T ) : MetaDouble( T )
+{
+   TheICPSFNStarEstimateGParameter = this;
+}
+
+IsoString ICPSFNStarEstimateG::Id() const
+{
+   return "psfNStarEstimateG";
+}
+
+int ICPSFNStarEstimateG::Precision() const
+{
+   return 4;
+}
+
+bool ICPSFNStarEstimateG::ScientificNotation() const
+{
+   return true;
+}
+
+bool ICPSFNStarEstimateG::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+ICPSFNStarEstimateB::ICPSFNStarEstimateB( MetaTable* T ) : MetaDouble( T )
+{
+   TheICPSFNStarEstimateBParameter = this;
+}
+
+IsoString ICPSFNStarEstimateB::Id() const
+{
+   return "psfNStarEstimateB";
+}
+
+int ICPSFNStarEstimateB::Precision() const
+{
+   return 4;
+}
+
+bool ICPSFNStarEstimateB::ScientificNotation() const
+{
+   return true;
+}
+
+bool ICPSFNStarEstimateB::IsReadOnly() const
 {
    return true;
 }
@@ -2554,4 +2818,4 @@ bool ICNoiseAlgorithmB::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationParameters.cpp - Released 2021-12-29T20:37:28Z
+// EOF ImageCalibrationParameters.cpp - Released 2022-03-12T18:59:53Z

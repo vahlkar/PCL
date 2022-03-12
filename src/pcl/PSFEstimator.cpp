@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.19
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// pcl/PSFEstimator.cpp - Released 2022-01-24T22:43:35Z
+// pcl/PSFEstimator.cpp - Released 2022-03-12T18:59:35Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -49,6 +49,8 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
+#include <pcl/AutoStatusCallbackRestorer.h>
+#include <pcl/MuteStatus.h>
 #include <pcl/PSFEstimator.h>
 
 namespace pcl
@@ -65,12 +67,14 @@ public:
    Array<PSFData> psfs;
 
    PCL_PSFE_PSFFitThread( const AbstractImage::ThreadData& data,
-                          const ImageVariant& image, psf_function psfType, float tolerance,
+                          const ImageVariant& image, psf_function psfType,
+                          float tolerance, float growth,
                           const StarDetector::star_list& stars, int start, int end )
       : m_data( data )
       , m_image( image )
       , m_psfType( psfType )
       , m_tolerance( tolerance )
+      , m_growth( growth )
       , m_stars( stars )
       , m_start( start )
       , m_end( end )
@@ -103,13 +107,34 @@ public:
           * PSF fitting and validation. Always fit elliptical functions instead
           * of circular ones for more adaptive and accurate signal evaluation.
           */
-         PSFFit fit( m_image, star.pos + 0.5, rect, m_psfType, false/*circular*/,
-                     1.0F/*betaMin*/, 4.0F/*betaMax*/,
-                     1.0e-06/*tolerance*/, 0.1F/*bkgMaxVar*/ );
-         if ( fit )
-            if ( DRect( rect ).DeflatedBy( rect.Width()*0.15 ).Includes( fit.psf.c0 ) )
-               if ( fit.psf.c0.DistanceTo( star.pos + 0.5 ) < m_tolerance )
-                  psfs << fit.psf;
+         PSFData psf;
+         for ( int it = 0; it < 4; ++it )
+         {
+            psf_function psfType;
+            switch ( it )
+            {
+            default: // ?!
+            case 0: psfType = (m_psfType == PSFunction::Auto) ? PSFunction::Moffat25 : m_psfType; break;
+            case 1: psfType = PSFunction::Moffat4; break;
+            case 2: psfType = PSFunction::Moffat6; break;
+            case 3: psfType = PSFunction::MoffatA; break;
+            }
+
+            PSFFit fit( m_image, star.pos + 0.5, rect, psfType, false/*circular*/,
+                        1.0F/*betaMin*/, 4.0F/*betaMax*/,
+                        1.0e-06/*tolerance*/, 0.1F/*bkgMaxVar*/, m_growth );
+            if ( fit )
+               if ( it == 0 || fit.psf.mad < psf.mad )
+                  if ( DRect( rect ).DeflatedBy( rect.Width()*0.15 ).Includes( fit.psf.c0 ) )
+                     if ( fit.psf.c0.DistanceTo( star.pos + 0.5 ) < m_tolerance )
+                        psf = fit.psf;
+
+            if ( m_psfType != PSFunction::Auto )
+               break;
+         }
+
+         if ( psf )
+            psfs << psf;
 
          UPDATE_THREAD_MONITOR( 16 )
       }
@@ -121,6 +146,7 @@ private:
    const ImageVariant&              m_image;
          psf_function               m_psfType;
          float                      m_tolerance;
+         float                      m_growth;
    const StarDetector::star_list&   m_stars;
          int                        m_start, m_end;
 };
@@ -136,18 +162,21 @@ Array<PSFData> PSFEstimator::FitStars( const ImageVariant& image ) const
    /*
     * Perform star detection
     */
+   StarDetector::star_list stars;
+   {
+      volatile AutoStatusCallbackRestorer saveStatus( image.Status() );
 
-   StatusCallback* status = image.Status().Callback();
-   image.SetStatusCallback( nullptr );
+      MuteStatus status;
+      image.SetStatusCallback( &status );
+      image.Status().DisableInitialization();
 
-   m_starDetector.DisablePSFFitting();
-   m_starDetector.SetUpperLimit( m_saturationRelative ? m_saturationThreshold*image.MaximumSampleValue()
-                                                      : double( m_saturationThreshold ) );
-   m_starDetector.EnableParallelProcessing( IsParallelProcessingEnabled() );
-   m_starDetector.SetMaxProcessors( MaxProcessors() );
-   StarDetector::star_list stars = m_starDetector.DetectStars( image );
-
-   image.SetStatusCallback( status );
+      m_starDetector.DisablePSFFitting();
+      m_starDetector.SetUpperLimit( m_saturationRelative ? m_saturationThreshold*image.MaximumSampleValue()
+                                                         : double( m_saturationThreshold ) );
+      m_starDetector.EnableParallelProcessing( IsParallelProcessingEnabled() );
+      m_starDetector.SetMaxProcessors( MaxProcessors() );
+      stars = m_starDetector.DetectStars( image );
+   }
 
    if ( !stars.IsEmpty() )
    {
@@ -174,7 +203,9 @@ Array<PSFData> PSFEstimator::FitStars( const ImageVariant& image ) const
       ReferenceArray<PCL_PSFE_PSFFitThread> threads;
       AbstractImage::ThreadData data( *image, numberOfStars );
       for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
-         threads.Add( new PCL_PSFE_PSFFitThread( data, image, m_psfType, m_psfCentroidTolerance, stars, n, n + int( L[i] ) ) );
+         threads.Add( new PCL_PSFE_PSFFitThread( data, image,
+                                                 m_psfType, m_psfCentroidTolerance, m_growthForFlux,
+                                                 stars, n, n + int( L[i] ) ) );
       AbstractImage::RunThreads( threads, data );
 
       for ( const PCL_PSFE_PSFFitThread& thread : threads )
@@ -201,10 +232,12 @@ Array<PSFData> PSFEstimator::FitStars( const ImageVariant& image ) const
          }
 
          /*
-          * Reject a prescribed fraction of the brightest signal estimates,
-          * since they tend to be unreliable because of relative saturation and
-          * nonlinearity. Validity of the dimmest measurements is already
-          * ensured by robust star detection.
+          * Optional rejection of a prescribed fraction of the brightest signal
+          * estimates. This is normally not necessary (hence m_rejectionLimit
+          * has a default value of 1.0) if the saturation threshold parameter
+          * has been set to a reasonable value. Validity of the dimmest and
+          * brightest measurements in the psfs list should already be ensured
+          * by robust star detection.
           */
          psfs.Sort( []( const PSFData& p, const PSFData& q ){ return double( p ) < double( q ); } );
          psfs.Resize( Min( RoundInt( m_rejectionLimit*psfs.Length() ), int( psfs.Length() ) ) );
@@ -222,4 +255,4 @@ Array<PSFData> PSFEstimator::FitStars( const ImageVariant& image ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFEstimator.cpp - Released 2022-01-24T22:43:35Z
+// EOF pcl/PSFEstimator.cpp - Released 2022-03-12T18:59:35Z

@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.8.5
+// Standard PixelMath Process Module Version 1.9.2
 // ----------------------------------------------------------------------------
-// Symbol.cpp - Released 2021-12-29T20:37:28Z
+// Symbol.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -120,7 +120,7 @@ static const char* s_functionName[] =
 
 // ----------------------------------------------------------------------------
 
-Symbol::symbol_set Symbol::m_symbols;
+Symbol::symbol_list Symbol::s_symbols;
 
 // ----------------------------------------------------------------------------
 
@@ -136,7 +136,7 @@ Symbol::OutputData::OutputData( const GlobalVariable& g )
 Symbol::Symbol( const String& id )
    : m_id( id )
 {
-   m_symbols << this;
+   s_symbols << this;
 }
 
 // ----------------------------------------------------------------------------
@@ -645,7 +645,7 @@ void Symbol::Create( const String& defList )
 String Symbol::GlobalVariablesReport()
 {
    String text;
-   for ( const Symbol* symbol : m_symbols )
+   for ( const Symbol* symbol : s_symbols )
       if ( symbol->IsGlobalVariable() )
       {
          const GlobalVariable* g = static_cast<const GlobalVariable*>( symbol );
@@ -662,7 +662,7 @@ String Symbol::GlobalVariablesReport()
 Array<Symbol::OutputData> Symbol::GlobalVariablesData()
 {
    Array<Symbol::OutputData> data;
-   for ( symbol_set::const_iterator i = m_symbols.Begin(); i != m_symbols.End(); ++i )
+   for ( symbol_list::const_iterator i = s_symbols.Begin(); i != s_symbols.End(); ++i )
       if ( (*i)->IsGlobalVariable() )
          data << *static_cast<const GlobalVariable*>( *i );
    return data;
@@ -956,4 +956,4 @@ Expression* Constant::FunctionValue( const DVector& data, int tokenPos ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Symbol.cpp - Released 2021-12-29T20:37:28Z
+// EOF Symbol.cpp - Released 2022-03-12T18:59:53Z

@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.8.0
+// Standard ImageCalibration Process Module Version 1.9.1
 // ----------------------------------------------------------------------------
-// ImageCalibrationProcess.cpp - Released 2021-12-29T20:37:28Z
+// ImageCalibrationProcess.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -114,13 +114,14 @@ ImageCalibrationProcess::ImageCalibrationProcess()
    new ICNoiseEvaluationAlgorithm( this );
    new ICEvaluateSignal( this );
    new ICStructureLayers( this );
+   new ICSaturationThreshold( this );
+   new ICSaturationRelative( this );
    new ICNoiseLayers( this );
    new ICHotPixelFilterRadius( this );
    new ICNoiseReductionFilterRadius( this );
    new ICMinStructureSize( this );
    new ICPSFType( this );
-   new ICPSFRejectionLimit( this );
-   new ICPSFHighClippingPoint( this );
+   new ICPSFGrowth( this );
    new ICMaxStars( this );
    new ICOutputDirectory( this );
    new ICOutputExtension( this );
@@ -128,6 +129,8 @@ ImageCalibrationProcess::ImageCalibrationProcess()
    new ICOutputPostfix( this );
    new ICOutputSampleFormat( this );
    new ICOutputPedestal( this );
+   new ICOutputPedestalMode( this );
+   new ICAutoPedestalThreshold( this );
    new ICOverwriteExistingFiles( this );
    new ICOnError( this );
    new ICNoGUIMessages( this );
@@ -141,18 +144,24 @@ ImageCalibrationProcess::ImageCalibrationProcess()
    new ICDarkScalingFactorRK( TheICOutputDataParameter );
    new ICDarkScalingFactorG( TheICOutputDataParameter );
    new ICDarkScalingFactorB( TheICOutputDataParameter );
-   new ICPSFSignalEstimateRK( TheICOutputDataParameter );
-   new ICPSFSignalEstimateG( TheICOutputDataParameter );
-   new ICPSFSignalEstimateB( TheICOutputDataParameter );
-   new ICPSFSignalPowerEstimateRK( TheICOutputDataParameter );
-   new ICPSFSignalPowerEstimateG( TheICOutputDataParameter );
-   new ICPSFSignalPowerEstimateB( TheICOutputDataParameter );
-   new ICPSFFluxEstimateRK( TheICOutputDataParameter );
-   new ICPSFFluxEstimateG( TheICOutputDataParameter );
-   new ICPSFFluxEstimateB( TheICOutputDataParameter );
-   new ICPSFFluxPowerEstimateRK( TheICOutputDataParameter );
-   new ICPSFFluxPowerEstimateG( TheICOutputDataParameter );
-   new ICPSFFluxPowerEstimateB( TheICOutputDataParameter );
+   new ICPSFTotalFluxEstimateRK( TheICOutputDataParameter );
+   new ICPSFTotalFluxEstimateG( TheICOutputDataParameter );
+   new ICPSFTotalFluxEstimateB( TheICOutputDataParameter );
+   new ICPSFTotalPowerFluxEstimateRK( TheICOutputDataParameter );
+   new ICPSFTotalPowerFluxEstimateG( TheICOutputDataParameter );
+   new ICPSFTotalPowerFluxEstimateB( TheICOutputDataParameter );
+   new ICPSFTotalMeanFluxEstimateRK( TheICOutputDataParameter );
+   new ICPSFTotalMeanFluxEstimateG( TheICOutputDataParameter );
+   new ICPSFTotalMeanFluxEstimateB( TheICOutputDataParameter );
+   new ICPSFTotalMeanPowerFluxEstimateRK( TheICOutputDataParameter );
+   new ICPSFTotalMeanPowerFluxEstimateG( TheICOutputDataParameter );
+   new ICPSFTotalMeanPowerFluxEstimateB( TheICOutputDataParameter );
+   new ICPSFMStarEstimateRK( TheICOutputDataParameter );
+   new ICPSFMStarEstimateG( TheICOutputDataParameter );
+   new ICPSFMStarEstimateB( TheICOutputDataParameter );
+   new ICPSFNStarEstimateRK( TheICOutputDataParameter );
+   new ICPSFNStarEstimateG( TheICOutputDataParameter );
+   new ICPSFNStarEstimateB( TheICOutputDataParameter );
    new ICPSFCountRK( TheICOutputDataParameter );
    new ICPSFCountG( TheICOutputDataParameter );
    new ICPSFCountB( TheICOutputDataParameter );
@@ -235,4 +244,4 @@ ProcessImplementation* ImageCalibrationProcess::Clone( const ProcessImplementati
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationProcess.cpp - Released 2021-12-29T20:37:28Z
+// EOF ImageCalibrationProcess.cpp - Released 2022-03-12T18:59:53Z

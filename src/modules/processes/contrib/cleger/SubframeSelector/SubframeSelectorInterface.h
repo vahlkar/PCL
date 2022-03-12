@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.7.3
+// Standard SubframeSelector Process Module Version 1.8.0
 // ----------------------------------------------------------------------------
-// SubframeSelectorInterface.h - Released 2021-12-29T20:37:28Z
+// SubframeSelectorInterface.h - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -94,6 +94,14 @@ public:
    bool RequiresInstanceValidation() const override;
    bool ImportProcess( const ProcessImplementation& ) override;
 
+   enum SubframeSortingCriterion
+   {
+      SortByTimeAscending,
+      SortByTimeDescending,
+      SortByPathAscending,
+      SortByPathDescending
+   };
+
 private:
 
    SubframeSelectorInstance m_instance;
@@ -118,10 +126,18 @@ private:
          TreeBox           SubframeImages_TreeBox;
          VerticalSizer     SubframeButtons_Sizer;
             PushButton        SubframeImages_AddFiles_PushButton;
+            PushButton        SubframeImages_AddDrizzleFiles_PushButton;
+            PushButton        SubframeImages_ClearDrizzleFiles_PushButton;
+            PushButton        SubframeImages_AddLocalNormalizationFiles_PushButton;
+            PushButton        SubframeImages_ClearLocalNormalizationFiles_PushButton;
+            PushButton        SubframeImages_Sort_PushButton;
+            PushButton        SubframeImages_SelectAll_PushButton;
             PushButton        SubframeImages_Invert_PushButton;
             PushButton        SubframeImages_Toggle_PushButton;
             PushButton        SubframeImages_Remove_PushButton;
             PushButton        SubframeImages_Clear_PushButton;
+            CheckBox          SubframeImages_StaticDataTargets_CheckBox;
+            CheckBox          SubframeImages_FullPaths_CheckBox;
             CheckBox          SubframeImages_FileCache_CheckBox;
 
       SectionBar        SystemParameters_SectionBar;
@@ -266,6 +282,11 @@ private:
    void e_FileDrop( Control& sender, const Point& pos, const StringList& files, unsigned modifiers );
    void e_Hide( Control& );
 
+   String LocalNormalizationTargetName( const String& filePath );
+   String DrizzleTargetName( const String& filePath );
+
+   void SortSubframes( SubframeSortingCriterion );
+
    friend struct GUIData;
    friend class SubframeSelectorInstance;
 };
@@ -283,4 +304,4 @@ PCL_END_LOCAL
 #endif   // e_SubframeSelectorInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInterface.h - Released 2021-12-29T20:37:28Z
+// EOF SubframeSelectorInterface.h - Released 2022-03-12T18:59:53Z

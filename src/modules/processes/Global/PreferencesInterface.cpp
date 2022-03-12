@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// PreferencesInterface.cpp - Released 2021-12-29T20:37:28Z
+// PreferencesInterface.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -2149,6 +2149,15 @@ MiscImageWindowSettingsPreferencesPage::MiscImageWindowSettingsPreferencesPage( 
       "close to a sensitive point. For example, this is used to change cursor shapes when you place "
       "the mouse near preview rectangle edges.</p>" );
 
+   ZoomAtCursor_Flag.checkBox.SetText( "Zoom at cursor" );
+   ZoomAtCursor_Flag.item = &instance.imageWindow.zoomAtCursor;
+   ZoomAtCursor_Flag.SetToolTip(
+      "<p>If enabled: zoom in/out at mouse position. If disabled: zoom in/out preserving the current center "
+      "coordinates.</p>"
+      "<p>Pressing the Shift key always exchanges these modes. For example, if this option is enabled, zooming "
+      "with the Shift key pressed will zoom at the center of the viewport, and vice-versa, if this option is "
+      "disabled the Shift key will force zooming at cursor coordinates.</p>" );
+
    WheelStepAngle_Unsigned.label.SetText( "Wheel step angle (deg)" );
    WheelStepAngle_Unsigned.spinBox.SetRange( 1, 90 );
    WheelStepAngle_Unsigned.item = &instance.imageWindow.wheelStepAngle;
@@ -2248,6 +2257,7 @@ MiscImageWindowSettingsPreferencesPage::MiscImageWindowSettingsPreferencesPage( 
    Page_Sizer.Add( ShowCaptionFullPaths_Flag );
    Page_Sizer.Add( ShowActiveSTFIndicators_Flag );
    Page_Sizer.Add( CursorTolerance_Integer );
+   Page_Sizer.Add( ZoomAtCursor_Flag );
    Page_Sizer.Add( WheelStepAngle_Unsigned );
    Page_Sizer.Add( WheelDirection_Set );
    Page_Sizer.Add( TouchEvents_Flag );
@@ -2272,6 +2282,7 @@ void MiscImageWindowSettingsPreferencesPage::TransferSettings( PreferencesInstan
    to.imageWindow.showCaptionFullPaths                    = from.imageWindow.showCaptionFullPaths;
    to.imageWindow.showActiveSTFIndicators                 = from.imageWindow.showActiveSTFIndicators;
    to.imageWindow.cursorTolerance                         = from.imageWindow.cursorTolerance;
+   to.imageWindow.zoomAtCursor                            = from.imageWindow.zoomAtCursor;
    to.imageWindow.wheelStepAngle                          = from.imageWindow.wheelStepAngle;
    to.imageWindow.wheelDirection                          = from.imageWindow.wheelDirection;
    to.imageWindow.touchEvents                             = from.imageWindow.touchEvents;
@@ -2871,4 +2882,4 @@ void PreferencesInterface::GUIData::InitializeCategories()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInterface.cpp - Released 2021-12-29T20:37:28Z
+// EOF PreferencesInterface.cpp - Released 2022-03-12T18:59:53Z

@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.4.3
+// Standard ImageIntegration Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// IntegrationFile.h - Released 2021-12-29T20:37:28Z
+// IntegrationFile.h - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -134,19 +134,9 @@ public:
       return !m_psfSignalEstimates.IsEmpty();
    }
 
-   double PSFSignalEstimate( int c ) const
+   const PSFSignalEstimator::Estimates& PSFSignalEstimate( int c ) const
    {
-      return m_psfSignalEstimates[c].mean;
-   }
-
-   double PSFSignalPowerEstimate( int c ) const
-   {
-      return m_psfSignalEstimates[c].power;
-   }
-
-   double PSFCount( int c ) const
-   {
-      return m_psfSignalEstimates[c].count;
+      return m_psfSignalEstimates[c];
    }
 
    bool HasNoiseEstimates() const
@@ -488,4 +478,4 @@ private:
 #endif   // __IntegrationFile_h
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationFile.h - Released 2021-12-29T20:37:28Z
+// EOF IntegrationFile.h - Released 2022-03-12T18:59:53Z

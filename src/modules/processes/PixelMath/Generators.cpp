@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.8.5
+// Standard PixelMath Process Module Version 1.9.2
 // ----------------------------------------------------------------------------
-// Generators.cpp - Released 2021-12-29T20:37:28Z
+// Generators.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -96,7 +96,7 @@ static ImageVariant NewGeneratorResult( const ImageReference* ref, int bitsPerSa
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-bool GaussianConvolutionFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
+bool GaussianConvolutionFunction::ValidateArguments( String& info, Expression*& arg, ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    // gconv( image[, sigma=2[, rho=1[, theta=0[, eps=0.01]]]] )
 
@@ -190,7 +190,7 @@ bool GaussianConvolutionFunction::ValidateArguments( String& info, Expression*& 
    return true;
 }
 
-IsoString GaussianConvolutionFunction::GenerateImage( component_list::const_iterator i, component_list::const_iterator j ) const
+IsoString GaussianConvolutionFunction::GenerateImage( ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    // gconv( image[, sigma=2[, rho=1[, theta=0[, eps=0.01]]]] )
 
@@ -281,14 +281,14 @@ IsoString GaussianConvolutionFunction::GenerateImage( component_list::const_iter
    return key;
 }
 
-void GaussianConvolutionFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void GaussianConvolutionFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw ParseError( "gconv(): Internal execution error" );
 }
 
 // ----------------------------------------------------------------------------
 
-bool BoxConvolutionFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
+bool BoxConvolutionFunction::ValidateArguments( String& info, Expression*& arg, ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    // bconv( image[, n=3] )
 
@@ -343,7 +343,7 @@ bool BoxConvolutionFunction::ValidateArguments( String& info, Expression*& arg, 
    return true;
 }
 
-IsoString BoxConvolutionFunction::GenerateImage( component_list::const_iterator i, component_list::const_iterator j ) const
+IsoString BoxConvolutionFunction::GenerateImage( ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    // bconv( image[, n=3] )
 
@@ -398,14 +398,14 @@ IsoString BoxConvolutionFunction::GenerateImage( component_list::const_iterator 
    return key;
 }
 
-void BoxConvolutionFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void BoxConvolutionFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw ParseError( "bconv(): Internal execution error" );
 }
 
 // ----------------------------------------------------------------------------
 
-bool KernelConvolutionFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
+bool KernelConvolutionFunction::ValidateArguments( String& info, Expression*& arg, ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    // kconv( image, k11, k12, k13, k21, k22, k23, k31, k32, k33[, ...] )
 
@@ -452,7 +452,7 @@ bool KernelConvolutionFunction::ValidateArguments( String& info, Expression*& ar
    return true;
 }
 
-IsoString KernelConvolutionFunction::GenerateImage( component_list::const_iterator i, component_list::const_iterator j ) const
+IsoString KernelConvolutionFunction::GenerateImage( ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    // kconv( image, k11, k12, k13, k21, k22, k23, k31, k32, k33[, ...] )
 
@@ -499,7 +499,7 @@ IsoString KernelConvolutionFunction::GenerateImage( component_list::const_iterat
    return key;
 }
 
-void KernelConvolutionFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void KernelConvolutionFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw ParseError( "kconv(): Internal execution error" );
 }
@@ -512,7 +512,7 @@ enum
 };
 
 static bool ValidateMorphologicalTransformationGeneratorParameters( const String& functionName, String& info, Expression*& arg,
-                                       Expression::component_list::const_iterator i, Expression::component_list::const_iterator j )
+                                       ExpressionList::const_iterator i, ExpressionList::const_iterator j )
 {
    if ( !(*i)->IsImageReference() )
       if ( !(*i)->IsFunctional() )
@@ -584,7 +584,7 @@ static bool ValidateMorphologicalTransformationGeneratorParameters( const String
 }
 
 static void GetMorphologicalTransformationGeneratorParameters( const String& functionName, const ImageReference*& ref, int& n, int& s,
-                                       Expression::component_list::const_iterator i, Expression::component_list::const_iterator j )
+                                       ExpressionList::const_iterator i, ExpressionList::const_iterator j )
 {
    if ( !(*i)->IsImageReference() )
       throw ParseError( functionName + "() argument #1: Must be an image reference or a functional subexpression evaluating to an image" );
@@ -637,7 +637,7 @@ static StructuringElement* NewStructuringElement( int n, int s )
 
 // ----------------------------------------------------------------------------
 
-bool MedianFilterFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
+bool MedianFilterFunction::ValidateArguments( String& info, Expression*& arg, ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    // medfilt( image[, n=3[, str=str_square()]] )
 
@@ -651,7 +651,7 @@ bool MedianFilterFunction::ValidateArguments( String& info, Expression*& arg, co
    return ValidateMorphologicalTransformationGeneratorParameters( "medfilt", info, arg, i, j );
 }
 
-IsoString MedianFilterFunction::GenerateImage( component_list::const_iterator i, component_list::const_iterator j ) const
+IsoString MedianFilterFunction::GenerateImage( ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    // medfilt( image[, n=3[, str=str_square()]] )
 
@@ -674,14 +674,14 @@ IsoString MedianFilterFunction::GenerateImage( component_list::const_iterator i,
    return key;
 }
 
-void MedianFilterFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void MedianFilterFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw ParseError( "medfilt(): Internal execution error" );
 }
 
 // ----------------------------------------------------------------------------
 
-bool ErosionFilterFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
+bool ErosionFilterFunction::ValidateArguments( String& info, Expression*& arg, ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    // erosion( image[, n=3[, str=str_square()]] )
 
@@ -695,7 +695,7 @@ bool ErosionFilterFunction::ValidateArguments( String& info, Expression*& arg, c
    return ValidateMorphologicalTransformationGeneratorParameters( "erosion", info, arg, i, j );
 }
 
-IsoString ErosionFilterFunction::GenerateImage( component_list::const_iterator i, component_list::const_iterator j ) const
+IsoString ErosionFilterFunction::GenerateImage( ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    // erosion( image[, n=3[, str=str_square()]] )
 
@@ -718,14 +718,14 @@ IsoString ErosionFilterFunction::GenerateImage( component_list::const_iterator i
    return key;
 }
 
-void ErosionFilterFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void ErosionFilterFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw ParseError( "erosion(): Internal execution error" );
 }
 
 // ----------------------------------------------------------------------------
 
-bool DilationFilterFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
+bool DilationFilterFunction::ValidateArguments( String& info, Expression*& arg, ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    // dilation( image[, n=3[, str=str_square()]] )
 
@@ -739,7 +739,7 @@ bool DilationFilterFunction::ValidateArguments( String& info, Expression*& arg, 
    return ValidateMorphologicalTransformationGeneratorParameters( "dilation", info, arg, i, j );
 }
 
-IsoString DilationFilterFunction::GenerateImage( component_list::const_iterator i, component_list::const_iterator j ) const
+IsoString DilationFilterFunction::GenerateImage( ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    // dilation( image[, n=3[, str=str_square()]] )
 
@@ -762,116 +762,116 @@ IsoString DilationFilterFunction::GenerateImage( component_list::const_iterator 
    return key;
 }
 
-void DilationFilterFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void DilationFilterFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw ParseError( "dilation(): Internal execution error" );
 }
 
 // ----------------------------------------------------------------------------
 
-void StrSquareFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void StrSquareFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw Error( "str_square(): Internal parser error" );
 }
 
-bool StrSquareFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+bool StrSquareFunction::IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    return true;
 }
 
-void StrSquareFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+void StrSquareFunction::operator()( Pixel& r, ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    r.SetSamples( StrSquare );
 }
 
 // ----------------------------------------------------------------------------
 
-void StrCircularFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void StrCircularFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw Error( "str_circular(): Internal parser error" );
 }
 
-bool StrCircularFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+bool StrCircularFunction::IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    return true;
 }
 
-void StrCircularFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+void StrCircularFunction::operator()( Pixel& r, ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    r.SetSamples( StrCircular );
 }
 
 // ----------------------------------------------------------------------------
 
-void StrOrthogonalFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void StrOrthogonalFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw Error( "str_orthogonal(): Internal parser error" );
 }
 
-bool StrOrthogonalFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+bool StrOrthogonalFunction::IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    return true;
 }
 
-void StrOrthogonalFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+void StrOrthogonalFunction::operator()( Pixel& r, ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    r.SetSamples( StrOrthogonal );
 }
 
 // ----------------------------------------------------------------------------
 
-void StrDiagonalFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void StrDiagonalFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw Error( "str_diagonal(): Internal parser error" );
 }
 
-bool StrDiagonalFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+bool StrDiagonalFunction::IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    return true;
 }
 
-void StrDiagonalFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+void StrDiagonalFunction::operator()( Pixel& r, ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    r.SetSamples( StrDiagonal );
 }
 
 // ----------------------------------------------------------------------------
 
-void StrStarFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void StrStarFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw Error( "str_star(): Internal parser error" );
 }
 
-bool StrStarFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+bool StrStarFunction::IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    return true;
 }
 
-void StrStarFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+void StrStarFunction::operator()( Pixel& r, ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    r.SetSamples( StrStar );
 }
 
 // ----------------------------------------------------------------------------
 
-void StrThreeWayFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void StrThreeWayFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw Error( "str_threeway(): Internal parser error" );
 }
 
-bool StrThreeWayFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+bool StrThreeWayFunction::IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    return true;
 }
 
-void StrThreeWayFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+void StrThreeWayFunction::operator()( Pixel& r, ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    r.SetSamples( StrThreeWay );
 }
 
 // ----------------------------------------------------------------------------
 
-bool TranslationFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
+bool TranslationFunction::ValidateArguments( String& info, Expression*& arg, ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    // translate( image, dx, dy )
 
@@ -900,7 +900,7 @@ bool TranslationFunction::ValidateArguments( String& info, Expression*& arg, com
    return true;
 }
 
-IsoString TranslationFunction::GenerateImage( component_list::const_iterator i, component_list::const_iterator j ) const
+IsoString TranslationFunction::GenerateImage( ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    // translate( image, dx, dy )
 
@@ -940,14 +940,14 @@ IsoString TranslationFunction::GenerateImage( component_list::const_iterator i, 
    return key;
 }
 
-void TranslationFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void TranslationFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw ParseError( "translate(): Internal execution error" );
 }
 
 // ----------------------------------------------------------------------------
 
-bool RotationFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
+bool RotationFunction::ValidateArguments( String& info, Expression*& arg, ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    // rotate( image, angle[, cx, cy] )
 
@@ -978,7 +978,7 @@ bool RotationFunction::ValidateArguments( String& info, Expression*& arg, compon
    return true;
 }
 
-IsoString RotationFunction::GenerateImage( component_list::const_iterator i, component_list::const_iterator j ) const
+IsoString RotationFunction::GenerateImage( ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    // rotate( image, angle[, cx, cy] )
 
@@ -1038,14 +1038,14 @@ IsoString RotationFunction::GenerateImage( component_list::const_iterator i, com
    return key;
 }
 
-void RotationFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void RotationFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw ParseError( "rotate(): Internal execution error" );
 }
 
 // ----------------------------------------------------------------------------
 
-bool UnclippedRotationFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
+bool UnclippedRotationFunction::ValidateArguments( String& info, Expression*& arg, ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    // urotate( image, angle )
 
@@ -1075,7 +1075,7 @@ bool UnclippedRotationFunction::ValidateArguments( String& info, Expression*& ar
    return true;
 }
 
-IsoString UnclippedRotationFunction::GenerateImage( component_list::const_iterator i, component_list::const_iterator j ) const
+IsoString UnclippedRotationFunction::GenerateImage( ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    // urotate( image, angle )
 
@@ -1108,14 +1108,14 @@ IsoString UnclippedRotationFunction::GenerateImage( component_list::const_iterat
    return key;
 }
 
-void UnclippedRotationFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void UnclippedRotationFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw ParseError( "urotate(): Internal execution error" );
 }
 
 // ----------------------------------------------------------------------------
 
-bool MirrorHorzFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
+bool MirrorHorzFunction::ValidateArguments( String& info, Expression*& arg, ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    // hmirror( image )
 
@@ -1136,7 +1136,7 @@ bool MirrorHorzFunction::ValidateArguments( String& info, Expression*& arg, comp
    return true;
 }
 
-IsoString MirrorHorzFunction::GenerateImage( component_list::const_iterator i, component_list::const_iterator j ) const
+IsoString MirrorHorzFunction::GenerateImage( ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    // hmirror( image )
 
@@ -1157,14 +1157,14 @@ IsoString MirrorHorzFunction::GenerateImage( component_list::const_iterator i, c
    return key;
 }
 
-void MirrorHorzFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void MirrorHorzFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw ParseError( "hmirror(): Internal execution error" );
 }
 
 // ----------------------------------------------------------------------------
 
-bool MirrorVertFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
+bool MirrorVertFunction::ValidateArguments( String& info, Expression*& arg, ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    // vmirror( image )
 
@@ -1185,7 +1185,7 @@ bool MirrorVertFunction::ValidateArguments( String& info, Expression*& arg, comp
    return true;
 }
 
-IsoString MirrorVertFunction::GenerateImage( component_list::const_iterator i, component_list::const_iterator j ) const
+IsoString MirrorVertFunction::GenerateImage( ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    // vmirror( image )
 
@@ -1206,14 +1206,14 @@ IsoString MirrorVertFunction::GenerateImage( component_list::const_iterator i, c
    return key;
 }
 
-void MirrorVertFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void MirrorVertFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw ParseError( "vmirror(): Internal execution error" );
 }
 
 // ----------------------------------------------------------------------------
 
-bool NormalizationFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
+bool NormalizationFunction::ValidateArguments( String& info, Expression*& arg, ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    // normalize( image[, a=0, b=1] )
 
@@ -1256,7 +1256,7 @@ bool NormalizationFunction::ValidateArguments( String& info, Expression*& arg, c
    return true;
 }
 
-IsoString NormalizationFunction::GenerateImage( component_list::const_iterator i, component_list::const_iterator j ) const
+IsoString NormalizationFunction::GenerateImage( ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    // normalize( image[, a=0, b=1] )
 
@@ -1305,14 +1305,14 @@ IsoString NormalizationFunction::GenerateImage( component_list::const_iterator i
    return key;
 }
 
-void NormalizationFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void NormalizationFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw ParseError( "normalize(): Internal execution error" );
 }
 
 // ----------------------------------------------------------------------------
 
-bool TruncationFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
+bool TruncationFunction::ValidateArguments( String& info, Expression*& arg, ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    // truncate( image[, a=0, b=1] )
 
@@ -1355,7 +1355,7 @@ bool TruncationFunction::ValidateArguments( String& info, Expression*& arg, comp
    return true;
 }
 
-IsoString TruncationFunction::GenerateImage( component_list::const_iterator i, component_list::const_iterator j ) const
+IsoString TruncationFunction::GenerateImage( ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    // truncate( image[, a=0, b=1] )
 
@@ -1404,14 +1404,14 @@ IsoString TruncationFunction::GenerateImage( component_list::const_iterator i, c
    return key;
 }
 
-void TruncationFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void TruncationFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw ParseError( "truncate(): Internal execution error" );
 }
 
 // ----------------------------------------------------------------------------
 
-bool BinarizationFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
+bool BinarizationFunction::ValidateArguments( String& info, Expression*& arg, ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    // binarize( image[, t=0.5] )
 
@@ -1442,7 +1442,7 @@ bool BinarizationFunction::ValidateArguments( String& info, Expression*& arg, co
    return true;
 }
 
-IsoString BinarizationFunction::GenerateImage( component_list::const_iterator i, component_list::const_iterator j ) const
+IsoString BinarizationFunction::GenerateImage( ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    // binarize( image[, t=0.5] )
 
@@ -1484,7 +1484,7 @@ IsoString BinarizationFunction::GenerateImage( component_list::const_iterator i,
    return key;
 }
 
-void BinarizationFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void BinarizationFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw ParseError( "binarize(): Internal execution error" );
 }
@@ -1520,7 +1520,7 @@ SeparableFilter LVarKernelFunctionSeparable( int d, int k )
    }
 }
 
-bool LocalVarianceFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
+bool LocalVarianceFunction::ValidateArguments( String& info, Expression*& arg, ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    // lvar( image[, d=3[, k=krn_flat()]] )
 
@@ -1600,7 +1600,7 @@ bool LocalVarianceFunction::ValidateArguments( String& info, Expression*& arg, c
    return true;
 }
 
-IsoString LocalVarianceFunction::GenerateImage( component_list::const_iterator i, component_list::const_iterator j ) const
+IsoString LocalVarianceFunction::GenerateImage( ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    // lvar( image[, d=3[, k=krn_flat()]] )
 
@@ -1681,41 +1681,41 @@ IsoString LocalVarianceFunction::GenerateImage( component_list::const_iterator i
    return key;
 }
 
-void LocalVarianceFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void LocalVarianceFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw ParseError( "lvar(): Internal execution error" );
 }
 
 // ----------------------------------------------------------------------------
 
-void KrnFlatFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void KrnFlatFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw Error( "krn_flat(): Internal parser error" );
 }
 
-bool KrnFlatFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+bool KrnFlatFunction::IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    return true;
 }
 
-void KrnFlatFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+void KrnFlatFunction::operator()( Pixel& r, ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    r.SetSamples( KrnFlat );
 }
 
 // ----------------------------------------------------------------------------
 
-void KrnGaussianFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void KrnGaussianFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw Error( "krn_gauss(): Internal parser error" );
 }
 
-bool KrnGaussianFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+bool KrnGaussianFunction::IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    return true;
 }
 
-void KrnGaussianFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+void KrnGaussianFunction::operator()( Pixel& r, ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    r.SetSamples( KrnGaussian );
 }
@@ -1732,7 +1732,7 @@ enum
 
 // ----------------------------------------------------------------------------
 
-bool CombinationFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
+bool CombinationFunction::ValidateArguments( String& info, Expression*& arg, ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    // combine( image1, image2, op )
 
@@ -1789,7 +1789,7 @@ bool CombinationFunction::ValidateArguments( String& info, Expression*& arg, com
    return true;
 }
 
-IsoString CombinationFunction::GenerateImage( component_list::const_iterator i, component_list::const_iterator j ) const
+IsoString CombinationFunction::GenerateImage( ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    // combine( image1, image2, op )
 
@@ -1922,364 +1922,364 @@ IsoString CombinationFunction::GenerateImage( component_list::const_iterator i, 
    return key;
 }
 
-void CombinationFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void CombinationFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw ParseError( "combine(): Internal execution error" );
 }
 
 // ----------------------------------------------------------------------------
 
-void OpMovFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void OpMovFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw Error( "op_mov(): Internal parser error" );
 }
 
-bool OpMovFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+bool OpMovFunction::IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    return true;
 }
 
-void OpMovFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+void OpMovFunction::operator()( Pixel& r, ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    r.SetSamples( OpMov );
 }
 
 // ----------------------------------------------------------------------------
 
-void OpAddFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void OpAddFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw Error( "op_add(): Internal parser error" );
 }
 
-bool OpAddFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+bool OpAddFunction::IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    return true;
 }
 
-void OpAddFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+void OpAddFunction::operator()( Pixel& r, ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    r.SetSamples( OpAdd );
 }
 
 // ----------------------------------------------------------------------------
 
-void OpSubFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void OpSubFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw Error( "op_sub(): Internal parser error" );
 }
 
-bool OpSubFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+bool OpSubFunction::IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    return true;
 }
 
-void OpSubFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+void OpSubFunction::operator()( Pixel& r, ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    r.SetSamples( OpSub );
 }
 
 // ----------------------------------------------------------------------------
 
-void OpMulFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void OpMulFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw Error( "op_mul(): Internal parser error" );
 }
 
-bool OpMulFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+bool OpMulFunction::IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    return true;
 }
 
-void OpMulFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+void OpMulFunction::operator()( Pixel& r, ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    r.SetSamples( OpMul );
 }
 
 // ----------------------------------------------------------------------------
 
-void OpDivFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void OpDivFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw Error( "op_div(): Internal parser error" );
 }
 
-bool OpDivFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+bool OpDivFunction::IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    return true;
 }
 
-void OpDivFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+void OpDivFunction::operator()( Pixel& r, ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    r.SetSamples( OpDiv );
 }
 
 // ----------------------------------------------------------------------------
 
-void OpPowFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void OpPowFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw Error( "op_pow(): Internal parser error" );
 }
 
-bool OpPowFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+bool OpPowFunction::IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    return true;
 }
 
-void OpPowFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+void OpPowFunction::operator()( Pixel& r, ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    r.SetSamples( OpPow );
 }
 
 // ----------------------------------------------------------------------------
 
-void OpDifFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void OpDifFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw Error( "op_dif(): Internal parser error" );
 }
 
-bool OpDifFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+bool OpDifFunction::IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    return true;
 }
 
-void OpDifFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+void OpDifFunction::operator()( Pixel& r, ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    r.SetSamples( OpDif );
 }
 
 // ----------------------------------------------------------------------------
 
-void OpMinFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void OpMinFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw Error( "op_min(): Internal parser error" );
 }
 
-bool OpMinFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+bool OpMinFunction::IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    return true;
 }
 
-void OpMinFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+void OpMinFunction::operator()( Pixel& r, ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    r.SetSamples( OpMin );
 }
 
 // ----------------------------------------------------------------------------
 
-void OpMaxFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void OpMaxFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw Error( "op_max(): Internal parser error" );
 }
 
-bool OpMaxFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+bool OpMaxFunction::IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    return true;
 }
 
-void OpMaxFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+void OpMaxFunction::operator()( Pixel& r, ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    r.SetSamples( OpMax );
 }
 
 // ----------------------------------------------------------------------------
 
-void OpAtan2Function::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void OpAtan2Function::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw Error( "op_atan2(): Internal parser error" );
 }
 
-bool OpAtan2Function::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+bool OpAtan2Function::IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    return true;
 }
 
-void OpAtan2Function::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+void OpAtan2Function::operator()( Pixel& r, ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    r.SetSamples( OpAtan2 );
 }
 
 // ----------------------------------------------------------------------------
 
-void OpColorBurnFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void OpColorBurnFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw Error( "op_color_burn(): Internal parser error" );
 }
 
-bool OpColorBurnFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+bool OpColorBurnFunction::IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    return true;
 }
 
-void OpColorBurnFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+void OpColorBurnFunction::operator()( Pixel& r, ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    r.SetSamples( OpColorBurn );
 }
 
 // ----------------------------------------------------------------------------
 
-void OpLinearBurnFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void OpLinearBurnFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw Error( "op_linear_burn(): Internal parser error" );
 }
 
-bool OpLinearBurnFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+bool OpLinearBurnFunction::IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    return true;
 }
 
-void OpLinearBurnFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+void OpLinearBurnFunction::operator()( Pixel& r, ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    r.SetSamples( OpLinearBurn );
 }
 
 // ----------------------------------------------------------------------------
 
-void OpScreenFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void OpScreenFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw Error( "op_screen(): Internal parser error" );
 }
 
-bool OpScreenFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+bool OpScreenFunction::IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    return true;
 }
 
-void OpScreenFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+void OpScreenFunction::operator()( Pixel& r, ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    r.SetSamples( OpScreen );
 }
 
 // ----------------------------------------------------------------------------
 
-void OpColorDodgeFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void OpColorDodgeFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw Error( "op_color_dodge(): Internal parser error" );
 }
 
-bool OpColorDodgeFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+bool OpColorDodgeFunction::IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    return true;
 }
 
-void OpColorDodgeFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+void OpColorDodgeFunction::operator()( Pixel& r, ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    r.SetSamples( OpColorDodge );
 }
 
 // ----------------------------------------------------------------------------
 
-void OpOverlayFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void OpOverlayFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw Error( "op_overlay(): Internal parser error" );
 }
 
-bool OpOverlayFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+bool OpOverlayFunction::IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    return true;
 }
 
-void OpOverlayFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+void OpOverlayFunction::operator()( Pixel& r, ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    r.SetSamples( OpOverlay );
 }
 
 // ----------------------------------------------------------------------------
 
-void OpSoftLightFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void OpSoftLightFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw Error( "op_soft_light(): Internal parser error" );
 }
 
-bool OpSoftLightFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+bool OpSoftLightFunction::IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    return true;
 }
 
-void OpSoftLightFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+void OpSoftLightFunction::operator()( Pixel& r, ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    r.SetSamples( OpSoftLight );
 }
 
 // ----------------------------------------------------------------------------
 
-void OpHardLightFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void OpHardLightFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw Error( "op_hard_light(): Internal parser error" );
 }
 
-bool OpHardLightFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+bool OpHardLightFunction::IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    return true;
 }
 
-void OpHardLightFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+void OpHardLightFunction::operator()( Pixel& r, ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    r.SetSamples( OpHardLight );
 }
 
 // ----------------------------------------------------------------------------
 
-void OpVividLightFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void OpVividLightFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw Error( "op_vivid_light(): Internal parser error" );
 }
 
-bool OpVividLightFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+bool OpVividLightFunction::IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    return true;
 }
 
-void OpVividLightFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+void OpVividLightFunction::operator()( Pixel& r, ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    r.SetSamples( OpVividLight );
 }
 
 // ----------------------------------------------------------------------------
 
-void OpLinearLightFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void OpLinearLightFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw Error( "op_linear_light(): Internal parser error" );
 }
 
-bool OpLinearLightFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+bool OpLinearLightFunction::IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    return true;
 }
 
-void OpLinearLightFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+void OpLinearLightFunction::operator()( Pixel& r, ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    r.SetSamples( OpLinearLight );
 }
 
 // ----------------------------------------------------------------------------
 
-void OpPinLightFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void OpPinLightFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw Error( "op_pin_light(): Internal parser error" );
 }
 
-bool OpPinLightFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+bool OpPinLightFunction::IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    return true;
 }
 
-void OpPinLightFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+void OpPinLightFunction::operator()( Pixel& r, ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    r.SetSamples( OpPinLight );
 }
 
 // ----------------------------------------------------------------------------
 
-void OpExclusionFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void OpExclusionFunction::operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const
 {
    throw Error( "op_exclusion(): Internal parser error" );
 }
 
-bool OpExclusionFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+bool OpExclusionFunction::IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    return true;
 }
 
-void OpExclusionFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+void OpExclusionFunction::operator()( Pixel& r, ExpressionList::const_iterator, ExpressionList::const_iterator ) const
 {
    r.SetSamples( OpExclusion );
 }
@@ -2289,4 +2289,4 @@ void OpExclusionFunction::operator()( Pixel& r, component_list::const_iterator, 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Generators.cpp - Released 2021-12-29T20:37:28Z
+// EOF Generators.cpp - Released 2022-03-12T18:59:53Z

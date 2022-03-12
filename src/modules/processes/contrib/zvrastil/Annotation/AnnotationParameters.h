@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
 // Standard Annotation Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// AnnotationParameters.h - Released 2021-12-29T20:37:28Z
+// AnnotationParameters.h - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Annotation PixInsight module.
 //
@@ -259,4 +259,4 @@ PCL_END_LOCAL
 #endif // __AnnotationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF AnnotationParameters.h - Released 2021-12-29T20:37:28Z
+// EOF AnnotationParameters.h - Released 2022-03-12T18:59:53Z

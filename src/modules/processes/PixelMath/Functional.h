@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.8.5
+// Standard PixelMath Process Module Version 1.9.2
 // ----------------------------------------------------------------------------
-// Functional.h - Released 2021-12-29T20:37:28Z
+// Functional.h - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -95,15 +95,15 @@ public:
 
    virtual String ToString() const = 0;
 
-   virtual void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const = 0;
+   virtual void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const = 0;
 
-   virtual bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+   virtual bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const
    {
       return false;
    }
 
    // Invariant function call
-   virtual void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const
+   virtual void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const
    {
    }
 
@@ -117,9 +117,9 @@ public:
       return false;
    }
 
-   virtual component_list Optimized() const
+   virtual ExpressionList Optimized() const
    {
-      return component_list();
+      return ExpressionList();
    }
 
    bool IsParsed() const
@@ -154,7 +154,7 @@ public:
 
    String PostOrder() const;
 
-   void PostOrder( component_list&, bool optimize = true ) const;
+   void PostOrder( ExpressionList&, bool optimize = true ) const;
 
    void CheckParsedGlobalVariables( const String& beingParsed ) const;
 
@@ -164,7 +164,7 @@ protected:
 
 private:
 
-   void PostOrderRecursive( component_list&, bool optimize ) const;
+   void PostOrderRecursive( ExpressionList&, bool optimize ) const;
 };
 
 // ----------------------------------------------------------------------------
@@ -174,4 +174,4 @@ private:
 #endif   // __Functional_h
 
 // ----------------------------------------------------------------------------
-// EOF Functional.h - Released 2021-12-29T20:37:28Z
+// EOF Functional.h - Released 2022-03-12T18:59:53Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.19
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// pcl/Exception.cpp - Released 2022-01-24T22:43:35Z
+// pcl/Exception.cpp - Released 2022-03-12T18:59:36Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -275,7 +275,6 @@ String ParseError::Message() const
       {
          if ( !info.IsEmpty() )
             info << ":\n";
-         info << "<code>";
 
          int p0 = 0, p1 = 0;
          String::const_iterator i0 = m_beingParsed.Begin();
@@ -287,7 +286,7 @@ String ParseError::Message() const
                   if ( *i1 == '\n' )
                      break;
                info << String( i0, i1 ) << '\n'
-                    << String( '~', p1-p0  ) << '^' << "</code>";
+                    << String( '~', p1-p0  ) << '^';
                break;
             }
             if ( *i1 == '\n' )
@@ -302,7 +301,7 @@ String ParseError::Message() const
       {
          if ( !info.IsEmpty() )
             info << ": ";
-         info << "<code>" << m_beingParsed << "</code>";
+         info << m_beingParsed;
       }
 
    return info;
@@ -319,7 +318,7 @@ void ParseError::Show() const
       {
          Console console;
          console.Show();
-         console.Critical( "<end><cbr>*** " + Caption() + ": " + Message() );
+         console.Critical( "<end><cbr>*** " + Caption() + ": <raw>" + Message() + "</raw>" );
          console.Write( "\x1b[39m<end><cbr>" );
       }
       else
@@ -327,8 +326,7 @@ void ParseError::Show() const
 
    if ( showOnGUI )
    {
-      String info = Message();
-      info.ReplaceString( "code>", "tt>" );
+      String info = "<div style=\"white-space:pre; font-family:Hack;\">" + Message() + "</div>";
       String caption = Caption();
       pcl::MessageBox( info, caption, StdIcon::Error ).Execute();
    }
@@ -380,7 +378,7 @@ void SourceCodeError::Show() const
 
    if ( showOnGUI )
    {
-      String info = Message();
+      String info = "<div style=\"white-space:pre; font-family:Hack;\">" + Message() + "</div>";
       String caption = Caption();
       pcl::MessageBox( info, caption, StdIcon::Error ).Execute();
    }
@@ -391,4 +389,4 @@ void SourceCodeError::Show() const
 }  // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Exception.cpp - Released 2022-01-24T22:43:35Z
+// EOF pcl/Exception.cpp - Released 2022-03-12T18:59:36Z

@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.4.3
+// Standard ImageIntegration Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// ImageIntegrationProcess.cpp - Released 2021-12-29T20:37:28Z
+// ImageIntegrationProcess.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -97,6 +97,7 @@ ImageIntegrationProcess::ImageIntegrationProcess()
    new IIESDOutliersFraction( this );
    new IIESDAlpha( this );
    new IIESDLowRelaxation( this );
+   new IIRCRLimit( this );
    new IICCDGain( this );
    new IICCDReadNoise( this );
    new IICCDScaleNoise( this );
@@ -130,7 +131,10 @@ ImageIntegrationProcess::ImageIntegrationProcess()
    new IIROIY1( this );
    new IIUseCache( this );
    new IIEvaluateSNR( this );
+   new IINoiseEvaluationAlgorithm( this );
    new IIMRSMinDataFraction( this );
+   new IIPSFStructureLayers( this );
+   new IIPSFType( this );
    new IISubtractPedestals( this );
    new IITruncateOnOutOfRange( this );
    new IINoGUIMessages( this );
@@ -169,6 +173,9 @@ ImageIntegrationProcess::ImageIntegrationProcess()
    new IIFinalNoiseScaleEstimateHighRK( this );
    new IIFinalNoiseScaleEstimateHighG( this );
    new IIFinalNoiseScaleEstimateHighB( this );
+   new IIFinalNoiseAlgorithmRK( this );
+   new IIFinalNoiseAlgorithmG( this );
+   new IIFinalNoiseAlgorithmB( this );
 
    new IIFinalScaleEstimateRK( this );
    new IIFinalScaleEstimateG( this );
@@ -178,21 +185,27 @@ ImageIntegrationProcess::ImageIntegrationProcess()
    new IIFinalLocationEstimateG( this );
    new IIFinalLocationEstimateB( this );
 
-   new IIFinalPSFSignalEstimateRK( this );
-   new IIFinalPSFSignalEstimateG( this );
-   new IIFinalPSFSignalEstimateB( this );
-   new IIFinalPSFSignalPowerEstimateRK( this );
-   new IIFinalPSFSignalPowerEstimateG( this );
-   new IIFinalPSFSignalPowerEstimateB( this );
-   new IIFinalPSFFluxEstimateRK( this );
-   new IIFinalPSFFluxEstimateG( this );
-   new IIFinalPSFFluxEstimateB( this );
-   new IIFinalPSFFluxPowerEstimateRK( this );
-   new IIFinalPSFFluxPowerEstimateG( this );
-   new IIFinalPSFFluxPowerEstimateB( this );
-   new IIFinalPSFSignalCountRK( this );
-   new IIFinalPSFSignalCountG( this );
-   new IIFinalPSFSignalCountB( this );
+   new IIFinalPSFTotalFluxEstimateRK( this );
+   new IIFinalPSFTotalFluxEstimateG( this );
+   new IIFinalPSFTotalFluxEstimateB( this );
+   new IIFinalPSFTotalPowerFluxEstimateRK( this );
+   new IIFinalPSFTotalPowerFluxEstimateG( this );
+   new IIFinalPSFTotalPowerFluxEstimateB( this );
+   new IIFinalPSFTotalMeanFluxEstimateRK( this );
+   new IIFinalPSFTotalMeanFluxEstimateG( this );
+   new IIFinalPSFTotalMeanFluxEstimateB( this );
+   new IIFinalPSFTotalMeanPowerFluxEstimateRK( this );
+   new IIFinalPSFTotalMeanPowerFluxEstimateG( this );
+   new IIFinalPSFTotalMeanPowerFluxEstimateB( this );
+   new IIFinalPSFMStarEstimateRK( this );
+   new IIFinalPSFMStarEstimateG( this );
+   new IIFinalPSFMStarEstimateB( this );
+   new IIFinalPSFNStarEstimateRK( this );
+   new IIFinalPSFNStarEstimateG( this );
+   new IIFinalPSFNStarEstimateB( this );
+   new IIFinalPSFCountRK( this );
+   new IIFinalPSFCountG( this );
+   new IIFinalPSFCountB( this );
 
    new IIReferenceNoiseReductionRK( this );
    new IIReferenceNoiseReductionG( this );
@@ -283,4 +296,4 @@ ProcessImplementation* ImageIntegrationProcess::Clone( const ProcessImplementati
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationProcess.cpp - Released 2021-12-29T20:37:28Z
+// EOF ImageIntegrationProcess.cpp - Released 2022-03-12T18:59:53Z

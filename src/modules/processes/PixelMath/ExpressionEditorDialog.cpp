@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.8.5
+// Standard PixelMath Process Module Version 1.9.2
 // ----------------------------------------------------------------------------
-// ExpressionEditorDialog.cpp - Released 2021-12-29T20:37:28Z
+// ExpressionEditorDialog.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -113,14 +113,13 @@ struct SyntaxItem
    }
 };
 
-static Function::function_set    s_functions;
-static Function::function_index  s_functionIndex;
+static FunctionList  s_functions;
+static FunctionIndex s_functionIndex;
 
-static Operator::operator_set    s_operators;
-static Operator::operator_index  s_operatorIndex;
+static OperatorList  s_operators;
+static OperatorIndex s_operatorIndex;
 
-typedef SortedArray<SyntaxItem>  syntax_item_set;
-static syntax_item_set           s_syntaxItems;
+static SortedArray<SyntaxItem> s_syntaxItems;
 
 static void InitializeSyntaxItems()
 {
@@ -319,6 +318,85 @@ static void InitializeSyntaxItems()
                         "main view that has the keyboard focus when the instance of PixelMath is executed.</p>"
                         "<p>$A can always be used, in both the view and global execution contexts. If there is no active image in the current "
                         "workspace, a runtime error will occur if $A is used.</p>" )
+
+         /* Directives */
+
+                 << SyntaxItem( ".pragma arg1[, arg2[, ...]];", ".pragma",
+                        "<p>Pragma directive.</p>"
+                        "<p>The pragma directive allows you to modify PixelMath process parameters directly from executed expressions. "
+                        "Each argument of a pragma directive overrides the current value of a working PixelMath parameter. The supported "
+                        "arguments are currently the following:</p>"
+                        "<p><b>rescale</b><br/>"
+                        "Enable the <i>rescale result</i> option."
+                        "</p>"
+                        "<p><b>no-rescale</b><br/>"
+                        "Disable the <i>rescale result</i> option."
+                        "</p>"
+                        "<p><b>truncate</b><br/>"
+                        "Enable the <i>truncate result</i> option."
+                        "</p>"
+                        "<p><b>no-truncate</b><br/>"
+                        "Disable the <i>truncate result</i> option.<br/>"
+                        "** Warning ** Platform stability is not guaranteed if out-of-range pixel sample values propagate after PixelMath execution."
+                        "</p>"
+                        "<p><b>64_bit</b><br/>"
+                        "Enable the <i>use 64-bit working images</i> option."
+                        "</p>"
+                        "<p><b>no-64_bit</b><br/>"
+                        "Disable the <i>use 64-bit working images</i> option."
+                        "</p>"
+                        "<p><b>single_thread</b><br/>"
+                        "Enable the <i>single threaded</i> option."
+                        "</p>"
+                        "<p><b>no-single_thread</b><br/>"
+                        "Disable the <i>single threaded</i> option."
+                        "</p>"
+                        "<p><b>optimize</b><br/>"
+                        "Enable the <i>code optimization</i> option."
+                        "</p>"
+                        "<p><b>no-optimize</b><br/>"
+                        "Disable the <i>code optimization</i> option."
+                        "</p>"
+                        "<p><b>cache</b><br/>"
+                        "Enable the <i>cache generated images</i> option."
+                        "</p>"
+                        "<p><b>no-cache</b><br/>"
+                        "Disable the <i>cache generated images</i> option."
+                        "</p>"
+                        "<p><b>single_expr</b><br/>"
+                        "Enable the <i>use a single RGB/K expression</i> option."
+                        "</p>"
+                        "<p><b>no-single_expr</b><br/>"
+                        "Disable the <i>use a single RGB/K expression</i> option."
+                        "</p>"
+                        "<p><b>new_image</b><br/>"
+                        "Enable the <i>create new image</i> option."
+                        "</p>"
+                        "<p><b>no-new_image</b><br/>"
+                        "Disable the <i>create new image</i> option."
+                        "</p>"
+                        "<p><b>alpha</b><br/>"
+                        "Enable the <i>alpha channel</i> option."
+                        "</p>"
+                        "<p><b>no-alpha</b><br/>"
+                        "Disable the <i>alpha channel</i> option."
+                        "</p>"
+                        "<p>Multiple arguments can be specified as a comma (,) separated list. The pragma directive must end with an expression "
+                        "separator (;).</p>"
+                        "<p>Directives must be specified before any executable expression and cannot be mixed with executable expressions. "
+                        "In practice this means that directives can only be included at the begining of a PixelMath set of expressions.</p>" )
+
+                 << SyntaxItem( ".symbols arg1[, arg2[, ...]];", ".symbols",
+                        "<p>Symbols directive.</p>"
+                        "<p>The symbols directive allows you to define a list of one or more symbols directly from executed PixelMath expressions. "
+                        "When the symbols directive is present it overrides the current contents of the <i>symbols</i> process parameter, that is, "
+                        "the contents of the Symbols section will be ignored if this directive is present in the expression(s). For documentation on "
+                        "PixelMath symbols, their roles and initialization syntax, see the process documentation and the Symbol Definition section "
+                        "on this Expression Editor dialog.</p>"
+                        "<p>Multiple symbol definitions can be specified as a comma (,) separated list. The symbols directive must end with an "
+                        "expression separator (;).</p>"
+                        "<p>Directives must be specified before any executable expression and cannot be mixed with executable expressions. "
+                        "In practice this means that directives can only be included at the begining of a PixelMath set of expressions.</p>" )
                  ;
 }
 
@@ -698,6 +776,9 @@ void ExpressionEditorDialog::RebuildSyntaxTree()
    TreeBox::Node* metasymbolsNode = new TreeBox::Node( Syntax_TreeBox );
    metasymbolsNode->SetText( 0, "Metasymbols" );
 
+   TreeBox::Node* directivesNode = new TreeBox::Node( Syntax_TreeBox );
+   directivesNode->SetText( 0, "Directives" );
+
    for ( const SyntaxItem& item : s_syntaxItems )
    {
       TreeBox::Node* node;
@@ -709,6 +790,8 @@ void ExpressionEditorDialog::RebuildSyntaxTree()
          node = symDefFunctionsNode;
       else if ( item.meta.StartsWith( "$" ) )
          node = metasymbolsNode;
+      else if ( item.meta.StartsWith( "." ) )
+         node = directivesNode;
       else
          node = punctuatorsNode;
 
@@ -768,7 +851,9 @@ void ExpressionEditorDialog::ParseSymbols()
 
 void ExpressionEditorDialog::ParseExpression()
 {
-   String text;
+   TokenSet T;
+   DirectiveList D;
+   ExpressionList L;
 
    try
    {
@@ -783,8 +868,22 @@ void ExpressionEditorDialog::ParseExpression()
          return;
       }
 
+      String source = editor->Text().Trimmed();
+      Tokenize( T, D, source );
+
+      String symbolsSource = Symbols_CodeEditor.Text().Trimmed();
+      PixelMathInstance::ValidateDirectives( D, source );
+      for ( const Directive* d : D )
+         if ( d->Name() == "symbols" )
+         {
+            if ( !symbolsSource.IsEmpty() )
+               symbolsSource << ',';
+            symbolsSource << String().ToCommaSeparated( d->Arguments() );
+         }
+      D.Destroy();
+
       Symbol::DestroyAll();
-      Symbol::Create( Symbols_CodeEditor.Text().Trimmed() );
+      Symbol::Create( symbolsSource );
 
       Symbols_TreeBox.DisableUpdates();
       Symbols_TreeBox.Clear();
@@ -792,94 +891,106 @@ void ExpressionEditorDialog::ParseExpression()
          new SymbolNode( Symbols_TreeBox, symbol );
       Symbols_TreeBox.EnableUpdates();
 
-      Expression::component_list L;
-      Expression::Parse( L, editor->Text().Trimmed() );
+      Expression::Parse( L, T, source );
 
       Symbol::DestroyAll();
 
       if ( L.IsEmpty() )
-         text = "Empty PixelMath expression.";
-      else
       {
-         text = "Parsed " + String( L.Length() ) + " PixelMath expression(s).\n";
+         Parser_TextBox.SetText( "<nowrap>Empty PixelMath expression.</nowrap><beg>" );
+         return;
+      }
 
-         SortedStringList imageIds;
+      String text = "Parsed " + String( L.Length() ) + " PixelMath expression(s).\n";
 
-         for ( const Expression* i : L )
+      SortedStringList imageIds;
+
+      for ( const Expression* i : L )
+      {
+         ExpressionList RPN;
+
+         const Functional* F = dynamic_cast<const Functional*>( i );
+         if ( F != nullptr )
+            F->PostOrder( RPN );
+         else
+            RPN.Add( i->Clone() );
+
+         for ( const Expression* j : RPN )
          {
-            Expression::component_list RPN;
+            const ImageReference* I = dynamic_cast<const ImageReference*>( j );
+            if ( I != nullptr )
+               if ( dynamic_cast<const MetaSymbol*>( j ) == nullptr )
+                  if ( !imageIds.Contains( I->Id() ) )
+                     imageIds << I->Id();
+         }
 
-            const Functional* F = dynamic_cast<const Functional*>( i );
-            if ( F != nullptr )
-               F->PostOrder( RPN );
+         RPN.Destroy();
+      }
+
+      if ( !imageIds.IsEmpty() )
+      {
+         text << "\n<b>" << String( imageIds.Length() ) << " referenced image(s):</b>\n";
+         for ( const String& id : imageIds )
+         {
+            text << id << ": ";
+            ImageWindow w = ImageWindow::WindowById( id );
+            if ( w.IsNull() )
+               text << TextBox::PlainText( String( " <* not found *>" ) );
             else
-               RPN.Add( i->Clone() );
-
-            for ( const Expression* j : RPN )
             {
-               const ImageReference* I = dynamic_cast<const ImageReference*>( j );
-               if ( I != nullptr )
-                  if ( dynamic_cast<const MetaSymbol*>( j ) == nullptr )
-                     if ( !imageIds.Contains( I->Id() ) )
-                        imageIds << I->Id();
+               View v = w.MainView();
+               text.AppendFormat( "%dx%d, %s", v.Width(), v.Height(), v.IsColor() ? "RGB" : "Gray" );
             }
-
-            RPN.Destroy();
-         }
-
-         if ( !imageIds.IsEmpty() )
-         {
-            text << "\n<b>" << String( imageIds.Length() ) << " referenced image(s):</b>\n";
-            for ( const String& id : imageIds )
-            {
-               text << id << ": ";
-               ImageWindow w = ImageWindow::WindowById( id );
-               if ( w.IsNull() )
-                  text << TextBox::PlainText( String( " <* not found *>" ) );
-               else
-               {
-                  View v = w.MainView();
-                  text.AppendFormat( "%dx%d, %s", v.Width(), v.Height(), v.IsColor() ? "RGB" : "Gray" );
-               }
-               text << '\n';
-            }
-         }
-
-         int n = 0;
-         for ( const Expression* x : L )
-         {
-            text << "\n<b>Expression #" << String( ++n ) << ":</b>\n"
-                 << "<b>Infix:</b> "
-                 << TextBox::PlainText( x->ToString() );
-            const Functional* F = dynamic_cast<const Functional*>( x );
-            if ( F != nullptr )
-               text << "\n<b>Postfix:</b> "
-                    << TextBox::PlainText( F->PostOrder() );
             text << '\n';
          }
-
-         L.Destroy();
       }
-   }
-   catch ( ParseError& x )
-   {
-      Symbol::DestroyAll();
 
-      text += "<end><cbr>";
-      text += x.FormatInfo();
+      int n = 0;
+      for ( const Expression* x : L )
+      {
+         text << "\n<b>Expression #" << String( ++n ) << ":</b>\n"
+               << "<b>Infix:</b> "
+               << TextBox::PlainText( x->ToString() );
+         const Functional* F = dynamic_cast<const Functional*>( x );
+         if ( F != nullptr )
+            text << "\n<b>Postfix:</b> "
+                  << TextBox::PlainText( F->PostOrder() );
+         text << '\n';
+      }
+
+      Parser_TextBox.SetText( "<nowrap>" + text + "</nowrap><beg>" );
+
+      for ( TokenList& l : T )
+         l.Destroy();
+      T.Clear();
+      L.Destroy();
    }
    catch ( ... )
    {
       Symbol::DestroyAll();
+      for ( TokenList& l : T )
+         l.Destroy();
+      T.Clear();
+      D.Destroy();
+      L.Destroy();
 
       try
       {
          throw;
       }
-      ERROR_HANDLER
+      catch ( ParseError& x )
+      {
+         Parser_TextBox.SetText( "<nowrap>" + x.FormatInfo() + "</nowrap><beg>" );
+      }
+      catch ( ... )
+      {
+         try
+         {
+            throw;
+         }
+         ERROR_HANDLER
+      }
    }
-
-   Parser_TextBox.SetText( "<nowrap>" + text + "</nowrap><beg>" );
 }
 
 // ----------------------------------------------------------------------------
@@ -1083,4 +1194,4 @@ void ExpressionEditorDialog::e_MouseMove( Control& sender, const pcl::Point& pos
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ExpressionEditorDialog.cpp - Released 2021-12-29T20:37:28Z
+// EOF ExpressionEditorDialog.cpp - Released 2022-03-12T18:59:53Z

@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// StarDetector.h - Released 2021-12-29T20:37:28Z
+// StarDetector.h - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -67,6 +67,8 @@ struct StarData
    int32    channel; // channel index (0=R/K, 1=G, 2=B)
    DRect    rect;    // selection rectangle
    DPoint   pos;     // barycenter position
+
+   mutable DRect drawRect; // drawing region
 
    operator bool() const;
 
@@ -133,4 +135,4 @@ inline String StarData::StatusText() const
 #endif   // __StarDetector_h
 
 // ----------------------------------------------------------------------------
-// EOF StarDetector.h - Released 2021-12-29T20:37:28Z
+// EOF StarDetector.h - Released 2022-03-12T18:59:53Z

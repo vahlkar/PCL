@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.8.0
+// Standard ImageCalibration Process Module Version 1.9.1
 // ----------------------------------------------------------------------------
-// ImageCalibrationInstance.h - Released 2021-12-29T20:37:28Z
+// ImageCalibrationInstance.h - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -213,19 +213,20 @@ private:
    float           p_flatScaleClippingFactor;
 
    // Noise estimates
-   pcl_bool        p_evaluateNoise;   // perform MRS noise evaluation
+   pcl_bool        p_evaluateNoise;
    pcl_enum        p_noiseEvaluationAlgorithm;
 
    // PSF signal estimates
-   pcl_bool        p_evaluateSignal;  // perform signal evaluation with PSF photometry
+   pcl_bool        p_evaluateSignal;
    int32           p_structureLayers;
+   float           p_saturationThreshold;
+   pcl_bool        p_saturationRelative;
    int32           p_noiseLayers;
    int32           p_hotPixelFilterRadius;
    int32           p_noiseReductionFilterRadius;
    int32           p_minStructureSize;
    pcl_enum        p_psfType;
-   float           p_psfRejectionLimit;
-   float           p_psfHighClippingPoint;
+   float           p_psfGrowth;
    int32           p_maxStars;
 
    // Output files
@@ -234,7 +235,9 @@ private:
    String          p_outputPrefix;
    String          p_outputPostfix;
    pcl_enum        p_outputSampleFormat;
-   int32           p_outputPedestal;  // additive in 16-bit DN to ensure positivity
+   int32           p_outputPedestal;  // in 16-bit DN
+   pcl_enum        p_outputPedestalMode; // Literal | Auto
+   float           p_autoPedestalThreshold;
    pcl_bool        p_overwriteExistingFiles;
    pcl_enum        p_onError;
    pcl_bool        p_noGUIMessages;   // ### DEPRECATED
@@ -252,10 +255,12 @@ private:
    {
       String     outputFilePath;
       FVector    darkScalingFactors = FVector( 0.0F, 3 );
-      Vector     psfSignalEstimates = Vector( 0.0, 3 );
-      Vector     psfSignalPowerEstimates = Vector( 0.0, 3 );
-      Vector     psfFluxEstimates = Vector( 0.0, 3 );
-      Vector     psfFluxPowerEstimates = Vector( 0.0, 3 );
+      Vector     psfTotalFluxEstimates = Vector( 0.0, 3 );
+      Vector     psfTotalPowerFluxEstimates = Vector( 0.0, 3 );
+      Vector     psfTotalMeanFluxEstimates = Vector( 0.0, 3 );
+      Vector     psfTotalMeanPowerFluxEstimates = Vector( 0.0, 3 );
+      Vector     psfMStarEstimates = Vector( 0.0, 3 );
+      Vector     psfNStarEstimates = Vector( 0.0, 3 );
       IVector    psfCounts = IVector( 0, 3 );
       Vector     noiseEstimates = Vector( 0.0, 3 );
       Vector     noiseFractions = Vector( 0.0, 3 );
@@ -298,4 +303,4 @@ private:
 #endif   // __ImageCalibrationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInstance.h - Released 2021-12-29T20:37:28Z
+// EOF ImageCalibrationInstance.h - Released 2022-03-12T18:59:53Z

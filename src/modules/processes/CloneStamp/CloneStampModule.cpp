@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
 // Standard CloneStamp Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// CloneStampModule.cpp - Released 2021-12-29T20:37:28Z
+// CloneStampModule.cpp - Released 2022-03-12T18:59:52Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CloneStamp PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -56,9 +56,9 @@
 #define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
-#define MODULE_RELEASE_YEAR      2021
-#define MODULE_RELEASE_MONTH     12
-#define MODULE_RELEASE_DAY       29
+#define MODULE_RELEASE_YEAR      2022
+#define MODULE_RELEASE_MONTH     3
+#define MODULE_RELEASE_DAY       12
 
 #include "CloneStampInterface.h"
 #include "CloneStampModule.h"
@@ -116,7 +116,7 @@ String CloneStampModule::Author() const
 
 String CloneStampModule::Copyright() const
 {
-   return "Copyright (c) 2007-2021 Pleiades Astrophoto";
+   return "Copyright (c) 2007-2022 Pleiades Astrophoto";
 }
 
 // ----------------------------------------------------------------------------
@@ -173,4 +173,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF CloneStampModule.cpp - Released 2021-12-29T20:37:28Z
+// EOF CloneStampModule.cpp - Released 2022-03-12T18:59:52Z

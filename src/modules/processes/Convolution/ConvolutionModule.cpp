@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// ConvolutionModule.cpp - Released 2021-12-29T20:37:28Z
+// ConvolutionModule.cpp - Released 2022-03-12T18:59:52Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -56,9 +56,9 @@
 #define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
-#define MODULE_RELEASE_YEAR      2021
-#define MODULE_RELEASE_MONTH     12
-#define MODULE_RELEASE_DAY       29
+#define MODULE_RELEASE_YEAR      2022
+#define MODULE_RELEASE_MONTH     3
+#define MODULE_RELEASE_DAY       12
 
 #include "ConvolutionInterface.h"
 #include "ConvolutionModule.h"
@@ -122,7 +122,7 @@ String ConvolutionModule::Author() const
 
 String ConvolutionModule::Copyright() const
 {
-   return "Copyright (c) 2006-2021 Pleiades Astrophoto S.L.";
+   return "Copyright (c) 2006-2022 Pleiades Astrophoto S.L.";
 }
 
 // ----------------------------------------------------------------------------
@@ -183,4 +183,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF ConvolutionModule.cpp - Released 2021-12-29T20:37:28Z
+// EOF ConvolutionModule.cpp - Released 2022-03-12T18:59:52Z

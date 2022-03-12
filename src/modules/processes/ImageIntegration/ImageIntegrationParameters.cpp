@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.4.3
+// Standard ImageIntegration Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// ImageIntegrationParameters.cpp - Released 2021-12-29T20:37:28Z
+// ImageIntegrationParameters.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -57,145 +57,158 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-IIImages*                            TheIIImagesParameter = nullptr;
-IIImageEnabled*                      TheIIImageEnabledParameter = nullptr;
-IIImagePath*                         TheIIImagePathParameter = nullptr;
-IIDrizzlePath*                       TheIIDrizzlePathParameter = nullptr;
-IILocalNormalizationDataPath*        TheIILocalNormalizationDataPathParameter = nullptr;
-IIInputHints*                        TheIIInputHintsParameter = nullptr;
-IICombination*                       TheIICombinationParameter = nullptr;
-IIWeightMode*                        TheIIWeightModeParameter = nullptr;
-IIWeightKeyword*                     TheIIWeightKeywordParameter = nullptr;
-IIWeightScale*                       TheIIWeightScaleParameter = nullptr;
-IICSVWeights*                        TheIICSVWeightsParameter = nullptr;
-IIAdaptiveGridSize*                  TheIIAdaptiveGridSizeParameter = nullptr;
-IIAdaptiveNoScale*                   TheIIAdaptiveNoScaleParameter = nullptr;
-IIIgnoreNoiseKeywords*               TheIIIgnoreNoiseKeywordsParameter = nullptr;
-IINormalization*                     TheIINormalizationParameter = nullptr;
-IIRejection*                         TheIIRejectionParameter = nullptr;
-IIRejectionNormalization*            TheIIRejectionNormalizationParameter = nullptr;
-IIMinMaxLow*                         TheIIMinMaxLowParameter = nullptr;
-IIMinMaxHigh*                        TheIIMinMaxHighParameter = nullptr;
-IIPercentileLow*                     TheIIPercentileLowParameter = nullptr;
-IIPercentileHigh*                    TheIIPercentileHighParameter = nullptr;
-IISigmaLow*                          TheIISigmaLowParameter = nullptr;
-IISigmaHigh*                         TheIISigmaHighParameter = nullptr;
-IIWinsorizationCutoff*               TheIIWinsorizationCutoffParameter = nullptr;
-IILinearFitLow*                      TheIILinearFitLowParameter = nullptr;
-IILinearFitHigh*                     TheIILinearFitHighParameter = nullptr;
-IIESDOutliersFraction*               TheIIESDOutliersFractionParameter = nullptr;
-IIESDAlpha*                          TheIIESDAlphaParameter = nullptr;
-IIESDLowRelaxation*                  TheIIESDLowRelaxationParameter = nullptr;
-IICCDGain*                           TheIICCDGainParameter = nullptr;
-IICCDReadNoise*                      TheIICCDReadNoiseParameter = nullptr;
-IICCDScaleNoise*                     TheIICCDScaleNoiseParameter = nullptr;
-IIClipLow*                           TheIIClipLowParameter = nullptr;
-IIClipHigh*                          TheIIClipHighParameter = nullptr;
-IIRangeClipLow*                      TheIIRangeClipLowParameter = nullptr;
-IIRangeLow*                          TheIIRangeLowParameter = nullptr;
-IIRangeClipHigh*                     TheIIRangeClipHighParameter = nullptr;
-IIRangeHigh*                         TheIIRangeHighParameter = nullptr;
-IIMapRangeRejection*                 TheIIMapRangeRejectionParameter = nullptr;
-IIReportRangeRejection*              TheIIReportRangeRejectionParameter = nullptr;
-IILargeScaleClipLow*                 TheIILargeScaleClipLowParameter = nullptr;
-IILargeScaleClipLowProtectedLayers*  TheIILargeScaleClipLowProtectedLayersParameter = nullptr;
-IILargeScaleClipLowGrowth*           TheIILargeScaleClipLowGrowthParameter = nullptr;
-IILargeScaleClipHigh*                TheIILargeScaleClipHighParameter = nullptr;
-IILargeScaleClipHighProtectedLayers* TheIILargeScaleClipHighProtectedLayersParameter = nullptr;
-IILargeScaleClipHighGrowth*          TheIILargeScaleClipHighGrowthParameter = nullptr;
-IIGenerate64BitResult*               TheIIGenerate64BitResultParameter = nullptr;
-IIGenerateRejectionMaps*             TheIIGenerateRejectionMapsParameter = nullptr;
-IIGenerateIntegratedImage*           TheIIGenerateIntegratedImageParameter = nullptr;
-IIGenerateDrizzleData*               TheIIGenerateDrizzleDataParameter = nullptr;
-IIClosePreviousImages*               TheIIClosePreviousImagesParameter = nullptr;
-IIBufferSize*                        TheIIBufferSizeParameter = nullptr;
-IIStackSize*                         TheIIStackSizeParameter = nullptr;
-IIAutoMemorySize*                    TheIIAutoMemorySizeParameter = nullptr;
-IIAutoMemoryLimit*                   TheIIAutoMemoryLimitParameter = nullptr;
-IIUseROI*                            TheIIUseROIParameter = nullptr;
-IIROIX0*                             TheIIROIX0Parameter = nullptr;
-IIROIY0*                             TheIIROIY0Parameter = nullptr;
-IIROIX1*                             TheIIROIX1Parameter = nullptr;
-IIROIY1*                             TheIIROIY1Parameter = nullptr;
-IIUseCache*                          TheIIUseCacheParameter = nullptr;
-IIEvaluateSNR*                       TheIIEvaluateSNRParameter = nullptr;
-IIMRSMinDataFraction*                TheIIMRSMinDataFractionParameter = nullptr;
-IISubtractPedestals*                 TheIISubtractPedestalsParameter = nullptr;
-IITruncateOnOutOfRange*              TheIITruncateOnOutOfRangeParameter = nullptr;
-IINoGUIMessages*                     TheIINoGUIMessagesParameter = nullptr;
-IIShowImages*                        TheIIShowImagesParameter = nullptr;
-IIUseFileThreads*                    TheIIUseFileThreadsParameter = nullptr;
-IIFileThreadOverload*                TheIIFileThreadOverloadParameter = nullptr;
-IIUseBufferThreads*                  TheIIUseBufferThreadsParameter = nullptr;
-IIMaxBufferThreads*                  TheIIMaxBufferThreadsParameter = nullptr;
+IIImages*                               TheIIImagesParameter = nullptr;
+IIImageEnabled*                         TheIIImageEnabledParameter = nullptr;
+IIImagePath*                            TheIIImagePathParameter = nullptr;
+IIDrizzlePath*                          TheIIDrizzlePathParameter = nullptr;
+IILocalNormalizationDataPath*           TheIILocalNormalizationDataPathParameter = nullptr;
+IIInputHints*                           TheIIInputHintsParameter = nullptr;
+IICombination*                          TheIICombinationParameter = nullptr;
+IIWeightMode*                           TheIIWeightModeParameter = nullptr;
+IIWeightKeyword*                        TheIIWeightKeywordParameter = nullptr;
+IIWeightScale*                          TheIIWeightScaleParameter = nullptr;
+IICSVWeights*                           TheIICSVWeightsParameter = nullptr;
+IIAdaptiveGridSize*                     TheIIAdaptiveGridSizeParameter = nullptr;
+IIAdaptiveNoScale*                      TheIIAdaptiveNoScaleParameter = nullptr;
+IIIgnoreNoiseKeywords*                  TheIIIgnoreNoiseKeywordsParameter = nullptr;
+IINormalization*                        TheIINormalizationParameter = nullptr;
+IIRejection*                            TheIIRejectionParameter = nullptr;
+IIRejectionNormalization*               TheIIRejectionNormalizationParameter = nullptr;
+IIMinMaxLow*                            TheIIMinMaxLowParameter = nullptr;
+IIMinMaxHigh*                           TheIIMinMaxHighParameter = nullptr;
+IIPercentileLow*                        TheIIPercentileLowParameter = nullptr;
+IIPercentileHigh*                       TheIIPercentileHighParameter = nullptr;
+IISigmaLow*                             TheIISigmaLowParameter = nullptr;
+IISigmaHigh*                            TheIISigmaHighParameter = nullptr;
+IIWinsorizationCutoff*                  TheIIWinsorizationCutoffParameter = nullptr;
+IILinearFitLow*                         TheIILinearFitLowParameter = nullptr;
+IILinearFitHigh*                        TheIILinearFitHighParameter = nullptr;
+IIESDOutliersFraction*                  TheIIESDOutliersFractionParameter = nullptr;
+IIESDAlpha*                             TheIIESDAlphaParameter = nullptr;
+IIESDLowRelaxation*                     TheIIESDLowRelaxationParameter = nullptr;
+IIRCRLimit*                             TheIIRCRLimitParameter = nullptr;
+IICCDGain*                              TheIICCDGainParameter = nullptr;
+IICCDReadNoise*                         TheIICCDReadNoiseParameter = nullptr;
+IICCDScaleNoise*                        TheIICCDScaleNoiseParameter = nullptr;
+IIClipLow*                              TheIIClipLowParameter = nullptr;
+IIClipHigh*                             TheIIClipHighParameter = nullptr;
+IIRangeClipLow*                         TheIIRangeClipLowParameter = nullptr;
+IIRangeLow*                             TheIIRangeLowParameter = nullptr;
+IIRangeClipHigh*                        TheIIRangeClipHighParameter = nullptr;
+IIRangeHigh*                            TheIIRangeHighParameter = nullptr;
+IIMapRangeRejection*                    TheIIMapRangeRejectionParameter = nullptr;
+IIReportRangeRejection*                 TheIIReportRangeRejectionParameter = nullptr;
+IILargeScaleClipLow*                    TheIILargeScaleClipLowParameter = nullptr;
+IILargeScaleClipLowProtectedLayers*     TheIILargeScaleClipLowProtectedLayersParameter = nullptr;
+IILargeScaleClipLowGrowth*              TheIILargeScaleClipLowGrowthParameter = nullptr;
+IILargeScaleClipHigh*                   TheIILargeScaleClipHighParameter = nullptr;
+IILargeScaleClipHighProtectedLayers*    TheIILargeScaleClipHighProtectedLayersParameter = nullptr;
+IILargeScaleClipHighGrowth*             TheIILargeScaleClipHighGrowthParameter = nullptr;
+IIGenerate64BitResult*                  TheIIGenerate64BitResultParameter = nullptr;
+IIGenerateRejectionMaps*                TheIIGenerateRejectionMapsParameter = nullptr;
+IIGenerateIntegratedImage*              TheIIGenerateIntegratedImageParameter = nullptr;
+IIGenerateDrizzleData*                  TheIIGenerateDrizzleDataParameter = nullptr;
+IIClosePreviousImages*                  TheIIClosePreviousImagesParameter = nullptr;
+IIBufferSize*                           TheIIBufferSizeParameter = nullptr;
+IIStackSize*                            TheIIStackSizeParameter = nullptr;
+IIAutoMemorySize*                       TheIIAutoMemorySizeParameter = nullptr;
+IIAutoMemoryLimit*                      TheIIAutoMemoryLimitParameter = nullptr;
+IIUseROI*                               TheIIUseROIParameter = nullptr;
+IIROIX0*                                TheIIROIX0Parameter = nullptr;
+IIROIY0*                                TheIIROIY0Parameter = nullptr;
+IIROIX1*                                TheIIROIX1Parameter = nullptr;
+IIROIY1*                                TheIIROIY1Parameter = nullptr;
+IIUseCache*                             TheIIUseCacheParameter = nullptr;
+IIEvaluateSNR*                          TheIIEvaluateSNRParameter = nullptr;
+IINoiseEvaluationAlgorithm*             TheIINoiseEvaluationAlgorithmParameter = nullptr;
+IIMRSMinDataFraction*                   TheIIMRSMinDataFractionParameter = nullptr;
+IIPSFStructureLayers*                   TheIIPSFStructureLayersParameter = nullptr;
+IIPSFType*                              TheIIPSFTypeParameter = nullptr;
+IISubtractPedestals*                    TheIISubtractPedestalsParameter = nullptr;
+IITruncateOnOutOfRange*                 TheIITruncateOnOutOfRangeParameter = nullptr;
+IINoGUIMessages*                        TheIINoGUIMessagesParameter = nullptr;
+IIShowImages*                           TheIIShowImagesParameter = nullptr;
+IIUseFileThreads*                       TheIIUseFileThreadsParameter = nullptr;
+IIFileThreadOverload*                   TheIIFileThreadOverloadParameter = nullptr;
+IIUseBufferThreads*                     TheIIUseBufferThreadsParameter = nullptr;
+IIMaxBufferThreads*                     TheIIMaxBufferThreadsParameter = nullptr;
 
-IIIntegrationImageId*                TheIIIntegrationImageIdParameter = nullptr;
-IILowRejectionMapImageId*            TheIILowRejectionMapImageIdParameter = nullptr;
-IIHighRejectionMapImageId*           TheIIHighRejectionMapImageIdParameter = nullptr;
-IISlopeMapImageId*                   TheIISlopeMapImageIdParameter = nullptr;
-IINumberOfChannels*                  TheIINumberOfChannelsParameter = nullptr;
-IINumberOfPixels*                    TheIINumberOfPixelsParameter = nullptr;
-IITotalPixels*                       TheIITotalPixelsParameter = nullptr;
-IIOutputRangeLow*                    TheIIOutputRangeLowParameter = nullptr;
-IIOutputRangeHigh*                   TheIIOutputRangeHighParameter = nullptr;
-IITotalRejectedLowRK*                TheIITotalRejectedLowRKParameter = nullptr;
-IITotalRejectedLowG*                 TheIITotalRejectedLowGParameter = nullptr;
-IITotalRejectedLowB*                 TheIITotalRejectedLowBParameter = nullptr;
-IITotalRejectedHighRK*               TheIITotalRejectedHighRKParameter = nullptr;
-IITotalRejectedHighG*                TheIITotalRejectedHighGParameter = nullptr;
-IITotalRejectedHighB*                TheIITotalRejectedHighBParameter = nullptr;
-IIFinalNoiseEstimateRK*              TheIIFinalNoiseEstimateRKParameter = nullptr;
-IIFinalNoiseEstimateG*               TheIIFinalNoiseEstimateGParameter = nullptr;
-IIFinalNoiseEstimateB*               TheIIFinalNoiseEstimateBParameter = nullptr;
-IIFinalNoiseScaleEstimateLowRK*      TheIIFinalNoiseScaleEstimateLowRKParameter = nullptr;
-IIFinalNoiseScaleEstimateLowG*       TheIIFinalNoiseScaleEstimateLowGParameter = nullptr;
-IIFinalNoiseScaleEstimateLowB*       TheIIFinalNoiseScaleEstimateLowBParameter = nullptr;
-IIFinalNoiseScaleEstimateHighRK*     TheIIFinalNoiseScaleEstimateHighRKParameter = nullptr;
-IIFinalNoiseScaleEstimateHighG*      TheIIFinalNoiseScaleEstimateHighGParameter = nullptr;
-IIFinalNoiseScaleEstimateHighB*      TheIIFinalNoiseScaleEstimateHighBParameter = nullptr;
-IIFinalScaleEstimateRK*              TheIIFinalScaleEstimateRKParameter = nullptr;
-IIFinalScaleEstimateG*               TheIIFinalScaleEstimateGParameter = nullptr;
-IIFinalScaleEstimateB*               TheIIFinalScaleEstimateBParameter = nullptr;
-IIFinalLocationEstimateRK*           TheIIFinalLocationEstimateRKParameter = nullptr;
-IIFinalLocationEstimateG*            TheIIFinalLocationEstimateGParameter = nullptr;
-IIFinalLocationEstimateB*            TheIIFinalLocationEstimateBParameter = nullptr;
-IIFinalPSFSignalEstimateRK*          TheIIFinalPSFSignalEstimateRKParameter = nullptr;
-IIFinalPSFSignalEstimateG*           TheIIFinalPSFSignalEstimateGParameter = nullptr;
-IIFinalPSFSignalEstimateB*           TheIIFinalPSFSignalEstimateBParameter = nullptr;
-IIFinalPSFSignalPowerEstimateRK*     TheIIFinalPSFSignalPowerEstimateRKParameter = nullptr;
-IIFinalPSFSignalPowerEstimateG*      TheIIFinalPSFSignalPowerEstimateGParameter = nullptr;
-IIFinalPSFSignalPowerEstimateB*      TheIIFinalPSFSignalPowerEstimateBParameter = nullptr;
-IIFinalPSFFluxEstimateRK*            TheIIFinalPSFFluxEstimateRKParameter = nullptr;
-IIFinalPSFFluxEstimateG*             TheIIFinalPSFFluxEstimateGParameter = nullptr;
-IIFinalPSFFluxEstimateB*             TheIIFinalPSFFluxEstimateBParameter = nullptr;
-IIFinalPSFFluxPowerEstimateRK*       TheIIFinalPSFFluxPowerEstimateRKParameter = nullptr;
-IIFinalPSFFluxPowerEstimateG*        TheIIFinalPSFFluxPowerEstimateGParameter = nullptr;
-IIFinalPSFFluxPowerEstimateB*        TheIIFinalPSFFluxPowerEstimateBParameter = nullptr;
-IIFinalPSFSignalCountRK*             TheIIFinalPSFSignalCountRKParameter = nullptr;
-IIFinalPSFSignalCountG*              TheIIFinalPSFSignalCountGParameter = nullptr;
-IIFinalPSFSignalCountB*              TheIIFinalPSFSignalCountBParameter = nullptr;
-IIReferenceNoiseReductionRK*         TheIIReferenceNoiseReductionRKParameter = nullptr;
-IIReferenceNoiseReductionG*          TheIIReferenceNoiseReductionGParameter = nullptr;
-IIReferenceNoiseReductionB*          TheIIReferenceNoiseReductionBParameter = nullptr;
-IIMedianNoiseReductionRK*            TheIIMedianNoiseReductionRKParameter = nullptr;
-IIMedianNoiseReductionG*             TheIIMedianNoiseReductionGParameter = nullptr;
-IIMedianNoiseReductionB*             TheIIMedianNoiseReductionBParameter = nullptr;
-IIReferenceSNRIncrementRK*           TheIIReferenceSNRIncrementRKParameter = nullptr;
-IIReferenceSNRIncrementG*            TheIIReferenceSNRIncrementGParameter = nullptr;
-IIReferenceSNRIncrementB*            TheIIReferenceSNRIncrementBParameter = nullptr;
-IIAverageSNRIncrementRK*             TheIIAverageSNRIncrementRKParameter = nullptr;
-IIAverageSNRIncrementG*              TheIIAverageSNRIncrementGParameter = nullptr;
-IIAverageSNRIncrementB*              TheIIAverageSNRIncrementBParameter = nullptr;
-IIImageData*                         TheIIImageDataParameter = nullptr;
-IIImageWeightRK*                     TheIIImageWeightRKParameter = nullptr;
-IIImageWeightG*                      TheIIImageWeightGParameter = nullptr;
-IIImageWeightB*                      TheIIImageWeightBParameter = nullptr;
-IIImageRejectedLowRK*                TheIIImageRejectedLowRKParameter = nullptr;
-IIImageRejectedLowG*                 TheIIImageRejectedLowGParameter = nullptr;
-IIImageRejectedLowB*                 TheIIImageRejectedLowBParameter = nullptr;
-IIImageRejectedHighRK*               TheIIImageRejectedHighRKParameter = nullptr;
-IIImageRejectedHighG*                TheIIImageRejectedHighGParameter = nullptr;
-IIImageRejectedHighB*                TheIIImageRejectedHighBParameter = nullptr;
+IIIntegrationImageId*                   TheIIIntegrationImageIdParameter = nullptr;
+IILowRejectionMapImageId*               TheIILowRejectionMapImageIdParameter = nullptr;
+IIHighRejectionMapImageId*              TheIIHighRejectionMapImageIdParameter = nullptr;
+IISlopeMapImageId*                      TheIISlopeMapImageIdParameter = nullptr;
+IINumberOfChannels*                     TheIINumberOfChannelsParameter = nullptr;
+IINumberOfPixels*                       TheIINumberOfPixelsParameter = nullptr;
+IITotalPixels*                          TheIITotalPixelsParameter = nullptr;
+IIOutputRangeLow*                       TheIIOutputRangeLowParameter = nullptr;
+IIOutputRangeHigh*                      TheIIOutputRangeHighParameter = nullptr;
+IITotalRejectedLowRK*                   TheIITotalRejectedLowRKParameter = nullptr;
+IITotalRejectedLowG*                    TheIITotalRejectedLowGParameter = nullptr;
+IITotalRejectedLowB*                    TheIITotalRejectedLowBParameter = nullptr;
+IITotalRejectedHighRK*                  TheIITotalRejectedHighRKParameter = nullptr;
+IITotalRejectedHighG*                   TheIITotalRejectedHighGParameter = nullptr;
+IITotalRejectedHighB*                   TheIITotalRejectedHighBParameter = nullptr;
+IIFinalNoiseEstimateRK*                 TheIIFinalNoiseEstimateRKParameter = nullptr;
+IIFinalNoiseEstimateG*                  TheIIFinalNoiseEstimateGParameter = nullptr;
+IIFinalNoiseEstimateB*                  TheIIFinalNoiseEstimateBParameter = nullptr;
+IIFinalNoiseScaleEstimateLowRK*         TheIIFinalNoiseScaleEstimateLowRKParameter = nullptr;
+IIFinalNoiseScaleEstimateLowG*          TheIIFinalNoiseScaleEstimateLowGParameter = nullptr;
+IIFinalNoiseScaleEstimateLowB*          TheIIFinalNoiseScaleEstimateLowBParameter = nullptr;
+IIFinalNoiseScaleEstimateHighRK*        TheIIFinalNoiseScaleEstimateHighRKParameter = nullptr;
+IIFinalNoiseScaleEstimateHighG*         TheIIFinalNoiseScaleEstimateHighGParameter = nullptr;
+IIFinalNoiseScaleEstimateHighB*         TheIIFinalNoiseScaleEstimateHighBParameter = nullptr;
+IIFinalNoiseAlgorithmRK*                TheIIFinalNoiseAlgorithmRKParameter = nullptr;
+IIFinalNoiseAlgorithmG*                 TheIIFinalNoiseAlgorithmGParameter = nullptr;
+IIFinalNoiseAlgorithmB*                 TheIIFinalNoiseAlgorithmBParameter = nullptr;
+IIFinalScaleEstimateRK*                 TheIIFinalScaleEstimateRKParameter = nullptr;
+IIFinalScaleEstimateG*                  TheIIFinalScaleEstimateGParameter = nullptr;
+IIFinalScaleEstimateB*                  TheIIFinalScaleEstimateBParameter = nullptr;
+IIFinalLocationEstimateRK*              TheIIFinalLocationEstimateRKParameter = nullptr;
+IIFinalLocationEstimateG*               TheIIFinalLocationEstimateGParameter = nullptr;
+IIFinalLocationEstimateB*               TheIIFinalLocationEstimateBParameter = nullptr;
+IIFinalPSFTotalFluxEstimateRK*          TheIIFinalPSFTotalFluxEstimateRKParameter = nullptr;
+IIFinalPSFTotalFluxEstimateG*           TheIIFinalPSFTotalFluxEstimateGParameter = nullptr;
+IIFinalPSFTotalFluxEstimateB*           TheIIFinalPSFTotalFluxEstimateBParameter = nullptr;
+IIFinalPSFTotalPowerFluxEstimateRK*     TheIIFinalPSFTotalPowerFluxEstimateRKParameter = nullptr;
+IIFinalPSFTotalPowerFluxEstimateG*      TheIIFinalPSFTotalPowerFluxEstimateGParameter = nullptr;
+IIFinalPSFTotalPowerFluxEstimateB*      TheIIFinalPSFTotalPowerFluxEstimateBParameter = nullptr;
+IIFinalPSFTotalMeanFluxEstimateRK*      TheIIFinalPSFTotalMeanFluxEstimateRKParameter = nullptr;
+IIFinalPSFTotalMeanFluxEstimateG*       TheIIFinalPSFTotalMeanFluxEstimateGParameter = nullptr;
+IIFinalPSFTotalMeanFluxEstimateB*       TheIIFinalPSFTotalMeanFluxEstimateBParameter = nullptr;
+IIFinalPSFTotalMeanPowerFluxEstimateRK* TheIIFinalPSFTotalMeanPowerFluxEstimateRKParameter = nullptr;
+IIFinalPSFTotalMeanPowerFluxEstimateG*  TheIIFinalPSFTotalMeanPowerFluxEstimateGParameter = nullptr;
+IIFinalPSFTotalMeanPowerFluxEstimateB*  TheIIFinalPSFTotalMeanPowerFluxEstimateBParameter = nullptr;
+IIFinalPSFMStarEstimateRK*              TheIIFinalPSFMStarEstimateRKParameter = nullptr;
+IIFinalPSFMStarEstimateG*               TheIIFinalPSFMStarEstimateGParameter = nullptr;
+IIFinalPSFMStarEstimateB*               TheIIFinalPSFMStarEstimateBParameter = nullptr;
+IIFinalPSFNStarEstimateRK*              TheIIFinalPSFNStarEstimateRKParameter = nullptr;
+IIFinalPSFNStarEstimateG*               TheIIFinalPSFNStarEstimateGParameter = nullptr;
+IIFinalPSFNStarEstimateB*               TheIIFinalPSFNStarEstimateBParameter = nullptr;
+IIFinalPSFCountRK*                      TheIIFinalPSFCountRKParameter = nullptr;
+IIFinalPSFCountG*                       TheIIFinalPSFCountGParameter = nullptr;
+IIFinalPSFCountB*                       TheIIFinalPSFCountBParameter = nullptr;
+IIReferenceNoiseReductionRK*            TheIIReferenceNoiseReductionRKParameter = nullptr;
+IIReferenceNoiseReductionG*             TheIIReferenceNoiseReductionGParameter = nullptr;
+IIReferenceNoiseReductionB*             TheIIReferenceNoiseReductionBParameter = nullptr;
+IIMedianNoiseReductionRK*               TheIIMedianNoiseReductionRKParameter = nullptr;
+IIMedianNoiseReductionG*                TheIIMedianNoiseReductionGParameter = nullptr;
+IIMedianNoiseReductionB*                TheIIMedianNoiseReductionBParameter = nullptr;
+IIReferenceSNRIncrementRK*              TheIIReferenceSNRIncrementRKParameter = nullptr;
+IIReferenceSNRIncrementG*               TheIIReferenceSNRIncrementGParameter = nullptr;
+IIReferenceSNRIncrementB*               TheIIReferenceSNRIncrementBParameter = nullptr;
+IIAverageSNRIncrementRK*                TheIIAverageSNRIncrementRKParameter = nullptr;
+IIAverageSNRIncrementG*                 TheIIAverageSNRIncrementGParameter = nullptr;
+IIAverageSNRIncrementB*                 TheIIAverageSNRIncrementBParameter = nullptr;
+IIImageData*                            TheIIImageDataParameter = nullptr;
+IIImageWeightRK*                        TheIIImageWeightRKParameter = nullptr;
+IIImageWeightG*                         TheIIImageWeightGParameter = nullptr;
+IIImageWeightB*                         TheIIImageWeightBParameter = nullptr;
+IIImageRejectedLowRK*                   TheIIImageRejectedLowRKParameter = nullptr;
+IIImageRejectedLowG*                    TheIIImageRejectedLowGParameter = nullptr;
+IIImageRejectedLowB*                    TheIIImageRejectedLowBParameter = nullptr;
+IIImageRejectedHighRK*                  TheIIImageRejectedHighRKParameter = nullptr;
+IIImageRejectedHighG*                   TheIIImageRejectedHighGParameter = nullptr;
+IIImageRejectedHighB*                   TheIIImageRejectedHighBParameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -343,22 +356,22 @@ IsoString IIWeightMode::ElementId( size_type i ) const
 {
    switch ( i )
    {
-   case DontCare:             return "DontCare";
-   case ExposureTimeWeight:   return "ExposureTime";
-   case SNREstimate:          return "SNREstimate";
-   case SignalWeight:         return "SignalWeight";
-   case MedianWeight:         return "MedianWeight";
-   case AverageWeight:        return "AverageWeight";
-   case KeywordWeight:        return "KeywordWeight";
+   case DontCare:           return "DontCare";
+   case ExposureTimeWeight: return "ExposureTime";
+   case SNREstimate:        return "SNREstimate";
+   case SignalWeight:       return "SignalWeight";
+   case MedianWeight:       return "MedianWeight";
+   case AverageWeight:      return "AverageWeight";
+   case KeywordWeight:      return "KeywordWeight";
    default:
-   case PSFSignalWeight:      return "PSFSignalWeight";
-   case PSFSignalPowerWeight: return "PSFSignalPowerWeight";
+   case PSFSignalWeight:    return "PSFSignalWeight";
+   case PSFSNR:             return "PSFSNR";
    }
 }
 
 IsoString IIWeightMode::ElementAliases() const
 {
-   return "NoiseEvaluation=SNREstimate,PSFPowerWeight=PSFSignalPowerWeight";
+   return "NoiseEvaluation=SNREstimate";
 }
 
 int IIWeightMode::ElementValue( size_type i ) const
@@ -375,16 +388,16 @@ String IIWeightMode::ElementLabel( int index )
 {
    switch ( index )
    {
-   case DontCare:             return "Don't care (all weights = 1)";
-   case ExposureTimeWeight:   return "Exposure time";
-   case SNREstimate:          return "SNR estimate";
-   case SignalWeight:         return "Average signal strength";
-   case MedianWeight:         return "Median value";
-   case AverageWeight:        return "Average value";
-   case KeywordWeight:        return "FITS keyword";
+   case DontCare:           return "Don't care (all weights = 1)";
+   case ExposureTimeWeight: return "Exposure time";
+   case SNREstimate:        return "SNR estimate";
+   case SignalWeight:       return "Average signal strength";
+   case MedianWeight:       return "Median value";
+   case AverageWeight:      return "Average value";
+   case KeywordWeight:      return "FITS keyword";
    default:
-   case PSFSignalWeight:      return "PSF signal weight";
-   case PSFSignalPowerWeight: return "PSF signal power weight";
+   case PSFSignalWeight:    return "PSF signal weight";
+   case PSFSNR:             return "PSF SNR";
    }
 }
 
@@ -590,6 +603,7 @@ IsoString IIRejection::ElementId( size_type i ) const
    case LinearFit:           return "LinearFit";
    case CCDClip:             return "CCDClip";
    case ESD:                 return "Rejection_ESD";
+   case RCR:                 return "Rejection_RCR";
    }
 }
 
@@ -994,17 +1008,49 @@ int IIESDLowRelaxation::Precision() const
 
 double IIESDLowRelaxation::DefaultValue() const
 {
-   return 1.50;
+   return 1.0;
 }
 
 double IIESDLowRelaxation::MinimumValue() const
 {
-   return 1;
+   return 1.0;
 }
 
 double IIESDLowRelaxation::MaximumValue() const
 {
-   return 5;
+   return 5.0;
+}
+
+// ----------------------------------------------------------------------------
+
+IIRCRLimit::IIRCRLimit( MetaProcess* P ) : MetaFloat( P )
+{
+   TheIIRCRLimitParameter = this;
+}
+
+IsoString IIRCRLimit::Id() const
+{
+   return "rcrLimit";
+}
+
+int IIRCRLimit::Precision() const
+{
+   return 2;
+}
+
+double IIRCRLimit::DefaultValue() const
+{
+   return 0.1;
+}
+
+double IIRCRLimit::MinimumValue() const
+{
+   return 0;
+}
+
+double IIRCRLimit::MaximumValue() const
+{
+   return 1;
 }
 
 // ----------------------------------------------------------------------------
@@ -1765,6 +1811,44 @@ bool IIEvaluateSNR::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
+IINoiseEvaluationAlgorithm::IINoiseEvaluationAlgorithm( MetaProcess* P ) : MetaEnumeration( P )
+{
+   TheIINoiseEvaluationAlgorithmParameter = this;
+}
+
+IsoString IINoiseEvaluationAlgorithm::Id() const
+{
+   return "noiseEvaluationAlgorithm";
+}
+
+size_type IINoiseEvaluationAlgorithm::NumberOfElements() const
+{
+   return NumberOfItems;
+}
+
+IsoString IINoiseEvaluationAlgorithm::ElementId( size_type i ) const
+{
+   switch ( i )
+   {
+   case KSigma: return "NoiseEvaluation_KSigma";
+   default:
+   case MRS:    return "NoiseEvaluation_MRS";
+   case NStar:  return "NoiseEvaluation_NStar";
+   }
+}
+
+int IINoiseEvaluationAlgorithm::ElementValue( size_type i ) const
+{
+   return int( i );
+}
+
+size_type IINoiseEvaluationAlgorithm::DefaultValueIndex() const
+{
+   return size_type( Default );
+}
+
+// ----------------------------------------------------------------------------
+
 IIMRSMinDataFraction::IIMRSMinDataFraction( MetaProcess* P ) : MetaFloat( P )
 {
    TheIIMRSMinDataFractionParameter = this;
@@ -1793,6 +1877,90 @@ double IIMRSMinDataFraction::MinimumValue() const
 double IIMRSMinDataFraction::MaximumValue() const
 {
    return 1;
+}
+
+// ----------------------------------------------------------------------------
+
+IIPSFStructureLayers::IIPSFStructureLayers( MetaProcess* p ) : MetaInt32( p )
+{
+   TheIIPSFStructureLayersParameter = this;
+}
+
+IsoString IIPSFStructureLayers::Id() const
+{
+   return "psfStructureLayers";
+}
+
+double IIPSFStructureLayers::DefaultValue() const
+{
+   return 5;
+}
+
+double IIPSFStructureLayers::MinimumValue() const
+{
+   return 1;
+}
+
+double IIPSFStructureLayers::MaximumValue() const
+{
+   return 8;
+}
+
+// ----------------------------------------------------------------------------
+
+IIPSFType::IIPSFType( MetaProcess* P ) : MetaEnumeration( P )
+{
+   TheIIPSFTypeParameter = this;
+}
+
+IsoString IIPSFType::Id() const
+{
+   return "psfType";
+}
+
+size_type IIPSFType::NumberOfElements() const
+{
+   return NumberOfItems;
+}
+
+IsoString IIPSFType::ElementId( size_type i ) const
+{
+   switch ( i )
+   {
+   case Gaussian: return "PSFType_Gaussian";
+   case Moffat15: return "PSFType_Moffat15";
+   default:
+   case Moffat4:  return "PSFType_Moffat4";
+   case Moffat6:  return "PSFType_Moffat6";
+   case Moffat8:  return "PSFType_Moffat8";
+   case MoffatA:  return "PSFType_MoffatA";
+   case Auto:     return "PSFType_Auto";
+   }
+}
+
+IsoString IIPSFType::FunctionName( pcl_enum i )
+{
+   switch ( i )
+   {
+   case Gaussian: return "Gaussian";
+   case Moffat15: return "Moffat15";
+   default:
+   case Moffat4:  return "Moffat4";
+   case Moffat6:  return "Moffat6";
+   case Moffat8:  return "Moffat8";
+   case MoffatA:  return "MoffatA";
+   case Auto:     return "Auto";
+   }
+}
+
+int IIPSFType::ElementValue( size_type i ) const
+{
+   return int( i );
+}
+
+size_type IIPSFType::DefaultValueIndex() const
+{
+   return size_type( Default );
 }
 
 // ----------------------------------------------------------------------------
@@ -2481,6 +2649,57 @@ bool IIFinalNoiseScaleEstimateHighB::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
+IIFinalNoiseAlgorithmRK::IIFinalNoiseAlgorithmRK( MetaProcess* P ) : MetaString( P )
+{
+   TheIIFinalNoiseAlgorithmRKParameter = this;
+}
+
+IsoString IIFinalNoiseAlgorithmRK::Id() const
+{
+   return "finalNoiseAlgorithmRK";
+}
+
+bool IIFinalNoiseAlgorithmRK::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+IIFinalNoiseAlgorithmG::IIFinalNoiseAlgorithmG( MetaProcess* P ) : MetaString( P )
+{
+   TheIIFinalNoiseAlgorithmGParameter = this;
+}
+
+IsoString IIFinalNoiseAlgorithmG::Id() const
+{
+   return "finalNoiseAlgorithmG";
+}
+
+bool IIFinalNoiseAlgorithmG::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+IIFinalNoiseAlgorithmB::IIFinalNoiseAlgorithmB( MetaProcess* P ) : MetaString( P )
+{
+   TheIIFinalNoiseAlgorithmBParameter = this;
+}
+
+IsoString IIFinalNoiseAlgorithmB::Id() const
+{
+   return "finalNoiseAlgorithmB";
+}
+
+bool IIFinalNoiseAlgorithmB::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
 IIFinalScaleEstimateRK::IIFinalScaleEstimateRK( MetaProcess* P ) : MetaDouble( P )
 {
    TheIIFinalScaleEstimateRKParameter = this;
@@ -2643,375 +2862,537 @@ bool IIFinalLocationEstimateB::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-IIFinalPSFSignalEstimateRK::IIFinalPSFSignalEstimateRK( MetaProcess* P ) : MetaDouble( P )
+IIFinalPSFTotalFluxEstimateRK::IIFinalPSFTotalFluxEstimateRK( MetaProcess* P ) : MetaDouble( P )
 {
-   TheIIFinalPSFSignalEstimateRKParameter = this;
+   TheIIFinalPSFTotalFluxEstimateRKParameter = this;
 }
 
-IsoString IIFinalPSFSignalEstimateRK::Id() const
+IsoString IIFinalPSFTotalFluxEstimateRK::Id() const
 {
-   return "finalPSFSignalEstimateRK";
+   return "finalPSFTotalFluxEstimateRK";
 }
 
-int IIFinalPSFSignalEstimateRK::Precision() const
-{
-   return 4;
-}
-
-bool IIFinalPSFSignalEstimateRK::ScientificNotation() const
-{
-   return true;
-}
-
-bool IIFinalPSFSignalEstimateRK::IsReadOnly() const
-{
-   return true;
-}
-
-// ----------------------------------------------------------------------------
-
-IIFinalPSFSignalEstimateG::IIFinalPSFSignalEstimateG( MetaProcess* P ) : MetaDouble( P )
-{
-   TheIIFinalPSFSignalEstimateGParameter = this;
-}
-
-IsoString IIFinalPSFSignalEstimateG::Id() const
-{
-   return "finalPSFSignalEstimateG";
-}
-
-int IIFinalPSFSignalEstimateG::Precision() const
+int IIFinalPSFTotalFluxEstimateRK::Precision() const
 {
    return 4;
 }
 
-bool IIFinalPSFSignalEstimateG::ScientificNotation() const
+bool IIFinalPSFTotalFluxEstimateRK::ScientificNotation() const
 {
    return true;
 }
 
-bool IIFinalPSFSignalEstimateG::IsReadOnly() const
+bool IIFinalPSFTotalFluxEstimateRK::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-IIFinalPSFSignalEstimateB::IIFinalPSFSignalEstimateB( MetaProcess* P ) : MetaDouble( P )
+IIFinalPSFTotalFluxEstimateG::IIFinalPSFTotalFluxEstimateG( MetaProcess* P ) : MetaDouble( P )
 {
-   TheIIFinalPSFSignalEstimateBParameter = this;
+   TheIIFinalPSFTotalFluxEstimateGParameter = this;
 }
 
-IsoString IIFinalPSFSignalEstimateB::Id() const
+IsoString IIFinalPSFTotalFluxEstimateG::Id() const
 {
-   return "finalPSFSignalEstimateB";
+   return "finalPSFTotalFluxEstimateG";
 }
 
-int IIFinalPSFSignalEstimateB::Precision() const
+int IIFinalPSFTotalFluxEstimateG::Precision() const
 {
    return 4;
 }
 
-bool IIFinalPSFSignalEstimateB::ScientificNotation() const
+bool IIFinalPSFTotalFluxEstimateG::ScientificNotation() const
 {
    return true;
 }
 
-bool IIFinalPSFSignalEstimateB::IsReadOnly() const
+bool IIFinalPSFTotalFluxEstimateG::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-IIFinalPSFSignalPowerEstimateRK::IIFinalPSFSignalPowerEstimateRK( MetaProcess* P ) : MetaDouble( P )
+IIFinalPSFTotalFluxEstimateB::IIFinalPSFTotalFluxEstimateB( MetaProcess* P ) : MetaDouble( P )
 {
-   TheIIFinalPSFSignalPowerEstimateRKParameter = this;
+   TheIIFinalPSFTotalFluxEstimateBParameter = this;
 }
 
-IsoString IIFinalPSFSignalPowerEstimateRK::Id() const
+IsoString IIFinalPSFTotalFluxEstimateB::Id() const
 {
-   return "finalPSFSignalPowerEstimateRK";
+   return "finalPSFTotalFluxEstimateB";
 }
 
-int IIFinalPSFSignalPowerEstimateRK::Precision() const
+int IIFinalPSFTotalFluxEstimateB::Precision() const
 {
    return 4;
 }
 
-bool IIFinalPSFSignalPowerEstimateRK::ScientificNotation() const
+bool IIFinalPSFTotalFluxEstimateB::ScientificNotation() const
 {
    return true;
 }
 
-bool IIFinalPSFSignalPowerEstimateRK::IsReadOnly() const
+bool IIFinalPSFTotalFluxEstimateB::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-IIFinalPSFSignalPowerEstimateG::IIFinalPSFSignalPowerEstimateG( MetaProcess* P ) : MetaDouble( P )
+IIFinalPSFTotalPowerFluxEstimateRK::IIFinalPSFTotalPowerFluxEstimateRK( MetaProcess* P ) : MetaDouble( P )
 {
-   TheIIFinalPSFSignalPowerEstimateGParameter = this;
+   TheIIFinalPSFTotalPowerFluxEstimateRKParameter = this;
 }
 
-IsoString IIFinalPSFSignalPowerEstimateG::Id() const
+IsoString IIFinalPSFTotalPowerFluxEstimateRK::Id() const
 {
-   return "finalPSFSignalPowerEstimateG";
+   return "finalPSFTotalPowerFluxEstimateRK";
 }
 
-int IIFinalPSFSignalPowerEstimateG::Precision() const
+int IIFinalPSFTotalPowerFluxEstimateRK::Precision() const
 {
    return 4;
 }
 
-bool IIFinalPSFSignalPowerEstimateG::ScientificNotation() const
+bool IIFinalPSFTotalPowerFluxEstimateRK::ScientificNotation() const
 {
    return true;
 }
 
-bool IIFinalPSFSignalPowerEstimateG::IsReadOnly() const
+bool IIFinalPSFTotalPowerFluxEstimateRK::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-IIFinalPSFSignalPowerEstimateB::IIFinalPSFSignalPowerEstimateB( MetaProcess* P ) : MetaDouble( P )
+IIFinalPSFTotalPowerFluxEstimateG::IIFinalPSFTotalPowerFluxEstimateG( MetaProcess* P ) : MetaDouble( P )
 {
-   TheIIFinalPSFSignalPowerEstimateBParameter = this;
+   TheIIFinalPSFTotalPowerFluxEstimateGParameter = this;
 }
 
-IsoString IIFinalPSFSignalPowerEstimateB::Id() const
+IsoString IIFinalPSFTotalPowerFluxEstimateG::Id() const
 {
-   return "finalPSFSignalPowerEstimateB";
+   return "finalPSFTotalPowerFluxEstimateG";
 }
 
-int IIFinalPSFSignalPowerEstimateB::Precision() const
+int IIFinalPSFTotalPowerFluxEstimateG::Precision() const
 {
    return 4;
 }
 
-bool IIFinalPSFSignalPowerEstimateB::ScientificNotation() const
+bool IIFinalPSFTotalPowerFluxEstimateG::ScientificNotation() const
 {
    return true;
 }
 
-bool IIFinalPSFSignalPowerEstimateB::IsReadOnly() const
+bool IIFinalPSFTotalPowerFluxEstimateG::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-IIFinalPSFFluxEstimateRK::IIFinalPSFFluxEstimateRK( MetaProcess* P ) : MetaDouble( P )
+IIFinalPSFTotalPowerFluxEstimateB::IIFinalPSFTotalPowerFluxEstimateB( MetaProcess* P ) : MetaDouble( P )
 {
-   TheIIFinalPSFFluxEstimateRKParameter = this;
+   TheIIFinalPSFTotalPowerFluxEstimateBParameter = this;
 }
 
-IsoString IIFinalPSFFluxEstimateRK::Id() const
+IsoString IIFinalPSFTotalPowerFluxEstimateB::Id() const
 {
-   return "finalPSFFluxEstimateRK";
+   return "finalPSFTotalPowerFluxEstimateB";
 }
 
-int IIFinalPSFFluxEstimateRK::Precision() const
+int IIFinalPSFTotalPowerFluxEstimateB::Precision() const
 {
    return 4;
 }
 
-bool IIFinalPSFFluxEstimateRK::ScientificNotation() const
+bool IIFinalPSFTotalPowerFluxEstimateB::ScientificNotation() const
 {
    return true;
 }
 
-bool IIFinalPSFFluxEstimateRK::IsReadOnly() const
+bool IIFinalPSFTotalPowerFluxEstimateB::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-IIFinalPSFFluxEstimateG::IIFinalPSFFluxEstimateG( MetaProcess* P ) : MetaDouble( P )
+IIFinalPSFTotalMeanFluxEstimateRK::IIFinalPSFTotalMeanFluxEstimateRK( MetaProcess* P ) : MetaDouble( P )
 {
-   TheIIFinalPSFFluxEstimateGParameter = this;
+   TheIIFinalPSFTotalMeanFluxEstimateRKParameter = this;
 }
 
-IsoString IIFinalPSFFluxEstimateG::Id() const
+IsoString IIFinalPSFTotalMeanFluxEstimateRK::Id() const
 {
-   return "finalPSFFluxEstimateG";
+   return "finalPSFTotalMeanFluxEstimateRK";
 }
 
-int IIFinalPSFFluxEstimateG::Precision() const
+int IIFinalPSFTotalMeanFluxEstimateRK::Precision() const
 {
    return 4;
 }
 
-bool IIFinalPSFFluxEstimateG::ScientificNotation() const
+bool IIFinalPSFTotalMeanFluxEstimateRK::ScientificNotation() const
 {
    return true;
 }
 
-bool IIFinalPSFFluxEstimateG::IsReadOnly() const
+bool IIFinalPSFTotalMeanFluxEstimateRK::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-IIFinalPSFFluxEstimateB::IIFinalPSFFluxEstimateB( MetaProcess* P ) : MetaDouble( P )
+IIFinalPSFTotalMeanFluxEstimateG::IIFinalPSFTotalMeanFluxEstimateG( MetaProcess* P ) : MetaDouble( P )
 {
-   TheIIFinalPSFFluxEstimateBParameter = this;
+   TheIIFinalPSFTotalMeanFluxEstimateGParameter = this;
 }
 
-IsoString IIFinalPSFFluxEstimateB::Id() const
+IsoString IIFinalPSFTotalMeanFluxEstimateG::Id() const
 {
-   return "finalPSFFluxEstimateB";
+   return "finalPSFTotalMeanFluxEstimateG";
 }
 
-int IIFinalPSFFluxEstimateB::Precision() const
+int IIFinalPSFTotalMeanFluxEstimateG::Precision() const
 {
    return 4;
 }
 
-bool IIFinalPSFFluxEstimateB::ScientificNotation() const
+bool IIFinalPSFTotalMeanFluxEstimateG::ScientificNotation() const
 {
    return true;
 }
 
-bool IIFinalPSFFluxEstimateB::IsReadOnly() const
+bool IIFinalPSFTotalMeanFluxEstimateG::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-IIFinalPSFFluxPowerEstimateRK::IIFinalPSFFluxPowerEstimateRK( MetaProcess* P ) : MetaDouble( P )
+IIFinalPSFTotalMeanFluxEstimateB::IIFinalPSFTotalMeanFluxEstimateB( MetaProcess* P ) : MetaDouble( P )
 {
-   TheIIFinalPSFFluxPowerEstimateRKParameter = this;
+   TheIIFinalPSFTotalMeanFluxEstimateBParameter = this;
 }
 
-IsoString IIFinalPSFFluxPowerEstimateRK::Id() const
+IsoString IIFinalPSFTotalMeanFluxEstimateB::Id() const
 {
-   return "finalPSFFluxPowerEstimateRK";
+   return "finalPSFTotalMeanFluxEstimateB";
 }
 
-int IIFinalPSFFluxPowerEstimateRK::Precision() const
+int IIFinalPSFTotalMeanFluxEstimateB::Precision() const
 {
    return 4;
 }
 
-bool IIFinalPSFFluxPowerEstimateRK::ScientificNotation() const
+bool IIFinalPSFTotalMeanFluxEstimateB::ScientificNotation() const
 {
    return true;
 }
 
-bool IIFinalPSFFluxPowerEstimateRK::IsReadOnly() const
+bool IIFinalPSFTotalMeanFluxEstimateB::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-IIFinalPSFFluxPowerEstimateG::IIFinalPSFFluxPowerEstimateG( MetaProcess* P ) : MetaDouble( P )
+IIFinalPSFTotalMeanPowerFluxEstimateRK::IIFinalPSFTotalMeanPowerFluxEstimateRK( MetaProcess* P ) : MetaDouble( P )
 {
-   TheIIFinalPSFFluxPowerEstimateGParameter = this;
+   TheIIFinalPSFTotalMeanPowerFluxEstimateRKParameter = this;
 }
 
-IsoString IIFinalPSFFluxPowerEstimateG::Id() const
+IsoString IIFinalPSFTotalMeanPowerFluxEstimateRK::Id() const
 {
-   return "finalPSFFluxPowerEstimateG";
+   return "finalPSFTotalMeanPowerFluxEstimateRK";
 }
 
-int IIFinalPSFFluxPowerEstimateG::Precision() const
+int IIFinalPSFTotalMeanPowerFluxEstimateRK::Precision() const
 {
    return 4;
 }
 
-bool IIFinalPSFFluxPowerEstimateG::ScientificNotation() const
+bool IIFinalPSFTotalMeanPowerFluxEstimateRK::ScientificNotation() const
 {
    return true;
 }
 
-bool IIFinalPSFFluxPowerEstimateG::IsReadOnly() const
+bool IIFinalPSFTotalMeanPowerFluxEstimateRK::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-IIFinalPSFFluxPowerEstimateB::IIFinalPSFFluxPowerEstimateB( MetaProcess* P ) : MetaDouble( P )
+IIFinalPSFTotalMeanPowerFluxEstimateG::IIFinalPSFTotalMeanPowerFluxEstimateG( MetaProcess* P ) : MetaDouble( P )
 {
-   TheIIFinalPSFFluxPowerEstimateBParameter = this;
+   TheIIFinalPSFTotalMeanPowerFluxEstimateGParameter = this;
 }
 
-IsoString IIFinalPSFFluxPowerEstimateB::Id() const
+IsoString IIFinalPSFTotalMeanPowerFluxEstimateG::Id() const
 {
-   return "finalPSFFluxPowerEstimateB";
+   return "finalPSFTotalMeanPowerFluxEstimateG";
 }
 
-int IIFinalPSFFluxPowerEstimateB::Precision() const
+int IIFinalPSFTotalMeanPowerFluxEstimateG::Precision() const
 {
    return 4;
 }
 
-bool IIFinalPSFFluxPowerEstimateB::ScientificNotation() const
+bool IIFinalPSFTotalMeanPowerFluxEstimateG::ScientificNotation() const
 {
    return true;
 }
 
-bool IIFinalPSFFluxPowerEstimateB::IsReadOnly() const
-{
-   return true;
-}
-
-// ----------------------------------------------------------------------------
-
-IIFinalPSFSignalCountRK::IIFinalPSFSignalCountRK( MetaProcess* P ) : MetaUInt32( P )
-{
-   TheIIFinalPSFSignalCountRKParameter = this;
-}
-
-IsoString IIFinalPSFSignalCountRK::Id() const
-{
-   return "finalPSFSignalCountRK";
-}
-
-bool IIFinalPSFSignalCountRK::IsReadOnly() const
+bool IIFinalPSFTotalMeanPowerFluxEstimateG::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-IIFinalPSFSignalCountG::IIFinalPSFSignalCountG( MetaProcess* P ) : MetaUInt32( P )
+IIFinalPSFTotalMeanPowerFluxEstimateB::IIFinalPSFTotalMeanPowerFluxEstimateB( MetaProcess* P ) : MetaDouble( P )
 {
-   TheIIFinalPSFSignalCountGParameter = this;
+   TheIIFinalPSFTotalMeanPowerFluxEstimateBParameter = this;
 }
 
-IsoString IIFinalPSFSignalCountG::Id() const
+IsoString IIFinalPSFTotalMeanPowerFluxEstimateB::Id() const
 {
-   return "finalPSFSignalCountG";
+   return "finalPSFTotalMeanPowerFluxEstimateB";
 }
 
-bool IIFinalPSFSignalCountG::IsReadOnly() const
+int IIFinalPSFTotalMeanPowerFluxEstimateB::Precision() const
+{
+   return 4;
+}
+
+bool IIFinalPSFTotalMeanPowerFluxEstimateB::ScientificNotation() const
+{
+   return true;
+}
+
+bool IIFinalPSFTotalMeanPowerFluxEstimateB::IsReadOnly() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-IIFinalPSFSignalCountB::IIFinalPSFSignalCountB( MetaProcess* P ) : MetaUInt32( P )
+IIFinalPSFMStarEstimateRK::IIFinalPSFMStarEstimateRK( MetaProcess* P ) : MetaDouble( P )
 {
-   TheIIFinalPSFSignalCountBParameter = this;
+   TheIIFinalPSFMStarEstimateRKParameter = this;
 }
 
-IsoString IIFinalPSFSignalCountB::Id() const
+IsoString IIFinalPSFMStarEstimateRK::Id() const
 {
-   return "finalPSFSignalCountB";
+   return "finalPSFMStarEstimateRK";
 }
 
-bool IIFinalPSFSignalCountB::IsReadOnly() const
+int IIFinalPSFMStarEstimateRK::Precision() const
+{
+   return 4;
+}
+
+bool IIFinalPSFMStarEstimateRK::ScientificNotation() const
+{
+   return true;
+}
+
+bool IIFinalPSFMStarEstimateRK::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+IIFinalPSFMStarEstimateG::IIFinalPSFMStarEstimateG( MetaProcess* P ) : MetaDouble( P )
+{
+   TheIIFinalPSFMStarEstimateGParameter = this;
+}
+
+IsoString IIFinalPSFMStarEstimateG::Id() const
+{
+   return "finalPSFMStarEstimateG";
+}
+
+int IIFinalPSFMStarEstimateG::Precision() const
+{
+   return 4;
+}
+
+bool IIFinalPSFMStarEstimateG::ScientificNotation() const
+{
+   return true;
+}
+
+bool IIFinalPSFMStarEstimateG::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+IIFinalPSFMStarEstimateB::IIFinalPSFMStarEstimateB( MetaProcess* P ) : MetaDouble( P )
+{
+   TheIIFinalPSFMStarEstimateBParameter = this;
+}
+
+IsoString IIFinalPSFMStarEstimateB::Id() const
+{
+   return "finalPSFMStarEstimateB";
+}
+
+int IIFinalPSFMStarEstimateB::Precision() const
+{
+   return 4;
+}
+
+bool IIFinalPSFMStarEstimateB::ScientificNotation() const
+{
+   return true;
+}
+
+bool IIFinalPSFMStarEstimateB::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+IIFinalPSFNStarEstimateRK::IIFinalPSFNStarEstimateRK( MetaProcess* P ) : MetaDouble( P )
+{
+   TheIIFinalPSFNStarEstimateRKParameter = this;
+}
+
+IsoString IIFinalPSFNStarEstimateRK::Id() const
+{
+   return "finalPSFNStarEstimateRK";
+}
+
+int IIFinalPSFNStarEstimateRK::Precision() const
+{
+   return 4;
+}
+
+bool IIFinalPSFNStarEstimateRK::ScientificNotation() const
+{
+   return true;
+}
+
+bool IIFinalPSFNStarEstimateRK::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+IIFinalPSFNStarEstimateG::IIFinalPSFNStarEstimateG( MetaProcess* P ) : MetaDouble( P )
+{
+   TheIIFinalPSFNStarEstimateGParameter = this;
+}
+
+IsoString IIFinalPSFNStarEstimateG::Id() const
+{
+   return "finalPSFNStarEstimateG";
+}
+
+int IIFinalPSFNStarEstimateG::Precision() const
+{
+   return 4;
+}
+
+bool IIFinalPSFNStarEstimateG::ScientificNotation() const
+{
+   return true;
+}
+
+bool IIFinalPSFNStarEstimateG::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+IIFinalPSFNStarEstimateB::IIFinalPSFNStarEstimateB( MetaProcess* P ) : MetaDouble( P )
+{
+   TheIIFinalPSFNStarEstimateBParameter = this;
+}
+
+IsoString IIFinalPSFNStarEstimateB::Id() const
+{
+   return "finalPSFNStarEstimateB";
+}
+
+int IIFinalPSFNStarEstimateB::Precision() const
+{
+   return 4;
+}
+
+bool IIFinalPSFNStarEstimateB::ScientificNotation() const
+{
+   return true;
+}
+
+bool IIFinalPSFNStarEstimateB::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+IIFinalPSFCountRK::IIFinalPSFCountRK( MetaProcess* P ) : MetaUInt32( P )
+{
+   TheIIFinalPSFCountRKParameter = this;
+}
+
+IsoString IIFinalPSFCountRK::Id() const
+{
+   return "finalPSFCountRK";
+}
+
+bool IIFinalPSFCountRK::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+IIFinalPSFCountG::IIFinalPSFCountG( MetaProcess* P ) : MetaUInt32( P )
+{
+   TheIIFinalPSFCountGParameter = this;
+}
+
+IsoString IIFinalPSFCountG::Id() const
+{
+   return "finalPSFCountG";
+}
+
+bool IIFinalPSFCountG::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+IIFinalPSFCountB::IIFinalPSFCountB( MetaProcess* P ) : MetaUInt32( P )
+{
+   TheIIFinalPSFCountBParameter = this;
+}
+
+IsoString IIFinalPSFCountB::Id() const
+{
+   return "finalPSFCountB";
+}
+
+bool IIFinalPSFCountB::IsReadOnly() const
 {
    return true;
 }
@@ -3470,4 +3851,4 @@ bool IIImageRejectedHighB::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationParameters.cpp - Released 2021-12-29T20:37:28Z
+// EOF ImageIntegrationParameters.cpp - Released 2022-03-12T18:59:53Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.7.3
+// Standard SubframeSelector Process Module Version 1.8.0
 // ----------------------------------------------------------------------------
-// SubframeSelectorProcess.cpp - Released 2021-12-29T20:37:28Z
+// SubframeSelectorProcess.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -74,6 +74,8 @@ SubframeSelectorProcess::SubframeSelectorProcess()
    new SSSubframes( this );
    new SSSubframeEnabled( TheSSSubframesParameter );
    new SSSubframePath( TheSSSubframesParameter );
+   new SSLocalNormalizationDataPath( TheSSSubframesParameter );
+   new SSDrizzlePath( TheSSSubframesParameter );
 
    new SSFileCache( this );
 
@@ -145,7 +147,7 @@ SubframeSelectorProcess::SubframeSelectorProcess()
    new SSMeasurementFWHM( TheSSMeasurementsParameter );
    new SSMeasurementEccentricity( TheSSMeasurementsParameter );
    new SSMeasurementPSFSignalWeight( TheSSMeasurementsParameter );
-   new SSMeasurementPSFSignalPowerWeight( TheSSMeasurementsParameter );
+   new SSMeasurementUnused01( TheSSMeasurementsParameter ); // ### retained for compatibility
    new SSMeasurementSNRWeight( TheSSMeasurementsParameter );
    new SSMeasurementMedian( TheSSMeasurementsParameter );
    new SSMeasurementMedianMeanDev( TheSSMeasurementsParameter );
@@ -160,6 +162,12 @@ SubframeSelectorProcess::SubframeSelectorProcess()
    new SSMeasurementAltitude( TheSSMeasurementsParameter );
    new SSMeasurementPSFFlux( TheSSMeasurementsParameter );
    new SSMeasurementPSFFluxPower( TheSSMeasurementsParameter );
+   new SSMeasurementPSFTotalMeanFlux( TheSSMeasurementsParameter );
+   new SSMeasurementPSFTotalMeanPowerFlux( TheSSMeasurementsParameter );
+   new SSMeasurementPSFCount( TheSSMeasurementsParameter );
+   new SSMeasurementMStar( TheSSMeasurementsParameter );
+   new SSMeasurementNStar( TheSSMeasurementsParameter );
+   new SSMeasurementPSFSNR( TheSSMeasurementsParameter );
 }
 
 // ----------------------------------------------------------------------------
@@ -232,4 +240,4 @@ ProcessImplementation* SubframeSelectorProcess::Clone( const ProcessImplementati
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorProcess.cpp - Released 2021-12-29T20:37:28Z
+// EOF SubframeSelectorProcess.cpp - Released 2022-03-12T18:59:53Z

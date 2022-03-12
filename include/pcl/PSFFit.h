@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.19
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// pcl/PSFFit.h - Released 2022-01-24T22:43:24Z
+// pcl/PSFFit.h - Released 2022-03-12T18:59:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -72,16 +72,16 @@ namespace pcl
  *
  * <table border="1" cellpadding="4" cellspacing="0">
  * <tr><td>PSFunction::Invalid</td>      <td>Represents an invalid or unsupported PSF type.</td></tr>
- * <tr><td>ImageMode::Gaussian</td>      <td>Gaussian PSF.</td></tr>
- * <tr><td>ImageMode::Moffat</td>        <td>Moffat PSF with a fitted beta parameter.</td></tr>
- * <tr><td>ImageMode::MoffatA</td>       <td>Moffat PSF with fixed beta=10 parameter.</td></tr>
- * <tr><td>ImageMode::Moffat8</td>       <td>Moffat PSF with fixed beta=8 parameter.</td></tr>
- * <tr><td>ImageMode::Moffat6</td>       <td>Moffat PSF with fixed beta=6 parameter.</td></tr>
- * <tr><td>ImageMode::Moffat4</td>       <td>Moffat PSF with fixed beta=4 parameter.</td></tr>
- * <tr><td>ImageMode::Moffat25</td>      <td>Moffat PSF with fixed beta=2.5 parameter.</td></tr>
- * <tr><td>ImageMode::Moffat15</td>      <td>Moffat PSF with fixed beta=1.5 parameter.</td></tr>
- * <tr><td>ImageMode::Lorentzian</td>    <td>Lorentzian PSF, equivalent to a Moffat PSF with fixed beta=1 parameter.</td></tr>
- * <tr><td>ImageMode::VariableShape</td> <td>Variable shape PSF</td></tr>
+ * <tr><td>PSFunction::Gaussian</td>      <td>Gaussian PSF.</td></tr>
+ * <tr><td>PSFunction::Moffat</td>        <td>Moffat PSF with a fitted beta parameter.</td></tr>
+ * <tr><td>PSFunction::MoffatA</td>       <td>Moffat PSF with fixed beta=10 parameter.</td></tr>
+ * <tr><td>PSFunction::Moffat8</td>       <td>Moffat PSF with fixed beta=8 parameter.</td></tr>
+ * <tr><td>PSFunction::Moffat6</td>       <td>Moffat PSF with fixed beta=6 parameter.</td></tr>
+ * <tr><td>PSFunction::Moffat4</td>       <td>Moffat PSF with fixed beta=4 parameter.</td></tr>
+ * <tr><td>PSFunction::Moffat25</td>      <td>Moffat PSF with fixed beta=2.5 parameter.</td></tr>
+ * <tr><td>PSFunction::Moffat15</td>      <td>Moffat PSF with fixed beta=1.5 parameter.</td></tr>
+ * <tr><td>PSFunction::Lorentzian</td>    <td>Lorentzian PSF, equivalent to a Moffat PSF with fixed beta=1 parameter.</td></tr>
+ * <tr><td>PSFunction::VariableShape</td> <td>Variable shape PSF</td></tr>
  * </table>
  */
 namespace PSFunction
@@ -99,9 +99,8 @@ namespace PSFunction
       Moffat15,      // Moffat PSF with fixed beta=1.5
       Lorentzian,    // Lorentzian PSF, equivalent to a Moffat PSF with fixed beta=1
       VariableShape, // Variable shape PSF
-
       NumberOfFunctions,
-
+      Auto = 999,    // Automatic selection for optimization, process-dependent.
       Default = Gaussian
    };
 }
@@ -178,9 +177,9 @@ struct PSFData
    double         flux = 0;   //!< Total flux above the local background, measured over the rectangular fitting region.
    double         signal = 0; //!< Total flux above the local background, measured over the elliptical PSF region.
    unsigned       signalCount = 0; //!< Number of pixels used for signal evaluation.
-   double         mad = 0;    /*!< Goodness of fit estimate. A robust, normalized mean absolute difference between
-                                   the estimated PSF and the sample of source image pixels over the fitting region. */
-
+   double         mad = 0;    /*!< Goodness of fit estimate. A robust, mean absolute difference between the
+                                   fitted PSF and the sample of source image pixels over the fitting region, scaled
+                                   by the total signal estimate. */
    /*!
     * Default constructor.
     */
@@ -275,6 +274,32 @@ struct PSFData
    }
 
    /*!
+    * Returns the full width at tenth maximum (FWTM) on the X axis in pixels.
+    *
+    * For an elliptic PSF, the X axis corresponds to the orientation of the
+    * major function axis as projected on the image.
+    *
+    * For a circular PSF, FWTMx() and FWTMy() are equivalent.
+    */
+   double FWTMx() const
+   {
+      return FWTM( function, sx, beta );
+   }
+
+   /*!
+    * Returns the full width at tenth maximum (FWTM) on the Y axis in pixels.
+    *
+    * For an elliptic PSF, the Y axis corresponds to the orientation of the
+    * minor function axis as projected on the image.
+    *
+    * For a circular PSF, FWTMx() and FWTMy() are equivalent.
+    */
+   double FWTMy() const
+   {
+      return FWTM( function, sy, beta );
+   }
+
+   /*!
     * Returns the double integral of the PSF, or the estimated volume over the
     * XY plane for z > B.
     */
@@ -354,6 +379,40 @@ struct PSFData
    }
 
    /*!
+    * Returns the full width at tenth maximum (FWTM) corresponding to a
+    * supported function with the specified parameters.
+    *
+    * \param function   The type of point spread function. See the PSFunction
+    *                   namespace for supported functions.
+    *
+    * \param sigma      Estimated function width.
+    *
+    * \param beta       Moffat beta or VariableShape shape parameter.
+    *                   Must be > 0.
+    *
+    * The returned value is the FWTM in sigma units, or zero if an invalid or
+    * unsupported function type has been specified.
+    */
+   static double FWTM( psf_function function, double sigma, double beta = 2 )
+   {
+      PCL_PRECONDITION( beta > 0 )
+      switch ( function )
+      {
+      case PSFunction::Gaussian:      return 4.291932052578694 * sigma;
+      case PSFunction::Moffat:        return 2 * sigma * Sqrt( Pow( 10.0, 1/beta ) - 1 );
+      case PSFunction::MoffatA:       return 1.017694279819175 * sigma;
+      case PSFunction::Moffat8:       return 1.155026289161115 * sigma;
+      case PSFunction::Moffat6:       return 1.367917055412454 * sigma;
+      case PSFunction::Moffat4:       return 1.764402913213331 * sigma;
+      case PSFunction::Moffat25:      return 2.459175822514185 * sigma;
+      case PSFunction::Moffat15:      return 3.816589489904712 * sigma;
+      case PSFunction::Lorentzian:    return 6 * sigma;
+      case PSFunction::VariableShape: return 2 * sigma * Pow( beta*2.302585092994045, 1/beta );
+      default:                        return 0; // ?!
+      }
+   }
+
+   /*!
     * Returns the double integral of a supported elliptical function with the
     * specified parameters.
     *
@@ -396,7 +455,7 @@ struct PSFData
 /*!
  * \class PSFFit
  * \brief Numerical Point Spread Function (PSF) fit to a source in an image.
- * \sa StarDetector, PSFSignalEstimator
+ * \sa StarDetector, PSFSignalEstimator, PSFScaleEstimator
  */
 class PSFFit
 {
@@ -468,6 +527,11 @@ public:
     *       variation of the \e B parameter the PSF fitting process can be more
     *       accurate and robust.
     *
+    * \param growthForFlux    Growing factor in units of the Full Width at
+    *                         Tenth Maximum (FWTM) for extension/contraction of
+    *                         the PSF flux measurement region. The default
+    *                         value is 1.0.
+    *
     * The implementation of the Levenberg-Marquardt algorithm used internally
     * by this function is extremely sensitive to the specified \a center and
     * \a rect parameters. These starting parameters should always be
@@ -482,7 +546,7 @@ public:
            const DPoint& center, const DRect& rect,
            psf_function function = PSFunction::Gaussian, bool circular = false,
            float betaMin = 1.0F, float betaMax = 4.0F,
-           double tolerance = 1.0e-08, float bkgMaxVar = 0.1F );
+           double tolerance = 1.0e-08, float bkgMaxVar = 0.1F, float growthForFlux = 1.0F );
 
    /*!
     * Copy constructor.
@@ -524,6 +588,10 @@ private:
    double m_bkg;
    float  m_bkgMaxVar;
 
+   // Growing factor in units of the Full Width at Tenth Maximum (FWTM) for
+   // extension/contraction of the PSF flux measurement region.
+   float  m_growthForFlux = 1.0F;
+
    // Keep track of successive beta values in L-M iterations for stabilization
    // of shape parameters. This guarantees convergence for Moffat functions.
    mutable float m_beta;
@@ -540,4 +608,4 @@ private:
 #endif   // __PCL_PSFFit_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFFit.h - Released 2022-01-24T22:43:24Z
+// EOF pcl/PSFFit.h - Released 2022-03-12T18:59:29Z

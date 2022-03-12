@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.4.3
+// Standard ImageIntegration Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// ImageIntegrationInstance.h - Released 2021-12-29T20:37:28Z
+// ImageIntegrationInstance.h - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -85,15 +85,16 @@ private:
 
    struct ImageItem
    {
-      pcl_bool enabled = true;
-      String   path;    // image file
+      pcl_bool enabled = true; // if disabled, skip (ignore) this image
+      String   path;    // absolute file path
       String   nmlPath; // local normalization data file
       String   drzPath; // drizzle data file
 
       ImageItem() = default;
       ImageItem( const ImageItem& ) = default;
 
-      ImageItem( const String& a_path ) : path( a_path )
+      ImageItem( const String& a_path )
+         : path( a_path )
       {
       }
 
@@ -144,6 +145,8 @@ private:
    float       p_esdAlpha;             // type I error probability for ESD rejection
    float       p_esdLowRelaxation;     // relaxation factor for ESD rejection of low pixels
 
+   float       p_rcrLimit;      // rejection limit for the Chauvenet criterion
+
    float       p_ccdGain;       // CCD gain in e-/ADU
    float       p_ccdReadNoise;  // CCD read noise in e-
    float       p_ccdScaleNoise; // CCD scale noise (or sensitivity noise), dimensionless
@@ -182,8 +185,12 @@ private:
 
    pcl_bool    p_useCache;             // use the dynamic file cache
 
-   pcl_bool    p_evaluateSNR;          // compute MRS noise and PSF signal estimates for the resulting image
+   // SNR estimates
+   pcl_bool    p_evaluateSNR;          // compute noise and PSF signal estimates for the resulting image
+   pcl_enum    p_noiseEvaluationAlgorithm; // MRS | k-sigma | N-star
    float       p_mrsMinDataFraction;   // minimum fraction of data for a valid MRS noise evaluation
+   int32       p_psfStructureLayers;
+   pcl_enum    p_psfType;
 
    pcl_bool    p_subtractPedestals;    // subtract PEDESTAL keyword values from input images
    pcl_bool    p_truncateOnOutOfRange; // if the output image is out of [0,1], truncate instead of rescaling
@@ -225,21 +232,26 @@ private:
       double          outputRangeHigh              = 0; // output range, upper bound
       UI64Vector      totalRejectedLow             = UI64Vector( 0, 3 ); // low rejected pixels
       UI64Vector      totalRejectedHigh            = UI64Vector( 0, 3 ); // high rejected pixels
-      DVector         finalNoiseEstimates          = DVector( 0, 3 );    // noise estimates for the integrated image
+
+      DVector         finalNoiseEstimates          = DVector( 0, 3 ); // noise estimates for the integrated image
       scale_estimates finalNoiseScaleEstimates     = scale_estimates( 0, 3 ); // noise scale estimates for the integrated image
-      DVector         finalScaleEstimates          = DVector( 0, 3 );  // scale estimates for the integrated image
-      DVector         finalLocationEstimates       = DVector( 0, 3 );  // location estimates for the integrated image
-      DVector         finalPSFSignalEstimates      = DVector( 0, 3 );  // PSF signal estimates for the integrated image
-      DVector         finalPSFSignalPowerEstimates = DVector( 0, 3 );  // PSF signal power estimates for the integrated image
-      DVector         finalPSFFluxEstimates        = DVector( 0, 3 );  // PSF flux estimates for the integrated image
-      DVector         finalPSFFluxPowerEstimates   = DVector( 0, 3 );  // PSF flux power estimates for the integrated image
-      UI32Vector      finalPSFSignalCounts         = UI32Vector( 0, 3 ); // Number of PSF signal measurements for the integrated image
+      StringList      finalNoiseAlgorithms         = StringList( size_type( 3 ) ); // noise evaluation algorithms used for the integrated image
+      DVector         finalScaleEstimates          = DVector( 0, 3 ); // scale estimates for the integrated image
+      DVector         finalLocationEstimates       = DVector( 0, 3 ); // location estimates for the integrated image
+
+      DVector         finalPSFTotalFluxEstimates          = DVector( 0, 3 ); // sum of PSF flux estimates for the integrated image
+      DVector         finalPSFTotalPowerFluxEstimates     = DVector( 0, 3 ); // sum of squared PSF flux estimates for the integrated image
+      DVector         finalPSFTotalMeanFluxEstimates      = DVector( 0, 3 ); // sum of mean PSF flux estimates for the integrated image
+      DVector         finalPSFTotalMeanPowerFluxEstimates = DVector( 0, 3 ); // sum of mean squared PSF flux estimates for the integrated image
+      DVector         finalPSFMStarEstimates              = DVector( 0, 3 ); // M* robust mean background estimate for the integrated image
+      DVector         finalPSFNStarEstimates              = DVector( 0, 3 ); // N* robust noise estimate for the integrated image
+      UI32Vector      finalPSFCounts                      = UI32Vector( 0, 3 ); // number of valid PSF flux estimates
 
       // ### DEPRECATED ###
-      FVector         referenceNoiseReductions = FVector( 0, 3 );    // noise reduction w.r.t. the reference image
-      FVector         medianNoiseReductions    = FVector( 0, 3 );    // median noise reduction
-      FVector         referenceSNRIncrements   = FVector( 0, 3 );    // SNR increment w.r.t. the reference image
-      FVector         averageSNRIncrements     = FVector( 0, 3 );    // average SNR increment
+      FVector         referenceNoiseReductions = FVector( 0, 3 ); // noise reduction w.r.t. the reference image
+      FVector         medianNoiseReductions    = FVector( 0, 3 ); // median noise reduction
+      FVector         referenceSNRIncrements   = FVector( 0, 3 ); // SNR increment w.r.t. the reference image
+      FVector         averageSNRIncrements     = FVector( 0, 3 ); // average SNR increment
 
       // Per-channel data for each integrated image
 
@@ -253,7 +265,7 @@ private:
       Array<ImageData> imageData;
    };
 
-   OutputData o_output;
+   mutable OutputData o_output;
 
    /*
     * Rejection data structures
@@ -316,9 +328,9 @@ private:
     * Auxiliary integration data and functions
     */
 
-   DVector EvaluateNoise( const ImageVariant& ) const;
-   scale_estimates EvaluateNoiseScale( const ImageVariant&, double k = 4 ) const;
-   signal_estimates EvaluatePSFSignal( const ImageVariant& ) const;
+   DVector EvaluateNoise( const ImageVariant&, bool final = false ) const;
+   scale_estimates EvaluateNoiseScale( const ImageVariant&, bool final = false ) const;
+   signal_estimates EvaluatePSFSignal( const ImageVariant&, bool final = false ) const;
 
    ImageWindow CreateImageWindow( const IsoString& id, int bitsPerSample ) const;
 
@@ -360,4 +372,4 @@ private:
 #endif   // __ImageIntegrationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationInstance.h - Released 2021-12-29T20:37:28Z
+// EOF ImageIntegrationInstance.h - Released 2022-03-12T18:59:53Z

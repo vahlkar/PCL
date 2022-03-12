@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.4.3
+// Standard ImageIntegration Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// ImageIntegrationInterface.cpp - Released 2021-12-29T20:37:28Z
+// ImageIntegrationInterface.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -73,7 +73,7 @@ static pcl_enum s_comboBoxItemIndexToWeightMode[] =
 {
    IIWeightMode::DontCare,
    IIWeightMode::PSFSignalWeight,
-   IIWeightMode::PSFSignalPowerWeight,
+   IIWeightMode::PSFSNR,
    IIWeightMode::SNREstimate,
    IIWeightMode::ExposureTimeWeight,
    IIWeightMode::AverageWeight,
@@ -235,6 +235,7 @@ void ImageIntegrationInterface::UpdateControls()
    UpdateFormatHintsControls();
    UpdateIntegrationControls();
    UpdateRejectionControls();
+   UpdateSNREvaluationControls();
    UpdateROIControls();
 }
 
@@ -341,9 +342,9 @@ void ImageIntegrationInterface::UpdateIntegrationControls()
 
    GUI->Normalization_ComboBox.SetCurrentItem( m_instance.p_normalization );
 
-   GUI->AdaptiveGridSize_SpinBox.SetValue( m_instance.p_adaptiveGridSize );
+//    GUI->AdaptiveGridSize_SpinBox.SetValue( m_instance.p_adaptiveGridSize );
 
-   GUI->AdaptiveNoScale_CheckBox.SetChecked( m_instance.p_adaptiveNoScale );
+//    GUI->AdaptiveNoScale_CheckBox.SetChecked( m_instance.p_adaptiveNoScale );
 
    GUI->WeightMode_Label.Enable( isAverage );
 
@@ -352,13 +353,11 @@ void ImageIntegrationInterface::UpdateIntegrationControls()
 
    GUI->WeightKeyword_Label.Enable( isAverage && isKeywordWeight );
 
-   GUI->WeightScale_ComboBox.Enable( isAverage );
-   GUI->WeightScale_ComboBox.SetCurrentItem( m_instance.p_weightScale );
+//    GUI->WeightScale_ComboBox.Enable( isAverage );
+//    GUI->WeightScale_ComboBox.SetCurrentItem( m_instance.p_weightScale );
 
    GUI->WeightKeyword_Edit.Enable( isAverage && isKeywordWeight );
    GUI->WeightKeyword_Edit.SetText( m_instance.p_weightKeyword );
-
-   GUI->IgnoreNoiseKeywords_CheckBox.SetChecked( m_instance.p_ignoreNoiseKeywords );
 
    GUI->GenerateIntegratedImage_CheckBox.SetChecked( m_instance.p_generateIntegratedImage );
 
@@ -371,9 +370,6 @@ void ImageIntegrationInterface::UpdateIntegrationControls()
 
    GUI->TruncateOnOutOfRange_CheckBox.SetChecked( m_instance.p_truncateOnOutOfRange );
    GUI->TruncateOnOutOfRange_CheckBox.Enable( m_instance.p_generateIntegratedImage );
-
-   GUI->EvaluateSNR_CheckBox.SetChecked( m_instance.p_evaluateSNR );
-   GUI->EvaluateSNR_CheckBox.Enable( m_instance.p_generateIntegratedImage );
 
    GUI->ClosePreviousImages_CheckBox.SetChecked( m_instance.p_closePreviousImages );
 
@@ -474,8 +470,11 @@ void ImageIntegrationInterface::UpdateRejectionControls()
    GUI->ESDAlpha_NumericControl.Enable( doesESDRejection );
    GUI->ESDAlpha_NumericControl.SetValue( m_instance.p_esdAlpha );
 
-   GUI->ESDLowRelaxation_NumericControl.Enable( doesESDRejection );
-   GUI->ESDLowRelaxation_NumericControl.SetValue( m_instance.p_esdLowRelaxation );
+//    GUI->ESDLowRelaxation_NumericControl.Enable( doesESDRejection );
+//    GUI->ESDLowRelaxation_NumericControl.SetValue( m_instance.p_esdLowRelaxation );
+
+   GUI->RCRLimit_NumericControl.Enable( m_instance.p_rejection == IIRejection::RCR );
+   GUI->RCRLimit_NumericControl.SetValue( m_instance.p_rcrLimit );
 
    GUI->CCDGain_NumericControl.Enable( doesCCDClipRejection );
    GUI->CCDGain_NumericControl.SetValue( m_instance.p_ccdGain );
@@ -519,6 +518,20 @@ void ImageIntegrationInterface::UpdateRejectionControls()
 
    GUI->GrowthHigh_SpinBox.SetValue( m_instance.p_largeScaleClipHighGrowth );
    GUI->GrowthHigh_SpinBox.Enable( m_instance.p_clipHigh && m_instance.p_largeScaleClipHigh );
+}
+
+// ----------------------------------------------------------------------------
+
+void ImageIntegrationInterface::UpdateSNREvaluationControls()
+{
+   GUI->SNREvaluation_SectionBar.SetChecked( m_instance.p_evaluateSNR );
+   GUI->SNREvaluation_SectionBar.Enable( m_instance.p_generateIntegratedImage );
+
+   GUI->NoiseEvaluationAlgorithm_ComboBox.SetCurrentItem( m_instance.p_noiseEvaluationAlgorithm );
+
+   GUI->StructureLayers_SpinBox.SetValue( m_instance.p_psfStructureLayers );
+
+   GUI->PSFType_ComboBox.SetCurrentItem( m_instance.p_psfType );
 }
 
 // ----------------------------------------------------------------------------
@@ -780,6 +793,15 @@ void ImageIntegrationInterface::e_InputImages_Click( Button& sender, bool checke
                            "ImageIntegration",
                            StdIcon::Warning,
                            StdButton::Ok ).Execute();
+
+            if ( m_instance.p_normalization != IINormalization::LocalNormalization
+              || m_instance.p_rejectionNormalization != IIRejectionNormalization::LocalRejectionNormalization )
+            {
+               m_instance.p_normalization = IINormalization::LocalNormalization;
+               m_instance.p_rejectionNormalization = IIRejectionNormalization::LocalRejectionNormalization;
+               UpdateIntegrationControls();
+               UpdateRejectionControls();
+            }
          }
       }
    }
@@ -788,6 +810,15 @@ void ImageIntegrationInterface::e_InputImages_Click( Button& sender, bool checke
       for ( ImageIntegrationInstance::ImageItem& item : m_instance.p_images )
          item.nmlPath.Clear();
       UpdateInputImagesList();
+
+      if ( m_instance.p_normalization == IINormalization::LocalNormalization
+        || m_instance.p_rejectionNormalization == IIRejectionNormalization::LocalRejectionNormalization )
+      {
+         m_instance.p_normalization = IINormalization::AdditiveWithScaling;
+         m_instance.p_rejectionNormalization = IIRejectionNormalization::Scale;
+         UpdateIntegrationControls();
+         UpdateRejectionControls();
+      }
    }
    else if ( sender == GUI->SelectAll_PushButton )
    {
@@ -851,19 +882,25 @@ void ImageIntegrationInterface::e_InputImages_Click( Button& sender, bool checke
 
 // ----------------------------------------------------------------------------
 
-void ImageIntegrationInterface::e_FormatHints_EditCompleted( Edit& sender )
+void ImageIntegrationInterface::e_EditCompleted( Edit& sender )
 {
-   String hints = sender.Text().Trimmed();
+   String text = sender.Text().Trimmed();
 
    if ( sender == GUI->InputHints_Edit )
-      m_instance.p_inputHints = hints;
+      m_instance.p_inputHints = text;
+   if ( sender == GUI->WeightKeyword_Edit )
+   {
+      m_instance.p_weightKeyword = text;
+      m_instance.p_weightKeyword.ToUppercase();
+      text = m_instance.p_weightKeyword;
+   }
 
-   sender.SetText( hints );
+   sender.SetText( text );
 }
 
 // ----------------------------------------------------------------------------
 
-void ImageIntegrationInterface::e_Integration_ItemSelected( ComboBox& sender, int itemIndex )
+void ImageIntegrationInterface::e_ItemSelected( ComboBox& sender, int itemIndex )
 {
    if ( sender == GUI->Combination_ComboBox )
    {
@@ -873,83 +910,18 @@ void ImageIntegrationInterface::e_Integration_ItemSelected( ComboBox& sender, in
    else if ( sender == GUI->Normalization_ComboBox )
    {
       m_instance.p_normalization = itemIndex;
+      UpdateIntegrationControls();
    }
    else if ( sender == GUI->WeightMode_ComboBox )
    {
       m_instance.p_weightMode = s_comboBoxItemIndexToWeightMode[itemIndex];
       UpdateIntegrationControls();
    }
-   else if ( sender == GUI->WeightScale_ComboBox )
-   {
-      m_instance.p_weightScale = itemIndex;
-      UpdateIntegrationControls();
-   }
-}
-
-// ----------------------------------------------------------------------------
-
-void ImageIntegrationInterface::e_Integration_EditCompleted( Edit& sender )
-{
-   if ( sender == GUI->WeightKeyword_Edit )
-   {
-      m_instance.p_weightKeyword = sender.Text();
-      m_instance.p_weightKeyword.Trim();
-      m_instance.p_weightKeyword.ToUppercase();
-      sender.SetText( m_instance.p_weightKeyword );
-   }
-}
-
-// ----------------------------------------------------------------------------
-
-void ImageIntegrationInterface::e_Integration_SpinValueUpdated( SpinBox& sender, int value )
-{
-   if ( sender == GUI->AdaptiveGridSize_SpinBox )
-      m_instance.p_adaptiveGridSize = value;
-   else if ( sender == GUI->BufferSize_SpinBox )
-      m_instance.p_bufferSizeMB = value;
-   else if ( sender == GUI->StackSize_SpinBox )
-      m_instance.p_stackSizeMB = value;
-}
-
-// ----------------------------------------------------------------------------
-
-void ImageIntegrationInterface::e_Integration_Click( Button& sender, bool checked )
-{
-   if ( sender == GUI->GenerateIntegratedImage_CheckBox )
-   {
-      m_instance.p_generateIntegratedImage = checked;
-      UpdateIntegrationControls();
-   }
-   else if ( sender == GUI->Generate64BitResult_CheckBox )
-      m_instance.p_generate64BitResult = checked;
-   else if ( sender == GUI->GenerateDrizzleData_CheckBox )
-      m_instance.p_generateDrizzleData = checked;
-   else if ( sender == GUI->IgnoreNoiseKeywords_CheckBox )
-      m_instance.p_ignoreNoiseKeywords = checked;
-   else if ( sender == GUI->AdaptiveNoScale_CheckBox )
-      m_instance.p_adaptiveNoScale = checked;
-   else if ( sender == GUI->SubtractPedestals_CheckBox )
-      m_instance.p_subtractPedestals = checked;
-   else if ( sender == GUI->TruncateOnOutOfRange_CheckBox )
-      m_instance.p_truncateOnOutOfRange = checked;
-   else if ( sender == GUI->EvaluateSNR_CheckBox )
-      m_instance.p_evaluateSNR = checked;
-   else if ( sender == GUI->ClosePreviousImages_CheckBox )
-      m_instance.p_closePreviousImages = checked;
-   else if ( sender == GUI->AutoMemorySize_CheckBox )
-   {
-      m_instance.p_autoMemorySize = checked;
-      UpdateIntegrationControls();
-   }
-   else if ( sender == GUI->UseCache_CheckBox )
-      m_instance.p_useCache = checked;
-}
-
-// ----------------------------------------------------------------------------
-
-void ImageIntegrationInterface::e_Rejection_ItemSelected( ComboBox& sender, int itemIndex )
-{
-   if ( sender == GUI->RejectionAlgorithm_ComboBox )
+//    else if ( sender == GUI->WeightScale_ComboBox )
+//    {
+//       m_instance.p_weightScale = itemIndex;
+//    }
+   else if ( sender == GUI->RejectionAlgorithm_ComboBox )
    {
       m_instance.p_rejection = itemIndex;
       UpdateRejectionControls();
@@ -959,13 +931,27 @@ void ImageIntegrationInterface::e_Rejection_ItemSelected( ComboBox& sender, int 
       m_instance.p_rejectionNormalization = itemIndex;
       UpdateRejectionControls();
    }
+   else if ( sender == GUI->NoiseEvaluationAlgorithm_ComboBox )
+   {
+      m_instance.p_noiseEvaluationAlgorithm = itemIndex;
+   }
+   else if ( sender == GUI->PSFType_ComboBox )
+   {
+      m_instance.p_psfType = itemIndex;
+   }
 }
 
 // ----------------------------------------------------------------------------
 
-void ImageIntegrationInterface::e_Rejection_SpinValueUpdated( SpinBox& sender, int value )
+void ImageIntegrationInterface::e_SpinValueUpdated( SpinBox& sender, int value )
 {
-   if ( sender == GUI->MinMaxLow_SpinBox )
+//    if ( sender == GUI->AdaptiveGridSize_SpinBox )
+//       m_instance.p_adaptiveGridSize = value;
+   if ( sender == GUI->BufferSize_SpinBox )
+      m_instance.p_bufferSizeMB = value;
+   else if ( sender == GUI->StackSize_SpinBox )
+      m_instance.p_stackSizeMB = value;
+   else if ( sender == GUI->MinMaxLow_SpinBox )
       m_instance.p_minMaxLow = value;
    else if ( sender == GUI->MinMaxHigh_SpinBox )
       m_instance.p_minMaxHigh = value;
@@ -977,49 +963,62 @@ void ImageIntegrationInterface::e_Rejection_SpinValueUpdated( SpinBox& sender, i
       m_instance.p_largeScaleClipHighProtectedLayers = value;
    else if ( sender == GUI->GrowthHigh_SpinBox )
       m_instance.p_largeScaleClipHighGrowth = value;
+   else if ( sender == GUI->StructureLayers_SpinBox )
+      m_instance.p_psfStructureLayers = value;
+   else if ( sender == GUI->ROIX0_SpinBox )
+      m_instance.p_roi.x0 = value;
+   else if ( sender == GUI->ROIY0_SpinBox )
+      m_instance.p_roi.y0 = value;
+   else if ( sender == GUI->ROIWidth_SpinBox )
+      m_instance.p_roi.x1 = m_instance.p_roi.x0 + value;
+   else if ( sender == GUI->ROIHeight_SpinBox )
+      m_instance.p_roi.y1 = m_instance.p_roi.y0 + value;
 }
 
 // ----------------------------------------------------------------------------
 
-void ImageIntegrationInterface::e_Rejection_EditValueUpdated( NumericEdit& sender, double value )
+void ImageIntegrationInterface::e_Click( Button& sender, bool checked )
 {
-   if ( sender == GUI->PercentileLow_NumericControl )
-      m_instance.p_pcClipLow = value;
-   else if ( sender == GUI->PercentileHigh_NumericControl )
-      m_instance.p_pcClipHigh = value;
-   else if ( sender == GUI->SigmaLow_NumericControl )
-      m_instance.p_sigmaLow = value;
-   else if ( sender == GUI->SigmaHigh_NumericControl )
-      m_instance.p_sigmaHigh = value;
-   else if ( sender == GUI->WinsorizationCutoff_NumericControl )
-      m_instance.p_winsorizationCutoff = value;
-   else if ( sender == GUI->LinearFitLow_NumericControl )
-      m_instance.p_linearFitLow = value;
-   else if ( sender == GUI->LinearFitHigh_NumericControl )
-      m_instance.p_linearFitHigh = value;
-   else if ( sender == GUI->ESDOutliersFraction_NumericControl )
-      m_instance.p_esdOutliersFraction = value;
-   else if ( sender == GUI->ESDAlpha_NumericControl )
-      m_instance.p_esdAlpha = value;
-   else if ( sender == GUI->ESDLowRelaxation_NumericControl )
-      m_instance.p_esdLowRelaxation = value;
-   else if ( sender == GUI->CCDGain_NumericControl )
-      m_instance.p_ccdGain = value;
-   else if ( sender == GUI->CCDReadNoise_NumericControl )
-      m_instance.p_ccdReadNoise = value;
-   else if ( sender == GUI->CCDScaleNoise_NumericControl )
-      m_instance.p_ccdScaleNoise = value;
-   else if ( sender == GUI->RangeLow_NumericControl )
-      m_instance.p_rangeLow = value;
-   else if ( sender == GUI->RangeHigh_NumericControl )
-      m_instance.p_rangeHigh = value;
-}
-
-// ----------------------------------------------------------------------------
-
-void ImageIntegrationInterface::e_Rejection_Click( Button& sender, bool checked )
-{
-   if ( sender == GUI->GenerateRejectionMaps_CheckBox )
+   if ( sender == GUI->GenerateIntegratedImage_CheckBox )
+   {
+      m_instance.p_generateIntegratedImage = checked;
+      UpdateIntegrationControls();
+      UpdateSNREvaluationControls();
+   }
+   else if ( sender == GUI->Generate64BitResult_CheckBox )
+   {
+      m_instance.p_generate64BitResult = checked;
+   }
+   else if ( sender == GUI->GenerateDrizzleData_CheckBox )
+   {
+      m_instance.p_generateDrizzleData = checked;
+   }
+//    else if ( sender == GUI->AdaptiveNoScale_CheckBox )
+//    {
+//       m_instance.p_adaptiveNoScale = checked;
+//    }
+   else if ( sender == GUI->SubtractPedestals_CheckBox )
+   {
+      m_instance.p_subtractPedestals = checked;
+   }
+   else if ( sender == GUI->TruncateOnOutOfRange_CheckBox )
+   {
+      m_instance.p_truncateOnOutOfRange = checked;
+   }
+   else if ( sender == GUI->ClosePreviousImages_CheckBox )
+   {
+      m_instance.p_closePreviousImages = checked;
+   }
+   else if ( sender == GUI->AutoMemorySize_CheckBox )
+   {
+      m_instance.p_autoMemorySize = checked;
+      UpdateIntegrationControls();
+   }
+   else if ( sender == GUI->UseCache_CheckBox )
+   {
+      m_instance.p_useCache = checked;
+   }
+   else if ( sender == GUI->GenerateRejectionMaps_CheckBox )
    {
       m_instance.p_generateRejectionMaps = checked;
       UpdateRejectionControls();
@@ -1045,9 +1044,13 @@ void ImageIntegrationInterface::e_Rejection_Click( Button& sender, bool checked 
       UpdateRejectionControls();
    }
    else if ( sender == GUI->ReportRangeRejection_CheckBox )
+   {
       m_instance.p_reportRangeRejection = checked;
+   }
    else if ( sender == GUI->MapRangeRejection_CheckBox )
+   {
       m_instance.p_mapRangeRejection = checked;
+   }
    else if ( sender == GUI->RejectLargeScaleLow_CheckBox )
    {
       m_instance.p_largeScaleClipLow = checked;
@@ -1058,35 +1061,7 @@ void ImageIntegrationInterface::e_Rejection_Click( Button& sender, bool checked 
       m_instance.p_largeScaleClipHigh = checked;
       UpdateRejectionControls();
    }
-}
-
-// ----------------------------------------------------------------------------
-
-void ImageIntegrationInterface::e_ROI_Check( SectionBar& sender, bool checked )
-{
-   if ( sender == GUI->ROI_SectionBar )
-      m_instance.p_useROI = checked;
-}
-
-// ----------------------------------------------------------------------------
-
-void ImageIntegrationInterface::e_ROI_SpinValueUpdated( SpinBox& sender, int value )
-{
-   if ( sender == GUI->ROIX0_SpinBox )
-      m_instance.p_roi.x0 = value;
-   else if ( sender == GUI->ROIY0_SpinBox )
-      m_instance.p_roi.y0 = value;
-   else if ( sender == GUI->ROIWidth_SpinBox )
-      m_instance.p_roi.x1 = m_instance.p_roi.x0 + value;
-   else if ( sender == GUI->ROIHeight_SpinBox )
-      m_instance.p_roi.y1 = m_instance.p_roi.y0 + value;
-}
-
-// ----------------------------------------------------------------------------
-
-void ImageIntegrationInterface::e_ROI_Click( Button& sender, bool checked )
-{
-   if ( sender == GUI->SelectPreview_Button )
+   else if ( sender == GUI->SelectPreview_Button )
    {
       PreviewSelectionDialog d;
       d.SetWindowTitle( "Select ROI Preview" );
@@ -1101,6 +1076,54 @@ void ImageIntegrationInterface::e_ROI_Click( Button& sender, bool checked )
             }
          }
    }
+}
+
+// ----------------------------------------------------------------------------
+
+void ImageIntegrationInterface::e_EditValueUpdated( NumericEdit& sender, double value )
+{
+   if ( sender == GUI->PercentileLow_NumericControl )
+      m_instance.p_pcClipLow = value;
+   else if ( sender == GUI->PercentileHigh_NumericControl )
+      m_instance.p_pcClipHigh = value;
+   else if ( sender == GUI->SigmaLow_NumericControl )
+      m_instance.p_sigmaLow = value;
+   else if ( sender == GUI->SigmaHigh_NumericControl )
+      m_instance.p_sigmaHigh = value;
+   else if ( sender == GUI->WinsorizationCutoff_NumericControl )
+      m_instance.p_winsorizationCutoff = value;
+   else if ( sender == GUI->LinearFitLow_NumericControl )
+      m_instance.p_linearFitLow = value;
+   else if ( sender == GUI->LinearFitHigh_NumericControl )
+      m_instance.p_linearFitHigh = value;
+   else if ( sender == GUI->ESDOutliersFraction_NumericControl )
+      m_instance.p_esdOutliersFraction = value;
+   else if ( sender == GUI->ESDAlpha_NumericControl )
+      m_instance.p_esdAlpha = value;
+//    else if ( sender == GUI->ESDLowRelaxation_NumericControl )
+//       m_instance.p_esdLowRelaxation = value;
+   else if ( sender == GUI->RCRLimit_NumericControl )
+      m_instance.p_rcrLimit = value;
+   else if ( sender == GUI->CCDGain_NumericControl )
+      m_instance.p_ccdGain = value;
+   else if ( sender == GUI->CCDReadNoise_NumericControl )
+      m_instance.p_ccdReadNoise = value;
+   else if ( sender == GUI->CCDScaleNoise_NumericControl )
+      m_instance.p_ccdScaleNoise = value;
+   else if ( sender == GUI->RangeLow_NumericControl )
+      m_instance.p_rangeLow = value;
+   else if ( sender == GUI->RangeHigh_NumericControl )
+      m_instance.p_rangeHigh = value;
+}
+
+// ----------------------------------------------------------------------------
+
+void ImageIntegrationInterface::e_SectionBar_Check( SectionBar& sender, bool checked )
+{
+   if ( sender == GUI->SNREvaluation_SectionBar )
+      m_instance.p_evaluateSNR = checked;
+   else if ( sender == GUI->ROI_SectionBar )
+      m_instance.p_useROI = checked;
 }
 
 // ----------------------------------------------------------------------------
@@ -1203,6 +1226,16 @@ void ImageIntegrationInterface::e_FileDrop( Control& sender, const Point& pos, c
 
       UpdateInputImagesList();
       UpdateImageSelectionButtons();
+
+      if ( !localNormalizationFiles.IsEmpty() )
+         if ( m_instance.p_normalization != IINormalization::LocalNormalization
+            || m_instance.p_rejectionNormalization != IIRejectionNormalization::LocalRejectionNormalization )
+         {
+            m_instance.p_normalization = IINormalization::LocalNormalization;
+            m_instance.p_rejectionNormalization = IIRejectionNormalization::LocalRejectionNormalization;
+            UpdateIntegrationControls();
+            UpdateRejectionControls();
+         }
 
       if ( !drizzleFiles.IsEmpty() )
          if ( !m_instance.p_generateDrizzleData )
@@ -1381,7 +1414,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    InputHints_Label.SetToolTip( hintsToolTip );
 
    InputHints_Edit.SetToolTip( hintsToolTip );
-   InputHints_Edit.OnEditCompleted( (Edit::edit_event_handler)&ImageIntegrationInterface::e_FormatHints_EditCompleted, w );
+   InputHints_Edit.OnEditCompleted( (Edit::edit_event_handler)&ImageIntegrationInterface::e_EditCompleted, w );
 
    InputHints_Sizer.SetSpacing( 4 );
    InputHints_Sizer.Add( InputHints_Label );
@@ -1413,7 +1446,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    Combination_ComboBox.AddItem( "Minimum" );
    Combination_ComboBox.AddItem( "Maximum" );
    Combination_ComboBox.SetToolTip( combinationToolTip );
-   Combination_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ImageIntegrationInterface::e_Integration_ItemSelected, w );
+   Combination_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ImageIntegrationInterface::e_ItemSelected, w );
 
    Combination_Sizer.SetSpacing( 4 );
    Combination_Sizer.Add( Combination_Label );
@@ -1438,11 +1471,11 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
       "files must be associated with input integration files. This option should normally be used when local normalization "
       "is also used for pixel rejection.</p>"
 
-      "<p><b>Adaptive normalization</b> is an alternative local normalization that doesn't require auxiliary files. The "
-      "adaptive normalization algorithm calculates matrices of location and two-sided scale estimates for each integrated "
-      "image, then it applies per-pixel linear normalization functions by thin plate spline interpolation. As happens with "
-      "local normalization, when one of these algorithms is selected for integration output the same option should also be "
-      "selected for pixel rejection under normal working conditions.</p>"
+//       "<p><b>Adaptive normalization</b> is an alternative local normalization that doesn't require auxiliary files. The "
+//       "adaptive normalization algorithm calculates matrices of location and two-sided scale estimates for each integrated "
+//       "image, then it applies per-pixel linear normalization functions by thin plate spline interpolation. As happens with "
+//       "local normalization, when one of these algorithms is selected for integration output the same option should also be "
+//       "selected for pixel rejection under normal working conditions.</p>"
 
       "<p>The default option is additive normalization with scaling.</p>";
 
@@ -1457,83 +1490,85 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    Normalization_ComboBox.AddItem( "Additive with scaling" );
    Normalization_ComboBox.AddItem( "Multiplicative with scaling" );
    Normalization_ComboBox.AddItem( "Local normalization" );
-   Normalization_ComboBox.AddItem( "Adaptive normalization" );
+//    Normalization_ComboBox.AddItem( "Adaptive normalization" );
    Normalization_ComboBox.SetToolTip( normalizationToolTip );
-   Normalization_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ImageIntegrationInterface::e_Integration_ItemSelected, w );
+   Normalization_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ImageIntegrationInterface::e_ItemSelected, w );
 
    Normalization_Sizer.SetSpacing( 4 );
    Normalization_Sizer.Add( Normalization_Label );
    Normalization_Sizer.Add( Normalization_ComboBox );
    Normalization_Sizer.AddStretch();
 
-   const char* adaptiveGridToolTip =
-      "<p>This parameter defines the number of samples used to interpolate per-pixel statistical location and scale "
-      "estimates for adaptive normalization. The more samples, the more locally adaptive the normalization will be.</p>"
-
-      "<p>A more adaptive normalization attempts to compensate for additive and multiplicative differences between "
-      "integrated subframes at a smaller scale. A less adaptive normalization acts at a larger scale; for example, the "
-      "default <i>additive with scaling</i> output normalization (or the <i>scale + zero offset</i> normalization for "
-      "rejection) uses a single sample of location and scale, and hence can be regarded as a special case of adaptive "
-      "normalization working at the scale of the entire image.</p>"
-
-      "<p>The value specified with this parameter determines the number of columns or rows (according to the largest "
-      "dimension of the image) in the matrix of regularly distributed samples of location and scale computed from pixels "
-      "of each integrated subframe. This value will be used equally for rejection and output adaptive normalizations.</p>"
-
-      "<p><b>Warning:</b> Specifying a value that is too high for this parameter may lead to generation of artifacts in "
-      "the integrated image. This is because too small sampling regions tend to map small-scale local variations that may "
-      "not be representative of significant statistical variations in the image. Always watch rejection maps closely when "
-      "using adaptive normalization. <b>Local normalizations must <i>never</i> be applied blindly without analyzing the "
-      "results.</b></p>";
-
-   AdaptiveGridSize_Label.SetText( "Adaptive grid size:" );
-   AdaptiveGridSize_Label.SetFixedWidth( labelWidth1 );
-   AdaptiveGridSize_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
-   AdaptiveGridSize_Label.SetToolTip( adaptiveGridToolTip );
-
-   AdaptiveGridSize_SpinBox.SetRange( int( TheIIAdaptiveGridSizeParameter->MinimumValue() ), int( TheIIAdaptiveGridSizeParameter->MaximumValue() ) );
-   AdaptiveGridSize_SpinBox.SetToolTip( adaptiveGridToolTip );
-   AdaptiveGridSize_SpinBox.SetFixedWidth( editWidth2 );
-   AdaptiveGridSize_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&ImageIntegrationInterface::e_Integration_SpinValueUpdated, w );
-
-   AdaptiveGridSize_Sizer.SetSpacing( 4 );
-   AdaptiveGridSize_Sizer.Add( AdaptiveGridSize_Label );
-   AdaptiveGridSize_Sizer.Add( AdaptiveGridSize_SpinBox );
-   AdaptiveGridSize_Sizer.AddStretch();
-
-   AdaptiveNoScale_CheckBox.SetText( "No adaptive scale components" );
-   AdaptiveNoScale_CheckBox.SetToolTip( "<p>Apply only the location (additive) components of adaptive normalization "
-      "functions, and use global two-sided scale estimates instead of adaptive ones.</p>"
-      "<p>This option can be used to limit adaptive normalization to correction of purely additive gradients. Without "
-      "multiplicative components, adaptive normalization can be more tolerant of excessive grid size parameter values. "
-      "However, in difficult cases with strong gradients, scale components can be necessary to achieve a sufficiently "
-      "accurate normalization.</p>" );
-   AdaptiveNoScale_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Integration_Click, w );
-
-   AdaptiveNoScale_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
-   AdaptiveNoScale_Sizer.Add( AdaptiveNoScale_CheckBox );
-   AdaptiveNoScale_Sizer.AddStretch();
+//    const char* adaptiveGridToolTip =
+//       "<p>This parameter defines the number of samples used to interpolate per-pixel statistical location and scale "
+//       "estimates for adaptive normalization. The more samples, the more locally adaptive the normalization will be.</p>"
+//
+//       "<p>A more adaptive normalization attempts to compensate for additive and multiplicative differences between "
+//       "integrated subframes at a smaller scale. A less adaptive normalization acts at a larger scale; for example, the "
+//       "default <i>additive with scaling</i> output normalization (or the <i>scale + zero offset</i> normalization for "
+//       "rejection) uses a single sample of location and scale, and hence can be regarded as a special case of adaptive "
+//       "normalization working at the scale of the entire image.</p>"
+//
+//       "<p>The value specified with this parameter determines the number of columns or rows (according to the largest "
+//       "dimension of the image) in the matrix of regularly distributed samples of location and scale computed from pixels "
+//       "of each integrated subframe. This value will be used equally for rejection and output adaptive normalizations.</p>"
+//
+//       "<p><b>Warning:</b> Specifying a value that is too high for this parameter may lead to generation of artifacts in "
+//       "the integrated image. This is because too small sampling regions tend to map small-scale local variations that may "
+//       "not be representative of significant statistical variations in the image. Always watch rejection maps closely when "
+//       "using adaptive normalization. <b>Local normalizations must <i>never</i> be applied blindly without analyzing the "
+//       "results.</b></p>";
+//
+//    AdaptiveGridSize_Label.SetText( "Adaptive grid size:" );
+//    AdaptiveGridSize_Label.SetFixedWidth( labelWidth1 );
+//    AdaptiveGridSize_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+//    AdaptiveGridSize_Label.SetToolTip( adaptiveGridToolTip );
+//
+//    AdaptiveGridSize_SpinBox.SetRange( int( TheIIAdaptiveGridSizeParameter->MinimumValue() ), int( TheIIAdaptiveGridSizeParameter->MaximumValue() ) );
+//    AdaptiveGridSize_SpinBox.SetToolTip( adaptiveGridToolTip );
+//    AdaptiveGridSize_SpinBox.SetFixedWidth( editWidth2 );
+//    AdaptiveGridSize_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&ImageIntegrationInterface::e_SpinValueUpdated, w );
+//
+//    AdaptiveGridSize_Sizer.SetSpacing( 4 );
+//    AdaptiveGridSize_Sizer.Add( AdaptiveGridSize_Label );
+//    AdaptiveGridSize_Sizer.Add( AdaptiveGridSize_SpinBox );
+//    AdaptiveGridSize_Sizer.AddStretch();
+//
+//    AdaptiveNoScale_CheckBox.SetText( "No adaptive scale components" );
+//    AdaptiveNoScale_CheckBox.SetToolTip( "<p>Apply only the location (additive) components of adaptive normalization "
+//       "functions, and use global two-sided scale estimates instead of adaptive ones.</p>"
+//       "<p>This option can be used to limit adaptive normalization to correction of purely additive gradients. Without "
+//       "multiplicative components, adaptive normalization can be more tolerant of excessive grid size parameter values. "
+//       "However, in difficult cases with strong gradients, scale components can be necessary to achieve a sufficiently "
+//       "accurate normalization.</p>" );
+//    AdaptiveNoScale_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Click, w );
+//
+//    AdaptiveNoScale_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+//    AdaptiveNoScale_Sizer.Add( AdaptiveNoScale_CheckBox );
+//    AdaptiveNoScale_Sizer.AddStretch();
 
    const char* weightModeToolTip = "<p>Image weighting method.</p>"
 
-      "<p>The <b>PSF signal</b> and <b>PSF signal power</b> weighting algorithms are based on robust estimates of mean signal "
-      "and mean squared signal computed by PSF photometry, as well as noise estimates computed using multiscale analysis "
-      "techniques. These methods are robust and accurate. The PSF signal method is currently the default option."
+      "<p>The <b>PSF signal weight (PSFSW)</b> and <b>PSF SNR</b> algorithms are based on robust estimates of total and mean flux "
+      "computed by PSF photometry, as well as noise estimates computed using multiscale analysis techniques. These methods "
+      "are robust and accurate. PSFSW is a comprehensive image quality estimator, able to capture a wide variety of image quality "
+      "metrics including signal-to-noise ratio, source dimensions and background gradients. PSF SNR is the best choice to generate "
+      "image weights based on signal-to-noise ratio exclusively. The PSF signal weight method is currently the default option."
 
-      "<p>The <b>SNR estimate</b> option uses multiscale noise evaluation techniques to compute noise "
-      "estimates and their corresponding noise scaling factors. These estimates are applied to minimize mean "
-      "squared error in the integrated result. This method can lead to optimal results in terms of SNR maximization, "
-      "but has potential robustness problems that can also generate wrong results, so it must be used with care by "
-      "analyzing the data prior to integration, for example with the SubframeSelector tool.</p>"
+      "<p>The <b>SNR estimate</b> option uses multiscale noise evaluation techniques to compute noise estimates and their "
+      "corresponding noise scaling factors. These estimates are applied to minimize mean squared error in the integrated "
+      "result. This method can lead to optimal results in terms of SNR maximization, but has potential robustness problems "
+      "that can also generate wrong results, so it must be used with care by analyzing the data prior to integration, for "
+      "example with the SubframeSelector tool.</p>"
 
-      "<p>Noise estimates and scaling factors, as well as PSF signal estimates, are obtained either from cached data, "
-      "when available, of from XISF properties. If no XISF properties are available, the estimates are obtained from "
-      "NOISExx, NOISELxx, NOISEHxx, PSFSGLxx, PSFSGPxx, PSFFLXxx and PSFFLPxx FITS keywords, if they are present in the "
-      "images. If the data being integrated has been correctly calibrated (and demosaiced when applicable) with our "
-      "preprocessing tools, these properties and keywords should always be included in each input frame. Otherwise "
-      "ImageIntegration will have to compute these estimates from the data being integrated, which is a potentially wrong "
-      "procedure because input frames have been interpolated during the image demosaicing (when applicable) and registration "
-      "tasks, destroying the original statistics of the raw data. Appropriate warning messages will be shown in these cases.</p>"
+      "<p>Noise estimates and scaling factors, as well as PSF flux estimates and other auxiliary weighting terms, are "
+      "obtained either from cached data, when available, of from XISF properties. If no XISF properties are available, the "
+      "estimates are obtained from a set of custom FITS keywords, if they are present in the images. If the data being "
+      "integrated has been correctly calibrated (and demosaiced when applicable) with our preprocessing tools, these "
+      "properties and keywords should always be included in each input frame. Otherwise ImageIntegration will have to compute "
+      "these estimates from the data being integrated, which is a potentially wrong procedure because input frames have been "
+      "interpolated during the image demosaicing (when applicable) and registration tasks, destroying the original statistics "
+      "of the raw data. Appropriate warning messages will be shown in these cases.</p>"
 
       "<p>Exposure times will be retrieved from standard EXPTIME and EXPOSURE FITS keywords (in that order).</p>"
 
@@ -1541,9 +1576,8 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
       "properties of the data. This option is less robust and may not work if some images have additive "
       "illumination variations, such as sky gradients.</p>"
 
-      "<p>If you select the <b>FITS keyword</b> option, please specify the name of a FITS keyword to retrieve "
-      "image weights. The specified keyword must be present in all input images and its value must be of numeric "
-      "type and positive.</p>";
+      "<p>If you select the <b>FITS keyword</b> option, please specify the name of a FITS keyword to retrieve image weights. "
+      "The specified keyword must be present in all input images and its value must be of numeric type and positive.</p>";
 
    WeightMode_Label.SetText( "Weights:" );
    WeightMode_Label.SetFixedWidth( labelWidth1 );
@@ -1553,7 +1587,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    for ( int i = 0; i < IIWeightMode::NumberOfItems; ++i )
       WeightMode_ComboBox.AddItem( TheIIWeightModeParameter->ElementLabel( s_comboBoxItemIndexToWeightMode[i] ) );
    WeightMode_ComboBox.SetToolTip( weightModeToolTip );
-   WeightMode_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ImageIntegrationInterface::e_Integration_ItemSelected, w );
+   WeightMode_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ImageIntegrationInterface::e_ItemSelected, w );
 
    WeightMode_Sizer.SetSpacing( 4 );
    WeightMode_Sizer.Add( WeightMode_Label );
@@ -1571,67 +1605,53 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
 
    WeightKeyword_Edit.SetMinWidth( editWidth1 );
    WeightKeyword_Edit.SetToolTip( weightKeywordToolTip );
-   WeightKeyword_Edit.OnEditCompleted( (Edit::edit_event_handler)&ImageIntegrationInterface::e_Integration_EditCompleted, w );
+   WeightKeyword_Edit.OnEditCompleted( (Edit::edit_event_handler)&ImageIntegrationInterface::e_EditCompleted, w );
 
    WeightKeyword_Sizer.SetSpacing( 4 );
    WeightKeyword_Sizer.Add( WeightKeyword_Label );
    WeightKeyword_Sizer.Add( WeightKeyword_Edit );
    WeightKeyword_Sizer.AddStretch();
 
-   const char* weightScaleToolTip = "<p>Estimator of scale used for image normalization.</p>"
-      "<p>Statistical estimates of scale, or dispersion, are necessary for output and rejection normalization/scaling "
-      "algorithms. Robust and efficient scale estimators are crucial to make the data from different images statistically "
-      "compatible.</p>"
-
-      "<p>The <b>average absolute deviation from the median</b> is robustified by trimming all pixel samples outside "
-      "the [0.00002,0.99998] range, which excludes cold and hot pixels, as well as saturated pixels and bright spurious "
-      "features (cosmics, etc).</p>"
-
-      "<p>The <b>median absolute deviation from the median (MAD)</b> is a well-known robust estimator of scale. Although "
-      "it has the best possible breakdown point (50%), its Gaussian efficiency is rather low (37%).</p>"
-
-      "<p>The square root of the <b>biweight midvariance</b> is a robust estimator of scale with a 50% breakdown point "
-      "(as good as MAD) and high efficiency with respect to several distributions (about 87%). This is the default scale "
-      "estimator in current versions of the ImageIntegration tool.</p>"
-
-      "<p>All scale estimators have been implemented as two-sided or bilateral algorithms, where estimates of scale are "
-      "computed separately for low and high pixel samples, which are samples with values less than or equal and greater "
-      "than the computed estimate of location, respectively, for each image channel. This helps to achieve a more robust "
-      "and efficient normalization for pixel rejection, especially for input images with asymmetric or skewed "
-      "distributions.</p>"
-
-      "<p>In all cases the median is used as a robust estimator of location. This makes sense for deep-sky images "
-      "because the median closely represents the mean background of the image in most cases.</p>";
-
-   WeightScale_Label.SetText( "Scale estimator:" );
-   WeightScale_Label.SetFixedWidth( labelWidth1 );
-   WeightScale_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
-   WeightScale_Label.SetToolTip( weightScaleToolTip );
-
-   WeightScale_ComboBox.AddItem( "Average absolute deviation from the median" );
-   WeightScale_ComboBox.AddItem( "Median absolute deviation from the median (MAD)" );
-   WeightScale_ComboBox.AddItem( "Biweight midvariance (BWMV)" );
-   WeightScale_ComboBox.SetToolTip( weightScaleToolTip );
-   WeightScale_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ImageIntegrationInterface::e_Integration_ItemSelected, w );
-
-   WeightScale_Sizer.SetSpacing( 4 );
-   WeightScale_Sizer.Add( WeightScale_Label );
-   WeightScale_Sizer.Add( WeightScale_ComboBox );
-   WeightScale_Sizer.AddStretch();
-
-   IgnoreNoiseKeywords_CheckBox.SetText( "Ignore noise keywords" );
-   IgnoreNoiseKeywords_CheckBox.SetToolTip( "<p>Ignore NOISExx and NOISELxx/NOISEHxx keywords. Always compute new "
-      "noise estimates and noise scaling factors from the input images, or retrieve them from the cache (if the "
-      "cache is enabled and valid cached noise metadata are available).</p>"
-      "<p>This option can be useful for testing purposes, but should never be enabled for production images. "
-      "Under normal working conditions, the existing noise estimates and noise scaling factors stored in the metadata "
-      "of the input images have been calculated from the calibrated raw data, which is the only valid option to "
-      "achieve optimal results.</p>" );
-   IgnoreNoiseKeywords_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Integration_Click, w );
-
-   IgnoreNoiseKeywords_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
-   IgnoreNoiseKeywords_Sizer.Add( IgnoreNoiseKeywords_CheckBox );
-   IgnoreNoiseKeywords_Sizer.AddStretch();
+//    const char* weightScaleToolTip = "<p>Estimator of scale used for image normalization.</p>"
+//       "<p>Statistical estimates of scale, or dispersion, are necessary for output and rejection normalization/scaling "
+//       "algorithms. Robust and efficient scale estimators are crucial to make the data from different images statistically "
+//       "compatible.</p>"
+//
+//       "<p>The <b>average absolute deviation from the median</b> is robustified by trimming all pixel samples outside "
+//       "the [0.00002,0.99998] range, which excludes cold and hot pixels, as well as saturated pixels and bright spurious "
+//       "features (cosmics, etc).</p>"
+//
+//       "<p>The <b>median absolute deviation from the median (MAD)</b> is a well-known robust estimator of scale. Although "
+//       "it has the best possible breakdown point (50%), its Gaussian efficiency is rather low (37%).</p>"
+//
+//       "<p>The square root of the <b>biweight midvariance</b> is a robust estimator of scale with a 50% breakdown point "
+//       "(as good as MAD) and high efficiency with respect to several distributions (about 87%). This is the default scale "
+//       "estimator in current versions of the ImageIntegration tool.</p>"
+//
+//       "<p>All scale estimators have been implemented as two-sided or bilateral algorithms, where estimates of scale are "
+//       "computed separately for low and high pixel samples, which are samples with values less than or equal and greater "
+//       "than the computed estimate of location, respectively, for each image channel. This helps to achieve a more robust "
+//       "and efficient normalization for pixel rejection, especially for input images with asymmetric or skewed "
+//       "distributions.</p>"
+//
+//       "<p>In all cases the median is used as a robust estimator of location. This makes sense for deep-sky images "
+//       "because the median closely represents the mean background of the image in most cases.</p>";
+//
+//    WeightScale_Label.SetText( "Scale estimator:" );
+//    WeightScale_Label.SetFixedWidth( labelWidth1 );
+//    WeightScale_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+//    WeightScale_Label.SetToolTip( weightScaleToolTip );
+//
+//    WeightScale_ComboBox.AddItem( "Average absolute deviation from the median" );
+//    WeightScale_ComboBox.AddItem( "Median absolute deviation from the median (MAD)" );
+//    WeightScale_ComboBox.AddItem( "Biweight midvariance (BWMV)" );
+//    WeightScale_ComboBox.SetToolTip( weightScaleToolTip );
+//    WeightScale_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ImageIntegrationInterface::e_ItemSelected, w );
+//
+//    WeightScale_Sizer.SetSpacing( 4 );
+//    WeightScale_Sizer.Add( WeightScale_Label );
+//    WeightScale_Sizer.Add( WeightScale_ComboBox );
+//    WeightScale_Sizer.AddStretch();
 
    GenerateIntegratedImage_CheckBox.SetText( "Generate integrated image" );
    GenerateIntegratedImage_CheckBox.SetToolTip( "<p>Generate the result of the integration process as a new "
@@ -1640,7 +1660,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
       "generated at the end of the process. You can disable this option to save a relatively modest amount of "
       "computation time and resources while you are trying out rejection parameters. To evaluate the quality "
       "of pixel rejection, you normally are only interested in rejection pixel counts and/or rejection maps.</p>" );
-   GenerateIntegratedImage_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Integration_Click, w );
+   GenerateIntegratedImage_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Click, w );
 
    GenerateIntegratedImage_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    GenerateIntegratedImage_Sizer.Add( GenerateIntegratedImage_CheckBox );
@@ -1650,7 +1670,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    Generate64BitResult_CheckBox.SetToolTip( "<p>If this option is selected, ImageIntegration will generate a "
       "64-bit floating point result image. Otherwise the integration result will be generated as a 32-bit "
       "floating point image.</p>" );
-   Generate64BitResult_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Integration_Click, w );
+   Generate64BitResult_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Click, w );
 
    Generate64BitResult_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    Generate64BitResult_Sizer.Add( Generate64BitResult_CheckBox );
@@ -1662,7 +1682,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
       "and metadata for the DrizzleIntegration tool. StarAlignment creates drizzle files with projection data, "
       "and the ImageIntegration tool appends rejection and statistical data to the same files. Drizzle files carry "
       "the .xdrz file suffix.</p>" );
-   GenerateDrizzleData_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Integration_Click, w );
+   GenerateDrizzleData_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Click, w );
 
    GenerateDrizzleData_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    GenerateDrizzleData_Sizer.Add( GenerateDrizzleData_CheckBox );
@@ -1670,16 +1690,21 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
 
    SubtractPedestals_CheckBox.SetText( "Subtract pedestals" );
    SubtractPedestals_CheckBox.SetToolTip( "<p>Subtract PEDESTAL keyword values, if present in input images.</p>"
-      "<p>Some applications add small positive values (typically about 100 DN) systematically to calibrated light frames. "
-      "<p>These small <i>pedestals</i> should be subtracted from source integration pixels to refer all input data to the "
-      "same zero point consistently.</p>"
-      "<p>This option should only be enabled for integration of calibrated light frames with PEDESTAL keywords. This is "
-      "typically the case if you have no access to uncalibrated raw data, and are forced to work with data already "
-      "calibrated in other applications.</p>"
-      "<p>This option should be <i>disabled</i> for integration of raw bias and dark frames, since in these cases existing "
-      "PEDESTAL keywords should be preserved in the generated master bias and dark frames. These pedestals will be "
-      "subtracted automatically by the ImageCalibration process for calibration of flat and light frames.</p>" );
-   SubtractPedestals_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Integration_Click, w );
+      "<p>Some data sets require the addition of small positive values (typically about 100 DN) to calibrated "
+      "light frames in order to prevent truncation of negative pixel sample values after calibration. These small "
+      "<i>pedestals</i> can be subtracted from source integration pixels to refer all input data to the same zero "
+      "point consistently.</p>"
+      "<p>In general, this option should only be enabled for integration of calibrated light frames with PEDESTAL "
+      "keywords when a global normalization method (such as <i>additive with scaling</i>) is used for pixel "
+      "rejection and/or integration output.</p>"
+      "<p>This option should always be <i>disabled</i> if local normalization is used, since subtracting pedestals "
+      "invalidates local normalization functions. Local normalization already compensates for differing additive "
+      "components among integrated frames.</p>"
+      "<p>This option should also be <i>disabled</i> for integration of raw bias and dark frames, since in these "
+      "cases existing PEDESTAL keywords should be preserved in the generated master bias and dark frames. These "
+      "pedestals will be subtracted automatically by the ImageCalibration process for calibration of flat and "
+      "light frames.</p>" );
+   SubtractPedestals_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Click, w );
 
    SubtractPedestals_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    SubtractPedestals_Sizer.Add( SubtractPedestals_CheckBox );
@@ -1695,33 +1720,17 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
       "preserves all of the integrated data. However, in some cases altering all pixel values is not admissible, so a "
       "rescaling operation is not applicable. This is the case for integration of flat frames, where truncation is the "
       "only option available to preserve the correct illumination profile in the integrated master flat frame.</p>" );
-   TruncateOnOutOfRange_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Integration_Click, w );
+   TruncateOnOutOfRange_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Click, w );
 
    TruncateOnOutOfRange_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    TruncateOnOutOfRange_Sizer.Add( TruncateOnOutOfRange_CheckBox );
    TruncateOnOutOfRange_Sizer.AddStretch();
 
-   EvaluateSNR_CheckBox.SetText( "Evaluate SNR" );
-   EvaluateSNR_CheckBox.SetToolTip( "<p>Generate noise, SNR and PSF signal weight estimates for the final "
-      "integrated image.</p>"
-      "<p>When this option is enabled, the multiresolution support noise evaluation algorithm (MRS) will be used to "
-      "compute the standard deviation of the noise in the integrated result, assuming a normal noise distribution. "
-      "These estimates are typically to within 1% accuracy. Besides noise estimates, a final report will be generated "
-      "with per-channel robust descriptive statistics, SNR and PSF signal weight estimates.</p>"
-      "<p>This option is useful to compare the results of different integration procedures. For example, by comparing "
-      "SNR and PSF signal weight estimates you can know which image normalization and weighting criteria lead to the "
-      "best results in terms of noise reduction and SNR increment.</p>" );
-   EvaluateSNR_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Integration_Click, w );
-
-   EvaluateSNR_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
-   EvaluateSNR_Sizer.Add( EvaluateSNR_CheckBox );
-   EvaluateSNR_Sizer.AddStretch();
-
    ClosePreviousImages_CheckBox.SetText( "Close previous images" );
    ClosePreviousImages_CheckBox.SetToolTip( "<p>Select this option to close existing integration and rejection "
       "map images before running a new integration process. This is useful to avoid accumulation of multiple "
       "results on the workspace, when the same integration is being tested repeatedly.</p>" );
-   ClosePreviousImages_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Integration_Click, w );
+   ClosePreviousImages_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Click, w );
 
    ClosePreviousImages_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    ClosePreviousImages_Sizer.Add( ClosePreviousImages_CheckBox );
@@ -1734,7 +1743,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
       "data sets and low-memory machines (relative to the total size of the data) the process may use too many "
       "system resources. If you want finer control on system resources usage, disable this option and tweak the "
       "values of the <i>buffer size</i> and <i>stack size</i> parameters.</p>" );
-   AutoMemorySize_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Integration_Click, w );
+   AutoMemorySize_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Click, w );
 
    AutoMemorySize_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    AutoMemorySize_Sizer.Add( AutoMemorySize_CheckBox );
@@ -1756,7 +1765,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    BufferSize_SpinBox.SetRange( int( TheIIBufferSizeParameter->MinimumValue() ), int( TheIIBufferSizeParameter->MaximumValue() ) );
    BufferSize_SpinBox.SetToolTip( bufferSizeToolTip );
    BufferSize_SpinBox.SetFixedWidth( editWidth2 );
-   BufferSize_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&ImageIntegrationInterface::e_Integration_SpinValueUpdated, w );
+   BufferSize_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&ImageIntegrationInterface::e_SpinValueUpdated, w );
 
    BufferSize_Sizer.SetSpacing( 4 );
    BufferSize_Sizer.Add( BufferSize_Label );
@@ -1792,7 +1801,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    StackSize_SpinBox.SetRange( int( TheIIStackSizeParameter->MinimumValue() ), int( TheIIStackSizeParameter->MaximumValue() ) >> 1 );
    StackSize_SpinBox.SetToolTip( stackSizeToolTip );
    StackSize_SpinBox.SetFixedWidth( editWidth2 );
-   StackSize_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&ImageIntegrationInterface::e_Integration_SpinValueUpdated, w );
+   StackSize_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&ImageIntegrationInterface::e_SpinValueUpdated, w );
 
    StackSize_Sizer.SetSpacing( 4 );
    StackSize_Sizer.Add( StackSize_Label );
@@ -1811,7 +1820,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
 
       "<p>The file cache can also be <i>persistent</i> across PixInsight core application executions. The "
       "persistent cache and its options can be controlled with the ImageIntegration Preferences dialog.</p>");
-   UseCache_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Integration_Click, w );
+   UseCache_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Click, w );
 
    Cache_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    Cache_Sizer.Add( UseCache_CheckBox );
@@ -1820,18 +1829,16 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    Integration_Sizer.SetSpacing( 4 );
    Integration_Sizer.Add( Combination_Sizer );
    Integration_Sizer.Add( Normalization_Sizer );
-   Integration_Sizer.Add( AdaptiveGridSize_Sizer );
-   Integration_Sizer.Add( AdaptiveNoScale_Sizer );
+//    Integration_Sizer.Add( AdaptiveGridSize_Sizer );
+//    Integration_Sizer.Add( AdaptiveNoScale_Sizer );
    Integration_Sizer.Add( WeightMode_Sizer );
    Integration_Sizer.Add( WeightKeyword_Sizer );
-   Integration_Sizer.Add( WeightScale_Sizer );
-   Integration_Sizer.Add( IgnoreNoiseKeywords_Sizer );
+//    Integration_Sizer.Add( WeightScale_Sizer );
    Integration_Sizer.Add( GenerateIntegratedImage_Sizer );
    Integration_Sizer.Add( Generate64BitResult_Sizer );
    Integration_Sizer.Add( GenerateDrizzleData_Sizer );
    Integration_Sizer.Add( SubtractPedestals_Sizer );
    Integration_Sizer.Add( TruncateOnOutOfRange_Sizer );
-   Integration_Sizer.Add( EvaluateSNR_Sizer );
    Integration_Sizer.Add( ClosePreviousImages_Sizer );
    Integration_Sizer.Add( AutoMemorySize_Sizer );
    Integration_Sizer.Add( BufferSize_Sizer );
@@ -1872,6 +1879,13 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
       "similar to another outlier. The performance of this algorithm is usually excellent for data sets of 20 "
       "or more images. The minimum required is 3 images.</p>"
 
+      "<p><b>Robust Chauvenet Rejection (RCR)</b> is based on the algorithms described in Maples, M. P., "
+      "Reichart, D. E. et al., <i>Robust Chauvenet Outlier Rejection</i>, Astrophysical Journal Supplement "
+      "Series, 2018, 238, A2, 1-49. Our implementation applies three successive stages of rejection with "
+      "decreasingly robust/increasingly precise measures of central tendency and sample deviation, rejecting "
+      "a single pixel at each iteration for maximum stability. This is a single-parameter pixel rejection "
+      "algorithm introduced since version 1.8.8-13 of PixInsight.</p>"
+
       "<p><b>Percentile clipping</b> rejection is excellent to integrate reduced sets of images, such as "
       "3 to 6 images. This is a single-pass algorithm that rejects pixels outside a fixed range of values "
       "relative to the median of each pixel stack.</p>"
@@ -1904,8 +1918,9 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    RejectionAlgorithm_ComboBox.AddItem( "Linear Fit Clipping" );
    RejectionAlgorithm_ComboBox.AddItem( "CCD Noise Model" );
    RejectionAlgorithm_ComboBox.AddItem( "Generalized Extreme Studentized Deviate (ESD)" );
+   RejectionAlgorithm_ComboBox.AddItem( "Robust Chauvenet Rejection (RCR)" );
    RejectionAlgorithm_ComboBox.SetToolTip( rejectionAlgorithmToolTip );
-   RejectionAlgorithm_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ImageIntegrationInterface::e_Rejection_ItemSelected, w );
+   RejectionAlgorithm_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ImageIntegrationInterface::e_ItemSelected, w );
 
    RejectionAlgorithm_Sizer.SetSpacing( 4 );
    RejectionAlgorithm_Sizer.Add( RejectionAlgorithm_Label );
@@ -1937,11 +1952,12 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
       "whole image may be unable to make the data statistically compatible with the required locality, leading to "
       "inaccurate pixel rejection.</p>"
 
-      "<p><b>Adaptive normalization</b> is an alternative local normalization that doesn't require auxiliary files. The "
-      "adaptive normalization algorithm calculates matrices of location and two-sided scale estimates for each integrated "
-      "image, then it applies per-pixel linear normalization functions by thin plate spline interpolation. This normalization "
-      "algorithm is intended to solve the same problems described for local normalization: data with strong local variations, "
-      "especially strong gradients of varying orientations and intensities.</p>";
+//       "<p><b>Adaptive normalization</b> is an alternative local normalization that doesn't require auxiliary files. The "
+//       "adaptive normalization algorithm calculates matrices of location and two-sided scale estimates for each integrated "
+//       "image, then it applies per-pixel linear normalization functions by thin plate spline interpolation. This normalization "
+//       "algorithm is intended to solve the same problems described for local normalization: data with strong local variations, "
+//       "especially strong gradients of varying orientations and intensities.</p>"
+      ;
 
    RejectionNormalization_Label.SetText( "Normalization:" );
    RejectionNormalization_Label.SetFixedWidth( labelWidth1 );
@@ -1952,9 +1968,9 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    RejectionNormalization_ComboBox.AddItem( "Scale + zero offset" );
    RejectionNormalization_ComboBox.AddItem( "Equalize fluxes" );
    RejectionNormalization_ComboBox.AddItem( "Local normalization" );
-   RejectionNormalization_ComboBox.AddItem( "Adaptive normalization" );
+//    RejectionNormalization_ComboBox.AddItem( "Adaptive normalization" );
    RejectionNormalization_ComboBox.SetToolTip( rejectionNormalizationToolTip );
-   RejectionNormalization_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ImageIntegrationInterface::e_Rejection_ItemSelected, w );
+   RejectionNormalization_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ImageIntegrationInterface::e_ItemSelected, w );
 
    RejectionNormalization_Sizer.SetSpacing( 4 );
    RejectionNormalization_Sizer.Add( RejectionNormalization_Label );
@@ -1967,7 +1983,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
       "separate rejection maps, which are generated as 32-bit floating point images.</p>"
       "<p>Use rejection maps along with console rejection statistics to evaluate performance of pixel "
       "rejection parameters.</p>" );
-   GenerateRejectionMaps_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Rejection_Click, w );
+   GenerateRejectionMaps_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Click, w );
 
    GenerateRejectionMaps_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    GenerateRejectionMaps_Sizer.Add( GenerateRejectionMaps_CheckBox );
@@ -1977,7 +1993,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    ClipLow_CheckBox.SetToolTip( "<p>Enable rejection of low pixels. Low pixels have values below the median of "
       "a pixel stack.</p>"
       "<p>If this option is disabled, rejection algorithms can only reject high pixels, i.e. pixels above the median.</p>" );
-   ClipLow_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Rejection_Click, w );
+   ClipLow_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Click, w );
 
    ClipLow_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    ClipLow_Sizer.Add( ClipLow_CheckBox );
@@ -1987,7 +2003,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    ClipHigh_CheckBox.SetToolTip( "<p>Enable rejection of high pixels. High pixels have values above the median of "
       "a pixel stack.</p>"
       "<p>If this option is disabled, rejection algorithms can only reject low pixels, i.e. pixels below the median.</p>" );
-   ClipHigh_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Rejection_Click, w );
+   ClipHigh_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Click, w );
 
    ClipHigh_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    ClipHigh_Sizer.Add( ClipHigh_CheckBox );
@@ -1996,7 +2012,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    ClipLowRange_CheckBox.SetText( "Clip low range" );
    ClipLowRange_CheckBox.SetToolTip( "<p>Enable rejection of pixels with values less than or equal to the "
       "<i>low rejection range</i> parameter.</p>" );
-   ClipLowRange_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Rejection_Click, w );
+   ClipLowRange_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Click, w );
 
    ClipLowRange_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    ClipLowRange_Sizer.Add( ClipLowRange_CheckBox );
@@ -2005,7 +2021,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    ClipHighRange_CheckBox.SetText( "Clip high range" );
    ClipHighRange_CheckBox.SetToolTip( "<p>Enable rejection of pixels with values greater than or equal to the "
       "<i>high rejection range</i> parameter.</p>" );
-   ClipHighRange_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Rejection_Click, w );
+   ClipHighRange_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Click, w );
 
    ClipHighRange_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    ClipHighRange_Sizer.Add( ClipHighRange_CheckBox );
@@ -2014,7 +2030,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    ReportRangeRejection_CheckBox.SetText( "Report range rejection" );
    ReportRangeRejection_CheckBox.SetToolTip( "<p>Include range rejected pixels in rejected pixel counts "
       "reported on console summaries.</p>" );
-   ReportRangeRejection_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Rejection_Click, w );
+   ReportRangeRejection_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Click, w );
 
    ReportRangeRejection_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    ReportRangeRejection_Sizer.Add( ReportRangeRejection_CheckBox );
@@ -2022,7 +2038,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
 
    MapRangeRejection_CheckBox.SetText( "Map range rejection" );
    MapRangeRejection_CheckBox.SetToolTip( "<p>Include range rejected pixels in pixel rejection maps.</p>" );
-   MapRangeRejection_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Rejection_Click, w );
+   MapRangeRejection_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Click, w );
 
    MapRangeRejection_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    MapRangeRejection_Sizer.Add( MapRangeRejection_CheckBox );
@@ -2057,7 +2073,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    MinMaxLow_SpinBox.SetRange( int( TheIIMinMaxLowParameter->MinimumValue() ), 65536 );
    MinMaxLow_SpinBox.SetToolTip( minMaxLowToolTip );
    MinMaxLow_SpinBox.SetFixedWidth( editWidth2 );
-   MinMaxLow_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&ImageIntegrationInterface::e_Rejection_SpinValueUpdated, w );
+   MinMaxLow_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&ImageIntegrationInterface::e_SpinValueUpdated, w );
 
    MinMaxLow_Sizer.SetSpacing( 4 );
    MinMaxLow_Sizer.Add( MinMaxLow_Label );
@@ -2074,7 +2090,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    MinMaxHigh_SpinBox.SetRange( int( TheIIMinMaxHighParameter->MinimumValue() ), 65536 );
    MinMaxHigh_SpinBox.SetToolTip( minMaxHighToolTip );
    MinMaxHigh_SpinBox.SetFixedWidth( editWidth2 );
-   MinMaxHigh_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&ImageIntegrationInterface::e_Rejection_SpinValueUpdated, w );
+   MinMaxHigh_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&ImageIntegrationInterface::e_SpinValueUpdated, w );
 
    MinMaxHigh_Sizer.SetSpacing( 4 );
    MinMaxHigh_Sizer.Add( MinMaxHigh_Label );
@@ -2089,7 +2105,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    PercentileLow_NumericControl.SetPrecision( TheIIPercentileLowParameter->Precision() );
    PercentileLow_NumericControl.edit.SetFixedWidth( editWidth2 );
    PercentileLow_NumericControl.SetToolTip( "<p>Low clipping factor for the percentile clipping rejection algorithm.</p>" );
-   PercentileLow_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::e_Rejection_EditValueUpdated, w );
+   PercentileLow_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::e_EditValueUpdated, w );
 
    PercentileHigh_NumericControl.label.SetText( "Percentile high:" );
    PercentileHigh_NumericControl.label.SetFixedWidth( labelWidth1 );
@@ -2099,7 +2115,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    PercentileHigh_NumericControl.SetPrecision( TheIIPercentileHighParameter->Precision() );
    PercentileHigh_NumericControl.edit.SetFixedWidth( editWidth2 );
    PercentileHigh_NumericControl.SetToolTip( "<p>High clipping factor for the percentile clipping rejection algorithm.</p>" );
-   PercentileHigh_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::e_Rejection_EditValueUpdated, w );
+   PercentileHigh_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::e_EditValueUpdated, w );
 
    SigmaLow_NumericControl.label.SetText( "Sigma low:" );
    SigmaLow_NumericControl.label.SetFixedWidth( labelWidth1 );
@@ -2110,7 +2126,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    SigmaLow_NumericControl.edit.SetFixedWidth( editWidth2 );
    SigmaLow_NumericControl.SetToolTip( "<p>Low sigma clipping factor for the sigma clipping and averaged sigma clipping "
       "rejection algorithms.</p>" );
-   SigmaLow_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::e_Rejection_EditValueUpdated, w );
+   SigmaLow_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::e_EditValueUpdated, w );
 
    SigmaHigh_NumericControl.label.SetText( "Sigma high:" );
    SigmaHigh_NumericControl.label.SetFixedWidth( labelWidth1 );
@@ -2121,7 +2137,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    SigmaHigh_NumericControl.edit.SetFixedWidth( editWidth2 );
    SigmaHigh_NumericControl.SetToolTip( "<p>High sigma clipping factor for the sigma clipping and averaged sigma clipping "
       "rejection algorithms.</p>" );
-   SigmaHigh_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::e_Rejection_EditValueUpdated, w );
+   SigmaHigh_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::e_EditValueUpdated, w );
 
    WinsorizationCutoff_NumericControl.label.SetText( "Winsorization cutoff:" );
    WinsorizationCutoff_NumericControl.label.SetFixedWidth( labelWidth1 );
@@ -2135,7 +2151,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
       "<p>All pixel samples with absolute differences from the median larger than this parameter will be set equal to the median "
       "of the pixel stack in the first rejection iteration. This replaces extreme outliers, such as cosmics, hot and cold pixels, "
       "with plausible values instead of their nearest neighbors.</p>" );
-   WinsorizationCutoff_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::e_Rejection_EditValueUpdated, w );
+   WinsorizationCutoff_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::e_EditValueUpdated, w );
 
    LinearFitLow_NumericControl.label.SetText( "Linear fit low:" );
    LinearFitLow_NumericControl.label.SetFixedWidth( labelWidth1 );
@@ -2145,7 +2161,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    LinearFitLow_NumericControl.SetPrecision( TheIILinearFitLowParameter->Precision() );
    LinearFitLow_NumericControl.edit.SetFixedWidth( editWidth2 );
    LinearFitLow_NumericControl.SetToolTip( "<p>Tolerance of the linear fit clipping algorithm for low pixel values, in sigma units.</p>" );
-   LinearFitLow_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::e_Rejection_EditValueUpdated, w );
+   LinearFitLow_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::e_EditValueUpdated, w );
 
    LinearFitHigh_NumericControl.label.SetText( "Linear fit high:" );
    LinearFitHigh_NumericControl.label.SetFixedWidth( labelWidth1 );
@@ -2155,7 +2171,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    LinearFitHigh_NumericControl.SetPrecision( TheIILinearFitHighParameter->Precision() );
    LinearFitHigh_NumericControl.edit.SetFixedWidth( editWidth2 );
    LinearFitHigh_NumericControl.SetToolTip( "<p>Tolerance of the linear fit clipping algorithm for high pixel values, in sigma units.</p>" );
-   LinearFitHigh_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::e_Rejection_EditValueUpdated, w );
+   LinearFitHigh_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::e_EditValueUpdated, w );
 
    ESDOutliersFraction_NumericControl.label.SetText( "ESD outliers:" );
    ESDOutliersFraction_NumericControl.label.SetFixedWidth( labelWidth1 );
@@ -2170,7 +2186,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
       "to detect a maximum of two outlier pixels, or in other words, only 0, 1 or 2 outliers will be detectable in "
       "such case. The default value is 0.3, which allows the algorithm to detect up to a 30% of outlier pixels in "
       "each pixel stack.</p>" );
-   ESDOutliersFraction_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::e_Rejection_EditValueUpdated, w );
+   ESDOutliersFraction_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::e_EditValueUpdated, w );
 
    ESDAlpha_NumericControl.label.SetText( "ESD significance:" );
    ESDAlpha_NumericControl.label.SetFixedWidth( labelWidth1 );
@@ -2187,21 +2203,37 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
       "<p>By increasing this parameter the ESD algorithm will tend to reject more pixels in each stack. The effect of "
       "increasing this parameter is similar to reducing the threshold of a sigma clipping algorithm (although the "
       "underlying mechanism is very different).</p>" );
-   ESDAlpha_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::e_Rejection_EditValueUpdated, w );
+   ESDAlpha_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::e_EditValueUpdated, w );
 
-   ESDLowRelaxation_NumericControl.label.SetText( "ESD low relaxation:" );
-   ESDLowRelaxation_NumericControl.label.SetFixedWidth( labelWidth1 );
-   ESDLowRelaxation_NumericControl.slider.SetRange( 0, 50 );
-   ESDLowRelaxation_NumericControl.SetReal();
-   ESDLowRelaxation_NumericControl.SetRange( TheIIESDLowRelaxationParameter->MinimumValue(), TheIIESDLowRelaxationParameter->MaximumValue() );
-   ESDLowRelaxation_NumericControl.SetPrecision( TheIIESDLowRelaxationParameter->Precision() );
-   ESDLowRelaxation_NumericControl.edit.SetFixedWidth( editWidth2 );
-   ESDLowRelaxation_NumericControl.SetToolTip( "<p>Relaxation factor for ESD rejection of low pixels.</p>"
-      "<p>The larger the value of this parameter, the more permissive the ESD algorithm will be for rejection of pixels "
-      "with values below the median of each stack. This can be useful to reject less dark pixels on sky background areas "
-      "and extended nebular regions, where high dispersion induced by noise may lead to excessive detection of false "
-      "outliers.</p>" );
-   ESDLowRelaxation_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::e_Rejection_EditValueUpdated, w );
+//    ESDLowRelaxation_NumericControl.label.SetText( "ESD low relaxation:" );
+//    ESDLowRelaxation_NumericControl.label.SetFixedWidth( labelWidth1 );
+//    ESDLowRelaxation_NumericControl.slider.SetRange( 0, 50 );
+//    ESDLowRelaxation_NumericControl.SetReal();
+//    ESDLowRelaxation_NumericControl.SetRange( TheIIESDLowRelaxationParameter->MinimumValue(), TheIIESDLowRelaxationParameter->MaximumValue() );
+//    ESDLowRelaxation_NumericControl.SetPrecision( TheIIESDLowRelaxationParameter->Precision() );
+//    ESDLowRelaxation_NumericControl.edit.SetFixedWidth( editWidth2 );
+//    ESDLowRelaxation_NumericControl.SetToolTip( "<p>Relaxation factor for ESD rejection of low pixels.</p>"
+//       "<p>The larger the value of this parameter, the more permissive the ESD algorithm will be for rejection of pixels "
+//       "with values below the median of each stack. This can be useful to reject less dark pixels on sky background areas "
+//       "and extended nebular regions, where high dispersion induced by noise may lead to excessive detection of false "
+//       "outliers.</p>" );
+//    ESDLowRelaxation_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::e_EditValueUpdated, w );
+
+   RCRLimit_NumericControl.label.SetText( "RCR limit:" );
+   RCRLimit_NumericControl.label.SetFixedWidth( labelWidth1 );
+   RCRLimit_NumericControl.slider.SetRange( 0, 100 );
+   RCRLimit_NumericControl.SetReal();
+   RCRLimit_NumericControl.SetRange( TheIIRCRLimitParameter->MinimumValue(), TheIIRCRLimitParameter->MaximumValue() );
+   RCRLimit_NumericControl.SetPrecision( TheIIRCRLimitParameter->Precision() );
+   RCRLimit_NumericControl.edit.SetFixedWidth( editWidth2 );
+   RCRLimit_NumericControl.SetToolTip( "<p>Limit for the altered Chauvenet rejection criterion.</p>"
+      "<p>The larger the value of this parameter, the more pixels will be rejected by the Robust Chauvenet Rejection algorithm.</p>"
+      "<p>The original Chauvenet rejection criterion is N*P(x > |z|) &lt; 0.5, where N is the number of measurements and P() represents "
+      "the probability of x being more than z standard deviations from the mean. This parameter alters the rejection criterion by "
+      "replacing 0.5 with an arbitrary limit in the [0,1] range, in order to make the algorithm controllable. The default value is "
+      "0.1, which usually works well with most deep-sky images. Note that a single limit parameter is applied for rejection of both "
+      "low and high pixels, since the implemented iterative rejection method works in a symmetrical manner.</p>" );
+   RCRLimit_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::e_EditValueUpdated, w );
 
    RangeLow_NumericControl.label.SetText( "Range low:" );
    RangeLow_NumericControl.label.SetFixedWidth( labelWidth1 );
@@ -2212,7 +2244,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    RangeLow_NumericControl.edit.SetFixedWidth( editWidth2 );
    RangeLow_NumericControl.SetToolTip( "<p>Low rejection range. If the <i>clip low range</i> option is enabled, "
       "all pixels with values less than or equal to this low rejection range parameter will be rejected.</p>" );
-   RangeLow_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::e_Rejection_EditValueUpdated, w );
+   RangeLow_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::e_EditValueUpdated, w );
 
    RangeHigh_NumericControl.label.SetText( "Range high:" );
    RangeHigh_NumericControl.label.SetFixedWidth( labelWidth1 );
@@ -2223,7 +2255,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    RangeHigh_NumericControl.edit.SetFixedWidth( editWidth2 );
    RangeHigh_NumericControl.SetToolTip( "<p>High rejection range. If the <i>clip high range</i> option is enabled, "
       "all pixels with values greater than or equal to this high rejection range parameter will be rejected.</p>" );
-   RangeHigh_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::e_Rejection_EditValueUpdated, w );
+   RangeHigh_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::e_EditValueUpdated, w );
 
    Rejection2_Sizer.SetSpacing( 4 );
    Rejection2_Sizer.Add( MinMaxLow_Sizer );
@@ -2237,7 +2269,8 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    Rejection2_Sizer.Add( LinearFitHigh_NumericControl );
    Rejection2_Sizer.Add( ESDOutliersFraction_NumericControl );
    Rejection2_Sizer.Add( ESDAlpha_NumericControl );
-   Rejection2_Sizer.Add( ESDLowRelaxation_NumericControl );
+//    Rejection2_Sizer.Add( ESDLowRelaxation_NumericControl );
+   Rejection2_Sizer.Add( RCRLimit_NumericControl );
    Rejection2_Sizer.Add( RangeLow_NumericControl );
    Rejection2_Sizer.Add( RangeHigh_NumericControl );
 
@@ -2258,7 +2291,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    CCDGain_NumericControl.edit.SetFixedWidth( editWidth2 );
    CCDGain_NumericControl.SetToolTip( "<p>CCD sensor gain in electrons per data number (e-/ADU). Only used by the CCD noise "
       "clipping rejection algorithm.</p>" );
-   CCDGain_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::e_Rejection_EditValueUpdated, w );
+   CCDGain_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::e_EditValueUpdated, w );
 
    CCDReadNoise_NumericControl.label.SetText( "CCD readout noise:" );
    CCDReadNoise_NumericControl.label.SetFixedWidth( labelWidth1 );
@@ -2269,7 +2302,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    CCDReadNoise_NumericControl.edit.SetFixedWidth( editWidth2 );
    CCDReadNoise_NumericControl.SetToolTip( "<p>CCD readout noise in electrons. Only used by the CCD noise "
       "clipping rejection algorithm.</p>" );
-   CCDReadNoise_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::e_Rejection_EditValueUpdated, w );
+   CCDReadNoise_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::e_EditValueUpdated, w );
 
    CCDScaleNoise_NumericControl.label.SetText( "CCD scale noise:" );
    CCDScaleNoise_NumericControl.label.SetFixedWidth( labelWidth1 );
@@ -2281,7 +2314,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    CCDScaleNoise_NumericControl.SetToolTip( "<p>CCD <i>scale noise</i> (AKA <i>sensitivity noise</i>). This is a "
       "dimensionless factor, only used by the CCD noise clipping rejection algorithm. Scale noise typically comes "
       "from noise introduced during flat fielding.</p>" );
-   CCDScaleNoise_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::e_Rejection_EditValueUpdated, w );
+   CCDScaleNoise_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::e_EditValueUpdated, w );
 
    Rejection3_Sizer.SetSpacing( 4 );
    Rejection3_Sizer.Add( CCDGain_NumericControl );
@@ -2306,7 +2339,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    RejectLargeScaleLow_CheckBox.SetText( "Reject low large-scale structures" );
    RejectLargeScaleLow_CheckBox.SetToolTip( "<p>Enable large-scale rejection for low pixels. A low pixel sample has a value below the "
       "estimated central value of its pixel stack.</p>" );
-   RejectLargeScaleLow_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Rejection_Click, w );
+   RejectLargeScaleLow_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Click, w );
 
    RejectLargeScaleLow_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    RejectLargeScaleLow_Sizer.Add( RejectLargeScaleLow_CheckBox );
@@ -2326,7 +2359,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
                                          int( TheIILargeScaleClipHighProtectedLayersParameter->MaximumValue() ) );
    SmallScaleLayersLow_SpinBox.SetToolTip( smallScaleLayersLowToolTip );
    SmallScaleLayersLow_SpinBox.SetFixedWidth( editWidth2 );
-   SmallScaleLayersLow_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&ImageIntegrationInterface::e_Rejection_SpinValueUpdated, w );
+   SmallScaleLayersLow_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&ImageIntegrationInterface::e_SpinValueUpdated, w );
 
    SmallScaleLayersLow_Sizer.SetSpacing( 4 );
    SmallScaleLayersLow_Sizer.Add( SmallScaleLayersLow_Label );
@@ -2347,7 +2380,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
                                int( TheIILargeScaleClipHighGrowthParameter->MaximumValue() ) );
    GrowthLow_SpinBox.SetToolTip( growthLowToolTip );
    GrowthLow_SpinBox.SetFixedWidth( editWidth2 );
-   GrowthLow_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&ImageIntegrationInterface::e_Rejection_SpinValueUpdated, w );
+   GrowthLow_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&ImageIntegrationInterface::e_SpinValueUpdated, w );
 
    GrowthLow_Sizer.SetSpacing( 4 );
    GrowthLow_Sizer.Add( GrowthLow_Label );
@@ -2357,7 +2390,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    RejectLargeScaleHigh_CheckBox.SetText( "Reject high large-scale structures" );
    RejectLargeScaleHigh_CheckBox.SetToolTip( "<p>Enable large-scale rejection for high pixels. A high pixel sample has a value above the "
       "estimated central value of its pixel stack.</p>" );
-   RejectLargeScaleHigh_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Rejection_Click, w );
+   RejectLargeScaleHigh_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Click, w );
 
    RejectLargeScaleHigh_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    RejectLargeScaleHigh_Sizer.Add( RejectLargeScaleHigh_CheckBox );
@@ -2377,7 +2410,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
                                           int( TheIILargeScaleClipHighProtectedLayersParameter->MaximumValue() ) );
    SmallScaleLayersHigh_SpinBox.SetToolTip( smallScaleLayersHighToolTip );
    SmallScaleLayersHigh_SpinBox.SetFixedWidth( editWidth2 );
-   SmallScaleLayersHigh_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&ImageIntegrationInterface::e_Rejection_SpinValueUpdated, w );
+   SmallScaleLayersHigh_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&ImageIntegrationInterface::e_SpinValueUpdated, w );
 
    SmallScaleLayersHigh_Sizer.SetSpacing( 4 );
    SmallScaleLayersHigh_Sizer.Add( SmallScaleLayersHigh_Label );
@@ -2398,7 +2431,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
                                 int( TheIILargeScaleClipHighGrowthParameter->MaximumValue() ) );
    GrowthHigh_SpinBox.SetToolTip( growthHighToolTip );
    GrowthHigh_SpinBox.SetFixedWidth( editWidth2 );
-   GrowthHigh_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&ImageIntegrationInterface::e_Rejection_SpinValueUpdated, w );
+   GrowthHigh_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&ImageIntegrationInterface::e_SpinValueUpdated, w );
 
    GrowthHigh_Sizer.SetSpacing( 4 );
    GrowthHigh_Sizer.Add( GrowthHigh_Label );
@@ -2417,10 +2450,115 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
 
    //
 
+   SNREvaluation_SectionBar.SetTitle( "Signal and Noise Evaluation" );
+   SNREvaluation_SectionBar.SetToolTip( "<p>Generate noise, SNR and PSF signal weight estimates for the final "
+      "integrated image.</p>"
+      "<p>When this option is enabled, the selected noise evaluation algorithm (MRS by default) will be used to "
+      "compute the standard deviation of the noise in the integrated result. These estimates are typically to within "
+      "1% accuracy. Besides noise estimates, a final report will be generated with per-channel robust descriptive "
+      "statistics, SNR and PSF signal weight estimates.</p>"
+      "<p>This option is useful to compare the results of different integration procedures. For example, by comparing "
+      "SNR and PSF signal weight estimates you can know which image normalization and weighting criteria lead to the "
+      "best results in terms of image quality.</p>" );
+   SNREvaluation_SectionBar.SetSection( SNREvaluation_Control );
+   SNREvaluation_SectionBar.EnableTitleCheckBox();
+   SNREvaluation_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&ImageIntegrationInterface::e_ToggleSection, w );
+   SNREvaluation_SectionBar.OnCheck( (SectionBar::check_event_handler)&ImageIntegrationInterface::e_SectionBar_Check, w );
+
+   const char* noiseEvaluationToolTip = "<p>Noise evaluation algorithm. This option selects an algorithm for automatic "
+      "estimation of the standard deviation of the noise in the integrated image, as well as for input images when noise "
+      "estimates metadata is not available.</p>"
+      "<p>The <b>multiresolution support (MRS)</b> noise estimation routine implements the iterative algorithm described by "
+      "Jean-Luc Starck and Fionn Murtagh in their paper <em>Automatic Noise Estimation from the Multiresolution Support</em> "
+      "(Publications of the Royal Astronomical Society of the Pacific, vol. 110, pp. 193-199). In our implementation, the "
+      "standard deviation of the noise is evaluated on the first four wavelet layers, assuming a Gaussian noise distribution. "
+      "MRS is a remarkably accurate and robust algorithm and the default option for noise evaluation.</p>"
+      "<p>The <b>iterative k-sigma clipping</b> algorithm can be used as a last-resort option in cases where the MRS algorithm "
+      "does not converge systematically. This can happen on images with no detectable small-scale noise, but should never "
+      "happen with integrated images under normal working conditions.</p>"
+      "<p>The <b>N* robust noise estimator</b> extracts a subset of residual pixels by comparison with a large-scale model of "
+      "the local background of the image, generated with the multiscale median transform (MMT). Since the MMT is remarkably "
+      "efficient at isolating image structures, it can be used to detect pixels that cannot contribute to significant structures. "
+      "N* is an accurate and robust, alternative estimator of the standard deviation of the noise that does not assume or require "
+      "any particular statistical distribution in the analyzed data.</p>";
+
+   NoiseEvaluationAlgorithm_Label.SetText( "Noise estimator:" );
+   NoiseEvaluationAlgorithm_Label.SetFixedWidth( labelWidth1 );
+   NoiseEvaluationAlgorithm_Label.SetToolTip( noiseEvaluationToolTip );
+   NoiseEvaluationAlgorithm_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+
+   NoiseEvaluationAlgorithm_ComboBox.AddItem( "Iterative k-sigma clipping" );
+   NoiseEvaluationAlgorithm_ComboBox.AddItem( "Multiresolution support" );
+   NoiseEvaluationAlgorithm_ComboBox.AddItem( "N* robust noise estimator" );
+   NoiseEvaluationAlgorithm_ComboBox.SetToolTip( noiseEvaluationToolTip );
+   NoiseEvaluationAlgorithm_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ImageIntegrationInterface::e_ItemSelected, w );
+
+   NoiseEvaluationAlgorithm_Sizer.SetSpacing( 4 );
+   NoiseEvaluationAlgorithm_Sizer.Add( NoiseEvaluationAlgorithm_Label );
+   NoiseEvaluationAlgorithm_Sizer.Add( NoiseEvaluationAlgorithm_ComboBox );
+   NoiseEvaluationAlgorithm_Sizer.AddStretch();
+
+   const char* structureLayersToolTip =
+   "<p>Number of wavelet layers used for structure detection.</p>"
+   "<p>With more wavelet layers, larger stars (and perhaps also some nonstellar objects) will be detected.</p>";
+
+   StructureLayers_Label.SetText( "Detection scales:" );
+   StructureLayers_Label.SetFixedWidth( labelWidth1 );
+   StructureLayers_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   StructureLayers_Label.SetToolTip( structureLayersToolTip );
+
+   StructureLayers_SpinBox.SetRange( int( TheIIPSFStructureLayersParameter->MinimumValue() ), int( TheIIPSFStructureLayersParameter->MaximumValue() ) );
+   StructureLayers_SpinBox.SetToolTip( structureLayersToolTip );
+   StructureLayers_SpinBox.SetFixedWidth( editWidth2 );
+   StructureLayers_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&ImageIntegrationInterface::e_SpinValueUpdated, w );
+
+   StructureLayers_Sizer.SetSpacing( 4 );
+   StructureLayers_Sizer.Add( StructureLayers_Label );
+   StructureLayers_Sizer.Add( StructureLayers_SpinBox );
+   StructureLayers_Sizer.AddStretch();
+
+   const char* psfTypeToolTip =
+      "<p>Point spread function type used for PSF fitting and photometry.</p>"
+      "<p>In all cases elliptical functions are fitted to detected star structures, and PSF sampling regions are "
+      "defined adaptively using a median stabilization algorithm.</p>"
+      "<p>When the <b>Auto</b> option is selected, a series of different PSFs will be fitted for each source, and "
+      "the fit that leads to the least absolute difference among function values and sampled pixel values will be "
+      "used for flux measurement. Currently the following functions are tested in this special automatic mode: "
+      "Moffat functions with <i>beta</i> shape parameters equal to 2.5, 4, 6 and 10.</p>";
+
+   PSFType_Label.SetText( "PSF type:" );
+   PSFType_Label.SetFixedWidth( labelWidth1 );
+   PSFType_Label.SetToolTip( psfTypeToolTip );
+   PSFType_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+
+   PSFType_ComboBox.AddItem( "Gaussian" );
+   PSFType_ComboBox.AddItem( "Moffat beta = 1.5" );
+   PSFType_ComboBox.AddItem( "Moffat beta = 4" );
+   PSFType_ComboBox.AddItem( "Moffat beta = 6" );
+   PSFType_ComboBox.AddItem( "Moffat beta = 8" );
+   PSFType_ComboBox.AddItem( "Moffat beta = 10" );
+   PSFType_ComboBox.AddItem( "Auto" );
+   PSFType_ComboBox.SetToolTip( psfTypeToolTip );
+   PSFType_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ImageIntegrationInterface::e_ItemSelected, w );
+
+   PSFType_Sizer.SetSpacing( 4 );
+   PSFType_Sizer.Add( PSFType_Label );
+   PSFType_Sizer.Add( PSFType_ComboBox );
+   PSFType_Sizer.AddStretch();
+
+   SNREvaluation_Sizer.SetSpacing( 4 );
+   SNREvaluation_Sizer.Add( NoiseEvaluationAlgorithm_Sizer );
+   SNREvaluation_Sizer.Add( StructureLayers_Sizer );
+   SNREvaluation_Sizer.Add( PSFType_Sizer );
+
+   SNREvaluation_Control.SetSizer( SNREvaluation_Sizer );
+
+   //
+
    ROI_SectionBar.SetTitle( "Region of Interest" );
    ROI_SectionBar.EnableTitleCheckBox();
    ROI_SectionBar.SetSection( ROI_Control );
-   ROI_SectionBar.OnCheck( (SectionBar::check_event_handler)&ImageIntegrationInterface::e_ROI_Check, w );
+   ROI_SectionBar.OnCheck( (SectionBar::check_event_handler)&ImageIntegrationInterface::e_SectionBar_Check, w );
    ROI_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&ImageIntegrationInterface::e_ToggleSection, w );
    ROI_SectionBar.OnViewDrag( (Control::view_drag_event_handler)&ImageIntegrationInterface::e_ViewDrag, w );
    ROI_SectionBar.OnViewDrop( (Control::view_drop_event_handler)&ImageIntegrationInterface::e_ViewDrop, w );
@@ -2435,7 +2573,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    ROIX0_SpinBox.SetRange( 0, int_max );
    //ROIX0_SpinBox.SetFixedWidth( spinWidth1 );
    ROIX0_SpinBox.SetToolTip( roiX0ToolTip );
-   ROIX0_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&ImageIntegrationInterface::e_ROI_SpinValueUpdated, w );
+   ROIX0_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&ImageIntegrationInterface::e_SpinValueUpdated, w );
 
    ROIX0_Sizer.SetSpacing( 4 );
    ROIX0_Sizer.Add( ROIX0_Label );
@@ -2452,7 +2590,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    ROIY0_SpinBox.SetRange( 0, int_max );
    //ROIY0_SpinBox.SetFixedWidth( spinWidth1 );
    ROIY0_SpinBox.SetToolTip( roiY0ToolTip );
-   ROIY0_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&ImageIntegrationInterface::e_ROI_SpinValueUpdated, w );
+   ROIY0_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&ImageIntegrationInterface::e_SpinValueUpdated, w );
 
    ROIY0_Sizer.SetSpacing( 4 );
    ROIY0_Sizer.Add( ROIY0_Label );
@@ -2469,7 +2607,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    ROIWidth_SpinBox.SetRange( 0, int_max );
    //ROIWidth_SpinBox.SetFixedWidth( spinWidth1 );
    ROIWidth_SpinBox.SetToolTip( roiWidthToolTip );
-   ROIWidth_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&ImageIntegrationInterface::e_ROI_SpinValueUpdated, w );
+   ROIWidth_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&ImageIntegrationInterface::e_SpinValueUpdated, w );
 
    ROIWidth_Sizer.SetSpacing( 4 );
    ROIWidth_Sizer.Add( ROIWidth_Label );
@@ -2486,11 +2624,11 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    ROIHeight_SpinBox.SetRange( 0, int_max );
    //ROIHeight_SpinBox.SetFixedWidth( spinWidth1 );
    ROIHeight_SpinBox.SetToolTip( roiHeightToolTip );
-   ROIHeight_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&ImageIntegrationInterface::e_ROI_SpinValueUpdated, w );
+   ROIHeight_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&ImageIntegrationInterface::e_SpinValueUpdated, w );
 
    SelectPreview_Button.SetText( "From Preview" );
    SelectPreview_Button.SetToolTip( "<p>Import ROI coordinates from an existing preview.</p>" );
-   SelectPreview_Button.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_ROI_Click, w );
+   SelectPreview_Button.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Click, w );
    SelectPreview_Button.OnViewDrag( (Control::view_drag_event_handler)&ImageIntegrationInterface::e_ViewDrag, w );
    SelectPreview_Button.OnViewDrop( (Control::view_drop_event_handler)&ImageIntegrationInterface::e_ViewDrop, w );
 
@@ -2528,6 +2666,8 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    Global_Sizer.Add( Rejection3_Control );
    Global_Sizer.Add( LargeScaleRejection_SectionBar );
    Global_Sizer.Add( LargeScaleRejection_Control );
+   Global_Sizer.Add( SNREvaluation_SectionBar );
+   Global_Sizer.Add( SNREvaluation_Control );
    Global_Sizer.Add( ROI_SectionBar );
    Global_Sizer.Add( ROI_Control );
 
@@ -2542,6 +2682,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    Rejection2_Control.Hide();
    Rejection3_Control.Hide();
    LargeScaleRejection_Control.Hide();
+   SNREvaluation_Control.Hide();
    ROI_Control.Hide();
 
    w.AdjustToContents();
@@ -2552,4 +2693,4 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationInterface.cpp - Released 2021-12-29T20:37:28Z
+// EOF ImageIntegrationInterface.cpp - Released 2022-03-12T18:59:53Z

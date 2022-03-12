@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.8.0
+// Standard ImageCalibration Process Module Version 1.9.1
 // ----------------------------------------------------------------------------
-// LocalNormalizationParameters.cpp - Released 2021-12-29T20:37:28Z
+// LocalNormalizationParameters.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -57,42 +57,68 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-LNScale*                       TheLNScaleParameter = nullptr;
-LNNoScale*                     TheLNNoScaleParameter = nullptr;
-LNRejection*                   TheLNRejectionParameter = nullptr;
-LNBackgroundRejectionLimit*    TheLNBackgroundRejectionLimitParameter = nullptr;
-LNReferenceRejectionThreshold* TheLNReferenceRejectionThresholdParameter = nullptr;
-LNTargetRejectionThreshold*    TheLNTargetRejectionThresholdParameter = nullptr;
-LNHotPixelFilterRadius*        TheLNHotPixelFilterRadiusParameter = nullptr;
-LNNoiseReductionFilterRadius*  TheLNNoiseReductionFilterRadiusParameter = nullptr;
-LNReferencePathOrViewId*       TheLNReferencePathOrViewIdParameter = nullptr;
-LNReferenceIsView*             TheLNReferenceIsViewParameter = nullptr;
-LNTargetItems*                 TheLNTargetItemsParameter = nullptr;
-LNTargetEnabled*               TheLNTargetEnabledParameter = nullptr;
-LNTargetImage*                 TheLNTargetImageParameter = nullptr;
-LNInputHints*                  TheLNInputHintsParameter = nullptr;
-LNOutputHints*                 TheLNOutputHintsParameter = nullptr;
-LNGenerateNormalizedImages*    TheLNGenerateNormalizedImagesParameter = nullptr;
-LNGenerateNormalizationData*   TheLNGenerateNormalizationDataParameter = nullptr;
-LNShowBackgroundModels*        TheLNShowBackgroundModelsParameter = nullptr;
-LNShowRejectionMaps*           TheLNShowRejectionMapsParameter = nullptr;
-LNPlotNormalizationFunctions*  TheLNPlotNormalizationFunctionsParameter = nullptr;
-LNNoGUIMessages*               TheLNNoGUIMessagesParameter = nullptr;
-LNOutputDirectory*             TheLNOutputDirectoryParameter = nullptr;
-LNOutputExtension*             TheLNOutputExtensionParameter = nullptr;
-LNOutputPrefix*                TheLNOutputPrefixParameter = nullptr;
-LNOutputPostfix*               TheLNOutputPostfixParameter = nullptr;
-LNOverwriteExistingFiles*      TheLNOverwriteExistingFilesParameter = nullptr;
-LNOnError*                     TheLNOnErrorParameter = nullptr;
-LNUseFileThreads*              TheLNUseFileThreadsParameter = nullptr;
-LNFileThreadOverload*          TheLNFileThreadOverloadParameter = nullptr;
-LNMaxFileReadThreads*          TheLNMaxFileReadThreadsParameter = nullptr;
-LNMaxFileWriteThreads*         TheLNMaxFileWriteThreadsParameter = nullptr;
-LNGraphSize*                   TheLNGraphSizeParameter = nullptr;
-LNGraphTextSize*               TheLNGraphTextSizeParameter = nullptr;
-LNGraphTitleSize*              TheLNGraphTitleSizeParameter = nullptr;
-LNGraphTransparent*            TheLNGraphTransparentParameter = nullptr;
-LNGraphOutputDirectory*        TheLNGraphOutputDirectoryParameter = nullptr;
+LNScale*                         TheLNScaleParameter = nullptr;
+LNNoScale*                       TheLNNoScaleParameter = nullptr;
+LNGlobalLocationNormalization*   TheLNGlobalLocationNormalizationParameter = nullptr;
+LNRejection*                     TheLNRejectionParameter = nullptr;
+LNTruncate*                      TheLNTruncateParameter = nullptr;
+LNBackgroundSamplingDelta*       TheLNBackgroundSamplingDeltaParameter = nullptr;
+LNBackgroundRejectionLimit*      TheLNBackgroundRejectionLimitParameter = nullptr;
+LNReferenceRejectionThreshold*   TheLNReferenceRejectionThresholdParameter = nullptr;
+LNTargetRejectionThreshold*      TheLNTargetRejectionThresholdParameter = nullptr;
+LNHotPixelFilterRadius*          TheLNHotPixelFilterRadiusParameter = nullptr;
+LNNoiseReductionFilterRadius*    TheLNNoiseReductionFilterRadiusParameter = nullptr;
+LNModelScalingFactor*            TheLNModelScalingFactorParameter = nullptr;
+LNScaleEvaluationMethod*         TheLNScaleEvaluationMethodParameter = nullptr;
+LNLocalScaleCorrections*         TheLNLocalScaleCorrectionsParameter = nullptr;
+LNStructureLayers*               TheLNStructureLayersParameter = nullptr;
+LNSaturationThreshold*           TheLNSaturationThresholdParameter = nullptr;
+LNSaturationRelative*            TheLNSaturationRelativeParameter = nullptr;
+LNPSFNoiseLayers*                TheLNPSFNoiseLayersParameter = nullptr;
+LNPSFHotPixelFilterRadius*       TheLNPSFHotPixelFilterRadiusParameter = nullptr;
+LNPSFNoiseReductionFilterRadius* TheLNPSFNoiseReductionFilterRadiusParameter = nullptr;
+LNPSFMinStructureSize*           TheLNPSFMinStructureSizeParameter = nullptr;
+LNPSFType*                       TheLNPSFTypeParameter = nullptr;
+LNPSFGrowth*                     TheLNPSFGrowthParameter = nullptr;
+LNPSFMaxStars*                   TheLNPSFMaxStarsParameter = nullptr;
+LNReferencePathOrViewId*         TheLNReferencePathOrViewIdParameter = nullptr;
+LNReferenceIsView*               TheLNReferenceIsViewParameter = nullptr;
+LNTargetItems*                   TheLNTargetItemsParameter = nullptr;
+LNTargetEnabled*                 TheLNTargetEnabledParameter = nullptr;
+LNTargetImage*                   TheLNTargetImageParameter = nullptr;
+LNInputHints*                    TheLNInputHintsParameter = nullptr;
+LNOutputHints*                   TheLNOutputHintsParameter = nullptr;
+LNGenerateNormalizedImages*      TheLNGenerateNormalizedImagesParameter = nullptr;
+LNGenerateNormalizationData*     TheLNGenerateNormalizationDataParameter = nullptr;
+LNShowBackgroundModels*          TheLNShowBackgroundModelsParameter = nullptr;
+LNShowLocalScaleModels*          TheLNShowLocalScaleModelsParameter = nullptr;
+LNShowRejectionMaps*             TheLNShowRejectionMapsParameter = nullptr;
+LNShowStructureMaps*             TheLNShowStructureMapsParameter = nullptr;
+LNPlotNormalizationFunctions*    TheLNPlotNormalizationFunctionsParameter = nullptr;
+LNNoGUIMessages*                 TheLNNoGUIMessagesParameter = nullptr;
+LNAutoMemoryLimit*               TheLNAutoMemoryLimitParameter = nullptr;
+LNOutputDirectory*               TheLNOutputDirectoryParameter = nullptr;
+LNOutputExtension*               TheLNOutputExtensionParameter = nullptr;
+LNOutputPrefix*                  TheLNOutputPrefixParameter = nullptr;
+LNOutputPostfix*                 TheLNOutputPostfixParameter = nullptr;
+LNOverwriteExistingFiles*        TheLNOverwriteExistingFilesParameter = nullptr;
+LNOnError*                       TheLNOnErrorParameter = nullptr;
+LNUseFileThreads*                TheLNUseFileThreadsParameter = nullptr;
+LNFileThreadOverload*            TheLNFileThreadOverloadParameter = nullptr;
+LNMaxFileReadThreads*            TheLNMaxFileReadThreadsParameter = nullptr;
+LNMaxFileWriteThreads*           TheLNMaxFileWriteThreadsParameter = nullptr;
+LNGraphSize*                     TheLNGraphSizeParameter = nullptr;
+LNGraphTextSize*                 TheLNGraphTextSizeParameter = nullptr;
+LNGraphTitleSize*                TheLNGraphTitleSizeParameter = nullptr;
+LNGraphTransparent*              TheLNGraphTransparentParameter = nullptr;
+LNGraphOutputDirectory*          TheLNGraphOutputDirectoryParameter = nullptr;
+
+LNOutputData*                    TheLNOutputDataParameter = nullptr;
+LNOutputFilePathXNML*            TheLNOutputFilePathXNMLParameter = nullptr;
+LNOutputFilePath*                TheLNOutputFilePathParameter = nullptr;
+LNScaleFactorRK*                 TheLNScaleFactorRKParameter = nullptr;
+LNScaleFactorG*                  TheLNScaleFactorGParameter = nullptr;
+LNScaleFactorB*                  TheLNScaleFactorBParameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -113,12 +139,12 @@ double LNScale::MinimumValue() const
 
 double LNScale::MaximumValue() const
 {
-   return 65536;
+   return 1024;
 }
 
 double LNScale::DefaultValue() const
 {
-   return 128;
+   return 512;
 }
 
 // ----------------------------------------------------------------------------
@@ -140,6 +166,23 @@ bool LNNoScale::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
+LNGlobalLocationNormalization::LNGlobalLocationNormalization( MetaProcess* P ) : MetaBoolean( P )
+{
+   TheLNGlobalLocationNormalizationParameter = this;
+}
+
+IsoString LNGlobalLocationNormalization::Id() const
+{
+   return "globalLocationNormalization";
+}
+
+bool LNGlobalLocationNormalization::DefaultValue() const
+{
+   return false;
+}
+
+// ----------------------------------------------------------------------------
+
 LNRejection::LNRejection( MetaProcess* P ) : MetaBoolean( P )
 {
    TheLNRejectionParameter = this;
@@ -153,6 +196,50 @@ IsoString LNRejection::Id() const
 bool LNRejection::DefaultValue() const
 {
    return true;
+}
+
+// ----------------------------------------------------------------------------
+
+LNTruncate::LNTruncate( MetaProcess* P ) : MetaBoolean( P )
+{
+   TheLNTruncateParameter = this;
+}
+
+IsoString LNTruncate::Id() const
+{
+   return "truncate";
+}
+
+bool LNTruncate::DefaultValue() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+LNBackgroundSamplingDelta::LNBackgroundSamplingDelta( MetaProcess* P ) : MetaInt32( P )
+{
+   TheLNBackgroundSamplingDeltaParameter = this;
+}
+
+IsoString LNBackgroundSamplingDelta::Id() const
+{
+   return "backgroundSamplingDelta";
+}
+
+double LNBackgroundSamplingDelta::MinimumValue() const
+{
+   return 8;
+}
+
+double LNBackgroundSamplingDelta::MaximumValue() const
+{
+   return 64;
+}
+
+double LNBackgroundSamplingDelta::DefaultValue() const
+{
+   return 32;
 }
 
 // ----------------------------------------------------------------------------
@@ -307,6 +394,392 @@ double LNNoiseReductionFilterRadius::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
+LNModelScalingFactor::LNModelScalingFactor( MetaProcess* P ) : MetaFloat( P )
+{
+   TheLNModelScalingFactorParameter = this;
+}
+
+IsoString LNModelScalingFactor::Id() const
+{
+   return "modelScalingFactor";
+}
+
+int LNModelScalingFactor::Precision() const
+{
+   return 2;
+}
+
+double LNModelScalingFactor::DefaultValue() const
+{
+   return 8;
+}
+
+double LNModelScalingFactor::MinimumValue() const
+{
+   return 1;
+}
+
+double LNModelScalingFactor::MaximumValue() const
+{
+   return 32; // same as minimum scale
+}
+
+// ----------------------------------------------------------------------------
+
+LNScaleEvaluationMethod::LNScaleEvaluationMethod( MetaProcess* p ) : MetaEnumeration( p )
+{
+   TheLNScaleEvaluationMethodParameter = this;
+}
+
+IsoString LNScaleEvaluationMethod::Id() const
+{
+   return "scaleEvaluationMethod";
+}
+
+size_type LNScaleEvaluationMethod::NumberOfElements() const
+{
+   return NumberOfItems;
+}
+
+IsoString LNScaleEvaluationMethod::ElementId( size_type i ) const
+{
+   switch ( i )
+   {
+   default:
+   case PSFSignal:          return "ScaleEvaluationMethod_PSFSignal";
+   case MultiscaleAnalysis: return "ScaleEvaluationMethod_MultiscaleAnalysis";
+   }
+}
+
+int LNScaleEvaluationMethod::ElementValue( size_type i ) const
+{
+   return int( i );
+}
+
+size_type LNScaleEvaluationMethod::DefaultValueIndex() const
+{
+   return size_type( Default );
+}
+
+// ----------------------------------------------------------------------------
+
+LNLocalScaleCorrections::LNLocalScaleCorrections( MetaProcess* P ) : MetaBoolean( P )
+{
+   TheLNLocalScaleCorrectionsParameter = this;
+}
+
+IsoString LNLocalScaleCorrections::Id() const
+{
+   return "localScaleCorrections";
+}
+
+bool LNLocalScaleCorrections::DefaultValue() const
+{
+   return false; // N.B. Local scale corrections are an experimental feature
+}
+
+// ----------------------------------------------------------------------------
+
+LNStructureLayers::LNStructureLayers( MetaProcess* p ) : MetaInt32( p )
+{
+   TheLNStructureLayersParameter = this;
+}
+
+IsoString LNStructureLayers::Id() const
+{
+   return "psfStructureLayers";
+}
+
+double LNStructureLayers::DefaultValue() const
+{
+   return 5;
+}
+
+double LNStructureLayers::MinimumValue() const
+{
+   return 1;
+}
+
+double LNStructureLayers::MaximumValue() const
+{
+   return 8;
+}
+
+// ----------------------------------------------------------------------------
+
+LNSaturationThreshold::LNSaturationThreshold( MetaProcess* P ) : MetaFloat( P )
+{
+   TheLNSaturationThresholdParameter = this;
+}
+
+IsoString LNSaturationThreshold::Id() const
+{
+   return "saturationThreshold";
+}
+
+int LNSaturationThreshold::Precision() const
+{
+   return 2;
+}
+
+double LNSaturationThreshold::DefaultValue() const
+{
+   return 0.75;
+}
+
+double LNSaturationThreshold::MinimumValue() const
+{
+   return 0.10;
+}
+
+double LNSaturationThreshold::MaximumValue() const
+{
+   return 1.00;
+}
+
+// ----------------------------------------------------------------------------
+
+LNSaturationRelative::LNSaturationRelative( MetaProcess* P ) : MetaBoolean( P )
+{
+   TheLNSaturationRelativeParameter = this;
+}
+
+IsoString LNSaturationRelative::Id() const
+{
+   return "saturationRelative";
+}
+
+bool LNSaturationRelative::DefaultValue() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+LNPSFNoiseLayers::LNPSFNoiseLayers( MetaProcess* p ) : MetaInt32( p )
+{
+   TheLNPSFNoiseLayersParameter = this;
+}
+
+IsoString LNPSFNoiseLayers::Id() const
+{
+   return "psfNoiseLayers";
+}
+
+double LNPSFNoiseLayers::DefaultValue() const
+{
+   return 1;
+}
+
+double LNPSFNoiseLayers::MinimumValue() const
+{
+   return 0;
+}
+
+double LNPSFNoiseLayers::MaximumValue() const
+{
+   return 4;
+}
+
+// ----------------------------------------------------------------------------
+
+LNPSFHotPixelFilterRadius::LNPSFHotPixelFilterRadius( MetaProcess* p ) : MetaInt32( p )
+{
+   TheLNPSFHotPixelFilterRadiusParameter = this;
+}
+
+IsoString LNPSFHotPixelFilterRadius::Id() const
+{
+   return "psfHotPixelFilterRadius";
+}
+
+double LNPSFHotPixelFilterRadius::DefaultValue() const
+{
+   return 1;
+}
+
+double LNPSFHotPixelFilterRadius::MinimumValue() const
+{
+   return 0;
+}
+
+double LNPSFHotPixelFilterRadius::MaximumValue() const
+{
+   return 2;
+}
+
+// ----------------------------------------------------------------------------
+
+LNPSFNoiseReductionFilterRadius::LNPSFNoiseReductionFilterRadius( MetaProcess* p ) : MetaInt32( p )
+{
+   TheLNPSFNoiseReductionFilterRadiusParameter = this;
+}
+
+IsoString LNPSFNoiseReductionFilterRadius::Id() const
+{
+   return "psfNoiseReductionFilterRadius";
+}
+
+double LNPSFNoiseReductionFilterRadius::DefaultValue() const
+{
+   return 0;
+}
+
+double LNPSFNoiseReductionFilterRadius::MinimumValue() const
+{
+   return 0;
+}
+
+double LNPSFNoiseReductionFilterRadius::MaximumValue() const
+{
+   return 50;
+}
+
+// ----------------------------------------------------------------------------
+
+LNPSFMinStructureSize::LNPSFMinStructureSize( MetaProcess* p ) : MetaInt32( p )
+{
+   TheLNPSFMinStructureSizeParameter = this;
+}
+
+IsoString LNPSFMinStructureSize::Id() const
+{
+   return "psfMinStructureSize";
+}
+
+double LNPSFMinStructureSize::DefaultValue() const
+{
+   return 0;
+}
+
+double LNPSFMinStructureSize::MinimumValue() const
+{
+   return 0;
+}
+
+double LNPSFMinStructureSize::MaximumValue() const
+{
+   return 999999;
+}
+
+// ----------------------------------------------------------------------------
+
+LNPSFType::LNPSFType( MetaProcess* P ) : MetaEnumeration( P )
+{
+   TheLNPSFTypeParameter = this;
+}
+
+IsoString LNPSFType::Id() const
+{
+   return "psfType";
+}
+
+size_type LNPSFType::NumberOfElements() const
+{
+   return NumberOfItems;
+}
+
+IsoString LNPSFType::ElementId( size_type i ) const
+{
+   switch ( i )
+   {
+   case Gaussian: return "PSFType_Gaussian";
+   case Moffat15: return "PSFType_Moffat15";
+   case Moffat4:  return "PSFType_Moffat4";
+   case Moffat6:  return "PSFType_Moffat6";
+   case Moffat8:  return "PSFType_Moffat8";
+   case MoffatA:  return "PSFType_MoffatA";
+   default:
+   case Auto:     return "PSFType_Auto";
+   }
+}
+
+IsoString LNPSFType::FunctionName( pcl_enum i )
+{
+   switch ( i )
+   {
+   case Gaussian: return "Gaussian";
+   case Moffat15: return "Moffat15";
+   case Moffat4:  return "Moffat4";
+   case Moffat6:  return "Moffat6";
+   case Moffat8:  return "Moffat8";
+   case MoffatA:  return "MoffatA";
+   default:
+   case Auto:     return "Auto";
+   }
+}
+
+int LNPSFType::ElementValue( size_type i ) const
+{
+   return int( i );
+}
+
+size_type LNPSFType::DefaultValueIndex() const
+{
+   return size_type( Default );
+}
+
+// ----------------------------------------------------------------------------
+
+LNPSFGrowth::LNPSFGrowth( MetaProcess* P ) : MetaFloat( P )
+{
+   TheLNPSFGrowthParameter = this;
+}
+
+IsoString LNPSFGrowth::Id() const
+{
+   return "psfGrowth";
+}
+
+int LNPSFGrowth::Precision() const
+{
+   return 2;
+}
+
+double LNPSFGrowth::DefaultValue() const
+{
+   return 1.0;
+}
+
+double LNPSFGrowth::MinimumValue() const
+{
+   return 0.5;
+}
+
+double LNPSFGrowth::MaximumValue() const
+{
+   return 4.0;
+}
+
+// ----------------------------------------------------------------------------
+
+LNPSFMaxStars::LNPSFMaxStars( MetaProcess* p ) : MetaInt32( p )
+{
+   TheLNPSFMaxStarsParameter = this;
+}
+
+IsoString LNPSFMaxStars::Id() const
+{
+   return "psfMaxStars";
+}
+
+double LNPSFMaxStars::DefaultValue() const
+{
+   return 24*1024;
+}
+
+double LNPSFMaxStars::MinimumValue() const
+{
+   return 256;
+}
+
+double LNPSFMaxStars::MaximumValue() const
+{
+   return 999999;
+}
+
+// ----------------------------------------------------------------------------
+
 LNReferencePathOrViewId::LNReferencePathOrViewId( MetaProcess* P ) : MetaString( P )
 {
    TheLNReferencePathOrViewIdParameter = this;
@@ -331,7 +804,7 @@ IsoString LNReferenceIsView::Id() const
 
 bool LNReferenceIsView::DefaultValue() const
 {
-   return false;
+   return true;
 }
 
 // ----------------------------------------------------------------------------
@@ -474,6 +947,23 @@ bool LNShowBackgroundModels::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
+LNShowLocalScaleModels::LNShowLocalScaleModels( MetaProcess* P ) : MetaBoolean( P )
+{
+   TheLNShowLocalScaleModelsParameter = this;
+}
+
+IsoString LNShowLocalScaleModels::Id() const
+{
+   return "showLocalScaleModels";
+}
+
+bool LNShowLocalScaleModels::DefaultValue() const
+{
+   return false;
+}
+
+// ----------------------------------------------------------------------------
+
 LNShowRejectionMaps::LNShowRejectionMaps( MetaProcess* P ) : MetaBoolean( P )
 {
    TheLNShowRejectionMapsParameter = this;
@@ -485,6 +975,23 @@ IsoString LNShowRejectionMaps::Id() const
 }
 
 bool LNShowRejectionMaps::DefaultValue() const
+{
+   return false;
+}
+
+// ----------------------------------------------------------------------------
+
+LNShowStructureMaps::LNShowStructureMaps( MetaProcess* P ) : MetaBoolean( P )
+{
+   TheLNShowStructureMapsParameter = this;
+}
+
+IsoString LNShowStructureMaps::Id() const
+{
+   return "showStructureMaps";
+}
+
+bool LNShowStructureMaps::DefaultValue() const
 {
    return false;
 }
@@ -512,8 +1019,8 @@ IsoString LNPlotNormalizationFunctions::ElementId( size_type i ) const
    {
    case DontPlot:  return "PlotNormalizationFunctions_DontPlot";
    case Line3D:    return "PlotNormalizationFunctions_Line3D";
-   default:
    case Palette3D: return "PlotNormalizationFunctions_Palette3D";
+   default:
    case Map3D:     return "PlotNormalizationFunctions_Map3D";
    }
 }
@@ -544,6 +1051,38 @@ IsoString LNNoGUIMessages::Id() const
 bool LNNoGUIMessages::DefaultValue() const
 {
    return true;
+}
+
+// ----------------------------------------------------------------------------
+
+LNAutoMemoryLimit::LNAutoMemoryLimit( MetaProcess* P ) : MetaFloat( P )
+{
+   TheLNAutoMemoryLimitParameter = this;
+}
+
+IsoString LNAutoMemoryLimit::Id() const
+{
+   return "autoMemoryLimit";
+}
+
+int LNAutoMemoryLimit::Precision() const
+{
+   return 2;
+}
+
+double LNAutoMemoryLimit::DefaultValue() const
+{
+   return 0.85;
+}
+
+double LNAutoMemoryLimit::MinimumValue() const
+{
+   return 0.10;
+}
+
+double LNAutoMemoryLimit::MaximumValue() const
+{
+   return 1.00;
 }
 
 // ----------------------------------------------------------------------------
@@ -781,7 +1320,7 @@ IsoString LNGraphSize::Id() const
 
 double LNGraphSize::DefaultValue() const
 {
-   return 800;
+   return 1024;
 }
 
 double LNGraphSize::MinimumValue() const
@@ -883,8 +1422,126 @@ String LNGraphOutputDirectory::DefaultValue() const
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+
+LNOutputData::LNOutputData( MetaProcess* P ) : MetaTable( P )
+{
+   TheLNOutputDataParameter = this;
+}
+
+IsoString LNOutputData::Id() const
+{
+   return "outputData";
+}
+
+bool LNOutputData::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+LNOutputFilePathXNML::LNOutputFilePathXNML( MetaTable* T ) : MetaString( T )
+{
+   TheLNOutputFilePathXNMLParameter = this;
+}
+
+IsoString LNOutputFilePathXNML::Id() const
+{
+   return "outputFilePathXNML";
+}
+
+bool LNOutputFilePathXNML::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+LNOutputFilePath::LNOutputFilePath( MetaTable* T ) : MetaString( T )
+{
+   TheLNOutputFilePathParameter = this;
+}
+
+IsoString LNOutputFilePath::Id() const
+{
+   return "outputFilePath";
+}
+
+bool LNOutputFilePath::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+LNScaleFactorRK::LNScaleFactorRK( MetaTable* T ) : MetaFloat( T )
+{
+   TheLNScaleFactorRKParameter = this;
+}
+
+IsoString LNScaleFactorRK::Id() const
+{
+   return "scaleFactorRK";
+}
+
+int LNScaleFactorRK::Precision() const
+{
+   return 4;
+}
+
+bool LNScaleFactorRK::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+LNScaleFactorG::LNScaleFactorG( MetaTable* T ) : MetaFloat( T )
+{
+   TheLNScaleFactorGParameter = this;
+}
+
+IsoString LNScaleFactorG::Id() const
+{
+   return "scaleFactorG";
+}
+
+int LNScaleFactorG::Precision() const
+{
+   return 4;
+}
+
+bool LNScaleFactorG::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+LNScaleFactorB::LNScaleFactorB( MetaTable* T ) : MetaFloat( T )
+{
+   TheLNScaleFactorBParameter = this;
+}
+
+IsoString LNScaleFactorB::Id() const
+{
+   return "scaleFactorB";
+}
+
+int LNScaleFactorB::Precision() const
+{
+   return 4;
+}
+
+bool LNScaleFactorB::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationParameters.cpp - Released 2021-12-29T20:37:28Z
+// EOF LocalNormalizationParameters.cpp - Released 2022-03-12T18:59:53Z

@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// PreferencesInstance.cpp - Released 2021-12-29T20:37:28Z
+// PreferencesInstance.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -212,6 +212,7 @@ bool PreferencesInstance::ExecuteGlobal()
       PixInsightSettings::SetGlobalFlag    ( "ImageWindow/FileFormatWarnings",                  imageWindow.fileFormatWarnings );
       PixInsightSettings::SetGlobalFlag    ( "ImageWindow/UseFileNamesAsImageIdentifiers",      imageWindow.useFileNamesAsImageIdentifiers );
       PixInsightSettings::SetGlobalInteger ( "ImageWindow/CursorTolerance",                     imageWindow.cursorTolerance );
+      PixInsightSettings::SetGlobalFlag    ( "ImageWindow/ZoomAtCursor",                        imageWindow.zoomAtCursor );
       PixInsightSettings::SetGlobalUnsigned( "ImageWindow/WheelStepAngle",                      imageWindow.wheelStepAngle );
       PixInsightSettings::SetGlobalInteger ( "ImageWindow/WheelDirection",                      imageWindow.wheelDirection );
       PixInsightSettings::SetGlobalFlag    ( "ImageWindow/TouchEvents",                         imageWindow.touchEvents );
@@ -490,6 +491,8 @@ void* PreferencesInstance::LockParameter( const MetaParameter* p, size_type tabl
       return &imageWindow.useFileNamesAsImageIdentifiers;
    if ( p == METAPARAMETER_INSTANCE_ID( ImageWindow, cursorTolerance ) )
       return &imageWindow.cursorTolerance;
+   if ( p == METAPARAMETER_INSTANCE_ID( ImageWindow, zoomAtCursor ) )
+      return &imageWindow.zoomAtCursor;
    if ( p == METAPARAMETER_INSTANCE_ID( ImageWindow, wheelStepAngle ) )
       return &imageWindow.wheelStepAngle;
    if ( p == METAPARAMETER_INSTANCE_ID( ImageWindow, wheelDirection ) )
@@ -762,6 +765,7 @@ void PreferencesInstance::LoadDefaultSettings()
    imageWindow.fileFormatWarnings               =         METAPARAMETER_INSTANCE_ID( ImageWindow, fileFormatWarnings               )->DefaultValue();
    imageWindow.useFileNamesAsImageIdentifiers   =         METAPARAMETER_INSTANCE_ID( ImageWindow, useFileNamesAsImageIdentifiers   )->DefaultValue();
    imageWindow.cursorTolerance                  =  int32( METAPARAMETER_INSTANCE_ID( ImageWindow, cursorTolerance                  )->DefaultValue() );
+   imageWindow.zoomAtCursor                     =         METAPARAMETER_INSTANCE_ID( ImageWindow, zoomAtCursor                     )->DefaultValue();
    imageWindow.wheelStepAngle                   = uint32( METAPARAMETER_INSTANCE_ID( ImageWindow, wheelStepAngle                   )->DefaultValue() );
    imageWindow.wheelDirection                   =  int32( METAPARAMETER_INSTANCE_ID( ImageWindow, wheelDirection                   )->DefaultValue() );
    imageWindow.touchEvents                      =         METAPARAMETER_INSTANCE_ID( ImageWindow, touchEvents                      )->DefaultValue();
@@ -928,6 +932,7 @@ void PreferencesInstance::LoadCurrentSettings()
    imageWindow.fileFormatWarnings               = PixInsightSettings::GlobalFlag    ( "ImageWindow/FileFormatWarnings" );
    imageWindow.useFileNamesAsImageIdentifiers   = PixInsightSettings::GlobalFlag    ( "ImageWindow/UseFileNamesAsImageIdentifiers" );
    imageWindow.cursorTolerance                  = PixInsightSettings::GlobalInteger ( "ImageWindow/CursorTolerance" );
+   imageWindow.zoomAtCursor                     = PixInsightSettings::GlobalFlag    ( "ImageWindow/ZoomAtCursor" );
    imageWindow.wheelStepAngle                   = PixInsightSettings::GlobalUnsigned( "ImageWindow/WheelStepAngle" );
    imageWindow.wheelDirection                   = PixInsightSettings::GlobalInteger ( "ImageWindow/WheelDirection" );
    imageWindow.touchEvents                      = PixInsightSettings::GlobalFlag    ( "ImageWindow/TouchEvents" );
@@ -1108,4 +1113,4 @@ String* PreferencesInstance::StringParameterFromMetaParameter( const MetaParamet
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInstance.cpp - Released 2021-12-29T20:37:28Z
+// EOF PreferencesInstance.cpp - Released 2022-03-12T18:59:53Z

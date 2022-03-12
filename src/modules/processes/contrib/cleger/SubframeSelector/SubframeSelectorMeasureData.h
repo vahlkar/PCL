@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.7.3
+// Standard SubframeSelector Process Module Version 1.8.0
 // ----------------------------------------------------------------------------
-// SubframeSelectorMeasureData.h - Released 2021-12-29T20:37:28Z
+// SubframeSelectorMeasureData.h - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -85,9 +85,14 @@ struct MeasureProperties
    MeasureProperty eccentricity;
    MeasureProperty eccentricityMeanDev;
    MeasureProperty psfSignalWeight;
-   MeasureProperty psfSignalPowerWeight;
+   MeasureProperty psfSNR;
    MeasureProperty psfFlux;
    MeasureProperty psfFluxPower;
+   MeasureProperty psfTotalMeanFlux;
+   MeasureProperty psfTotalMeanPowerFlux;
+   MeasureProperty psfCount;
+   MeasureProperty MStar;
+   MeasureProperty NStar;
    MeasureProperty snrWeight;
    MeasureProperty median;
    MeasureProperty medianMeanDev;
@@ -112,9 +117,14 @@ struct MeasureData
    double eccentricity;
    double eccentricityMeanDev;
    double psfSignalWeight;
-   double psfSignalPowerWeight;
+   double psfSNR;
    double psfFlux;
    double psfFluxPower;
+   double psfTotalMeanFlux;
+   double psfTotalMeanPowerFlux;
+   uint32 psfCount;
+   double MStar;
+   double NStar;
    double snrWeight;
    double median;
    double medianMeanDev;
@@ -153,9 +163,14 @@ struct MeasureItem
    double   fwhm;
    double   eccentricity;
    double   psfSignalWeight;
-   double   psfSignalPowerWeight;
+   double   psfSNR;
    double   psfFlux;
    double   psfFluxPower;
+   double   psfTotalMeanFlux;
+   double   psfTotalMeanPowerFlux;
+   uint32   psfCount;
+   double   MStar;
+   double   NStar;
    double   snrWeight;
    double   median;
    double   medianMeanDev;
@@ -168,6 +183,7 @@ struct MeasureItem
    double   starResidualMeanDev;
    double   azimuth;
    double   altitude;
+   double   unused01 = 0; // ### compatibility
 
    MeasureItem( uint32 a_index, const String& a_path = String() )
       : index( a_index )
@@ -178,9 +194,14 @@ struct MeasureItem
       , fwhm( TheSSMeasurementFWHMParameter->DefaultValue() )
       , eccentricity( TheSSMeasurementEccentricityParameter->DefaultValue() )
       , psfSignalWeight( TheSSMeasurementPSFSignalWeightParameter->DefaultValue() )
-      , psfSignalPowerWeight( TheSSMeasurementPSFSignalPowerWeightParameter->DefaultValue() )
+      , psfSNR( TheSSMeasurementPSFSNRParameter->DefaultValue() )
       , psfFlux( TheSSMeasurementPSFFluxParameter->DefaultValue() )
       , psfFluxPower( TheSSMeasurementPSFFluxPowerParameter->DefaultValue() )
+      , psfTotalMeanFlux( TheSSMeasurementPSFTotalMeanFluxParameter->DefaultValue() )
+      , psfTotalMeanPowerFlux( TheSSMeasurementPSFTotalMeanPowerFluxParameter->DefaultValue() )
+      , psfCount( TheSSMeasurementPSFCountParameter->DefaultValue() )
+      , MStar( TheSSMeasurementMStarParameter->DefaultValue() )
+      , NStar( TheSSMeasurementNStarParameter->DefaultValue() )
       , snrWeight( TheSSMeasurementSNRWeightParameter->DefaultValue() )
       , median( TheSSMeasurementMedianParameter->DefaultValue() )
       , medianMeanDev( TheSSMeasurementMedianMeanDevParameter->DefaultValue() )
@@ -209,9 +230,14 @@ struct MeasureItem
       fwhm = measureData.fwhm;
       eccentricity = measureData.eccentricity;
       psfSignalWeight = measureData.psfSignalWeight;
-      psfSignalPowerWeight = measureData.psfSignalPowerWeight;
+      psfSNR = measureData.psfSNR;
       psfFlux = measureData.psfFlux;
       psfFluxPower = measureData.psfFluxPower;
+      psfTotalMeanFlux = measureData.psfTotalMeanFlux;
+      psfTotalMeanPowerFlux = measureData.psfTotalMeanPowerFlux;
+      psfCount = measureData.psfCount;
+      MStar = measureData.MStar;
+      NStar = measureData.NStar;
       snrWeight = measureData.snrWeight;
       median = measureData.median;
       medianMeanDev = measureData.medianMeanDev;
@@ -296,27 +322,32 @@ struct MeasureItem
    {
       switch ( sortBy )
       {
-      case SSSortingProperty::Index:                return index;
-      case SSSortingProperty::Weight:               return weight;
-      case SSSortingProperty::FWHM:                 return fwhm;
-      case SSSortingProperty::Eccentricity:         return eccentricity;
-      case SSSortingProperty::PSFSignalWeight:      return psfSignalWeight;
-      case SSSortingProperty::PSFSignalPowerWeight: return psfSignalPowerWeight;
-      case SSSortingProperty::PSFFlux:              return psfFlux;
-      case SSSortingProperty::PSFFluxPower:         return psfFluxPower;
-      case SSSortingProperty::SNRWeight:            return snrWeight;
-      case SSSortingProperty::Median:               return median;
-      case SSSortingProperty::MedianMeanDev:        return medianMeanDev;
-      case SSSortingProperty::Noise:                return noise;
-      case SSSortingProperty::NoiseRatio:           return noiseRatio;
-      case SSSortingProperty::Stars:                return stars;
-      case SSSortingProperty::StarResidual:         return starResidual;
-      case SSSortingProperty::FWHMMeanDev:          return fwhmMeanDev;
-      case SSSortingProperty::EccentricityMeanDev:  return eccentricityMeanDev;
-      case SSSortingProperty::StarResidualMeanDev:  return starResidualMeanDev;
-      case SSSortingProperty::Azimuth:              return azimuth;
-      case SSSortingProperty::Altitude:             return altitude;
-      default:                                      return 0; // ?
+      case SSSortingProperty::Index:                 return index;
+      case SSSortingProperty::Weight:                return weight;
+      case SSSortingProperty::FWHM:                  return fwhm;
+      case SSSortingProperty::Eccentricity:          return eccentricity;
+      case SSSortingProperty::PSFSignalWeight:       return psfSignalWeight;
+      case SSSortingProperty::PSFSNR:                return psfSNR;
+      case SSSortingProperty::PSFFlux:               return psfFlux;
+      case SSSortingProperty::PSFFluxPower:          return psfFluxPower;
+      case SSSortingProperty::PSFTotalMeanFlux:      return psfTotalMeanFlux;
+      case SSSortingProperty::PSFTotalMeanPowerFlux: return psfTotalMeanPowerFlux;
+      case SSSortingProperty::PSFCount:              return psfCount;
+      case SSSortingProperty::MStar:                 return MStar;
+      case SSSortingProperty::NStar:                 return NStar;
+      case SSSortingProperty::SNRWeight:             return snrWeight;
+      case SSSortingProperty::Median:                return median;
+      case SSSortingProperty::MedianMeanDev:         return medianMeanDev;
+      case SSSortingProperty::Noise:                 return noise;
+      case SSSortingProperty::NoiseRatio:            return noiseRatio;
+      case SSSortingProperty::Stars:                 return stars;
+      case SSSortingProperty::StarResidual:          return starResidual;
+      case SSSortingProperty::FWHMMeanDev:           return fwhmMeanDev;
+      case SSSortingProperty::EccentricityMeanDev:   return eccentricityMeanDev;
+      case SSSortingProperty::StarResidualMeanDev:   return starResidualMeanDev;
+      case SSSortingProperty::Azimuth:               return azimuth;
+      case SSSortingProperty::Altitude:              return altitude;
+      default:                                       return 0; // ?
       }
    }
 };
@@ -391,4 +422,4 @@ private:
 #endif   // __SubframeSelectorMeasureData_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorMeasureData.h - Released 2021-12-29T20:37:28Z
+// EOF SubframeSelectorMeasureData.h - Released 2022-03-12T18:59:53Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.19
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// pcl/EndianConversions.h - Released 2022-01-24T22:43:24Z
+// pcl/EndianConversions.h - Released 2022-03-12T18:59:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -165,4 +165,4 @@ constexpr bool IsBigEndianMachine()
 #endif   // __PCL_EndianConversions_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/EndianConversions.h - Released 2022-01-24T22:43:24Z
+// EOF pcl/EndianConversions.h - Released 2022-03-12T18:59:29Z

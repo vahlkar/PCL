@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.8.0
+// Standard ImageCalibration Process Module Version 1.9.1
 // ----------------------------------------------------------------------------
-// LocalNormalizationInterface.cpp - Released 2021-12-29T20:37:28Z
+// LocalNormalizationInterface.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -182,6 +182,8 @@ bool LocalNormalizationInterface::ImportProcess( const ProcessImplementation& p 
 void LocalNormalizationInterface::UpdateControls()
 {
    UpdateGeneralParameterControls();
+   UpdateOutlierRejectionControls();
+   UpdateScaleEvaluationControls();
    UpdateTargetImagesList();
    UpdateImageSelectionButtons();
    UpdateFormatHintsControls();
@@ -190,42 +192,98 @@ void LocalNormalizationInterface::UpdateControls()
 
 // ----------------------------------------------------------------------------
 
+static int NormalizationScaleToComboBoxItem( int scale )
+{
+   switch ( scale )
+   {
+   case   32: return 0;
+   case   64: return 1;
+   case  128: return 2;
+   case  192: return 3;
+   case  256: return 4;
+   case  384: return 5;
+   default: // ?!
+   case  512: return 6;
+   case  768: return 7;
+   case 1024: return 8;
+   }
+}
+
+static int ComboBoxItemToNormalizationScale( int item )
+{
+   switch ( item )
+   {
+   case 0: return   32;
+   case 1: return   64;
+   case 2: return  128;
+   case 3: return  192;
+   case 4: return  256;
+   case 5: return  384;
+   default: // ?!
+   case 6: return  512;
+   case 7: return  768;
+   case 8: return 1024;
+   }
+}
+
 void LocalNormalizationInterface::UpdateGeneralParameterControls()
 {
    GUI->ReferenceImage_Edit.SetText( m_instance.p_referencePathOrViewId );
    GUI->ReferenceImage_ComboBox.SetCurrentItem( m_instance.p_referenceIsView ? 1 : 0 );
 
-   GUI->Scale_SpinBox.SetValue( m_instance.p_scale );
-
-   GUI->Rejection_CheckBox.SetChecked( m_instance.p_rejection );
-
-   GUI->HotPixelFilterRadius_SpinBox.SetValue( m_instance.p_hotPixelFilterRadius );
-   GUI->HotPixelFilterRadius_SpinBox.Enable( m_instance.p_rejection );
-
-   GUI->NoiseReductionFilterRadius_SpinBox.SetValue( m_instance.p_noiseReductionFilterRadius );
-   GUI->NoiseReductionFilterRadius_SpinBox.Enable( m_instance.p_rejection );
-
-   GUI->BackgroundRejectionLimit_NumericControl.SetValue( m_instance.p_backgroundRejectionLimit );
-   GUI->BackgroundRejectionLimit_NumericControl.Enable( m_instance.p_rejection );
-
-   GUI->ReferenceRejectionThreshold_NumericControl.SetValue( m_instance.p_referenceRejectionThreshold );
-   GUI->ReferenceRejectionThreshold_NumericControl.Enable( m_instance.p_rejection );
-
-   GUI->TargetRejectionThreshold_NumericControl.SetValue( m_instance.p_targetRejectionThreshold );
-   GUI->TargetRejectionThreshold_NumericControl.Enable( m_instance.p_rejection );
-
+   GUI->Scale_ComboBox.SetCurrentItem( NormalizationScaleToComboBoxItem( m_instance.p_scale ) );
    GUI->GenerateNormalizedImages_ComboBox.SetCurrentItem( m_instance.p_generateNormalizedImages );
-
    GUI->NoScale_CheckBox.SetChecked( m_instance.p_noScale );
-
+   GUI->GlobalLocationNormalization_CheckBox.SetChecked( m_instance.p_globalLocationNormalization );
    GUI->GenerateNormalizationData_CheckBox.SetChecked( m_instance.p_generateNormalizationData );
-
    GUI->ShowBackgroundModels_CheckBox.SetChecked( m_instance.p_showBackgroundModels );
+//    GUI->PlotNormalizationFunctions_ComboBox.SetCurrentItem( m_instance.p_plotNormalizationFunctions );
+}
 
+// ----------------------------------------------------------------------------
+
+void LocalNormalizationInterface::UpdateOutlierRejectionControls()
+{
+   GUI->OutlierRejection_SectionBar.SetChecked( m_instance.p_rejection );
+   GUI->HotPixelFilterRadius_SpinBox.SetValue( m_instance.p_hotPixelFilterRadius );
+   GUI->NoiseReductionFilterRadius_SpinBox.SetValue( m_instance.p_noiseReductionFilterRadius );
+   GUI->BackgroundRejectionLimit_NumericControl.SetValue( m_instance.p_backgroundRejectionLimit );
+   GUI->ReferenceRejectionThreshold_NumericControl.SetValue( m_instance.p_referenceRejectionThreshold );
+   GUI->TargetRejectionThreshold_NumericControl.SetValue( m_instance.p_targetRejectionThreshold );
    GUI->ShowRejectionMaps_CheckBox.SetChecked( m_instance.p_showRejectionMaps );
-   GUI->ShowRejectionMaps_CheckBox.Enable( m_instance.p_rejection );
+}
 
-   GUI->PlotNormalizationFunctions_ComboBox.SetCurrentItem( m_instance.p_plotNormalizationFunctions );
+// ----------------------------------------------------------------------------
+
+void LocalNormalizationInterface::UpdateScaleEvaluationControls()
+{
+   GUI->ScaleEvaluationMethod_ComboBox.SetCurrentItem( m_instance.p_scaleEvaluationMethod );
+
+   GUI->LocalScaleCorrections_CheckBox.SetChecked( m_instance.p_localScaleCorrections );
+   GUI->LocalScaleCorrections_CheckBox.Enable( m_instance.p_scaleEvaluationMethod == LNScaleEvaluationMethod::PSFSignal );
+
+   GUI->ShowLocalScaleModels_CheckBox.SetChecked( m_instance.p_showLocalScaleModels );
+   GUI->ShowLocalScaleModels_CheckBox.Enable( m_instance.p_scaleEvaluationMethod == LNScaleEvaluationMethod::PSFSignal &&
+                                              m_instance.p_localScaleCorrections );
+
+   GUI->StructureLayers_SpinBox.SetValue( m_instance.p_structureLayers );
+
+   GUI->SaturationThreshold_NumericControl.SetValue( m_instance.p_saturationThreshold );
+
+   GUI->SaturationRelative_CheckBox.SetChecked( m_instance.p_saturationRelative );
+
+   GUI->PSFNoiseLayers_SpinBox.SetValue( m_instance.p_psfNoiseLayers );
+   GUI->PSFMinStructureSize_SpinBox.SetValue( m_instance.p_psfMinStructureSize );
+   GUI->PSFHotPixelFilterRadius_SpinBox.SetValue( m_instance.p_psfHotPixelFilterRadius );
+   GUI->PSFNoiseReductionFilterRadius_SpinBox.SetValue( m_instance.p_psfNoiseReductionFilterRadius );
+   GUI->PSFType_ComboBox.SetCurrentItem( m_instance.p_psfType );
+   GUI->PSFGrowth_NumericControl.SetValue( m_instance.p_psfGrowth );
+   GUI->PSFMaxStars_SpinBox.SetValue( m_instance.p_psfMaxStars );
+
+   GUI->PSFScaleEvaluation_Control.Enable( m_instance.p_scaleEvaluationMethod == LNScaleEvaluationMethod::PSFSignal );
+
+   GUI->ShowStructureMaps_CheckBox.SetChecked( m_instance.p_showStructureMaps );
+   GUI->ShowStructureMaps_CheckBox.Enable( m_instance.p_scaleEvaluationMethod == LNScaleEvaluationMethod::MultiscaleAnalysis );
 }
 
 // ----------------------------------------------------------------------------
@@ -385,13 +443,26 @@ void LocalNormalizationInterface::e_ItemSelected( ComboBox& sender, int itemInde
          GUI->ReferenceImage_Edit.SetText( m_instance.p_referencePathOrViewId = String() );
       }
    }
+   else if ( sender == GUI->Scale_ComboBox )
+   {
+      m_instance.p_scale = ComboBoxItemToNormalizationScale( itemIndex );
+   }
    else if ( sender == GUI->GenerateNormalizedImages_ComboBox )
    {
       m_instance.p_generateNormalizedImages = itemIndex;
    }
-   else if ( sender == GUI->PlotNormalizationFunctions_ComboBox )
+//    else if ( sender == GUI->PlotNormalizationFunctions_ComboBox )
+//    {
+//       m_instance.p_plotNormalizationFunctions = itemIndex;
+//    }
+   else if ( sender == GUI->ScaleEvaluationMethod_ComboBox )
    {
-      m_instance.p_plotNormalizationFunctions = itemIndex;
+      m_instance.p_scaleEvaluationMethod = itemIndex;
+      UpdateScaleEvaluationControls();
+   }
+   else if ( sender == GUI->PSFType_ComboBox )
+   {
+      m_instance.p_psfType = itemIndex;
    }
    else if ( sender == GUI->OnError_ComboBox )
    {
@@ -426,14 +497,13 @@ void LocalNormalizationInterface::e_Click( Button& sender, bool checked )
 
       GUI->ReferenceImage_Edit.SetText( m_instance.p_referencePathOrViewId );
    }
-   else if ( sender == GUI->Rejection_CheckBox )
-   {
-      m_instance.p_rejection = checked;
-      UpdateGeneralParameterControls();
-   }
    else if ( sender == GUI->NoScale_CheckBox )
    {
       m_instance.p_noScale = checked;
+   }
+   else if ( sender == GUI->GlobalLocationNormalization_CheckBox )
+   {
+      m_instance.p_globalLocationNormalization = checked;
    }
    else if ( sender == GUI->GenerateNormalizationData_CheckBox )
    {
@@ -446,6 +516,23 @@ void LocalNormalizationInterface::e_Click( Button& sender, bool checked )
    else if ( sender == GUI->ShowRejectionMaps_CheckBox )
    {
       m_instance.p_showRejectionMaps = checked;
+   }
+   else if ( sender == GUI->LocalScaleCorrections_CheckBox )
+   {
+      m_instance.p_localScaleCorrections = checked;
+      UpdateScaleEvaluationControls();
+   }
+   else if ( sender == GUI->ShowLocalScaleModels_CheckBox )
+   {
+      m_instance.p_showLocalScaleModels = checked;
+   }
+   else if ( sender == GUI->SaturationRelative_CheckBox )
+   {
+      m_instance.p_saturationRelative = checked;
+   }
+   else if ( sender == GUI->ShowStructureMaps_CheckBox )
+   {
+      m_instance.p_showStructureMaps = checked;
    }
    else if ( sender == GUI->AddFiles_PushButton )
    {
@@ -521,20 +608,29 @@ void LocalNormalizationInterface::e_Click( Button& sender, bool checked )
 
 // ----------------------------------------------------------------------------
 
-void LocalNormalizationInterface::e_EditValueUpdated( NumericEdit& sender, double value )
+void LocalNormalizationInterface::e_CheckSection( SectionBar& sender, bool checked )
+{
+   if ( sender == GUI->OutlierRejection_SectionBar )
+   {
+      m_instance.p_rejection = checked;
+      UpdateOutlierRejectionControls();
+   }
+}
+
+// ----------------------------------------------------------------------------
+
+void LocalNormalizationInterface::e_ValueUpdated( NumericEdit& sender, double value )
 {
    if ( sender == GUI->BackgroundRejectionLimit_NumericControl )
-   {
       m_instance.p_backgroundRejectionLimit = value;
-   }
    else if ( sender == GUI->ReferenceRejectionThreshold_NumericControl )
-   {
       m_instance.p_referenceRejectionThreshold = value;
-   }
    else if ( sender == GUI->TargetRejectionThreshold_NumericControl )
-   {
       m_instance.p_targetRejectionThreshold = value;
-   }
+   else if ( sender == GUI->SaturationThreshold_NumericControl )
+      m_instance.p_saturationThreshold = value;
+   else if ( sender == GUI->PSFGrowth_NumericControl )
+      m_instance.p_psfGrowth = value;
 }
 
 // ----------------------------------------------------------------------------
@@ -587,12 +683,22 @@ void LocalNormalizationInterface::e_NodeSelectionUpdated( TreeBox& sender )
 
 void LocalNormalizationInterface::e_SpinValueUpdated( SpinBox& sender, int value )
 {
-   if ( sender == GUI->Scale_SpinBox )
-      m_instance.p_scale = value;
-   else if ( sender == GUI->HotPixelFilterRadius_SpinBox )
+   if ( sender == GUI->HotPixelFilterRadius_SpinBox )
       m_instance.p_hotPixelFilterRadius = value;
    else if ( sender == GUI->NoiseReductionFilterRadius_SpinBox )
       m_instance.p_noiseReductionFilterRadius = value;
+   else if ( sender == GUI->StructureLayers_SpinBox )
+      m_instance.p_structureLayers = value;
+   else if ( sender == GUI->PSFNoiseLayers_SpinBox )
+      m_instance.p_psfNoiseLayers = value;
+   else if ( sender == GUI->PSFMinStructureSize_SpinBox )
+      m_instance.p_psfMinStructureSize = value;
+   else if ( sender == GUI->PSFHotPixelFilterRadius_SpinBox )
+      m_instance.p_psfHotPixelFilterRadius = value;
+   else if ( sender == GUI->PSFNoiseReductionFilterRadius_SpinBox )
+      m_instance.p_psfNoiseReductionFilterRadius = value;
+   else if ( sender == GUI->PSFMaxStars_SpinBox )
+      m_instance.p_psfMaxStars = value;
 }
 
 // ----------------------------------------------------------------------------
@@ -690,9 +796,10 @@ void LocalNormalizationInterface::e_ViewDrop( Control& sender, const Point& pos,
 LocalNormalizationInterface::GUIData::GUIData( LocalNormalizationInterface& w )
 {
    pcl::Font fnt = w.Font();
-   int labelWidth1 = fnt.Width( String( "Reference threshold:" ) + 'M' );
-   int editWidth1 = fnt.Width( String( '0', 12 ) );
+   int labelWidth1 = fnt.Width( String( "Minimum structure size:" ) + 'M' );
+   int editWidth1 = fnt.Width( String( '0', 8 ) );
    int editWidth2 = fnt.Width( String( 'M', 5 ) );
+   int editWidth3 = fnt.Width( String( '0', 10 ) );
    int ui4 = w.LogicalPixelsToPhysical( 4 );
 
    //
@@ -700,7 +807,7 @@ LocalNormalizationInterface::GUIData::GUIData( LocalNormalizationInterface& w )
    const char* referenceToolTip = "<p>Normalization reference image.</p>"
       "<p>Local normalization functions will be calculated for each target image with respect to the reference image, "
       "which will be acquired either from an image view, or from an existing disk file.</p>"
-      "<p><b>Important:</b> For execution in the global context (batch procedure), if the reference image refers to a disk"
+      "<p><b>Important:</b> For execution in the global context (batch procedure), if the reference image refers to a disk "
       "file that will be part of an image integration task, it must also be included in the target images list. Otherwise no "
       ".xnml file and/or normalized image will be generated for the reference image.</p>";
 
@@ -737,44 +844,183 @@ LocalNormalizationInterface::GUIData::GUIData( LocalNormalizationInterface& w )
    const char* scaleTip = "<p>Normalization scale.</p>"
       "<p>LocalNormalization implements a multiscale normalization algorithm. This parameter is the size in pixels of the "
       "sampling scale for local image normalization. The larger this parameter, the less locally adaptive will be the local "
-      "normalization task. Smaller values tend to reproduce variations among small-scale structures in the reference image. "
+      "normalization function. Smaller values tend to reproduce variations among small-scale structures in the reference image. "
       "Larger values tend to reproduce variations among large-scale structures.</p>"
       "<p>To better understand the role of this parameter, suppose we applied the algorithm at the scale of one pixel. The "
       "result would be an exact copy of the reference image. On the other hand, if we applied the algorithm at a scale similar "
       "to the size of the whole image, the result would be a <i>global normalization</i>: a single linear function would be "
-      "applied for normalization of the target image.</p>"
-      "<p>The default scale is 128 pixels, which is quite appropriate for most digital images. Suitable scales are generally "
-      "in the range from 64 to 256 pixels. Although the value of this parameter can be freely set in the range from 32 to "
-      "65536 pixels, the current implementation is optimized for multiples of 32 pixels: 32, 64, 96, 128, 160, 192, etc.</p>";
+      "applied for normalization of the entire target image.</p>"
+      "<p>The default scale is 512 pixels, which is quite appropriate for most deep-sky images. Suitable scales are generally "
+      "in the range from 128 to 512 pixels. Although the value of this parameter could in theory be set arbitrarily, for "
+      "performance and accuracy reasons the current implementation is limited to the scales of 32, 64, 128, 192, 256, 384, "
+      "512, 768 and 1024 pixels.</p>";
 
    Scale_Label.SetText( "Scale:" );
    Scale_Label.SetFixedWidth( labelWidth1 );
    Scale_Label.SetToolTip( scaleTip );
    Scale_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
 
-   Scale_SpinBox.SetRange( int( TheLNScaleParameter->MinimumValue() ), int( TheLNScaleParameter->MaximumValue() ) );
-   Scale_SpinBox.SetStepSize( 32 );
-   Scale_SpinBox.SetMinWidth( editWidth1 );
-   Scale_SpinBox.SetToolTip( scaleTip );
-   Scale_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&LocalNormalizationInterface::e_SpinValueUpdated, w );
+   Scale_ComboBox.AddItem( "32" );
+   Scale_ComboBox.AddItem( "64" );
+   Scale_ComboBox.AddItem( "128" );
+   Scale_ComboBox.AddItem( "192" );
+   Scale_ComboBox.AddItem( "256" );
+   Scale_ComboBox.AddItem( "384" );
+   Scale_ComboBox.AddItem( "512" );
+   Scale_ComboBox.AddItem( "768" );
+   Scale_ComboBox.AddItem( "1024" );
+   Scale_ComboBox.SetMinWidth( editWidth3 );
+   Scale_ComboBox.SetToolTip( scaleTip );
+   Scale_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&LocalNormalizationInterface::e_ItemSelected, w );
 
    Scale_Sizer.SetSpacing( 4 );
    Scale_Sizer.Add( Scale_Label );
-   Scale_Sizer.Add( Scale_SpinBox );
+   Scale_Sizer.Add( Scale_ComboBox );
    Scale_Sizer.AddStretch();
 
    //
 
-   Rejection_CheckBox.SetText( "Outlier rejection" );
-   Rejection_CheckBox.SetToolTip( "<p>The implemented local normalization algorithms are sensitive to differences between the "
+   const char* generateNormalizedImagesToolTip = "<p>This parameter defines when to apply the local normalization functions to "
+      "generate normalized images. This includes newly created image files for global execution, as well as modifying the target "
+      "image for view execution.</p>"
+      "<p>This option is set to <i>view execution only</i> by default because local normalization functions, stored in .xnml files, "
+      "can be used by the ImageIntegration and DrizzleIntegration processes for normalization in the pixel rejection and/or "
+      "integration output tasks. This means that the normalization functions can be applied internally by these processes, so "
+      "writing normalized images to disk files is generally not necessary. In addition, the ImageIntegration and DrizzleIntegration "
+      "processes apply normalization functions internally without any truncation or rescaling of the data, so the entire data set "
+      "is always integrated without any loss or artificial alteration when local normalization files are used.</p>"
+      "<p>For view execution, however, inspecting the transformed image is often necessary for testing purposes. Generation of "
+      "normalized image files during batch execution can also be useful in very difficult cases, for example when the data set "
+      "includes strong and large artifacts, such as big plane trails. In these cases you may want to inspect locally normalized "
+      "images manually with analysis tools such as Blink. Normalized images may also be necessary for applications of local "
+      "normalization different from integration of astronomical images.</p>";
+
+   GenerateNormalizedImages_Label.SetText( "Apply normalization:" );
+   GenerateNormalizedImages_Label.SetFixedWidth( labelWidth1 );
+   GenerateNormalizedImages_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   GenerateNormalizedImages_Label.SetToolTip( generateNormalizedImagesToolTip );
+
+   GenerateNormalizedImages_ComboBox.AddItem( "Disabled" );
+   GenerateNormalizedImages_ComboBox.AddItem( "Always" );
+   GenerateNormalizedImages_ComboBox.AddItem( "View execution only" );
+   GenerateNormalizedImages_ComboBox.AddItem( "Global execution only" );
+   GenerateNormalizedImages_ComboBox.SetToolTip( generateNormalizedImagesToolTip );
+   GenerateNormalizedImages_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&LocalNormalizationInterface::e_ItemSelected, w );
+
+   GenerateNormalizedImages_Sizer.SetSpacing( 4 );
+   GenerateNormalizedImages_Sizer.Add( GenerateNormalizedImages_Label );
+   GenerateNormalizedImages_Sizer.Add( GenerateNormalizedImages_ComboBox );
+   GenerateNormalizedImages_Sizer.AddStretch();
+
+   //
+
+   NoScale_CheckBox.SetText( "No scale component" );
+   NoScale_CheckBox.SetToolTip( "<p>Compute only the offset component of the local normalization function, and set the scale "
+      "component constant equal to one.</p>"
+      "<p>This option should be disabled under normal working conditions. It can be useful in special cases to limit local "
+      "normalization to correction of additive gradients exclusively. However, without its multiplicative component the "
+      "normalization function will be less accurate in general.</p>" );
+   NoScale_CheckBox.OnClick( (Button::click_event_handler)&LocalNormalizationInterface::e_Click, w );
+
+   NoScale_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   NoScale_Sizer.Add( NoScale_CheckBox );
+   NoScale_Sizer.AddStretch();
+
+   //
+
+   GlobalLocationNormalization_CheckBox.SetText( "Global location normalization" );
+   GlobalLocationNormalization_CheckBox.SetToolTip( "<p>Compute global location parameters to be applied after local normalization.</p>"
+      "<p>For some applications it may be desirable matching the global statistical parameter of location (or central tendency) "
+      "of the reference image after local normalization. In such cases this option can be enabled to compute the required global "
+      "normalization parameters, which will be included in generated .xnml files and applied to output normalized images, as "
+      "appropriate.</p>" );
+   GlobalLocationNormalization_CheckBox.OnClick( (Button::click_event_handler)&LocalNormalizationInterface::e_Click, w );
+
+   GlobalLocationNormalization_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   GlobalLocationNormalization_Sizer.Add( GlobalLocationNormalization_CheckBox );
+   GlobalLocationNormalization_Sizer.AddStretch();
+
+   //
+
+   GenerateNormalizationData_CheckBox.SetText( "Generate normalization data" );
+   GenerateNormalizationData_CheckBox.SetToolTip( "<p>Generate XML normalization data files (XNML format, .xnml files) that can be "
+      "used with the ImageIntegration and DrizzleIntegration processes. .xnml files store normalization parameters, image references "
+      "and function matrices, among other parameters, that can be used by these processes to generate normalized pixel sample values "
+      "required for pixel rejection and optimal integration output. For applications of local normalization to integration of "
+      "astronomical images, this option should always be enabled.</p>" );
+   GenerateNormalizationData_CheckBox.OnClick( (Button::click_event_handler)&LocalNormalizationInterface::e_Click, w );
+
+   GenerateNormalizationData_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   GenerateNormalizationData_Sizer.Add( GenerateNormalizationData_CheckBox );
+   GenerateNormalizationData_Sizer.AddStretch();
+
+   //
+
+   ShowBackgroundModels_CheckBox.SetText( "Show background models" );
+   ShowBackgroundModels_CheckBox.SetToolTip( "<p>Generate floating point images with the computed local background models for the "
+      "reference and target images. This option is only applicable to execution on views, and is always ignored when LocalNormalization "
+      "is executed in the global context (that is, as a batch procedure).</p>"
+      "<p>Analysis of local backgrounds can be important for testing purposes, especially in difficult cases, for example to know how "
+      "complex gradients are being evaluated, or to judge the quality of outlier rejection.</p>" );
+   ShowBackgroundModels_CheckBox.OnClick( (Button::click_event_handler)&LocalNormalizationInterface::e_Click, w );
+
+   ShowBackgroundModels_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   ShowBackgroundModels_Sizer.Add( ShowBackgroundModels_CheckBox );
+   ShowBackgroundModels_Sizer.AddStretch();
+
+   //
+
+//    const char* plotNormalizationFunctionsToolTip = "<p>Generate graphical representations of the local normalization function matrices. "
+//       "This option is only applicable to execution on views; it is always ignored when LocalNormalization is executed in the global context "
+//       "(that is, as a batch procedure).</p>"
+//       "<p>When this option is enabled, two images are generated for each image channel with graphs representing the parameters of the "
+//       "two-dimensional surface linear normalization function: one for the scaling coefficients (or slopes), and another for the zero offsets "
+//       "(or Y-intercepts). These graphs, besides being beautiful, can be outstandingly useful for evaluation and testing purposes.</p>"
+//       "<p>The <i>lines 3D</i> mode is the fastest option, but also the less accurate because of potential artifacts caused by crossing grid "
+//       "lines. The <i>palette 3D</i> and <i>map 3D</i> modes generate high-quality, smooth and accurate renditions, but require more computation "
+//       "time. The default option is <i>map 3D</i>.</p>";
+//
+//    PlotNormalizationFunctions_Label.SetText( "Plot functions:" );
+//    PlotNormalizationFunctions_Label.SetFixedWidth( labelWidth1 );
+//    PlotNormalizationFunctions_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+//    PlotNormalizationFunctions_Label.SetToolTip( plotNormalizationFunctionsToolTip );
+//
+//    PlotNormalizationFunctions_ComboBox.AddItem( "Disabled" );
+//    PlotNormalizationFunctions_ComboBox.AddItem( "Lines 3D" );
+//    PlotNormalizationFunctions_ComboBox.AddItem( "Palette 3D" );
+//    PlotNormalizationFunctions_ComboBox.AddItem( "Map 3D" );
+//    PlotNormalizationFunctions_ComboBox.SetToolTip( plotNormalizationFunctionsToolTip );
+//    PlotNormalizationFunctions_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&LocalNormalizationInterface::e_ItemSelected, w );
+//
+//    PlotNormalizationFunctions_Sizer.SetSpacing( 4 );
+//    PlotNormalizationFunctions_Sizer.Add( PlotNormalizationFunctions_Label );
+//    PlotNormalizationFunctions_Sizer.Add( PlotNormalizationFunctions_ComboBox );
+//    PlotNormalizationFunctions_Sizer.AddStretch();
+
+   //
+
+   GeneralParameters_Sizer.SetSpacing( 4 );
+   GeneralParameters_Sizer.Add( ReferenceImage_Sizer );
+   GeneralParameters_Sizer.Add( Scale_Sizer );
+   GeneralParameters_Sizer.Add( GenerateNormalizedImages_Sizer );
+   GeneralParameters_Sizer.Add( NoScale_Sizer );
+   GeneralParameters_Sizer.Add( GlobalLocationNormalization_Sizer );
+   GeneralParameters_Sizer.Add( GenerateNormalizationData_Sizer );
+   GeneralParameters_Sizer.Add( ShowBackgroundModels_Sizer );
+   GeneralParameters_Sizer.Add( ShowRejectionMaps_Sizer );
+//    GeneralParameters_Sizer.Add( PlotNormalizationFunctions_Sizer );
+
+   //
+
+   OutlierRejection_SectionBar.SetTitle( "Outlier Rejection" );
+   OutlierRejection_SectionBar.SetSection( OutlierRejection_Control );
+   OutlierRejection_SectionBar.SetToolTip( "<p>The implemented local normalization algorithms are sensitive to differences between the "
       "reference and target images caused by spurious image features, such as hot pixels, plane and satellite trails, cosmic rays, etc.</p>"
       "<p>Under normal working conditions, this option should be enabled to detect and reject outlier image structures prior to "
       "calculation of local normalization functions.</p>" );
-   Rejection_CheckBox.OnClick( (Button::click_event_handler)&LocalNormalizationInterface::e_Click, w );
-
-   Rejection_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
-   Rejection_Sizer.Add( Rejection_CheckBox );
-   Rejection_Sizer.AddStretch();
+   OutlierRejection_SectionBar.EnableTitleCheckBox();
+   OutlierRejection_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&LocalNormalizationInterface::e_ToggleSection, w );
+   OutlierRejection_SectionBar.OnCheck( (SectionBar::check_event_handler)&LocalNormalizationInterface::e_CheckSection, w );
 
    //
 
@@ -792,7 +1038,7 @@ LocalNormalizationInterface::GUIData::GUIData( LocalNormalizationInterface& w )
 
    HotPixelFilterRadius_SpinBox.SetRange( int( TheLNHotPixelFilterRadiusParameter->MinimumValue() ), int( TheLNHotPixelFilterRadiusParameter->MaximumValue() ) );
    HotPixelFilterRadius_SpinBox.SetToolTip( hotPixelFilterRadiusToolTip );
-   HotPixelFilterRadius_SpinBox.SetFixedWidth( editWidth2 );
+   HotPixelFilterRadius_SpinBox.SetFixedWidth( editWidth1 );
    HotPixelFilterRadius_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&LocalNormalizationInterface::e_SpinValueUpdated, w );
 
    HotPixelFilterRadius_Sizer.SetSpacing( 4 );
@@ -816,7 +1062,7 @@ LocalNormalizationInterface::GUIData::GUIData( LocalNormalizationInterface& w )
    NoiseReductionFilterRadius_SpinBox.SetRange( int( TheLNNoiseReductionFilterRadiusParameter->MinimumValue() ), int( TheLNNoiseReductionFilterRadiusParameter->MaximumValue() ) );
    NoiseReductionFilterRadius_SpinBox.SetStepSize( 5 );
    NoiseReductionFilterRadius_SpinBox.SetToolTip( noiseReductionFilterRadiusToolTip );
-   NoiseReductionFilterRadius_SpinBox.SetFixedWidth( editWidth2 );
+   NoiseReductionFilterRadius_SpinBox.SetFixedWidth( editWidth1 );
    NoiseReductionFilterRadius_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&LocalNormalizationInterface::e_SpinValueUpdated, w );
 
    NoiseReductionFilterRadius_Sizer.SetSpacing( 4 );
@@ -842,7 +1088,7 @@ LocalNormalizationInterface::GUIData::GUIData( LocalNormalizationInterface& w )
       "The default value of 0.05 is a good option in most cases. For difficult cases where the images are very noisy and/or "
       "there are large outliers such as plane trails, you can use the <i>show rejection maps</i> option to evaluate outlier "
       "rejection with different values of normalization rejection parameters.</p>" );
-   BackgroundRejectionLimit_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&LocalNormalizationInterface::e_EditValueUpdated, w );
+   BackgroundRejectionLimit_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&LocalNormalizationInterface::e_ValueUpdated, w );
 
    //
 
@@ -858,7 +1104,7 @@ LocalNormalizationInterface::GUIData::GUIData( LocalNormalizationInterface& w )
       "<i>background limit</i> parameter for more information on the local background and its role for local normalization.</p>"
       "<p>Increase this parameter to relax the outlier rejection algorithm with respect to the reference image. Decrease it to "
       "strengthen outlier rejection. The default value is 0.5.</p>" );
-   ReferenceRejectionThreshold_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&LocalNormalizationInterface::e_EditValueUpdated, w );
+   ReferenceRejectionThreshold_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&LocalNormalizationInterface::e_ValueUpdated, w );
 
    //
 
@@ -873,80 +1119,7 @@ LocalNormalizationInterface::GUIData::GUIData( LocalNormalizationInterface& w )
       "background, in absolute value, for a structure to be considered as a potential outlier in the target image. See the "
       "<i>reference threshold</i> and <i>background limit</i> parameters for more information on outlier rejection and its role "
       "for local normalization.</p>" );
-   TargetRejectionThreshold_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&LocalNormalizationInterface::e_EditValueUpdated, w );
-
-   //
-
-   const char* generateNormalizedImagesToolTip = "<p>This parameter defines when to apply the local normalization functions to "
-      "generate normalized images. This includes newly created image files for global execution, as well as modifying the target "
-      "image for view execution.</p>"
-      "<p>This option is set to <i>view execution only</i> by default because local normalization functions, stored in .xnml files, "
-      "can be used by the ImageIntegration and DrizzleIntegration processes for normalization in the pixel rejection and/or "
-      "integration output tasks. This means that the normalization functions can be applied internally by these processes, so "
-      "writing normalized images to disk files is generally not necessary. For view execution, however, inspecting the transformed "
-      "image is often necessary for testing purposes (although graphs can be even more informative).</p>"
-      "<p>Generation of normalized image files during batch execution can also be useful in difficult cases, for example when the "
-      "data set includes strong light pollution gradients and large artifacts, such as plane trails. In these cases you may want "
-      "to inspect locally normalized images manually with analysis tools such as Blink. Normalized images may also be necessary for "
-      "applications of local normalization different from integration of astronomical images.</p>";
-
-   GenerateNormalizedImages_Label.SetText( "Apply normalization:" );
-   GenerateNormalizedImages_Label.SetFixedWidth( labelWidth1 );
-   GenerateNormalizedImages_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
-   GenerateNormalizedImages_Label.SetToolTip( generateNormalizedImagesToolTip );
-
-   GenerateNormalizedImages_ComboBox.AddItem( "Disabled" );
-   GenerateNormalizedImages_ComboBox.AddItem( "Always" );
-   GenerateNormalizedImages_ComboBox.AddItem( "View execution only" );
-   GenerateNormalizedImages_ComboBox.AddItem( "Global execution only" );
-   GenerateNormalizedImages_ComboBox.SetToolTip( generateNormalizedImagesToolTip );
-   GenerateNormalizedImages_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&LocalNormalizationInterface::e_ItemSelected, w );
-
-   GenerateNormalizedImages_Sizer.SetSpacing( 4 );
-   GenerateNormalizedImages_Sizer.Add( GenerateNormalizedImages_Label );
-   GenerateNormalizedImages_Sizer.Add( GenerateNormalizedImages_ComboBox );
-   GenerateNormalizedImages_Sizer.AddStretch();
-
-   //
-
-   NoScale_CheckBox.SetText( "No scale component" );
-   NoScale_CheckBox.SetToolTip( "<p>Compute only the offset component of the local normalization function, and set the scale "
-      "component constant equal to one.</p>"
-      "<p>This option should be disabled under normal working conditions. It can be useful to limit local normalization to correction "
-      "of additive gradients exclusively.</p>" );
-   NoScale_CheckBox.OnClick( (Button::click_event_handler)&LocalNormalizationInterface::e_Click, w );
-
-   NoScale_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
-   NoScale_Sizer.Add( NoScale_CheckBox );
-   NoScale_Sizer.AddStretch();
-
-   //
-
-   GenerateNormalizationData_CheckBox.SetText( "Generate normalization data" );
-   GenerateNormalizationData_CheckBox.SetToolTip( "<p>Generate XML normalization data files (XNML format, .xnml files) that can be "
-      "used with the ImageIntegration and DrizzleIntegration processes. XNML files store normalization parameters, image references "
-      "and function matrices, that can be used by these processes to generate normalized pixel sample values required for pixel "
-      "rejection and integration output. For applications of local normalization to integration of astronomical images, this option "
-      "should always be enabled.</p>" );
-   GenerateNormalizationData_CheckBox.OnClick( (Button::click_event_handler)&LocalNormalizationInterface::e_Click, w );
-
-   GenerateNormalizationData_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
-   GenerateNormalizationData_Sizer.Add( GenerateNormalizationData_CheckBox );
-   GenerateNormalizationData_Sizer.AddStretch();
-
-   //
-
-   ShowBackgroundModels_CheckBox.SetText( "Show background models" );
-   ShowBackgroundModels_CheckBox.SetToolTip( "<p>Generate floating point images with the computed local background models for the "
-      "reference and target images. This option is only applicable to execution on views, and is always ignored when LocalNormalization "
-      "is executed in the global context (that is, as a batch procedure).</p>"
-      "<p>Analysis of local backgrounds can be important for testing purposes, especially in difficult cases, for example to know how "
-      "complex gradients are being evaluated, or to judge the quality of outlier rejection.</p>" );
-   ShowBackgroundModels_CheckBox.OnClick( (Button::click_event_handler)&LocalNormalizationInterface::e_Click, w );
-
-   ShowBackgroundModels_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
-   ShowBackgroundModels_Sizer.Add( ShowBackgroundModels_CheckBox );
-   ShowBackgroundModels_Sizer.AddStretch();
+   TargetRejectionThreshold_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&LocalNormalizationInterface::e_ValueUpdated, w );
 
    //
 
@@ -954,8 +1127,8 @@ LocalNormalizationInterface::GUIData::GUIData( LocalNormalizationInterface& w )
    ShowRejectionMaps_CheckBox.SetToolTip( "<p>Generate unsigned 8-bit images where nonzero pixel samples correspond to rejected "
       "samples in the reference and target images. This option is only applicable to execution on views, and is always ignored when "
       "LocalNormalization is executed in the global context (that is, as a batch procedure).</p>"
-      "<p>Rejection maps are essential for testing purposes, especially in difficult cases where the images have large outliers, such "
-      "as plane and satellite trails, and/or complex gradients.</p>" );
+      "<p>Rejection maps are useful for testing purposes, especially in very difficult cases where the images have large outliers "
+      "such as plane trails.</p>" );
    ShowRejectionMaps_CheckBox.OnClick( (Button::click_event_handler)&LocalNormalizationInterface::e_Click, w );
 
    ShowRejectionMaps_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
@@ -964,50 +1137,313 @@ LocalNormalizationInterface::GUIData::GUIData( LocalNormalizationInterface& w )
 
    //
 
-   const char* plotNormalizationFunctionsToolTip = "<p>Generate graphical representations of the local normalization function matrices. "
-      "This option is only applicable to execution on views; it is always ignored when LocalNormalization is executed in the global context "
-      "(that is, as a batch procedure).</p>"
-      "<p>When this option is enabled, two images are generated for each image channel with graphs representing the parameters of the "
-      "two-dimensional surface linear normalization function: one for the scaling coefficients (or slopes), and another for the zero offsets "
-      "(or Y-intercepts). These graphs, besides being beautiful, can be outstandingly useful for evaluation and testing purposes.</p>"
-      "<p>The <i>lines 3D</i> mode is the fastest option, but also the less accurate because of potential artifacts caused by crossing grid "
-      "lines. The <i>palette 3D</i> and <i>map 3D</i> modes generate high-quality, smooth and accurate renditions, but require more computation "
-      "time. The default option is <i>palette 3D</i>.</p>";
+   OutlierRejection_Sizer.SetSpacing( 4 );
+   OutlierRejection_Sizer.Add( HotPixelFilterRadius_Sizer );
+   OutlierRejection_Sizer.Add( NoiseReductionFilterRadius_Sizer );
+   OutlierRejection_Sizer.Add( BackgroundRejectionLimit_NumericControl );
+   OutlierRejection_Sizer.Add( ReferenceRejectionThreshold_NumericControl );
+   OutlierRejection_Sizer.Add( TargetRejectionThreshold_NumericControl );
+   OutlierRejection_Sizer.Add( ShowRejectionMaps_Sizer );
 
-   PlotNormalizationFunctions_Label.SetText( "Plot functions:" );
-   PlotNormalizationFunctions_Label.SetFixedWidth( labelWidth1 );
-   PlotNormalizationFunctions_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
-   PlotNormalizationFunctions_Label.SetToolTip( plotNormalizationFunctionsToolTip );
-
-   PlotNormalizationFunctions_ComboBox.AddItem( "Disabled" );
-   PlotNormalizationFunctions_ComboBox.AddItem( "Lines 3D" );
-   PlotNormalizationFunctions_ComboBox.AddItem( "Palette 3D" );
-   PlotNormalizationFunctions_ComboBox.AddItem( "Map 3D" );
-   PlotNormalizationFunctions_ComboBox.SetToolTip( plotNormalizationFunctionsToolTip );
-   PlotNormalizationFunctions_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&LocalNormalizationInterface::e_ItemSelected, w );
-
-   PlotNormalizationFunctions_Sizer.SetSpacing( 4 );
-   PlotNormalizationFunctions_Sizer.Add( PlotNormalizationFunctions_Label );
-   PlotNormalizationFunctions_Sizer.Add( PlotNormalizationFunctions_ComboBox );
-   PlotNormalizationFunctions_Sizer.AddStretch();
+   OutlierRejection_Control.SetSizer( OutlierRejection_Sizer );
 
    //
 
-   GeneralParameters_Sizer.SetSpacing( 4 );
-   GeneralParameters_Sizer.Add( ReferenceImage_Sizer );
-   GeneralParameters_Sizer.Add( Scale_Sizer );
-   GeneralParameters_Sizer.Add( Rejection_Sizer );
-   GeneralParameters_Sizer.Add( HotPixelFilterRadius_Sizer );
-   GeneralParameters_Sizer.Add( NoiseReductionFilterRadius_Sizer );
-   GeneralParameters_Sizer.Add( BackgroundRejectionLimit_NumericControl );
-   GeneralParameters_Sizer.Add( ReferenceRejectionThreshold_NumericControl );
-   GeneralParameters_Sizer.Add( TargetRejectionThreshold_NumericControl );
-   GeneralParameters_Sizer.Add( GenerateNormalizedImages_Sizer );
-   GeneralParameters_Sizer.Add( NoScale_Sizer );
-   GeneralParameters_Sizer.Add( GenerateNormalizationData_Sizer );
-   GeneralParameters_Sizer.Add( ShowBackgroundModels_Sizer );
-   GeneralParameters_Sizer.Add( ShowRejectionMaps_Sizer );
-   GeneralParameters_Sizer.Add( PlotNormalizationFunctions_Sizer );
+   ScaleEvaluation_SectionBar.SetTitle( "Scale Evaluation" );
+   ScaleEvaluation_SectionBar.SetToolTip( "<p>The multiplicative component of the local normalization function requires an "
+      "estimate of the global relative scale of the reference image with respect to each target image. The relative scale is "
+      "defined as the ratio of fluxes measured on significant image structures. We have implemented two different methods "
+      "for scale evaluation: PSF flux and multiscale analysis. This section includes all relevant parameters available "
+      "to control the application of these algorithms.</p>" );
+   ScaleEvaluation_SectionBar.SetSection( ScaleEvaluation_Control );
+   ScaleEvaluation_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&LocalNormalizationInterface::e_ToggleSection, w );
+
+   const char* scaleEvaluationMethodToolTip = "<p>In this version of the LocalNormalization process we have implemented "
+      "two different methods for evaluation of the global relative scale of the reference image with respect to each "
+      "normalization target image: PSF flux evaluation and multiscale analysis.</p>"
+      "<p>The <b>PSF flux evaluation</b> method detects stars in the images and fits a point spread function model to each detected "
+      "source. The fitted PSF parameters are then used to guide evaluation of the total flux of each source, and the fluxes of matched "
+      "pairs of stars in both images are used to compute a robust and precise scale factor. This method is usually the best choice for "
+      "normalization of deep-sky astronomical images where stars can be detected efficiently.</p>"
+      "<p>The <b>multiscale analysis</b> method uses wavelet transforms and morphological operations to isolate significant image "
+      "structures. The pixels gathered on the intersection between significant structures of the reference and target images are then "
+      "evaluated statistically to estimate the scale factor.</p>";
+
+   ScaleEvaluationMethod_Label.SetText( "Method:" );
+   ScaleEvaluationMethod_Label.SetFixedWidth( labelWidth1 );
+   ScaleEvaluationMethod_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   ScaleEvaluationMethod_Label.SetToolTip( scaleEvaluationMethodToolTip );
+
+   ScaleEvaluationMethod_ComboBox.AddItem( "PSF flux evaluation" );
+   ScaleEvaluationMethod_ComboBox.AddItem( "Multiscale analysis" );
+   ScaleEvaluationMethod_ComboBox.SetToolTip( scaleEvaluationMethodToolTip );
+   ScaleEvaluationMethod_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&LocalNormalizationInterface::e_ItemSelected, w );
+
+   ScaleEvaluationMethod_Sizer.SetSpacing( 4 );
+   ScaleEvaluationMethod_Sizer.Add( ScaleEvaluationMethod_Label );
+   ScaleEvaluationMethod_Sizer.Add( ScaleEvaluationMethod_ComboBox );
+   ScaleEvaluationMethod_Sizer.AddStretch();
+
+   LocalScaleCorrections_CheckBox.SetText( "Local scale corrections" );
+   LocalScaleCorrections_CheckBox.SetToolTip( "<p>Compute first order local scale corrections.</p>"
+      "<p>If this option is enabled, LocalNormalization will model local scale variations, i.e. multiplicative gradients "
+      "that cannot be corrected with a single global scale factor.</p>"
+      "<p><b>Warning: The implementation of this feature is still experimental.</b></p>" );
+   LocalScaleCorrections_CheckBox.OnClick( (Button::click_event_handler)&LocalNormalizationInterface::e_Click, w );
+
+   LocalScaleCorrections_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   LocalScaleCorrections_Sizer.Add( LocalScaleCorrections_CheckBox );
+   LocalScaleCorrections_Sizer.AddStretch();
+
+   ShowLocalScaleModels_CheckBox.SetText( "Show local scale correction models" );
+   ShowLocalScaleModels_CheckBox.SetToolTip( "<p>Generate floating point images with the computed local scale correction models for the "
+      "normalization function. These model images are rescaled linearly to the [0,1] range.</p>"
+      "<p>This option is only applicable to execution on views, and is always ignored when LocalNormalization is executed "
+      "in the global context (that is, as a batch procedure).</p>" );
+   ShowLocalScaleModels_CheckBox.OnClick( (Button::click_event_handler)&LocalNormalizationInterface::e_Click, w );
+
+   ShowLocalScaleModels_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   ShowLocalScaleModels_Sizer.Add( ShowLocalScaleModels_CheckBox );
+   ShowLocalScaleModels_Sizer.AddStretch();
+
+   const char* scaleStructureLayersToolTip =
+   "<p>Number of wavelet layers used for structure detection.</p>"
+   "<p>With more wavelet layers, larger stars and significant structures will be detected and used for relative scale evaluation.</p>";
+
+   StructureLayers_Label.SetText( "Detection scales:" );
+   StructureLayers_Label.SetFixedWidth( labelWidth1 );
+   StructureLayers_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   StructureLayers_Label.SetToolTip( scaleStructureLayersToolTip );
+
+   StructureLayers_SpinBox.SetRange( int( TheLNStructureLayersParameter->MinimumValue() ), int( TheLNStructureLayersParameter->MaximumValue() ) );
+   StructureLayers_SpinBox.SetToolTip( scaleStructureLayersToolTip );
+   StructureLayers_SpinBox.SetFixedWidth( editWidth1 );
+   StructureLayers_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&LocalNormalizationInterface::e_SpinValueUpdated, w );
+
+   StructureLayers_Sizer.SetSpacing( 4 );
+   StructureLayers_Sizer.Add( StructureLayers_Label );
+   StructureLayers_Sizer.Add( StructureLayers_SpinBox );
+   StructureLayers_Sizer.AddStretch();
+
+   SaturationThreshold_NumericControl.label.SetText( "Saturation threshold:" );
+   SaturationThreshold_NumericControl.label.SetFixedWidth( labelWidth1 );
+   SaturationThreshold_NumericControl.slider.SetRange( 0, 250 );
+   SaturationThreshold_NumericControl.SetReal();
+   SaturationThreshold_NumericControl.SetRange( TheLNSaturationThresholdParameter->MinimumValue(), TheLNSaturationThresholdParameter->MaximumValue() );
+   SaturationThreshold_NumericControl.SetPrecision( TheLNSaturationThresholdParameter->Precision() );
+   SaturationThreshold_NumericControl.edit.SetFixedWidth( editWidth1 );
+   SaturationThreshold_NumericControl.SetToolTip( "<p>Saturation threshold in the [0,1] range.</p>"
+      "<p>Detected stars with one or more pixels with values above this threshold will be excluded for relative scale evaluation. "
+      "Similarly, when the multiscale analysis method of scale evaluation is selected, significant structure pixels above this "
+      "value will also be excluded.</p>"
+      "<p>This parameter is expressed in the [0,1] range. It can be applied either as an absolute pixel sample value in the "
+      "normalized [0,1] range, or as a value relative to the maximum pixel sample value of the measured image (see the <i>Relative "
+      "saturation threshold</i> parameter).</p>"
+      "<p>The default saturation threshold is 0.75. For relative scale evaluation this parameter is crucial in order to prevent "
+      "contamination of the statistical sample of flux ratios by sources with saturated or nonlinear data. Changing the default "
+      "value should not be necessary under normal conditions.</p>" );
+   SaturationThreshold_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&LocalNormalizationInterface::e_ValueUpdated, w );
+
+   SaturationRelative_CheckBox.SetText( "Relative saturation threshold" );
+   SaturationRelative_CheckBox.SetToolTip( "<p>The saturation threshold parameter can be applied either as an absolute pixel "
+      "sample value in the normalized [0,1] range, or as a value relative to the maximum pixel sample value of the measured image.</p>"
+      "The relative saturation threshold option is enabled by default.</p>" );
+   SaturationRelative_CheckBox.OnClick( (Button::click_event_handler)&LocalNormalizationInterface::e_Click, w );
+
+   SaturationRelative_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   SaturationRelative_Sizer.Add( SaturationRelative_CheckBox );
+   SaturationRelative_Sizer.AddStretch();
+
+   const char* psfNoiseLayersToolTip =
+      "<p>Star detector: Number of wavelet layers used for noise reduction.</p>"
+      "<p>Noise reduction prevents detection of bright noise structures as false stars, including hot pixels and "
+      "cosmic rays. This parameter can also be used to control the sizes of the smallest detected stars (increase "
+      "to exclude more stars), although the <i>minimum structure size</i> parameter can be more efficient for this purpose.</p>";
+
+   PSFNoiseLayers_Label.SetText( "Noise scales:" );
+   PSFNoiseLayers_Label.SetFixedWidth( labelWidth1 );
+   PSFNoiseLayers_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   PSFNoiseLayers_Label.SetToolTip( psfNoiseLayersToolTip );
+
+   PSFNoiseLayers_SpinBox.SetRange( int( TheLNPSFNoiseLayersParameter->MinimumValue() ), int( TheLNPSFNoiseLayersParameter->MaximumValue() ) );
+   PSFNoiseLayers_SpinBox.SetToolTip( psfNoiseLayersToolTip );
+   PSFNoiseLayers_SpinBox.SetFixedWidth( editWidth1 );
+   PSFNoiseLayers_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&LocalNormalizationInterface::e_SpinValueUpdated, w );
+
+   PSFNoiseLayers_Sizer.SetSpacing( 4 );
+   PSFNoiseLayers_Sizer.Add( PSFNoiseLayers_Label );
+   PSFNoiseLayers_Sizer.Add( PSFNoiseLayers_SpinBox );
+   PSFNoiseLayers_Sizer.AddStretch();
+
+   const char* psfMinStructureSizeToolTip =
+      "<p>Star detector: Minimum size of a detectable star structure in square pixels.</p>"
+      "<p>This parameter can be used to prevent detection of small and bright image artifacts as stars, when "
+      "such artifacts cannot be removed with a median filter (i.e., the <i>Hot pixel removal</i> parameter).</p>"
+      "<p>Changing the default zero value of this parameter should not be necessary with correctly acquired and "
+      "calibrated data. It may help, however, when working with poor quality data such as poorly tracked, poorly "
+      "focused, wrongly calibrated, low-SNR raw frames, for which our star detection algorithms have not been "
+      "designed specifically.</p>";
+
+   PSFMinStructureSize_Label.SetText( "Minimum structure size:" );
+   PSFMinStructureSize_Label.SetFixedWidth( labelWidth1 );
+   PSFMinStructureSize_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   PSFMinStructureSize_Label.SetToolTip( psfMinStructureSizeToolTip );
+
+   PSFMinStructureSize_SpinBox.SetRange( int( TheLNPSFMinStructureSizeParameter->MinimumValue() ), int( TheLNPSFMinStructureSizeParameter->MaximumValue() ) );
+   PSFMinStructureSize_SpinBox.SetToolTip( psfMinStructureSizeToolTip );
+   PSFMinStructureSize_SpinBox.SetFixedWidth( editWidth1 );
+   PSFMinStructureSize_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&LocalNormalizationInterface::e_SpinValueUpdated, w );
+
+   PSFMinStructureSize_Sizer.SetSpacing( 4 );
+   PSFMinStructureSize_Sizer.Add( PSFMinStructureSize_Label );
+   PSFMinStructureSize_Sizer.Add( PSFMinStructureSize_SpinBox );
+   PSFMinStructureSize_Sizer.AddStretch();
+
+   const char* psfHotPixelFilterRadiusToolTip =
+      "<p>Star detector: Size of the hot pixel removal filter.</p>"
+      "<p>This is the radius in pixels of a median filter applied by the star detector before the structure "
+      "detection phase. A median filter is very efficient to remove <i>hot pixels</i>. Hot pixels will be "
+      "identified as false stars, and if present in large amounts, can prevent a valid signal evaluation.</p>"
+      "<p>To disable hot pixel removal, set this parameter to zero.</p>";
+
+   PSFHotPixelFilterRadius_Label.SetText( "Hot pixel removal:" );
+   PSFHotPixelFilterRadius_Label.SetFixedWidth( labelWidth1 );
+   PSFHotPixelFilterRadius_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   PSFHotPixelFilterRadius_Label.SetToolTip( psfHotPixelFilterRadiusToolTip );
+
+   PSFHotPixelFilterRadius_SpinBox.SetRange( int( TheLNPSFHotPixelFilterRadiusParameter->MinimumValue() ), int( TheLNPSFHotPixelFilterRadiusParameter->MaximumValue() ) );
+   PSFHotPixelFilterRadius_SpinBox.SetToolTip( psfHotPixelFilterRadiusToolTip );
+   PSFHotPixelFilterRadius_SpinBox.SetFixedWidth( editWidth1 );
+   PSFHotPixelFilterRadius_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&LocalNormalizationInterface::e_SpinValueUpdated, w );
+
+   PSFHotPixelFilterRadius_Sizer.SetSpacing( 4 );
+   PSFHotPixelFilterRadius_Sizer.Add( PSFHotPixelFilterRadius_Label );
+   PSFHotPixelFilterRadius_Sizer.Add( PSFHotPixelFilterRadius_SpinBox );
+   PSFHotPixelFilterRadius_Sizer.AddStretch();
+
+   const char* psfNoiseReductionFilterRadiusToolTip =
+      "<p>Star detector: Size of the noise reduction filter.</p>"
+      "<p>This is the radius in pixels of a Gaussian convolution filter applied to the working image used for star "
+      "detection. Use it only for very low SNR images, where the star detector cannot find reliable stars with its "
+      "default parameters.</p>"
+      "<p>To disable noise reduction, set this parameter to zero.</p>";
+
+   PSFNoiseReductionFilterRadius_Label.SetText( "Noise reduction:" );
+   PSFNoiseReductionFilterRadius_Label.SetFixedWidth( labelWidth1 );
+   PSFNoiseReductionFilterRadius_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   PSFNoiseReductionFilterRadius_Label.SetToolTip( psfNoiseReductionFilterRadiusToolTip );
+
+   PSFNoiseReductionFilterRadius_SpinBox.SetRange( int( TheLNPSFNoiseReductionFilterRadiusParameter->MinimumValue() ), int( TheLNPSFNoiseReductionFilterRadiusParameter->MaximumValue() ) );
+   PSFNoiseReductionFilterRadius_SpinBox.SetToolTip( psfNoiseReductionFilterRadiusToolTip );
+   PSFNoiseReductionFilterRadius_SpinBox.SetFixedWidth( editWidth1 );
+   PSFNoiseReductionFilterRadius_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&LocalNormalizationInterface::e_SpinValueUpdated, w );
+
+   PSFNoiseReductionFilterRadius_Sizer.SetSpacing( 4 );
+   PSFNoiseReductionFilterRadius_Sizer.Add( PSFNoiseReductionFilterRadius_Label );
+   PSFNoiseReductionFilterRadius_Sizer.Add( PSFNoiseReductionFilterRadius_SpinBox );
+   PSFNoiseReductionFilterRadius_Sizer.AddStretch();
+
+   const char* psfTypeToolTip = "<p>Point spread function type used for PSF fitting and photometry.</p>"
+      "<p>In all cases elliptical functions are fitted to detected star structures, and PSF sampling regions are "
+      "defined adaptively using a median stabilization algorithm.</p>"
+      "<p>When the <b>Auto</b> option is selected, a series of different PSFs will be fitted for each source, and "
+      "the fit that leads to the least absolute difference among function values and sampled pixel values will be "
+      "used for scale estimation. Currently the following functions are tested in this special automatic mode: "
+      "Moffat functions with <i>beta</i> shape parameters equal to 2.5, 4, 6 and 10.</p>"
+      "<p>The rest of options select a fixed PSF type for all detected sources, which improves execution times at "
+      "the cost of a less adaptive, and hence potentially less accurate, relative scale measurement process.</p>";
+
+   PSFType_Label.SetText( "PSF type:" );
+   PSFType_Label.SetFixedWidth( labelWidth1 );
+   PSFType_Label.SetToolTip( psfTypeToolTip );
+   PSFType_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+
+   PSFType_ComboBox.AddItem( "Gaussian" );
+   PSFType_ComboBox.AddItem( "Moffat beta = 1.5" );
+   PSFType_ComboBox.AddItem( "Moffat beta = 4" );
+   PSFType_ComboBox.AddItem( "Moffat beta = 6" );
+   PSFType_ComboBox.AddItem( "Moffat beta = 8" );
+   PSFType_ComboBox.AddItem( "Moffat beta = 10" );
+   PSFType_ComboBox.AddItem( "Auto" );
+   PSFType_ComboBox.SetToolTip( psfTypeToolTip );
+   PSFType_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&LocalNormalizationInterface::e_ItemSelected, w );
+
+   PSFType_Sizer.SetSpacing( 4 );
+   PSFType_Sizer.Add( PSFType_Label );
+   PSFType_Sizer.Add( PSFType_ComboBox );
+   PSFType_Sizer.AddStretch();
+
+   PSFGrowth_NumericControl.label.SetText( "Growth factor:" );
+   PSFGrowth_NumericControl.label.SetFixedWidth( labelWidth1 );
+   PSFGrowth_NumericControl.slider.SetRange( 0, 250 );
+   PSFGrowth_NumericControl.SetReal();
+   PSFGrowth_NumericControl.SetRange( TheLNPSFGrowthParameter->MinimumValue(), TheLNPSFGrowthParameter->MaximumValue() );
+   PSFGrowth_NumericControl.SetPrecision( TheLNPSFGrowthParameter->Precision() );
+   PSFGrowth_NumericControl.edit.SetFixedWidth( editWidth1 );
+   PSFGrowth_NumericControl.SetToolTip( "<p>Growing factor for expansion/contraction of the PSF flux measurement region for "
+      "each source, in units of the Full Width at Tenth Maximum (FWTM).</p>"
+      "<p>The default value of this parameter is 1.0, meaning that flux is measured exclusively for pixels within the elliptical "
+      "region defined at one tenth of the fitted PSF maximum. Increasing this parameter can inprove accuracy of PSF flux "
+      "measurements for undersampled images, where PSF fitting uncertainty is relatively large. Decreasing it can be beneficial "
+      "in some cases working with very noisy data to restrict flux evaluation to star cores.</p>" );
+   PSFGrowth_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&LocalNormalizationInterface::e_ValueUpdated, w );
+
+   const char* psfMaxStarsToolTip =
+      "<p>The maximum number of stars that can be measured to compute mean scale estimates.</p>"
+      "<p>PSF photometry will be performed for no more than the specified number of stars. The subset of measured stars "
+      "will always start at the beginning of the set of detected stars, sorted by brightness in descending order.</p>"
+      "<p>The default value imposes a generous limit of 24K stars. Limiting the number of photometric samples can improve "
+      "performance for normalization of wide-field frames, where the number of detected stars can be very large. However, "
+      "reducing the set of measured sources too much will damage the accuracy of scale evaluation.</p>";
+
+   PSFMaxStars_Label.SetText( "Maximum stars:" );
+   PSFMaxStars_Label.SetFixedWidth( labelWidth1 );
+   PSFMaxStars_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   PSFMaxStars_Label.SetToolTip( psfMaxStarsToolTip );
+
+   PSFMaxStars_SpinBox.SetRange( int( TheLNPSFMaxStarsParameter->MinimumValue() ), int( TheLNPSFMaxStarsParameter->MaximumValue() ) );
+   PSFMaxStars_SpinBox.SetToolTip( psfMaxStarsToolTip );
+   PSFMaxStars_SpinBox.SetFixedWidth( editWidth3 );
+   PSFMaxStars_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&LocalNormalizationInterface::e_SpinValueUpdated, w );
+
+   PSFMaxStars_Sizer.SetSpacing( 4 );
+   PSFMaxStars_Sizer.Add( PSFMaxStars_Label );
+   PSFMaxStars_Sizer.Add( PSFMaxStars_SpinBox );
+   PSFMaxStars_Sizer.AddStretch();
+
+   PSFScaleEvaluation_Sizer.SetSpacing( 4 );
+   PSFScaleEvaluation_Sizer.Add( PSFNoiseLayers_Sizer );
+   PSFScaleEvaluation_Sizer.Add( PSFMinStructureSize_Sizer );
+   PSFScaleEvaluation_Sizer.Add( PSFHotPixelFilterRadius_Sizer );
+   PSFScaleEvaluation_Sizer.Add( PSFNoiseReductionFilterRadius_Sizer );
+   PSFScaleEvaluation_Sizer.Add( PSFType_Sizer );
+   PSFScaleEvaluation_Sizer.Add( PSFGrowth_NumericControl );
+   PSFScaleEvaluation_Sizer.Add( PSFMaxStars_Sizer );
+
+   PSFScaleEvaluation_Control.SetSizer( PSFScaleEvaluation_Sizer );
+
+   ShowStructureMaps_CheckBox.SetText( "Show structure maps" );
+   ShowStructureMaps_CheckBox.SetToolTip( "<p>Generate unsigned 8-bit images where nonzero pixel samples belong to detected significant "
+      "structures in the reference and target images. This option is only available for the multiscale analysis scale evaluation method, "
+      "and is only applicable to execution on views. This option is always ignored when LocalNormalization is executed in the global "
+      "context (that is, as a batch procedure).</p>" );
+   ShowStructureMaps_CheckBox.OnClick( (Button::click_event_handler)&LocalNormalizationInterface::e_Click, w );
+
+   ShowStructureMaps_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   ShowStructureMaps_Sizer.Add( ShowStructureMaps_CheckBox );
+   ShowStructureMaps_Sizer.AddStretch();
+
+   ScaleEvaluation_Sizer.SetSpacing( 4 );
+   ScaleEvaluation_Sizer.Add( ScaleEvaluationMethod_Sizer );
+   ScaleEvaluation_Sizer.Add( LocalScaleCorrections_Sizer );
+   ScaleEvaluation_Sizer.Add( ShowLocalScaleModels_Sizer );
+   ScaleEvaluation_Sizer.Add( StructureLayers_Sizer );
+   ScaleEvaluation_Sizer.Add( SaturationThreshold_NumericControl );
+   ScaleEvaluation_Sizer.Add( SaturationRelative_Sizer );
+   ScaleEvaluation_Sizer.Add( PSFScaleEvaluation_Control );
+   ScaleEvaluation_Sizer.Add( ShowStructureMaps_Sizer );
+
+   ScaleEvaluation_Control.SetSizer( ScaleEvaluation_Sizer );
 
    //
 
@@ -1219,6 +1655,10 @@ LocalNormalizationInterface::GUIData::GUIData( LocalNormalizationInterface& w )
    Global_Sizer.SetMargin( 8 );
    Global_Sizer.SetSpacing( 6 );
    Global_Sizer.Add( GeneralParameters_Sizer );
+   Global_Sizer.Add( OutlierRejection_SectionBar );
+   Global_Sizer.Add( OutlierRejection_Control );
+   Global_Sizer.Add( ScaleEvaluation_SectionBar );
+   Global_Sizer.Add( ScaleEvaluation_Control );
    Global_Sizer.Add( TargetImages_SectionBar );
    Global_Sizer.Add( TargetImages_Control );
    Global_Sizer.Add( FormatHints_SectionBar );
@@ -1230,6 +1670,8 @@ LocalNormalizationInterface::GUIData::GUIData( LocalNormalizationInterface& w )
 
    w.SetSizer( Global_Sizer );
 
+   OutlierRejection_Control.Hide();
+   ScaleEvaluation_Control.Hide();
    FormatHints_Control.Hide();
 
    w.EnsureLayoutUpdated();
@@ -1242,4 +1684,4 @@ LocalNormalizationInterface::GUIData::GUIData( LocalNormalizationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationInterface.cpp - Released 2021-12-29T20:37:28Z
+// EOF LocalNormalizationInterface.cpp - Released 2022-03-12T18:59:53Z

@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.8.0
+// Standard ImageCalibration Process Module Version 1.9.1
 // ----------------------------------------------------------------------------
-// LocalNormalizationInstance.h - Released 2021-12-29T20:37:28Z
+// LocalNormalizationInstance.h - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -102,14 +102,32 @@ private:
    typedef Array<Item>  item_list;
 
    // Working parameters
-   int32       p_scale;                      // working scale in pixels
-   pcl_bool    p_noScale;                    // only compute offset component with scale = 1
+   int32       p_scale;   // working scale in pixels
+   pcl_bool    p_noScale; // only compute offset component with constant scale = 1
+   pcl_bool    p_globalLocationNormalization; // compute global location normalization parameters
    pcl_bool    p_rejection;
+   pcl_bool    p_truncate; // truncate normalized images - not exposed
+   int32       p_backgroundSamplingDelta;
    float       p_backgroundRejectionLimit;
    float       p_referenceRejectionThreshold;
    float       p_targetRejectionThreshold;
    int32       p_hotPixelFilterRadius;
    int32       p_noiseReductionFilterRadius;
+   float       p_modelScalingFactor;
+
+   // Scale estimation
+   pcl_enum    p_scaleEvaluationMethod; // PSF signal | multiscale analysis
+   pcl_bool    p_localScaleCorrections; // compute 1st order local scale corrections
+   int32       p_structureLayers;
+   float       p_saturationThreshold;
+   pcl_bool    p_saturationRelative;
+   int32       p_psfNoiseLayers;
+   int32       p_psfHotPixelFilterRadius;
+   int32       p_psfNoiseReductionFilterRadius;
+   int32       p_psfMinStructureSize;
+   pcl_enum    p_psfType;
+   float       p_psfGrowth;
+   int32       p_psfMaxStars;
 
    // Working images
    String      p_referencePathOrViewId;
@@ -121,12 +139,15 @@ private:
    String      p_outputHints;
 
    // Working modes
-   pcl_enum    p_generateNormalizedImages;   // apply to target images
-   pcl_bool    p_generateNormalizationData;  // generate .xnml files
+   pcl_enum    p_generateNormalizedImages;  // apply to target images
+   pcl_bool    p_generateNormalizationData; // generate .xnml files
    pcl_bool    p_showBackgroundModels;
+   pcl_bool    p_showLocalScaleModels;
    pcl_bool    p_showRejectionMaps;
+   pcl_bool    p_showStructureMaps;
    pcl_enum    p_plotNormalizationFunctions;
    pcl_bool    p_noGUIMessages; // ### DEPRECATED
+   float       p_autoMemoryLimit; // maximum fraction of available physical memory we can use
 
    // Output images
    String      p_outputDirectory;
@@ -151,6 +172,15 @@ private:
    pcl_bool    p_graphTransparent;
    String      p_graphOutputDirectory;
 
+   // Read-only output properties
+   struct OutputData
+   {
+      String   outputFilePathXNML;
+      String   outputFilePath;
+      FVector  scaleFactors = Vector( 1.0F, 3 );
+   };
+   Array<OutputData> o_output;
+
    void ApplyErrorPolicy();
 
    friend class LocalNormalizationThread;
@@ -164,4 +194,4 @@ private:
 #endif   // __LocalNormalizationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationInstance.h - Released 2021-12-29T20:37:28Z
+// EOF LocalNormalizationInstance.h - Released 2022-03-12T18:59:53Z

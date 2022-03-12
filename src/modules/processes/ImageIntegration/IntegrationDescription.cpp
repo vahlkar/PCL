@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.4.3
+// Standard ImageIntegration Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// IntegrationDescription.cpp - Released 2021-12-29T20:37:28Z
+// IntegrationDescription.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -124,7 +124,6 @@ ImageIntegrationInstance::IntegrationDescriptionItems::IntegrationDescriptionIte
       case IIWeightMode::ExposureTimeWeight:
          weightMode = "Exposure time";
          break;
-      default:
       case IIWeightMode::SNREstimate:
          weightMode = "SNR estimate";
          break;
@@ -140,11 +139,12 @@ ImageIntegrationInstance::IntegrationDescriptionItems::IntegrationDescriptionIte
       case IIWeightMode::KeywordWeight:
          weightMode = "Custom keyword: " + instance.p_weightKeyword;
          break;
+      default:
       case IIWeightMode::PSFSignalWeight:
          weightMode = "PSF signal weight";
          break;
-      case IIWeightMode::PSFSignalPowerWeight:
-         weightMode = "PSF signal power weight";
+      case IIWeightMode::PSFSNR:
+         weightMode = "PSF SNR";
          break;
       }
 
@@ -201,6 +201,9 @@ ImageIntegrationInstance::IntegrationDescriptionItems::IntegrationDescriptionIte
    case IIRejection::ESD:
       pixelRejection = "Generalized extreme Studentized deviate";
       break;
+   case IIRejection::RCR:
+      pixelRejection = "Robust Chauvenet rejection";
+      break;
    case IIRejection::CCDClip:
       pixelRejection = "CCD noise model";
       break;
@@ -252,6 +255,9 @@ ImageIntegrationInstance::IntegrationDescriptionItems::IntegrationDescriptionIte
       case IIRejection::ESD:
          rejectionParameters.Format( "esd_outliers=%.2f esd_alpha=%.2f esd_low=%.2f",
                                      instance.p_esdOutliersFraction, instance.p_esdAlpha, instance.p_esdLowRelaxation );
+         break;
+      case IIRejection::RCR:
+         rejectionParameters.Format( "rcr_limit=%.2f", instance.p_rcrLimit );
          break;
       case IIRejection::CCDClip:
          rejectionParameters.Format( "gain=%.2f read_noise=%.2f scale_noise=%.2f",
@@ -313,4 +319,4 @@ String ImageIntegrationInstance::IntegrationDescription() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationDescription.cpp - Released 2021-12-29T20:37:28Z
+// EOF IntegrationDescription.cpp - Released 2022-03-12T18:59:53Z

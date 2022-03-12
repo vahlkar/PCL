@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// JPEGInstance.cpp - Released 2021-12-29T20:37:37Z
+// JPEGInstance.cpp - Released 2022-03-12T18:59:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -436,4 +436,4 @@ bool JPEGInstance::WasLossyWrite() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF JPEGInstance.cpp - Released 2021-12-29T20:37:37Z
+// EOF JPEGInstance.cpp - Released 2022-03-12T18:59:44Z

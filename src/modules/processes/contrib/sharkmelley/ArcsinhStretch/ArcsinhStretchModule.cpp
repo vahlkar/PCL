@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
 // Standard ArcsinhStretch Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// ArcsinhStretchModule.cpp - Released 2021-12-29T20:37:28Z
+// ArcsinhStretchModule.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ArcsinhStretch PixInsight module.
 //
@@ -56,9 +56,9 @@
 #define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
-#define MODULE_RELEASE_YEAR      2021
-#define MODULE_RELEASE_MONTH     12
-#define MODULE_RELEASE_DAY       29
+#define MODULE_RELEASE_YEAR      2022
+#define MODULE_RELEASE_MONTH     3
+#define MODULE_RELEASE_DAY       12
 
 #include "ArcsinhStretchInterface.h"
 #include "ArcsinhStretchModule.h"
@@ -116,7 +116,7 @@ String ArcsinhStretchModule::Author() const
 
 String ArcsinhStretchModule::Copyright() const
 {
-   return "Copyright (c) 2017-2021 Mark Shelley";
+   return "Copyright (c) 2017-2022 Mark Shelley";
 }
 
 // ----------------------------------------------------------------------------
@@ -173,4 +173,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF ArcsinhStretchModule.cpp - Released 2021-12-29T20:37:28Z
+// EOF ArcsinhStretchModule.cpp - Released 2022-03-12T18:59:53Z

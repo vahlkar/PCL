@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.4.3
+// Standard ImageIntegration Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// IntegrationFile.cpp - Released 2021-12-29T20:37:28Z
+// IntegrationFile.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -58,6 +58,11 @@
 #include <pcl/FileFormat.h>
 #include <pcl/MetaModule.h>
 #include <pcl/SpinStatus.h>
+
+/*
+ * Minimum supported local normalization data version.
+ */
+#define LN_MIN_VERSION  1
 
 namespace pcl
 {
@@ -431,11 +436,6 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
       m_image = new Image( (void*)0, 0, 0 ); // shared image
       if ( !m_file->ReadImage( *m_image ) )
          throw CaughtException();
-
-      if ( instance.p_subtractPedestals )
-         if ( m_metadata.IsValid() )
-            if ( m_metadata.pedestal.IsDefined() )
-               *m_image -= m_metadata.pedestal()/65535.0;
    }
 
    bool generateOutput = instance.p_generateIntegratedImage || instance.p_generateDrizzleData;
@@ -449,12 +449,12 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
                                   !hasWeightsList &&
                                   (instance.p_weightMode == IIWeightMode::SNREstimate ||
                                    instance.p_weightMode == IIWeightMode::PSFSignalWeight ||
-                                   instance.p_weightMode == IIWeightMode::PSFSignalPowerWeight))
+                                   instance.p_weightMode == IIWeightMode::PSFSNR))
                                || instance.p_generateDrizzleData &&
                                   !hasWeightsList &&
                                   (instance.p_weightMode == IIWeightMode::SNREstimate ||
                                    instance.p_weightMode == IIWeightMode::PSFSignalWeight ||
-                                   instance.p_weightMode == IIWeightMode::PSFSignalPowerWeight);
+                                   instance.p_weightMode == IIWeightMode::PSFSNR);
 
    bool needScale = needNoise  || instance.p_generateDrizzleData
                                || instance.p_generateIntegratedImage &&
@@ -504,11 +504,6 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
          m_image = new Image( (void*)0, 0, 0 ); // shared image
          if ( !m_file->ReadImage( *m_image ) )
             throw CaughtException();
-
-         if ( instance.p_subtractPedestals )
-            if ( m_metadata.IsValid() )
-               if ( m_metadata.pedestal.IsDefined() )
-                  *m_image -= m_metadata.pedestal()/65535.0;
       }
 
       m_image->SetStatusCallback( &spin );
@@ -549,6 +544,16 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
          }
          if ( doBWMV )
             m_bwmv[c] = Sqrt( m_image->TwoSidedBiweightMidvariance( m_median[c], m_mad[c] ) );
+
+         if ( instance.p_subtractPedestals )
+            if ( m_metadata.IsValid() )
+               if ( m_metadata.pedestal.IsDefined() )
+               {
+                  if ( doMean )
+                     m_mean[c] -= m_metadata.pedestal()/65535.0;
+                  if ( doMedian )
+                     m_median[c] -= m_metadata.pedestal()/65535.0;
+               }
       }
 
       m_image->ResetSelections();
@@ -601,225 +606,210 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
 
       if ( !instance.p_ignoreNoiseKeywords )
       {
-         if ( format.CanStoreImageProperties() )
+         if ( format.CanStoreKeywords() )
          {
-            if ( m_file->HasImageProperty( "PCL:PSFSignalEstimates" ) )
-               if ( m_file->HasImageProperty( "PCL:PSFSignalPowerEstimates" ) )
+            int c0 = 0;
+            if ( format.CanStoreImageProperties() )
+               if ( m_file->HasImageProperty( "PCL:CFASourceChannel" ) )
                {
-                  Variant v1 = m_file->ReadImageProperty( "PCL:PSFSignalEstimates" );
-                  if ( v1.IsValid() )
-                  {
-                     Variant v2 = m_file->ReadImageProperty( "PCL:PSFSignalPowerEstimates" );
-                     if ( v2.IsValid() )
-                     {
-                        DVector s1 = v1.ToVector();
-                        if ( s1.Length() >= s_numberOfChannels )
-                           if ( s1.MinComponent() > 0 )
-                           {
-                              DVector s2 = v2.ToVector();
-                              if ( s2.Length() >= s_numberOfChannels )
-                                 if ( s2.MinComponent() > 0 )
-                                 {
-                                    for ( int i = 0; i < s_numberOfChannels; ++i )
-                                    {
-                                       m_psfSignalEstimates[i].mean = s1[i];
-                                       m_psfSignalEstimates[i].power = s2[i];
-                                    }
-                                    signalOk = true;
-                                 }
-                           }
-                     }
-                  }
+                  Variant v = m_file->ReadImageProperty( "PCL:CFASourceChannel" );
+                  if ( v.IsValid() )
+                     c0 = v.ToInt();
                }
 
-            if ( m_file->HasImageProperty( "PCL:NoiseEstimates" ) )
+            signalOk = true;
+            for ( int c = 0; c < s_numberOfChannels; ++c )
             {
-               Variant v = m_file->ReadImageProperty( "PCL:NoiseEstimates" );
-               if ( v.IsValid() )
+               m_psfSignalEstimates[c].totalFlux = KeywordValue( IsoString().Format( "PSFFLX%02d", c0 + c ) );
+               if ( m_psfSignalEstimates[c].totalFlux <= 0 )
                {
-                  m_noiseEstimates = v.ToVector();
-                  if ( m_noiseEstimates.Length() >= s_numberOfChannels )
-                     if ( m_noiseEstimates.MinComponent() > 0 )
-                        noiseOk = true;
+                  m_psfSignalEstimates[c].totalFlux = KeywordValue( "PSFFLX" );
+                  if ( m_psfSignalEstimates[c].totalFlux <= 0 )
+                  {
+                     signalOk = false;
+                     break;
+                  }
+               }
+               m_psfSignalEstimates[c].totalPowerFlux = KeywordValue( IsoString().Format( "PSFFLP%02d", c0 + c ) );
+               if ( m_psfSignalEstimates[c].totalPowerFlux <= 0 )
+               {
+                  m_psfSignalEstimates[c].totalPowerFlux = KeywordValue( "PSFFLP" );
+                  if ( m_psfSignalEstimates[c].totalPowerFlux <= 0 )
+                  {
+                     signalOk = false;
+                     break;
+                  }
                }
 
-               if ( noiseOk )
-                  if ( m_file->HasImageProperty( "PCL:NoiseLowScaleEstimates" ) )
+               m_psfSignalEstimates[c].totalMeanFlux = KeywordValue( IsoString().Format( "PSFMFL%02d", c0 + c ) );
+               if ( m_psfSignalEstimates[c].totalMeanFlux <= 0 )
+               {
+                  m_psfSignalEstimates[c].totalMeanFlux = KeywordValue( "PSFMFL" );
+                  if ( m_psfSignalEstimates[c].totalMeanFlux <= 0 )
                   {
-                     Variant v = m_file->ReadImageProperty( "PCL:NoiseLowScaleEstimates" );
-                     if ( v.IsValid() )
+                     signalOk = false;
+                     break;
+                  }
+               }
+               m_psfSignalEstimates[c].totalMeanPowerFlux = KeywordValue( IsoString().Format( "PSFMFP%02d", c0 + c ) );
+               if ( m_psfSignalEstimates[c].totalMeanPowerFlux <= 0 )
+               {
+                  m_psfSignalEstimates[c].totalMeanPowerFlux = KeywordValue( "PSFMFP" );
+                  if ( m_psfSignalEstimates[c].totalMeanPowerFlux <= 0 )
+                  {
+                     signalOk = false;
+                     break;
+                  }
+               }
+
+               m_psfSignalEstimates[c].MStar = KeywordValue( IsoString().Format( "PSFMST%02d", c0 + c ) );
+               if ( m_psfSignalEstimates[c].MStar <= 0 )
+               {
+                  m_psfSignalEstimates[c].MStar = KeywordValue( "PSFMST" );
+                  if ( m_psfSignalEstimates[c].MStar <= 0 )
+                  {
+                     signalOk = false;
+                     break;
+                  }
+               }
+               m_psfSignalEstimates[c].NStar = KeywordValue( IsoString().Format( "PSFNST%02d", c0 + c ) );
+               if ( m_psfSignalEstimates[c].NStar <= 0 )
+               {
+                  m_psfSignalEstimates[c].NStar = KeywordValue( "PSFNST" );
+                  if ( m_psfSignalEstimates[c].NStar <= 0 )
+                  {
+                     signalOk = false;
+                     break;
+                  }
+               }
+
+               m_psfSignalEstimates[c].count = int( KeywordValue( IsoString().Format( "PSFSGN%02d", c0 + c ) ) );
+               if ( m_psfSignalEstimates[c].count <= 0 )
+               {
+                  m_psfSignalEstimates[c].count = int( KeywordValue( "PSFSGN" ) );
+                  if ( m_psfSignalEstimates[c].count <= 0 )
+                  {
+                     signalOk = false;
+                     break;
+                  }
+               }
+            }
+
+            noiseOk = true;
+            for ( int c = 0; c < s_numberOfChannels; ++c )
+            {
+               m_noiseEstimates[c] = KeywordValue( IsoString().Format( "NOISE%02d", c0 + c ) );
+               if ( m_noiseEstimates[c] <= 0 )
+               {
+                  m_noiseEstimates[c] = KeywordValue( "NOISE" );
+                  if ( m_noiseEstimates[c] <= 0 )
+                  {
+                     noiseOk = false;
+                     break;
+                  }
+               }
+            }
+
+            if ( noiseOk )
+               if ( !noiseScaleOk )
+               {
+                  noiseScaleOk = true;
+                  for ( int c = 0; c < s_numberOfChannels; ++c )
+                  {
+                     m_noiseScaleEstimates[c].low = KeywordValue( IsoString().Format( "NOISEL%02d", c0 + c ) );
+                     if ( m_noiseScaleEstimates[c].low <= 0 )
                      {
-                        Vector sl = v.ToVector();
-                        if ( sl.Length() >= s_numberOfChannels )
-                           if ( sl.MinComponent() > 0 )
-                              if ( m_file->HasImageProperty( "PCL:NoiseHighScaleEstimates" ) )
-                              {
-                                 Variant v = m_file->ReadImageProperty( "PCL:NoiseHighScaleEstimates" );
-                                 if ( v.IsValid() )
-                                 {
-                                    Vector sh = v.ToVector();
-                                    if ( sh.Length() >= s_numberOfChannels )
-                                       if ( sh.MinComponent() > 0 )
-                                       {
-                                          for ( int i = 0; i < s_numberOfChannels; ++i )
-                                          {
-                                             m_noiseScaleEstimates[i].low = sl[i];
-                                             m_noiseScaleEstimates[i].high = sh[i];
-                                          }
-                                          noiseScaleOk = true;
-                                       }
-                                 }
-                              }
+                        m_noiseScaleEstimates[c].low = KeywordValue( "NOISEL" );
+                        if ( m_noiseScaleEstimates[c].low <= 0 )
+                        {
+                           noiseScaleOk = false;
+                           break;
+                        }
                      }
                   }
-            }
+
+                  if ( noiseScaleOk )
+                     for ( int c = 0; c < s_numberOfChannels; ++c )
+                     {
+                        m_noiseScaleEstimates[c].high = KeywordValue( IsoString().Format( "NOISEH%02d", c0 + c ) );
+                        if ( m_noiseScaleEstimates[c].high <= 0 )
+                        {
+                           m_noiseScaleEstimates[c].high = KeywordValue( "NOISEH" );
+                           if ( m_noiseScaleEstimates[c].high <= 0 )
+                           {
+                              noiseScaleOk = false;
+                              break;
+                           }
+                        }
+                     }
+               }
          }
-
-         if ( !signalOk || !noiseOk || !noiseScaleOk )
-            if ( format.CanStoreKeywords() )
-            {
-               int c0 = 0;
-               if ( format.CanStoreImageProperties() )
-                  if ( m_file->HasImageProperty( "PCL:CFASourceChannel" ) )
-                  {
-                     Variant v = m_file->ReadImageProperty( "PCL:CFASourceChannel" );
-                     if ( v.IsValid() )
-                        c0 = v.ToInt();
-                  }
-
-               if ( !signalOk )
-               {
-                  signalOk = true;
-                  for ( int c = 0; c < s_numberOfChannels; ++c )
-                  {
-                     m_psfSignalEstimates[c].mean = KeywordValue( IsoString().Format( "PSFSGL%02d", c0 + c ) );
-                     if ( m_psfSignalEstimates[c].mean <= 0 )
-                     {
-                        m_psfSignalEstimates[c].mean = KeywordValue( "PSFSGL" );
-                        if ( m_psfSignalEstimates[c].mean <= 0 )
-                        {
-                           signalOk = false;
-                           break;
-                        }
-                     }
-                     m_psfSignalEstimates[c].power = KeywordValue( IsoString().Format( "PSFSGP%02d", c0 + c ) );
-                     if ( m_psfSignalEstimates[c].power <= 0 )
-                     {
-                        m_psfSignalEstimates[c].power = KeywordValue( "PSFSGP" );
-                        if ( m_psfSignalEstimates[c].power <= 0 )
-                        {
-                           signalOk = false;
-                           break;
-                        }
-                     }
-                  }
-               }
-
-               if ( !noiseOk )
-               {
-                  noiseOk = true;
-                  for ( int c = 0; c < s_numberOfChannels; ++c )
-                  {
-                     m_noiseEstimates[c] = KeywordValue( IsoString().Format( "NOISE%02d", c0 + c ) );
-                     if ( m_noiseEstimates[c] <= 0 )
-                     {
-                        m_noiseEstimates[c] = KeywordValue( "NOISE" );
-                        if ( m_noiseEstimates[c] <= 0 )
-                        {
-                           noiseOk = false;
-                           break;
-                        }
-                     }
-                  }
-
-                  if ( noiseOk )
-                     if ( !noiseScaleOk )
-                     {
-                        noiseScaleOk = true;
-                        for ( int c = 0; c < s_numberOfChannels; ++c )
-                        {
-                           m_noiseScaleEstimates[c].low = KeywordValue( IsoString().Format( "NOISEL%02d", c0 + c ) );
-                           if ( m_noiseScaleEstimates[c].low <= 0 )
-                           {
-                              m_noiseScaleEstimates[c].low = KeywordValue( "NOISEL" );
-                              if ( m_noiseScaleEstimates[c].low <= 0 )
-                              {
-                                 noiseScaleOk = false;
-                                 break;
-                              }
-                           }
-                        }
-
-                        if ( noiseScaleOk )
-                           for ( int c = 0; c < s_numberOfChannels; ++c )
-                           {
-                              m_noiseScaleEstimates[c].high = KeywordValue( IsoString().Format( "NOISEH%02d", c0 + c ) );
-                              if ( m_noiseScaleEstimates[c].high <= 0 )
-                              {
-                                 m_noiseScaleEstimates[c].high = KeywordValue( "NOISEH" );
-                                 if ( m_noiseScaleEstimates[c].high <= 0 )
-                                 {
-                                    noiseScaleOk = false;
-                                    break;
-                                 }
-                              }
-                           }
-                     }
-               }
-            }
-      }
+      } // if ( !instance.p_ignoreNoiseKeywords )
 
       if ( !signalOk )
       {
          console.WarningLn( "<end><cbr>** Warning: PSF signal estimates are being calculated from non-raw data. "
-                            "Image weights can be wrong or inaccurate." );
+                            "Image weights can be inaccurate." );
          m_psfSignalEstimates = instance.EvaluatePSFSignal( ImageVariant( m_image.Ptr() ) );
       }
 
       if ( !noiseOk )
       {
          console.WarningLn( "<end><cbr>** Warning: Noise estimates and scaling factors are being calculated from non-raw data. "
-                            "Image weights can be wrong or inaccurate." );
+                            "Image weights can be inaccurate." );
          m_noiseEstimates = instance.EvaluateNoise( ImageVariant( m_image.Ptr() ) );
          m_noiseScaleEstimates = instance.EvaluateNoiseScale( ImageVariant( m_image.Ptr() ) );
       }
       else if ( !noiseScaleOk )
       {
          console.WarningLn( "<end><cbr>** Warning: Noise scaling factors are being calculated from non-raw data. "
-                            "Image weights can be wrong or inaccurate." );
+                            "Image weights can be inaccurate." );
          m_noiseScaleEstimates = instance.EvaluateNoiseScale( ImageVariant( m_image.Ptr() ) );
       }
-   }
+   } // if doNoise
 
    if ( s_incremental )
       m_image.Destroy();
    else
+   {
       m_image->ResetSelections();
+
+      if ( instance.p_subtractPedestals )
+         if ( m_metadata.IsValid() )
+            if ( m_metadata.pedestal.IsDefined() )
+               *m_image -= m_metadata.pedestal()/65535.0;
+   }
 
    if ( instance.p_useCache )
       AddToCache( path );
 
-   if ( needScale )
-   {
-      console.Write( "<end><cbr>Scale factors          :" );
-      for ( int c = 0; c < s_numberOfChannels; ++c )
-         console.Write( String().Format( " (%.6e,%.6e)", ScaleFactor( c ).low, ScaleFactor( c ).high ) );
-      console.Write(       "<br>Zero offset            :" );
-      for ( int c = 0; c < s_numberOfChannels; ++c )
-         console.Write( String().Format( " %+.6e", ZeroOffset( c ) ) );
-      if ( !needNoise )
-         console.WriteLn();
-   }
-
    if ( needNoise )
    {
-      console.Write(       "<br>Noise scaling factors  :" );
+      console.WriteLn( "<end><cbr>PSF signal estimates:" );
       for ( int c = 0; c < s_numberOfChannels; ++c )
-      console.Write( String().Format( " (%.6e,%.6e)", NoiseScaleEstimates( c ).low, NoiseScaleEstimates( c ).high ) );
-      console.Write(       "<br>Scaled noise estimates :" );
+         if ( m_psfSignalEstimates[c].count > 0 )
+            console.WriteLn( String().Format( "ch %d : TFlux = %.4e, TMeanFlux = %.4e, M* = %.4e, N* = %.4e, %d PSF fits",
+                                       c, m_psfSignalEstimates[c].totalFlux, m_psfSignalEstimates[c].totalMeanFlux,
+                                       m_psfSignalEstimates[c].MStar, m_psfSignalEstimates[c].NStar, m_psfSignalEstimates[c].count ) );
+            else
+               console.WarningLn( String().Format( "** Warning: No valid PSF signal samples (channel %d).", c ) );
+
+      console.WriteLn( "Noise estimates:" );
+      for ( int c = 0; c < m_noiseEstimates.Length(); ++c )
+         console.WriteLn( String().Format( "ch %d : sigma_n = %.4e", c, m_noiseEstimates[c] ) );
+
+      console.WriteLn( "Noise scaling factors:" );
+      for ( int c = 0; c < m_noiseEstimates.Length(); ++c )
+         console.WriteLn( String().Format( "ch %d : sigma_low = %.6e, sigma_high = %.6e",
+                                       c, m_noiseScaleEstimates[c].low, m_noiseScaleEstimates[c].high ) );
+   }
+
+   if ( needScale )
+   {
+      console.WriteLn( "<end><cbr>Relative location and scale:" );
       for ( int c = 0; c < s_numberOfChannels; ++c )
-         console.Write( String().Format( " %.4e", NoiseEstimate( c )/double( NoiseScaleEstimates( c ) ) ) );
-      console.WriteLn();
+         console.WriteLn( String().Format( "ch %d : zero_offset = %+.6e, scale_low = %.6e, scale_high = %.6e",
+                                       c, ZeroOffset( c ), ScaleFactor( c ).low, ScaleFactor( c ).high ) );
    }
 
    if ( generateOutput )
@@ -840,24 +830,24 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
             for ( int c = 0; c < s_numberOfChannels; ++c )
             {
                /*
-                * Weighting by signal-to-noise ratio with PSF signal estimates
+                * PSF Signal Weight (PSFSW) image quality estimator
                 */
-               double w_psf = PSFSignalEstimate( c )/NoiseEstimate( c );
+               double w_psf = PSFSignalEstimator::PSFSignalWeight( PSFSignalEstimate( c ), NoiseEstimate( c ) );
                if ( !IsFinite( w_psf ) || 1 + w_psf == 1 )
-                  throw Error( m_file->FilePath() + String().Format( " (channel #%d): Zero or insignificant SNR estimate for PSF signal weight.", c ) );
+                  throw Error( m_file->FilePath() + String().Format( " (channel #%d): Zero or insignificant PSF signal weight estimate.", c ) );
                m_weights[c] = w_psf;
             }
             break;
-         case IIWeightMode::PSFSignalPowerWeight:
+         case IIWeightMode::PSFSNR:
             for ( int c = 0; c < s_numberOfChannels; ++c )
             {
                /*
-                * Weighting by signal-to-noise ratio with PSF signal power estimates
+                * PSF Signal to Noise Ratio (PSFSNR) estimator
                 */
-               double w_psf2 = PSFSignalPowerEstimate( c )/NoiseEstimate( c )/NoiseEstimate( c );
-               if ( !IsFinite( w_psf2 ) || 1 + w_psf2 == 1 )
-                  throw Error( m_file->FilePath() + String().Format( " (channel #%d): Zero or insignificant SNR estimate for PSF signal power weight.", c ) );
-               m_weights[c] = w_psf2;
+               double snr_psf = PSFSignalEstimator::PSFSNR( PSFSignalEstimate( c ), NoiseEstimate( c ) );
+               if ( !IsFinite( snr_psf ) || 1 + snr_psf == 1 )
+                  throw Error( m_file->FilePath() + String().Format( " (channel #%d): Zero or insignificant PSF signal-to-noise ratio estimate.", c ) );
+               m_weights[c] = snr_psf;
             }
             break;
          case IIWeightMode::SNREstimate:
@@ -866,7 +856,7 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
                /*
                 * Weighting by scaled inverse noise variance
                 */
-               double w_snr = NoiseScaleEstimates( c ).Total()/NoiseEstimate( c );
+               double w_snr = double( NoiseScaleEstimates( c ) )/NoiseEstimate( c );
                if ( !IsFinite( w_snr ) || 1 + w_snr*w_snr == 1 )
                   throw Error( m_file->FilePath() + String().Format( " (channel #%d): Zero or insignificant scaled noise estimate.", c ) );
                m_weights[c] = w_snr*w_snr;
@@ -910,11 +900,9 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
          for ( int c = 0; c < s_numberOfChannels; ++c )
             if ( !IsFinite( m_weights[c] ) || 1 + m_weights[c] == 1 )
                throw Error( m_file->FilePath() + ": Zero or insignificant signal detected (empty image?)." );
-         console.Write(           "Weight                 :" );
-
+         console.WriteLn( "<end><cbr>Relative weights:" );
          for ( int c = 0; c < s_numberOfChannels; ++c )
-            console.Write( String().Format( " %.5e", ImageWeight( c ) ) );
-         console.WriteLn();
+            console.WriteLn( String().Format( "ch %d : weight = %.5e", c, ImageWeight( c ) ) );
       }
       else
       {
@@ -924,7 +912,7 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
           */
          m_weights = 1.0;
       }
-   }
+   } // if ( generateOutput )
 
    if ( !s_incremental )
       if ( s_roi != m_image->Bounds() )
@@ -942,6 +930,10 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
             throw Error( "No such file: " + m_nmlPath );
 
          m_localNormalization.Parse( m_nmlPath );
+
+         if ( m_localNormalization.Version() < LN_MIN_VERSION )
+            throw Error( String().Format( "Incompatible local normalization data version. Expected >= %d, got %d: ",
+                                          LN_MIN_VERSION, m_localNormalization.Version() ) + m_nmlPath );
 
          if ( m_localNormalization.ReferenceWidth() != s_width ||
               m_localNormalization.ReferenceHeight() != s_height ||
@@ -1291,4 +1283,4 @@ void IntegrationFile::OpenFileThread::Run()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationFile.cpp - Released 2021-12-29T20:37:28Z
+// EOF IntegrationFile.cpp - Released 2022-03-12T18:59:53Z

@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
 // Standard Morphology Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// MorphologicalTransformationInstance.cpp - Released 2021-12-29T20:37:28Z
+// MorphologicalTransformationInstance.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Morphology PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -359,4 +359,4 @@ size_type MorphologicalTransformationInstance::ParameterLength( const MetaParame
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF MorphologicalTransformationInstance.cpp - Released 2021-12-29T20:37:28Z
+// EOF MorphologicalTransformationInstance.cpp - Released 2022-03-12T18:59:53Z

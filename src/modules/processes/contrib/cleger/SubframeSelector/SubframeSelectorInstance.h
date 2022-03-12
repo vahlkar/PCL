@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.7.3
+// Standard SubframeSelector Process Module Version 1.8.0
 // ----------------------------------------------------------------------------
-// SubframeSelectorInstance.h - Released 2021-12-29T20:37:28Z
+// SubframeSelectorInstance.h - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -92,16 +92,20 @@ private:
 
    struct SubframeItem
    {
-      pcl_bool enabled; // if disabled, skip (ignore) this image
-      String   path;    // absolute file path
+      pcl_bool     enabled = true; // if disabled, skip (ignore) this image
+      String       path;    // absolute file path
+      String       nmlPath; // local normalization data file
+      String       drzPath; // drizzle data file
+      TimePoint    obsTime; // observation time, for sorting subframes
+      MeasureItem* measureItem = nullptr; // for dual sorting of subframe/measure item lists
 
-      SubframeItem( const String& p = String() )
-         : enabled( TheSSSubframeEnabledParameter->DefaultValue() )
-         , path( p )
+      SubframeItem() = default;
+      SubframeItem( const SubframeItem& ) = default;
+
+      SubframeItem( const String& a_path )
+         : path( a_path )
       {
       }
-
-      SubframeItem( const SubframeItem& ) = default;
    };
 
    typedef Array<SubframeItem>  subframe_list;
@@ -139,10 +143,13 @@ private:
    pcl_bool           p_psfFitCircular;
    Rect               p_roi = 0;
 
-   // Subtractive pedestal
+   // Subtractive pedestal.
    int32              p_pedestal;      // in 16-bit DN
    pcl_enum           p_pedestalMode;  // literal | default keyword | custom keyword
    String             p_pedestalKeyword;
+
+   // Noise evaluation.
+   pcl_enum           p_noiseEvaluationAlgorithm;
 
    // Format hints.
    String             p_inputHints;
@@ -209,4 +216,4 @@ private:
 #endif   // __SubframeSelectorInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInstance.h - Released 2021-12-29T20:37:28Z
+// EOF SubframeSelectorInstance.h - Released 2022-03-12T18:59:53Z

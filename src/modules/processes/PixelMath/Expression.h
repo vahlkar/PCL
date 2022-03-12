@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.8.5
+// Standard PixelMath Process Module Version 1.9.2
 // ----------------------------------------------------------------------------
-// Expression.h - Released 2021-12-29T20:37:28Z
+// Expression.h - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -197,7 +197,7 @@ public:
 
    virtual String ToString() const = 0;
 
-   static void Parse( component_list&, const String& );
+   static void Parse( component_list& expressions, TokenSet& tokens, const String& text );
 
 private:
 
@@ -205,9 +205,13 @@ private:
    int      m_pos;              // token position
    bool     m_isLvalue = false; // lvalue role set by the parser
 
-   static Expression* Parse( token_list& );     // parser stage 1
+   static Expression* Parse( TokenList& );      // parser stage 1
    static Expression* Parse( component_list& ); // parser stage 2
 };
+
+// ----------------------------------------------------------------------------
+
+typedef Expression::component_list  ExpressionList;
 
 // ----------------------------------------------------------------------------
 
@@ -216,4 +220,4 @@ private:
 #endif   // __Expression_h
 
 // ----------------------------------------------------------------------------
-// EOF Expression.h - Released 2021-12-29T20:37:28Z
+// EOF Expression.h - Released 2022-03-12T18:59:53Z

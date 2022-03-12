@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.7.3
+// Standard SubframeSelector Process Module Version 1.8.0
 // ----------------------------------------------------------------------------
-// SubframeSelectorInterface.cpp - Released 2021-12-29T20:37:28Z
+// SubframeSelectorInterface.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -57,11 +57,17 @@
 
 #include <pcl/Console.h>
 #include <pcl/Dialog.h>
+#include <pcl/DrizzleData.h>
 #include <pcl/FileDataCachePreferencesDialog.h>
 #include <pcl/FileDialog.h>
 #include <pcl/FileFormat.h>
+#include <pcl/FileFormatInstance.h>
+#include <pcl/IntegrationMetadata.h>
+#include <pcl/LocalNormalizationData.h>
+#include <pcl/MessageBox.h>
 #include <pcl/MetaModule.h>
 #include <pcl/PreviewSelectionDialog.h>
+#include <pcl/RadioButton.h>
 #include <pcl/StandardStatus.h>
 #include <pcl/ViewList.h>
 
@@ -204,6 +210,100 @@ bool SubframeSelectorInterface::ImportProcess( const ProcessImplementation& p )
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
+class SortSubframesDialog : public Dialog
+{
+public:
+
+   SubframeSelectorInterface::SubframeSortingCriterion sortBy = SubframeSelectorInterface::SortByTimeAscending;
+
+   SortSubframesDialog()
+   {
+      SortingCriterion_GroupBox.SetTitle( "Sorting Criterion" );
+
+      SortByAcquisitionTime_RadioButton.SetText( "Acquisition time" );
+      SortByFilePath_RadioButton.SetText( "File path" );
+      SortAscending_CheckBox.SetText( "Ascending order" );
+
+      SortByAcquisitionTime_RadioButton.SetChecked();
+      SortAscending_CheckBox.SetChecked();
+
+      SortingCriterion_Sizer.SetMargin( 6 );
+      SortingCriterion_Sizer.SetSpacing( 6 );
+      SortingCriterion_Sizer.Add( SortByAcquisitionTime_RadioButton );
+      SortingCriterion_Sizer.Add( SortByFilePath_RadioButton );
+      SortingCriterion_Sizer.AddSpacing( 6 );
+      SortingCriterion_Sizer.Add( SortAscending_CheckBox );
+
+      SortingCriterion_GroupBox.SetSizer( SortingCriterion_Sizer );
+      SortingCriterion_GroupBox.SetMinWidth( Font().Width( String( '0', 40 ) ) );
+
+      OK_PushButton.SetText( "OK" );
+      OK_PushButton.SetDefault();
+      OK_PushButton.SetCursor( StdCursor::Checkmark );
+      OK_PushButton.OnClick( (Button::click_event_handler)&SortSubframesDialog::e_Click, *this );
+
+      Cancel_PushButton.SetText( "Cancel" );
+      Cancel_PushButton.SetCursor( StdCursor::Crossmark );
+      Cancel_PushButton.OnClick( (Button::click_event_handler)&SortSubframesDialog::e_Click, *this );
+
+      Buttons_Sizer.SetSpacing( 8 );
+      Buttons_Sizer.AddStretch();
+      Buttons_Sizer.Add( OK_PushButton );
+      Buttons_Sizer.Add( Cancel_PushButton );
+
+      Global_Sizer.SetMargin( 8 );
+      Global_Sizer.SetSpacing( 6 );
+      Global_Sizer.Add( SortingCriterion_GroupBox );
+      Global_Sizer.AddSpacing( 6 );
+      Global_Sizer.Add( Buttons_Sizer );
+
+      SetSizer( Global_Sizer );
+
+      EnsureLayoutUpdated();
+      AdjustToContents();
+      SetFixedSize();
+
+      SetWindowTitle( "Sort Subframes" );
+   }
+
+private:
+
+   VerticalSizer  Global_Sizer;
+      GroupBox       SortingCriterion_GroupBox;
+      VerticalSizer  SortingCriterion_Sizer;
+         RadioButton SortByAcquisitionTime_RadioButton;
+         RadioButton SortByFilePath_RadioButton;
+         CheckBox    SortAscending_CheckBox;
+      HorizontalSizer   Buttons_Sizer;
+         PushButton        OK_PushButton;
+         PushButton        Cancel_PushButton;
+
+   void e_Click( Button& sender, bool checked )
+   {
+      if ( sender == OK_PushButton )
+      {
+         if ( SortByAcquisitionTime_RadioButton.IsChecked() )
+            sortBy = SortAscending_CheckBox.IsChecked() ?
+                        SubframeSelectorInterface::SortByTimeAscending :
+                        SubframeSelectorInterface::SortByTimeDescending;
+         else if ( SortByFilePath_RadioButton.IsChecked() )
+            sortBy = SortAscending_CheckBox.IsChecked() ?
+                        SubframeSelectorInterface::SortByPathAscending :
+                        SubframeSelectorInterface::SortByPathDescending;
+         Ok();
+      }
+      else if ( sender == Cancel_PushButton )
+      {
+         Cancel();
+      }
+   }
+};
+
+static SortSubframesDialog* s_sortSubframesDialog = nullptr;
+
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+
 void SubframeSelectorInterface::ShowExpressionsInterface() const
 {
    if ( !TheSubframeSelectorExpressionsInterface->IsVisible() )
@@ -243,6 +343,7 @@ void SubframeSelectorInterface::UpdateControls()
    GUI->Routine_ComboBox.SetCurrentItem( m_instance.p_routine );
    GUI->SubframeImages_FileCache_CheckBox.SetChecked( m_instance.p_fileCache );
    UpdateSubframeImagesList();
+   UpdateSubframeImageSelectionButtons();
    UpdateSystemParametersControls();
    UpdateStarDetectorControls();
    UpdatePedestalControls();
@@ -268,10 +369,25 @@ void SubframeSelectorInterface::UpdateSubframeImageItem( size_type i )
    node->SetIcon( 1, Bitmap( ScaledResource( item.enabled ? ":/browser/enabled.png" : ":/browser/disabled.png" ) ) );
    node->SetAlignment( 1, TextAlign::Left );
 
-   node->SetIcon( 2, Bitmap( ScaledResource( ":/browser/picture.png" ) ) );
-   node->SetText( 2, File::ExtractNameAndSuffix( item.path ) );
-   node->SetToolTip( 2, item.path );
+   String fileText;
+   if ( !item.nmlPath.IsEmpty() )
+      fileText << "<n> ";
+   if ( !item.drzPath.IsEmpty() )
+      fileText << "<d> ";
+   if ( GUI->SubframeImages_FullPaths_CheckBox.IsChecked() )
+      fileText << item.path;
+   else
+      fileText << File::ExtractNameAndSuffix( item.path );
+
+   node->SetText( 2, fileText );
    node->SetAlignment( 2, TextAlign::Left );
+
+   String toolTip = item.path;
+   if ( !item.nmlPath.IsEmpty() )
+      toolTip << '\n' << item.nmlPath;
+   if ( !item.drzPath.IsEmpty() )
+      toolTip << '\n' << item.drzPath;
+   node->SetToolTip( 2, toolTip );
 }
 
 // ----------------------------------------------------------------------------
@@ -308,6 +424,12 @@ void SubframeSelectorInterface::UpdateSubframeImageSelectionButtons()
    bool hasItems = GUI->SubframeImages_TreeBox.NumberOfChildren() > 0;
    bool hasSelection = hasItems && GUI->SubframeImages_TreeBox.HasSelectedTopLevelNodes();
 
+   GUI->SubframeImages_AddDrizzleFiles_PushButton.Enable( hasItems );
+   GUI->SubframeImages_ClearDrizzleFiles_PushButton.Enable( hasItems );
+   GUI->SubframeImages_AddLocalNormalizationFiles_PushButton.Enable( hasItems );
+   GUI->SubframeImages_ClearLocalNormalizationFiles_PushButton.Enable( hasItems );
+   GUI->SubframeImages_SelectAll_PushButton.Enable( hasItems );
+   GUI->SubframeImages_Sort_PushButton.Enable( hasItems );
    GUI->SubframeImages_Invert_PushButton.Enable( hasItems );
    GUI->SubframeImages_Toggle_PushButton.Enable( hasSelection );
    GUI->SubframeImages_Remove_PushButton.Enable( hasSelection );
@@ -471,6 +593,147 @@ void SubframeSelectorInterface::e_SubframeImages_Click( Button& sender, bool che
          UpdateSubframeImageSelectionButtons();
       }
    }
+   else if ( sender == GUI->SubframeImages_AddDrizzleFiles_PushButton )
+   {
+      OpenFileDialog d;
+      d.SetCaption( "SubframeSelector: Select Drizzle Data Files" );
+      d.SetFilter( FileFilter( "Drizzle Data Files", StringList() << ".xdrz" << ".drz" ) );
+      d.EnableMultipleSelections();
+      if ( d.Execute() )
+      {
+         IVector assigned( 0, int( m_instance.p_subframes.Length() ) );
+         for ( const String& path : d.FileNames() )
+         {
+            String targetName = DrizzleTargetName( path );
+            IVector::iterator n = assigned.Begin();
+            for ( SubframeSelectorInstance::SubframeItem& item : m_instance.p_subframes )
+            {
+               String name = GUI->SubframeImages_StaticDataTargets_CheckBox.IsChecked() ?
+                                 File::ChangeExtension( item.path, String() ) : File::ExtractName( item.path );
+               if ( name == targetName )
+               {
+                  item.drzPath = path;
+                  ++*n;
+                  break;
+               }
+               ++n;
+            }
+         }
+
+         UpdateSubframeImagesList();
+
+         int total = 0;
+         int duplicates = 0;
+         for ( int i = 0; i < assigned.Length(); ++i )
+            if ( assigned[i] > 0 )
+            {
+               ++total;
+               if ( assigned[i] > 1 )
+                  ++duplicates;
+            }
+
+         if ( total == 0 )
+         {
+            MessageBox( "<p>No drizzle data files have been assigned to input subframes.</p>",
+                        "SubframeSelector",
+                        StdIcon::Error,
+                        StdButton::Ok ).Execute();
+         }
+         else
+         {
+            if ( total < assigned.Length() || duplicates )
+               MessageBox( String().Format( "<p>%d of %d drizzle data files have been assigned.<br/>"
+                                            "%d duplicate assignment(s)</p>", total, assigned.Length(), duplicates ),
+                           "SubframeSelector",
+                           StdIcon::Warning,
+                           StdButton::Ok ).Execute();
+         }
+      }
+   }
+   else if ( sender == GUI->SubframeImages_ClearDrizzleFiles_PushButton )
+   {
+      for ( SubframeSelectorInstance::SubframeItem& item : m_instance.p_subframes )
+         item.drzPath.Clear();
+      UpdateSubframeImagesList();
+   }
+   else if ( sender == GUI->SubframeImages_AddLocalNormalizationFiles_PushButton )
+   {
+      OpenFileDialog d;
+      d.SetCaption( "SubframeSelector: Select Local Normalization Data Files" );
+      d.SetFilter( FileFilter( "Local Normalization Data Files", ".xnml" ) );
+      d.EnableMultipleSelections();
+      if ( d.Execute() )
+      {
+         IVector assigned( 0, int( m_instance.p_subframes.Length() ) );
+         for ( const String& path : d.FileNames() )
+         {
+            String targetName = LocalNormalizationTargetName( path );
+            IVector::iterator n = assigned.Begin();
+            for ( SubframeSelectorInstance::SubframeItem& item : m_instance.p_subframes )
+            {
+               String name = GUI->SubframeImages_StaticDataTargets_CheckBox.IsChecked() ?
+                                 File::ChangeExtension( item.path, String() ) : File::ExtractName( item.path );
+               if ( name == targetName )
+               {
+                  item.nmlPath = path;
+                  ++*n;
+                  break;
+               }
+               ++n;
+            }
+         }
+
+         UpdateSubframeImagesList();
+
+         int total = 0;
+         int duplicates = 0;
+         for ( int i = 0; i < assigned.Length(); ++i )
+            if ( assigned[i] > 0 )
+            {
+               ++total;
+               if ( assigned[i] > 1 )
+                  ++duplicates;
+            }
+
+         if ( total == 0 )
+         {
+            MessageBox( "<p>No local normalization data files have been assigned to input subframes.</p>",
+                        "SubframeSelector",
+                        StdIcon::Error,
+                        StdButton::Ok ).Execute();
+         }
+         else
+         {
+            if ( total < assigned.Length() || duplicates )
+               MessageBox( String().Format( "<p>%d of %d local normalization data files have been assigned.<br/>"
+                                            "%d duplicate assignment(s)</p>", total, assigned.Length(), duplicates ),
+                           "SubframeSelector",
+                           StdIcon::Warning,
+                           StdButton::Ok ).Execute();
+         }
+      }
+   }
+   else if ( sender == GUI->SubframeImages_ClearLocalNormalizationFiles_PushButton )
+   {
+      for ( SubframeSelectorInstance::SubframeItem& item : m_instance.p_subframes )
+         item.nmlPath.Clear();
+      UpdateSubframeImagesList();
+   }
+   else if ( sender == GUI->SubframeImages_SelectAll_PushButton )
+   {
+      GUI->SubframeImages_TreeBox.SelectAllNodes();
+      UpdateSubframeImageSelectionButtons();
+   }
+   else if ( sender == GUI->SubframeImages_Sort_PushButton )
+   {
+      if ( s_sortSubframesDialog == nullptr )
+         s_sortSubframesDialog = new SortSubframesDialog;
+      if ( s_sortSubframesDialog->Execute() )
+      {
+         SortSubframes( s_sortSubframesDialog->sortBy );
+         UpdateSubframeImagesList();
+      }
+   }
    else if ( sender == GUI->SubframeImages_Invert_PushButton )
    {
       for ( int i = 0, n = GUI->SubframeImages_TreeBox.NumberOfChildren(); i < n; ++i )
@@ -500,6 +763,10 @@ void SubframeSelectorInterface::e_SubframeImages_Click( Button& sender, bool che
       m_instance.p_subframes.Clear();
       UpdateSubframeImagesList();
       UpdateSubframeImageSelectionButtons();
+   }
+   else if ( sender == GUI->SubframeImages_FullPaths_CheckBox )
+   {
+      UpdateSubframeImagesList();
    }
 }
 
@@ -706,18 +973,71 @@ void SubframeSelectorInterface::e_FileDrop( Control& sender, const Point& pos, c
 {
    if ( sender == GUI->SubframeImages_TreeBox.Viewport() )
    {
-      StringList inputFiles;
+      StringList localNormalizationFiles, drizzleFiles;
       bool recursive = IsControlOrCmdPressed();
+      size_type i0 = TreeInsertionIndex( GUI->SubframeImages_TreeBox );
       for ( const String& item : files )
+      {
+         StringList inputFiles;
          if ( File::Exists( item ) )
-            inputFiles << item;
+         {
+            String ext = File::ExtractSuffix( item ).CaseFolded();
+            if ( ext == ".xnml" )
+               localNormalizationFiles << item;
+            else if ( ext == ".xdrz" || ext == ".drz" )
+               drizzleFiles << item;
+            else
+               inputFiles << item;
+         }
          else if ( File::DirectoryExists( item ) )
+         {
             inputFiles << FileFormat::SupportedImageFiles( item, true/*toRead*/, false/*toWrite*/, recursive );
+            localNormalizationFiles << FileFormat::LocalNormalizationFiles( item, recursive );
+            drizzleFiles << FileFormat::DrizzleFiles( item, recursive );
+         }
 
-      inputFiles.Sort();
-      size_type i = TreeInsertionIndex( GUI->SubframeImages_TreeBox );
-      for ( const String& file : inputFiles )
-         m_instance.p_subframes.Insert( m_instance.p_subframes.At( i++ ), SubframeSelectorInstance::SubframeItem( file ) );
+         inputFiles.Sort();
+         for ( const String& file : inputFiles )
+         {
+            String ext = File::ExtractSuffix( file ).CaseFolded();
+            if ( ext == ".xnml" )
+               localNormalizationFiles << file;
+            else if ( ext == ".xdrz" || ext == ".drz" )
+               drizzleFiles << file;
+            else
+               m_instance.p_subframes.Insert( m_instance.p_subframes.At( i0++ ), SubframeSelectorInstance::SubframeItem( file ) );
+         }
+      }
+
+      for ( const String& file : localNormalizationFiles )
+      {
+         String targetName = LocalNormalizationTargetName( file );
+         for ( SubframeSelectorInstance::SubframeItem& item : m_instance.p_subframes )
+         {
+            String name = GUI->SubframeImages_StaticDataTargets_CheckBox.IsChecked() ?
+                              File::ChangeExtension( item.path, String() ) : File::ExtractName( item.path );
+            if ( name == targetName )
+            {
+               item.nmlPath = file;
+               break;
+            }
+         }
+      }
+
+      for ( const String& file : drizzleFiles )
+      {
+         String targetName = DrizzleTargetName( file );
+         for ( SubframeSelectorInstance::SubframeItem& item : m_instance.p_subframes )
+         {
+            String name = GUI->SubframeImages_StaticDataTargets_CheckBox.IsChecked() ?
+                              File::ChangeExtension( item.path, String() ) : File::ExtractName( item.path );
+            if ( name == targetName )
+            {
+               item.drzPath = file;
+               break;
+            }
+         }
+      }
 
       UpdateSubframeImagesList();
       UpdateSubframeImageSelectionButtons();
@@ -737,6 +1057,133 @@ void SubframeSelectorInterface::e_Hide( Control& )
    m_measurementsWasVisible = TheSubframeSelectorMeasurementsInterface->IsVisible();
    HideExpressionsInterface();
    HideMeasurementsInterface();
+}
+
+// ----------------------------------------------------------------------------
+
+String SubframeSelectorInterface::LocalNormalizationTargetName( const String& filePath )
+{
+   LocalNormalizationData nml( filePath, true/*ignoreNormalizationData*/ );
+
+   /*
+    * If the XNML file includes a target normalization path, use it. Otherwise
+    * the target should have the same name as the .xnml file.
+    */
+   String targetfilePath = nml.TargetFilePath();
+   if ( targetfilePath.IsEmpty() )
+      targetfilePath = filePath;
+
+   if ( GUI->SubframeImages_StaticDataTargets_CheckBox.IsChecked() )
+      return File::ChangeExtension( targetfilePath, String() );
+   return File::ExtractName( targetfilePath );
+}
+
+// ----------------------------------------------------------------------------
+
+String SubframeSelectorInterface::DrizzleTargetName( const String& filePath )
+{
+   DrizzleData drz( filePath, true/*ignoreIntegrationData*/ );
+
+   /*
+    * If the XDRZ file includes a target alignment path, use it. Otherwise
+    * the target should have the same name as the .xdrz file.
+    */
+   String targetfilePath = drz.AlignmentTargetFilePath();
+   if ( targetfilePath.IsEmpty() )
+      targetfilePath = filePath;
+
+   if ( GUI->SubframeImages_StaticDataTargets_CheckBox.IsChecked() )
+      return File::ChangeExtension( targetfilePath, String() );
+   return File::ExtractName( targetfilePath );
+}
+
+// ----------------------------------------------------------------------------
+
+void SubframeSelectorInterface::SortSubframes( SubframeSortingCriterion sortBy )
+{
+   if ( sortBy == SortByTimeAscending || sortBy == SortByTimeDescending )
+   {
+      Console console;
+      console.Show();
+      console.WriteLn( "<end><cbr><br>SubframeSelector: Retrieving acquisition times:<br>" );
+      Module->ProcessEvents();
+
+      for ( SubframeSelectorInstance::SubframeItem& item : m_instance.p_subframes )
+      {
+         console.WriteLn( "<end><cbr><raw>" + item.path + "</raw>" );
+
+         FileFormat format( File::ExtractExtension( item.path ), true/*read*/, false/*write*/ );
+         FileFormatInstance file( format );
+
+         ImageDescriptionArray images;
+         if ( !file.Open( images, item.path, m_instance.p_inputHints ) )
+            throw CaughtException();
+
+         FITSKeywordArray keywords;
+         if ( format.CanStoreKeywords() )
+            file.ReadFITSKeywords( keywords );
+
+         PropertyArray properties;
+         if ( format.CanStoreImageProperties() )
+            properties = file.ReadImageProperties();
+
+         item.obsTime = TimePoint(); // invalid TimePoint
+         IntegrationMetadata metadata( properties, keywords );
+         if ( metadata.IsValid() )
+         {
+            if ( metadata.startTime.IsDefined() )
+            {
+               item.obsTime = metadata.startTime();
+               console.NoteLn( "<end><cbr>* Acquisition time: " + item.obsTime.ToString() + " UTC" );
+            }
+            else
+            {
+               console.WarningLn( "<end><cbr>** Warning: no valid acquisition time could be retrieved from file: <raw>" + item.path + "</raw>" );
+            }
+         }
+         else
+         {
+            console.WarningLn( "<end><cbr>** Warning: no valid image metadata could be retrieved from file: <raw>" + item.path + "</raw>" );
+         }
+
+         (void)file.Close();
+         Module->ProcessEvents();
+      }
+   }
+
+   for ( MeasureItem& item : m_instance.o_measures )
+      m_instance.p_subframes[item.index].measureItem = &item;
+
+   m_instance.p_subframes.Sort(
+      [sortBy]( SubframeSelectorInstance::SubframeItem& a,
+                SubframeSelectorInstance::SubframeItem& b )
+      {
+         switch ( sortBy )
+         {
+         default: // ?!
+         case SortByTimeAscending:  return a.obsTime < b.obsTime;
+         case SortByTimeDescending: return b.obsTime < a.obsTime;
+         case SortByPathAscending:  return a.path < b.path;
+         case SortByPathDescending: return b.path < a.path;
+         }
+      } );
+
+   if ( !m_instance.o_measures.IsEmpty() )
+   {
+      uint32 idx = 0;
+      for ( SubframeSelectorInstance::SubframeItem& item : m_instance.p_subframes )
+      {
+         item.measureItem->index = idx++;
+         item.measureItem = nullptr;
+      }
+   }
+
+   UpdateSubframeImagesList();
+
+   m_instance.p_sortingProperty = SSSortingProperty::Index;
+
+   TheSubframeSelectorMeasurementsInterface->Cleanup();
+   TheSubframeSelectorMeasurementsInterface->UpdateControls();
 }
 
 // ----------------------------------------------------------------------------
@@ -812,18 +1259,49 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
    SubframeImages_AddFiles_PushButton.OnClick( (Button::click_event_handler)
                                     &SubframeSelectorInterface::e_SubframeImages_Click, w );
 
-   SubframeImages_Invert_PushButton.SetText( "Invert" );
+   SubframeImages_AddLocalNormalizationFiles_PushButton.SetText( "Add L.Norm. Files" );
+   SubframeImages_AddLocalNormalizationFiles_PushButton.SetToolTip( "<p>Associate existing local normalization data files with input subframes.</p>"
+      "<p>Local normalization data files carry the .xnml suffix. Normally you should select .xnml files generated by "
+      "the LocalNormalization tool for the same files that you are measuring.</p>" );
+   SubframeImages_AddLocalNormalizationFiles_PushButton.OnClick( (Button::click_event_handler)&SubframeSelectorInterface::e_SubframeImages_Click, w );
+
+   SubframeImages_ClearLocalNormalizationFiles_PushButton.SetText( "Clear L.Norm. Files" );
+   SubframeImages_ClearLocalNormalizationFiles_PushButton.SetToolTip( "<p>Remove all local normalization data files currently associated with "
+      "input subframes.</p>"
+      "<p>This removes just file associations, not the actual local normalization data files.</p>" );
+   SubframeImages_ClearLocalNormalizationFiles_PushButton.OnClick( (Button::click_event_handler)&SubframeSelectorInterface::e_SubframeImages_Click, w );
+
+   SubframeImages_AddDrizzleFiles_PushButton.SetText( "Add Drizzle Files" );
+   SubframeImages_AddDrizzleFiles_PushButton.SetToolTip( "<p>Associate existing drizzle data files with input subframes.</p>"
+      "<p>Drizzle data files carry the .xdrz suffix. Normally you should select .xdrz files generated by "
+      "the StarAlignment tool for the same files that you are measuring.</p>" );
+   SubframeImages_AddDrizzleFiles_PushButton.OnClick( (Button::click_event_handler)&SubframeSelectorInterface::e_SubframeImages_Click, w );
+
+   SubframeImages_ClearDrizzleFiles_PushButton.SetText( "Clear Drizzle Files" );
+   SubframeImages_ClearDrizzleFiles_PushButton.SetToolTip( "<p>Remove all drizzle data files currently associated with input subframes.</p>"
+      "<p>This removes just file associations, not the actual drizzle data files.</p>" );
+   SubframeImages_ClearDrizzleFiles_PushButton.OnClick( (Button::click_event_handler)&SubframeSelectorInterface::e_SubframeImages_Click, w );
+
+   SubframeImages_Sort_PushButton.SetText( "Sort..." );
+   SubframeImages_Sort_PushButton.SetToolTip( "<p>Sort the list of input subframes.</p>" );
+   SubframeImages_Sort_PushButton.OnClick( (Button::click_event_handler)&SubframeSelectorInterface::e_SubframeImages_Click, w );
+
+   SubframeImages_SelectAll_PushButton.SetText( "Select All" );
+   SubframeImages_SelectAll_PushButton.SetToolTip( "<p>Select all input subframes.</p>" );
+   SubframeImages_SelectAll_PushButton.OnClick( (Button::click_event_handler)&SubframeSelectorInterface::e_SubframeImages_Click, w );
+
+   SubframeImages_Invert_PushButton.SetText( "Invert Selection" );
    SubframeImages_Invert_PushButton.SetToolTip( "<p>Invert the current selection of subframes.</p>" );
    SubframeImages_Invert_PushButton.OnClick( (Button::click_event_handler)
                                     &SubframeSelectorInterface::e_SubframeImages_Click, w );
 
-   SubframeImages_Toggle_PushButton.SetText( "Toggle" );
+   SubframeImages_Toggle_PushButton.SetText( "Toggle Selected" );
    SubframeImages_Toggle_PushButton.SetToolTip( "<p>Toggle the enabled/disabled state of currently selected subframes.</p>"
                                                  "<p>Disabled subframes will be ignored during the measuring and output processes.</p>" );
    SubframeImages_Toggle_PushButton.OnClick( (Button::click_event_handler)
                                     &SubframeSelectorInterface::e_SubframeImages_Click, w );
 
-   SubframeImages_Remove_PushButton.SetText( "Remove" );
+   SubframeImages_Remove_PushButton.SetText( "Remove Selected" );
    SubframeImages_Remove_PushButton.SetToolTip( "<p>Remove all currently selected subframes.</p>" );
    SubframeImages_Remove_PushButton.OnClick( (Button::click_event_handler)
                                     &SubframeSelectorInterface::e_SubframeImages_Click, w );
@@ -833,6 +1311,21 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
    SubframeImages_Clear_PushButton.OnClick( (Button::click_event_handler)
                                     &SubframeSelectorInterface::e_SubframeImages_Click, w );
 
+   SubframeImages_StaticDataTargets_CheckBox.SetText( "Static data targets" );
+   SubframeImages_StaticDataTargets_CheckBox.SetToolTip( "<p>When assigning drizzle and/or local normalization data files to "
+      "input subframes, take into account full file paths stored in .xdrz and .xnml files. This allows you to measure images "
+      "with duplicate file names on different directories. However, by enabling this option your data set gets tied to "
+      "specific locations on the local filesystem. When this option is disabled (the default state), only file names are "
+      "used to associate target images with .xdrz and .xnml files, which allows you to move your images freely throughout "
+      "the filesystem, including the possibility to migrate them to different machines.</p>"
+      "<p>Changes to this option will come into play the next time you associate .xdrz and/or .xnml files with input "
+      "subframes. Existing file associations are not affected.</p>");
+   //SubframeImages_StaticDataTargets_CheckBox.OnClick( (Button::click_event_handler)&SubframeSelectorInterface::e_SubframeImages_Click, w );
+
+   SubframeImages_FullPaths_CheckBox.SetText( "Full paths" );
+   SubframeImages_FullPaths_CheckBox.SetToolTip( "<p>Show full paths for input image files.</p>" );
+   SubframeImages_FullPaths_CheckBox.OnClick( (Button::click_event_handler)&SubframeSelectorInterface::e_SubframeImages_Click, w );
+
    SubframeImages_FileCache_CheckBox.SetText( "File cache" );
    SubframeImages_FileCache_CheckBox.SetToolTip( TheSSFileCacheParameter->Tooltip() );
    SubframeImages_FileCache_CheckBox.OnCheck( (Button::check_event_handler)
@@ -840,11 +1333,19 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
 
    SubframeButtons_Sizer.SetSpacing( 4 );
    SubframeButtons_Sizer.Add( SubframeImages_AddFiles_PushButton );
+   SubframeButtons_Sizer.Add( SubframeImages_AddLocalNormalizationFiles_PushButton );
+   SubframeButtons_Sizer.Add( SubframeImages_ClearLocalNormalizationFiles_PushButton );
+   SubframeButtons_Sizer.Add( SubframeImages_AddDrizzleFiles_PushButton );
+   SubframeButtons_Sizer.Add( SubframeImages_ClearDrizzleFiles_PushButton );
+   SubframeButtons_Sizer.Add( SubframeImages_Sort_PushButton );
+   SubframeButtons_Sizer.Add( SubframeImages_SelectAll_PushButton );
    SubframeButtons_Sizer.Add( SubframeImages_Invert_PushButton );
    SubframeButtons_Sizer.Add( SubframeImages_Toggle_PushButton );
    SubframeButtons_Sizer.Add( SubframeImages_Remove_PushButton );
    SubframeButtons_Sizer.Add( SubframeImages_Clear_PushButton );
    SubframeButtons_Sizer.AddStretch();
+   SubframeButtons_Sizer.Add( SubframeImages_StaticDataTargets_CheckBox );
+   SubframeButtons_Sizer.Add( SubframeImages_FullPaths_CheckBox );
    SubframeButtons_Sizer.Add( SubframeImages_FileCache_CheckBox );
 
    SubframeImages_Sizer.SetSpacing( 4 );
@@ -1470,4 +1971,4 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInterface.cpp - Released 2021-12-29T20:37:28Z
+// EOF SubframeSelectorInterface.cpp - Released 2022-03-12T18:59:53Z

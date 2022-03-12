@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.19
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// pcl/XISFWriter.cpp - Released 2022-01-24T22:43:35Z
+// pcl/XISFWriter.cpp - Released 2022-03-12T18:59:35Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -573,7 +573,7 @@ public:
          }
          if ( value.IsValid() )
             if ( m_xisfOptions.verbosity > 1 )
-               LogLn( "Property '" + id + "' (" + XISF::PropertyTypeId( value.Type() ) + ") embedded in image." );
+               LogLn( "Property '" + id + "' (" + XISF::PropertyTypeId( value.Type() ) + ") embedded in image" );
       }
       else
       {
@@ -663,7 +663,7 @@ public:
       }
       if ( value.IsValid() )
          if ( m_xisfOptions.verbosity > 1 )
-            LogLn( "Property '" + id + "' (" + XISF::PropertyTypeId( value.Type() ) + ") generated." );
+            LogLn( "Property '" + id + "' (" + XISF::PropertyTypeId( value.Type() ) + ") generated" );
    }
 
    /*
@@ -1217,7 +1217,7 @@ private:
                keywordElement->SetAttribute( "comment", keyword.comment );
             }
             if ( m_xisfOptions.verbosity > 0 )
-               LogLn( String( m_lastKeywords.Length() ) + " FITS keyword(s) embedded." );
+               LogLn( String( m_lastKeywords.Length() ) + " FITS keyword(s) embedded" );
          }
 
       if ( m_options.embedColorFilterArray )
@@ -1251,7 +1251,7 @@ private:
             rgbwsElement->SetAttribute( "Yg", String( m_rgbws.LuminanceCoefficients()[1] ) );
             rgbwsElement->SetAttribute( "Yb", String( m_rgbws.LuminanceCoefficients()[2] ) );
             if ( m_xisfOptions.verbosity > 0 )
-               LogLn( "RGBWS parameters embedded." );
+               LogLn( "RGBWS parameters embedded" );
          }
 
       if ( m_options.embedDisplayFunction )
@@ -1266,7 +1266,7 @@ private:
             dfElement->SetAttribute( "l", String().Format( "%.16g:%.16g:%.16g:%.16g", l[0], l[1], l[2], l[3] ) );
             dfElement->SetAttribute( "r", String().Format( "%.16g:%.16g:%.16g:%.16g", r[0], r[1], r[2], r[3] ) );
             if ( m_xisfOptions.verbosity > 0 )
-               LogLn( "Display function parameters embedded." );
+               LogLn( "Display function parameters embedded" );
          }
 
       if ( m_options.xResolution > 0 )
@@ -1277,7 +1277,7 @@ private:
             resElement->SetAttribute( "vertical", String( m_options.yResolution ) );
             resElement->SetAttribute( "unit", m_options.metricResolution ? "cm" : "inch" );
             if ( m_xisfOptions.verbosity > 1 )
-               LogLn( "Image resolution parameters embedded." );
+               LogLn( "Image resolution parameters embedded" );
          }
 
       if ( m_options.embedICCProfile )
@@ -1285,7 +1285,7 @@ private:
          {
             NewBlock( NewElement( element, "ICCProfile" ), m_iccProfile.ProfileData() );
             if ( m_xisfOptions.verbosity > 0 )
-               LogLn( "ICC profile embedded: \'" + m_iccProfile.Description() + "\', " + String( m_iccProfile.ProfileSize() ) + " bytes." );
+               LogLn( "ICC profile embedded: \'" + m_iccProfile.Description() + "\', " + String( m_iccProfile.ProfileSize() ) + " bytes" );
          }
 
       if ( m_options.embedProperties )
@@ -1295,7 +1295,7 @@ private:
                WriteProperty( element, property );
             if ( m_xisfOptions.verbosity > 0 )
                LogLn( String( m_imageProperties.Length() ) + " image " +
-                                 ((m_imageProperties.Length() > 1) ? "properties" : "property") + " embedded." );
+                                 ((m_imageProperties.Length() > 1) ? "properties" : "property") + " embedded" );
          }
 
       if ( m_options.embedThumbnail )
@@ -1817,4 +1817,4 @@ void XISFWriter::CheckClosedStream( const char* memberFunction ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/XISFWriter.cpp - Released 2022-01-24T22:43:35Z
+// EOF pcl/XISFWriter.cpp - Released 2022-03-12T18:59:35Z

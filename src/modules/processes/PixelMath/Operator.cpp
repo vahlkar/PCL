@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.8.5
+// Standard PixelMath Process Module Version 1.9.2
 // ----------------------------------------------------------------------------
-// Operator.cpp - Released 2021-12-29T20:37:28Z
+// Operator.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -85,7 +85,7 @@ String Operator::ToString() const
 
 // ----------------------------------------------------------------------------
 
-void Operator::InitializeList( operator_set& operators, operator_index& index )
+void Operator::InitializeList( operator_list& operators, operator_index& index )
 {
    operators.Destroy();
 
@@ -138,18 +138,18 @@ void Operator::InitializeList( operator_set& operators, operator_index& index )
 
 // ----------------------------------------------------------------------------
 
-void InvOperator::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+void InvOperator::operator()( Pixel& r, PixelList::const_iterator i, PixelList::const_iterator j ) const
 {
    for ( int c = 0; c < r.Length(); ++c )
       r[c] = 1 - (*i)[c];
 }
 
-bool InvOperator::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
+bool InvOperator::IsInvariant( ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    return (*i)->IsSample() || (*i)->IsPixel();
 }
 
-void InvOperator::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
+void InvOperator::operator()( Pixel& r, ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    if ( (*i)->IsSample() )
    {
@@ -167,18 +167,18 @@ void InvOperator::operator()( Pixel& r, component_list::const_iterator i, compon
 
 // ----------------------------------------------------------------------------
 
-void ChsOperator::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+void ChsOperator::operator()( Pixel& r, PixelList::const_iterator i, PixelList::const_iterator j ) const
 {
    for ( int c = 0; c < r.Length(); ++c )
       r[c] = -(*i)[c];
 }
 
-bool ChsOperator::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
+bool ChsOperator::IsInvariant( ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    return (*i)->IsSample() || (*i)->IsPixel();
 }
 
-void ChsOperator::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
+void ChsOperator::operator()( Pixel& r, ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    if ( (*i)->IsSample() )
    {
@@ -196,18 +196,18 @@ void ChsOperator::operator()( Pixel& r, component_list::const_iterator i, compon
 
 // ----------------------------------------------------------------------------
 
-void PlusOperator::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+void PlusOperator::operator()( Pixel& r, PixelList::const_iterator i, PixelList::const_iterator j ) const
 {
    for ( int c = 0; c < r.Length(); ++c )
       r[c] = (*i)[c];
 }
 
-bool PlusOperator::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
+bool PlusOperator::IsInvariant( ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    return (*i)->IsSample() || (*i)->IsPixel();
 }
 
-void PlusOperator::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
+void PlusOperator::operator()( Pixel& r, ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    if ( (*i)->IsSample() )
    {
@@ -225,18 +225,18 @@ void PlusOperator::operator()( Pixel& r, component_list::const_iterator i, compo
 
 // ----------------------------------------------------------------------------
 
-void LogicalNotOperator::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+void LogicalNotOperator::operator()( Pixel& r, PixelList::const_iterator i, PixelList::const_iterator j ) const
 {
    for ( int c = 0; c < r.Length(); ++c )
       r[c] = ((*i)[c] == 0) ? 1 : 0;
 }
 
-bool LogicalNotOperator::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
+bool LogicalNotOperator::IsInvariant( ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    return (*i)->IsSample() || (*i)->IsPixel();
 }
 
-void LogicalNotOperator::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
+void LogicalNotOperator::operator()( Pixel& r, ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    if ( (*i)->IsSample() )
    {
@@ -254,20 +254,20 @@ void LogicalNotOperator::operator()( Pixel& r, component_list::const_iterator i,
 
 // ----------------------------------------------------------------------------
 
-void PowOperator::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+void PowOperator::operator()( Pixel& r, PixelList::const_iterator i, PixelList::const_iterator j ) const
 {
    j = i; ++j;
    for ( int c = 0; c < r.Length(); ++c )
       r[c] = pcl::Pow( (*i)[c], (*j)[c] );
 }
 
-bool PowOperator::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
+bool PowOperator::IsInvariant( ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    j = i; ++j;
    return ((*i)->IsSample() || (*i)->IsPixel()) && ((*j)->IsSample() || (*j)->IsPixel());
 }
 
-void PowOperator::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
+void PowOperator::operator()( Pixel& r, ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    j = i; ++j;
 
@@ -291,20 +291,20 @@ void PowOperator::operator()( Pixel& r, component_list::const_iterator i, compon
 
 // ----------------------------------------------------------------------------
 
-void MulOperator::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+void MulOperator::operator()( Pixel& r, PixelList::const_iterator i, PixelList::const_iterator j ) const
 {
    j = i; ++j;
    for ( int c = 0; c < r.Length(); ++c )
       r[c] = (*i)[c] * (*j)[c];
 }
 
-bool MulOperator::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
+bool MulOperator::IsInvariant( ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    j = i; ++j;
    return ((*i)->IsSample() || (*i)->IsPixel()) && ((*j)->IsSample() || (*j)->IsPixel());
 }
 
-void MulOperator::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
+void MulOperator::operator()( Pixel& r, ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    j = i; ++j;
 
@@ -328,20 +328,20 @@ void MulOperator::operator()( Pixel& r, component_list::const_iterator i, compon
 
 // ----------------------------------------------------------------------------
 
-void DivOperator::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+void DivOperator::operator()( Pixel& r, PixelList::const_iterator i, PixelList::const_iterator j ) const
 {
    j = i; ++j;
    for ( int c = 0; c < r.Length(); ++c )
       r[c] = (Abs( (*j)[c] ) > std::numeric_limits<double>::epsilon()) ? ((*i)[c] / (*j)[c]) : std::numeric_limits<double>::max();
 }
 
-bool DivOperator::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
+bool DivOperator::IsInvariant( ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    j = i; ++j;
    return ((*i)->IsSample() || (*i)->IsPixel()) && ((*j)->IsSample() || (*j)->IsPixel());
 }
 
-void DivOperator::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
+void DivOperator::operator()( Pixel& r, ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    j = i; ++j;
 
@@ -365,20 +365,20 @@ void DivOperator::operator()( Pixel& r, component_list::const_iterator i, compon
 
 // ----------------------------------------------------------------------------
 
-void ModOperator::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+void ModOperator::operator()( Pixel& r, PixelList::const_iterator i, PixelList::const_iterator j ) const
 {
    j = i; ++j;
    for ( int c = 0; c < r.Length(); ++c )
       r[c] = (Abs( (*j)[c] ) > std::numeric_limits<double>::epsilon()) ? Mod( (*i)[c], (*j)[c] ) : 0.0;
 }
 
-bool ModOperator::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
+bool ModOperator::IsInvariant( ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    j = i; ++j;
    return ((*i)->IsSample() || (*i)->IsPixel()) && ((*j)->IsSample() || (*j)->IsPixel());
 }
 
-void ModOperator::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
+void ModOperator::operator()( Pixel& r, ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    j = i; ++j;
 
@@ -402,20 +402,20 @@ void ModOperator::operator()( Pixel& r, component_list::const_iterator i, compon
 
 // ----------------------------------------------------------------------------
 
-void AddOperator::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+void AddOperator::operator()( Pixel& r, PixelList::const_iterator i, PixelList::const_iterator j ) const
 {
    j = i; ++j;
    for ( int c = 0; c < r.Length(); ++c )
       r[c] = (*i)[c] + (*j)[c];
 }
 
-bool AddOperator::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
+bool AddOperator::IsInvariant( ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    j = i; ++j;
    return ((*i)->IsSample() || (*i)->IsPixel()) && ((*j)->IsSample() || (*j)->IsPixel());
 }
 
-void AddOperator::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
+void AddOperator::operator()( Pixel& r, ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    j = i; ++j;
 
@@ -439,20 +439,20 @@ void AddOperator::operator()( Pixel& r, component_list::const_iterator i, compon
 
 // ----------------------------------------------------------------------------
 
-void SubOperator::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+void SubOperator::operator()( Pixel& r, PixelList::const_iterator i, PixelList::const_iterator j ) const
 {
    j = i; ++j;
    for ( int c = 0; c < r.Length(); ++c )
       r[c] = (*i)[c] - (*j)[c];
 }
 
-bool SubOperator::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
+bool SubOperator::IsInvariant( ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    j = i; ++j;
    return ((*i)->IsSample() || (*i)->IsPixel()) && ((*j)->IsSample() || (*j)->IsPixel());
 }
 
-void SubOperator::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
+void SubOperator::operator()( Pixel& r, ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    j = i; ++j;
 
@@ -476,20 +476,20 @@ void SubOperator::operator()( Pixel& r, component_list::const_iterator i, compon
 
 // ----------------------------------------------------------------------------
 
-void DifOperator::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+void DifOperator::operator()( Pixel& r, PixelList::const_iterator i, PixelList::const_iterator j ) const
 {
    j = i; ++j;
    for ( int c = 0; c < r.Length(); ++c )
       r[c] = Abs( (*i)[c] - (*j)[c] );
 }
 
-bool DifOperator::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
+bool DifOperator::IsInvariant( ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    j = i; ++j;
    return ((*i)->IsSample() || (*i)->IsPixel()) && ((*j)->IsSample() || (*j)->IsPixel());
 }
 
-void DifOperator::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
+void DifOperator::operator()( Pixel& r, ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    j = i; ++j;
 
@@ -513,20 +513,20 @@ void DifOperator::operator()( Pixel& r, component_list::const_iterator i, compon
 
 // ----------------------------------------------------------------------------
 
-void LessThanOperator::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+void LessThanOperator::operator()( Pixel& r, PixelList::const_iterator i, PixelList::const_iterator j ) const
 {
    j = i; ++j;
    for ( int c = 0; c < r.Length(); ++c )
       r[c] = ((*i)[c] < (*j)[c]) ? 1 : 0;
 }
 
-bool LessThanOperator::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
+bool LessThanOperator::IsInvariant( ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    j = i; ++j;
    return ((*i)->IsSample() || (*i)->IsPixel()) && ((*j)->IsSample() || (*j)->IsPixel());
 }
 
-void LessThanOperator::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
+void LessThanOperator::operator()( Pixel& r, ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    j = i; ++j;
 
@@ -550,20 +550,20 @@ void LessThanOperator::operator()( Pixel& r, component_list::const_iterator i, c
 
 // ----------------------------------------------------------------------------
 
-void LessThanOrEqualOperator::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+void LessThanOrEqualOperator::operator()( Pixel& r, PixelList::const_iterator i, PixelList::const_iterator j ) const
 {
    j = i; ++j;
    for ( int c = 0; c < r.Length(); ++c )
       r[c] = ((*i)[c] <= (*j)[c]) ? 1 : 0;
 }
 
-bool LessThanOrEqualOperator::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
+bool LessThanOrEqualOperator::IsInvariant( ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    j = i; ++j;
    return ((*i)->IsSample() || (*i)->IsPixel()) && ((*j)->IsSample() || (*j)->IsPixel());
 }
 
-void LessThanOrEqualOperator::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
+void LessThanOrEqualOperator::operator()( Pixel& r, ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    j = i; ++j;
 
@@ -587,20 +587,20 @@ void LessThanOrEqualOperator::operator()( Pixel& r, component_list::const_iterat
 
 // ----------------------------------------------------------------------------
 
-void GreaterThanOperator::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+void GreaterThanOperator::operator()( Pixel& r, PixelList::const_iterator i, PixelList::const_iterator j ) const
 {
    j = i; ++j;
    for ( int c = 0; c < r.Length(); ++c )
       r[c] = ((*i)[c] > (*j)[c]) ? 1 : 0;
 }
 
-bool GreaterThanOperator::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
+bool GreaterThanOperator::IsInvariant( ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    j = i; ++j;
    return ((*i)->IsSample() || (*i)->IsPixel()) && ((*j)->IsSample() || (*j)->IsPixel());
 }
 
-void GreaterThanOperator::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
+void GreaterThanOperator::operator()( Pixel& r, ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    j = i; ++j;
 
@@ -624,20 +624,20 @@ void GreaterThanOperator::operator()( Pixel& r, component_list::const_iterator i
 
 // ----------------------------------------------------------------------------
 
-void GreaterThanOrEqualOperator::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+void GreaterThanOrEqualOperator::operator()( Pixel& r, PixelList::const_iterator i, PixelList::const_iterator j ) const
 {
    j = i; ++j;
    for ( int c = 0; c < r.Length(); ++c )
       r[c] = ((*i)[c] >= (*j)[c]) ? 1 : 0;
 }
 
-bool GreaterThanOrEqualOperator::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
+bool GreaterThanOrEqualOperator::IsInvariant( ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    j = i; ++j;
    return ((*i)->IsSample() || (*i)->IsPixel()) && ((*j)->IsSample() || (*j)->IsPixel());
 }
 
-void GreaterThanOrEqualOperator::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
+void GreaterThanOrEqualOperator::operator()( Pixel& r, ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    j = i; ++j;
 
@@ -661,20 +661,20 @@ void GreaterThanOrEqualOperator::operator()( Pixel& r, component_list::const_ite
 
 // ----------------------------------------------------------------------------
 
-void EqualToOperator::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+void EqualToOperator::operator()( Pixel& r, PixelList::const_iterator i, PixelList::const_iterator j ) const
 {
    j = i; ++j;
    for ( int c = 0; c < r.Length(); ++c )
       r[c] = ((*i)[c] == (*j)[c]) ? 1 : 0;
 }
 
-bool EqualToOperator::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
+bool EqualToOperator::IsInvariant( ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    j = i; ++j;
    return ((*i)->IsSample() || (*i)->IsPixel()) && ((*j)->IsSample() || (*j)->IsPixel());
 }
 
-void EqualToOperator::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
+void EqualToOperator::operator()( Pixel& r, ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    j = i; ++j;
 
@@ -698,20 +698,20 @@ void EqualToOperator::operator()( Pixel& r, component_list::const_iterator i, co
 
 // ----------------------------------------------------------------------------
 
-void NotEqualToOperator::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+void NotEqualToOperator::operator()( Pixel& r, PixelList::const_iterator i, PixelList::const_iterator j ) const
 {
    j = i; ++j;
    for ( int c = 0; c < r.Length(); ++c )
       r[c] = ((*i)[c] != (*j)[c]) ? 1 : 0;
 }
 
-bool NotEqualToOperator::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
+bool NotEqualToOperator::IsInvariant( ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    j = i; ++j;
    return ((*i)->IsSample() || (*i)->IsPixel()) && ((*j)->IsSample() || (*j)->IsPixel());
 }
 
-void NotEqualToOperator::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
+void NotEqualToOperator::operator()( Pixel& r, ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    j = i; ++j;
 
@@ -735,20 +735,20 @@ void NotEqualToOperator::operator()( Pixel& r, component_list::const_iterator i,
 
 // ----------------------------------------------------------------------------
 
-void AndOperator::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+void AndOperator::operator()( Pixel& r, PixelList::const_iterator i, PixelList::const_iterator j ) const
 {
    j = i; ++j;
    for ( int c = 0; c < r.Length(); ++c )
       r[c] = TruncInt( (*i)[c] ) & TruncInt( (*j)[c] );
 }
 
-bool AndOperator::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
+bool AndOperator::IsInvariant( ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    j = i; ++j;
    return ((*i)->IsSample() || (*i)->IsPixel()) && ((*j)->IsSample() || (*j)->IsPixel());
 }
 
-void AndOperator::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
+void AndOperator::operator()( Pixel& r, ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    j = i; ++j;
 
@@ -772,20 +772,20 @@ void AndOperator::operator()( Pixel& r, component_list::const_iterator i, compon
 
 // ----------------------------------------------------------------------------
 
-void NandOperator::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+void NandOperator::operator()( Pixel& r, PixelList::const_iterator i, PixelList::const_iterator j ) const
 {
    j = i; ++j;
    for ( int c = 0; c < r.Length(); ++c )
       r[c] = ~(TruncInt( (*i)[c] ) & TruncInt( (*j)[c] ));
 }
 
-bool NandOperator::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
+bool NandOperator::IsInvariant( ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    j = i; ++j;
    return ((*i)->IsSample() || (*i)->IsPixel()) && ((*j)->IsSample() || (*j)->IsPixel());
 }
 
-void NandOperator::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
+void NandOperator::operator()( Pixel& r, ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    j = i; ++j;
 
@@ -809,20 +809,20 @@ void NandOperator::operator()( Pixel& r, component_list::const_iterator i, compo
 
 // ----------------------------------------------------------------------------
 
-void XorOperator::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+void XorOperator::operator()( Pixel& r, PixelList::const_iterator i, PixelList::const_iterator j ) const
 {
    j = i; ++j;
    for ( int c = 0; c < r.Length(); ++c )
       r[c] = TruncInt( (*i)[c] ) ^ TruncInt( (*j)[c] );
 }
 
-bool XorOperator::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
+bool XorOperator::IsInvariant( ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    j = i; ++j;
    return ((*i)->IsSample() || (*i)->IsPixel()) && ((*j)->IsSample() || (*j)->IsPixel());
 }
 
-void XorOperator::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
+void XorOperator::operator()( Pixel& r, ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    j = i; ++j;
 
@@ -846,20 +846,20 @@ void XorOperator::operator()( Pixel& r, component_list::const_iterator i, compon
 
 // ----------------------------------------------------------------------------
 
-void XnorOperator::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+void XnorOperator::operator()( Pixel& r, PixelList::const_iterator i, PixelList::const_iterator j ) const
 {
    j = i; ++j;
    for ( int c = 0; c < r.Length(); ++c )
       r[c] = ~(TruncInt( (*i)[c] ) ^ TruncInt( (*j)[c] ));
 }
 
-bool XnorOperator::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
+bool XnorOperator::IsInvariant( ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    j = i; ++j;
    return ((*i)->IsSample() || (*i)->IsPixel()) && ((*j)->IsSample() || (*j)->IsPixel());
 }
 
-void XnorOperator::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
+void XnorOperator::operator()( Pixel& r, ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    j = i; ++j;
 
@@ -883,20 +883,20 @@ void XnorOperator::operator()( Pixel& r, component_list::const_iterator i, compo
 
 // ----------------------------------------------------------------------------
 
-void OrOperator::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+void OrOperator::operator()( Pixel& r, PixelList::const_iterator i, PixelList::const_iterator j ) const
 {
    j = i; ++j;
    for ( int c = 0; c < r.Length(); ++c )
       r[c] = TruncInt( (*i)[c] ) | TruncInt( (*j)[c] );
 }
 
-bool OrOperator::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
+bool OrOperator::IsInvariant( ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    j = i; ++j;
    return ((*i)->IsSample() || (*i)->IsPixel()) && ((*j)->IsSample() || (*j)->IsPixel());
 }
 
-void OrOperator::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
+void OrOperator::operator()( Pixel& r, ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    j = i; ++j;
 
@@ -920,20 +920,20 @@ void OrOperator::operator()( Pixel& r, component_list::const_iterator i, compone
 
 // ----------------------------------------------------------------------------
 
-void NorOperator::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+void NorOperator::operator()( Pixel& r, PixelList::const_iterator i, PixelList::const_iterator j ) const
 {
    j = i; ++j;
    for ( int c = 0; c < r.Length(); ++c )
       r[c] = ~(TruncInt( (*i)[c] ) | TruncInt( (*j)[c] ));
 }
 
-bool NorOperator::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
+bool NorOperator::IsInvariant( ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    j = i; ++j;
    return ((*i)->IsSample() || (*i)->IsPixel()) && ((*j)->IsSample() || (*j)->IsPixel());
 }
 
-void NorOperator::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
+void NorOperator::operator()( Pixel& r, ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    j = i; ++j;
 
@@ -957,20 +957,20 @@ void NorOperator::operator()( Pixel& r, component_list::const_iterator i, compon
 
 // ----------------------------------------------------------------------------
 
-void LogicalAndOperator::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+void LogicalAndOperator::operator()( Pixel& r, PixelList::const_iterator i, PixelList::const_iterator j ) const
 {
    j = i; ++j;
    for ( int c = 0; c < r.Length(); ++c )
       r[c] = ((*i)[c] != 0 && (*j)[c] != 0) ? 1 : 0;
 }
 
-bool LogicalAndOperator::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
+bool LogicalAndOperator::IsInvariant( ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    j = i; ++j;
    return ((*i)->IsSample() || (*i)->IsPixel()) && ((*j)->IsSample() || (*j)->IsPixel());
 }
 
-void LogicalAndOperator::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
+void LogicalAndOperator::operator()( Pixel& r, ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    j = i; ++j;
 
@@ -992,10 +992,10 @@ void LogicalAndOperator::operator()( Pixel& r, component_list::const_iterator i,
       r[c] = (a[c] != 0 && b[c] != 0) ? 1 : 0;
 }
 
-Expression::component_list LogicalAndOperator::Optimized() const
+ExpressionList LogicalAndOperator::Optimized() const
 {
    unsigned a = Pointer::NextId();
-   return component_list()
+   return ExpressionList()
             << arguments[0]->Clone()
             << new BranchOnZero( a, TokenPosition() )
             << arguments[1]->Clone()
@@ -1006,20 +1006,20 @@ Expression::component_list LogicalAndOperator::Optimized() const
 
 // ----------------------------------------------------------------------------
 
-void LogicalOrOperator::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+void LogicalOrOperator::operator()( Pixel& r, PixelList::const_iterator i, PixelList::const_iterator j ) const
 {
    j = i; ++j;
    for ( int c = 0; c < r.Length(); ++c )
       r[c] = ((*i)[c] != 0 || (*j)[c] != 0) ? 1 : 0;
 }
 
-bool LogicalOrOperator::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
+bool LogicalOrOperator::IsInvariant( ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    j = i; ++j;
    return ((*i)->IsSample() || (*i)->IsPixel()) && ((*j)->IsSample() || (*j)->IsPixel());
 }
 
-void LogicalOrOperator::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
+void LogicalOrOperator::operator()( Pixel& r, ExpressionList::const_iterator i, ExpressionList::const_iterator j ) const
 {
    j = i; ++j;
 
@@ -1041,10 +1041,10 @@ void LogicalOrOperator::operator()( Pixel& r, component_list::const_iterator i, 
       r[c] = (a[c] != 0 || b[c] != 0) ? 1 : 0;
 }
 
-Expression::component_list LogicalOrOperator::Optimized() const
+ExpressionList LogicalOrOperator::Optimized() const
 {
    unsigned a = Pointer::NextId();
-   return component_list()
+   return ExpressionList()
             << arguments[0]->Clone()
             << new BranchOnNonZero( a, TokenPosition() )
             << arguments[1]->Clone()
@@ -1068,7 +1068,7 @@ Expression::component_list LogicalOrOperator::Optimized() const
 
 // ----------------------------------------------------------------------------
 
-void AssignmentOperator::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+void AssignmentOperator::operator()( Pixel& r, PixelList::const_iterator i, PixelList::const_iterator j ) const
 {
    j = i; ++j;
 
@@ -1091,7 +1091,7 @@ void AssignmentOperator::operator()( Pixel& r, pixel_set::const_iterator i, pixe
 
 // ----------------------------------------------------------------------------
 
-void AssignmentAddOperator::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+void AssignmentAddOperator::operator()( Pixel& r, PixelList::const_iterator i, PixelList::const_iterator j ) const
 {
    j = i; ++j;
 
@@ -1114,7 +1114,7 @@ void AssignmentAddOperator::operator()( Pixel& r, pixel_set::const_iterator i, p
 
 // ----------------------------------------------------------------------------
 
-void AssignmentSubOperator::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+void AssignmentSubOperator::operator()( Pixel& r, PixelList::const_iterator i, PixelList::const_iterator j ) const
 {
    j = i; ++j;
 
@@ -1137,7 +1137,7 @@ void AssignmentSubOperator::operator()( Pixel& r, pixel_set::const_iterator i, p
 
 // ----------------------------------------------------------------------------
 
-void AssignmentMulOperator::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+void AssignmentMulOperator::operator()( Pixel& r, PixelList::const_iterator i, PixelList::const_iterator j ) const
 {
    j = i; ++j;
 
@@ -1160,7 +1160,7 @@ void AssignmentMulOperator::operator()( Pixel& r, pixel_set::const_iterator i, p
 
 // ----------------------------------------------------------------------------
 
-void AssignmentDivOperator::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+void AssignmentDivOperator::operator()( Pixel& r, PixelList::const_iterator i, PixelList::const_iterator j ) const
 {
    j = i; ++j;
 
@@ -1192,7 +1192,7 @@ void AssignmentDivOperator::operator()( Pixel& r, pixel_set::const_iterator i, p
 
 // ----------------------------------------------------------------------------
 
-void AssignmentPowOperator::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+void AssignmentPowOperator::operator()( Pixel& r, PixelList::const_iterator i, PixelList::const_iterator j ) const
 {
    j = i; ++j;
 
@@ -1215,7 +1215,7 @@ void AssignmentPowOperator::operator()( Pixel& r, pixel_set::const_iterator i, p
 
 // ----------------------------------------------------------------------------
 
-void AssignmentModOperator::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+void AssignmentModOperator::operator()( Pixel& r, PixelList::const_iterator i, PixelList::const_iterator j ) const
 {
    j = i; ++j;
 
@@ -1247,7 +1247,7 @@ void AssignmentModOperator::operator()( Pixel& r, pixel_set::const_iterator i, p
 
 // ----------------------------------------------------------------------------
 
-void AssignmentDifOperator::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+void AssignmentDifOperator::operator()( Pixel& r, PixelList::const_iterator i, PixelList::const_iterator j ) const
 {
    j = i; ++j;
 
@@ -1270,7 +1270,7 @@ void AssignmentDifOperator::operator()( Pixel& r, pixel_set::const_iterator i, p
 
 // ----------------------------------------------------------------------------
 
-void AssignmentAndOperator::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+void AssignmentAndOperator::operator()( Pixel& r, PixelList::const_iterator i, PixelList::const_iterator j ) const
 {
    j = i; ++j;
    for ( int c = 0; c < r.Length(); ++c )
@@ -1280,7 +1280,7 @@ void AssignmentAndOperator::operator()( Pixel& r, pixel_set::const_iterator i, p
 
 // ----------------------------------------------------------------------------
 
-void AssignmentNandOperator::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+void AssignmentNandOperator::operator()( Pixel& r, PixelList::const_iterator i, PixelList::const_iterator j ) const
 {
    j = i; ++j;
    for ( int c = 0; c < r.Length(); ++c )
@@ -1290,7 +1290,7 @@ void AssignmentNandOperator::operator()( Pixel& r, pixel_set::const_iterator i, 
 
 // ----------------------------------------------------------------------------
 
-void AssignmentOrOperator::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+void AssignmentOrOperator::operator()( Pixel& r, PixelList::const_iterator i, PixelList::const_iterator j ) const
 {
    j = i; ++j;
    for ( int c = 0; c < r.Length(); ++c )
@@ -1300,7 +1300,7 @@ void AssignmentOrOperator::operator()( Pixel& r, pixel_set::const_iterator i, pi
 
 // ----------------------------------------------------------------------------
 
-void AssignmentNorOperator::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+void AssignmentNorOperator::operator()( Pixel& r, PixelList::const_iterator i, PixelList::const_iterator j ) const
 {
    j = i; ++j;
    for ( int c = 0; c < r.Length(); ++c )
@@ -1310,7 +1310,7 @@ void AssignmentNorOperator::operator()( Pixel& r, pixel_set::const_iterator i, p
 
 // ----------------------------------------------------------------------------
 
-void AssignmentXorOperator::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+void AssignmentXorOperator::operator()( Pixel& r, PixelList::const_iterator i, PixelList::const_iterator j ) const
 {
    j = i; ++j;
    for ( int c = 0; c < r.Length(); ++c )
@@ -1320,7 +1320,7 @@ void AssignmentXorOperator::operator()( Pixel& r, pixel_set::const_iterator i, p
 
 // ----------------------------------------------------------------------------
 
-void AssignmentXnorOperator::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+void AssignmentXnorOperator::operator()( Pixel& r, PixelList::const_iterator i, PixelList::const_iterator j ) const
 {
    j = i; ++j;
    for ( int c = 0; c < r.Length(); ++c )
@@ -1330,7 +1330,7 @@ void AssignmentXnorOperator::operator()( Pixel& r, pixel_set::const_iterator i, 
 
 // ----------------------------------------------------------------------------
 
-void AssignmentLogicalAndOperator::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+void AssignmentLogicalAndOperator::operator()( Pixel& r, PixelList::const_iterator i, PixelList::const_iterator j ) const
 {
    j = i; ++j;
 
@@ -1353,7 +1353,7 @@ void AssignmentLogicalAndOperator::operator()( Pixel& r, pixel_set::const_iterat
 
 // ----------------------------------------------------------------------------
 
-void AssignmentLogicalOrOperator::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
+void AssignmentLogicalOrOperator::operator()( Pixel& r, PixelList::const_iterator i, PixelList::const_iterator j ) const
 {
    j = i; ++j;
 
@@ -1383,4 +1383,4 @@ void AssignmentLogicalOrOperator::operator()( Pixel& r, pixel_set::const_iterato
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Operator.cpp - Released 2021-12-29T20:37:28Z
+// EOF Operator.cpp - Released 2022-03-12T18:59:53Z

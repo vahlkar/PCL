@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
 // Standard StarNet Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// StarNetModule.cpp - Released 2021-12-29T20:37:28Z
+// StarNetModule.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarNet PixInsight module.
 //
@@ -34,9 +34,9 @@
 #define MODULE_VERSION_BUILD     24
 #define MODULE_VERSION_LANGUAGE  eng
 
-#define MODULE_RELEASE_YEAR      2021
-#define MODULE_RELEASE_MONTH     12
-#define MODULE_RELEASE_DAY       29
+#define MODULE_RELEASE_YEAR      2022
+#define MODULE_RELEASE_MONTH     3
+#define MODULE_RELEASE_DAY       12
 
 #include "StarNetModule.h"
 #include "StarNetInterface.h"
@@ -94,7 +94,7 @@ String StarNetModule::Author() const
 
 String StarNetModule::Copyright() const
 {
-   return "Copyright (c) 2018-2021 Nikita Misiura";
+   return "Copyright (c) 2018-2022 Nikita Misiura";
 }
 
 // ----------------------------------------------------------------------------
@@ -160,4 +160,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF StarNetModule.cpp - Released 2021-12-29T20:37:28Z
+// EOF StarNetModule.cpp - Released 2022-03-12T18:59:53Z

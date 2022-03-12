@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.8.5
+// Standard PixelMath Process Module Version 1.9.2
 // ----------------------------------------------------------------------------
-// Token.h - Released 2021-12-29T20:37:28Z
+// Token.h - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -55,6 +55,7 @@
 
 #include <pcl/IndirectArray.h>
 #include <pcl/String.h>
+#include <pcl/StringList.h>
 
 namespace pcl
 {
@@ -73,93 +74,143 @@ public:
 
    enum { Symbol, MetaSymbol, Numeric, Separator };
 
-   Token( const String& s, int p, bool meta = false )
-      : type( meta ? MetaSymbol : Symbol )
-      , pos( p )
-      , stringValue( s )
+   Token( const String& str, int pos, bool meta = false )
+      : m_type( meta ? MetaSymbol : Symbol )
+      , m_pos( pos )
+      , m_stringValue( str )
    {
    }
 
-   Token( double v, int p )
-      : type( Numeric )
-      , pos( p )
-      , numericValue( v )
+   Token( double num, int pos )
+      : m_type( Numeric )
+      , m_pos( pos )
+      , m_numericValue( num )
    {
    }
 
-   Token( char16_type c, int p )
-      : type( Separator )
-      , pos( p )
-      , separatorValue( c )
+   Token( char16_type sep, int pos )
+      : m_type( Separator )
+      , m_pos( pos )
+      , m_separatorValue( sep )
    {
    }
 
    int Type() const
    {
-      return type;
+      return m_type;
    }
 
    bool IsSymbol() const
    {
-      return type == Symbol;
+      return m_type == Symbol;
    }
 
    bool IsMetaSymbol() const
    {
-      return type == MetaSymbol;
+      return m_type == MetaSymbol;
    }
 
    bool IsNumeric() const
    {
-      return type == Numeric;
+      return m_type == Numeric;
    }
 
    bool IsSeparator() const
    {
-      return type == Separator;
+      return m_type == Separator;
    }
 
    int Position() const
    {
-      return pos;
+      return m_pos;
    }
 
    String ToString() const
    {
       if ( IsSymbol() || IsMetaSymbol() )
-         return stringValue;
+         return m_stringValue;
       if ( IsNumeric() )
-         return String( numericValue );
+         return String( m_numericValue );
       if ( IsSeparator() )
-         return String( separatorValue, 1 );
+         return String( m_separatorValue, 1 );
       return String();
+   }
+
+   const String& AsString() const
+   {
+      return m_stringValue;
    }
 
    double AsNumeric() const
    {
-      return numericValue;
+      return m_numericValue;
    }
 
    char16_type AsSeparator() const
    {
-      return separatorValue;
+      return m_separatorValue;
    }
 
 private:
 
-   int type;
-   int pos;
-   String stringValue;
-   double numericValue        = 0;
-   char16_type separatorValue = 0;
+   int         m_type;
+   int         m_pos;
+   String      m_stringValue;
+   double      m_numericValue   = 0;
+   char16_type m_separatorValue = 0;
 };
 
 // ----------------------------------------------------------------------------
 
-typedef IndirectArray<Token>  token_list;
-typedef Array<token_list>     token_set;
+class Directive
+{
+public:
 
-void Tokenize( token_set&, const String& );
+   Directive( const String& name, const StringList& arguments, int pos, const Array<int>& argPos )
+      : m_name( name )
+      , m_arguments( arguments )
+      , m_pos( pos )
+      , m_argPos( argPos )
+   {
+   }
+
+   const String& Name() const
+   {
+      return m_name;
+   }
+
+   const StringList& Arguments() const
+   {
+      return m_arguments;
+   }
+
+   int Position() const
+   {
+      return m_pos;
+   }
+
+   int ArgumentPosition( int i ) const
+   {
+      return m_argPos[Range( i, 0, int( m_argPos.Length() ) )];
+   }
+
+private:
+
+   String     m_name;
+   StringList m_arguments;
+   int        m_pos;
+   Array<int> m_argPos;
+
+};
+
+// ----------------------------------------------------------------------------
+
+typedef IndirectArray<Token>     TokenList;
+typedef Array<TokenList>         TokenSet;
+
+typedef IndirectArray<Directive> DirectiveList;
+
+void Tokenize( TokenSet& tokens, DirectiveList& directives, const String& text );
 
 // ----------------------------------------------------------------------------
 
@@ -168,4 +219,4 @@ void Tokenize( token_set&, const String& );
 #endif   // __Token_h
 
 // ----------------------------------------------------------------------------
-// EOF Token.h - Released 2021-12-29T20:37:28Z
+// EOF Token.h - Released 2022-03-12T18:59:53Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.19
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// pcl/SurfaceSimplifier.h - Released 2022-01-24T22:43:24Z
+// pcl/SurfaceSimplifier.h - Released 2022-03-12T18:59:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -402,7 +402,7 @@ public:
    template <class C>
    void Simplify( C& xs, C& ys, C& zs, const C& x, const C& y, const C& z ) const
    {
-      int n = Min( Min( x.Length(), y.Length() ), z.Length() );
+      int n = int( Min( Min( x.Length(), y.Length() ), z.Length() ) );
       if ( n < 4 )
       {
          xs = x; ys = y; zs = z;
@@ -578,4 +578,4 @@ private:
 #endif   // __PCL_SurfaceSimplifier_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SurfaceSimplifier.h - Released 2022-01-24T22:43:24Z
+// EOF pcl/SurfaceSimplifier.h - Released 2022-03-12T18:59:29Z

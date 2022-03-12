@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// ImageIdentifierInterface.cpp - Released 2021-12-29T20:37:28Z
+// ImageIdentifierInterface.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -171,7 +171,7 @@ void ImageIdentifierInterface::UpdateControls()
 
 // ----------------------------------------------------------------------------
 
-void ImageIdentifierInterface::__EditCompleted( Edit& sender )
+void ImageIdentifierInterface::e_EditCompleted( Edit& sender )
 {
    try
    {
@@ -220,7 +220,7 @@ ImageIdentifierInterface::GUIData::GUIData( ImageIdentifierInterface& w )
    Identifier_Label.SetText( "Identifier:" );
 
    Identifier_Edit.SetMinWidth( w.Font().Width( String( '0', 50 ) ) );
-   Identifier_Edit.OnEditCompleted( (pcl::Edit::edit_event_handler)&ImageIdentifierInterface::__EditCompleted, w );
+   Identifier_Edit.OnEditCompleted( (pcl::Edit::edit_event_handler)&ImageIdentifierInterface::e_EditCompleted, w );
    Identifier_Edit.OnViewDrag( (Control::view_drag_event_handler)&ImageIdentifierInterface::__ViewDrag, w );
    Identifier_Edit.OnViewDrop( (Control::view_drop_event_handler)&ImageIdentifierInterface::__ViewDrop, w );
 
@@ -243,4 +243,4 @@ ImageIdentifierInterface::GUIData::GUIData( ImageIdentifierInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIdentifierInterface.cpp - Released 2021-12-29T20:37:28Z
+// EOF ImageIdentifierInterface.cpp - Released 2022-03-12T18:59:53Z

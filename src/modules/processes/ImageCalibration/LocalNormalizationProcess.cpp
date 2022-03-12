@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.8.0
+// Standard ImageCalibration Process Module Version 1.9.1
 // ----------------------------------------------------------------------------
-// LocalNormalizationProcess.cpp - Released 2021-12-29T20:37:28Z
+// LocalNormalizationProcess.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -70,12 +70,28 @@ LocalNormalizationProcess::LocalNormalizationProcess()
 
    new LNScale( this );
    new LNNoScale( this );
+   new LNGlobalLocationNormalization( this );
    new LNRejection( this );
+   new LNTruncate( this );
+   new LNBackgroundSamplingDelta( this );
    new LNBackgroundRejectionLimit( this );
    new LNReferenceRejectionThreshold( this );
    new LNTargetRejectionThreshold( this );
    new LNHotPixelFilterRadius( this );
    new LNNoiseReductionFilterRadius( this );
+   new LNModelScalingFactor( this );
+   new LNScaleEvaluationMethod( this );
+   new LNLocalScaleCorrections( this );
+   new LNStructureLayers( this );
+   new LNSaturationThreshold( this );
+   new LNSaturationRelative( this );
+   new LNPSFNoiseLayers( this );
+   new LNPSFHotPixelFilterRadius( this );
+   new LNPSFNoiseReductionFilterRadius( this );
+   new LNPSFMinStructureSize( this );
+   new LNPSFType( this );
+   new LNPSFGrowth( this );
+   new LNPSFMaxStars( this );
    new LNReferencePathOrViewId( this );
    new LNReferenceIsView( this );
    new LNTargetItems( this );
@@ -86,9 +102,12 @@ LocalNormalizationProcess::LocalNormalizationProcess()
    new LNGenerateNormalizedImages( this );
    new LNGenerateNormalizationData( this );
    new LNShowBackgroundModels( this );
+   new LNShowLocalScaleModels( this );
    new LNShowRejectionMaps( this );
+   new LNShowStructureMaps( this );
    new LNPlotNormalizationFunctions( this );
    new LNNoGUIMessages( this );
+   new LNAutoMemoryLimit( this );
    new LNOutputDirectory( this );
    new LNOutputExtension( this );
    new LNOutputPrefix( this );
@@ -104,6 +123,13 @@ LocalNormalizationProcess::LocalNormalizationProcess()
    new LNGraphTitleSize( this );
    new LNGraphTransparent( this );
    new LNGraphOutputDirectory( this );
+
+   new LNOutputData( this );
+   new LNOutputFilePathXNML( TheLNOutputDataParameter );
+   new LNOutputFilePath( TheLNOutputDataParameter );
+   new LNScaleFactorRK( TheLNOutputDataParameter );
+   new LNScaleFactorG( TheLNOutputDataParameter );
+   new LNScaleFactorB( TheLNOutputDataParameter );
 }
 
 // ----------------------------------------------------------------------------
@@ -167,4 +193,4 @@ ProcessImplementation* LocalNormalizationProcess::Clone( const ProcessImplementa
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationProcess.cpp - Released 2021-12-29T20:37:28Z
+// EOF LocalNormalizationProcess.cpp - Released 2022-03-12T18:59:53Z

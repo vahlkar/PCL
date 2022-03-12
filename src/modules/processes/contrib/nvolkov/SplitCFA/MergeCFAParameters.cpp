@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
 // Standard SplitCFA Process Module Version 1.0.6
 // ----------------------------------------------------------------------------
-// MergeCFAParameters.cpp - Released 2021-12-29T20:37:28Z
+// MergeCFAParameters.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SplitCFA PixInsight module.
 //
@@ -139,4 +139,4 @@ bool MergeCFAOutputViewId::IsReadOnly() const
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF MergeCFAParameters.cpp - Released 2021-12-29T20:37:28Z
+// EOF MergeCFAParameters.cpp - Released 2022-03-12T18:59:53Z

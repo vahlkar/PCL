@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.8.0
+// Standard ImageCalibration Process Module Version 1.9.1
 // ----------------------------------------------------------------------------
-// SuperbiasInstance.cpp - Released 2021-12-29T20:37:28Z
+// SuperbiasInstance.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -371,4 +371,4 @@ size_type SuperbiasInstance::ParameterLength( const MetaParameter* p, size_type 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SuperbiasInstance.cpp - Released 2021-12-29T20:37:28Z
+// EOF SuperbiasInstance.cpp - Released 2022-03-12T18:59:53Z

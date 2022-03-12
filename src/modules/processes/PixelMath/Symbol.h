@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.8.5
+// Standard PixelMath Process Module Version 1.9.2
 // ----------------------------------------------------------------------------
-// Symbol.h - Released 2021-12-29T20:37:28Z
+// Symbol.h - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -79,7 +79,7 @@ class Symbol : public Pixel
 {
 public:
 
-   typedef IndirectSortedArray<Symbol> symbol_set;
+   typedef IndirectSortedArray<Symbol> symbol_list;
 
    Symbol( const String& id );
 
@@ -124,20 +124,20 @@ public:
 
    static bool IsDefined( const String& id )
    {
-      return m_symbols.Contains( Symbol( id, 0 ) );
+      return s_symbols.Contains( Symbol( id, 0 ) );
    }
 
    static Symbol* Find( const String& id )
    {
-      symbol_set::const_iterator i = m_symbols.Search( Symbol( id, 0 ) );
-      return (i == m_symbols.End()) ? nullptr : *i;
+      symbol_list::const_iterator i = s_symbols.Search( Symbol( id, 0 ) );
+      return (i == s_symbols.End()) ? nullptr : *i;
    }
 
    static void Create( const String& defList );
 
    static void DestroyAll()
    {
-      m_symbols.Destroy();
+      s_symbols.Destroy();
    }
 
    static String GlobalVariablesReport();
@@ -154,9 +154,9 @@ public:
 
    static Array<OutputData> GlobalVariablesData();
 
-   static const symbol_set& Symbols()
+   static const symbol_list& Symbols()
    {
-      return m_symbols;
+      return s_symbols;
    }
 
 private:
@@ -168,8 +168,12 @@ private:
    {
    }
 
-   static symbol_set m_symbols;
+   static symbol_list s_symbols;
 };
+
+// ----------------------------------------------------------------------------
+
+typedef Symbol::symbol_list   SymbolList;
 
 // ----------------------------------------------------------------------------
 
@@ -344,4 +348,4 @@ private:
 #endif   // __Symbol_h
 
 // ----------------------------------------------------------------------------
-// EOF Symbol.h - Released 2021-12-29T20:37:28Z
+// EOF Symbol.h - Released 2022-03-12T18:59:53Z

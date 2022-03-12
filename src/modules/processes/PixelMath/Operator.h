@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.8.5
+// Standard PixelMath Process Module Version 1.9.2
 // ----------------------------------------------------------------------------
-// Operator.h - Released 2021-12-29T20:37:28Z
+// Operator.h - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -67,7 +67,7 @@ class Operator : public Functional
 {
 public:
 
-   typedef IndirectArray<Operator>  operator_set;
+   typedef IndirectArray<Operator>  operator_list;
 
    struct IndexNode
    {
@@ -114,7 +114,7 @@ public:
    virtual String Id() const = 0;
    virtual String Token() const = 0;
 
-   virtual void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const = 0;
+   virtual void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const = 0;
 
    virtual int Precedence() const = 0;
 
@@ -170,8 +170,13 @@ public:
 
    String ToString() const override;
 
-   static void InitializeList( operator_set&, operator_index& );
+   static void InitializeList( operator_list&, operator_index& );
 };
+
+// ----------------------------------------------------------------------------
+
+typedef Operator::operator_list  OperatorList;
+typedef Operator::operator_index OperatorIndex;
 
 // ----------------------------------------------------------------------------
 
@@ -237,10 +242,10 @@ public:
    bool   IsLeftAssociative() const override  { return false; }
    bool   IsArithmetic() const override       { return true; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -263,10 +268,10 @@ public:
    bool   IsLeftAssociative() const override  { return false; }
    bool   IsArithmetic() const override       { return true; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -288,10 +293,10 @@ public:
    bool   IsLeftAssociative() const override  { return false; }
    bool   IsArithmetic() const override       { return true; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -313,10 +318,10 @@ public:
    bool   IsLeftAssociative() const override  { return false; }
    bool   IsLogical() const override          { return true; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -338,10 +343,10 @@ public:
    bool   IsCommutative() const override      { return false; }
    bool   IsArithmetic() const override       { return true; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -363,10 +368,10 @@ public:
    bool   IsArithmetic() const override       { return true; }
    bool   IsMultiplicative() const override   { return true; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -392,10 +397,10 @@ public:
    bool   IsArithmetic() const override       { return true; }
    bool   IsMultiplicative() const override   { return true; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -424,10 +429,10 @@ public:
    bool   IsCommutative() const override      { return false; }
    bool   IsArithmetic() const override       { return true; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -449,10 +454,10 @@ public:
    bool   IsArithmetic() const override       { return true; }
    bool   IsAdditive() const override         { return true; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -475,10 +480,10 @@ public:
    bool   IsArithmetic() const override       { return true; }
    bool   IsAdditive() const override         { return true; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -501,10 +506,10 @@ public:
    bool   IsArithmetic() const override       { return true; }
    bool   IsAdditive() const override         { return true; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -526,10 +531,10 @@ public:
    int    Precedence() const override         { return PRECEDENCE_INEQUALITY; }
    bool   IsRelational() const override       { return true; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -551,10 +556,10 @@ public:
    int    Precedence() const override         { return PRECEDENCE_INEQUALITY; }
    bool   IsRelational() const override       { return true; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -576,10 +581,10 @@ public:
    int    Precedence() const override         { return PRECEDENCE_INEQUALITY; }
    bool   IsRelational() const override       { return true; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -601,10 +606,10 @@ public:
    int    Precedence() const override         { return PRECEDENCE_INEQUALITY; }
    bool   IsRelational() const override       { return true; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -626,10 +631,10 @@ public:
    int    Precedence() const override         { return PRECEDENCE_EQUALITY; }
    bool   IsRelational() const override       { return true; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -651,10 +656,10 @@ public:
    int    Precedence() const override         { return PRECEDENCE_EQUALITY; }
    bool   IsRelational() const override       { return true; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -678,10 +683,10 @@ public:
    int    Precedence() const override         { return PRECEDENCE_AND; }
    bool   IsBitwise() const override          { return true; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -705,10 +710,10 @@ public:
    int    Precedence() const override         { return PRECEDENCE_AND; }
    bool   IsBitwise() const override          { return true; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -732,10 +737,10 @@ public:
    int    Precedence() const override         { return PRECEDENCE_XOR; }
    bool   IsBitwise() const override          { return true; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -759,10 +764,10 @@ public:
    int    Precedence() const override         { return PRECEDENCE_XOR; }
    bool   IsBitwise() const override          { return true; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -786,10 +791,10 @@ public:
    int    Precedence() const override         { return PRECEDENCE_OR; }
    bool   IsBitwise() const override          { return true; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -813,10 +818,10 @@ public:
    int    Precedence() const override         { return PRECEDENCE_OR; }
    bool   IsBitwise() const override          { return true; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -838,13 +843,13 @@ public:
    int    Precedence() const override         { return PRECEDENCE_LOGICAL_AND; }
    bool   IsLogical() const override          { return true; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
    bool CanOptimize() const override          { return true; }
-   component_list Optimized() const override;
+   ExpressionList Optimized() const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -866,13 +871,13 @@ public:
    int    Precedence() const override         { return PRECEDENCE_LOGICAL_OR; }
    bool   IsLogical() const override          { return true; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 
-   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
-   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool IsInvariant( ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
+   void operator()( Pixel&, ExpressionList::const_iterator, ExpressionList::const_iterator ) const override;
 
    bool CanOptimize() const override          { return true; }
-   component_list Optimized() const override;
+   ExpressionList Optimized() const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -895,7 +900,7 @@ public:
    bool   IsCommutative() const override      { return false; }
    bool   IsAssignment() const override       { return true; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -921,7 +926,7 @@ public:
    bool   IsAssignment() const override       { return true; }
    bool   IsAdditive() const override         { return true; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -947,7 +952,7 @@ public:
    bool   IsAssignment() const override       { return true; }
    bool   IsAdditive() const override         { return true; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -973,7 +978,7 @@ public:
    bool   IsAssignment() const override       { return true; }
    bool   IsMultiplicative() const override   { return true; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1003,7 +1008,7 @@ public:
    bool   IsAssignment() const override       { return true; }
    bool   IsMultiplicative() const override   { return true; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1028,7 +1033,7 @@ public:
    bool   IsCommutative() const override      { return false; }
    bool   IsAssignment() const override       { return true; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1056,7 +1061,7 @@ public:
    bool   IsCommutative() const override      { return false; }
    bool   IsAssignment() const override       { return true; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1082,7 +1087,7 @@ public:
    bool   IsAssignment() const override       { return true; }
    bool   IsAdditive() const override         { return true; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1107,7 +1112,7 @@ public:
    bool   IsCommutative() const override      { return false; }
    bool   IsAssignment() const override       { return true; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1132,7 +1137,7 @@ public:
    bool   IsCommutative() const override      { return false; }
    bool   IsAssignment() const override       { return true; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1157,7 +1162,7 @@ public:
    bool   IsCommutative() const override      { return false; }
    bool   IsAssignment() const override       { return true; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1182,7 +1187,7 @@ public:
    bool   IsCommutative() const override      { return false; }
    bool   IsAssignment() const override       { return true; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1207,7 +1212,7 @@ public:
    bool   IsCommutative() const override      { return false; }
    bool   IsAssignment() const override       { return true; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1232,7 +1237,7 @@ public:
    bool   IsCommutative() const override      { return false; }
    bool   IsAssignment() const override       { return true; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1257,7 +1262,7 @@ public:
    bool   IsCommutative() const override      { return false; }
    bool   IsAssignment() const override       { return true; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1282,7 +1287,7 @@ public:
    bool   IsCommutative() const override      { return false; }
    bool   IsAssignment() const override       { return true; }
 
-   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+   void operator()( Pixel&, PixelList::const_iterator, PixelList::const_iterator ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -1292,4 +1297,4 @@ public:
 #endif   // __Operator_h
 
 // ----------------------------------------------------------------------------
-// EOF Operator.h - Released 2021-12-29T20:37:28Z
+// EOF Operator.h - Released 2022-03-12T18:59:53Z

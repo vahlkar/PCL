@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.4.3
+// Standard ImageIntegration Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// IntegrationCache.h - Released 2021-12-29T20:37:28Z
+// IntegrationCache.h - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -74,7 +74,7 @@ public:
    scale_estimates  avgDev;      // two-sided AvgDev scale estimates
    scale_estimates  mad;         // two-sided MAD scale estimates
    scale_estimates  bwmv;        // two-sided BWMV scale estimates
-   signal_estimates psfSignal;   // PSF signal and signal power estimates
+   signal_estimates psfSignal;   // PSF signal estimates
    DVector          noise;       // noise stdDev estimates
    scale_estimates  noiseScale;  // two-sided noise scale estimates
    DVector          ax;          // adaptive normalization: sample X-coordinates
@@ -120,12 +120,12 @@ public:
 
    int Version() const override
    {
-      return 4;
+      return 5;
    }
 
    int MinSupportedVersion() const override
    {
-      return 4;
+      return 5;
    }
 
 private:
@@ -145,4 +145,4 @@ extern IntegrationCache* TheIntegrationCache;
 #endif   // __IntegrationCache_h
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationCache.h - Released 2021-12-29T20:37:28Z
+// EOF IntegrationCache.h - Released 2022-03-12T18:59:53Z

@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.8.5
+// Standard PixelMath Process Module Version 1.9.2
 // ----------------------------------------------------------------------------
-// PixelMathInstance.cpp - Released 2021-12-29T20:37:28Z
+// PixelMathInstance.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -61,7 +61,7 @@
 #include <pcl/PixelInterpolation.h>
 #include <pcl/StandardStatus.h>
 
-// #include <iostream>
+#include <iostream>
 
 namespace pcl
 {
@@ -472,15 +472,15 @@ private:
 
          try
          {
-            pixel_set stack;
+            PixelList stack;
 
             size_type stackLen = 0;
-            for ( const Expression::component_list& l : m_data.RPN )
+            for ( const ExpressionList& l : m_data.RPN )
                if ( l.Length() > stackLen )
                   stackLen = l.Length();
             stack.Add( Pixel(), stackLen );
 
-            pixel_set::iterator tos = stack.Begin();
+            PixelList::iterator tos = stack.Begin();
 
             bool generate = !m_image.IsEmpty();
 
@@ -516,10 +516,10 @@ private:
                   /*
                    * For each expression
                    */
-                  for ( const Expression::component_list& rpn : m_data.RPN )
+                  for ( const ExpressionList& rpn : m_data.RPN )
                   {
                      // Current stack pointer
-                     pixel_set::iterator sp = tos;
+                     PixelList::iterator sp = tos;
 
                      int rgbCount = 0;
                      bool stackPushed = false;
@@ -527,7 +527,7 @@ private:
                      /*
                       * For each expression component
                       */
-                     for ( Expression::component_list::const_iterator i = rpn.Begin(); i != rpn.End(); ++i )
+                     for ( ExpressionList::const_iterator i = rpn.Begin(); i != rpn.End(); ++i )
                      {
                         if ( (*i)->IsData() )
                         {
@@ -587,12 +587,12 @@ private:
                            /*
                             * Functional component
                             */
-                           pixel_set::iterator s0 = sp - F->NumberOfArguments();
+                           PixelList::iterator s0 = sp - F->NumberOfArguments();
 
                            Pixel pixel( &tls, xPos, yPos );
                            if ( rgbCount != 0 )
                            {
-                              for ( pixel_set::iterator s = s0; s != sp; ++s )
+                              for ( PixelList::iterator s = s0; s != sp; ++s )
                                  if ( !s->IsRGB() )
                                     s->ConvertToRGB();
                            }
@@ -759,12 +759,12 @@ void PixelMathInstance::SolveInvariants( rpn_set RPN[], const ImageWindow& targe
    int invTotal = 0;
 
    for ( int c = 0; c < 4; ++c )
-      for ( Expression::component_list& rpn : RPN[c] )
+      for ( ExpressionList& rpn : RPN[c] )
          for ( ;; )
          {
             int invFound = 0;
 
-            for ( Expression::component_list::iterator i = rpn.Begin(); i != rpn.End(); ++i )
+            for ( ExpressionList::iterator i = rpn.Begin(); i != rpn.End(); ++i )
             {
                Functional* F = dynamic_cast<Functional*>( *i );
                if ( F != nullptr )
@@ -779,7 +779,7 @@ void PixelMathInstance::SolveInvariants( rpn_set RPN[], const ImageWindow& targe
 
                      Pixel pixel( 0.0 );
 
-                     for ( Expression::component_list::const_iterator j = i-n; j != i; ++j )
+                     for ( ExpressionList::const_iterator j = i-n; j != i; ++j )
                      {
                         const PixelData* P = dynamic_cast<const PixelData*>( *j );
                         if ( P != nullptr )
@@ -871,16 +871,16 @@ void PixelMathInstance::SolveBranchTargets( rpn_set RPN[] )
 {
    Array<PointerLocation> pointers;
    for ( int c = 0; c < 4; ++c )
-      for ( const component_list& rpn : RPN[c] )
-         for ( component_list::const_iterator i = rpn.Begin(); i < rpn.End(); ++i )
+      for ( const ExpressionList& rpn : RPN[c] )
+         for ( ExpressionList::const_iterator i = rpn.Begin(); i < rpn.End(); ++i )
             if ( (*i)->IsPointer() )
                pointers << PointerLocation{ static_cast<const Pointer*>( *i )->Id(), i - rpn.Begin() };
 
    pointers.Sort();
 
    for ( int c = 0; c < 4; ++c )
-      for ( component_list& rpn : RPN[c] )
-         for ( component_list::iterator i = rpn.Begin(); i < rpn.End(); ++i )
+      for ( ExpressionList& rpn : RPN[c] )
+         for ( ExpressionList::iterator i = rpn.Begin(); i < rpn.End(); ++i )
             if ( (*i)->IsBranch() )
             {
                unsigned id = static_cast<const Branch*>( *i )->TargetId();
@@ -899,12 +899,12 @@ void RunImageGenerators( PixelMathInstance::rpn_set RPN[], AutoPointer<BicubicPi
    int genTotal = 0;
 
    for ( int c = 0; c < 4; ++c )
-      for ( Expression::component_list& rpn : RPN[c] )
+      for ( ExpressionList& rpn : RPN[c] )
          for ( ;; )
          {
             int genFound = 0;
 
-            for ( Expression::component_list::iterator i = rpn.Begin(); i != rpn.End(); ++i )
+            for ( ExpressionList::iterator i = rpn.Begin(); i != rpn.End(); ++i )
                if ( (*i)->IsFunction() )
                {
                   const Function* F = dynamic_cast<Function*>( *i );
@@ -973,6 +973,219 @@ void ClearImageCache()
    if ( TheImageCache->ClearImages( count, size ) )
       Console().NoteLn( "<end><cbr>* " + String( count ) + " cached image(s) removed"
                         ", " + File::SizeAsString( size ) + " freed up." );
+}
+
+// ----------------------------------------------------------------------------
+
+// std::cout << ( IsoString().Format( "%08X\n", String( "rescale" ).Hash32() ) );
+// std::cout << ( IsoString().Format( "%08X\n", String( "no-rescale" ).Hash32() ) );
+// std::cout << ( IsoString().Format( "%08X\n", String( "truncate" ).Hash32() ) );
+// std::cout << ( IsoString().Format( "%08X\n", String( "no-truncate" ).Hash32() ) );
+// std::cout << ( IsoString().Format( "%08X\n", String( "64_bit" ).Hash32() ) );
+// std::cout << ( IsoString().Format( "%08X\n", String( "no-64_bit" ).Hash32() ) );
+// std::cout << ( IsoString().Format( "%08X\n", String( "single_thread" ).Hash32() ) );
+// std::cout << ( IsoString().Format( "%08X\n", String( "no-single_thread" ).Hash32() ) );
+// std::cout << ( IsoString().Format( "%08X\n", String( "optimize" ).Hash32() ) );
+// std::cout << ( IsoString().Format( "%08X\n", String( "no-optimize" ).Hash32() ) );
+// std::cout << ( IsoString().Format( "%08X\n", String( "cache" ).Hash32() ) );
+// std::cout << ( IsoString().Format( "%08X\n", String( "no-cache" ).Hash32() ) );
+// std::cout << ( IsoString().Format( "%08X\n", String( "single_expr" ).Hash32() ) );
+// std::cout << ( IsoString().Format( "%08X\n", String( "no-single_expr" ).Hash32() ) );
+// std::cout << ( IsoString().Format( "%08X\n", String( "new_image" ).Hash32() ) );
+// std::cout << ( IsoString().Format( "%08X\n", String( "no-new_image" ).Hash32() ) );
+// std::cout << ( IsoString().Format( "%08X\n", String( "alpha" ).Hash32() ) );
+// std::cout << ( IsoString().Format( "%08X\n", String( "no-alpha" ).Hash32() ) );
+// std::cout << ( IsoString().Format( "%08X\n", String( "rescale_low" ).Hash32() ) );
+// std::cout << ( IsoString().Format( "%08X\n", String( "rescale_high" ).Hash32() ) );
+// std::cout << ( IsoString().Format( "%08X\n", String( "truncate_low" ).Hash32() ) );
+// std::cout << ( IsoString().Format( "%08X\n", String( "truncate_high" ).Hash32() ) );
+
+static PixelMathInstance* s_unpragmatizedInstance = nullptr;
+
+void PixelMathInstance::ProcessDirectives( const DirectiveList D[] )
+{
+   for ( int c = 0; c < 4; ++c )
+      for ( const Directive* d : D[c] )
+      {
+         if ( s_unpragmatizedInstance == nullptr )
+            s_unpragmatizedInstance = new PixelMathInstance( *this );
+
+         if ( d->Name() == "pragma" )
+         {
+            if ( d->Arguments().IsEmpty() )
+               throw ParseError( "The pragma directive requires one or more arguments", p_expression[c], d->Position() );
+
+            int i = 0;
+            for ( const String& arg : d->Arguments() )
+            {
+               switch ( arg.Hash32() )
+               {
+               case 0x64CE5908:  // rescale
+                  p_rescaleResult = true;
+                  break;
+               case 0xAB7A03E3:  // no-rescale
+                  p_rescaleResult = false;
+                  break;
+               case 0x3E29A0EA:  // truncate
+                  p_truncateResult = true;
+                  break;
+               case 0x5F78E855:  // no-truncate
+                  p_truncateResult = false;
+                  break;
+               case 0x2F7E0FC2:  // 64_bit
+                  p_use64BitWorkingImage = true;
+                  break;
+               case 0xF3EDF7E2:  // no-64_bit
+                  p_use64BitWorkingImage = false;
+                  break;
+               case 0x2A7CA212:  // single_thread
+                  p_singleThreaded = true;
+                  break;
+               case 0x15B668D7:  // no-single_thread
+                  p_singleThreaded = false;
+                  break;
+               case 0x70E9AB21:  // optimize
+                  p_optimization = true;
+                  break;
+               case 0xEAAD9165:  // no-optimize
+                  p_optimization = false;
+                  break;
+               case 0x028412BD:  // cache
+                  p_cacheGeneratedImages = true;
+                  break;
+               case 0x0F6A40E4:  // no-cache
+                  p_cacheGeneratedImages = false;
+                  break;
+               case 0x22EF3C60:  // single_expr
+                  p_useSingleExpression = true;
+                  break;
+               case 0xE6A44C2C:  // no-single_expr
+                  p_useSingleExpression = false;
+                  break;
+               case 0x1B9A8074:  // new_image
+                  p_createNewImage = true;
+                  break;
+               case 0xBE564277:  // no-new_image
+                  p_createNewImage = false;
+                  break;
+               case 0xCDDD25A6:  // alpha
+                  p_newImageAlpha = true;
+                  break;
+               case 0xA0FC0E52:  // no-alpha
+                  p_newImageAlpha = false;
+                  break;
+//                case 0x3005AED4:  // rescale_low
+//                   break;
+//                case 0xF6640F8C:  // rescale_high
+//                   break;
+//                case 0xE5955C60:  // truncate_low
+//                   break;
+//                case 0x4DFAD4B1:  // truncate_high
+//                   break;
+               default:
+                  throw ParseError( "Unknown pragma directive argument \'" + arg + "\'", p_expression[c], d->ArgumentPosition( i ) );
+               }
+
+               ++i;
+            }
+         }
+         else if ( d->Name() == "symbols" )
+         {
+            if ( d->Arguments().IsEmpty() )
+               throw ParseError( "The symbols directive requires one or more arguments", p_expression[c], d->Position() );
+
+            p_symbols = String().ToCommaSeparated( d->Arguments() );
+         }
+         else
+            throw ParseError( "Unknown directive \'" + d->Name() + "\'", p_expression[c], d->Position() );
+      }
+}
+
+void PixelMathInstance::ValidateDirectives( const DirectiveList& D, const String& source )
+{
+   for ( const Directive* d : D )
+   {
+      if ( d->Name() == "pragma" )
+      {
+         if ( d->Arguments().IsEmpty() )
+            throw ParseError( "The pragma directive requires one or more arguments", source, d->Position() );
+
+         int i = 0;
+         for ( const String& arg : d->Arguments() )
+         {
+               switch ( arg.Hash32() )
+               {
+               case 0x64CE5908:  // rescale
+               case 0xAB7A03E3:  // no-rescale
+               case 0x3E29A0EA:  // truncate
+               case 0x5F78E855:  // no-truncate
+               case 0x2F7E0FC2:  // 64_bit
+               case 0xF3EDF7E2:  // no-64_bit
+               case 0x2A7CA212:  // single_thread
+               case 0x15B668D7:  // no-single_thread
+               case 0x70E9AB21:  // optimize
+               case 0xEAAD9165:  // no-optimize
+               case 0x028412BD:  // cache
+               case 0x0F6A40E4:  // no-cache
+               case 0x22EF3C60:  // single_expr
+               case 0xE6A44C2C:  // no-single_expr
+               case 0x1B9A8074:  // new_image
+               case 0xBE564277:  // no-new_image
+               case 0xCDDD25A6:  // alpha
+               case 0xA0FC0E52:  // no-alpha
+//                case 0x3005AED4:  // rescale_low
+//                case 0xF6640F8C:  // rescale_high
+//                case 0xE5955C60:  // truncate_low
+//                case 0x4DFAD4B1:  // truncate_high
+                  break;
+               default:
+                  throw ParseError( "Unknown pragma directive argument \'" + arg + "\'", source, d->ArgumentPosition( i ) );
+               }
+
+               ++i;
+         }
+      }
+      else if ( d->Name() == "symbols" )
+      {
+         if ( d->Arguments().IsEmpty() )
+            throw ParseError( "The symbols directive requires one or more arguments", source, d->Position() );
+      }
+      else
+         throw ParseError( "Unknown directive \'" + d->Name() + "\'", source, d->Position() );
+   }
+}
+
+// ----------------------------------------------------------------------------
+
+void PixelMathInstance::Unpragmatize()
+{
+   if ( s_unpragmatizedInstance != nullptr )
+   {
+      p_symbols              = s_unpragmatizedInstance->p_symbols;
+      p_useSingleExpression  = s_unpragmatizedInstance->p_useSingleExpression;
+      p_cacheGeneratedImages = s_unpragmatizedInstance->p_cacheGeneratedImages;
+      p_generateOutput       = s_unpragmatizedInstance->p_generateOutput;
+      p_singleThreaded       = s_unpragmatizedInstance->p_singleThreaded;
+      p_optimization         = s_unpragmatizedInstance->p_optimization;
+      p_use64BitWorkingImage = s_unpragmatizedInstance->p_use64BitWorkingImage;
+      p_rescaleResult        = s_unpragmatizedInstance->p_rescaleResult;
+      p_rescaleLower         = s_unpragmatizedInstance->p_rescaleLower;
+      p_rescaleUpper         = s_unpragmatizedInstance->p_rescaleUpper;
+      p_truncateResult       = s_unpragmatizedInstance->p_truncateResult;
+      p_truncateLower        = s_unpragmatizedInstance->p_truncateLower;
+      p_truncateUpper        = s_unpragmatizedInstance->p_truncateUpper;
+      p_createNewImage       = s_unpragmatizedInstance->p_createNewImage;
+      p_showNewImage         = s_unpragmatizedInstance->p_showNewImage;
+      p_newImageId           = s_unpragmatizedInstance->p_newImageId;
+      p_newImageWidth        = s_unpragmatizedInstance->p_newImageWidth;
+      p_newImageHeight       = s_unpragmatizedInstance->p_newImageHeight;
+      p_newImageAlpha        = s_unpragmatizedInstance->p_newImageAlpha;
+      p_newImageColorSpace   = s_unpragmatizedInstance->p_newImageColorSpace;
+      p_newImageSampleFormat = s_unpragmatizedInstance->p_newImageSampleFormat;
+
+      delete s_unpragmatizedInstance;
+      s_unpragmatizedInstance = nullptr;
+   }
 }
 
 // ----------------------------------------------------------------------------
@@ -1103,7 +1316,9 @@ bool PixelMathInstance::ExecuteOn( View& view )
          return true;
    }
 
-   Expression::component_list L[ 4 ];
+   TokenSet T[ 4 ];
+   DirectiveList D[ 4 ];
+   ExpressionList L[ 4 ];
    rpn_set RPN[ 4 ];
 
    AutoPointer<BicubicPixelInterpolation> interpolation;
@@ -1113,20 +1328,37 @@ bool PixelMathInstance::ExecuteOn( View& view )
    try
    {
       /*
+       * Tokenize expressions.
+       */
+      Tokenize( T[0], D[0], p_expression[0] );
+      if ( !p_useSingleExpression )
+      {
+         Tokenize( T[1], D[1], p_expression[1] );
+         Tokenize( T[2], D[2], p_expression[2] );
+      }
+      Tokenize( T[3], D[3], p_expression[3] );
+
+      /*
+       * Directives modify instance behavior (e.g. .pragma), so we have to
+       * process them early.
+       */
+      ProcessDirectives( D );
+
+      /*
        * Create symbols and global variables.
        */
       Symbol::Create( p_symbols );
 
       /*
-       * Parse expressions.
+       * Parse token lists.
        */
-      Expression::Parse( L[0], p_expression[0] );
+      Expression::Parse( L[0], T[0], p_expression[0] );
       if ( !p_useSingleExpression )
       {
-         Expression::Parse( L[1], p_expression[1] );
-         Expression::Parse( L[2], p_expression[2] );
+         Expression::Parse( L[1], T[1], p_expression[1] );
+         Expression::Parse( L[2], T[2], p_expression[2] );
       }
-      Expression::Parse( L[3], p_expression[3] );
+      Expression::Parse( L[3], T[3], p_expression[3] );
 
       if ( L[0].IsEmpty() && L[1].IsEmpty() && L[2].IsEmpty() && L[3].IsEmpty() )
          throw ParseError( "No applicable PixelMath expression has been defined." );
@@ -1210,7 +1442,7 @@ bool PixelMathInstance::ExecuteOn( View& view )
       for ( int c = 0; c < 4; ++c )
          for ( const Expression* X : L[c] )
          {
-            Expression::component_list rpn;
+            ExpressionList rpn;
 
             try
             {
@@ -1233,7 +1465,7 @@ bool PixelMathInstance::ExecuteOn( View& view )
                /*
                 * Resolve metasymbols and image references.
                 */
-               for ( Expression::component_list::iterator i = rpn.Begin(); i != rpn.End(); ++i )
+               for ( ExpressionList::iterator i = rpn.Begin(); i != rpn.End(); ++i )
                {
                   ImageReference* I = nullptr;
 
@@ -1485,7 +1717,8 @@ bool PixelMathInstance::ExecuteOn( View& view )
        * rescaleResult and truncateResult), but this is not exposed to the user
        * on PixelMath's interface because platform stability is not guaranteed
        * if out-of-range images are propagated to the core GUI. This feature is
-       * only intended for execution of PixelMath instances from scripts.
+       * only intended for execution of PixelMath instances from scripts, or
+       * for those very special cases when 'you know what you are doing'.
        */
       if ( p_generateOutput )
          if ( p_rescaleResult )
@@ -1503,9 +1736,13 @@ bool PixelMathInstance::ExecuteOn( View& view )
        */
       for ( int c = 0; c < 4; ++c )
       {
-         for ( Expression::component_list& l : RPN[c] )
+         for ( ExpressionList& l : RPN[c] )
             l.Destroy();
+         for ( TokenList& l : T[c] )
+            l.Destroy();
+         T[c].Clear();
          L[c].Destroy();
+         D[c].Destroy();
       }
 
       Symbol::DestroyAll();
@@ -1514,6 +1751,8 @@ bool PixelMathInstance::ExecuteOn( View& view )
          ReportCachedImages();
       else
          TheImageCache->ClearImages();
+
+      Unpragmatize();
 
       /*
        * If we have used a temporary working image, copy the result to the
@@ -1544,15 +1783,21 @@ bool PixelMathInstance::ExecuteOn( View& view )
    {
       for ( int c = 0; c < 4; ++c )
       {
-         for ( Expression::component_list& l : RPN[c] )
+         for ( ExpressionList& l : RPN[c] )
             l.Destroy();
+         for ( TokenList& l : T[c] )
+            l.Destroy();
+         T[c].Clear();
          L[c].Destroy();
+         D[c].Destroy();
       }
 
       Symbol::DestroyAll();
 
       if ( !p_cacheGeneratedImages )
          TheImageCache->ClearImages();
+
+      Unpragmatize();
 
       workingImage.Free();
 
@@ -1591,7 +1836,9 @@ bool PixelMathInstance::ExecuteGlobal()
          return true;
    }
 
-   Expression::component_list L[ 4 ];
+   TokenSet T[ 4 ];
+   DirectiveList D[ 4 ];
+   ExpressionList L[ 4 ];
    rpn_set RPN[ 4 ];
 
    AutoPointer<BicubicPixelInterpolation> interpolation;
@@ -1604,20 +1851,37 @@ bool PixelMathInstance::ExecuteGlobal()
    try
    {
       /*
+       * Tokenize expressions.
+       */
+      Tokenize( T[0], D[0], p_expression[0] );
+      if ( !p_useSingleExpression )
+      {
+         Tokenize( T[1], D[1], p_expression[1] );
+         Tokenize( T[2], D[2], p_expression[2] );
+      }
+      Tokenize( T[3], D[3], p_expression[3] );
+
+      /*
+       * Directives modify instance behavior (e.g. .pragma), so we have to
+       * process them early.
+       */
+      ProcessDirectives( D );
+
+      /*
        * Create symbols and global variables.
        */
       Symbol::Create( p_symbols );
 
       /*
-       * Parse expressions.
+       * Parse token lists.
        */
-      Expression::Parse( L[0], p_expression[0] );
+      Expression::Parse( L[0], T[0], p_expression[0] );
       if ( !p_useSingleExpression )
       {
-         Expression::Parse( L[1], p_expression[1] );
-         Expression::Parse( L[2], p_expression[2] );
+         Expression::Parse( L[1], T[1], p_expression[1] );
+         Expression::Parse( L[2], T[2], p_expression[2] );
       }
-      Expression::Parse( L[3], p_expression[3] );
+      Expression::Parse( L[3], T[3], p_expression[3] );
 
       if ( L[0].IsEmpty() && L[1].IsEmpty() && L[2].IsEmpty() && L[3].IsEmpty() )
          throw ParseError( "No applicable PixelMath expression has been defined." );
@@ -1652,7 +1916,7 @@ bool PixelMathInstance::ExecuteGlobal()
       for ( int c = 0; c < 4; ++c )
          for ( Expression* X : L[c] )
          {
-            Expression::component_list rpn;
+            ExpressionList rpn;
 
             try
             {
@@ -1670,7 +1934,7 @@ bool PixelMathInstance::ExecuteGlobal()
                /*
                 * Resolve metasymbols and image references.
                 */
-               for ( Expression::component_list::iterator i = rpn.Begin(); i != rpn.End(); ++i )
+               for ( ExpressionList::iterator i = rpn.Begin(); i != rpn.End(); ++i )
                {
                   ImageReference* I = nullptr;
 
@@ -1833,9 +2097,13 @@ bool PixelMathInstance::ExecuteGlobal()
        */
       for ( int c = 0; c < 4; ++c )
       {
-         for ( Expression::component_list& l : RPN[c] )
+         for ( ExpressionList& l : RPN[c] )
             l.Destroy();
+         for ( TokenList& l : T[c] )
+            l.Destroy();
+         T[c].Clear();
          L[c].Destroy();
+         D[c].Destroy();
       }
 
       Symbol::DestroyAll();
@@ -1844,6 +2112,8 @@ bool PixelMathInstance::ExecuteGlobal()
          ReportCachedImages();
       else
          TheImageCache->ClearImages();
+
+      Unpragmatize();
 
       /*
        * If we have used a temporary working image, copy the result to the
@@ -1868,15 +2138,21 @@ bool PixelMathInstance::ExecuteGlobal()
    {
       for ( int c = 0; c < 4; ++c )
       {
-         for ( Expression::component_list& l : RPN[c] )
+         for ( ExpressionList& l : RPN[c] )
             l.Destroy();
+         for ( TokenList& l : T[c] )
+            l.Destroy();
+         T[c].Clear();
          L[c].Destroy();
+         D[c].Destroy();
       }
 
       Symbol::DestroyAll();
 
       if ( !p_cacheGeneratedImages )
          TheImageCache->ClearImages();
+
+      Unpragmatize();
 
       workingImage.Free();
 
@@ -2056,4 +2332,4 @@ size_type PixelMathInstance::ParameterLength( const MetaParameter* p, size_type 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PixelMathInstance.cpp - Released 2021-12-29T20:37:28Z
+// EOF PixelMathInstance.cpp - Released 2022-03-12T18:59:53Z

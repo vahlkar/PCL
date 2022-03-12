@@ -1,24 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg version="1.1" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+<svg width="512" height="512" version="1.1" viewBox="0 0 135.47 135.47" xmlns="http://www.w3.org/2000/svg">
 <defs>
-<linearGradient id="c" x1="10" x2="230" y1="10" y2="230" gradientTransform="matrix(2.0952 0 0 2.0952 -34.854 -105.31)" gradientUnits="userSpaceOnUse">
+<linearGradient id="a" x1="227.1" x2="287.31" y1="-106.19" y2="-67.844" gradientTransform="matrix(2.0001 0 0 3.143 -452.48 335.74)" gradientUnits="userSpaceOnUse">
 <stop stop-color="#008d25" offset="0"/>
 <stop stop-color="#8ef68e" offset="1"/>
 </linearGradient>
-<radialGradient id="b" cx="-192.52" cy="241.52" r="65" gradientTransform="matrix(.42482 -4.2501 4.1084 .41066 -1002.5 -766.49)" gradientUnits="userSpaceOnUse">
+<radialGradient id="c" cx="-171.24" cy="217.84" r="65" gradientTransform="matrix(.0019059 -.45665 .44833 .0018712 -10.292 -42.322)" gradientUnits="userSpaceOnUse">
 <stop stop-color="#aab3f7" offset="0"/>
 <stop stop-color="#8414f2" offset="1"/>
 </radialGradient>
-<radialGradient id="a" cx="-209.26" cy="183.67" r="65" gradientTransform="matrix(.083303 -3.2067 3.8133 .09906 -897.48 -664.42)" gradientUnits="userSpaceOnUse">
-<stop stop-color="#92b3f0" offset="0"/>
-<stop stop-color="#2d1aff" offset="1"/>
+<radialGradient id="b" cx="-171.79" cy="217.12" r="65" gradientTransform="matrix(.001978 -.44474 .44588 .0019832 -60.609 10.399)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#aab3f7" offset="0"/>
+<stop stop-color="#8414f2" offset="1"/>
 </radialGradient>
 </defs>
-<g transform="translate(38.773 111)">
-<rect x="-2.7732" y="-75.004" width="440" height="440" fill="url(#c)" stroke="#008d25" stroke-width="24" style="paint-order:normal"/>
-<g transform="translate(460.77 156.39)">
-<ellipse cx="-304.88" cy="-72.726" rx="146.67" ry="146.67" fill="url(#a)" style="paint-order:normal"/>
-<ellipse cx="-182.21" cy="49.94" rx="146.67" ry="146.67" fill="url(#b)" style="paint-order:normal"/>
+<text transform="translate(432.83 -2.7747)" fill="#000000" font-family="Pristina" font-size="5.9531px" letter-spacing="0px" word-spacing="0px" style="line-height:125%;shape-inside:url(#rect3412);white-space:pre" xml:space="preserve"/>
+<g transform="translate(6.35,6.35)">
+<rect x="3.175" y="3.175" width="116.42" height="116.42" fill="url(#a)" stroke="#007d21" stroke-linecap="square" stroke-width="6.35" style="paint-order:fill markers stroke"/>
+<circle cx="86.651" cy="36.116" r="29.766" fill="url(#c)" stroke-width=".26458" style="paint-order:normal"/>
+<circle cx="36.116" cy="86.651" r="29.766" fill="url(#b)" stroke-width=".26458" style="paint-order:normal"/>
+<g transform="translate(.0024012 .0028387)">
+<path d="m86.649 16.097v40.031" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="7.9375"/>
+<path d="m106.66 36.446h-40.032" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="7.9375"/>
+</g>
+<path d="m87.046 36.282-51.185 50.949" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="7.4083"/>
+<g transform="translate(-50.533 50.538)" stroke="#000" stroke-width="7.9375">
+<path d="m86.649 16.097v40.031" fill="none" stroke-linecap="round"/>
+<path d="m106.66 36.446h-40.032" fill="none" stroke="#000" stroke-linecap="round" stroke-width="7.9375"/>
 </g>
 </g>
 </svg>

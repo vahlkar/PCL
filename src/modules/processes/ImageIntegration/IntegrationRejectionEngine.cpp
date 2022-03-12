@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.4.3
+// Standard ImageIntegration Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// IntegrationRejectionEngine.cpp - Released 2021-12-29T20:37:28Z
+// IntegrationRejectionEngine.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -52,8 +52,6 @@
 
 #include "IntegrationFile.h"
 #include "IntegrationRejectionEngine.h"
-
-#include <pcl/LinearFit.h>
 
 namespace pcl
 {
@@ -105,6 +103,9 @@ IntegrationRejectionEngine::IntegrationRejectionEngine( const ImageIntegrationIn
          break;
       case IIRejection::ESD:
          rejectThreads << new ESDRejectionThread( *this, n, n1 );
+         break;
+      case IIRejection::RCR:
+         rejectThreads << new RCRRejectionThread( *this, n, n1 );
          break;
       case IIRejection::CCDClip:
          rejectThreads << new CCDClipRejectionThread( *this, n, n1 );
@@ -249,11 +250,12 @@ void IntegrationRejectionEngine::NormalizationThread::Run()
                RejectionDataItem* r = R->RowPtr( j ) + 1;
                for ( int i = 1; i < R->Columns(); ++i, ++r )
                   if ( !r->IsRejected() )
-                  {
-                     r->value = (r->value - m[i])*((r->value <= m[i]) ? s[i].low : s[i].high) + m[0];
-                     if ( r->value < rmin )
-                        rmin = r->value;
-                  }
+                     if ( r->value != 0 )
+                     {
+                        r->value = (r->value - m[i])*double( s[i] ) + m[0];
+                        if ( r->value < rmin )
+                           rmin = r->value;
+                     }
             }
 
             if ( rmin < 0 )
@@ -986,6 +988,89 @@ void IntegrationRejectionEngine::ESDRejectionThread::Run()
 
 // ----------------------------------------------------------------------------
 
+void IntegrationRejectionEngine::RCRRejectionThread::Run()
+{
+   INIT_THREAD_MONITOR()
+
+   RejectionMatrix* R = E.m_R.ComponentPtr( m_firstStack );
+   IVector* N = E.m_N.ComponentPtr( m_firstStack );
+
+   for ( int k = m_firstStack; k < m_endStack; ++k, ++R, ++N )
+   {
+      for ( int i = 0; i < R->Rows(); ++i )
+      {
+         int n = N->DataPtr()[i];
+         if ( n < 3 )
+            continue;
+
+         RejectionDataItem* r = R->DataPtr()[i];
+         Sort( r, r + n );
+
+         for ( int phase = 0; phase < 3; ++phase )
+            for ( double m, d;; )
+            {
+               switch ( phase )
+               {
+               case 0: // + robustness / - precision
+                  m = E.RejectionMedian( r, n );
+                  d = LineFitDeviation( r, n, m );
+                  break;
+               case 1: // = robustness / = precision
+                  m = E.RejectionMedian( r, n );
+                  d = SampleDeviation( r, n, m );
+                  break;
+               case 2: // - robustness / + precision
+                  m = E.RejectionMean( r, n );
+                  d = E.RejectionSigma( r, n, m );
+                  break;
+               }
+
+               if ( 1 + d == 1 )
+                  goto __rcr_end;
+
+               double d0 = 0;
+               bool c0 = false;
+               if ( I.p_clipLow )
+               {
+                  d0 = n*QF( (m - r->value)/d );
+                  c0 = d0 < I.p_rcrLimit;
+               }
+
+               double d1 = 0;
+               bool c1 = false;
+               if ( I.p_clipHigh )
+               {
+                  d1 = n*QF( (r[n-1].value - m)/d );
+                  c1 = d1 < I.p_rcrLimit;
+               }
+
+               if ( c1 )
+               {
+                  if ( !c0 || d1 < d0 )
+                     r[n-1].rejectHigh = true;
+                  else
+                     r->rejectLow = true;
+               }
+               else if ( c0 )
+                  r->rejectLow = true;
+               else
+                  break;
+
+               Sort( r, r + n );
+
+               if ( --n < 3 )
+                  goto __rcr_end;
+            }
+__rcr_end:
+         N->DataPtr()[i] = n;
+      }
+
+      UPDATE_THREAD_MONITOR( 10 )
+   }
+}
+
+// ----------------------------------------------------------------------------
+
 IntegrationRejectionEngine::CCDClipRejectionThread::RejectionData::RejectionData( float ccdGain, float ccdReadNoise, float ccdScaleNoise, int bits )
 {
    /*
@@ -1089,4 +1174,4 @@ void IntegrationRejectionEngine::CCDClipRejectionThread::PostRun()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationRejectionEngine.cpp - Released 2021-12-29T20:37:28Z
+// EOF IntegrationRejectionEngine.cpp - Released 2022-03-12T18:59:53Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.19
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// pcl/ATrousWaveletTransform.cpp - Released 2022-01-24T22:43:35Z
+// pcl/ATrousWaveletTransform.cpp - Released 2022-03-12T18:59:36Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -472,19 +472,20 @@ private:
          for ( size_type k = m_start; k < m_end; ++k )
          {
             typename P::sample v = m_data.I[k];
-            if ( v > m_data.m_low && v < m_data.m_high )
-            {
-               bool isNoise = true;
-               for ( int j = m_data.J; --j >= 0; )
-                  if ( Abs( m_data.c[j][k] ) > m_data.Ksj[j] )
-                  {
-                     isNoise = false;
-                     break;
-                  }
+            if ( v > m_data.m_low )
+               if ( v < m_data.m_high )
+               {
+                  bool isNoise = true;
+                  for ( int j = m_data.J; --j >= 0; )
+                     if ( Abs( m_data.c[j][k] ) > m_data.Ksj[j] )
+                     {
+                        isNoise = false;
+                        break;
+                     }
 
-               if ( isNoise )
-                  S[n++] = v - m_data.c[m_data.J][k];
-            }
+                  if ( isNoise )
+                     S[n++] = v - m_data.c[m_data.J][k];
+               }
 
             UPDATE_THREAD_MONITOR( 65536 )
          }
@@ -542,4 +543,4 @@ void ATrousWaveletTransform::ValidateScalingFunction() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ATrousWaveletTransform.cpp - Released 2022-01-24T22:43:35Z
+// EOF pcl/ATrousWaveletTransform.cpp - Released 2022-03-12T18:59:36Z

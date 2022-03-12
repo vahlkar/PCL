@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// PreferencesInstance.h - Released 2021-12-29T20:37:28Z
+// PreferencesInstance.h - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -172,6 +172,7 @@ struct ImageWindowPreferences
    pcl_bool    fileFormatWarnings;
    pcl_bool    useFileNamesAsImageIdentifiers;
    int32       cursorTolerance;
+   pcl_bool    zoomAtCursor;
    uint32      wheelStepAngle; // in degrees
    int         wheelDirection; // >= 0 forward is zoom out | < 0 forward is zoom in
    pcl_bool    touchEvents;
@@ -301,4 +302,4 @@ private:
 #endif   // __PreferencesInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInstance.h - Released 2021-12-29T20:37:28Z
+// EOF PreferencesInstance.h - Released 2022-03-12T18:59:53Z

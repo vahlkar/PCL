@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// ExtractAlphaChannelsInstance.cpp - Released 2021-12-29T20:37:28Z
+// ExtractAlphaChannelsInstance.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -200,12 +200,12 @@ static void ExtractAllAlphaChannels( GenericImage<P>& image, bool extractChannel
                w.Show();
             }
 
-            Console().WriteLn( String().Format( "%d alpha channel(s) extracted and deleted.", n ) );
+            Console().WriteLn( String().Format( "%d alpha channel(s) extracted and deleted", n ) );
          }
          else
          {
             image.DeleteAlphaChannels();
-            Console().WriteLn( String().Format( "%d alpha channel(s) deleted.", n ) );
+            Console().WriteLn( String().Format( "%d alpha channel(s) deleted", n ) );
          }
       }
       else
@@ -225,7 +225,7 @@ static void ExtractAllAlphaChannels( GenericImage<P>& image, bool extractChannel
 
                w.Show();
 
-               Console().WriteLn( String().Format( "%d alpha channel(s) extracted.", n ) );
+               Console().WriteLn( String().Format( "%d alpha channel(s) extracted", n ) );
             }
          }
       }
@@ -306,12 +306,12 @@ static void ExtractActiveAlphaChannel( GenericImage<P>& image, bool extractChann
             static_cast<GenericImage<P>&>( *w.MainView().Image() ).ImportData( data, image.Width(), image.Height() );
             w.Show();
 
-            Console().WriteLn( "Active alpha channel extracted and deleted." );
+            Console().WriteLn( "Active alpha channel extracted and deleted" );
          }
          else
          {
             image.DeleteAlphaChannel( 0 );
-            Console().WriteLn( "Active alpha channel deleted." );
+            Console().WriteLn( "Active alpha channel deleted" );
          }
       }
       else
@@ -327,7 +327,7 @@ static void ExtractActiveAlphaChannel( GenericImage<P>& image, bool extractChann
 
             w.Show();
 
-            Console().WriteLn( "Active alpha channel extracted." );
+            Console().WriteLn( "Active alpha channel extracted" );
          }
       }
    }
@@ -433,7 +433,7 @@ static void ExtractListOfAlphaChannels( GenericImage<P>& image, const SortedArra
                   w.Show();
                }
 
-            Console().WriteLn( String().Format( "%d alpha channel(s) extracted and deleted.", count ) );
+            Console().WriteLn( String().Format( "%d alpha channel(s) extracted and deleted", count ) );
          }
          else
          {
@@ -444,7 +444,7 @@ static void ExtractListOfAlphaChannels( GenericImage<P>& image, const SortedArra
                   image.DeleteAlphaChannel( c ), ++count;
             }
 
-            Console().WriteLn( String().Format( "%d alpha channel(s) deleted.", count ) );
+            Console().WriteLn( String().Format( "%d alpha channel(s) deleted", count ) );
          }
       }
       else
@@ -471,7 +471,7 @@ static void ExtractListOfAlphaChannels( GenericImage<P>& image, const SortedArra
                }
             }
 
-            Console().WriteLn( String().Format( "%d alpha channel(s) extracted.", count ) );
+            Console().WriteLn( String().Format( "%d alpha channel(s) extracted", count ) );
          }
       }
    }
@@ -622,4 +622,4 @@ void ExtractAlphaChannelsInstance::ParseChannelList( SortedArray<int>& list, con
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ExtractAlphaChannelsInstance.cpp - Released 2021-12-29T20:37:28Z
+// EOF ExtractAlphaChannelsInstance.cpp - Released 2022-03-12T18:59:53Z

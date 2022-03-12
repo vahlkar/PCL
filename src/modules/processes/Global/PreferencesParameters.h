@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// PreferencesParameters.h - Released 2021-12-29T20:37:28Z
+// PreferencesParameters.h - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -285,7 +285,11 @@ DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  explodeIcons,                      
 DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  implodeIcons,                        true )
 DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  animateWindows,                      true )
 DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  animateMenu,                         true )
+#ifdef __PCL_WINDOWS
+DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  animateCombo,                        false )
+#else
 DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  animateCombo,                        true )
+#endif
 DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  animateToolTip,                      true )
 DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  animateToolBox,                      true )
 DECLARE_INT32_METAPARAMETER   ( MainWindow,  maxRecentFiles,                      32, 2, 128 )
@@ -336,6 +340,7 @@ DECLARE_BOOLEAN_METAPARAMETER ( ImageWindow, strictFileSaveMode,               t
 DECLARE_BOOLEAN_METAPARAMETER ( ImageWindow, fileFormatWarnings,               true )
 DECLARE_BOOLEAN_METAPARAMETER ( ImageWindow, useFileNamesAsImageIdentifiers,   true )
 DECLARE_INT32_METAPARAMETER   ( ImageWindow, cursorTolerance,                  3, 1, 16 )
+DECLARE_BOOLEAN_METAPARAMETER ( ImageWindow, zoomAtCursor,                     true )
 DECLARE_UINT32_METAPARAMETER  ( ImageWindow, wheelStepAngle,                   15, 1, 90 )
 DECLARE_INT32_METAPARAMETER   ( ImageWindow, wheelDirection,                   0, -1, 0 )
 DECLARE_BOOLEAN_METAPARAMETER ( ImageWindow, touchEvents,                      true )
@@ -385,7 +390,7 @@ DECLARE_BOOLEAN_METAPARAMETER ( Process, enableParallelProcessing,             t
 DECLARE_BOOLEAN_METAPARAMETER ( Process, enableParallelCoreRendering,          true )
 DECLARE_BOOLEAN_METAPARAMETER ( Process, enableParallelCoreColorManagement,    true )
 DECLARE_BOOLEAN_METAPARAMETER ( Process, enableParallelModuleProcessing,       true )
-DECLARE_BOOLEAN_METAPARAMETER ( Process, enableThreadCPUAffinity,              true )
+DECLARE_BOOLEAN_METAPARAMETER ( Process, enableThreadCPUAffinity,              false )
 DECLARE_INT32_METAPARAMETER   ( Process, maxModuleThreadPriority,              ThreadPriority::TimeCritical, ThreadPriority::Lowest, ThreadPriority::TimeCritical ) // ### Warning: DO NOT change these numbers
 DECLARE_INT32_METAPARAMETER   ( Process, maxProcessors,                        int_max, 1, int_max )
 DECLARE_INT32_METAPARAMETER   ( Process, maxFileReadThreads,                   8, 1, 1024 )
@@ -410,4 +415,4 @@ PCL_END_LOCAL
 #endif   // __PreferencesParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesParameters.h - Released 2021-12-29T20:37:28Z
+// EOF PreferencesParameters.h - Released 2022-03-12T18:59:53Z

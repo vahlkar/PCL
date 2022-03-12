@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
 // Standard Annotation Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// AnnotationModule.cpp - Released 2021-12-29T20:37:28Z
+// AnnotationModule.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Annotation PixInsight module.
 //
@@ -57,9 +57,9 @@
 #define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE eng
 
-#define MODULE_RELEASE_YEAR      2021
-#define MODULE_RELEASE_MONTH     12
-#define MODULE_RELEASE_DAY       29
+#define MODULE_RELEASE_YEAR      2022
+#define MODULE_RELEASE_MONTH     3
+#define MODULE_RELEASE_DAY       12
 
 #include "AnnotationInterface.h"
 #include "AnnotationModule.h"
@@ -117,7 +117,7 @@ String AnnotationModule::Author() const
 
 String AnnotationModule::Copyright() const
 {
-   return "Copyright (c) 2010-2021 Zbynek Vrastil";
+   return "Copyright (c) 2010-2022 Zbynek Vrastil";
 }
 
 // ----------------------------------------------------------------------------
@@ -174,4 +174,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF AnnotationModule.cpp - Released 2021-12-29T20:37:28Z
+// EOF AnnotationModule.cpp - Released 2022-03-12T18:59:53Z

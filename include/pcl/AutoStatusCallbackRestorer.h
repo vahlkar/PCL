@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.19
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// pcl/AutoStatusCallbackRestorer.h - Released 2022-01-24T22:43:24Z
+// pcl/AutoStatusCallbackRestorer.h - Released 2022-03-12T18:59:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -99,6 +99,7 @@ namespace pcl
  *    catch ( ... )
  *    {
  *       image.SetStatusCallback( oldStatus );
+ *       throw;
  *    }
  * }
  * \endcode
@@ -174,7 +175,7 @@ public:
     */
    void Restore()
    {
-      m_monitor.SetCallback( m_callback );
+      m_monitor.m_callback = m_callback;
    }
 
    /*!
@@ -182,7 +183,7 @@ public:
     */
    void Store()
    {
-      m_callback = m_monitor.Callback();
+      m_callback = m_monitor.m_callback;
    }
 
    /*!
@@ -229,4 +230,4 @@ private:
 #endif   // __PCL_AutoStatusCallbackRestorer_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AutoStatusCallbackRestorer.h - Released 2022-01-24T22:43:24Z
+// EOF pcl/AutoStatusCallbackRestorer.h - Released 2022-03-12T18:59:29Z

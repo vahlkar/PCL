@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.8.0
+// Standard ImageCalibration Process Module Version 1.9.1
 // ----------------------------------------------------------------------------
-// LocalNormalizationInterface.h - Released 2021-12-29T20:37:28Z
+// LocalNormalizationInterface.h - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -108,9 +108,25 @@ private:
             ToolButton        ReferenceImage_ToolButton;
          HorizontalSizer   Scale_Sizer;
             Label             Scale_Label;
-            SpinBox           Scale_SpinBox;
-         HorizontalSizer   Rejection_Sizer;
-            CheckBox          Rejection_CheckBox;
+            ComboBox          Scale_ComboBox;
+         HorizontalSizer   GenerateNormalizedImages_Sizer;
+            Label             GenerateNormalizedImages_Label;
+            ComboBox          GenerateNormalizedImages_ComboBox;
+         HorizontalSizer   NoScale_Sizer;
+            CheckBox          NoScale_CheckBox;
+         HorizontalSizer   GlobalLocationNormalization_Sizer;
+            CheckBox          GlobalLocationNormalization_CheckBox;
+         HorizontalSizer   GenerateNormalizationData_Sizer;
+            CheckBox          GenerateNormalizationData_CheckBox;
+         HorizontalSizer   ShowBackgroundModels_Sizer;
+            CheckBox          ShowBackgroundModels_CheckBox;
+//          HorizontalSizer   PlotNormalizationFunctions_Sizer;
+//             Label             PlotNormalizationFunctions_Label;
+//             ComboBox          PlotNormalizationFunctions_ComboBox;
+
+      SectionBar        OutlierRejection_SectionBar;
+      Control           OutlierRejection_Control;
+      VerticalSizer     OutlierRejection_Sizer;
          HorizontalSizer   HotPixelFilterRadius_Sizer;
             Label             HotPixelFilterRadius_Label;
             SpinBox           HotPixelFilterRadius_SpinBox;
@@ -120,20 +136,48 @@ private:
          NumericControl    BackgroundRejectionLimit_NumericControl;
          NumericControl    ReferenceRejectionThreshold_NumericControl;
          NumericControl    TargetRejectionThreshold_NumericControl;
-         HorizontalSizer   GenerateNormalizedImages_Sizer;
-            Label             GenerateNormalizedImages_Label;
-            ComboBox          GenerateNormalizedImages_ComboBox;
-         HorizontalSizer   NoScale_Sizer;
-            CheckBox          NoScale_CheckBox;
-         HorizontalSizer   GenerateNormalizationData_Sizer;
-            CheckBox          GenerateNormalizationData_CheckBox;
-         HorizontalSizer   ShowBackgroundModels_Sizer;
-            CheckBox          ShowBackgroundModels_CheckBox;
          HorizontalSizer   ShowRejectionMaps_Sizer;
             CheckBox          ShowRejectionMaps_CheckBox;
-         HorizontalSizer   PlotNormalizationFunctions_Sizer;
-            Label             PlotNormalizationFunctions_Label;
-            ComboBox          PlotNormalizationFunctions_ComboBox;
+
+      SectionBar        ScaleEvaluation_SectionBar;
+      Control           ScaleEvaluation_Control;
+      VerticalSizer     ScaleEvaluation_Sizer;
+         HorizontalSizer   ScaleEvaluationMethod_Sizer;
+            Label             ScaleEvaluationMethod_Label;
+            ComboBox          ScaleEvaluationMethod_ComboBox;
+         HorizontalSizer   LocalScaleCorrections_Sizer;
+            CheckBox          LocalScaleCorrections_CheckBox;
+         HorizontalSizer   ShowLocalScaleModels_Sizer;
+            CheckBox          ShowLocalScaleModels_CheckBox;
+         HorizontalSizer   StructureLayers_Sizer;
+            Label             StructureLayers_Label;
+            SpinBox           StructureLayers_SpinBox;
+         NumericControl    SaturationThreshold_NumericControl;
+         HorizontalSizer   SaturationRelative_Sizer;
+            CheckBox          SaturationRelative_CheckBox;
+         Control           PSFScaleEvaluation_Control;
+         VerticalSizer     PSFScaleEvaluation_Sizer;
+            HorizontalSizer   PSFNoiseLayers_Sizer;
+               Label             PSFNoiseLayers_Label;
+               SpinBox           PSFNoiseLayers_SpinBox;
+            HorizontalSizer   PSFMinStructureSize_Sizer;
+               Label             PSFMinStructureSize_Label;
+               SpinBox           PSFMinStructureSize_SpinBox;
+            HorizontalSizer   PSFHotPixelFilterRadius_Sizer;
+               Label             PSFHotPixelFilterRadius_Label;
+               SpinBox           PSFHotPixelFilterRadius_SpinBox;
+            HorizontalSizer   PSFNoiseReductionFilterRadius_Sizer;
+               Label             PSFNoiseReductionFilterRadius_Label;
+               SpinBox           PSFNoiseReductionFilterRadius_SpinBox;
+            HorizontalSizer   PSFType_Sizer;
+               Label             PSFType_Label;
+               ComboBox          PSFType_ComboBox;
+            NumericControl    PSFGrowth_NumericControl;
+            HorizontalSizer   PSFMaxStars_Sizer;
+               Label             PSFMaxStars_Label;
+               SpinBox           PSFMaxStars_SpinBox;
+         HorizontalSizer   ShowStructureMaps_Sizer;
+            CheckBox          ShowStructureMaps_CheckBox;
 
       SectionBar        TargetImages_SectionBar;
       Control           TargetImages_Control;
@@ -180,6 +224,8 @@ private:
 
    void UpdateControls();
    void UpdateGeneralParameterControls();
+   void UpdateOutlierRejectionControls();
+   void UpdateScaleEvaluationControls();
    void UpdateTargetImageItem( size_type );
    void UpdateTargetImagesList();
    void UpdateImageSelectionButtons();
@@ -189,7 +235,8 @@ private:
    void e_EditCompleted( Edit& sender );
    void e_ItemSelected( ComboBox& sender, int itemIndex );
    void e_Click( Button& sender, bool checked );
-   void e_EditValueUpdated( NumericEdit& sender, double value );
+   void e_CheckSection( SectionBar& sender, bool checked );
+   void e_ValueUpdated( NumericEdit& sender, double value );
    void e_CurrentNodeUpdated( TreeBox& sender, TreeBox::Node& current, TreeBox::Node& oldCurrent );
    void e_NodeActivated( TreeBox& sender, TreeBox::Node& node, int col );
    void e_NodeSelectionUpdated( TreeBox& sender );
@@ -216,4 +263,4 @@ PCL_END_LOCAL
 #endif   // __LocalNormalizationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationInterface.h - Released 2021-12-29T20:37:28Z
+// EOF LocalNormalizationInterface.h - Released 2022-03-12T18:59:53Z

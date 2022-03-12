@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.8.5
+// Standard PixelMath Process Module Version 1.9.2
 // ----------------------------------------------------------------------------
-// Token.cpp - Released 2021-12-29T20:37:28Z
+// Token.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -77,48 +77,191 @@ inline static bool IsMetaSpecifier( char c )
    return c == '$';
 }
 
+inline static bool IsDirectiveSpecifier( char c )
+{
+   return c == '.';
+}
+
+static String::const_iterator SkipComment( const String& s, String::const_iterator i )
+{
+   if ( i < s.End() )
+      if ( unlikely( *i == '/' ) )
+         if ( i+1 < s.End() )
+         {
+            if ( i[1] == '*' )
+            {
+               /*
+                * Block comment
+                */
+               size_type c = s.Find( "*/", (i-s.Begin())+1 );
+               if ( c == String::notFound )
+                  throw ParseError( "Unmatched block comment delimiter", s, i-s.Begin() );
+               return s.At( c+2 );
+            }
+
+            if ( i[1] == '/' )
+            {
+               /*
+                * Line comment
+                */
+               size_type e = s.Find( '\n', (i-s.Begin())+1 );
+               return (e == String::notFound) ? s.End() : s.At( e+1 );
+            }
+         }
+
+   return i;
+}
+
+struct BlockIndex
+{
+   distance_type codeStart;
+   distance_type sourceStart;
+
+   template <typename D1, typename D2>
+   BlockIndex( D1 cs, D2 ss )
+      : codeStart( distance_type( cs ) )
+      , sourceStart( distance_type( ss ) )
+   {
+   }
+};
+
+static size_type SourcePosition( String::const_iterator i, const String& code, const Array<BlockIndex>& index )
+{
+   distance_type d = i - code.Begin();
+   for ( const BlockIndex& b : ReverseIterable( index ) )
+      if ( d >= b.codeStart )
+         return d - b.codeStart + b.sourceStart;
+   return 0; // ?!
+}
+
 // ----------------------------------------------------------------------------
 
-#define PARSE_ERROR( msg )  throw ParseError( msg, s, j-s.Begin() )
+#define PARSE_ERROR( msg, itr )  throw ParseError( msg, s, SourcePosition( itr, code, index ) )
 
-void Tokenize( token_set& t, const String& s )
+void Tokenize( TokenSet& t, DirectiveList& d, const String& s )
 {
-   for ( token_list& l : t )
+   for ( TokenList& l : t )
       l.Destroy();
    t.Clear();
+   d.Destroy();
 
-   token_list tokens;
+   TokenList tokens;
 
    try
    {
-      for ( String::const_iterator i = s.Begin(); i != s.End(); )
+      String code;
+      Array<BlockIndex> index;
+
+      /*
+       * Extract comment-free code blocks and block index.
+       */
+      for ( String::const_iterator i = SkipComment( s, s.Begin() ), j = i; j != s.End(); )
       {
-         /*
-          * Comments
-          */
-         if ( *i == '/' )
-            if ( i+1 < s.End() )
-               if ( i[1] == '*' )
+         String::const_iterator k = SkipComment( s, j );
+         if ( j == k )
+         {
+            if ( ++j == s.End() )
+            {
+               index << BlockIndex( code.Length(), i-s.Begin() );
+               code << String( i, j );
+               break;
+            }
+         }
+         else
+         {
+            index << BlockIndex( code.Length(), i-s.Begin() );
+            code << String( i, j );
+            i = j = k;
+         }
+      }
+
+      /*
+       * Process code blocks
+       */
+      for ( String::const_iterator i = code.Begin(); i != code.End(); )
+      {
+         if ( IsDirectiveSpecifier( *i ) )
+         {
+            if ( i+1 == code.End() )
+               PARSE_ERROR( "Expected digit(s) or directive specification after '.'", i );
+
+            if ( IsoCharTraits::IsStartingSymbolDigit( i[1] ) )
+            {
+               /*
+                * Directive
+                */
+               if ( !tokens.IsEmpty() )
+                  PARSE_ERROR( "Illegal directive specification inside expression", i );
+               if ( !t.IsEmpty() )
+                  PARSE_ERROR( "Illegal directive specification between expressions", i );
+
+               // Look for mandatory terminating expression separator
+               String::const_iterator j = ++i;
+               while ( ++j != code.End() && !IsExpressionSeparator( *j ) ) {}
+               if ( j == code.End() )
+                  PARSE_ERROR( "Expected expression separator after directive specification", i );
+
+               // Name separator: space or terminating separator
+               String::const_iterator k = i;
+               while ( ++k != j && !IsoCharTraits::IsSpace( *k ) ) {}
+
+               // Directive name and starting position
+               int pos = SourcePosition( i, code, index );
+               String name( i, k );
+
+               // Skip whitespace
+               while ( k != j && IsoCharTraits::IsSpace( *++k ) ) {}
+
+               // Comma-separated list of directive arguments
+               StringList args;
+               Array<int> argPos;
+               int p = 0;
+               for ( i = k; k != j; )
                {
-                  /*
-                   * Block comment
-                   */
-                  size_type c = s.Find( "*/", (i-s.Begin())+1 );
-                  if ( c == String::notFound )
-                     throw ParseError( "Unmatched block comment delimiter", s, i-s.Begin() );
-                  if ( (i = s.At( c+2 )) == s.End() )
+                  bool newArg = false;
+                  switch ( *k )
+                  {
+                  case '(':
+                     ++p;
                      break;
-               }
-               else if ( i[1] == '/' )
-               {
-                  /*
-                   * Line comment
-                   */
-                  size_type e = s.Find( '\n', (i-s.Begin())+1 );
-                  if ( e == String::notFound || (i = s.At( e+1 )) == s.End() )
+                  case ')':
+                     --p;
                      break;
-                  continue;
+                  case ',':
+                     if ( p <= 0 )
+                        newArg = true;
+                     break;
+                  default:
+                     break;
+                  }
+
+                  if ( newArg || ++k == j )
+                  {
+                     // Skip initial whitespace
+                     for ( ; i != k && IsoCharTraits::IsSpace( *i ); ++i ) {}
+                     if ( i == k )
+                        PARSE_ERROR( "Expected directive argument", i );
+                     // New argument and position
+                     String arg = String( i, k ).Trimmed();
+                     args << arg;
+                     argPos << SourcePosition( i, code, index );
+                     if ( newArg )
+                     {
+                        if ( ++k == j )
+                           PARSE_ERROR( "Expected directive argument", j );
+                        i = k;
+                     }
+                  }
                }
+
+               d << new Directive( name, args, pos, argPos );
+
+               i = j;
+               if ( i != code.End() )
+                  ++i;
+               continue;
+            }
+         }
 
          // Next token start
          String::const_iterator j = i;
@@ -128,20 +271,20 @@ void Tokenize( token_set& t, const String& s )
             /*
              * Symbol
              */
-            for ( ; ++j != s.End() && IsoCharTraits::IsSymbolDigit( *j ); ) {}
-            tokens << new Token( String( i, j ), i-s.Begin() );
+            for ( ; ++j != code.End() && IsoCharTraits::IsSymbolDigit( *j ); ) {}
+            tokens << new Token( String( i, j ), SourcePosition( i, code, index ) );
          }
          else if ( IsMetaSpecifier( *i ) )
          {
             /*
              * Metasymbol
              */
-            if ( ++j == s.End() )
-               throw ParseError( "Expected a metasymbol identifier", s, i-s.Begin() );
+            if ( ++j == code.End() )
+               PARSE_ERROR( "Expected metasymbol identifier", i );
             if ( !IsoCharTraits::IsStartingSymbolDigit( *j ) )
-               throw ParseError( "Illegal metasymbol identifier", s, j-s.Begin() );
-            for ( ; ++j != s.End() && IsoCharTraits::IsSymbolDigit( *j ); ) {}
-            tokens << new Token( String( i+1, j ), i-s.Begin(), true );
+               PARSE_ERROR( "Illegal metasymbol identifier", j );
+            for ( ; ++j != code.End() && IsoCharTraits::IsSymbolDigit( *j ); ) {}
+            tokens << new Token( String( i+1, j ), SourcePosition( i, code, index ), true );
          }
          else if ( IsoCharTraits::IsDigit( *i )
                 || IsoCharTraits::IsDecimalSeparator( *i ) )
@@ -161,9 +304,9 @@ void Tokenize( token_set& t, const String& s )
                else if ( IsoCharTraits::IsDecimalSeparator( *j ) )
                {
                   if ( exponent )
-                     PARSE_ERROR( "Misplaced decimal point" );
+                     PARSE_ERROR( "Misplaced decimal point", j );
                   if ( decPoint )
-                     PARSE_ERROR( "Too many decimal points" );
+                     PARSE_ERROR( "Too many decimal points", j );
                   ++decPoint;
                }
                else if ( IsoCharTraits::IsSign( *j ) )
@@ -171,7 +314,7 @@ void Tokenize( token_set& t, const String& s )
                   if ( exponent )
                   {
                      if ( j != exponentPos+1 )
-                        PARSE_ERROR( "Misplaced exponent sign" );
+                        PARSE_ERROR( "Misplaced exponent sign", j );
                   }
                   else if ( j != i )
                      break;
@@ -179,9 +322,9 @@ void Tokenize( token_set& t, const String& s )
                else if ( IsoCharTraits::IsExponentDelimiter( *j ) )
                {
                   if ( digCount == 0 )
-                     PARSE_ERROR( "Misplaced exponent separator" );
+                     PARSE_ERROR( "Misplaced exponent separator", j );
                   if ( exponent )
-                     PARSE_ERROR( "Too many exponent separators" );
+                     PARSE_ERROR( "Too many exponent separators", j );
                   exponentPos = j;
                   ++exponent;
                   digCount = 0;
@@ -189,16 +332,16 @@ void Tokenize( token_set& t, const String& s )
                else
                {
                   if ( !(IsSeparator( *j ) || IsoCharTraits::IsSpace( *j )) )
-                     PARSE_ERROR( "Invalid character in numeric literal" );
+                     PARSE_ERROR( String().Format( "Invalid character '#%04X' in numeric literal", unsigned( *j ) ), j );
                   break;
                }
 
-               if ( ++j == s.End() )
+               if ( ++j == code.End() )
                   break;
             }
 
             if ( digCount == 0 )
-               PARSE_ERROR( "Digit(s) expected" );
+               PARSE_ERROR( "Digit(s) expected", j );
 
             String numStr( i, j );
             String::iterator errorPtr = nullptr;
@@ -212,10 +355,11 @@ void Tokenize( token_set& t, const String& s )
             if ( iPtr != nullptr && *iPtr != '\0' )
                errorPtr = numStr.Begin() + (iPtr - iStr.Begin());
 #endif
-            if ( errorPtr != nullptr && *errorPtr != 0 )
-               throw ParseError( "Invalid numeral", s, i-s.Begin() + errorPtr-numStr.c_str() );
+            if ( errorPtr != nullptr )
+               if ( *errorPtr != 0 )
+                  PARSE_ERROR( "Invalid numeral", i + (errorPtr - numStr.c_str()) );
 
-            tokens << new Token( x, i-s.Begin() );
+            tokens << new Token( x, SourcePosition( i, code, index ) );
          }
          else if ( IsSeparator( *i ) )
          {
@@ -228,7 +372,7 @@ void Tokenize( token_set& t, const String& s )
                tokens.Clear();
             }
             else
-               tokens << new Token( *i, i-s.Begin() );
+               tokens << new Token( *i, SourcePosition( i, code, index ) );
 
             j = i+1;
          }
@@ -237,14 +381,14 @@ void Tokenize( token_set& t, const String& s )
             /*
              * Whitespace
              */
-            while ( ++j != s.End() && IsoCharTraits::IsSpace( *j ) ) {}
+            while ( ++j != code.End() && IsoCharTraits::IsSpace( *j ) ) {}
          }
          else
          {
             /*
-             * Illegal token
+             * Illegal character
              */
-            throw ParseError( "Invalid character in expression", s, i-s.Begin() );
+            PARSE_ERROR( String().Format( "Invalid character '#%04X' in expression", unsigned( *i ) ), i );
          }
 
          i = j;
@@ -255,9 +399,10 @@ void Tokenize( token_set& t, const String& s )
    catch ( ... )
    {
       tokens.Destroy();
-      for ( token_list& l : t )
+      for ( TokenList& l : t )
          l.Destroy();
       t.Clear();
+      d.Destroy();
       throw;
    }
 }
@@ -269,4 +414,4 @@ void Tokenize( token_set& t, const String& s )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Token.cpp - Released 2021-12-29T20:37:28Z
+// EOF Token.cpp - Released 2022-03-12T18:59:53Z

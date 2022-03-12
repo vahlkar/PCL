@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.17
+// /_/     \____//_____/   PCL 2.4.23
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.4.3
+// Standard ImageIntegration Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// DrizzleIntegrationInstance.cpp - Released 2021-12-29T20:37:28Z
+// DrizzleIntegrationInstance.cpp - Released 2022-03-12T18:59:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
-// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -69,9 +69,21 @@
 #include <pcl/Version.h>
 #include <pcl/View.h>
 
+/*
+ * Drizzle drop tolerances.
+ */
 #define DRIZZLE_BOUNDS_TOLERANCE 1.0e-5
 #define DRIZZLE_DROP_TOLERANCE   1.0e-8
+
+/*
+ * Drizzle kernel generation tolerance.
+ */
 #define DRIZZLE_KERNEL_EPSILON   0.025
+
+/*
+ * Minimum supported local normalization data version.
+ */
+#define LN_MIN_VERSION  1
 
 namespace pcl
 {
@@ -1567,21 +1579,25 @@ void DrizzleIntegrationEngine::Perform()
 
                   m_localNormalization.Parse( item.nmlPath );
 
+                  if ( m_localNormalization.Version() < LN_MIN_VERSION )
+                     throw Error( String().Format( "Incompatible local normalization data version. Expected >= %d, got %d: ",
+                                                   LN_MIN_VERSION, m_localNormalization.Version() ) + item.nmlPath );
+
                   if ( m_localNormalization.ReferenceWidth() != m_referenceWidth ||
                        m_localNormalization.ReferenceHeight() != m_referenceHeight ||
                        m_localNormalization.NumberOfChannels() != m_numberOfChannels )
                      throw Error( "Inconsistent image geometry: " + item.nmlPath );
                }
                else
-                  console.NoteLn( "* Local normalization data will not be used." );
+                  console.WarningLn( "* Local normalization data will not be used." );
             }
 
             m_hasLocalNormalization = m_instance.p_enableLocalNormalization && m_localNormalization.HasInterpolations();
-            if ( m_instance.p_enableLocalNormalization )
-               if ( !m_hasLocalNormalization )
-                  console.WarningLn( "** Warning: Local normalization data not available." );
             if ( m_hasLocalNormalization )
                m_normalizationFunction = &DrizzleIntegrationEngine::NormalizeLocal;
+            else if ( m_instance.p_enableLocalNormalization )
+               if ( !item.nmlPath.IsEmpty() )
+                  console.WarningLn( "** Warning: Local normalization data not available." );
 
             if ( m_instance.p_enableAdaptiveNormalization )
                if ( !m_hasLocalNormalization )
@@ -2266,4 +2282,4 @@ size_type DrizzleIntegrationInstance::ParameterLength( const MetaParameter* p, s
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DrizzleIntegrationInstance.cpp - Released 2021-12-29T20:37:28Z
+// EOF DrizzleIntegrationInstance.cpp - Released 2022-03-12T18:59:53Z
