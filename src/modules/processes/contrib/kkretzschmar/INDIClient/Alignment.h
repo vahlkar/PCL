@@ -53,6 +53,8 @@
 #ifndef __Alignment_h
 #define __Alignment_h
 
+#include <pcl/Defs.h>
+
 #include <pcl/Array.h>
 #include <pcl/AutoPointer.h>
 #include <pcl/Console.h>

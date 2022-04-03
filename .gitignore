@@ -37,11 +37,10 @@
 .idea
 CMakeLists.txt
 PCL.*
+.vscode
 # Folders
 host
 __private
 Debug
 .gitignore
 bin
-# IDEs
-.vscode

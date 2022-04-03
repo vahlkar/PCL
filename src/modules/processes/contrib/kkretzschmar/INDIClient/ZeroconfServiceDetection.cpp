@@ -51,12 +51,11 @@
 // ----------------------------------------------------------------------------
 
 #include <errno.h>            // For errno, EINTR #include <time.h>
-#ifdef _WIN32
+#if defined(_WIN32)
 #include <process.h>
 typedef    int    pid_t;
 #define    getpid    _getpid
 #define    strcasecmp    _stricmp
-#define snprintf _snprintf
 #else
 #include <sys/time.h>        // For struct timeval
 #include <arpa/inet.h>       // For inet_addr(  )
@@ -66,7 +65,9 @@ typedef    int    pid_t;
 #include <sys/socket.h>
 #include <netdb.h>
 #include <unistd.h>
+#ifdef __PCL_LINUX
 #include <linux/wireless.h>
+#endif
 #include <sys/ioctl.h>
 #endif
 
@@ -159,7 +160,7 @@ bool ZeroConfServiceHandler::getAddrInfoFromInterfaceIndex(uint32_t interfaceInd
   freeifaddrs(ifaddr);
   return false;
 }
-
+#ifdef __PCL_LINUX
 bool ZeroConfServiceHandler::isWireless(const IsoString& interfaceName)
 {
   int sock = -1;
@@ -180,7 +181,7 @@ bool ZeroConfServiceHandler::isWireless(const IsoString& interfaceName)
   close(sock);
   return false;
 }
-
+#endif
 void ZeroConfServiceBrowser::Start()
 {
   DNSServiceErrorType error;
@@ -239,7 +240,9 @@ void ZeroConfServiceBrowser::onBrowseEvent(DNSServiceRef service,
           Console().WarningLn(String().Format("Call of getAddrInfoFromInterfaceIndex failed."));
         }
         item.InterfaceName = IsoString(ifNameBuff);
+#ifdef __PCL_LINUX
         item.IsWireless = isWireless(item.InterfaceName.c_str());
+#endif
         services << item;
         Console().WriteLn("");
         Console().WriteLn(String().Format("Indigo service added on network interface '%s' with address '%s'", ifNameBuff, host));
