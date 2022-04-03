@@ -53,7 +53,7 @@
 #ifndef ZEROCONFSERVICEDETECTION_H
 #define ZEROCONFSERVICEDETECTION_H
 
-#ifdef __PCL_LINUX
+#if defined(__PCL_LINUX) || defined(__PCL_MACOSX)
   #define WITH_ZEROCONF
 #endif
 
@@ -187,8 +187,9 @@ protected:
   DNSServiceRef m_serviceRef;
 
   static bool getAddrInfoFromInterfaceIndex(uint32_t interfaceIndex, char* host);
+#ifdef __PCL_LINUX
   static bool isWireless(const IsoString& interfaceName);
-
+#endif
 public:
 
   ZeroConfServiceHandler()  {}

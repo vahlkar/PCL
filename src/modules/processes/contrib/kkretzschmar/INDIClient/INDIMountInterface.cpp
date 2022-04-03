@@ -74,7 +74,7 @@ INDIMountInterface* TheINDIMountInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-void INDIMountInterfaceExecution::StartMountEvent( double targetRA, double currentRA, double targetDec, double currentDec, pcl_enum command )
+void INDIMountInterfaceExecution::StartMountEvent( double targetRA, double currentRA, double targetDec, double currentDec, pcl_enum command ) 
    {
       m_iface->m_execution = this;
       m_command = command;
@@ -104,7 +104,7 @@ void INDIMountInterfaceExecution::StartMountEvent( double targetRA, double curre
       Module->ProcessEvents();
    }
 
-   void INDIMountInterfaceExecution::MountEvent( double targetRA, double currentRA, double targetDec, double currentDec )
+   void INDIMountInterfaceExecution::MountEvent( double targetRA, double currentRA, double targetDec, double currentDec ) 
    {
       if ( m_abortRequested )
          AbstractINDIMountExecution::Abort();
@@ -136,7 +136,7 @@ void INDIMountInterfaceExecution::StartMountEvent( double targetRA, double curre
       Module->ProcessEvents();
    }
 
-   void INDIMountInterfaceExecution::EndMountEvent()
+   void INDIMountInterfaceExecution::EndMountEvent() 
    {
       m_iface->m_execution = nullptr;
       m_iface->GUI->TargetRA_H_SpinBox.Enable();
@@ -166,12 +166,12 @@ void INDIMountInterfaceExecution::StartMountEvent( double targetRA, double curre
       Module->ProcessEvents();
    }
 
-   void INDIMountInterfaceExecution::WaitEvent()
+   void INDIMountInterfaceExecution::WaitEvent() 
    {
       Module->ProcessEvents();
    }
 
-   void INDIMountInterfaceExecution::AbortEvent()
+   void INDIMountInterfaceExecution::AbortEvent() 
    {
       EndMountEvent();
    }
