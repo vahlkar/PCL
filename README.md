@@ -215,4 +215,4 @@ With the following environment variables correctly defined, you can generate mak
 
 
 ******
-###### Copyright (C) 2003-2021 Pleiades Astrophoto
+###### Copyright (C) 2003-2022 Pleiades Astrophoto

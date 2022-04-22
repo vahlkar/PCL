@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// pcl/XML.h - Released 2022-03-12T18:59:29Z
+// pcl/XML.h - Released 2022-04-22T19:28:34Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -2809,6 +2809,54 @@ public:
    void Clear();
 
    /*!
+    * Removes all top-level elements rejected by the specified \a filter.
+    *
+    * For each top-level %XML element in this document (including the root
+    * element), the specified \a filter object will be evaluated to accept or
+    * reject it. Rejected elements will be destroyed and removed.
+    *
+    * See XMLElementFilter for a complete description of the element filtering
+    * functionality.
+    */
+   void RemoveElementsByFilter( const XMLElementFilter& filter )
+   {
+      XMLElement dum;
+      m_nodes.Destroy( dum,
+         [&]( const XMLNode& node, const XMLNode& )
+         {
+            if ( node.IsElement() )
+            {
+               const XMLElement& element = static_cast<const XMLElement&>( node );
+               if ( !filter( nullptr, element.Name() ) ||
+                    !filter( nullptr, element.Name(), element.Attributes() ) )
+                  return true;
+            }
+            return false;
+         } );
+   }
+
+   /*!
+    * Destroys and removes all top-level elements with the specified \a name.
+    *
+    * \note The %XML root element can be removed by this member function.
+    */
+   void RemoveElementsByName( const String& name, bool caseSensitive = true )
+   {
+      XMLElement dum;
+      m_nodes.Destroy( dum,
+         [&]( const XMLNode& node, const XMLNode& )
+         {
+            if ( node.IsElement() )
+            {
+               const XMLElement& element = static_cast<const XMLElement&>( node );
+               if ( (caseSensitive ? element.Name().Compare( name ) : element.Name().CompareIC( name )) == 0 )
+                  return true;
+            }
+            return false;
+         } );
+   }
+
+   /*!
     * Sets a new element filter for this object. The specified object will be
     * owned by this %XMLDocument instance, which will destroy and deallocate it
     * when appropriate.
@@ -3035,4 +3083,4 @@ private:
 #endif   // __PCL_XML_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/XML.h - Released 2022-03-12T18:59:29Z
+// EOF pcl/XML.h - Released 2022-04-22T19:28:34Z

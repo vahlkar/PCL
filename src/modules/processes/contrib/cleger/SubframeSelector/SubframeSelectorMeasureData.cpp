@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.8.0
+// Standard SubframeSelector Process Module Version 1.8.3
 // ----------------------------------------------------------------------------
-// SubframeSelectorMeasureData.cpp - Released 2022-03-12T18:59:53Z
+// SubframeSelectorMeasureData.cpp - Released 2022-04-22T19:29:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -66,6 +66,8 @@ void MeasureData::ResetCacheableData()
    eccentricityMeanDev   = 0;
    psfSignalWeight       = TheSSMeasurementPSFSignalWeightParameter->DefaultValue();
    psfSNR                = TheSSMeasurementPSFSNRParameter->DefaultValue();
+   psfScale              = TheSSMeasurementPSFScaleParameter->DefaultValue();
+   psfScaleSNR           = TheSSMeasurementPSFScaleSNRParameter->DefaultValue();
    psfFlux               = TheSSMeasurementPSFFluxParameter->DefaultValue();
    psfFluxPower          = TheSSMeasurementPSFFluxPowerParameter->DefaultValue();
    psfTotalMeanFlux      = TheSSMeasurementPSFTotalMeanFluxParameter->DefaultValue();
@@ -98,6 +100,8 @@ void MeasureData::AddToCache( const SubframeSelectorInstance& instance ) const
       item.eccentricityMeanDev   = eccentricityMeanDev;
       item.psfSignalWeight       = psfSignalWeight;
       item.psfSNR                = psfSNR;
+      item.psfScale              = psfScale;
+      item.psfScaleSNR           = psfScaleSNR;
       item.psfFlux               = psfFlux;
       item.psfFluxPower          = psfFluxPower;
       item.psfTotalMeanFlux      = psfTotalMeanFlux;
@@ -137,6 +141,8 @@ bool MeasureData::GetFromCache( const SubframeSelectorInstance& instance )
          eccentricityMeanDev   = item.eccentricityMeanDev;
          psfSignalWeight       = item.psfSignalWeight;
          psfSNR                = item.psfSNR;
+         psfScale              = item.psfScale;
+         psfScaleSNR           = item.psfScaleSNR;
          psfFlux               = item.psfFlux;
          psfFluxPower          = item.psfFluxPower;
          psfTotalMeanFlux      = item.psfTotalMeanFlux;
@@ -215,6 +221,20 @@ String MeasureItem::JavaScriptParameters( double subframeScale, int scaleUnit, d
    String().Format( "let PSFSNRMedian = %.15e;\n", properties.psfSNR.median ) +
    String().Format( "let PSFSNRSigma = %.15e;\n", DeviationNormalize(
                   psfSNR, properties.psfSNR.median, properties.psfSNR.deviation ) ) +
+
+   String().Format( "let PSFScale = %.15e;\n", psfScale ) +
+   String().Format( "let PSFScaleMin = %.15e;\n", properties.psfScale.min ) +
+   String().Format( "let PSFScaleMax = %.15e;\n", properties.psfScale.max ) +
+   String().Format( "let PSFScaleMedian = %.15e;\n", properties.psfScale.median ) +
+   String().Format( "let PSFScaleSigma = %.15e;\n", DeviationNormalize(
+                  psfScale, properties.psfScale.median, properties.psfScale.deviation ) ) +
+
+   String().Format( "let PSFScaleSNR = %.15e;\n", psfScaleSNR ) +
+   String().Format( "let PSFScaleSNRMin = %.15e;\n", properties.psfScaleSNR.min ) +
+   String().Format( "let PSFScaleSNRMax = %.15e;\n", properties.psfScaleSNR.max ) +
+   String().Format( "let PSFScaleSNRMedian = %.15e;\n", properties.psfScaleSNR.median ) +
+   String().Format( "let PSFScaleSNRSigma = %.15e;\n", DeviationNormalize(
+                  psfScaleSNR, properties.psfScaleSNR.median, properties.psfScaleSNR.deviation ) ) +
 
    /**/
 
@@ -429,7 +449,7 @@ void MeasureUtils::MeasureProperties( const MeasureItemList& measures, double su
 {
    Array<double>
    weight, fwhm, eccentricity,
-   psfSignalWeight, psfSNR, psfFlux, psfFluxPower, psfTotalMeanFlux, psfTotalMeanPowerFlux, psfCount, MStar, NStar,
+   psfSignalWeight, psfSNR, psfScale, psfScaleSNR, psfFlux, psfFluxPower, psfTotalMeanFlux, psfTotalMeanPowerFlux, psfCount, MStar, NStar,
    snrWeight, median, medianMeanDev, noise, noiseRatio, stars, starResidual, fwhmMeanDev,
    eccentricityMeanDev, starResidualMeanDev, azimuth, altitude;
 
@@ -440,6 +460,8 @@ void MeasureUtils::MeasureProperties( const MeasureItemList& measures, double su
       eccentricity << item.eccentricity;
       psfSignalWeight << item.psfSignalWeight;
       psfSNR << item.psfSNR;
+      psfScale << item.psfScale;
+      psfScaleSNR << item.psfScaleSNR;
       psfFlux << item.psfFlux;
       psfFluxPower << item.psfFluxPower;
       psfTotalMeanFlux << item.psfTotalMeanFlux;
@@ -466,6 +488,8 @@ void MeasureUtils::MeasureProperties( const MeasureItemList& measures, double su
    MeasureUtils::MeasureProperty( eccentricity, properties.eccentricity );
    MeasureUtils::MeasureProperty( psfSignalWeight, properties.psfSignalWeight );
    MeasureUtils::MeasureProperty( psfSNR, properties.psfSNR );
+   MeasureUtils::MeasureProperty( psfScale, properties.psfScale );
+   MeasureUtils::MeasureProperty( psfScaleSNR, properties.psfScaleSNR );
    MeasureUtils::MeasureProperty( psfFlux, properties.psfFlux );
    MeasureUtils::MeasureProperty( psfFluxPower, properties.psfFluxPower );
    MeasureUtils::MeasureProperty( psfTotalMeanFlux, properties.psfTotalMeanFlux );
@@ -492,4 +516,4 @@ void MeasureUtils::MeasureProperties( const MeasureItemList& measures, double su
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorMeasureData.cpp - Released 2022-03-12T18:59:53Z
+// EOF SubframeSelectorMeasureData.cpp - Released 2022-04-22T19:29:05Z

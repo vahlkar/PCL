@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
 // Standard FindingChart Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// FindingChartInterface.cpp - Released 2022-03-12T18:59:53Z
+// FindingChartInterface.cpp - Released 2022-04-22T19:29:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FindingChart PixInsight module.
 //
@@ -1008,4 +1008,4 @@ FindingChartInterface::GUIData::GUIData( FindingChartInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FindingChartInterface.cpp - Released 2022-03-12T18:59:53Z
+// EOF FindingChartInterface.cpp - Released 2022-04-22T19:29:05Z

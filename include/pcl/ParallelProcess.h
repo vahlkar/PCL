@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// pcl/ParallelProcess.h - Released 2022-03-12T18:59:29Z
+// pcl/ParallelProcess.h - Released 2022-04-22T19:28:34Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -147,8 +147,11 @@ public:
    /*!
     * Sets the maximum number of processors allowed for this process.
     *
+    * A value of \a maxProcessors &le; 0 is ignored and causes the call to this
+    * function to have no effect.
+    *
     * In the current version of PCL, a module can use a maximum of 1023
-    * processors. The term \e processor actually refers to the number of
+    * processors. The term \e processors actually refers to the number of
     * threads a module can execute concurrently.
     *
     * Irrespective of the value specified by this function, a module should not
@@ -159,7 +162,8 @@ public:
     */
    void SetMaxProcessors( int maxProcessors ) noexcept
    {
-      m_maxProcessors = Range( maxProcessors, 1, PCL_MAX_PROCESSORS );
+      if ( maxProcessors > 0 )
+         m_maxProcessors = Min( maxProcessors, PCL_MAX_PROCESSORS );
    }
 
    /*!
@@ -184,4 +188,4 @@ protected:
 #endif   // __PCL_ParallelProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ParallelProcess.h - Released 2022-03-12T18:59:29Z
+// EOF pcl/ParallelProcess.h - Released 2022-04-22T19:28:34Z

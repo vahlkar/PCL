@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.9.1
+// Standard ImageCalibration Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// LocalNormalizationInstance.h - Released 2022-03-12T18:59:53Z
+// LocalNormalizationInstance.h - Released 2022-04-22T19:29:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -108,6 +108,8 @@ private:
    pcl_bool    p_rejection;
    pcl_bool    p_truncate; // truncate normalized images - not exposed
    int32       p_backgroundSamplingDelta;
+   double      p_lowClippingLevel;
+   float       p_highClippingLevel;
    float       p_backgroundRejectionLimit;
    float       p_referenceRejectionThreshold;
    float       p_targetRejectionThreshold;
@@ -194,4 +196,4 @@ private:
 #endif   // __LocalNormalizationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationInstance.h - Released 2022-03-12T18:59:53Z
+// EOF LocalNormalizationInstance.h - Released 2022-04-22T19:29:05Z

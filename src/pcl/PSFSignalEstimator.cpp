@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// pcl/PSFSignalEstimator.cpp - Released 2022-03-12T18:59:35Z
+// pcl/PSFSignalEstimator.cpp - Released 2022-04-22T19:28:42Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -49,9 +49,11 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
+#include <pcl/AutoPointer.h>
 #include <pcl/GridInterpolation.h>
 #include <pcl/MultiscaleMedianTransform.h>
 #include <pcl/PSFSignalEstimator.h>
+#include <pcl/Resample.h>
 #include <pcl/RobustChauvenetRejection.h>
 #include <pcl/ShepardInterpolation.h>
 
@@ -145,62 +147,111 @@ template <class P>
 static Array<float> LocalBackgroundResidual_Imp( const GenericImage<P>& image, int scale, int maxThreads )
 {
    /*
-    * Accelerated Multiscale Median Transform with linear scaling sequences.
+    * Accelerated Multiscale Median Transform.
     *
-    * The following values for the number of layers (n) and scaling increments
-    * (d) have been found experimentally to be accurate to within a 0.1% of the
-    * rigorous transforms with dyadic scaling sequences.
+    * The following values for the number of layers (n) and inverse sampling
+    * ratio (r) approximate the rigorous transforms with negligible errors
+    * using dyadic scaling sequences and decimation.
     *
-    * N.B.: These optimizations are valid for the current PCL implementation of
-    * the MMT algorithm. If the implementations change, these optimized
-    * parameters will have to be re-evaluated through new tests.
+    * We apply nearest neighbor interpolation for decimation/undecimation in
+    * order to avoid contamination of the nonlinear multiscale transform with
+    * linear components.
     */
-   int n, d;
+   int n, r;
    switch ( scale )
    {
-   case 1024: n = 5; d = 80; break;
-   case  768: n = 5; d = 60; break;
-   case  512: n = 4; d = 55; break;
-   case  384: n = 4; d = 40; break;
+   case 1024: n = 7; r = 8; break;
+   case  768: n = 7; r = 6; break;
+   case  512: n = 6; r = 8; break;
+   case  384: n = 6; r = 6; break;
    default: // ?!
-   case  256: n = 3; d = 40; break;
-   case  192: n = 3; d = 30; break;
-   case  128: n = 3; d = 20; break;
-   case   64: n = 3; d = 10; break;
-   case   32: n = 5; d =  0; break;
+   case  256: n = 6; r = 4; break;
+   case  192: n = 6; r = 3; break;
+   case  128: n = 6; r = 2; break;
+   case   64: n = 5; r = 2; break;
+   case   32: n = 4; r = 2; break;
    }
-   MultiscaleMedianTransform M( n, d );
+
+   /*
+    * MMT
+    */
+   MultiscaleMedianTransform M( n, 0 );
    M.SetMaxProcessors( maxThreads );
    for ( int i = 0; i < M.NumberOfLayers(); ++i )
       M.DisableLayer( i );
 
-   image.PushSelections();
-   image.SelectChannel( image.SelectedChannel() );
-
-   /*
-    * If potential black borders are detected, replace them with statistically
-    * plausible values to prevent border artifacts.
-    */
-   if ( HasZeroBorders( image ) )
    {
-      Image fz( image );
-      FixZero( fz );
-      M << fz;
+      /*
+       * Working image
+       */
+      image.PushSelections();
+      image.SelectChannel( image.SelectedChannel() );
+      Image I( image );
+
+      /*
+       * If potential black borders are detected, replace them with
+       * statistically plausible values to prevent border artifacts.
+       */
+      if ( HasZeroBorders( image ) )
+         FixZero( I );
+
+      /*
+       * Decimate
+       */
+      {
+         NearestNeighborPixelInterpolation N;
+         Resample R( N, 1.0/r );
+         R.SetMaxProcessors( maxThreads );
+         R >> I;
+      }
+
+      /*
+       * Perform MMT
+       */
+      M << I;
    }
-   else
-      M << image;
 
    /*
     * Gather the set of non-significant background pixels.
     */
-   Array<float> R;
-   Image::const_sample_iterator m( M[M.NumberOfLayers()] );
-   for ( typename GenericImage<P>::const_sample_iterator i( image ); i; ++i, ++m )
+   const Image& L = M[M.NumberOfLayers()];
+
+   /*
+    * Row pointers for inverse mapping (nearest neighbor).
+    */
+   GenericVector<const float*> rowPtr( image.Height() );
    {
-      float v; P::FromSample( v, *i );
-      if ( v != 0 )
-         if ( v < *m )
-            R << *m - v;
+      double ry = double( L.Height() )/image.Height();
+      for ( int i = 0; i < image.Height(); ++i )
+         rowPtr[i] = L[0] + (Range( RoundIntArithmetic( i*ry ), 0, L.Height()-1 )*int64( L.Width() ));
+   }
+
+   /*
+    * Column offsets for inverse mapping (nearest neighbor).
+    */
+   IVector colOfs( image.Width() );
+   {
+      double rx = double( L.Width() )/image.Width();
+      for ( int i = 0; i < image.Width(); ++i )
+         colOfs[i] = Range( RoundIntArithmetic( i*rx ), 0, L.Width()-1 );
+   }
+
+   /*
+    * Undecimate and calculate MMT residual.
+    */
+   Array<float> R;
+   typename GenericImage<P>::const_sample_iterator i( image );
+   for ( int y = 0; y < image.Height(); ++y )
+   {
+      const float* r = rowPtr[y];
+      for ( int x = 0; x < image.Width(); ++x, ++i )
+      {
+         const float& m = r[colOfs[x]];
+         float v; P::FromSample( v, *i );
+         if ( v != 0 )
+            if ( v < m )
+               R << m - v;
+      }
    }
 
    image.PopSelections();
@@ -240,20 +291,39 @@ PSFSignalEstimator::Estimates PSFSignalEstimator::EstimateSignal( const ImageVar
    if ( !psfs.IsEmpty() )
    {
       /*
-       * Gather PSF fluxes and accumulate mean flux.
+       * Gather PSF fluxes.
        */
       int n = int( psfs.Length() );
       Vector psfFlux( n );
       Vector psfFlux2( n );
-      Vector psfMean( n );
       for ( int i = 0; i < n; ++i )
       {
          double s = psfs[i].signal;
          psfFlux[i] = s;
          psfFlux2[i] = s*s;
-         // N.B. The fitted PSF area is more accurate and 'fine grained' than
-         // the number of measured source pixels, especially for low FWHM.
-         psfMean[i] = s/psfs[i].sx/psfs[i].sy; // instead of psfs[i].signalCount
+      }
+
+      /*
+       * Gather mean fluxes.
+       *
+       * N.B. The area of the fitted elliptical PSF measuring region is more
+       * accurate and 'fine grained' than the number of measured source pixels
+       * (psfs[i].signalCount), especially for low FWTM.
+       */
+      Vector psfMean( n );
+      if ( m_psfType == PSFunction::Auto || m_psfType == PSFunction::Moffat || m_psfType == PSFunction::VariableShape )
+      {
+         double k = 0.5 * m_growthForFlux;
+         double k2pi = k*k * Const<double>::pi();
+         for ( int i = 0; i < n; ++i )
+            psfMean[i] = psfs[i].signal/(k2pi * psfs[i].FWTMx() * psfs[i].FWTMy());
+      }
+      else
+      {
+         double k = 0.5 * m_growthForFlux * PSFData::FWTM( m_psfType, 1/*sigma*/ );
+         double k2pi = k*k * Const<double>::pi();
+         for ( int i = 0; i < n; ++i )
+            psfMean[i] = psfs[i].signal/(k2pi * psfs[i].sx * psfs[i].sy);
       }
 
       /*
@@ -297,8 +367,7 @@ PSFSignalEstimator::Estimates PSFSignalEstimator::EstimateSignal( const ImageVar
        */
       Array<float> R = LocalBackgroundResidual( image, m_scale, MaxProcessors() );
       E.MStar = Median( R.Begin(), R.End() );
-      E.NStar = 2.05434 * Sn( R.Begin(), R.End() );
-//       E.NStar = 2.50573 * MAD( R.Begin(), R.End(), E.MStar );
+      E.NStar = NStar( R );
    }
 
    return E;
@@ -309,4 +378,4 @@ PSFSignalEstimator::Estimates PSFSignalEstimator::EstimateSignal( const ImageVar
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFSignalEstimator.cpp - Released 2022-03-12T18:59:35Z
+// EOF pcl/PSFSignalEstimator.cpp - Released 2022-04-22T19:28:42Z

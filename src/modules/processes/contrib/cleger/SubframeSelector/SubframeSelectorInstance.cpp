@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.8.0
+// Standard SubframeSelector Process Module Version 1.8.3
 // ----------------------------------------------------------------------------
-// SubframeSelectorInstance.cpp - Released 2022-03-12T18:59:53Z
+// SubframeSelectorInstance.cpp - Released 2022-04-22T19:29:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -67,6 +67,7 @@
 #include <pcl/PSFSignalEstimator.h>
 #include <pcl/Position.h>
 #include <pcl/ProcessInstance.h>
+#include <pcl/RobustChauvenetRejection.h>
 #include <pcl/Version.h>
 #include <pcl/WCSKeywords.h>
 
@@ -127,6 +128,7 @@ SubframeSelectorInstance::SubframeSelectorInstance( const MetaProcess* m )
    , p_xyStretch( TheSSXYStretchParameter->DefaultValue() )
    , p_psfFit( SSPSFFit::Default )
    , p_psfFitCircular( TheSSPSFFitCircularParameter->DefaultValue() )
+   , p_maxPSFFits( int32( TheSSMaxPSFFitsParameter->DefaultValue() ) )
    , p_pedestal( TheSSPedestalParameter->DefaultValue() )
    , p_pedestalMode( SSPedestalMode::Default )
    , p_inputHints( TheSSInputHintsParameter->DefaultValue() )
@@ -187,6 +189,7 @@ void SubframeSelectorInstance::Assign( const ProcessImplementation& p )
       p_xyStretch                  = x->p_xyStretch;
       p_psfFit                     = x->p_psfFit;
       p_psfFitCircular             = x->p_psfFitCircular;
+      p_maxPSFFits                 = x->p_maxPSFFits;
       p_roi                        = x->p_roi;
       p_pedestal                   = x->p_pedestal;
       p_pedestalMode               = x->p_pedestalMode;
@@ -228,6 +231,7 @@ public:
       : m_instance( instance )
       , m_index( itemIndex )
       , m_filePath( m_instance.p_subframes[m_index].path )
+      , m_nmlPath( m_instance.p_subframes[m_index].nmlPath )
       , m_throwsOnMeasurementError( throwsOnMeasurementError )
    {
    }
@@ -304,12 +308,15 @@ private:
    const SubframeSelectorInstance& m_instance;
          size_type                 m_index;
          String                    m_filePath;
+         String                    m_nmlPath;
          ImageVariant              m_subframe;
          double                    m_pedestal = 0; // 16-bit DN
          double                    m_noise = 0;
          double                    m_noiseRatio = 0;
          double                    m_psfSignalWeight = 0;
          double                    m_psfSNR = 0;
+         double                    m_psfScale = 0;
+         double                    m_psfScaleSNR = 0;
          double                    m_psfFlux = 0;
          double                    m_psfFluxPower = 0;
          double                    m_psfTotalMeanFlux = 0;
@@ -370,7 +377,7 @@ private:
       }
 
       /*
-       * Optional pedestal.
+       * Optional pedestal
        */
       switch ( m_instance.p_pedestalMode )
       {
@@ -629,11 +636,36 @@ private:
          }
 
          /*
-          * SNR estimate
+          * SNR
           */
          double e = double( TwoSidedEstimate( noiseScaleLow, noiseScaleHigh ) )/m_noise;
          if ( IsFinite( e ) && 1 + e*e != 1 )
             m_snrWeight = e*e;
+
+         /*
+          * PSF Scale SNR
+          */
+         if ( !m_nmlPath.IsEmpty() )
+         {
+            LocalNormalizationData nml;
+            {
+               static Mutex mutex;
+               static AtomicInt count;
+               volatile AutoLockCounter lock( mutex, count, m_instance.m_maxFileReadThreads );
+               nml.Parse( m_nmlPath );
+            }
+
+            const Vector& s = nml.RelativeScaleFactors();
+            if ( !s.IsEmpty() )
+            {
+               if ( s.Length() == 1 )
+                  m_psfScale = s[0];
+               else
+                  m_psfScale = 0.5*(s.MinComponent() + s.MaxComponent());
+
+               m_psfScaleSNR = 1/m_psfScale/m_psfScale/m_noise/m_noise;
+            }
+         }
       }
 
       /*
@@ -725,7 +757,9 @@ private:
          throw ProcessAborted();
 
       // Run the PSF Fitter
-      psf_list fits = FitPSFs( stars.Begin(), stars.End() );
+      psf_list fits = FitPSFs( stars.Begin(),
+                        (m_instance.p_maxPSFFits > 0 && size_type( m_instance.p_maxPSFFits ) < stars.Length()) ?
+                        stars.At( m_instance.p_maxPSFFits ) : stars.End() );
       if ( fits.IsEmpty() )
          if ( m_throwsOnMeasurementError )
             throw Error( "No PSF could be fitted" );
@@ -736,8 +770,15 @@ private:
       // Measure PSF data
       MeasurePSFs( fits );
 
+      /*
+       * N.B. Since core version 1.8.9-1: The Stars property is now the number
+       * of detected stars instead of the number of fitted PSFs.
+       */
+      m_outputData.stars = stars.Length();
+
       console.WriteLn( String().Format( "Stars detected: %6u", stars.Length() ) );
-      console.WriteLn( String().Format( "Valid PSF fits: %6u (%6.2f%%)", fits.Length(), 100.0*fits.Length()/stars.Length() ) );
+      console.WriteLn( String().Format( "Valid PSF fits: %6u (%6.2f%%)", fits.Length(),
+                                        100.0*fits.Length()/Min( stars.Length(), size_type( m_instance.p_maxPSFFits ) ) ) );
    }
 
    void EvaluateSignalAndNoise()
@@ -829,7 +870,7 @@ private:
                               "calculated from possibly non-raw or uncalibrated data. Image weights can be inaccurate." );
 
          const double clipLow = 2.0/65535;
-         const double clipHigh = 1.0 - 2.0/65535;
+         const double clipHigh = 1 - 2.0/65535;
 
          m_subframe.SetRangeClipping( clipLow, clipHigh );
          double center = m_subframe.Median();
@@ -853,6 +894,9 @@ private:
          if ( IsFinite( e ) && 1 + e*e != 1 )
             m_outputData.snrWeight = e*e;
       }
+
+      m_outputData.psfScale = m_psfScale;
+      m_outputData.psfScaleSNR = m_psfScaleSNR;
    }
 
    void MeasureImage()
@@ -1000,7 +1044,11 @@ private:
          return;
       }
 
-      m_outputData.stars = fits.Length();
+      /*
+       * N.B. Since core version 1.8.9-1: The Stars property is now the number
+       * of detected stars instead of the number of fitted PSFs.
+       */
+//       m_outputData.stars = fits.Length();
 
       Array<double> fwhms, eccentricities, residuals;
       for ( const PSFData& fit : fits )
@@ -1009,13 +1057,22 @@ private:
          eccentricities << Sqrt( 1 - fit.sy*fit.sy/fit.sx/fit.sx );
          residuals << fit.mad;
       }
-      m_outputData.fwhm = Median( fwhms.Begin(), fwhms.End() );
-      m_outputData.eccentricity = Median( eccentricities.Begin(), eccentricities.End() );
-      m_outputData.starResidual = Median( residuals.Begin(), residuals.End() );
 
-      m_outputData.fwhmMeanDev = AvgDev( fwhms.Begin(), fwhms.End(), m_outputData.fwhm );
-      m_outputData.eccentricityMeanDev = AvgDev( eccentricities.Begin(), eccentricities.End(), m_outputData.eccentricity );
-      m_outputData.starResidualMeanDev = AvgDev( residuals.Begin(), residuals.End(), m_outputData.starResidual );
+      /*
+       * ### TODO: Replace the following xxxMeanDev properties with their
+       *           corresponding RCR standard deviations (and hence the calls
+       *           to AvgDev() will be removed). The properties should then be
+       *           renamed to xxxSigma.
+       */
+      int i, j;
+      RobustChauvenetRejection()( i, j, m_outputData.fwhm, m_outputData.fwhmMeanDev, fwhms );
+      m_outputData.fwhmMeanDev = AvgDev( fwhms.At( i ), fwhms.At( j ), m_outputData.fwhm );
+
+      RobustChauvenetRejection()( i, j, m_outputData.eccentricity, m_outputData.eccentricityMeanDev, eccentricities );
+      m_outputData.eccentricityMeanDev = AvgDev( eccentricities.At( i ), eccentricities.At( j ), m_outputData.eccentricity );
+
+      RobustChauvenetRejection()( i, j, m_outputData.starResidual, m_outputData.starResidualMeanDev, residuals );
+      m_outputData.starResidualMeanDev = AvgDev( residuals.At( i ), residuals.At( j ), m_outputData.starResidual );
    }
 };
 
@@ -2180,6 +2237,7 @@ IsoString SubframeSelectorInstance::EncodedCacheSensitiveParameters() const
                                           << String().Format( "%.4f", p_upperLimit )
                                           << String( p_psfFit )
                                           << String( bool( p_psfFitCircular ) )
+                                          << String( p_maxPSFFits )
                                           << String().Format( "%d%d%d%d", p_roi.x0, p_roi.y0, p_roi.x1, p_roi.y1 )
                                           << String( p_pedestal )
                                           << String( p_pedestalMode )
@@ -2330,6 +2388,8 @@ void* SubframeSelectorInstance::LockParameter( const MetaParameter* p, size_type
       return &p_psfFit;
    if ( p == TheSSPSFFitCircularParameter )
       return &p_psfFitCircular;
+   if ( p == TheSSMaxPSFFitsParameter )
+      return &p_maxPSFFits;
    if ( p == TheSSROIX0Parameter )
       return &p_roi.x0;
    if ( p == TheSSROIY0Parameter )
@@ -2405,6 +2465,10 @@ void* SubframeSelectorInstance::LockParameter( const MetaParameter* p, size_type
       return &o_measures[tableRow].psfSignalWeight;
    if ( p == TheSSMeasurementPSFSNRParameter )
       return &o_measures[tableRow].psfSNR;
+   if ( p == TheSSMeasurementPSFScaleParameter )
+      return &o_measures[tableRow].psfScale;
+   if ( p == TheSSMeasurementPSFScaleSNRParameter )
+      return &o_measures[tableRow].psfScaleSNR;
    if ( p == TheSSMeasurementPSFFluxParameter )
       return &o_measures[tableRow].psfFlux;
    if ( p == TheSSMeasurementPSFFluxPowerParameter )
@@ -2606,4 +2670,4 @@ size_type SubframeSelectorInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInstance.cpp - Released 2022-03-12T18:59:53Z
+// EOF SubframeSelectorInstance.cpp - Released 2022-04-22T19:29:05Z

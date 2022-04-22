@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// pcl/Edit.h - Released 2022-03-12T18:59:29Z
+// pcl/Edit.h - Released 2022-04-22T19:28:34Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -179,6 +179,84 @@ public:
    {
       EnablePasswordMode( !disable );
    }
+
+   /*!
+    * Returns the current regular expression used for validation of text input
+    * in this %Edit control, or an empty string if no validating regular
+    * expression has been defined.
+    *
+    * See SetValidatingRegExp() for detailed information.
+    */
+   String ValidatingRegExp() const;
+
+   /*!
+    * Returns the current regular expression used for validation of text input
+    * in this %Edit control, or an empty string if no validating regular
+    * expression has been defined.
+    *
+    * On exit, the specified \a caseSensitive variable will be \c true if the
+    * current regular expression is being used to perform case-sensitive
+    * matches; \c false if case-insensitive matches are performed.
+    *
+    * See SetValidatingRegExp() for detailed information.
+    */
+   String ValidatingRegExp( bool& caseSensitive ) const;
+
+   /*!
+    * Sets a validating regular expression for this %Edit control.
+    *
+    * The specified regular expression \a rx will be used to accept or reject
+    * characters automatically as they are being typed in the control, and also
+    * to accept or reject text pasted from the clipboard or dropped on the
+    * control by the user.
+    *
+    * For example, to ensure that a syntactically valid floating point number
+    * is entered, the following regular expression can be used:
+    *
+    * \code
+    * Edit velocity_Edit;
+    * ...
+    * velocity_Edit.SetValidatingRegExp( "[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?" );
+    * \endcode
+    *
+    * If the \a caseSensitive parameter is \c true, case-sensitive matches will
+    * be performed with the regular expression; otherwise the matches will
+    * ignore case. Case-sensitive matches are performed by default.
+    *
+    * This member function throws an Error exception if the specified regular
+    * expression is not an empty string and is not valid or is unsupported.
+    *
+    * To disable regular expression validation, specify an empty string as the
+    * \a rx argument, or call DisableValidatingRegExp().
+    *
+    * \sa ValidatingRegExp(), IsValid()
+    */
+   void SetValidatingRegExp( const String& rx, bool caseSensitive = true );
+
+   /*!
+    * Disables validation through a regular expression for this %Edit control.
+    *
+    * Calling this function is equivalent to:
+    *
+    * \code
+    * SetValidatingRegExp( String() );
+    * \endcode
+    */
+   void DisableValidatingRegExp()
+   {
+      SetValidatingRegExp( String() );
+   }
+
+   /*!
+    * Returns \c true if the text in this %Edit control matches the current
+    * validating regular expression, or if no validating regular expression is
+    * currently defined for this control. Returns \c false if a validating
+    * regular expression is defined and the current text does not match it.
+    *
+    * See SetValidatingRegExp() for complete information on validating regular
+    * expressions.
+    */
+   bool IsValid() const;
 
    /*!
     * Returns the maximum allowed length for the text in this %Edit control.
@@ -388,4 +466,4 @@ private:
 #endif   // __PCL_Edit_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Edit.h - Released 2022-03-12T18:59:29Z
+// EOF pcl/Edit.h - Released 2022-04-22T19:28:34Z

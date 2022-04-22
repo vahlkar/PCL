@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.8.0
+// Standard SubframeSelector Process Module Version 1.8.3
 // ----------------------------------------------------------------------------
-// SubframeSelectorParameters.cpp - Released 2022-03-12T18:59:53Z
+// SubframeSelectorParameters.cpp - Released 2022-04-22T19:29:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -89,6 +89,7 @@ SSBackgroundExpansion*              TheSSBackgroundExpansionParameter = nullptr;
 SSXYStretch*                        TheSSXYStretchParameter = nullptr;
 SSPSFFit*                           TheSSPSFFitParameter = nullptr;
 SSPSFFitCircular*                   TheSSPSFFitCircularParameter = nullptr;
+SSMaxPSFFits*                       TheSSMaxPSFFitsParameter = nullptr;
 SSROIX0*                            TheSSROIX0Parameter = nullptr;
 SSROIY0*                            TheSSROIY0Parameter = nullptr;
 SSROIX1*                            TheSSROIX1Parameter = nullptr;
@@ -131,6 +132,8 @@ SSMeasurementFWHM*                  TheSSMeasurementFWHMParameter = nullptr;
 SSMeasurementEccentricity*          TheSSMeasurementEccentricityParameter = nullptr;
 SSMeasurementPSFSignalWeight*       TheSSMeasurementPSFSignalWeightParameter = nullptr;
 SSMeasurementPSFSNR*                TheSSMeasurementPSFSNRParameter = nullptr;
+SSMeasurementPSFScale*              TheSSMeasurementPSFScaleParameter = nullptr;
+SSMeasurementPSFScaleSNR*           TheSSMeasurementPSFScaleSNRParameter = nullptr;
 SSMeasurementPSFFlux*               TheSSMeasurementPSFFluxParameter = nullptr;
 SSMeasurementPSFFluxPower*          TheSSMeasurementPSFFluxPowerParameter = nullptr;
 SSMeasurementPSFTotalMeanFlux*      TheSSMeasurementPSFTotalMeanFluxParameter = nullptr;
@@ -1135,6 +1138,47 @@ IsoString SSPSFFitCircular::Tooltip() const
 
 // ----------------------------------------------------------------------------
 
+SSMaxPSFFits::SSMaxPSFFits( MetaProcess* P ) : MetaInt32( P )
+{
+   TheSSMaxPSFFitsParameter = this;
+}
+
+IsoString SSMaxPSFFits::Id() const
+{
+   return "maxPSFFits";
+}
+
+double SSMaxPSFFits::DefaultValue() const
+{
+   return 8000;
+}
+
+double SSMaxPSFFits::MinimumValue() const
+{
+   return 0;
+}
+
+double SSMaxPSFFits::MaximumValue() const
+{
+   return int32_max;
+}
+
+IsoString SSMaxPSFFits::Tooltip() const
+{
+   return "<p>The maximum number of PSF fits that will be performed on the set of detected stars.</p>"
+          "<p>The default value is 8000 stars, which is more than reasonable in most cases. Set this parameter to zero to "
+          "allow an unlimited number of PSF fits, that is, to attempt fitting all detected stars on each subframe.</p>"
+          "<p>This parameter is intended to avoid fitting huge amounts of PSFs on wide-field images, where the number of "
+          "detected stars can easily reach several tens of thousands, or even more than one hundred thousand in extreme cases. "
+          "In such cases the measurement process can take a very long time to complete, but without any benefit in statistical "
+          "terms, since fitting about 10,000 stars on each subframe is normally more than sufficient to acquire reliable FWHM "
+          "and eccentricity measurements.</p>"
+          "<p>When this parameter imposes a limit on the number of PSF fits, the subset of measured stars will always start at "
+          "the beginning of the set of detected stars, sorted by brightness in descending order.</p>";
+}
+
+// ----------------------------------------------------------------------------
+
 SSROIX0::SSROIX0( MetaProcess* P ) : MetaInt32( P )
 {
    TheSSROIX0Parameter = this;
@@ -1592,8 +1636,9 @@ IsoString SSApprovalExpression::Tooltip() const
           "<p>A <i>property</i> can be one of:</p>"
           "<p>Altitude | Azimuth | Eccentricity | EccentricityMeanDev | FWHM | FWHMMeanDev | Index | "
           "MStar | Median | MedianMeanDev | NStar | Noise | NoiseRatio | PSFCount | PSFFlux | "
-          "PSFFluxPower | PSFSignalWeight = PSFSignal | PSFSNR | PSFTotalMeanFlux | PSFTotalMeanPowerFlux | "
-          "SNR = SNRWeight | StarResidual | StarResidualMeanDev | Stars | Weight</p>"
+          "PSFFluxPower | PSFSignalWeight = PSFSignal | PSFSNR | PSFScale | PSFScaleSNR | "
+          "PSFTotalMeanFlux | PSFTotalMeanPowerFlux | SNR = SNRWeight | StarResidual | "
+          "StarResidualMeanDev | Stars | Weight</p>"
           "<p>Each <i>property</i> (excluding <i>Index</i>) also has a Median, Min, and Max version, "
           "e.g. <i>FWHMMin</i>, which are computed across all subframes.</p>"
           "<p>Each <i>property</i> (excluding <i>Index</i>) also has a Sigma version, "
@@ -1623,8 +1668,9 @@ IsoString SSWeightingExpression::Tooltip() const
           "<p>A <i>property</i> can be one of:<p>"
           "<p>Altitude | Azimuth | Eccentricity | EccentricityMeanDev | FWHM | FWHMMeanDev | Index | "
           "MStar | Median | MedianMeanDev | NStar | Noise | NoiseRatio | PSFCount | PSFFlux | "
-          "PSFFluxPower | PSFSignalWeight = PSFSignal | PSFSNR | PSFTotalMeanFlux | PSFTotalMeanPowerFlux | "
-          "SNR = SNRWeight | StarResidual | StarResidualMeanDev | Stars</p>"
+          "PSFFluxPower | PSFSignalWeight = PSFSignal | PSFSNR | PSFScale | PSFScaleSNR | "
+          "PSFTotalMeanFlux | PSFTotalMeanPowerFlux | SNR = SNRWeight | StarResidual | "
+          "StarResidualMeanDev | Stars</p>"
           "<p>Each <i>property</i> (excluding <i>Index</i>) also has a Median, Min, and Max version, "
           "e.g. <i>FWHMMin</i>, which are computed across all subframes.</p>"
           "<p>Each <i>property</i> (excluding <i>Index</i>) also has a Sigma version, "
@@ -1670,6 +1716,8 @@ IsoString SSSortingProperty::ElementId( size_type i ) const
    case StarResidualMeanDev:   return "StarResidualMeanDev";
    case PSFSignalWeight:       return "PSFSignalWeight";
    case PSFSNR:                return "PSFSNR";
+   case PSFScale:              return "PSFScale";
+   case PSFScaleSNR:           return "PSFScaleSNR";
    case Azimuth:               return "Azimuth";
    case Altitude:              return "Altitude";
    case PSFFlux:               return "PSFFlux";
@@ -1713,6 +1761,8 @@ IsoString SSSortingProperty::ElementLabel( size_type i ) const
    case StarResidualMeanDev:   return "StarResidual Mean Dev.";
    case PSFSignalWeight:       return "PSF Signal Weight";
    case PSFSNR:                return "PSF SNR";
+   case PSFScale:              return "PSF Scale";
+   case PSFScaleSNR:           return "PSF Scale SNR";
    case Azimuth:               return "Azimuth";
    case Altitude:              return "Altitude";
    case PSFFlux:               return "PSF Flux";
@@ -1761,6 +1811,8 @@ IsoString SSGraphPropertyBase::ElementId( size_type i ) const
    case StarResidualMeanDev:   return "StarResidualMeanDev";
    case PSFSignalWeight:       return "PSFSignalWeight";
    case PSFSNR:                return "PSFSNR";
+   case PSFScale:              return "PSFScale";
+   case PSFScaleSNR:           return "PSFScaleSNR";
    case Azimuth:               return "Azimuth";
    case Altitude:              return "Altitude";
    case PSFFlux:               return "PSFFlux";
@@ -1803,6 +1855,8 @@ IsoString SSGraphPropertyBase::ElementLabel( size_type i ) const
    case StarResidualMeanDev:   return "Star Residual Mean Dev.";
    case PSFSignalWeight:       return "PSF Signal Weight";
    case PSFSNR:                return "PSF SNR";
+   case PSFScale:              return "PSF Scale";
+   case PSFScaleSNR:           return "PSF Scale SNR";
    case Azimuth:               return "Azimuth";
    case Altitude:              return "Altitude";
    case PSFFlux:               return "PSF Flux";
@@ -2228,6 +2282,70 @@ double SSMeasurementPSFSNR::DefaultValue() const
 }
 
 bool SSMeasurementPSFSNR::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+SSMeasurementPSFScale::SSMeasurementPSFScale( MetaTable* T ) : MetaDouble( T )
+{
+   TheSSMeasurementPSFScaleParameter = this;
+}
+
+IsoString SSMeasurementPSFScale::Id() const
+{
+   return "measurementPSFScale";
+}
+
+int SSMeasurementPSFScale::Precision() const
+{
+   return 4;
+}
+
+bool SSMeasurementPSFScale::ScientificNotation() const
+{
+   return true;
+}
+
+double SSMeasurementPSFScale::DefaultValue() const
+{
+   return 0.0;
+}
+
+bool SSMeasurementPSFScale::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+SSMeasurementPSFScaleSNR::SSMeasurementPSFScaleSNR( MetaTable* T ) : MetaDouble( T )
+{
+   TheSSMeasurementPSFScaleSNRParameter = this;
+}
+
+IsoString SSMeasurementPSFScaleSNR::Id() const
+{
+   return "measurementPSFScaleSNR";
+}
+
+int SSMeasurementPSFScaleSNR::Precision() const
+{
+   return 4;
+}
+
+bool SSMeasurementPSFScaleSNR::ScientificNotation() const
+{
+   return true;
+}
+
+double SSMeasurementPSFScaleSNR::DefaultValue() const
+{
+   return 0.0;
+}
+
+bool SSMeasurementPSFScaleSNR::IsReadOnly() const
 {
    return true;
 }
@@ -2922,4 +3040,4 @@ bool SSMeasurementUnused01::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorParameters.cpp - Released 2022-03-12T18:59:53Z
+// EOF SubframeSelectorParameters.cpp - Released 2022-04-22T19:29:05Z

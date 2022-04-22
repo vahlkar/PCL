@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// pcl/DrizzleData.cpp - Released 2022-03-12T18:59:36Z
+// pcl/DrizzleData.cpp - Released 2022-04-22T19:28:42Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -393,7 +393,7 @@ static GenericVector<T> ParseBase64EncodedVector( const XMLElement& element, siz
 
 // ----------------------------------------------------------------------------
 
-void DrizzleData::Parse( const String& filePath, bool ignoreIntegrationData )
+void DrizzleData::Parse( const String& filePath, DrizzleParserOptions options )
 {
    IsoString text = File::ReadTextFile( filePath );
    for ( auto ch : text )
@@ -404,14 +404,14 @@ void DrizzleData::Parse( const String& filePath, bool ignoreIntegrationData )
          xml.SetParserOption( XMLParserOption::IgnoreComments );
          xml.SetParserOption( XMLParserOption::IgnoreUnknownElements );
          xml.Parse( text.UTF8ToUTF16() );
-         Parse( xml, ignoreIntegrationData );
+         Parse( xml, options );
          return;
       }
 
       if ( !IsoCharTraits::IsSpace( ch ) )
       {
          Clear();
-         PlainTextDecoder( this, ignoreIntegrationData ).Decode( text );
+         PlainTextDecoder( this, options.IsFlagSet( DrizzleParserOption::IgnoreIntegrationData ) ).Decode( text );
 
          // Build rejection map from rejection coordinate lists.
          if ( !m_rejectHighData.IsEmpty() || !m_rejectLowData.IsEmpty() )
@@ -445,20 +445,23 @@ void DrizzleData::Parse( const String& filePath, bool ignoreIntegrationData )
 
 // ----------------------------------------------------------------------------
 
-void DrizzleData::Parse( const XMLDocument& xml, bool ignoreIntegrationData )
+void DrizzleData::Parse( const XMLDocument& xml, DrizzleParserOptions options )
 {
    if ( xml.RootElement() == nullptr )
       throw Error( "The XML document has no root element." );
    if ( xml.RootElement()->Name() != "xdrz" || xml.RootElement()->AttributeValue( "version" ) != "1.0" )
       throw Error( "Not an XDRZ version 1.0 document." );
-   Parse( *xml.RootElement(), ignoreIntegrationData );
+   Parse( *xml.RootElement(), options );
 }
 
 // ----------------------------------------------------------------------------
 
-void DrizzleData::Parse( const XMLElement& root, bool ignoreIntegrationData )
+void DrizzleData::Parse( const XMLElement& root, DrizzleParserOptions options )
 {
    Clear();
+
+   bool ignoreIntegrationData = options.IsFlagSet( DrizzleParserOption::IgnoreIntegrationData );
+   bool requireIntegrationData = options.IsFlagSet( DrizzleParserOption::RequireIntegrationData );
 
    for ( const XMLNode& node : root )
    {
@@ -745,11 +748,13 @@ void DrizzleData::Parse( const XMLElement& root, bool ignoreIntegrationData )
 
    if ( !ignoreIntegrationData )
    {
-      if ( m_location.IsEmpty() )
-         throw Error( "Missing required LocationEstimates element." );
+      if ( requireIntegrationData )
+         if ( m_location.IsEmpty() )
+            throw Error( "Missing required LocationEstimates element." );
 
-      if ( m_referenceLocation.IsEmpty() )
-         throw Error( "Missing required ReferenceLocation element." );
+      if ( requireIntegrationData )
+         if ( m_referenceLocation.IsEmpty() )
+            throw Error( "Missing required ReferenceLocation element." );
 
       if ( m_location.Length() != m_referenceLocation.Length() )
          throw Error( "Incongruent reference location vector definition." );
@@ -1307,4 +1312,4 @@ void DrizzleData::PlainTextSplineDecoder::ProcessBlock( IsoString& s, const IsoS
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/DrizzleData.cpp - Released 2022-03-12T18:59:36Z
+// EOF pcl/DrizzleData.cpp - Released 2022-04-22T19:28:42Z

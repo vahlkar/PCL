@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.8.0
+// Standard SubframeSelector Process Module Version 1.8.3
 // ----------------------------------------------------------------------------
-// SubframeSelectorCache.cpp - Released 2022-03-12T18:59:53Z
+// SubframeSelectorCache.cpp - Released 2022-04-22T19:29:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -70,6 +70,8 @@ void SubframeSelectorCacheItem::AssignData( const FileDataCacheItem& item )
    eccentricityMeanDev   = src.eccentricityMeanDev;
    psfSignalWeight       = src.psfSignalWeight;
    psfSNR                = src.psfSNR;
+   psfScale              = src.psfScale;
+   psfScaleSNR           = src.psfScaleSNR;
    psfFlux               = src.psfFlux;
    psfFluxPower          = src.psfFluxPower;
    psfTotalMeanFlux      = src.psfTotalMeanFlux;
@@ -102,6 +104,8 @@ String SubframeSelectorCacheItem::DataToString() const
       << String().Format( "eccentricityMeanDev\n%.15e", eccentricityMeanDev )
       << String().Format( "psfSignalWeight\n%.15e", psfSignalWeight )
       << String().Format( "psfSNR\n%.15e", psfSNR )
+      << String().Format( "psfScale\n%.15e", psfScale )
+      << String().Format( "psfScaleSNR\n%.15e", psfScaleSNR )
       << String().Format( "psfFlux\n%.15e", psfFlux )
       << String().Format( "psfFluxPower\n%.15e", psfFluxPower )
       << String().Format( "psfTotalMeanFlux\n%.15e", psfTotalMeanFlux )
@@ -158,6 +162,16 @@ bool SubframeSelectorCacheItem::GetDataFromTokens( const StringList& tokens )
       else if ( *i == "psfSNR" )
       {
          if ( !(++i)->TryToDouble( psfSNR ) )
+            return false;
+      }
+      else if ( *i == "psfScale" )
+      {
+         if ( !(++i)->TryToDouble( psfScale ) )
+            return false;
+      }
+      else if ( *i == "psfScaleSNR" )
+      {
+         if ( !(++i)->TryToDouble( psfScaleSNR ) )
             return false;
       }
       else if ( *i == "psfFlux" )
@@ -279,4 +293,4 @@ SubframeSelectorCache::~SubframeSelectorCache()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorCache.cpp - Released 2022-03-12T18:59:53Z
+// EOF SubframeSelectorCache.cpp - Released 2022-04-22T19:29:05Z

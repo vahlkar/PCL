@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.4.5
+// Standard ImageIntegration Process Module Version 1.4.9
 // ----------------------------------------------------------------------------
-// ImageIntegrationInstance.cpp - Released 2022-03-12T18:59:53Z
+// ImageIntegrationInstance.cpp - Released 2022-04-22T19:29:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -1250,7 +1250,7 @@ bool ImageIntegrationInstance::ExecuteGlobal()
 
                try
                {
-                  DrizzleData drz( F.DrizzleDataPath(), true/*ignoreIntegrationData*/ );
+                  DrizzleData drz( F.DrizzleDataPath(), DrizzleParserOption::IgnoreIntegrationData );
                   F.ToDrizzleData( drz );
                   String newDrzDataPath = File::ChangeExtension( F.DrizzleDataPath(), ".xdrz" ); // don't overwrite old .drz files
                   drz.SerializeToFile( newDrzDataPath );
@@ -1921,7 +1921,7 @@ DVector ImageIntegrationInstance::EvaluateNoise( const ImageVariant& image, bool
          else
          {
             Array<float> R = PSFSignalEstimator::LocalBackgroundResidual( image );
-            noise[c] = 2.05435 * Sn( R.Begin(), R.End() );
+            noise[c] = PSFSignalEstimator::NStar( R );
          }
          break;
       }
@@ -2055,4 +2055,4 @@ ImageWindow ImageIntegrationInstance::CreateImageWindow( const IsoString& id, in
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationInstance.cpp - Released 2022-03-12T18:59:53Z
+// EOF ImageIntegrationInstance.cpp - Released 2022-04-22T19:29:05Z

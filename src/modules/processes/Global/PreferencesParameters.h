@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.3.2
+// Standard Global Process Module Version 1.3.3
 // ----------------------------------------------------------------------------
-// PreferencesParameters.h - Released 2022-03-12T18:59:53Z
+// PreferencesParameters.h - Released 2022-04-22T19:29:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -408,6 +408,15 @@ DECLARE_BOOLEAN_METAPARAMETER ( Process, enableLaunchStatistics,               t
 
 // ----------------------------------------------------------------------------
 
+DECLARE_BOOLEAN_METAPARAMETER( Security, allowUnsignedScriptExecution,         true )
+DECLARE_BOOLEAN_METAPARAMETER( Security, allowUnsignedRepositories,            true )
+DECLARE_BOOLEAN_METAPARAMETER( Security, allowInsecureRepositories,            true )
+DECLARE_BOOLEAN_METAPARAMETER( Security, reportScriptSignatures,               true )
+DECLARE_BOOLEAN_METAPARAMETER( Security, warnOnUnsignedCodeExecution,          false )
+DECLARE_BOOLEAN_METAPARAMETER( Security, enableLocalSigningIdentity,           true )
+
+// ----------------------------------------------------------------------------
+
 PCL_END_LOCAL
 
 } // pcl
@@ -415,4 +424,4 @@ PCL_END_LOCAL
 #endif   // __PreferencesParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesParameters.h - Released 2022-03-12T18:59:53Z
+// EOF PreferencesParameters.h - Released 2022-04-22T19:29:05Z

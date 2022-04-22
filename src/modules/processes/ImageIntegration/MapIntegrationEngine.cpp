@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.4.5
+// Standard ImageIntegration Process Module Version 1.4.9
 // ----------------------------------------------------------------------------
-// MapIntegrationEngine.cpp - Released 2022-03-12T18:59:53Z
+// MapIntegrationEngine.cpp - Released 2022-04-22T19:29:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -181,7 +181,8 @@ void MapIntegrationEngine::IntegrationThread::Run()
             break;
          case IINormalization::LocalNormalization:
             for ( int i = 0, x = E.m_x0+j, y = E.m_y0+k; i < n; ++i )
-               stack[i] = IntegrationFile::FileByIndex( index[i] ).Normalize( stack[i], x, y, E.m_channel );
+               if ( stack[i] != 0 )
+                  stack[i] = IntegrationFile::FileByIndex( index[i] ).Normalize( stack[i], x, y, E.m_channel );
             break;
          case IINormalization::AdaptiveNormalization:
             {
@@ -192,24 +193,26 @@ void MapIntegrationEngine::IntegrationThread::Run()
                if ( I.p_adaptiveNoScale )
                {
                   for ( int i = 0; i < n; ++i )
-                  {
-                     const AdaptiveNormalizationData& a = IntegrationFile::FileByIndex( index[i] ).AdaptiveNormalization();
-                     double m = a.Location( x, y, E.m_channel );
-                     stack[i] = (stack[i] - m)*((stack[i] <= m) ? s[index[i]].low : s[index[i]].high) + m0;
-                  }
+                     if ( stack[i] != 0 )
+                     {
+                        const AdaptiveNormalizationData& a = IntegrationFile::FileByIndex( index[i] ).AdaptiveNormalization();
+                        double m = a.Location( x, y, E.m_channel );
+                        stack[i] = (stack[i] - m)*((stack[i] <= m) ? s[index[i]].low : s[index[i]].high) + m0;
+                     }
                }
                else
                {
                   double s00 = a0.ScaleLow( x, y, E.m_channel );
                   double s10 = a0.ScaleHigh( x, y, E.m_channel );
                   for ( int i = 0; i < n; ++i )
-                  {
-                     const AdaptiveNormalizationData& a = IntegrationFile::FileByIndex( index[i] ).AdaptiveNormalization();
-                     double m = a.Location( x, y, E.m_channel );
-                     stack[i] = (stack[i] - m)
-                           * ((stack[i] <= m) ? s00/a.ScaleLow( x, y, E.m_channel ) : s10/a.ScaleHigh( x, y, E.m_channel ))
-                           + m0;
-                  }
+                     if ( stack[i] != 0 )
+                     {
+                        const AdaptiveNormalizationData& a = IntegrationFile::FileByIndex( index[i] ).AdaptiveNormalization();
+                        double m = a.Location( x, y, E.m_channel );
+                        stack[i] = (stack[i] - m)
+                              * ((stack[i] <= m) ? s00/a.ScaleLow( x, y, E.m_channel ) : s10/a.ScaleHigh( x, y, E.m_channel ))
+                              + m0;
+                     }
                }
             }
             break;
@@ -235,12 +238,16 @@ void MapIntegrationEngine::IntegrationThread::Run()
                {
                   double ws = 0;
                   for ( int i = 0; i < n; ++i )
-                  {
-                     double w = IntegrationFile::FileByIndex( index[i] ).Weight( E.m_channel );
-                     f += w*stack[i];
-                     ws += w;
-                  }
-                  f /= ws;
+                     if ( stack[i] != 0 )
+                     {
+                        double w = IntegrationFile::FileByIndex( index[i] ).Weight( E.m_channel );
+                        f += w*stack[i];
+                        ws += w;
+                     }
+                  if ( 1 + ws != 1 )
+                     f /= ws;
+                  else
+                     f = 0;
                }
             }
             break;
@@ -271,7 +278,7 @@ void MapIntegrationEngine::IntegrationThread::Run()
             break;
          }
 
-         if ( result32 != nullptr )
+         if ( likely( result32 != nullptr ) )
             *result32++ = float( f );
          else
             *result64++ = f;
@@ -291,4 +298,4 @@ void MapIntegrationEngine::IntegrationThread::Run()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF MapIntegrationEngine.cpp - Released 2022-03-12T18:59:53Z
+// EOF MapIntegrationEngine.cpp - Released 2022-04-22T19:29:05Z

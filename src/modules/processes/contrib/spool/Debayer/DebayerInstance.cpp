@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
 // Standard Debayer Process Module Version 1.11.0
 // ----------------------------------------------------------------------------
-// DebayerInstance.cpp - Released 2022-03-12T18:59:53Z
+// DebayerInstance.cpp - Released 2022-04-22T19:29:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -457,7 +457,7 @@ public:
             else
             {
                Array<float> R = PSFSignalEstimator::LocalBackgroundResidual( ImageVariant( &m_image ) );
-               noiseEstimate = 2.05435 * Sn( R.Begin(), R.End() );
+               noiseEstimate = PSFSignalEstimator::NStar( R );
             }
             noiseFraction = 1.0;
             noiseAlgorithm = "N-star";
@@ -4604,4 +4604,4 @@ size_type DebayerInstance::ParameterLength( const MetaParameter* p, size_type ta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DebayerInstance.cpp - Released 2022-03-12T18:59:53Z
+// EOF DebayerInstance.cpp - Released 2022-04-22T19:29:05Z

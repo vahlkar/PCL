@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
 // Standard StarNet Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// StarNetProcess.cpp - Released 2022-03-12T18:59:53Z
+// StarNetProcess.cpp - Released 2022-04-22T19:29:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarNet PixInsight module.
 //
@@ -188,4 +188,4 @@ void StarNetProcess::SavePreferences()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF StarNetProcess.cpp - Released 2022-03-12T18:59:53Z
+// EOF StarNetProcess.cpp - Released 2022-04-22T19:29:05Z

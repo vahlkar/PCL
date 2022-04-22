@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// pcl/DrizzleData.h - Released 2022-03-12T18:59:29Z
+// pcl/DrizzleData.h - Released 2022-04-22T19:28:34Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -64,6 +64,36 @@
 
 namespace pcl
 {
+
+// ----------------------------------------------------------------------------
+
+/*!
+ * \namespace pcl::DrizzleParserOption
+ * \brief     %Drizzle data parsing options
+ *
+ * <table border="1" cellpadding="4" cellspacing="0">
+ * <tr><td>DrizzleParserOption::IgnoreIntegrationData</td>
+ *     <td>All drizzle data relative to the image integration task will be
+ * ignored. This includes statistical location and scale estimates for image
+ * normalization, image weights, and pixel rejection data.</td></tr>
+ * <tr><td>DrizzleParserOption::RequireIntegrationData</td>
+ *     <td>Fail if a .xdrz file does not include integration data.</td></tr>
+ * </table>
+ */
+namespace DrizzleParserOption
+{
+   enum mask_type
+   {
+      IgnoreIntegrationData  = 0x00000001,
+      RequireIntegrationData = 0x00000002,
+   };
+}
+
+/*!
+ * \class pcl::DrizzleParserOptions
+ * \brief A collection of %Drizzle data parsing options
+ */
+typedef Flags<DrizzleParserOption::mask_type>  DrizzleParserOptions;
 
 // ----------------------------------------------------------------------------
 
@@ -177,18 +207,17 @@ public:
     *                   first bytes of the file, and will decode it
     *                   correspondingly.
     *
-    * \param ignoreIntegrationData  If true, all drizzle data relative to the
-    *                   image integration task will be ignored. This includes
-    *                   statistical location and scale estimates for image
-    *                   normalization, image weights, and pixel rejection data.
+    * \param options    Optional set of flags controlling the way drizzle data
+    *                   are parsed and verified. See the DrizzleParserOption
+    *                   namespace for more information.
     *
     * This constructor validates the data retrieved from the specified file. It
     * throws the appropriate Error exceptions in the event of parsing errors or
     * invalid data.
     */
-   DrizzleData( const String& filePath, bool ignoreIntegrationData = false )
+   DrizzleData( const String& filePath, DrizzleParserOptions options = DrizzleParserOptions() )
    {
-      Parse( filePath, ignoreIntegrationData );
+      Parse( filePath, options );
    }
 
    /*!
@@ -199,18 +228,17 @@ public:
     *                   expects an %XML document in valid %XML drizzle data
     *                   format (.xdrz).
     *
-    * \param ignoreIntegrationData  If true, all drizzle data relative to the
-    *                   image integration task will be ignored. This includes
-    *                   statistical location and scale estimates for image
-    *                   normalization, image weights, and pixel rejection data.
+    * \param options    Optional set of flags controlling the way drizzle data
+    *                   are parsed and verified. See the DrizzleParserOption
+    *                   namespace for more information.
     *
     * This constructor validates the data retrieved from the specified %XML
     * document. It throws an Error exception in the event of an invalid
     * document or invalid data.
     */
-   DrizzleData( const XMLDocument& xml, bool ignoreIntegrationData = false )
+   DrizzleData( const XMLDocument& xml, DrizzleParserOptions options = DrizzleParserOptions() )
    {
-      Parse( xml, ignoreIntegrationData );
+      Parse( xml, options );
    }
 
    /*!
@@ -220,17 +248,16 @@ public:
     *                   expects an %XML document tree in valid %XML drizzle
     *                   data format (.xdrz) rooted at this element.
     *
-    * \param ignoreIntegrationData  If true, all drizzle data relative to the
-    *                   image integration task will be ignored. This includes
-    *                   statistical location and scale estimates for image
-    *                   normalization, image weights, and pixel rejection data.
+    * \param options    Optional set of flags controlling the way drizzle data
+    *                   are parsed and verified. See the DrizzleParserOption
+    *                   namespace for more information.
     *
     * This constructor validates the data retrieved from the specified %XML
     * element. It throws an Error exception in the event of invalid data.
     */
-   DrizzleData( const XMLElement& element, bool ignoreIntegrationData = false )
+   DrizzleData( const XMLElement& element, DrizzleParserOptions options = DrizzleParserOptions() )
    {
-      Parse( element, ignoreIntegrationData );
+      Parse( element, options );
    }
 
    /*!
@@ -1253,10 +1280,9 @@ public:
     *                   will detect the format in use from the first bytes read
     *                   from the file, and will decode it correspondingly.
     *
-    * \param ignoreIntegrationData  If true, all drizzle data relative to the
-    *                   image integration task will be ignored. This includes
-    *                   statistical location and scale estimates for image
-    *                   normalization, image weights, and pixel rejection data.
+    * \param options    Optional set of flags controlling the way drizzle data
+    *                   are parsed and verified. See the DrizzleParserOption
+    *                   namespace for more information.
     *
     * All of the previous data transported by this instance will be replaced
     * with new data acquired from the specified file.
@@ -1264,7 +1290,7 @@ public:
     * This function validates the data retrieved from the specified file. It
     * throws an Error exception in the event of parsing errors or invalid data.
     */
-   void Parse( const String& filePath, bool ignoreIntegrationData = false );
+   void Parse( const String& filePath, DrizzleParserOptions options = DrizzleParserOptions() );
 
    /*!
     * Parses a well-formed %XML document.
@@ -1273,10 +1299,9 @@ public:
     *                   function expects an %XML document in valid %XML
     *                   drizzle data format (.xdrz).
     *
-    * \param ignoreIntegrationData  If true, all drizzle data relative to the
-    *                   image integration task will be ignored. This includes
-    *                   statistical location and scale estimates for image
-    *                   normalization, image weights, and pixel rejection data.
+    * \param options    Optional set of flags controlling the way drizzle data
+    *                   are parsed and verified. See the DrizzleParserOption
+    *                   namespace for more information.
     *
     * All of the previous data transported by this instance will be replaced
     * with new data acquired from the specified %XML contents.
@@ -1285,7 +1310,7 @@ public:
     * document. It throws an Error exception in the event of an invalid
     * document or invalid data.
     */
-   void Parse( const XMLDocument& xml, bool ignoreIntegrationData = false );
+   void Parse( const XMLDocument& xml, DrizzleParserOptions options = DrizzleParserOptions() );
 
    /*!
     * Parses an %XML element.
@@ -1294,10 +1319,9 @@ public:
     *                   function expects an %XML document tree in valid %XML
     *                   drizzle data format (.xdrz) rooted at this element.
     *
-    * \param ignoreIntegrationData  If true, all drizzle data relative to the
-    *                   image integration task will be ignored. This includes
-    *                   statistical location and scale estimates for image
-    *                   normalization, image weights, and pixel rejection data.
+    * \param options    Optional set of flags controlling the way drizzle data
+    *                   are parsed and verified. See the DrizzleParserOption
+    *                   namespace for more information.
     *
     * All of the previous data transported by this instance will be replaced
     * with new data acquired from the specified %XML contents.
@@ -1305,7 +1329,7 @@ public:
     * This function validates the data retrieved from the specified %XML
     * element. It throws an Error exception in the event of invalid data.
     */
-   void Parse( const XMLElement& element, bool ignoreIntegrationData = false );
+   void Parse( const XMLElement& element, DrizzleParserOptions options = DrizzleParserOptions() );
 
    /*!
     * Returns true if drizzle data compression is enabled for serializations
@@ -1493,4 +1517,4 @@ private:
 #endif   // __PCL_DrizzleData_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/DrizzleData.h - Released 2022-03-12T18:59:29Z
+// EOF pcl/DrizzleData.h - Released 2022-04-22T19:28:34Z

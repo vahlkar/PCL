@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// pcl/NumericControl.cpp - Released 2022-03-12T18:59:36Z
+// pcl/NumericControl.cpp - Released 2022-04-22T19:28:42Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -81,41 +81,41 @@ NumericEdit::NumericEdit( Control& parent )
    SetBackgroundColor( 0 ); // transparent background
 
    SetChildToFocus( edit );
+
+   UpdateRegExp();
 }
 
 // ----------------------------------------------------------------------------
 
-void NumericEdit::SetValue( double v )
+void NumericEdit::SetValue( double value )
 {
-   m_value = Range( m_real ? v : Round( v ), m_lowerBound, m_upperBound );
+   m_value = Range( m_real ? value : Round( value ), m_lowerBound, m_upperBound );
    UpdateControls();
 }
 
 // ----------------------------------------------------------------------------
 
-String NumericEdit::ValueAsString( double v ) const
+String NumericEdit::ValueAsString( double value ) const
 {
-   v = Range( v, m_lowerBound, m_upperBound );
+   value = Range( value, m_lowerBound, m_upperBound );
 
    String vs;
    char sc = 0;
    if ( m_sign )
    {
-      sc = SignChar( Round( v, m_precision ) );
-      v = Abs( v );
+      sc = SignChar( Round( value, m_precision ) );
+      value = Abs( value );
    }
 
    if ( m_real )
    {
-      if ( m_scientific &&
-          (m_sciTriggerExp < 0 || v != 0 && (Abs( v ) > Pow10I<double>()( +m_sciTriggerExp ) ||
-                                             Abs( v ) < Pow10I<double>()( -m_sciTriggerExp ))) )
-         vs.Format( "%.*e", m_precision, v );
+      if ( UseScientific( value ) )
+         vs.Format( "%.*e", m_precision, value );
       else
-         vs.Format( "%.*f", PrecisionForValue( v ), v );
+         vs.Format( "%.*f", PrecisionForValue( value ), value );
    }
    else
-      vs.Format( "%.0f", v );
+      vs.Format( "%.0f", value );
 
    return m_sign ? sc + vs : vs;
 }
@@ -131,6 +131,29 @@ int NumericEdit::PrecisionForValue( double value ) const
          return Max( 0, m_precision - Max( 0, TruncInt( Log( value ) ) ) );
    }
    return m_precision;
+}
+
+// ----------------------------------------------------------------------------
+
+bool NumericEdit::UseScientific( double value ) const
+{
+   return m_scientific &&
+      (m_sciTriggerExp < 0 || value != 0 && (Abs( value ) > Pow10I<double>()( +m_sciTriggerExp ) ||
+                                             Abs( value ) < Pow10I<double>()( -m_sciTriggerExp )));
+}
+
+// ----------------------------------------------------------------------------
+
+void NumericEdit::UpdateRegExp()
+{
+   if ( m_useRegExp )
+   {
+      edit.SetValidatingRegExp( m_real ?
+         "([-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?)|(0[xX][0-9a-fA-F]+)" :
+         "([-+]?[0-9]+)|(0[xX][0-9a-fA-F]+)" );
+   }
+   else
+      edit.DisableValidatingRegExp();
 }
 
 // ----------------------------------------------------------------------------
@@ -161,6 +184,7 @@ void NumericEdit::SetReal( bool real )
       if ( m_autoEditWidth )
          AdjustEditWidth();
       SetValue( m_value );
+      UpdateRegExp();
    }
 }
 
@@ -271,7 +295,10 @@ void NumericEdit::EditCompleted( Edit& sender )
       if ( m_real )
       {
          newValue = sender.Text().ToDouble();
-         newValue = Round( newValue, PrecisionForValue( newValue ) );
+         if ( UseScientific( newValue ) )
+            newValue = IsoString().Format( "%.*e", m_precision, newValue ).ToDouble();
+         else
+            newValue = Round( newValue, PrecisionForValue( newValue ) );
       }
       else
          newValue = sender.Text().ToInt();
@@ -490,4 +517,4 @@ void NumericControl::KeyPressed( Control& sender, int key, unsigned modifiers, b
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/NumericControl.cpp - Released 2022-03-12T18:59:36Z
+// EOF pcl/NumericControl.cpp - Released 2022-04-22T19:28:42Z

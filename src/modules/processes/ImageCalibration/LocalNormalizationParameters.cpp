@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.9.1
+// Standard ImageCalibration Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// LocalNormalizationParameters.cpp - Released 2022-03-12T18:59:53Z
+// LocalNormalizationParameters.cpp - Released 2022-04-22T19:29:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -63,6 +63,8 @@ LNGlobalLocationNormalization*   TheLNGlobalLocationNormalizationParameter = nul
 LNRejection*                     TheLNRejectionParameter = nullptr;
 LNTruncate*                      TheLNTruncateParameter = nullptr;
 LNBackgroundSamplingDelta*       TheLNBackgroundSamplingDeltaParameter = nullptr;
+LNLowClippingLevel*              TheLNLowClippingLevelParameter = nullptr;
+LNHighClippingLevel*             TheLNHighClippingLevelParameter = nullptr;
 LNBackgroundRejectionLimit*      TheLNBackgroundRejectionLimitParameter = nullptr;
 LNReferenceRejectionThreshold*   TheLNReferenceRejectionThresholdParameter = nullptr;
 LNTargetRejectionThreshold*      TheLNTargetRejectionThresholdParameter = nullptr;
@@ -240,6 +242,70 @@ double LNBackgroundSamplingDelta::MaximumValue() const
 double LNBackgroundSamplingDelta::DefaultValue() const
 {
    return 32;
+}
+
+// ----------------------------------------------------------------------------
+
+LNLowClippingLevel::LNLowClippingLevel( MetaProcess* P ) : MetaDouble( P )
+{
+   TheLNLowClippingLevelParameter = this;
+}
+
+IsoString LNLowClippingLevel::Id() const
+{
+   return "lowClippingLevel";
+}
+
+int LNLowClippingLevel::Precision() const
+{
+   return 6;
+}
+
+double LNLowClippingLevel::DefaultValue() const
+{
+   return 4.5e-5; // approx. 3/65535
+}
+
+double LNLowClippingLevel::MinimumValue() const
+{
+   return 0.0;
+}
+
+double LNLowClippingLevel::MaximumValue() const
+{
+   return 0.5;
+}
+
+// ----------------------------------------------------------------------------
+
+LNHighClippingLevel::LNHighClippingLevel( MetaProcess* P ) : MetaFloat( P )
+{
+   TheLNHighClippingLevelParameter = this;
+}
+
+IsoString LNHighClippingLevel::Id() const
+{
+   return "highClippingLevel";
+}
+
+int LNHighClippingLevel::Precision() const
+{
+   return 2;
+}
+
+double LNHighClippingLevel::DefaultValue() const
+{
+   return 0.85;
+}
+
+double LNHighClippingLevel::MinimumValue() const
+{
+   return 0.5;
+}
+
+double LNHighClippingLevel::MaximumValue() const
+{
+   return 1.0;
 }
 
 // ----------------------------------------------------------------------------
@@ -1544,4 +1610,4 @@ bool LNScaleFactorB::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationParameters.cpp - Released 2022-03-12T18:59:53Z
+// EOF LocalNormalizationParameters.cpp - Released 2022-04-22T19:29:05Z

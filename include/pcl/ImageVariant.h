@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// pcl/ImageVariant.h - Released 2022-03-12T18:59:29Z
+// pcl/ImageVariant.h - Released 2022-04-22T19:28:34Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -1356,10 +1356,11 @@ public:
     *
     * The specified \a maxProcessors parameter is the maximum number of
     * processors that this image can use in member functions that support
-    * parallel execution.
+    * parallel execution. A value &le; 0 is ignored and causes the call to this
+    * function to have no effect.
     *
     * In the current versions of PCL, a module can use a maximum of 1023
-    * processors. The term \e processor actually refers to the number of
+    * processors. The term \e processors actually refers to the number of
     * threads a module can execute concurrently.
     *
     * Irrespective of the value specified by this function, a module should not
@@ -7274,4 +7275,4 @@ GenericImage<P>& GenericImage<P>::SetLightness( const ImageVariant& L, const Poi
 #endif   // __PCL_ImageVariant_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ImageVariant.h - Released 2022-03-12T18:59:29Z
+// EOF pcl/ImageVariant.h - Released 2022-04-22T19:28:34Z

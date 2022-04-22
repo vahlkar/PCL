@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.9.1
+// Standard ImageCalibration Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// ImageCalibrationInterface.cpp - Released 2022-03-12T18:59:53Z
+// ImageCalibrationInterface.cpp - Released 2022-04-22T19:29:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -2434,4 +2434,4 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInterface.cpp - Released 2022-03-12T18:59:53Z
+// EOF ImageCalibrationInterface.cpp - Released 2022-04-22T19:29:05Z

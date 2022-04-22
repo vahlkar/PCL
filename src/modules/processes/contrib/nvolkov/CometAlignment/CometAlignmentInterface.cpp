@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
 // Standard CometAlignment Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// CometAlignmentInterface.cpp - Released 2022-03-12T18:59:53Z
+// CometAlignmentInterface.cpp - Released 2022-04-22T19:29:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CometAlignment PixInsight module.
 //
@@ -785,7 +785,7 @@ void CometAlignmentInterface::__TargetImages_NodeSelectionUpdated( TreeBox& send
 
 String CometAlignmentInterface::DrizzleTargetName( const String& filePath )
 {
-   DrizzleData drz( filePath, true /*ignoreIntegrationData*/ );
+   DrizzleData drz( filePath, DrizzleParserOption::IgnoreIntegrationData );
 
    /*
     * If the drizzle file includes a target alignment path, use it. Otherwise
@@ -1798,4 +1798,4 @@ CometAlignmentInterface::GUIData::GUIData( CometAlignmentInterface& w )
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF CometAlignmentInterface.cpp - Released 2022-03-12T18:59:53Z
+// EOF CometAlignmentInterface.cpp - Released 2022-04-22T19:29:05Z

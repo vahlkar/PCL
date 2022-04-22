@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// pcl/PSFSignalEstimator.h - Released 2022-03-12T18:59:29Z
+// pcl/PSFSignalEstimator.h - Released 2022-04-22T19:28:34Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -224,6 +224,59 @@ public:
    static Array<float> LocalBackgroundResidual( const ImageVariant& image, int scale = 256, int maxThreads = 0 );
 
    /*!
+    * Returns the normalized N* robust estimator of the standard deviation of
+    * the noise for the specified local background residual \a R. This function
+    * computes the normalized N* variant with the MAD scale estimator:
+    *
+    * N* = 2.48308 * MAD( R )
+    *
+    * The type \a T must be a direct container with PCL random access container
+    * semantics, such as Vector or Array. You can use the output of
+    * LocalBackgroundResidual() directly to call this function.
+    */
+   template <class T>
+   static double NStar_MAD( const T& R )
+   {
+      return 2.48308 * pcl::MAD( R.Begin(), R.End() );
+   }
+
+   /*!
+    * Returns the normalized N* robust estimator of the standard deviation of
+    * the noise for the specified local background residual \a R. This function
+    * computes the normalized N* variant with the Sn scale estimator of
+    * Rousseeuw and Croux:
+    *
+    * N* = 2.03636 * Sn( R )
+    *
+    * The type \a T must be a direct container with PCL random access container
+    * semantics, such as Vector or Array. You can use the output of
+    * LocalBackgroundResidual() directly to call this function.
+    *
+    * \note This is a \e destructive algorithm: it may alter the initial order
+    * of items in the specified \a R container.
+    */
+   template <class T>
+   static double NStar_Sn( T& R )
+   {
+      return 2.03636 * pcl::Sn( R.Begin(), R.End() );
+   }
+
+   /*!
+    * Returns the normalized N* robust estimator of the standard deviation of
+    * the noise for the specified local background residual \a R. This function
+    * computes the normalized N* variant with the Sn scale estimator of
+    * Rousseeuw and Croux. It is equivalent to NStar_Sn( R ).
+    *
+    * \note This is a \e destructive algorithm: it may alter the initial order
+    * of items in the specified \a R container.
+    */
+   template <class T>
+   static double NStar( T& R )
+   {
+      return NStar_Sn( R );
+   }
+
+   /*!
     * The PSF Signal Weight (PSFSW) image quality estimator.
     *
     * \param E       PSF flux and robust mean background and noise estimates.
@@ -241,7 +294,7 @@ public:
    {
       if ( sigmaN <= 0 )
          sigmaN = E.NStar;
-      return (3.18e-6 * E.totalFlux * E.totalMeanFlux) / (9.00e+6 * sigmaN * E.MStar);
+      return (8.0832e-6 * E.totalFlux * E.totalMeanFlux) / (9.0e+6 * sigmaN * E.MStar);
    }
 
    /*!
@@ -277,4 +330,4 @@ private:
 #endif   // __PCL_PSFSignalEstimator_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFSignalEstimator.h - Released 2022-03-12T18:59:29Z
+// EOF pcl/PSFSignalEstimator.h - Released 2022-04-22T19:28:34Z

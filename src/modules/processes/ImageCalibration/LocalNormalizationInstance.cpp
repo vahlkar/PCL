@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.9.1
+// Standard ImageCalibration Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// LocalNormalizationInstance.cpp - Released 2022-03-12T18:59:53Z
+// LocalNormalizationInstance.cpp - Released 2022-04-22T19:29:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -83,8 +83,6 @@
 #include <pcl/Version.h>
 #include <pcl/View.h>
 
-#define TINY_SAMPLE_VALUE  4.5e-5   // approx. 3/65535
-
 #define RCR_LARGE_SAMPLE   20000
 
 namespace pcl
@@ -100,6 +98,8 @@ LocalNormalizationInstance::LocalNormalizationInstance( const MetaProcess* P )
    , p_rejection( TheLNRejectionParameter->DefaultValue() )
    , p_truncate( TheLNTruncateParameter->DefaultValue() )
    , p_backgroundSamplingDelta( TheLNBackgroundSamplingDeltaParameter->DefaultValue() )
+   , p_lowClippingLevel( TheLNLowClippingLevelParameter->DefaultValue() )
+   , p_highClippingLevel( TheLNHighClippingLevelParameter->DefaultValue() )
    , p_backgroundRejectionLimit( TheLNBackgroundRejectionLimitParameter->DefaultValue() )
    , p_referenceRejectionThreshold( TheLNReferenceRejectionThresholdParameter->DefaultValue() )
    , p_targetRejectionThreshold( TheLNTargetRejectionThresholdParameter->DefaultValue() )
@@ -170,6 +170,8 @@ void LocalNormalizationInstance::Assign( const ProcessImplementation& p )
       p_rejection                     = x->p_rejection;
       p_truncate                      = x->p_truncate;
       p_backgroundSamplingDelta       = x->p_backgroundSamplingDelta;
+      p_lowClippingLevel              = x->p_lowClippingLevel;
+      p_highClippingLevel             = x->p_highClippingLevel;
       p_backgroundRejectionLimit      = x->p_backgroundRejectionLimit;
       p_referenceRejectionThreshold   = x->p_referenceRejectionThreshold;
       p_targetRejectionThreshold      = x->p_targetRejectionThreshold;
@@ -485,12 +487,12 @@ public:
       m_monitor.DisableInitialization();
 
       /*
-       * Rejection of insignificant pixel samples.
+       * Rejection of insignificant and saturated pixel samples.
        */
       for ( int c = 0; c < R.NumberOfChannels(); ++c )
       {
          for ( Image::sample_iterator r( R, c ); r; ++r )
-            if ( *r < TINY_SAMPLE_VALUE )
+            if ( *r <= m_instance.p_lowClippingLevel || *r >= m_instance.p_highClippingLevel )
                *r = 0;
          ++m_monitor;
       }
@@ -774,14 +776,14 @@ private:
       Tmap.AllocateData( T.Width(), T.Height(), T.NumberOfNominalChannels(), T.ColorSpace() ).Fill( uint8( 0 ) );
 
       /*
-       * Initial rejection of black or insignificant pixel samples.
+       * Initial rejection of insignificant and saturated pixel samples.
        */
       for ( int c = 0; c < T.NumberOfChannels(); ++c )
       {
          UInt8Image::sample_iterator tm( Tmap, c );
          for ( Image::sample_iterator t( T, c ); t; ++t, ++tm )
          {
-            if ( *t < TINY_SAMPLE_VALUE )
+            if ( *t <= m_instance.p_lowClippingLevel || *t >= m_instance.p_highClippingLevel )
                *t = 0;
             if ( *t == 0 )
                *tm = uint8( 0xff );
@@ -877,45 +879,70 @@ private:
    // -------------------------------------------------------------------------
 
    /*
-    * Large-scale component extraction with the MMT and convolutions.
+    * Large-scale component extraction with the MMT.
     */
    Image LS( const Image& image )
    {
       /*
-       * Accelerated Multiscale Median Transform with linear scaling sequences.
+       * Accelerated Multiscale Median Transform.
        *
-       * The following values for the number of layers (n) and scaling
-       * increments (d) have been found experimentally to be accurate to within
-       * a 0.1% of the rigorous transforms with dyadic scaling sequences.
+       * The following values for the number of layers (n) and inverse sampling
+       * ratio (r) approximate the rigorous transforms with negligible errors
+       * using dyadic scaling sequences and decimation.
        *
-       * N.B.: These optimizations are valid for the current PCL implementation
-       * of the MMT algorithm. If the implementations change, these
-       * optimized parameters will have to be re-evaluated through new tests.
+       * We apply nearest neighbor interpolation for decimation/undecimation in
+       * order to avoid contamination of the nonlinear multiscale transform
+       * with linear components.
        */
-      int n, d;
+      int n, r;
       switch ( m_instance.p_scale )
       {
-      case 1024: n = 5; d = 80; break;
-      case  768: n = 5; d = 60; break;
+      case 1024: n = 7; r = 8; break;
+      case  768: n = 7; r = 6; break;
       default: // ?!
-      case  512: n = 4; d = 55; break;
-      case  384: n = 4; d = 40; break;
-      case  256: n = 3; d = 40; break;
-      case  192: n = 3; d = 30; break;
-      case  128: n = 3; d = 20; break;
-      case   64: n = 3; d = 10; break;
-      case   32: n = 5; d =  0; break;
+      case  512: n = 6; r = 8; break;
+      case  384: n = 6; r = 6; break;
+      case  256: n = 6; r = 4; break;
+      case  192: n = 6; r = 3; break;
+      case  128: n = 6; r = 2; break;
+      case   64: n = 5; r = 2; break;
+      case   32: n = 4; r = 2; break;
       }
-      MultiscaleMedianTransform M( n, d );
+
+      /*
+       * MMT
+       */
+      MultiscaleMedianTransform M( n, 0 );
       M.SetMaxProcessors( m_maxThreads );
       for ( int i = 0; i < M.NumberOfLayers(); ++i )
          M.DisableLayer( i );
-      image.Status() = m_monitor;
-      M << image;
-      m_monitor = image.Status();
-      image.Status() = StatusMonitor();
 
-      M[M.NumberOfLayers()].Status() = m_monitor;
+      {
+         /*
+          * Decimate
+          */
+         Image I( image );
+         I.Status() = m_monitor;
+         NearestNeighborPixelInterpolation N;
+         Resample R( N, 1.0/r );
+         R.SetMaxProcessors( m_maxThreads );
+         R >> I;
+
+         /*
+          * Perform MMT
+          */
+         M << I;
+
+         m_monitor = I.Status();
+         M[M.NumberOfLayers()].Status() = m_monitor;
+
+         /*
+          * Undecimate
+          */
+         R.SetMode( ResizeMode::AbsolutePixels );
+         R.SetSizes( image.Width(), image.Height() );
+         R >> M[M.NumberOfLayers()];
+      }
 
       /*
        * Apply a convolution with a Gaussian filter to smooth out
@@ -1494,21 +1521,27 @@ __rcr_end:
             }
             else
             {
-               m_A1.Fill( m_s[c].scale );
                Image::sample_iterator a0( m_A0, c );
-               for ( Image::const_sample_iterator rb( m_RB, c ), tb( TB, c ); rb; ++rb, ++tb, ++a0 )
-                  *a0 = *rb - m_s[c].scale * *tb;
+               Image::sample_iterator a1( m_A1, c );
+               for ( Image::const_sample_iterator rb( m_RB, c ), tb( TB, c ); rb; ++rb, ++tb, ++a0, ++a1 )
+               {
+                  *a1 = m_s[c].scale;
+                  *a0 = *rb - *a1 * *tb;
+               }
             }
          }
       }
       else
       {
-         m_A1.Fill( 1.0 );
          for ( int c = 0; c < T.NumberOfChannels(); ++c )
          {
             Image::sample_iterator a0( m_A0, c );
-            for ( Image::const_sample_iterator rb( m_RB, c ), tb( TB, c ); rb; ++rb, ++tb, ++a0 )
+            Image::sample_iterator a1( m_A1, c );
+            for ( Image::const_sample_iterator rb( m_RB, c ), tb( TB, c ); rb; ++rb, ++tb, ++a0, ++a1 )
+            {
                *a0 = *rb - *tb;
+               *a1 = 1.0;
+            }
          }
       }
 
@@ -2455,6 +2488,10 @@ void* LocalNormalizationInstance::LockParameter( const MetaParameter* p, size_ty
       return &p_truncate;
    if ( p == TheLNBackgroundSamplingDeltaParameter )
       return &p_backgroundSamplingDelta;
+   if ( p == TheLNLowClippingLevelParameter )
+      return &p_lowClippingLevel;
+   if ( p == TheLNHighClippingLevelParameter )
+      return &p_highClippingLevel;
    if ( p == TheLNBackgroundRejectionLimitParameter )
       return &p_backgroundRejectionLimit;
    if ( p == TheLNReferenceRejectionThresholdParameter )
@@ -2693,4 +2730,4 @@ size_type LocalNormalizationInstance::ParameterLength( const MetaParameter* p, s
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationInstance.cpp - Released 2022-03-12T18:59:53Z
+// EOF LocalNormalizationInstance.cpp - Released 2022-04-22T19:29:05Z

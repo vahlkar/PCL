@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
 // Standard RAW File Format Module Version 1.5.7
 // ----------------------------------------------------------------------------
-// RawModule.cpp - Released 2022-03-12T18:59:44Z
+// RawModule.cpp - Released 2022-04-22T19:28:54Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RAW PixInsight module.
 //
@@ -57,8 +57,8 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2022
-#define MODULE_RELEASE_MONTH     3
-#define MODULE_RELEASE_DAY       12
+#define MODULE_RELEASE_MONTH     4
+#define MODULE_RELEASE_DAY       22
 
 #include "RawModule.h"
 #include "RawFormat.h"
@@ -163,4 +163,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF RawModule.cpp - Released 2022-03-12T18:59:44Z
+// EOF RawModule.cpp - Released 2022-04-22T19:28:54Z

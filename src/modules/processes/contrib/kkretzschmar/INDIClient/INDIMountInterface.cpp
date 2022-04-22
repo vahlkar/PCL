@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// Standard INDIClient Process Module Version 1.2.2
+// Standard INDIClient Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// INDIMountInterface.cpp - Released 2022-03-12T18:59:53Z
+// INDIMountInterface.cpp - Released 2022-04-22T19:29:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
-// Copyright (c) 2014-2021 Klaus Kretzschmar
+// Copyright (c) 2014-2022 Klaus Kretzschmar
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -74,7 +74,7 @@ INDIMountInterface* TheINDIMountInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-void INDIMountInterfaceExecution::StartMountEvent( double targetRA, double currentRA, double targetDec, double currentDec, pcl_enum command ) 
+void INDIMountInterfaceExecution::StartMountEvent( double targetRA, double currentRA, double targetDec, double currentDec, pcl_enum command )
    {
       m_iface->m_execution = this;
       m_command = command;
@@ -104,7 +104,7 @@ void INDIMountInterfaceExecution::StartMountEvent( double targetRA, double curre
       Module->ProcessEvents();
    }
 
-   void INDIMountInterfaceExecution::MountEvent( double targetRA, double currentRA, double targetDec, double currentDec ) 
+   void INDIMountInterfaceExecution::MountEvent( double targetRA, double currentRA, double targetDec, double currentDec )
    {
       if ( m_abortRequested )
          AbstractINDIMountExecution::Abort();
@@ -136,7 +136,7 @@ void INDIMountInterfaceExecution::StartMountEvent( double targetRA, double curre
       Module->ProcessEvents();
    }
 
-   void INDIMountInterfaceExecution::EndMountEvent() 
+   void INDIMountInterfaceExecution::EndMountEvent()
    {
       m_iface->m_execution = nullptr;
       m_iface->GUI->TargetRA_H_SpinBox.Enable();
@@ -166,12 +166,12 @@ void INDIMountInterfaceExecution::StartMountEvent( double targetRA, double curre
       Module->ProcessEvents();
    }
 
-   void INDIMountInterfaceExecution::WaitEvent() 
+   void INDIMountInterfaceExecution::WaitEvent()
    {
       Module->ProcessEvents();
    }
 
-   void INDIMountInterfaceExecution::AbortEvent() 
+   void INDIMountInterfaceExecution::AbortEvent()
    {
       EndMountEvent();
    }
@@ -2779,4 +2779,4 @@ void INDIMountInterface::plotAlignemtResiduals( AlignmentModel* model )
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDIMountInterface.cpp - Released 2022-03-12T18:59:53Z
+// EOF INDIMountInterface.cpp - Released 2022-04-22T19:29:05Z

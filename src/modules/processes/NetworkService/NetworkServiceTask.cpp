@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
 // Standard NetworkService Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// NetworkServiceTask.cpp - Released 2022-03-12T18:59:53Z
+// NetworkServiceTask.cpp - Released 2022-04-22T19:29:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NetworkService PixInsight module.
 //
@@ -176,4 +176,4 @@ void NetworkServiceTask::RegisterTask( NetworkServiceTask* task )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF NetworkServiceTask.cpp - Released 2022-03-12T18:59:53Z
+// EOF NetworkServiceTask.cpp - Released 2022-04-22T19:29:05Z

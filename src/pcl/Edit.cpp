@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// pcl/Edit.cpp - Released 2022-03-12T18:59:35Z
+// pcl/Edit.cpp - Released 2022-04-22T19:28:42Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -72,7 +72,7 @@ Edit::Edit( const String& text, Control& parent )
 String Edit::Text() const
 {
    size_type len = 0;
-   (*API->Edit->GetEditText)( handle, 0, &len );
+   (*API->Edit->GetEditText)( handle, nullptr/*text*/, &len );
 
    String text;
    if ( len > 0 )
@@ -132,6 +132,59 @@ bool Edit::IsPasswordMode() const
 void Edit::EnablePasswordMode( bool enable )
 {
    (*API->Edit->SetEditPasswordEnabled)( handle, enable );
+}
+
+// ----------------------------------------------------------------------------
+
+String Edit::ValidatingRegExp() const
+{
+   size_type len = 0;
+   (*API->Edit->GetEditValidatingRegExp)( handle, nullptr, &len, nullptr/*caseSensitive*/ );
+
+   String text;
+   if ( len > 0 )
+   {
+      text.SetLength( len );
+      if ( (*API->Edit->GetEditValidatingRegExp)( handle, text.Begin(), &len, nullptr/*caseSensitive*/ ) == api_false )
+         throw APIFunctionError( "GetEditValidatingRegExp" );
+      text.ResizeToNullTerminated();
+   }
+   return text;
+}
+
+// ----------------------------------------------------------------------------
+
+String Edit::ValidatingRegExp( bool& caseSensitive ) const
+{
+   size_type len = 0;
+   (*API->Edit->GetEditValidatingRegExp)( handle, nullptr, &len, nullptr/*caseSensitive*/ );
+
+   String text;
+   if ( len > 0 )
+   {
+      text.SetLength( len );
+      api_bool cs = api_true;
+      if ( (*API->Edit->GetEditValidatingRegExp)( handle, text.Begin(), &len, &cs ) == api_false )
+         throw APIFunctionError( "GetEditValidatingRegExp" );
+      text.ResizeToNullTerminated();
+      caseSensitive = cs != api_false;
+   }
+   return text;
+}
+
+// ----------------------------------------------------------------------------
+
+void Edit::SetValidatingRegExp( const String& rx, bool caseSensitive )
+{
+   if ( (*API->Edit->SetEditValidatingRegExp)( handle, rx.c_str(), api_bool( caseSensitive ) ) == api_false )
+      throw APIFunctionError( "SetEditValidatingRegExp" );
+}
+
+// ----------------------------------------------------------------------------
+
+bool Edit::IsValid() const
+{
+   return (*API->Edit->GetEditValid)( handle ) != api_false;
 }
 
 // ----------------------------------------------------------------------------
@@ -355,4 +408,4 @@ void Edit::OnSelectionUpdated( selection_event_handler f, Control& receiver )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Edit.cpp - Released 2022-03-12T18:59:35Z
+// EOF pcl/Edit.cpp - Released 2022-04-22T19:28:42Z

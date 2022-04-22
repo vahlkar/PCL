@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.3.2
+// Standard Global Process Module Version 1.3.3
 // ----------------------------------------------------------------------------
-// PreferencesInstance.h - Released 2022-03-12T18:59:53Z
+// PreferencesInstance.h - Released 2022-04-22T19:29:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -246,6 +246,18 @@ struct ProcessPreferences
 
 // ----------------------------------------------------------------------------
 
+struct SecurityPreferences
+{
+   pcl_bool    allowUnsignedScriptExecution;
+   pcl_bool    allowUnsignedRepositories;
+   pcl_bool    allowInsecureRepositories;
+   pcl_bool    reportScriptSignatures;
+   pcl_bool    warnOnUnsignedCodeExecution;
+   pcl_bool    enableLocalSigningIdentity;
+};
+
+// ----------------------------------------------------------------------------
+
 class PreferencesInstance : public ProcessImplementation
 {
 public:
@@ -271,6 +283,7 @@ private:
    ImageWindowPreferences imageWindow;
    IdentifiersPreferences identifiers;
    ProcessPreferences     process;
+   SecurityPreferences    security;
 
    String* StringParameterFromMetaParameter( const MetaParameter* );
 
@@ -293,6 +306,7 @@ private:
    friend class ParallelProcessingPreferencesPage;
    friend class MiscProcessingPreferencesPage;
    friend class TransparencyColorsPreferencesPage;
+   friend class SecurityPreferencesPage;
 };
 
 // ----------------------------------------------------------------------------
@@ -302,4 +316,4 @@ private:
 #endif   // __PreferencesInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInstance.h - Released 2022-03-12T18:59:53Z
+// EOF PreferencesInstance.h - Released 2022-04-22T19:29:05Z

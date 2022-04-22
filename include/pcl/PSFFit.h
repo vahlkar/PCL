@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// pcl/PSFFit.h - Released 2022-03-12T18:59:29Z
+// pcl/PSFFit.h - Released 2022-04-22T19:28:34Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -424,12 +424,14 @@ struct PSFData
     * \param sigma_y    Estimated function width on the Y axis.
     *
     * \param beta       Moffat beta or VariableShape shape parameter.
-    *                   Must be > 0. Must be > 1 for Moffat and Lorentzian
-    *                   functions.
+    *                   Must be > 0. Must be > 1 for Moffat functions.
     *
     * The returned value is the volume of the PSF over the XY plane, or zero if
     * an invalid or unsupported function type has been specified, or if the
     * \a beta parameter is invalid for the type of PSF specified.
+    *
+    * \note The volume under a Lorentzian function (&beta; = 1) is undefined,
+    * since the denominator of the double integral equation is &beta; - 1 = 0.
     */
    static double Volume( psf_function function, double sigma_x, double sigma_y, double beta = 2 )
    {
@@ -608,4 +610,4 @@ private:
 #endif   // __PCL_PSFFit_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFFit.h - Released 2022-03-12T18:59:29Z
+// EOF pcl/PSFFit.h - Released 2022-04-22T19:28:34Z

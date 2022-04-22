@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.3.2
+// Standard Global Process Module Version 1.3.3
 // ----------------------------------------------------------------------------
-// PreferencesProcess.cpp - Released 2022-03-12T18:59:53Z
+// PreferencesProcess.cpp - Released 2022-04-22T19:29:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -241,6 +241,15 @@ PreferencesProcess::PreferencesProcess()
    new METAPARAMETER_ID( Process, alertOnProcessCompleted )( this );
    new METAPARAMETER_ID( Process, enableExecutionStatistics )( this );
    new METAPARAMETER_ID( Process, enableLaunchStatistics )( this );
+
+   // -------------------------------------------------------------------------
+
+   new METAPARAMETER_ID( Security, allowUnsignedScriptExecution )( this );
+   new METAPARAMETER_ID( Security, allowUnsignedRepositories )( this );
+   new METAPARAMETER_ID( Security, allowInsecureRepositories )( this );
+   new METAPARAMETER_ID( Security, reportScriptSignatures )( this );
+   new METAPARAMETER_ID( Security, warnOnUnsignedCodeExecution )( this );
+   new METAPARAMETER_ID( Security, enableLocalSigningIdentity )( this );
 }
 
 // ----------------------------------------------------------------------------
@@ -384,4 +393,4 @@ int PreferencesProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesProcess.cpp - Released 2022-03-12T18:59:53Z
+// EOF PreferencesProcess.cpp - Released 2022-04-22T19:29:05Z

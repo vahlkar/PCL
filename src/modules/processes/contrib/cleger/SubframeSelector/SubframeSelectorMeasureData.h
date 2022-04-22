@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.8.0
+// Standard SubframeSelector Process Module Version 1.8.3
 // ----------------------------------------------------------------------------
-// SubframeSelectorMeasureData.h - Released 2022-03-12T18:59:53Z
+// SubframeSelectorMeasureData.h - Released 2022-04-22T19:29:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -86,6 +86,8 @@ struct MeasureProperties
    MeasureProperty eccentricityMeanDev;
    MeasureProperty psfSignalWeight;
    MeasureProperty psfSNR;
+   MeasureProperty psfScale;
+   MeasureProperty psfScaleSNR;
    MeasureProperty psfFlux;
    MeasureProperty psfFluxPower;
    MeasureProperty psfTotalMeanFlux;
@@ -118,6 +120,8 @@ struct MeasureData
    double eccentricityMeanDev;
    double psfSignalWeight;
    double psfSNR;
+   double psfScale;
+   double psfScaleSNR;
    double psfFlux;
    double psfFluxPower;
    double psfTotalMeanFlux;
@@ -164,6 +168,8 @@ struct MeasureItem
    double   eccentricity;
    double   psfSignalWeight;
    double   psfSNR;
+   double   psfScale;
+   double   psfScaleSNR;
    double   psfFlux;
    double   psfFluxPower;
    double   psfTotalMeanFlux;
@@ -195,6 +201,8 @@ struct MeasureItem
       , eccentricity( TheSSMeasurementEccentricityParameter->DefaultValue() )
       , psfSignalWeight( TheSSMeasurementPSFSignalWeightParameter->DefaultValue() )
       , psfSNR( TheSSMeasurementPSFSNRParameter->DefaultValue() )
+      , psfScale( TheSSMeasurementPSFScaleParameter->DefaultValue() )
+      , psfScaleSNR( TheSSMeasurementPSFScaleSNRParameter->DefaultValue() )
       , psfFlux( TheSSMeasurementPSFFluxParameter->DefaultValue() )
       , psfFluxPower( TheSSMeasurementPSFFluxPowerParameter->DefaultValue() )
       , psfTotalMeanFlux( TheSSMeasurementPSFTotalMeanFluxParameter->DefaultValue() )
@@ -231,6 +239,8 @@ struct MeasureItem
       eccentricity = measureData.eccentricity;
       psfSignalWeight = measureData.psfSignalWeight;
       psfSNR = measureData.psfSNR;
+      psfScale = measureData.psfScale;
+      psfScaleSNR = measureData.psfScaleSNR;
       psfFlux = measureData.psfFlux;
       psfFluxPower = measureData.psfFluxPower;
       psfTotalMeanFlux = measureData.psfTotalMeanFlux;
@@ -328,6 +338,8 @@ struct MeasureItem
       case SSSortingProperty::Eccentricity:          return eccentricity;
       case SSSortingProperty::PSFSignalWeight:       return psfSignalWeight;
       case SSSortingProperty::PSFSNR:                return psfSNR;
+      case SSSortingProperty::PSFScale:              return psfScale;
+      case SSSortingProperty::PSFScaleSNR:           return psfScaleSNR;
       case SSSortingProperty::PSFFlux:               return psfFlux;
       case SSSortingProperty::PSFFluxPower:          return psfFluxPower;
       case SSSortingProperty::PSFTotalMeanFlux:      return psfTotalMeanFlux;
@@ -422,4 +434,4 @@ private:
 #endif   // __SubframeSelectorMeasureData_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorMeasureData.h - Released 2022-03-12T18:59:53Z
+// EOF SubframeSelectorMeasureData.h - Released 2022-04-22T19:29:05Z

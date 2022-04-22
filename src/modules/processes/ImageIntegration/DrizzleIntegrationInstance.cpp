@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.4.5
+// Standard ImageIntegration Process Module Version 1.4.9
 // ----------------------------------------------------------------------------
-// DrizzleIntegrationInstance.cpp - Released 2022-03-12T18:59:53Z
+// DrizzleIntegrationInstance.cpp - Released 2022-04-22T19:29:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -1499,7 +1499,7 @@ void DrizzleIntegrationEngine::Perform()
             if ( !File::Exists( item.path ) )
                throw Error( "No such file: " + item.path );
 
-            m_decoder.Parse( item.path );
+            m_decoder.Parse( item.path, DrizzleParserOption::RequireIntegrationData );
             if ( !m_instance.p_enableSurfaceSplines || !m_decoder.HasAlignmentSplines() )
                if ( !m_decoder.HasAlignmentMatrix() )
                   throw Error( "Missing alignment matrix definition." );
@@ -2282,4 +2282,4 @@ size_type DrizzleIntegrationInstance::ParameterLength( const MetaParameter* p, s
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DrizzleIntegrationInstance.cpp - Released 2022-03-12T18:59:53Z
+// EOF DrizzleIntegrationInstance.cpp - Released 2022-04-22T19:29:05Z

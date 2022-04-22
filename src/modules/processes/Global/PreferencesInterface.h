@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.3.2
+// Standard Global Process Module Version 1.3.3
 // ----------------------------------------------------------------------------
-// PreferencesInterface.h - Released 2022-03-12T18:59:53Z
+// PreferencesInterface.h - Released 2022-04-22T19:29:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -658,6 +658,26 @@ DEFINE_PREFERENCES_CATEGORY( DirectoriesAndNetwork, "Directories and Network" )
 
 // ----------------------------------------------------------------------------
 
+class SecurityPreferencesPage : public PreferencesCategoryPage
+{
+public:
+
+   SecurityPreferencesPage( PreferencesInstance& );
+
+   void TransferSettings( PreferencesInstance& to, const PreferencesInstance& from ) override;
+
+   GlobalFlagControl          AllowUnsignedScriptExecution_Flag;
+   GlobalFlagControl          AllowUnsignedRepositories_Flag;
+   GlobalFlagControl          AllowInsecureRepositories_Flag;
+   GlobalFlagControl          ReportScriptSignatures_Flag;
+   GlobalFlagControl          WarnOnUnsignedCodeExecution_Flag;
+   GlobalFlagControl          EnableLocalSigningIdentity_Flag;
+};
+
+DEFINE_PREFERENCES_CATEGORY( Security, "Security" )
+
+// ----------------------------------------------------------------------------
+
 class DefaultImageResolutionPreferencesPage : public PreferencesCategoryPage
 {
 public:
@@ -953,4 +973,4 @@ PCL_END_LOCAL
 #endif   // __PreferencesInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInterface.h - Released 2022-03-12T18:59:53Z
+// EOF PreferencesInterface.h - Released 2022-04-22T19:29:05Z

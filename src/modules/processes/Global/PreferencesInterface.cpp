@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.3.2
+// Standard Global Process Module Version 1.3.3
 // ----------------------------------------------------------------------------
-// PreferencesInterface.cpp - Released 2022-03-12T18:59:53Z
+// PreferencesInterface.cpp - Released 2022-04-22T19:29:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -973,12 +973,8 @@ bool PreferencesInterface::ImportProcess( const ProcessImplementation& p )
 
 void PreferencesInterface::UpdateControls()
 {
-   for ( global_item_ref_list::iterator i = globalItemControls.Begin();
-         i != globalItemControls.End();
-         ++i )
-   {
-      (*i)->Synchronize();
-   }
+   for ( GlobalItemControl* control : globalItemControls )
+      control->Synchronize();
 
    GUI->PerformAllPageAdditionalUpdates();
 
@@ -1009,7 +1005,7 @@ void PreferencesInterface::SelectPageByTreeNode( TreeBox::Node* node )
    page->Show();
 
    String title = node->Text( 0 );
-   if ( node->Parent() != 0 )
+   if ( node->Parent() != nullptr )
       title.Prepend( node->Parent()->Text( 0 ) + ": " );
 
    GUI->Title_Label.SetText( title );
@@ -1989,6 +1985,79 @@ void DirectoriesAndNetworkPreferencesPage::TransferSettings( PreferencesInstance
 
 // ----------------------------------------------------------------------------
 
+SecurityPreferencesPage::SecurityPreferencesPage( PreferencesInstance& instance )
+{
+   AllowUnsignedScriptExecution_Flag.checkBox.SetText( "Allow execution of unsigned scripts" );
+   AllowUnsignedScriptExecution_Flag.item = &instance.security.allowUnsignedScriptExecution;
+   AllowUnsignedScriptExecution_Flag.SetToolTip(
+      "<p>Allow execution of scripts without code signature files.</p>"
+      "<p><b>Important:</b> Execution of scripts with invalid code signatures is always forbidden, "
+      "regardless of this option.</p>" );
+
+   AllowUnsignedRepositories_Flag.checkBox.SetText( "Allow unsigned update repositories" );
+   AllowUnsignedRepositories_Flag.item = &instance.security.allowUnsignedRepositories;
+   AllowUnsignedRepositories_Flag.SetToolTip(
+      "<p>Allow downloading update packages from update repositories that don't provide signatures.</p>"
+      "<p><b>Important:</b> Downloading update packages from repositories with invalid signatures is "
+      "always forbidden, regardless of this option.</p>" );
+
+   AllowInsecureRepositories_Flag.checkBox.SetText( "Allow insecure update repositories" );
+   AllowInsecureRepositories_Flag.item = &instance.security.allowInsecureRepositories;
+   AllowInsecureRepositories_Flag.SetToolTip(
+      "<p>Allow update repositories using insecure network protocols (HTTP or FTP).</p>"
+      "<p>Authenticity of downloaded update packages cannot be guaranteed when insecure connections are "
+      "used, which is a serious security risk. The HTTPS and FTPS protocols are strongly recommended and "
+      "will be mandatory in a future version of PixInsight. Use of insecure connections is still allowed, "
+      "but <i>at your own risk.</i></p>"
+      "<p>If this option is disabled, only the secure HTTPS and FTPS protocols will be allowed.</p>" );
+
+   ReportScriptSignatures_Flag.checkBox.SetText( "Report script signatures" );
+   ReportScriptSignatures_Flag.item = &instance.security.reportScriptSignatures;
+   ReportScriptSignatures_Flag.SetToolTip(
+      "<p>Write information on valid script signatures on console upon script execution.</p>" );
+
+   WarnOnUnsignedCodeExecution_Flag.checkBox.SetText( "Warn on execution of unsigned code" );
+   WarnOnUnsignedCodeExecution_Flag.item = &instance.security.warnOnUnsignedCodeExecution;
+   WarnOnUnsignedCodeExecution_Flag.SetToolTip(
+      "<p>Ask the user for authorization to execute scripts without code signatures, and write the "
+      "corresponding warning messages on console when unsigned scripts are executed.</p>"
+      "<p><b>Important:</b> To ease adoption of the new security system, for now this option is disabled "
+      "by default. This option will be enabled by default in a future version of PixInsight.</p>" );
+
+   EnableLocalSigningIdentity_Flag.checkBox.SetText( "Enable the local signing identity" );
+   EnableLocalSigningIdentity_Flag.item = &instance.security.enableLocalSigningIdentity;
+   EnableLocalSigningIdentity_Flag.SetToolTip(
+      "<p>Allow creation and use of the local signing identity.</p>"
+      "<p>The local signing identity allows you to generate script code signatures using your software "
+      "license to identify you as a local certified developer, without needing to become a Certified "
+      "PixInsight Developer (CPD). This is useful for testing purposes, or when you are writing scripts "
+      "that require special security entitlements for your private use, or whenever you want to be sure "
+      "that the code you have written remains unaltered.<p>" );
+
+   Page_Sizer.SetSpacing( 4 );
+   Page_Sizer.Add( AllowUnsignedScriptExecution_Flag );
+   Page_Sizer.Add( AllowUnsignedRepositories_Flag );
+   Page_Sizer.Add( AllowInsecureRepositories_Flag );
+   Page_Sizer.Add( ReportScriptSignatures_Flag );
+   Page_Sizer.Add( WarnOnUnsignedCodeExecution_Flag );
+   Page_Sizer.Add( EnableLocalSigningIdentity_Flag );
+   Page_Sizer.AddStretch();
+
+   SetSizer( Page_Sizer );
+}
+
+void SecurityPreferencesPage::TransferSettings( PreferencesInstance& to, const PreferencesInstance& from )
+{
+   to.security.allowUnsignedScriptExecution = from.security.allowUnsignedScriptExecution;
+   to.security.allowUnsignedRepositories    = from.security.allowUnsignedRepositories;
+   to.security.allowInsecureRepositories    = from.security.allowInsecureRepositories;
+   to.security.reportScriptSignatures       = from.security.reportScriptSignatures;
+   to.security.warnOnUnsignedCodeExecution  = from.security.warnOnUnsignedCodeExecution;
+   to.security.enableLocalSigningIdentity   = from.security.enableLocalSigningIdentity;
+}
+
+// ----------------------------------------------------------------------------
+
 DefaultImageResolutionPreferencesPage::DefaultImageResolutionPreferencesPage( PreferencesInstance& instance )
 {
    DefaultHorizontalResolution_Real.label.SetText( "Default horizontal resolution" );
@@ -2824,13 +2893,9 @@ PreferencesCategoryPage* PreferencesInterface::GUIData::PageByIndex( int index )
 
       page->Hide();
 
-      for ( global_item_ref_list::iterator i = globalItemControls.Begin();
-            i != globalItemControls.End();
-            ++i )
-      {
-         if ( (*i)->Parent() == *page )
-            (*i)->Synchronize();
-      }
+      for ( GlobalItemControl* control : globalItemControls )
+         if ( control->Parent() == *page )
+            control->Synchronize();
 
       page->PerformAdditionalUpdates();
    }
@@ -2866,6 +2931,7 @@ void PreferencesInterface::GUIData::InitializeCategories()
    categories.Add( new GUIEffectsPreferencesCategory );
    categories.Add( new FileIOPreferencesCategory );
    categories.Add( new DirectoriesAndNetworkPreferencesCategory );
+   categories.Add( new SecurityPreferencesCategory );
    categories.Add( new DefaultImageResolutionPreferencesCategory );
    categories.Add( new DefaultMaskSettingsPreferencesCategory );
    categories.Add( new DefaultTransparencySettingsPreferencesCategory );
@@ -2882,4 +2948,4 @@ void PreferencesInterface::GUIData::InitializeCategories()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInterface.cpp - Released 2022-03-12T18:59:53Z
+// EOF PreferencesInterface.cpp - Released 2022-04-22T19:29:05Z

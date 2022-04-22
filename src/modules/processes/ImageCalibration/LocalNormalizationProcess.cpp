@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.9.1
+// Standard ImageCalibration Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// LocalNormalizationProcess.cpp - Released 2022-03-12T18:59:53Z
+// LocalNormalizationProcess.cpp - Released 2022-04-22T19:29:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -74,6 +74,8 @@ LocalNormalizationProcess::LocalNormalizationProcess()
    new LNRejection( this );
    new LNTruncate( this );
    new LNBackgroundSamplingDelta( this );
+   new LNLowClippingLevel( this );
+   new LNHighClippingLevel( this );
    new LNBackgroundRejectionLimit( this );
    new LNReferenceRejectionThreshold( this );
    new LNTargetRejectionThreshold( this );
@@ -193,4 +195,4 @@ ProcessImplementation* LocalNormalizationProcess::Clone( const ProcessImplementa
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationProcess.cpp - Released 2022-03-12T18:59:53Z
+// EOF LocalNormalizationProcess.cpp - Released 2022-04-22T19:29:05Z

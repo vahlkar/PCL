@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// pcl/Cryptography.h - Released 2022-03-12T18:59:29Z
+// pcl/Cryptography.h - Released 2022-04-22T19:28:34Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -504,7 +504,7 @@ private:
  *
  * \b References
  *
- * The SHA-2 family of secure hash functions (SHA-384, SHA-384, and SHA-512)
+ * The SHA-2 family of secure hash functions (SHA-256, SHA-384, and SHA-512)
  * was specified by NIST in 2002 with the publication of FIPS PUB 180-2. FIPS
  * PUB 180-2 has been superseded by FIPS PUB 180-3 and FIPS PUB 180-4:
  *
@@ -575,7 +575,7 @@ private:
  *
  * \b References
  *
- * The SHA-2 family of secure hash functions (SHA-384, SHA-384, and SHA-512)
+ * The SHA-2 family of secure hash functions (SHA-256, SHA-384, and SHA-512)
  * was specified by NIST in 2002 with the publication of FIPS PUB 180-2. FIPS
  * PUB 180-2 has been superseded by FIPS PUB 180-3 and FIPS PUB 180-4:
  *
@@ -1100,4 +1100,4 @@ private:
 #endif   // __PCL_Cryptography_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Cryptography.h - Released 2022-03-12T18:59:29Z
+// EOF pcl/Cryptography.h - Released 2022-04-22T19:28:34Z

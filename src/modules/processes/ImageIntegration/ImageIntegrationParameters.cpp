@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.4.5
+// Standard ImageIntegration Process Module Version 1.4.9
 // ----------------------------------------------------------------------------
-// ImageIntegrationParameters.cpp - Released 2022-03-12T18:59:53Z
+// ImageIntegrationParameters.cpp - Released 2022-04-22T19:29:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -366,6 +366,7 @@ IsoString IIWeightMode::ElementId( size_type i ) const
    default:
    case PSFSignalWeight:    return "PSFSignalWeight";
    case PSFSNR:             return "PSFSNR";
+   case PSFScaleSNR:        return "PSFScaleSNR";
    }
 }
 
@@ -390,14 +391,15 @@ String IIWeightMode::ElementLabel( int index )
    {
    case DontCare:           return "Don't care (all weights = 1)";
    case ExposureTimeWeight: return "Exposure time";
-   case SNREstimate:        return "SNR estimate";
+   case SNREstimate:        return "SNR";
    case SignalWeight:       return "Average signal strength";
    case MedianWeight:       return "Median value";
    case AverageWeight:      return "Average value";
    case KeywordWeight:      return "FITS keyword";
    default:
-   case PSFSignalWeight:    return "PSF signal weight";
+   case PSFSignalWeight:    return "PSF Signal Weight";
    case PSFSNR:             return "PSF SNR";
+   case PSFScaleSNR:        return "PSF Scale SNR";
    }
 }
 
@@ -601,7 +603,7 @@ IsoString IIRejection::ElementId( size_type i ) const
    case WinsorizedSigmaClip: return "WinsorizedSigmaClip";
    case AveragedSigmaClip:   return "AveragedSigmaClip";
    case LinearFit:           return "LinearFit";
-   case CCDClip:             return "CCDClip";
+   case CCDClip:             return "CCDClip"; // ### Deprecated
    case ESD:                 return "Rejection_ESD";
    case RCR:                 return "Rejection_RCR";
    }
@@ -615,6 +617,24 @@ int IIRejection::ElementValue( size_type i ) const
 size_type IIRejection::DefaultValueIndex() const
 {
    return size_type( Default );
+}
+
+String IIRejection::ElementLabel( int index )
+{
+   switch ( index )
+   {
+   default:
+   case NoRejection:         return "No rejection";
+   case MinMax:              return "Min/Max";
+   case PercentileClip:      return "Percentile Clipping";
+   case SigmaClip:           return "Sigma Clipping";
+   case WinsorizedSigmaClip: return "Winsorized Sigma Clipping";
+   case AveragedSigmaClip:   return "Averaged Sigma Clipping";
+   case LinearFit:           return "Linear Fit Clipping";
+   case CCDClip:             return "CCD Noise Model"; // ### Deprecated
+   case ESD:                 return "Generalized Extreme Studentized Deviate (ESD)";
+   case RCR:                 return "Robust Chauvenet Rejection (RCR)";
+   }
 }
 
 // ----------------------------------------------------------------------------
@@ -3851,4 +3871,4 @@ bool IIImageRejectedHighB::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationParameters.cpp - Released 2022-03-12T18:59:53Z
+// EOF ImageIntegrationParameters.cpp - Released 2022-04-22T19:29:05Z

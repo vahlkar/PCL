@@ -1,11 +1,11 @@
 // ----------------------------------------------------------------------------
 // PixInsight JavaScript Runtime API - PJSR Version 1.0
 // ----------------------------------------------------------------------------
-// CoordUtils.jsh - Released 2022-03-12T18:59:53Z
+// CoordUtils.jsh - Released 2022-04-22T19:29:05Z
 // ----------------------------------------------------------------------------
 //
 //
-// Copyright (c) 2014-2021 Klaus Kretzschmar
+// Copyright (c) 2014-2022 Klaus Kretzschmar
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -117,4 +117,4 @@ function hourAngleRangeShift(hourAngle) {
 #endif
 
 // ----------------------------------------------------------------------------
-// EOF CoordUtils.jsh - Released 2022-03-12T18:59:53Z
+// EOF CoordUtils.jsh - Released 2022-04-22T19:29:05Z

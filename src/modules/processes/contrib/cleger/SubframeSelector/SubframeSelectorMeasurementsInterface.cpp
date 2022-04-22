@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.8.0
+// Standard SubframeSelector Process Module Version 1.8.3
 // ----------------------------------------------------------------------------
-// SubframeSelectorMeasurementsInterface.cpp - Released 2022-03-12T18:59:53Z
+// SubframeSelectorMeasurementsInterface.cpp - Released 2022-04-22T19:29:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -72,6 +72,7 @@ static pcl_enum s_comboBoxItemIndexToSortingProperty[] =
    SSSortingProperty::Weight,
    SSSortingProperty::PSFSignalWeight,
    SSSortingProperty::PSFSNR,
+   SSSortingProperty::PSFScaleSNR,
    SSSortingProperty::SNRWeight,
    SSSortingProperty::FWHM,
    SSSortingProperty::Eccentricity,
@@ -87,6 +88,7 @@ static pcl_enum s_comboBoxItemIndexToSortingProperty[] =
    SSSortingProperty::PSFTotalMeanFlux,
    SSSortingProperty::PSFTotalMeanPowerFlux,
    SSSortingProperty::PSFCount,
+   SSSortingProperty::PSFScale,
    SSSortingProperty::StarResidual,
    SSSortingProperty::Median,
    SSSortingProperty::FWHMMeanDev,
@@ -102,6 +104,7 @@ static pcl_enum s_comboBoxItemIndexToGraphProperty[] =
    SSGraphProperty::Weight,
    SSGraphProperty::PSFSignalWeight,
    SSGraphProperty::PSFSNR,
+   SSGraphProperty::PSFScaleSNR,
    SSGraphProperty::SNRWeight,
    SSGraphProperty::FWHM,
    SSGraphProperty::Eccentricity,
@@ -117,6 +120,7 @@ static pcl_enum s_comboBoxItemIndexToGraphProperty[] =
    SSGraphProperty::PSFTotalMeanFlux,
    SSGraphProperty::PSFTotalMeanPowerFlux,
    SSGraphProperty::PSFCount,
+   SSGraphProperty::PSFScale,
    SSGraphProperty::StarResidual,
    SSGraphProperty::Median,
    SSGraphProperty::FWHMMeanDev,
@@ -361,75 +365,81 @@ void SubframeSelectorMeasurementsInterface::UpdateMeasurementNode( MeasurementNo
    node->SetText( 6, String().Format( "%.4e", item->psfSNR ) );
    node->SetAlignment( 6, TextAlign::Center );
 
-   node->SetText( 7, String().Format( "%.4e", item->snrWeight ) );
+   node->SetText( 7, String().Format( "%.4e", item->psfScaleSNR ) );
    node->SetAlignment( 7, TextAlign::Center );
 
-   node->SetText( 8, String().Format( "%.4f", item->FWHM( m_instance.p_subframeScale, m_instance.p_scaleUnit ) ) );
+   node->SetText( 8, String().Format( "%.4e", item->snrWeight ) );
    node->SetAlignment( 8, TextAlign::Center );
 
-   node->SetText( 9, String().Format( "%.4f", item->eccentricity ) );
+   node->SetText( 9, String().Format( "%.4f", item->FWHM( m_instance.p_subframeScale, m_instance.p_scaleUnit ) ) );
    node->SetAlignment( 9, TextAlign::Center );
 
-   node->SetText( 10, String().Format( "%u", unsigned( item->stars ) ) );
+   node->SetText( 10, String().Format( "%.4f", item->eccentricity ) );
    node->SetAlignment( 10, TextAlign::Center );
 
-   node->SetText( 11, String().Format( "%.4f", item->altitude ) );
+   node->SetText( 11, String().Format( "%u", unsigned( item->stars ) ) );
    node->SetAlignment( 11, TextAlign::Center );
 
-   node->SetText( 12, String().Format( "%.4f", item->azimuth ) );
+   node->SetText( 12, String().Format( "%.4f", item->altitude ) );
    node->SetAlignment( 12, TextAlign::Center );
 
-   node->SetText( 13, String().Format( "%.4e",
+   node->SetText( 13, String().Format( "%.4f", item->azimuth ) );
+   node->SetAlignment( 13, TextAlign::Center );
+
+   node->SetText( 14, String().Format( "%.4e",
             item->Noise( m_instance.p_cameraGain,
                          TheSSCameraResolutionParameter->ElementData( m_instance.p_cameraResolution ),
                          m_instance.p_dataUnit ) ) );
-   node->SetAlignment( 13, TextAlign::Center );
-
-   node->SetText( 14, String().Format( "%.4f", item->noiseRatio ) );
    node->SetAlignment( 14, TextAlign::Center );
 
-   node->SetText( 15, String().Format( "%.4e", item->MStar ) );
+   node->SetText( 15, String().Format( "%.4f", item->noiseRatio ) );
    node->SetAlignment( 15, TextAlign::Center );
 
-   node->SetText( 16, String().Format( "%.4e", item->NStar ) );
+   node->SetText( 16, String().Format( "%.4e", item->MStar ) );
    node->SetAlignment( 16, TextAlign::Center );
 
-   node->SetText( 17, String().Format( "%.4e", item->psfFlux ) );
+   node->SetText( 17, String().Format( "%.4e", item->NStar ) );
    node->SetAlignment( 17, TextAlign::Center );
 
-   node->SetText( 18, String().Format( "%.4e", item->psfFluxPower ) );
+   node->SetText( 18, String().Format( "%.4e", item->psfFlux ) );
    node->SetAlignment( 18, TextAlign::Center );
 
-   node->SetText( 19, String().Format( "%.4e", item->psfTotalMeanFlux ) );
+   node->SetText( 19, String().Format( "%.4e", item->psfFluxPower ) );
    node->SetAlignment( 19, TextAlign::Center );
 
-   node->SetText( 20, String().Format( "%.4e", item->psfTotalMeanPowerFlux ) );
+   node->SetText( 20, String().Format( "%.4e", item->psfTotalMeanFlux ) );
    node->SetAlignment( 20, TextAlign::Center );
 
-   node->SetText( 21, String().Format( "%u", unsigned( item->psfCount ) ) );
+   node->SetText( 21, String().Format( "%.4e", item->psfTotalMeanPowerFlux ) );
    node->SetAlignment( 21, TextAlign::Center );
 
-   node->SetText( 22, String().Format( "%.4e", item->starResidual ) );
+   node->SetText( 22, String().Format( "%u", unsigned( item->psfCount ) ) );
    node->SetAlignment( 22, TextAlign::Center );
 
-   node->SetText( 23, String().Format( "%.4e", item->Median( m_instance.p_cameraGain,
-                                 TheSSCameraResolutionParameter->ElementData( m_instance.p_cameraResolution ),
-                                 m_instance.p_dataUnit ) ) );
+   node->SetText( 23, String().Format( "%.4e", item->psfScale ) );
    node->SetAlignment( 23, TextAlign::Center );
 
-   node->SetText( 24, String().Format( "%.4e", item->FWHMMeanDeviation( m_instance.p_subframeScale, m_instance.p_scaleUnit ) ) );
+   node->SetText( 24, String().Format( "%.4e", item->starResidual ) );
    node->SetAlignment( 24, TextAlign::Center );
 
-   node->SetText( 25, String().Format( "%.4e", item->eccentricityMeanDev ) );
-   node->SetAlignment( 25, TextAlign::Center );
-
-   node->SetText( 26, String().Format( "%.4e", item->starResidualMeanDev ) );
-   node->SetAlignment( 26, TextAlign::Center );
-
-   node->SetText( 27, String().Format( "%.4e", item->MedianMeanDev( m_instance.p_cameraGain,
+   node->SetText( 25, String().Format( "%.4e", item->Median( m_instance.p_cameraGain,
                                  TheSSCameraResolutionParameter->ElementData( m_instance.p_cameraResolution ),
                                  m_instance.p_dataUnit ) ) );
+   node->SetAlignment( 25, TextAlign::Center );
+
+   node->SetText( 26, String().Format( "%.4e", item->FWHMMeanDeviation( m_instance.p_subframeScale, m_instance.p_scaleUnit ) ) );
+   node->SetAlignment( 26, TextAlign::Center );
+
+   node->SetText( 27, String().Format( "%.4e", item->eccentricityMeanDev ) );
    node->SetAlignment( 27, TextAlign::Center );
+
+   node->SetText( 28, String().Format( "%.4e", item->starResidualMeanDev ) );
+   node->SetAlignment( 28, TextAlign::Center );
+
+   node->SetText( 29, String().Format( "%.4e", item->MedianMeanDev( m_instance.p_cameraGain,
+                                 TheSSCameraResolutionParameter->ElementData( m_instance.p_cameraResolution ),
+                                 m_instance.p_dataUnit ) ) );
+   node->SetAlignment( 29, TextAlign::Center );
 }
 
 // ----------------------------------------------------------------------------
@@ -515,6 +525,12 @@ void SubframeSelectorMeasurementsInterface::UpdateMeasurementGraph()
             break;
          case SSGraphProperty::PSFSNR:
             data = item.psfSNR;
+            break;
+         case SSGraphProperty::PSFScale:
+            data = item.psfScale;
+            break;
+         case SSGraphProperty::PSFScaleSNR:
+            data = item.psfScaleSNR;
             break;
          case SSGraphProperty::PSFFlux:
             data = item.psfFlux;
@@ -619,53 +635,57 @@ void SubframeSelectorMeasurementsInterface::ExportCSV() const
          headerItems /* 00 */ << "Weight"
                      /* 01 */ << "PSF Signal Weight"
                      /* 02 */ << "PSF SNR"
-                     /* 03 */ << "PSF Count"
-                     /* 04 */ << "M*"
-                     /* 05 */ << "N*"
-                     /* 06 */ << "SNR"
-                     /* 07 */ << "FWHM"
-                     /* 08 */ << "Eccentricity"
-                     /* 09 */ << "Altitude"
-                     /* 10 */ << "Azimuth"
-                     /* 11 */ << "Median"
-                     /* 12 */ << "Median Mean Deviation"
-                     /* 13 */ << "Noise"
-                     /* 14 */ << "Noise Ratio"
-                     /* 15 */ << "Stars"
-                     /* 16 */ << "Star Residual"
-                     /* 17 */ << "PSF Total Flux"
-                     /* 18 */ << "PSF Total Power Flux"
-                     /* 19 */ << "PSF Total Mean Flux"
-                     /* 20 */ << "PSF Total Mean Power Flux"
-                     /* 21 */ << "FWHM Mean Deviation"
-                     /* 22 */ << "Eccentricity Mean Deviation"
-                     /* 23 */ << "Star Residual Mean Deviation";
+                     /* 03 */ << "PSF Scale"
+                     /* 04 */ << "PSF Scale SNR"
+                     /* 05 */ << "PSF Count"
+                     /* 06 */ << "M*"
+                     /* 07 */ << "N*"
+                     /* 08 */ << "SNR"
+                     /* 09 */ << "FWHM"
+                     /* 10 */ << "Eccentricity"
+                     /* 11 */ << "Altitude"
+                     /* 12 */ << "Azimuth"
+                     /* 13 */ << "Median"
+                     /* 14 */ << "Median Mean Deviation"
+                     /* 15 */ << "Noise"
+                     /* 16 */ << "Noise Ratio"
+                     /* 17 */ << "Stars"
+                     /* 18 */ << "Star Residual"
+                     /* 19 */ << "PSF Total Flux"
+                     /* 20 */ << "PSF Total Power Flux"
+                     /* 21 */ << "PSF Total Mean Flux"
+                     /* 22 */ << "PSF Total Mean Power Flux"
+                     /* 23 */ << "FWHM Mean Deviation"
+                     /* 24 */ << "Eccentricity Mean Deviation"
+                     /* 25 */ << "Star Residual Mean Deviation";
 
       IsoStringList formatItems;
          formatItems /* 00 */ << "%.6e"
                      /* 01 */ << "%.6e"
                      /* 02 */ << "%.6e"
-                     /* 03 */ << "%.0f"
-                     /* 04 */ << "%.4e"
-                     /* 05 */ << "%.4e"
+                     /* 03 */ << "%.6e"
+                     /* 04 */ << "%.6e"
+                     /* 05 */ << "%.0f"
                      /* 06 */ << "%.4e"
                      /* 07 */ << "%.4e"
                      /* 08 */ << "%.4e"
                      /* 09 */ << "%.4e"
                      /* 10 */ << "%.4e"
-                     /* 11 */ << "%.6e"
-                     /* 12 */ << "%.6e"
-                     /* 13 */ << "%.4e"
-                     /* 14 */ << "%.4e"
-                     /* 15 */ << "%.0f"
+                     /* 11 */ << "%.4e"
+                     /* 12 */ << "%.4e"
+                     /* 13 */ << "%.6e"
+                     /* 14 */ << "%.6e"
+                     /* 15 */ << "%.4e"
                      /* 16 */ << "%.4e"
-                     /* 17 */ << "%.6e"
-                     /* 18 */ << "%.6e"
+                     /* 17 */ << "%.0f"
+                     /* 18 */ << "%.4e"
                      /* 19 */ << "%.6e"
                      /* 20 */ << "%.6e"
-                     /* 21 */ << "%.4e"
-                     /* 22 */ << "%.4e"
-                     /* 23 */ << "%.4e";
+                     /* 21 */ << "%.6e"
+                     /* 22 */ << "%.6e"
+                     /* 23 */ << "%.4e"
+                     /* 24 */ << "%.4e"
+                     /* 25 */ << "%.4e";
 
       Array<Array<double>> csvData;
       for ( const MeasureItem& item : m_instance.o_measures )
@@ -673,27 +693,29 @@ void SubframeSelectorMeasurementsInterface::ExportCSV() const
                      /* 00 */ << item.weight
                      /* 01 */ << item.psfSignalWeight
                      /* 02 */ << item.psfSNR
-                     /* 03 */ << item.psfCount
-                     /* 04 */ << item.MStar
-                     /* 05 */ << item.NStar
-                     /* 06 */ << item.snrWeight
-                     /* 07 */ << item.FWHM( m_instance.p_subframeScale, m_instance.p_scaleUnit )
-                     /* 08 */ << item.eccentricity
-                     /* 09 */ << item.altitude
-                     /* 10 */ << item.azimuth
-                     /* 11 */ << item.Median( m_instance.p_cameraGain, TheSSCameraResolutionParameter->ElementData( m_instance.p_cameraResolution ), m_instance.p_dataUnit )
-                     /* 12 */ << item.MedianMeanDev( m_instance.p_cameraGain, TheSSCameraResolutionParameter->ElementData( m_instance.p_cameraResolution ), m_instance.p_dataUnit )
-                     /* 13 */ << item.Noise( m_instance.p_cameraGain, TheSSCameraResolutionParameter->ElementData( m_instance.p_cameraResolution ), m_instance.p_dataUnit )
-                     /* 14 */ << item.noiseRatio
-                     /* 15 */ << item.stars
-                     /* 16 */ << item.starResidual
-                     /* 17 */ << item.psfFlux
-                     /* 18 */ << item.psfFluxPower
-                     /* 19 */ << item.psfTotalMeanFlux
-                     /* 20 */ << item.psfTotalMeanPowerFlux
-                     /* 21 */ << item.FWHMMeanDeviation( m_instance.p_subframeScale, m_instance.p_scaleUnit )
-                     /* 22 */ << item.eccentricityMeanDev
-                     /* 23 */ << item.starResidualMeanDev);
+                     /* 03 */ << item.psfScale
+                     /* 04 */ << item.psfScaleSNR
+                     /* 05 */ << item.psfCount
+                     /* 06 */ << item.MStar
+                     /* 07 */ << item.NStar
+                     /* 08 */ << item.snrWeight
+                     /* 09 */ << item.FWHM( m_instance.p_subframeScale, m_instance.p_scaleUnit )
+                     /* 10 */ << item.eccentricity
+                     /* 11 */ << item.altitude
+                     /* 12 */ << item.azimuth
+                     /* 13 */ << item.Median( m_instance.p_cameraGain, TheSSCameraResolutionParameter->ElementData( m_instance.p_cameraResolution ), m_instance.p_dataUnit )
+                     /* 14 */ << item.MedianMeanDev( m_instance.p_cameraGain, TheSSCameraResolutionParameter->ElementData( m_instance.p_cameraResolution ), m_instance.p_dataUnit )
+                     /* 15 */ << item.Noise( m_instance.p_cameraGain, TheSSCameraResolutionParameter->ElementData( m_instance.p_cameraResolution ), m_instance.p_dataUnit )
+                     /* 16 */ << item.noiseRatio
+                     /* 17 */ << item.stars
+                     /* 18 */ << item.starResidual
+                     /* 19 */ << item.psfFlux
+                     /* 20 */ << item.psfFluxPower
+                     /* 21 */ << item.psfTotalMeanFlux
+                     /* 22 */ << item.psfTotalMeanPowerFlux
+                     /* 23 */ << item.FWHMMeanDeviation( m_instance.p_subframeScale, m_instance.p_scaleUnit )
+                     /* 24 */ << item.eccentricityMeanDev
+                     /* 25 */ << item.starResidualMeanDev);
 
       IsoStringList lines;
 
@@ -1229,4 +1251,4 @@ SubframeSelectorMeasurementsInterface::GUIData::GUIData( SubframeSelectorMeasure
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorMeasurementsInterface.cpp - Released 2022-03-12T18:59:53Z
+// EOF SubframeSelectorMeasurementsInterface.cpp - Released 2022-04-22T19:29:05Z

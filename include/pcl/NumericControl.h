@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// pcl/NumericControl.h - Released 2022-03-12T18:59:29Z
+// pcl/NumericControl.h - Released 2022-04-22T19:28:34Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -288,6 +288,32 @@ public:
       EnableAutoAdjustEditWidth( !disable );
    }
 
+   /*!
+    * Returns \c true if validating regular expressions are used to filter text
+    * input, \c false is the user is allowed to enter any characters freely.
+    */
+   bool IsValidatingRegExpEnabled() const
+   {
+      return m_useRegExp;
+   }
+
+   /*!
+    * Enables the use of validating regular expressions.
+    */
+   void EnableValidatingRegExp( bool enable = true )
+   {
+      m_useRegExp = enable;
+      UpdateRegExp();
+   }
+
+   /*!
+    * Disables the use of validating regular expressions.
+    */
+   void DisableValidatingRegExp( bool disable = true )
+   {
+      EnableValidatingRegExp( !disable );
+   }
+
    // -------------------------------------------------------------------------
    // Event handlers
    //
@@ -325,6 +351,7 @@ protected:
    bool   m_sign = false;         // always show a sign character
    bool   m_autoEditWidth = true; // set width of edit control automatically
    int    m_sciTriggerExp = -1;   // exponent (of ten) to trigger sci notation
+   bool   m_useRegExp = true;     // use validating regular expressions
 
    PCL_MEMBER_REENTRANCY_GUARD( EditCompleted )
 
@@ -338,6 +365,8 @@ protected:
    virtual void MousePress( Control&, const pcl::Point&, int, unsigned, unsigned );
 
    int PrecisionForValue( double ) const;
+   bool UseScientific( double ) const;
+   void UpdateRegExp();
 };
 
 // ----------------------------------------------------------------------------
@@ -465,4 +494,4 @@ private:
 #endif   // __PCL_NumericControl_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/NumericControl.h - Released 2022-03-12T18:59:29Z
+// EOF pcl/NumericControl.h - Released 2022-04-22T19:28:34Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.8.0
+// Standard SubframeSelector Process Module Version 1.8.3
 // ----------------------------------------------------------------------------
-// SubframeSelectorCache.h - Released 2022-03-12T18:59:53Z
+// SubframeSelectorCache.h - Released 2022-04-22T19:29:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -70,6 +70,8 @@ public:
    double    eccentricityMeanDev;
    double    psfSignalWeight;
    double    psfSNR;
+   double    psfScale;
+   double    psfScaleSNR;
    double    psfFlux;
    double    psfFluxPower;
    double    psfTotalMeanFlux;
@@ -121,12 +123,12 @@ public:
 
    int Version() const override
    {
-      return 15;
+      return 19;
    }
 
    int MinSupportedVersion() const override
    {
-      return 15;
+      return 19;
    }
 
 private:
@@ -146,4 +148,4 @@ extern SubframeSelectorCache* TheSubframeSelectorCache;
 #endif   // __SubframeSelectorCache_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorCache.h - Released 2022-03-12T18:59:53Z
+// EOF SubframeSelectorCache.h - Released 2022-04-22T19:29:05Z

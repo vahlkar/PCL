@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
 // Standard CometAlignment Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// CometAlignmentInstance.cpp - Released 2022-03-12T18:59:53Z
+// CometAlignmentInstance.cpp - Released 2022-04-22T19:29:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CometAlignment PixInsight module.
 //
@@ -845,7 +845,7 @@ thread_list CometAlignmentInstance::LoadTargetFrame( const size_t fileIndex )
    if ( drizzle )
    {
       console.WriteLn( "<end><cbr>Use origin drizzle integrable image." );
-      decoder.Parse( drzPath, true /*ignoreIntegrationData*/ );
+      decoder.Parse( drzPath, DrizzleParserOption::IgnoreIntegrationData );
       if ( !decoder.HasAlignmentMatrix() )
          throw Error( "The drizzle file does not define an alignment matrix: " + drzPath );
       filePath = decoder.SourceFilePath();
@@ -1715,4 +1715,4 @@ size_type CometAlignmentInstance::ParameterLength( const MetaParameter* p, size_
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF CometAlignmentInstance.cpp - Released 2022-03-12T18:59:53Z
+// EOF CometAlignmentInstance.cpp - Released 2022-04-22T19:29:05Z

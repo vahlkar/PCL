@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.4.5
+// Standard ImageIntegration Process Module Version 1.4.9
 // ----------------------------------------------------------------------------
-// ImageIntegrationParameters.h - Released 2022-03-12T18:59:53Z
+// ImageIntegrationParameters.h - Released 2022-04-22T19:29:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -178,8 +178,9 @@ public:
           MedianWeight,         // median
           AverageWeight,        // mean
           KeywordWeight,        // user-specified keyword
-          PSFSignalWeight,      // PSF signal weight (PSFSW) estimates
+          PSFSignalWeight,      // PSF Signal Weight (PSFSW) estimates
           PSFSNR,               // PSF SNR (PSFSNR) estimates
+          PSFScaleSNR,          // PSF Scale SNR (PSFSSNR) - requires local normalization data
           NumberOfItems,
           Default = PSFSignalWeight };
 
@@ -334,7 +335,7 @@ public:
           WinsorizedSigmaClip,
           AveragedSigmaClip,
           LinearFit,
-          CCDClip,
+          CCDClip, // ### Deprecated
           ESD,
           RCR,
           NumberOfItems,
@@ -347,6 +348,8 @@ public:
    IsoString ElementId( size_type ) const override;
    int ElementValue( size_type ) const override;
    size_type DefaultValueIndex() const override;
+
+   static String ElementLabel( int );
 };
 
 extern IIRejection* TheIIRejectionParameter;
@@ -2475,4 +2478,4 @@ PCL_END_LOCAL
 #endif   // __ImageIntegrationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationParameters.h - Released 2022-03-12T18:59:53Z
+// EOF ImageIntegrationParameters.h - Released 2022-04-22T19:29:05Z

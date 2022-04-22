@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// Standard FITS File Format Module Version 1.1.9
+// Standard FITS File Format Module Version 1.1.10
 // ----------------------------------------------------------------------------
-// FITS.cpp - Released 2022-03-12T18:59:44Z
+// FITS.cpp - Released 2022-04-22T19:28:54Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -307,9 +307,11 @@ public:
                // This is just for compatibility with writers that store raw (physical) pixel
                // data as signed integers.
                if ( hdu.signedIsPhysical )
-                  for ( int j = 0; j < image.Width(); ++j )
-                     if ( buffer[j] < 0 )
-                        buffer[j] = 0;
+                  if ( !P::IsFloatSample() )
+                     if ( !P::IsComplexSample() )
+                        for ( int j = 0; j < image.Width(); ++j )
+                           if ( buffer[j] < 0 )
+                              buffer[j] = 0;
 
                // Transfer pixels to the image.
                // Mirror pixel rows vertically if we are loading with bottom-up orientation.
@@ -411,9 +413,11 @@ public:
          // This is just for compatibility with writers that store raw (physical) pixel
          // data as signed integers.
          if ( hdu.signedIsPhysical )
-            for ( int i = 0; i < N; ++i )
-               if ( buffer[i] < 0 )
-                  buffer[i] = 0;
+            if ( !P::IsFloatSample() )
+               if ( !P::IsComplexSample() )
+                  for ( int i = 0; i < N; ++i )
+                     if ( buffer[i] < 0 )
+                        buffer[i] = 0;
 
          // Transfer pixels from the buffer to the image.
          if ( rescalingRequired )
@@ -2726,4 +2730,4 @@ void FITSWriter::WriteExtensionHDU( const FITSExtensionData& ext )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITS.cpp - Released 2022-03-12T18:59:44Z
+// EOF FITS.cpp - Released 2022-04-22T19:28:54Z

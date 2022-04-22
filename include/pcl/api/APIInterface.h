@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// pcl/APIInterface.h - Released 2022-03-12T18:59:29Z
+// pcl/APIInterface.h - Released 2022-04-22T19:28:34Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -56,7 +56,7 @@
 
 // Global namespace
 
-#define PCL_API_Version 0x0173
+#define PCL_API_Version 0x0174
 
 extern "C"
 {
@@ -1255,6 +1255,10 @@ struct api_context EditContext
 
    api_bool       (api_func* GetEditMask)( const_control_handle, char16_type*, size_type* );
    void           (api_func* SetEditMask)( control_handle, const char16_type* );
+
+   api_bool       (api_func* GetEditValidatingRegExp)( const_control_handle, char16_type*, size_type*, api_bool* caseSensitive );
+   api_bool       (api_func* SetEditValidatingRegExp)( control_handle, const char16_type*, api_bool caseSensitive );
+   api_bool       (api_func* GetEditValid)( const_control_handle );
 
    void           (api_func* SetEditSelected)( control_handle, api_bool );
 
@@ -3075,4 +3079,4 @@ extern "C" void* api_func APIFunctionResolver( const char* );
 #endif   // __PCL_API_APIInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/APIInterface.h - Released 2022-03-12T18:59:29Z
+// EOF pcl/APIInterface.h - Released 2022-04-22T19:28:34Z

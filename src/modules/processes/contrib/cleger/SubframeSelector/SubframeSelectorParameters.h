@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.8.0
+// Standard SubframeSelector Process Module Version 1.8.3
 // ----------------------------------------------------------------------------
-// SubframeSelectorParameters.h - Released 2022-03-12T18:59:53Z
+// SubframeSelectorParameters.h - Released 2022-04-22T19:29:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -588,6 +588,24 @@ extern SSPSFFitCircular* TheSSPSFFitCircularParameter;
 
 // ----------------------------------------------------------------------------
 
+class SSMaxPSFFits : public MetaInt32
+{
+public:
+
+   SSMaxPSFFits( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+
+   IsoString Tooltip() const;
+};
+
+extern SSMaxPSFFits* TheSSMaxPSFFitsParameter;
+
+// ----------------------------------------------------------------------------
+
 class SSROIX0 : public MetaInt32
 {
 public:
@@ -914,6 +932,8 @@ public:
           MStar,
           NStar,
           PSFSNR,
+          PSFScale,
+          PSFScaleSNR,
           NumberOfItems,
           Default = Index };
 
@@ -961,6 +981,8 @@ public:
           MStar,
           NStar,
           PSFSNR,
+          PSFScale,
+          PSFScaleSNR,
           NumberOfItems,
           Default = PSFSignalWeight };
 
@@ -1223,6 +1245,40 @@ public:
 };
 
 extern SSMeasurementPSFSNR* TheSSMeasurementPSFSNRParameter;
+
+// ----------------------------------------------------------------------------
+
+class SSMeasurementPSFScale : public MetaDouble
+{
+public:
+
+   SSMeasurementPSFScale( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   double DefaultValue() const override;
+   bool IsReadOnly() const override;
+};
+
+extern SSMeasurementPSFScale* TheSSMeasurementPSFScaleParameter;
+
+// ----------------------------------------------------------------------------
+
+class SSMeasurementPSFScaleSNR : public MetaDouble
+{
+public:
+
+   SSMeasurementPSFScaleSNR( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   double DefaultValue() const override;
+   bool IsReadOnly() const override;
+};
+
+extern SSMeasurementPSFScaleSNR* TheSSMeasurementPSFScaleSNRParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -1582,4 +1638,4 @@ PCL_END_LOCAL
 #endif   // __SubframeSelectorParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorParameters.h - Released 2022-03-12T18:59:53Z
+// EOF SubframeSelectorParameters.h - Released 2022-04-22T19:29:05Z

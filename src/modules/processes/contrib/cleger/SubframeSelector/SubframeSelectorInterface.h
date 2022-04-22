@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.8.0
+// Standard SubframeSelector Process Module Version 1.8.3
 // ----------------------------------------------------------------------------
-// SubframeSelectorInterface.h - Released 2022-03-12T18:59:53Z
+// SubframeSelectorInterface.h - Released 2022-04-22T19:29:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -187,6 +187,9 @@ private:
             ComboBox          StarDetectorParameters_PSFFit_ComboBox;
          HorizontalSizer   StarDetectorParameters_PSFFitCircular_Sizer;
             CheckBox          StarDetectorParameters_PSFFitCircular_CheckBox;
+         HorizontalSizer   StarDetectorParameters_MaxPSFFits_Sizer;
+            Label             StarDetectorParameters_MaxPSFFits_Label;
+            SpinBox           StarDetectorParameters_MaxPSFFits_SpinBox;
 
       SectionBar        RegionOfInterest_SectionBar;
       Control           RegionOfInterest_Control;
@@ -304,4 +307,4 @@ PCL_END_LOCAL
 #endif   // e_SubframeSelectorInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInterface.h - Released 2022-03-12T18:59:53Z
+// EOF SubframeSelectorInterface.h - Released 2022-04-22T19:29:05Z

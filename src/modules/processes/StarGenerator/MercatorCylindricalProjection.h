@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
 // Standard StarGenerator Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// MercatorCylindricalProjection.h - Released 2022-03-12T18:59:53Z
+// MercatorCylindricalProjection.h - Released 2022-04-22T19:29:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarGenerator PixInsight module.
 //
@@ -104,4 +104,4 @@ public:
 #endif   // __MercatorCylindricalProjection_h
 
 // ----------------------------------------------------------------------------
-// EOF MercatorCylindricalProjection.h - Released 2022-03-12T18:59:53Z
+// EOF MercatorCylindricalProjection.h - Released 2022-04-22T19:29:05Z

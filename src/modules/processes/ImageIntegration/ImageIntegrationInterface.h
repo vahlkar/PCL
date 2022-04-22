@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.4.5
+// Standard ImageIntegration Process Module Version 1.4.9
 // ----------------------------------------------------------------------------
-// ImageIntegrationInterface.h - Released 2022-03-12T18:59:53Z
+// ImageIntegrationInterface.h - Released 2022-04-22T19:29:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -220,12 +220,12 @@ private:
          NumericControl    RangeLow_NumericControl;
          NumericControl    RangeHigh_NumericControl;
 
-      SectionBar        Rejection3_SectionBar;
-      Control           Rejection3_Control;
-      VerticalSizer     Rejection3_Sizer;
-         NumericControl    CCDGain_NumericControl;
-         NumericControl    CCDReadNoise_NumericControl;
-         NumericControl    CCDScaleNoise_NumericControl;
+//       SectionBar        Rejection3_SectionBar;
+//       Control           Rejection3_Control;
+//       VerticalSizer     Rejection3_Sizer;
+//          NumericControl    CCDGain_NumericControl;
+//          NumericControl    CCDReadNoise_NumericControl;
+//          NumericControl    CCDScaleNoise_NumericControl;
 
       SectionBar        LargeScaleRejection_SectionBar;
       Control           LargeScaleRejection_Control;
@@ -327,4 +327,4 @@ PCL_END_LOCAL
 #endif   // __ImageIntegrationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationInterface.h - Released 2022-03-12T18:59:53Z
+// EOF ImageIntegrationInterface.h - Released 2022-04-22T19:29:05Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.4.5
+// Standard ImageIntegration Process Module Version 1.4.9
 // ----------------------------------------------------------------------------
-// IntegrationEngine.cpp - Released 2022-03-12T18:59:53Z
+// IntegrationEngine.cpp - Released 2022-04-22T19:29:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -169,7 +169,8 @@ void IntegrationEngine::IntegrationThread::Run()
             break;
          case IINormalization::LocalNormalization:
             for ( int i = 0, x = E.m_x0+j, y = E.m_y0+k; i < n; ++i )
-               r[i].raw = IntegrationFile::FileByIndex( r[i].index ).Normalize( r[i].raw, x, y, E.m_channel );
+               if ( r[i].raw != 0 )
+                  r[i].raw = IntegrationFile::FileByIndex( r[i].index ).Normalize( r[i].raw, x, y, E.m_channel );
             break;
          case IINormalization::AdaptiveNormalization:
             {
@@ -180,24 +181,26 @@ void IntegrationEngine::IntegrationThread::Run()
                if ( I.p_adaptiveNoScale )
                {
                   for ( int i = 0; i < n; ++i )
-                  {
-                     const AdaptiveNormalizationData& a = IntegrationFile::FileByIndex( r[i].index ).AdaptiveNormalization();
-                     double m = a.Location( x, y, E.m_channel );
-                     r[i].raw = (r[i].raw - m)*((r[i].raw <= m) ? s[r[i].index].low : s[r[i].index].high) + m0;
-                  }
+                     if ( r[i].raw != 0 )
+                     {
+                        const AdaptiveNormalizationData& a = IntegrationFile::FileByIndex( r[i].index ).AdaptiveNormalization();
+                        double m = a.Location( x, y, E.m_channel );
+                        r[i].raw = (r[i].raw - m)*((r[i].raw <= m) ? s[r[i].index].low : s[r[i].index].high) + m0;
+                     }
                }
                else
                {
                   double s00 = a0.ScaleLow( x, y, E.m_channel );
                   double s10 = a0.ScaleHigh( x, y, E.m_channel );
                   for ( int i = 0; i < n; ++i )
-                  {
-                     const AdaptiveNormalizationData& a = IntegrationFile::FileByIndex( r[i].index ).AdaptiveNormalization();
-                     double m = a.Location( x, y, E.m_channel );
-                     r[i].raw = (r[i].raw - m)
-                           * ((r[i].raw <= m) ? s00/a.ScaleLow( x, y, E.m_channel ) : s10/a.ScaleHigh( x, y, E.m_channel ))
-                           + m0;
-                  }
+                     if ( r[i].raw != 0 )
+                     {
+                        const AdaptiveNormalizationData& a = IntegrationFile::FileByIndex( r[i].index ).AdaptiveNormalization();
+                        double m = a.Location( x, y, E.m_channel );
+                        r[i].raw = (r[i].raw - m)
+                              * ((r[i].raw <= m) ? s00/a.ScaleLow( x, y, E.m_channel ) : s10/a.ScaleHigh( x, y, E.m_channel ))
+                              + m0;
+                     }
                }
             }
             break;
@@ -222,12 +225,19 @@ void IntegrationEngine::IntegrationThread::Run()
                {
                   double ws = 0;
                   for ( int i = 0; i < n; ++i, ++r )
-                  {
-                     double w = IntegrationFile::FileByIndex( r->index ).Weight( E.m_channel );
-                     f += w*r->raw;
-                     ws += w;
-                  }
-                  f /= ws;
+                     if ( r->raw != 0 )
+                     {
+                        double w = IntegrationFile::FileByIndex( r->index ).Weight( E.m_channel );
+                        if ( w > 0 )
+                        {
+                           f += w*r->raw;
+                           ws += w;
+                        }
+                     }
+                  if ( 1 + ws != 1 )
+                     f /= ws;
+                  else
+                     f = 0;
                }
             }
             break;
@@ -258,7 +268,7 @@ void IntegrationEngine::IntegrationThread::Run()
             break;
          }
 
-         if ( result32 != nullptr )
+         if ( likely( result32 != nullptr ) )
             *result32++ = float( f );
          else
             *result64++ = f;
@@ -278,4 +288,4 @@ void IntegrationEngine::IntegrationThread::Run()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationEngine.cpp - Released 2022-03-12T18:59:53Z
+// EOF IntegrationEngine.cpp - Released 2022-04-22T19:29:05Z

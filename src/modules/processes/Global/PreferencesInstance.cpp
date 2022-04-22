@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.3.2
+// Standard Global Process Module Version 1.3.3
 // ----------------------------------------------------------------------------
-// PreferencesInstance.cpp - Released 2022-03-12T18:59:53Z
+// PreferencesInstance.cpp - Released 2022-04-22T19:29:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -87,6 +87,7 @@ void PreferencesInstance::Assign( const ProcessImplementation& p )
       imageWindow = x->imageWindow;
       identifiers = x->identifiers;
       process     = x->process;
+      security    = x->security;
    }
 }
 
@@ -274,6 +275,13 @@ bool PreferencesInstance::ExecuteGlobal()
       PixInsightSettings::SetGlobalFlag    ( "Process/AlertOnProcessCompleted",                 process.alertOnProcessCompleted );
       PixInsightSettings::SetGlobalFlag    ( "Process/EnableExecutionStatistics",               process.enableExecutionStatistics );
       PixInsightSettings::SetGlobalFlag    ( "Process/EnableLaunchStatistics",                  process.enableLaunchStatistics );
+
+      PixInsightSettings::SetGlobalFlag    ( "Security/AllowUnsignedScriptExecution",           security.allowUnsignedScriptExecution );
+      PixInsightSettings::SetGlobalFlag    ( "Security/AllowUnsignedRepositories",              security.allowUnsignedRepositories );
+      PixInsightSettings::SetGlobalFlag    ( "Security/AllowInsecureRepositories",              security.allowInsecureRepositories );
+      PixInsightSettings::SetGlobalFlag    ( "Security/ReportScriptSignatures",                 security.reportScriptSignatures );
+      PixInsightSettings::SetGlobalFlag    ( "Security/WarnOnUnsignedCodeExecution",            security.warnOnUnsignedCodeExecution );
+      PixInsightSettings::SetGlobalFlag    ( "Security/EnableLocalSigningIdentity",             security.enableLocalSigningIdentity );
 
       PixInsightSettings::EndUpdate();
 
@@ -611,6 +619,19 @@ void* PreferencesInstance::LockParameter( const MetaParameter* p, size_type tabl
    if ( p == METAPARAMETER_INSTANCE_ID( Process, enableLaunchStatistics ) )
       return &process.enableLaunchStatistics;
 
+   if ( p == METAPARAMETER_INSTANCE_ID( Security, allowUnsignedScriptExecution ) )
+      return &security.allowUnsignedScriptExecution;
+   if ( p == METAPARAMETER_INSTANCE_ID( Security, allowUnsignedRepositories ) )
+      return &security.allowUnsignedRepositories;
+   if ( p == METAPARAMETER_INSTANCE_ID( Security, allowInsecureRepositories ) )
+      return &security.allowInsecureRepositories;
+   if ( p == METAPARAMETER_INSTANCE_ID( Security, reportScriptSignatures ) )
+      return &security.reportScriptSignatures;
+   if ( p == METAPARAMETER_INSTANCE_ID( Security, warnOnUnsignedCodeExecution ) )
+      return &security.warnOnUnsignedCodeExecution;
+   if ( p == METAPARAMETER_INSTANCE_ID( Security, enableLocalSigningIdentity ) )
+      return &security.enableLocalSigningIdentity;
+
    return nullptr;
 }
 
@@ -827,6 +848,13 @@ void PreferencesInstance::LoadDefaultSettings()
    process.alertOnProcessCompleted              =         METAPARAMETER_INSTANCE_ID( Process, alertOnProcessCompleted              )->DefaultValue();
    process.enableExecutionStatistics            =         METAPARAMETER_INSTANCE_ID( Process, enableExecutionStatistics            )->DefaultValue();
    process.enableLaunchStatistics               =         METAPARAMETER_INSTANCE_ID( Process, enableLaunchStatistics               )->DefaultValue();
+
+   security.allowUnsignedScriptExecution        =         METAPARAMETER_INSTANCE_ID( Security, allowUnsignedScriptExecution        )->DefaultValue();
+   security.allowUnsignedRepositories           =         METAPARAMETER_INSTANCE_ID( Security, allowUnsignedRepositories           )->DefaultValue();
+   security.allowInsecureRepositories           =         METAPARAMETER_INSTANCE_ID( Security, allowInsecureRepositories           )->DefaultValue();
+   security.reportScriptSignatures              =         METAPARAMETER_INSTANCE_ID( Security, reportScriptSignatures              )->DefaultValue();
+   security.warnOnUnsignedCodeExecution         =         METAPARAMETER_INSTANCE_ID( Security, warnOnUnsignedCodeExecution         )->DefaultValue();
+   security.enableLocalSigningIdentity          =         METAPARAMETER_INSTANCE_ID( Security, enableLocalSigningIdentity          )->DefaultValue();
 }
 
 // ----------------------------------------------------------------------------
@@ -992,6 +1020,13 @@ void PreferencesInstance::LoadCurrentSettings()
    process.alertOnProcessCompleted              = PixInsightSettings::GlobalFlag    ( "Process/AlertOnProcessCompleted" );
    process.enableExecutionStatistics            = PixInsightSettings::GlobalFlag    ( "Process/EnableExecutionStatistics" );
    process.enableLaunchStatistics               = PixInsightSettings::GlobalFlag    ( "Process/EnableLaunchStatistics" );
+
+   security.allowUnsignedScriptExecution        = PixInsightSettings::GlobalFlag    ( "Security/AllowUnsignedScriptExecution" );
+   security.allowUnsignedRepositories           = PixInsightSettings::GlobalFlag    ( "Security/AllowUnsignedRepositories" );
+   security.allowInsecureRepositories           = PixInsightSettings::GlobalFlag    ( "Security/AllowInsecureRepositories" );
+   security.reportScriptSignatures              = PixInsightSettings::GlobalFlag    ( "Security/ReportScriptSignatures" );
+   security.warnOnUnsignedCodeExecution         = PixInsightSettings::GlobalFlag    ( "Security/WarnOnUnsignedCodeExecution" );
+   security.enableLocalSigningIdentity          = PixInsightSettings::GlobalFlag    ( "Security/EnableLocalSigningIdentity" );
 }
 
 // ----------------------------------------------------------------------------
@@ -1105,6 +1140,7 @@ String* PreferencesInstance::StringParameterFromMetaParameter( const MetaParamet
       s = &identifiers.noPreviewSelectedText;
    else if ( p == METAPARAMETER_INSTANCE_ID( Identifiers, brokenLinkText ) )
       s = &identifiers.brokenLinkText;
+
    return s;
 }
 
@@ -1113,4 +1149,4 @@ String* PreferencesInstance::StringParameterFromMetaParameter( const MetaParamet
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInstance.cpp - Released 2022-03-12T18:59:53Z
+// EOF PreferencesInstance.cpp - Released 2022-04-22T19:29:05Z

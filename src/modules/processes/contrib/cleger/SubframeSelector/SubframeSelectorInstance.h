@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.8.0
+// Standard SubframeSelector Process Module Version 1.8.3
 // ----------------------------------------------------------------------------
-// SubframeSelectorInstance.h - Released 2022-03-12T18:59:53Z
+// SubframeSelectorInstance.h - Released 2022-04-22T19:29:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -141,6 +141,7 @@ private:
    float              p_xyStretch;           // ### DEPRECATED
    pcl_enum           p_psfFit;
    pcl_bool           p_psfFitCircular;
+   int32              p_maxPSFFits;
    Rect               p_roi = 0;
 
    // Subtractive pedestal.
@@ -216,4 +217,4 @@ private:
 #endif   // __SubframeSelectorInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInstance.h - Released 2022-03-12T18:59:53Z
+// EOF SubframeSelectorInstance.h - Released 2022-04-22T19:29:05Z

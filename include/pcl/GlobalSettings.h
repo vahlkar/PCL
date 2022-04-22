@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// pcl/GlobalSettings.h - Released 2022-03-12T18:59:29Z
+// pcl/GlobalSettings.h - Released 2022-04-22T19:28:34Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -212,6 +212,12 @@ namespace GlobalVariableType
  * <tr><td>Process/GenerateScriptComments</td><td></td></tr>
  * <tr><td>Process/InitCUDARuntimeAtStartup</td><td></td></tr>
  * <tr><td>Process/VerifyScriptChecksums</td><td></td></tr>
+ * <tr><td>Security/AllowInsecureRepositories</td><td></td></tr>
+ * <tr><td>Security/AllowUnsignedRepositories</td><td></td></tr>
+ * <tr><td>Security/AllowUnsignedScriptExecution</td><td></td></tr>
+ * <tr><td>Security/EnableLocalSigningIdentity</td><td></td></tr>
+ * <tr><td>Security/ReportScriptSignatures</td><td></td></tr>
+ * <tr><td>Security/WarnOnUnsignedCodeExecution</td><td></td></tr>
  * </table>
  *
  * <h4>Global Integers</h4>
@@ -519,4 +525,4 @@ public:
 #endif   // __PCL_GlobalSettings_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/GlobalSettings.h - Released 2022-03-12T18:59:29Z
+// EOF pcl/GlobalSettings.h - Released 2022-04-22T19:28:34Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.4.5
+// Standard ImageIntegration Process Module Version 1.4.9
 // ----------------------------------------------------------------------------
-// ImageIntegrationInterface.cpp - Released 2022-03-12T18:59:53Z
+// ImageIntegrationInterface.cpp - Released 2022-04-22T19:29:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -74,6 +74,7 @@ static pcl_enum s_comboBoxItemIndexToWeightMode[] =
    IIWeightMode::DontCare,
    IIWeightMode::PSFSignalWeight,
    IIWeightMode::PSFSNR,
+   IIWeightMode::PSFScaleSNR,
    IIWeightMode::SNREstimate,
    IIWeightMode::ExposureTimeWeight,
    IIWeightMode::AverageWeight,
@@ -83,6 +84,37 @@ static pcl_enum s_comboBoxItemIndexToWeightMode[] =
 };
 
 static int s_weightModeToComboBoxItemIndex[ IIWeightMode::NumberOfItems ];
+
+// ----------------------------------------------------------------------------
+
+static pcl_enum s_comboBoxItemIndexToRejectionAlgorithm[] =
+{
+   IIRejection::NoRejection,
+   IIRejection::MinMax,
+   IIRejection::PercentileClip,
+   IIRejection::SigmaClip,
+   IIRejection::WinsorizedSigmaClip,
+   IIRejection::AveragedSigmaClip,
+   IIRejection::LinearFit,
+   IIRejection::ESD,
+   IIRejection::RCR
+};
+
+// ----------------------------------------------------------------------------
+
+static int s_rejectionAlgorithmToComboBoxItemIndex[ IIRejection::NumberOfItems ] =
+{
+   0, // IIRejection::NoRejection
+   1, // IIRejection::MinMax
+   2, // IIRejection::PercentileClip
+   3, // IIRejection::SigmaClip
+   4, // IIRejection::WinsorizedSigmaClip
+   5, // IIRejection::AveragedSigmaClip
+   6, // IIRejection::LinearFit
+   4, // IIRejection::CCDClip => IIRejection::WinsorizedSigmaClip
+   7, // IIRejection::ESD
+   8  // IIRejection::RCR
+};
 
 // ----------------------------------------------------------------------------
 
@@ -407,9 +439,9 @@ void ImageIntegrationInterface::UpdateRejectionControls()
 
    bool doesESDRejection = m_instance.p_rejection == IIRejection::ESD;
 
-   bool doesCCDClipRejection = m_instance.p_rejection == IIRejection::CCDClip;
+//    bool doesCCDClipRejection = m_instance.p_rejection == IIRejection::CCDClip;
 
-   GUI->RejectionAlgorithm_ComboBox.SetCurrentItem( m_instance.p_rejection );
+   GUI->RejectionAlgorithm_ComboBox.SetCurrentItem( s_rejectionAlgorithmToComboBoxItemIndex[m_instance.p_rejection] );
 
    GUI->RejectionNormalization_ComboBox.Enable( doesRejection );
    GUI->RejectionNormalization_ComboBox.SetCurrentItem( m_instance.p_rejectionNormalization );
@@ -476,14 +508,14 @@ void ImageIntegrationInterface::UpdateRejectionControls()
    GUI->RCRLimit_NumericControl.Enable( m_instance.p_rejection == IIRejection::RCR );
    GUI->RCRLimit_NumericControl.SetValue( m_instance.p_rcrLimit );
 
-   GUI->CCDGain_NumericControl.Enable( doesCCDClipRejection );
-   GUI->CCDGain_NumericControl.SetValue( m_instance.p_ccdGain );
-
-   GUI->CCDReadNoise_NumericControl.Enable( doesCCDClipRejection );
-   GUI->CCDReadNoise_NumericControl.SetValue( m_instance.p_ccdReadNoise );
-
-   GUI->CCDScaleNoise_NumericControl.Enable( doesCCDClipRejection );
-   GUI->CCDScaleNoise_NumericControl.SetValue( m_instance.p_ccdScaleNoise );
+//    GUI->CCDGain_NumericControl.Enable( doesCCDClipRejection );
+//    GUI->CCDGain_NumericControl.SetValue( m_instance.p_ccdGain );
+//
+//    GUI->CCDReadNoise_NumericControl.Enable( doesCCDClipRejection );
+//    GUI->CCDReadNoise_NumericControl.SetValue( m_instance.p_ccdReadNoise );
+//
+//    GUI->CCDScaleNoise_NumericControl.Enable( doesCCDClipRejection );
+//    GUI->CCDScaleNoise_NumericControl.SetValue( m_instance.p_ccdScaleNoise );
 
    GUI->RangeLow_NumericControl.Enable( m_instance.p_rangeClipLow );
    GUI->RangeLow_NumericControl.SetValue( m_instance.p_rangeLow );
@@ -613,7 +645,7 @@ String ImageIntegrationInterface::LocalNormalizationTargetName( const String& fi
 
 String ImageIntegrationInterface::DrizzleTargetName( const String& filePath )
 {
-   DrizzleData drz( filePath, true/*ignoreIntegrationData*/ );
+   DrizzleData drz( filePath, DrizzleParserOption::IgnoreIntegrationData );
 
    /*
     * If the XDRZ file includes a target alignment path, use it. Otherwise
@@ -923,7 +955,7 @@ void ImageIntegrationInterface::e_ItemSelected( ComboBox& sender, int itemIndex 
 //    }
    else if ( sender == GUI->RejectionAlgorithm_ComboBox )
    {
-      m_instance.p_rejection = itemIndex;
+      m_instance.p_rejection = s_comboBoxItemIndexToRejectionAlgorithm[itemIndex];
       UpdateRejectionControls();
    }
    else if ( sender == GUI->RejectionNormalization_ComboBox )
@@ -1104,12 +1136,12 @@ void ImageIntegrationInterface::e_EditValueUpdated( NumericEdit& sender, double 
 //       m_instance.p_esdLowRelaxation = value;
    else if ( sender == GUI->RCRLimit_NumericControl )
       m_instance.p_rcrLimit = value;
-   else if ( sender == GUI->CCDGain_NumericControl )
-      m_instance.p_ccdGain = value;
-   else if ( sender == GUI->CCDReadNoise_NumericControl )
-      m_instance.p_ccdReadNoise = value;
-   else if ( sender == GUI->CCDScaleNoise_NumericControl )
-      m_instance.p_ccdScaleNoise = value;
+//    else if ( sender == GUI->CCDGain_NumericControl )
+//       m_instance.p_ccdGain = value;
+//    else if ( sender == GUI->CCDReadNoise_NumericControl )
+//       m_instance.p_ccdReadNoise = value;
+//    else if ( sender == GUI->CCDScaleNoise_NumericControl )
+//       m_instance.p_ccdScaleNoise = value;
    else if ( sender == GUI->RangeLow_NumericControl )
       m_instance.p_rangeLow = value;
    else if ( sender == GUI->RangeHigh_NumericControl )
@@ -1549,17 +1581,23 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
 
    const char* weightModeToolTip = "<p>Image weighting method.</p>"
 
-      "<p>The <b>PSF signal weight (PSFSW)</b> and <b>PSF SNR</b> algorithms are based on robust estimates of total and mean flux "
+      "<p>The <b>PSF Signal Weight (PSFSW)</b> and <b>PSF SNR</b> algorithms are based on robust estimates of total and mean flux "
       "computed by PSF photometry, as well as noise estimates computed using multiscale analysis techniques. These methods "
       "are robust and accurate. PSFSW is a comprehensive image quality estimator, able to capture a wide variety of image quality "
-      "metrics including signal-to-noise ratio, source dimensions and background gradients. PSF SNR is the best choice to generate "
-      "image weights based on signal-to-noise ratio exclusively. The PSF signal weight method is currently the default option."
+      "metrics including signal-to-noise ratio, source dimensions and background gradients. PSF SNR is a good choice to generate "
+      "image weights based on signal-to-noise ratio exclusively. The PSF Signal Weight method is currently the default option."
 
-      "<p>The <b>SNR estimate</b> option uses multiscale noise evaluation techniques to compute noise estimates and their "
-      "corresponding noise scaling factors. These estimates are applied to minimize mean squared error in the integrated "
-      "result. This method can lead to optimal results in terms of SNR maximization, but has potential robustness problems "
-      "that can also generate wrong results, so it must be used with care by analyzing the data prior to integration, for "
-      "example with the SubframeSelector tool.</p>"
+      "<p>The <b>PSF Scale SNR (PSFSSNR)</b> method uses relative scale estimates computed by the LocalNormalization tool and stored "
+      "in local normalization data files (XNML format, .xnml extension), along with multiscale noise estimates, to compute image "
+      "weights exclusively based on relative signal-to-noise ratios. This method is excellent to maximize SNR in the integrated image. "
+      "PSFSSNR requires .xnml files correctly associated with all input images to retrieve relative scale estimates, and all .xnml "
+      "files should be generated with the same normalization reference image.</p>"
+
+      "<p>The <b>SNR</b> method uses statistical scale estimators and multiscale noise evaluation techniques to compute SNR estimates. "
+      "These estimates are applied to minimize mean squared error in the integrated result, which in theory transforms the average "
+      "combination process into a maximum likelihood estimator of deterministic signal. This method can lead to optimal results in "
+      "terms of SNR maximization, but has potential robustness problems that can also generate wrong results, so it must be used with "
+      "care by analyzing the data prior to integration, for example with the SubframeSelector tool.</p>"
 
       "<p>Noise estimates and scaling factors, as well as PSF flux estimates and other auxiliary weighting terms, are "
       "obtained either from cached data, when available, of from XISF properties. If no XISF properties are available, the "
@@ -1876,15 +1914,16 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
       "Many-Outlier procedure</i>, adapted to the image integration task. The ESD algorithm assumes that each "
       "pixel stack, in absence of outliers, follows an approximately normal (Gaussian) distribution. It aims at "
       "avoiding <i>masking</i>, a serious issue that occurs when an outlier goes undetected because its value is "
-      "similar to another outlier. The performance of this algorithm is usually excellent for data sets of 20 "
-      "or more images. The minimum required is 3 images.</p>"
+      "similar to another outlier. The performance of this algorithm is excellent for data sets of 15 or more "
+      "images, although good results can also be obtained for reduced sets of 8-10 frames. The minimum required "
+      "is 3 images.</p>"
 
       "<p><b>Robust Chauvenet Rejection (RCR)</b> is based on the algorithms described in Maples, M. P., "
       "Reichart, D. E. et al., <i>Robust Chauvenet Outlier Rejection</i>, Astrophysical Journal Supplement "
       "Series, 2018, 238, A2, 1-49. Our implementation applies three successive stages of rejection with "
       "decreasingly robust/increasingly precise measures of central tendency and sample deviation, rejecting "
       "a single pixel at each iteration for maximum stability. This is a single-parameter pixel rejection "
-      "algorithm introduced since version 1.8.8-13 of PixInsight.</p>"
+      "algorithm introduced since version 1.8.9 of PixInsight.</p>"
 
       "<p><b>Percentile clipping</b> rejection is excellent to integrate reduced sets of images, such as "
       "3 to 6 images. This is a single-pass algorithm that rejects pixels outside a fixed range of values "
@@ -1900,25 +1939,18 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
       "Rejection methods based on robust statistics, such as percentile, Winsorized sigma clipping, linear "
       "fitting and averaged sigma clipping are in general preferable.</p>"
 
-      "<p>Finally, the <b>CCD noise model</b> algorithm requires unmodified (uncalibrated) data and accurate "
-      "sensor parameters. This rejection algorithm can only be useful to integrate calibration images (bias "
-      "frames, dark frames and flat fields).</p>";
+//       "<p>Finally, the <b>CCD noise model</b> algorithm requires unmodified (uncalibrated) data and accurate "
+//       "sensor parameters. This rejection algorithm can only be useful to integrate calibration images (bias "
+//       "frames, dark frames and flat fields).</p>"
+      ;
 
    RejectionAlgorithm_Label.SetText( "Rejection algorithm:" );
    RejectionAlgorithm_Label.SetFixedWidth( labelWidth1 );
    RejectionAlgorithm_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
    RejectionAlgorithm_Label.SetToolTip( rejectionAlgorithmToolTip );
 
-   RejectionAlgorithm_ComboBox.AddItem( "No rejection" );
-   RejectionAlgorithm_ComboBox.AddItem( "Min/Max" );
-   RejectionAlgorithm_ComboBox.AddItem( "Percentile Clipping" );
-   RejectionAlgorithm_ComboBox.AddItem( "Sigma Clipping" );
-   RejectionAlgorithm_ComboBox.AddItem( "Winsorized Sigma Clipping" );
-   RejectionAlgorithm_ComboBox.AddItem( "Averaged Sigma Clipping" );
-   RejectionAlgorithm_ComboBox.AddItem( "Linear Fit Clipping" );
-   RejectionAlgorithm_ComboBox.AddItem( "CCD Noise Model" );
-   RejectionAlgorithm_ComboBox.AddItem( "Generalized Extreme Studentized Deviate (ESD)" );
-   RejectionAlgorithm_ComboBox.AddItem( "Robust Chauvenet Rejection (RCR)" );
+   for ( size_type i = 0; i < ItemsInArray( s_comboBoxItemIndexToRejectionAlgorithm ); ++i )
+      RejectionAlgorithm_ComboBox.AddItem( TheIIRejectionParameter->ElementLabel( s_comboBoxItemIndexToRejectionAlgorithm[i] ) );
    RejectionAlgorithm_ComboBox.SetToolTip( rejectionAlgorithmToolTip );
    RejectionAlgorithm_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ImageIntegrationInterface::e_ItemSelected, w );
 
@@ -2011,7 +2043,9 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
 
    ClipLowRange_CheckBox.SetText( "Clip low range" );
    ClipLowRange_CheckBox.SetToolTip( "<p>Enable rejection of pixels with values less than or equal to the "
-      "<i>low rejection range</i> parameter.</p>" );
+      "<i>Range low</i> parameter.</p>"
+      "<b>Important:</b> Under normal working conditions this parameter should always be enabled for optimal "
+      "performance, along with <i>Range low</i> set to its default value of zero." );
    ClipLowRange_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Click, w );
 
    ClipLowRange_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
@@ -2020,7 +2054,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
 
    ClipHighRange_CheckBox.SetText( "Clip high range" );
    ClipHighRange_CheckBox.SetToolTip( "<p>Enable rejection of pixels with values greater than or equal to the "
-      "<i>high rejection range</i> parameter.</p>" );
+      "<i>Range high</i> parameter.</p>" );
    ClipHighRange_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Click, w );
 
    ClipHighRange_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
@@ -2278,50 +2312,50 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
 
    //
 
-   Rejection3_SectionBar.SetTitle( "Pixel Rejection (3)" );
-   Rejection3_SectionBar.SetSection( Rejection3_Control );
-   Rejection3_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&ImageIntegrationInterface::e_ToggleSection, w );
-
-   CCDGain_NumericControl.label.SetText( "CCD gain:" );
-   CCDGain_NumericControl.label.SetFixedWidth( labelWidth1 );
-   CCDGain_NumericControl.slider.SetRange( 0, 100 );
-   CCDGain_NumericControl.SetReal();
-   CCDGain_NumericControl.SetRange( TheIICCDGainParameter->MinimumValue(), TheIICCDGainParameter->MaximumValue() );
-   CCDGain_NumericControl.SetPrecision( TheIICCDGainParameter->Precision() );
-   CCDGain_NumericControl.edit.SetFixedWidth( editWidth2 );
-   CCDGain_NumericControl.SetToolTip( "<p>CCD sensor gain in electrons per data number (e-/ADU). Only used by the CCD noise "
-      "clipping rejection algorithm.</p>" );
-   CCDGain_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::e_EditValueUpdated, w );
-
-   CCDReadNoise_NumericControl.label.SetText( "CCD readout noise:" );
-   CCDReadNoise_NumericControl.label.SetFixedWidth( labelWidth1 );
-   CCDReadNoise_NumericControl.slider.SetRange( 0, 100 );
-   CCDReadNoise_NumericControl.SetReal();
-   CCDReadNoise_NumericControl.SetRange( TheIICCDReadNoiseParameter->MinimumValue(), TheIICCDReadNoiseParameter->MaximumValue() );
-   CCDReadNoise_NumericControl.SetPrecision( TheIICCDReadNoiseParameter->Precision() );
-   CCDReadNoise_NumericControl.edit.SetFixedWidth( editWidth2 );
-   CCDReadNoise_NumericControl.SetToolTip( "<p>CCD readout noise in electrons. Only used by the CCD noise "
-      "clipping rejection algorithm.</p>" );
-   CCDReadNoise_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::e_EditValueUpdated, w );
-
-   CCDScaleNoise_NumericControl.label.SetText( "CCD scale noise:" );
-   CCDScaleNoise_NumericControl.label.SetFixedWidth( labelWidth1 );
-   CCDScaleNoise_NumericControl.slider.SetRange( 0, 100 );
-   CCDScaleNoise_NumericControl.SetReal();
-   CCDScaleNoise_NumericControl.SetRange( TheIICCDScaleNoiseParameter->MinimumValue(), TheIICCDScaleNoiseParameter->MaximumValue() );
-   CCDScaleNoise_NumericControl.SetPrecision( TheIICCDScaleNoiseParameter->Precision() );
-   CCDScaleNoise_NumericControl.edit.SetFixedWidth( editWidth2 );
-   CCDScaleNoise_NumericControl.SetToolTip( "<p>CCD <i>scale noise</i> (AKA <i>sensitivity noise</i>). This is a "
-      "dimensionless factor, only used by the CCD noise clipping rejection algorithm. Scale noise typically comes "
-      "from noise introduced during flat fielding.</p>" );
-   CCDScaleNoise_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::e_EditValueUpdated, w );
-
-   Rejection3_Sizer.SetSpacing( 4 );
-   Rejection3_Sizer.Add( CCDGain_NumericControl );
-   Rejection3_Sizer.Add( CCDReadNoise_NumericControl );
-   Rejection3_Sizer.Add( CCDScaleNoise_NumericControl );
-
-   Rejection3_Control.SetSizer( Rejection3_Sizer );
+//    Rejection3_SectionBar.SetTitle( "Pixel Rejection (3)" );
+//    Rejection3_SectionBar.SetSection( Rejection3_Control );
+//    Rejection3_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&ImageIntegrationInterface::e_ToggleSection, w );
+//
+//    CCDGain_NumericControl.label.SetText( "CCD gain:" );
+//    CCDGain_NumericControl.label.SetFixedWidth( labelWidth1 );
+//    CCDGain_NumericControl.slider.SetRange( 0, 100 );
+//    CCDGain_NumericControl.SetReal();
+//    CCDGain_NumericControl.SetRange( TheIICCDGainParameter->MinimumValue(), TheIICCDGainParameter->MaximumValue() );
+//    CCDGain_NumericControl.SetPrecision( TheIICCDGainParameter->Precision() );
+//    CCDGain_NumericControl.edit.SetFixedWidth( editWidth2 );
+//    CCDGain_NumericControl.SetToolTip( "<p>CCD sensor gain in electrons per data number (e-/ADU). Only used by the CCD noise "
+//       "clipping rejection algorithm.</p>" );
+//    CCDGain_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::e_EditValueUpdated, w );
+//
+//    CCDReadNoise_NumericControl.label.SetText( "CCD readout noise:" );
+//    CCDReadNoise_NumericControl.label.SetFixedWidth( labelWidth1 );
+//    CCDReadNoise_NumericControl.slider.SetRange( 0, 100 );
+//    CCDReadNoise_NumericControl.SetReal();
+//    CCDReadNoise_NumericControl.SetRange( TheIICCDReadNoiseParameter->MinimumValue(), TheIICCDReadNoiseParameter->MaximumValue() );
+//    CCDReadNoise_NumericControl.SetPrecision( TheIICCDReadNoiseParameter->Precision() );
+//    CCDReadNoise_NumericControl.edit.SetFixedWidth( editWidth2 );
+//    CCDReadNoise_NumericControl.SetToolTip( "<p>CCD readout noise in electrons. Only used by the CCD noise "
+//       "clipping rejection algorithm.</p>" );
+//    CCDReadNoise_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::e_EditValueUpdated, w );
+//
+//    CCDScaleNoise_NumericControl.label.SetText( "CCD scale noise:" );
+//    CCDScaleNoise_NumericControl.label.SetFixedWidth( labelWidth1 );
+//    CCDScaleNoise_NumericControl.slider.SetRange( 0, 100 );
+//    CCDScaleNoise_NumericControl.SetReal();
+//    CCDScaleNoise_NumericControl.SetRange( TheIICCDScaleNoiseParameter->MinimumValue(), TheIICCDScaleNoiseParameter->MaximumValue() );
+//    CCDScaleNoise_NumericControl.SetPrecision( TheIICCDScaleNoiseParameter->Precision() );
+//    CCDScaleNoise_NumericControl.edit.SetFixedWidth( editWidth2 );
+//    CCDScaleNoise_NumericControl.SetToolTip( "<p>CCD <i>scale noise</i> (AKA <i>sensitivity noise</i>). This is a "
+//       "dimensionless factor, only used by the CCD noise clipping rejection algorithm. Scale noise typically comes "
+//       "from noise introduced during flat fielding.</p>" );
+//    CCDScaleNoise_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::e_EditValueUpdated, w );
+//
+//    Rejection3_Sizer.SetSpacing( 4 );
+//    Rejection3_Sizer.Add( CCDGain_NumericControl );
+//    Rejection3_Sizer.Add( CCDReadNoise_NumericControl );
+//    Rejection3_Sizer.Add( CCDScaleNoise_NumericControl );
+//
+//    Rejection3_Control.SetSizer( Rejection3_Sizer );
 
    //
 
@@ -2451,14 +2485,14 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    //
 
    SNREvaluation_SectionBar.SetTitle( "Signal and Noise Evaluation" );
-   SNREvaluation_SectionBar.SetToolTip( "<p>Generate noise, SNR and PSF signal weight estimates for the final "
+   SNREvaluation_SectionBar.SetToolTip( "<p>Generate noise, SNR and PSF Signal Weight estimates for the final "
       "integrated image.</p>"
       "<p>When this option is enabled, the selected noise evaluation algorithm (MRS by default) will be used to "
       "compute the standard deviation of the noise in the integrated result. These estimates are typically to within "
       "1% accuracy. Besides noise estimates, a final report will be generated with per-channel robust descriptive "
-      "statistics, SNR and PSF signal weight estimates.</p>"
+      "statistics, SNR and PSF Signal Weight estimates.</p>"
       "<p>This option is useful to compare the results of different integration procedures. For example, by comparing "
-      "SNR and PSF signal weight estimates you can know which image normalization and weighting criteria lead to the "
+      "SNR and PSF Signal Weight estimates you can know which image normalization and weighting criteria lead to the "
       "best results in terms of image quality.</p>" );
    SNREvaluation_SectionBar.SetSection( SNREvaluation_Control );
    SNREvaluation_SectionBar.EnableTitleCheckBox();
@@ -2662,8 +2696,8 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    Global_Sizer.Add( Rejection1_Control );
    Global_Sizer.Add( Rejection2_SectionBar );
    Global_Sizer.Add( Rejection2_Control );
-   Global_Sizer.Add( Rejection3_SectionBar );
-   Global_Sizer.Add( Rejection3_Control );
+//    Global_Sizer.Add( Rejection3_SectionBar );
+//    Global_Sizer.Add( Rejection3_Control );
    Global_Sizer.Add( LargeScaleRejection_SectionBar );
    Global_Sizer.Add( LargeScaleRejection_Control );
    Global_Sizer.Add( SNREvaluation_SectionBar );
@@ -2680,7 +2714,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    FormatHints_Control.Hide();
    Rejection1_Control.Hide();
    Rejection2_Control.Hide();
-   Rejection3_Control.Hide();
+//    Rejection3_Control.Hide();
    LargeScaleRejection_Control.Hide();
    SNREvaluation_Control.Hide();
    ROI_Control.Hide();
@@ -2693,4 +2727,4 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationInterface.cpp - Released 2022-03-12T18:59:53Z
+// EOF ImageIntegrationInterface.cpp - Released 2022-04-22T19:29:05Z

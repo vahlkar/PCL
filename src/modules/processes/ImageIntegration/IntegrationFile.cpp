@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.23
+// /_/     \____//_____/   PCL 2.4.28
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.4.5
+// Standard ImageIntegration Process Module Version 1.4.9
 // ----------------------------------------------------------------------------
-// IntegrationFile.cpp - Released 2022-03-12T18:59:53Z
+// IntegrationFile.cpp - Released 2022-04-22T19:29:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -449,12 +449,14 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
                                   !hasWeightsList &&
                                   (instance.p_weightMode == IIWeightMode::SNREstimate ||
                                    instance.p_weightMode == IIWeightMode::PSFSignalWeight ||
-                                   instance.p_weightMode == IIWeightMode::PSFSNR))
+                                   instance.p_weightMode == IIWeightMode::PSFSNR ||
+                                   instance.p_weightMode == IIWeightMode::PSFScaleSNR))
                                || instance.p_generateDrizzleData &&
                                   !hasWeightsList &&
                                   (instance.p_weightMode == IIWeightMode::SNREstimate ||
                                    instance.p_weightMode == IIWeightMode::PSFSignalWeight ||
-                                   instance.p_weightMode == IIWeightMode::PSFSNR);
+                                   instance.p_weightMode == IIWeightMode::PSFSNR ||
+                                   instance.p_weightMode == IIWeightMode::PSFScaleSNR);
 
    bool needScale = needNoise  || instance.p_generateDrizzleData
                                || instance.p_generateIntegratedImage &&
@@ -812,6 +814,53 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
                                        c, ZeroOffset( c ), ScaleFactor( c ).low, ScaleFactor( c ).high ) );
    }
 
+   if ( instance.p_generateIntegratedImage
+     && instance.p_normalization == IINormalization::LocalNormalization ||
+        instance.p_rejection != IIRejection::NoRejection
+     && instance.p_rejectionNormalization == IIRejectionNormalization::LocalRejectionNormalization ||
+        generateOutput
+     && !hasWeightsList
+     && (instance.p_generateDrizzleData || instance.p_combination == IICombination::Average)
+     && instance.p_weightMode == IIWeightMode::PSFScaleSNR )
+   {
+      m_nmlPath = nmlPath.Trimmed();
+      if ( !m_nmlPath.IsEmpty() )
+      {
+         if ( !File::Exists( m_nmlPath ) )
+            throw Error( "No such file: " + m_nmlPath );
+
+         m_localNormalization.Parse( m_nmlPath );
+
+         if ( m_localNormalization.Version() < LN_MIN_VERSION )
+            throw Error( String().Format( "Incompatible local normalization data version. Expected >= %d, got %d: ",
+                                          LN_MIN_VERSION, m_localNormalization.Version() ) + m_nmlPath );
+
+         if ( m_localNormalization.ReferenceWidth() != s_width ||
+              m_localNormalization.ReferenceHeight() != s_height ||
+              m_localNormalization.NumberOfChannels() != s_numberOfChannels )
+            throw Error( "Inconsistent image geometry: " + m_nmlPath );
+      }
+   }
+
+   m_hasLocalNormalization = m_localNormalization.HasInterpolations();
+   if ( !m_hasLocalNormalization )
+      if ( instance.p_generateIntegratedImage
+        && instance.p_normalization == IINormalization::LocalNormalization ||
+           instance.p_rejection != IIRejection::NoRejection
+        && instance.p_rejectionNormalization == IIRejectionNormalization::LocalRejectionNormalization )
+      {
+         console.WarningLn( "<end><cbr>** Warning: Local normalization data not available - No normalization will be applied!" );
+      }
+
+   if ( instance.p_generateDrizzleData )
+   {
+      m_drzPath = drzPath.Trimmed();
+      if ( m_drzPath.IsEmpty() )
+         throw Error( m_file->FilePath() + ": Missing drizzle data file path." );
+      if ( !File::Exists( m_drzPath ) )
+         throw Error( "No such file: " + m_drzPath );
+   }
+
    if ( generateOutput )
    {
       m_weights = DVector( s_numberOfChannels );
@@ -820,8 +869,9 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
        * Image weighting only makes sense for average combination. It is also
        * required for generation of drizzle integration data files.
        */
-      if ( instance.p_weightMode != IIWeightMode::DontCare && !hasWeightsList &&
-           (instance.p_generateDrizzleData || instance.p_combination == IICombination::Average) )
+      if ( instance.p_weightMode != IIWeightMode::DontCare
+        && !hasWeightsList
+        && (instance.p_generateDrizzleData || instance.p_combination == IICombination::Average) )
       {
          switch ( instance.p_weightMode )
          {
@@ -834,7 +884,7 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
                 */
                double w_psf = PSFSignalEstimator::PSFSignalWeight( PSFSignalEstimate( c ), NoiseEstimate( c ) );
                if ( !IsFinite( w_psf ) || 1 + w_psf == 1 )
-                  throw Error( m_file->FilePath() + String().Format( " (channel #%d): Zero or insignificant PSF signal weight estimate.", c ) );
+                  throw Error( m_file->FilePath() + String().Format( " (channel #%d): Zero or insignificant PSF Signal Weight estimate.", c ) );
                m_weights[c] = w_psf;
             }
             break;
@@ -846,8 +896,31 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
                 */
                double snr_psf = PSFSignalEstimator::PSFSNR( PSFSignalEstimate( c ), NoiseEstimate( c ) );
                if ( !IsFinite( snr_psf ) || 1 + snr_psf == 1 )
-                  throw Error( m_file->FilePath() + String().Format( " (channel #%d): Zero or insignificant PSF signal-to-noise ratio estimate.", c ) );
+                  throw Error( m_file->FilePath() + String().Format( " (channel #%d): Zero or insignificant PSF SNR ratio estimate.", c ) );
                m_weights[c] = snr_psf;
+            }
+            break;
+         case IIWeightMode::PSFScaleSNR:
+            if ( !HasLocalNormalization() )
+               throw Error( m_file->FilePath() + ": The PSF Scale SNR weighting method requires local normalization data." );
+            {
+               const Vector& s = LocalNormalization().RelativeScaleFactors();
+               if ( s.IsEmpty() )
+                  throw Error( LocalNormalizationDataPath() + ": The local normalization data file does not provide relative scale factors, "
+                                    "which are required by the PSF Scale SNR weighting method." );
+               if ( s.Length() < s_numberOfChannels )
+                  throw Error( LocalNormalizationDataPath() + ": The local normalization data file does not provide enough relative scale factors, "
+                                    "which are required by the PSF Scale SNR weighting method." );
+               for ( int c = 0; c < s_numberOfChannels; ++c )
+               {
+                  /*
+                   * PSF Scale SNR estimator
+                   */
+                  double snr_scale = 1/s[c]/s[c]/NoiseEstimate( c )/NoiseEstimate( c );
+                  if ( !IsFinite( snr_scale ) || 1 + snr_scale == 1 )
+                     throw Error( m_file->FilePath() + String().Format( " (channel #%d): Zero or insignificant PSF Scale SNR ratio estimate.", c ) );
+                  m_weights[c] = snr_scale;
+               }
             }
             break;
          case IIWeightMode::SNREstimate:
@@ -917,49 +990,6 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
    if ( !s_incremental )
       if ( s_roi != m_image->Bounds() )
          m_image->CropTo( s_roi );
-
-   if ( instance.p_generateIntegratedImage
-     && instance.p_normalization == IINormalization::LocalNormalization ||
-        instance.p_rejection != IIRejection::NoRejection
-     && instance.p_rejectionNormalization == IIRejectionNormalization::LocalRejectionNormalization )
-   {
-      m_nmlPath = nmlPath.Trimmed();
-      if ( !m_nmlPath.IsEmpty() )
-      {
-         if ( !File::Exists( m_nmlPath ) )
-            throw Error( "No such file: " + m_nmlPath );
-
-         m_localNormalization.Parse( m_nmlPath );
-
-         if ( m_localNormalization.Version() < LN_MIN_VERSION )
-            throw Error( String().Format( "Incompatible local normalization data version. Expected >= %d, got %d: ",
-                                          LN_MIN_VERSION, m_localNormalization.Version() ) + m_nmlPath );
-
-         if ( m_localNormalization.ReferenceWidth() != s_width ||
-              m_localNormalization.ReferenceHeight() != s_height ||
-              m_localNormalization.NumberOfChannels() != s_numberOfChannels )
-            throw Error( "Inconsistent image geometry: " + m_nmlPath );
-      }
-   }
-
-   m_hasLocalNormalization = m_localNormalization.HasInterpolations();
-   if ( !m_hasLocalNormalization )
-      if ( instance.p_generateIntegratedImage
-        && instance.p_normalization == IINormalization::LocalNormalization ||
-           instance.p_rejection != IIRejection::NoRejection
-        && instance.p_rejectionNormalization == IIRejectionNormalization::LocalRejectionNormalization )
-      {
-         console.WarningLn( "<end><cbr>** Warning: Local normalization data not available - No normalization will be applied!" );
-      }
-
-   if ( instance.p_generateDrizzleData )
-   {
-      m_drzPath = drzPath.Trimmed();
-      if ( m_drzPath.IsEmpty() )
-         throw Error( m_file->FilePath() + ": Missing drizzle data file path." );
-      if ( !File::Exists( m_drzPath ) )
-         throw Error( "No such file: " + m_drzPath );
-   }
 }
 
 // ----------------------------------------------------------------------------
@@ -1283,4 +1313,4 @@ void IntegrationFile::OpenFileThread::Run()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationFile.cpp - Released 2022-03-12T18:59:53Z
+// EOF IntegrationFile.cpp - Released 2022-04-22T19:29:05Z
