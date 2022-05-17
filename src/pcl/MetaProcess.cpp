@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// pcl/MetaProcess.cpp - Released 2022-04-22T19:28:42Z
+// pcl/MetaProcess.cpp - Released 2022-05-17T17:14:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -272,6 +272,19 @@ public:
 
    // -------------------------------------------------------------------------
 
+   static api_bool api_func SetProcessServerHandle( process_handle hp, const_api_handle hs )
+   {
+      try
+      {
+         instance->m_serverHandle = hs;
+         return api_true;
+      }
+      ERROR_HANDLER
+      return api_false;
+   }
+
+   // -------------------------------------------------------------------------
+
    static api_bool api_func InitializeProcess( process_handle hp )
    {
       try
@@ -461,7 +474,7 @@ public:
          String whyNotStr;
          bool ok = constInstance->CanExecuteGlobal( whyNotStr );
 
-         if ( !ok && !whyNotStr.IsEmpty() && whyNot != 0 && maxLen > 0 )
+         if ( !ok && !whyNotStr.IsEmpty() && whyNot != nullptr && maxLen > 0 )
                whyNotStr.c_copy( whyNot, maxLen );
 
          return api_bool( ok );
@@ -593,7 +606,7 @@ public:
          String whyNotStr;
          bool ok = constInstance->CanExecuteOn( image, whyNotStr );
 
-         if ( !ok && !whyNotStr.IsEmpty() && whyNot != 0 && maxLen > 0 )
+         if ( !ok && !whyNotStr.IsEmpty() && whyNot != nullptr && maxLen > 0 )
                whyNotStr.c_copy( whyNot, maxLen );
 
          return api_bool( ok );
@@ -1031,6 +1044,7 @@ void MetaProcess::PerformAPIDefinitions() const
    (*API->ProcessDefinition->SetProcessDestructionRoutine)( ProcessContextDispatcher::DestroyProcess );
    (*API->ProcessDefinition->SetProcessClonationRoutine)( ProcessContextDispatcher::CloneProcess );
    (*API->ProcessDefinition->SetProcessTestClonationRoutine)( ProcessContextDispatcher::TestCloneProcess );
+   (*API->ProcessDefinition->SetProcessSetServerHandleRoutine)( ProcessContextDispatcher::SetProcessServerHandle );
 
    if ( IsAssignable() )
       (*API->ProcessDefinition->SetProcessAssignmentRoutine)( ProcessContextDispatcher::AssignProcess );
@@ -1107,4 +1121,4 @@ void MetaProcess::PerformAPIDefinitions() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MetaProcess.cpp - Released 2022-04-22T19:28:42Z
+// EOF pcl/MetaProcess.cpp - Released 2022-05-17T17:14:53Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// pcl/PSFScaleEstimator.h - Released 2022-04-22T19:28:34Z
+// pcl/PSFScaleEstimator.h - Released 2022-05-17T17:14:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -166,6 +166,34 @@ public:
    }
 
    /*!
+    * Returns the limit for the altered Chauvenet rejection criterion.
+    *
+    * A Robust Chauvenet Rejection (RCR) routine is used internally by this
+    * implementation for rejection of outlier relative scale samples. The
+    * larger the value of this parameter, the more samples will be rejected
+    * by the RCR algorithm. The original Chauvenet rejection criterion is
+    * N*P(x > |z|) &lt; 0.5, where N is the number of measurements and P()
+    * represents the probability of x being more than z standard deviations
+    * from the mean. This parameter alters the rejection criterion by
+    * replacing 0.5 with an arbitrary limit in the [0,1] range, in order to
+    * make the algorithm controllable. The default rejection limit is 0.3.
+    */
+   float RejectionLimit() const
+   {
+      return m_rejectionLimit;
+   }
+
+   /*!
+    * Sets the limit for the altered Chauvenet rejection criterion. See
+    * RejectionLimit() for a description of this parameter.
+    */
+   void SetRejectionLimit( float r )
+   {
+      PCL_PRECONDITION( r > 0 && r < 1 )
+      m_rejectionLimit = Range( r, 0.0F, 1.0F );
+   }
+
+   /*!
     * Sets a new reference image for relative scale estimation.
     *
     * This function performs the star detection and PSF fitting tasks for the
@@ -243,6 +271,7 @@ private:
 
    Array<PSFData> m_psfReference;
    float          m_psfSearchTolerance = 4.0F; // px
+   float          m_rejectionLimit = 0.3F;
    bool           m_enableLocalModel = false;
 
    /*
@@ -273,4 +302,4 @@ private:
 #endif   // __PCL_PSFScaleEstimator_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFScaleEstimator.h - Released 2022-04-22T19:28:34Z
+// EOF pcl/PSFScaleEstimator.h - Released 2022-05-17T17:14:45Z

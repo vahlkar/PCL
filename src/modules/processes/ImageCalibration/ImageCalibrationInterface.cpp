@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.9.3
+// Standard ImageCalibration Process Module Version 1.9.4
 // ----------------------------------------------------------------------------
-// ImageCalibrationInterface.cpp - Released 2022-04-22T19:29:05Z
+// ImageCalibrationInterface.cpp - Released 2022-05-17T17:15:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -302,8 +302,8 @@ void ImageCalibrationInterface::UpdateOutputFilesControls()
 
    GUI->OutputPedestalMode_ComboBox.SetCurrentItem( m_instance.p_outputPedestalMode );
 
-   GUI->AutoPedestalThreshold_NumericEdit.SetValue( m_instance.p_autoPedestalThreshold );
-   GUI->AutoPedestalThreshold_NumericEdit.Enable( m_instance.p_outputPedestalMode == ICOutputPedestalMode::Auto );
+   GUI->AutoPedestalLimit_NumericEdit.SetValue( m_instance.p_autoPedestalLimit );
+   GUI->AutoPedestalLimit_NumericEdit.Enable( m_instance.p_outputPedestalMode == ICOutputPedestalMode::Auto );
 
    GUI->OutputPedestal_Label.Enable( m_instance.p_outputPedestalMode == ICOutputPedestalMode::Literal );
 
@@ -803,8 +803,8 @@ void ImageCalibrationInterface::e_SpinValueUpdated( SpinBox& sender, int value )
 
 void ImageCalibrationInterface::e_ValueUpdated( NumericEdit& sender, double value )
 {
-   if ( sender == GUI->AutoPedestalThreshold_NumericEdit )
-      m_instance.p_autoPedestalThreshold = value;
+   if ( sender == GUI->AutoPedestalLimit_NumericEdit )
+      m_instance.p_autoPedestalLimit = value;
    else if ( sender == GUI->SaturationThreshold_NumericControl )
       m_instance.p_saturationThreshold = value;
    else if ( sender == GUI->PSFGrowth_NumericControl )
@@ -1259,10 +1259,9 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
       "<p><b>Literal value</b> allows you to specify a pedestal value in 16-bit data number units (DN) with the "
       "<i>output pedestal</i> parameter.</p>"
       "<p><b>Automatic</b> will apply an automatically calculated pedestal value to frames that have negative, zero "
-      "or insignificant (to machine epsilon) minimum pixel values after calibration. Automatic pedestals are computed "
-      "as statistically significant, robust mean values to ensure positivity of the calibrated image with minimal "
-      "truncation.</p>"
-      "<p>See also the <i>auto pedestal threshold</i> and <i>output pedestal</i> parameters for more information.</p>";
+      "or insignificant (to machine epsilon) minimum pixel values after calibration. Automatic pedestals can be used "
+      "to ensure positivity of the calibrated image with minimal truncation.</p>"
+      "<p>See also the <i>auto pedestal limit</i> and <i>output pedestal</i> parameters for more information.</p>";
 
    OutputPedestalMode_Label.SetText( "Output pedestal mode:" );
    OutputPedestalMode_Label.SetToolTip( outputPedestalModeToolTip );
@@ -1279,21 +1278,21 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    OutputPedestalMode_Sizer.Add( OutputPedestalMode_ComboBox );
    OutputPedestalMode_Sizer.AddStretch();
 
-   AutoPedestalThreshold_NumericEdit.label.SetText( "Auto pedestal threshold:" );
-   AutoPedestalThreshold_NumericEdit.label.SetFixedWidth( labelWidth1 );
-   AutoPedestalThreshold_NumericEdit.SetReal();
-   AutoPedestalThreshold_NumericEdit.SetRange( TheICAutoPedestalThresholdParameter->MinimumValue(), TheICAutoPedestalThresholdParameter->MaximumValue() );
-   AutoPedestalThreshold_NumericEdit.SetPrecision( TheICAutoPedestalThresholdParameter->Precision() );
-   AutoPedestalThreshold_NumericEdit.edit.SetFixedWidth( editWidth2 );
-   AutoPedestalThreshold_NumericEdit.sizer.AddStretch();
-   AutoPedestalThreshold_NumericEdit.SetToolTip( "<p>Minimum fraction of negative or insignificant calibrated pixels to "
-      "trigger generation of an automatic output pedestal.</p>"
+   AutoPedestalLimit_NumericEdit.label.SetText( "Auto pedestal limit:" );
+   AutoPedestalLimit_NumericEdit.label.SetFixedWidth( labelWidth1 );
+   AutoPedestalLimit_NumericEdit.SetReal();
+   AutoPedestalLimit_NumericEdit.SetRange( TheICAutoPedestalLimitParameter->MinimumValue(), TheICAutoPedestalLimitParameter->MaximumValue() );
+   AutoPedestalLimit_NumericEdit.SetPrecision( TheICAutoPedestalLimitParameter->Precision() );
+   AutoPedestalLimit_NumericEdit.edit.SetFixedWidth( editWidth2 );
+   AutoPedestalLimit_NumericEdit.sizer.AddStretch();
+   AutoPedestalLimit_NumericEdit.SetToolTip( "<p>Maximum fraction of negative or insignificant calibrated pixels allowed "
+      "in automatic pedestal generation mode.</p>"
       "<p>This parameter represents a fraction of the total image pixels in the [0,1] range. When the image has more than this "
-      "fraction of negative or insignificant pixels after calibration and the <i>output pedestal mode</i> is set to <i>automatic</i>, "
-      "the process will compute a robust, statistically significant additive pedestal to ensure positivity of the calibrated image "
-      "with minimal truncation.</p>"
-      "<p>The default value is 0.001, which represents a 0.1% of the total pixels.</p>" );
-   AutoPedestalThreshold_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_ValueUpdated, w );
+      "fraction of negative or insignificant pixel values after calibration and the <i>output pedestal mode</i> is set to <i>automatic</i>, "
+      "the process will generate an additive pedestal to ensure that no more than this fraction of negative or insignificant pixels will be "
+      "present in the calibrated image.</p>"
+      "<p>The default value is 0.0001, which represents a 0.01% of the total pixels.</p>" );
+   AutoPedestalLimit_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_ValueUpdated, w );
 
    const char* outputPedestalTip = "<p>The <i>output pedestal</i> is a small quantity expressed in the 16-bit "
       "unsigned integer range (from 0 to 65535). It is added at the end of the calibration process and its "
@@ -1352,7 +1351,7 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    OutputFiles_Sizer.Add( OutputChunks_Sizer );
    OutputFiles_Sizer.Add( OutputSampleFormat_Sizer );
    OutputFiles_Sizer.Add( OutputPedestalMode_Sizer );
-   OutputFiles_Sizer.Add( AutoPedestalThreshold_NumericEdit );
+   OutputFiles_Sizer.Add( AutoPedestalLimit_NumericEdit );
    OutputFiles_Sizer.Add( OutputPedestal_Sizer );
    OutputFiles_Sizer.Add( OverwriteExistingFiles_Sizer );
    OutputFiles_Sizer.Add( OnError_Sizer );
@@ -2434,4 +2433,4 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInterface.cpp - Released 2022-04-22T19:29:05Z
+// EOF ImageCalibrationInterface.cpp - Released 2022-05-17T17:15:11Z

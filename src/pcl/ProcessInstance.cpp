@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// pcl/ProcessInstance.cpp - Released 2022-04-22T19:28:42Z
+// pcl/ProcessInstance.cpp - Released 2022-05-17T17:14:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -99,6 +99,13 @@ ProcessInstance& ProcessInstance::Null()
 Process ProcessInstance::ParentProcess() const
 {
    return Process( (const void*)(*API->Process->GetProcessInstanceProcess)( handle ) );
+}
+
+// ----------------------------------------------------------------------------
+
+uint32 ProcessInstance::Version() const
+{
+   return (*API->Process->GetProcessInstanceVersion)( handle );
 }
 
 // ----------------------------------------------------------------------------
@@ -258,7 +265,6 @@ void ProcessInstance::SetDescription( const String& text )
    (void)(*API->Process->SetProcessInstanceDescription)( handle, text.c_str() );
 }
 
-
 // ----------------------------------------------------------------------------
 
 void ProcessInstance::GetExecutionTimes( double& startJD, double& elapsedSecs ) const
@@ -272,7 +278,7 @@ String ProcessInstance::ToSource( const IsoString& language, const IsoString& va
 {
    char16_type* s = (*API->Process->GetProcessInstanceSourceCode)(
                               ModuleHandle(), handle, language.c_str(), varId.c_str(), indent );
-   if ( s == 0 )
+   if ( s == nullptr )
       throw APIFunctionError( "GetProcessInstanceSourceCode" );
    String source( s );
    Module->Deallocate( s );
@@ -545,4 +551,4 @@ void* ProcessInstance::CloneHandle() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ProcessInstance.cpp - Released 2022-04-22T19:28:42Z
+// EOF pcl/ProcessInstance.cpp - Released 2022-05-17T17:14:53Z

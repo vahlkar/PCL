@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.8.3
+// Standard SubframeSelector Process Module Version 1.8.5
 // ----------------------------------------------------------------------------
-// SubframeSelectorParameters.h - Released 2022-04-22T19:29:05Z
+// SubframeSelectorParameters.h - Released 2022-05-17T17:15:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -394,22 +394,6 @@ extern SSHotPixelFilterRadius* TheSSHotPixelFilterRadiusParameter;
 
 // ----------------------------------------------------------------------------
 
-class SSApplyHotPixelFilter : public MetaBoolean
-{
-public:
-
-   SSApplyHotPixelFilter( MetaProcess* );
-
-   IsoString Id() const override;
-   bool DefaultValue() const override;
-
-   IsoString Tooltip() const;
-};
-
-extern SSApplyHotPixelFilter* TheSSApplyHotPixelFilterParameter;
-
-// ----------------------------------------------------------------------------
-
 class SSNoiseReductionFilterRadius : public MetaInt32
 {
 public:
@@ -425,6 +409,24 @@ public:
 };
 
 extern SSNoiseReductionFilterRadius* TheSSNoiseReductionFilterRadiusParameter;
+
+// ----------------------------------------------------------------------------
+
+class SSMinStructureSize : public MetaInt32
+{
+public:
+
+   SSMinStructureSize( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+
+   IsoString Tooltip() const;
+};
+
+extern SSMinStructureSize* TheSSMinStructureSizeParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -466,6 +468,25 @@ extern SSPeakResponse* TheSSPeakResponseParameter;
 
 // ----------------------------------------------------------------------------
 
+class SSBrightThreshold : public MetaFloat
+{
+public:
+
+   SSBrightThreshold( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+
+   IsoString Tooltip() const;
+};
+
+extern SSBrightThreshold* TheSSBrightThresholdParameter;
+
+// ----------------------------------------------------------------------------
+
 class SSMaxDistortion : public MetaFloat
 {
 public:
@@ -485,6 +506,22 @@ extern SSMaxDistortion* TheSSMaxDistortionParameter;
 
 // ----------------------------------------------------------------------------
 
+class SSAllowClusteredSources : public MetaBoolean
+{
+public:
+
+   SSAllowClusteredSources( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+
+   IsoString Tooltip() const;
+};
+
+extern SSAllowClusteredSources* TheSSAllowClusteredSourcesParameter;
+
+// ----------------------------------------------------------------------------
+
 class SSUpperLimit : public MetaFloat
 {
 public:
@@ -501,43 +538,6 @@ public:
 };
 
 extern SSUpperLimit* TheSSUpperLimitParameter;
-
-// ----------------------------------------------------------------------------
-
-class SSBackgroundExpansion : public MetaInt32
-{
-public:
-
-   SSBackgroundExpansion( MetaProcess* );
-
-   IsoString Id() const override;
-   double DefaultValue() const override;
-   double MinimumValue() const override;
-   double MaximumValue() const override;
-
-   IsoString Tooltip() const;
-};
-
-extern SSBackgroundExpansion* TheSSBackgroundExpansionParameter;
-
-// ----------------------------------------------------------------------------
-
-class SSXYStretch : public MetaFloat
-{
-public:
-
-   SSXYStretch( MetaProcess* );
-
-   IsoString Id() const override;
-   int Precision() const override;
-   double DefaultValue() const override;
-   double MinimumValue() const override;
-   double MaximumValue() const override;
-
-   IsoString Tooltip() const;
-};
-
-extern SSXYStretch* TheSSXYStretchParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -1638,4 +1638,4 @@ PCL_END_LOCAL
 #endif   // __SubframeSelectorParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorParameters.h - Released 2022-04-22T19:29:05Z
+// EOF SubframeSelectorParameters.h - Released 2022-05-17T17:15:11Z

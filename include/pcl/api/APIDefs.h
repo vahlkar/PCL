@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// pcl/APIDefs.h - Released 2022-04-22T19:28:34Z
+// pcl/APIDefs.h - Released 2022-05-17T17:14:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -713,6 +713,7 @@ typedef void                  (api_func* process_destruction_routine)           
 typedef process_handle        (api_func* process_clonation_routine)                   ( const_process_handle );
 typedef process_handle        (api_func* process_test_clonation_routine)              ( const_process_handle );
 typedef api_bool              (api_func* process_assignment_routine)                  ( process_handle, const_process_handle );
+typedef api_bool              (api_func* process_set_handle_routine)                  ( process_handle, const_api_handle );
 typedef api_bool              (api_func* process_initialization_routine)              ( process_handle );
 typedef api_bool              (api_func* process_validation_routine)                  ( process_handle, char16_type*, uint32 );
 typedef int32                 (api_func* process_command_line_processing_routine)     ( meta_process_handle, int32, const char16_type** );
@@ -957,4 +958,4 @@ void PCL_FUNC PCLImageOptionsToAPI( api_image_options&, const ImageOptions& );
 #endif   // __PCL_API_APIDefs_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/APIDefs.h - Released 2022-04-22T19:28:34Z
+// EOF pcl/APIDefs.h - Released 2022-05-17T17:14:45Z

@@ -4,7 +4,7 @@
 # PixInsight Makefile Generator Script v1.126
 # Copyright (C) 2009-2022 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2022-04-22T19:32:36.333Z
+# Generated on .... 2022-05-17T19:53:16.704Z
 # Project id ...... FindingChart
 # Project type .... Module
 # Platform ........ Windows/vc16
@@ -16,13 +16,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>0986f3fb-1787-4d5f-812a-27a106ef6eaf</UniqueIdentifier>
+      <UniqueIdentifier>5da9a50d-ddba-43b6-8030-492b86a0dfe6</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>ddbd6433-4d68-4c01-b1a3-bf300f5e758b</UniqueIdentifier>
+      <UniqueIdentifier>e9db2f7b-2a8c-4981-b0eb-5379ccfc7acd</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>61c189d9-2e51-4aa2-9a59-50787a705b76</UniqueIdentifier>
+      <UniqueIdentifier>b7a936cd-5b54-4514-851c-b69ddce1ac0a</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

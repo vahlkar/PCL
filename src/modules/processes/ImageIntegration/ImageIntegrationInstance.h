@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.4.9
+// Standard ImageIntegration Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// ImageIntegrationInstance.h - Released 2022-04-22T19:29:05Z
+// ImageIntegrationInstance.h - Released 2022-05-17T17:15:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -117,6 +117,7 @@ private:
    pcl_enum    p_weightMode;    // don't care | exposure time | noise | signal | median | mean | keyword
    String      p_weightKeyword;
    pcl_enum    p_weightScale;   // scale estimator used for image weighting
+   float       p_minWeight;     // files with weights <= p_minWeight will be excluded
    String      p_csvWeights;    // prescribed image weights (comma-separated list, not publicly exposed - for development only)
 
    int32       p_adaptiveGridSize;  // adaptive normalization, matrix size
@@ -372,4 +373,4 @@ private:
 #endif   // __ImageIntegrationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationInstance.h - Released 2022-04-22T19:29:05Z
+// EOF ImageIntegrationInstance.h - Released 2022-05-17T17:15:11Z

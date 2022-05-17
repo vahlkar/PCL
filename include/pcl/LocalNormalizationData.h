@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// pcl/LocalNormalizationData.h - Released 2022-04-22T19:28:34Z
+// pcl/LocalNormalizationData.h - Released 2022-05-17T17:14:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -703,6 +703,16 @@ public:
    }
 
    /*!
+    * Disables compression of serialized local normalization data.
+    *
+    * \sa IsCompressionEnabled(), EnableCompression()
+    */
+   void DisableCompression( bool disable = true )
+   {
+      EnableCompression( !disable );
+   }
+
+   /*!
     * Returns a version number corresponding to the normalization data
     * transported by this object.
     *
@@ -731,13 +741,21 @@ public:
    }
 
    /*!
-    * Disables compression of serialized local normalization data.
-    *
-    * \sa IsCompressionEnabled(), EnableCompression()
+    * Returns true iff this object has parsed XNML source code, either from an
+    * existing file or from an %XML document or element, that has been tagged
+    * as invalid local normalization data.
     */
-   void DisableCompression( bool disable = true )
+   bool IsTaggedAsInvalid() const
    {
-      EnableCompression( !disable );
+      return m_invalid;
+   }
+
+   /*!
+    * Tags this object as invalid local normalization data.
+    */
+   void TagAsInvalid()
+   {
+      m_invalid = true;
    }
 
    /*!
@@ -780,6 +798,7 @@ private:
    TimePoint              m_creationTime;
    bool                   m_compressionEnabled = true;
    int                    m_version = 0;
+   bool                   m_invalid = false;
 
    void ParseNormalizationMatrices( normalization_matrices&, const XMLElement& ) const;
    void SerializeNormalizationMatrices( XMLElement*, const normalization_matrices& ) const;
@@ -792,4 +811,4 @@ private:
 #endif   // __PCL_LocalNormalizationData_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/LocalNormalizationData.h - Released 2022-04-22T19:28:34Z
+// EOF pcl/LocalNormalizationData.h - Released 2022-05-17T17:14:45Z

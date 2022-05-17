@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.9.3
+// Standard ImageCalibration Process Module Version 1.9.4
 // ----------------------------------------------------------------------------
-// LocalNormalizationParameters.cpp - Released 2022-04-22T19:29:05Z
+// LocalNormalizationParameters.cpp - Released 2022-05-17T17:15:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -80,6 +80,8 @@ LNPSFNoiseLayers*                TheLNPSFNoiseLayersParameter = nullptr;
 LNPSFHotPixelFilterRadius*       TheLNPSFHotPixelFilterRadiusParameter = nullptr;
 LNPSFNoiseReductionFilterRadius* TheLNPSFNoiseReductionFilterRadiusParameter = nullptr;
 LNPSFMinStructureSize*           TheLNPSFMinStructureSizeParameter = nullptr;
+LNPSFMinSNR*                     TheLNPSFMinSNRParameter = nullptr;
+LNPSFRejectionLimit*             TheLNPSFRejectionLimitParameter = nullptr;
 LNPSFType*                       TheLNPSFTypeParameter = nullptr;
 LNPSFGrowth*                     TheLNPSFGrowthParameter = nullptr;
 LNPSFMaxStars*                   TheLNPSFMaxStarsParameter = nullptr;
@@ -92,6 +94,7 @@ LNInputHints*                    TheLNInputHintsParameter = nullptr;
 LNOutputHints*                   TheLNOutputHintsParameter = nullptr;
 LNGenerateNormalizedImages*      TheLNGenerateNormalizedImagesParameter = nullptr;
 LNGenerateNormalizationData*     TheLNGenerateNormalizationDataParameter = nullptr;
+LNGenerateInvalidData*           TheLNGenerateInvalidDataParameter = nullptr;
 LNShowBackgroundModels*          TheLNShowBackgroundModelsParameter = nullptr;
 LNShowLocalScaleModels*          TheLNShowLocalScaleModelsParameter = nullptr;
 LNShowRejectionMaps*             TheLNShowRejectionMapsParameter = nullptr;
@@ -121,6 +124,7 @@ LNOutputFilePath*                TheLNOutputFilePathParameter = nullptr;
 LNScaleFactorRK*                 TheLNScaleFactorRKParameter = nullptr;
 LNScaleFactorG*                  TheLNScaleFactorGParameter = nullptr;
 LNScaleFactorB*                  TheLNScaleFactorBParameter = nullptr;
+LNValid*                         TheLNValidParameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -730,6 +734,70 @@ double LNPSFMinStructureSize::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
+LNPSFMinSNR::LNPSFMinSNR( MetaProcess* P ) : MetaFloat( P )
+{
+   TheLNPSFMinSNRParameter = this;
+}
+
+IsoString LNPSFMinSNR::Id() const
+{
+   return "psfMinSNR";
+}
+
+int LNPSFMinSNR::Precision() const
+{
+   return 2;
+}
+
+double LNPSFMinSNR::DefaultValue() const
+{
+   return 40.0;
+}
+
+double LNPSFMinSNR::MinimumValue() const
+{
+   return 0;
+}
+
+double LNPSFMinSNR::MaximumValue() const
+{
+   return 1000;
+}
+
+// ----------------------------------------------------------------------------
+
+LNPSFRejectionLimit::LNPSFRejectionLimit( MetaProcess* P ) : MetaFloat( P )
+{
+   TheLNPSFRejectionLimitParameter = this;
+}
+
+IsoString LNPSFRejectionLimit::Id() const
+{
+   return "psfRejectionLimit";
+}
+
+int LNPSFRejectionLimit::Precision() const
+{
+   return 2;
+}
+
+double LNPSFRejectionLimit::DefaultValue() const
+{
+   return 0.3;
+}
+
+double LNPSFRejectionLimit::MinimumValue() const
+{
+   return 0;
+}
+
+double LNPSFRejectionLimit::MaximumValue() const
+{
+   return 1;
+}
+
+// ----------------------------------------------------------------------------
+
 LNPSFType::LNPSFType( MetaProcess* P ) : MetaEnumeration( P )
 {
    TheLNPSFTypeParameter = this;
@@ -992,6 +1060,23 @@ IsoString LNGenerateNormalizationData::Id() const
 bool LNGenerateNormalizationData::DefaultValue() const
 {
    return true;
+}
+
+// ----------------------------------------------------------------------------
+
+LNGenerateInvalidData::LNGenerateInvalidData( MetaProcess* P ) : MetaBoolean( P )
+{
+   TheLNGenerateInvalidDataParameter = this;
+}
+
+IsoString LNGenerateInvalidData::Id() const
+{
+   return "generateInvalidData";
+}
+
+bool LNGenerateInvalidData::DefaultValue() const
+{
+   return false;
 }
 
 // ----------------------------------------------------------------------------
@@ -1605,9 +1690,32 @@ bool LNScaleFactorB::IsReadOnly() const
    return true;
 }
 
+
+// ----------------------------------------------------------------------------
+
+LNValid::LNValid( MetaTable* T ) : MetaBoolean( T )
+{
+   TheLNValidParameter = this;
+}
+
+IsoString LNValid::Id() const
+{
+   return "valid";
+}
+
+bool LNValid::DefaultValue() const
+{
+   return true;
+}
+
+bool LNValid::IsReadOnly() const
+{
+   return true;
+}
+
 // ----------------------------------------------------------------------------
 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationParameters.cpp - Released 2022-04-22T19:29:05Z
+// EOF LocalNormalizationParameters.cpp - Released 2022-05-17T17:15:11Z

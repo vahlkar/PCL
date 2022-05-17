@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// pcl/PSFScaleEstimator.cpp - Released 2022-04-22T19:28:42Z
+// pcl/PSFScaleEstimator.cpp - Released 2022-05-17T17:14:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -265,13 +265,15 @@ PSFScaleEstimator::Estimates PSFScaleEstimator::EstimateScale( const ImageVarian
 
             double d0 = n*QF( (m - double( R[i] ))/s );
             double d1 = n*QF( (double( R[j-1] ) - m)/s );
-            if ( d0 >= 0.5 && d1 >= 0.5 )
-               break;
+            if ( d0 >= m_rejectionLimit )
+               if ( d1 >= m_rejectionLimit )
+                  break;
             if ( d1 < d0 )
                --j;
             else
                ++i;
          }
+
 __rcr_end:
       E.scale = m;
       E.sigma = s;
@@ -316,4 +318,4 @@ __rcr_end:
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFScaleEstimator.cpp - Released 2022-04-22T19:28:42Z
+// EOF pcl/PSFScaleEstimator.cpp - Released 2022-05-17T17:14:53Z

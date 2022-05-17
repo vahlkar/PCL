@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// pcl/ProcessInstance.h - Released 2022-04-22T19:28:34Z
+// pcl/ProcessInstance.h - Released 2022-05-17T17:14:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -129,6 +129,23 @@ public:
     * this instance belongs to.
     */
    Process ParentProcess() const;
+
+   /*!
+    * Returns the version number of this process instance.
+    *
+    * Instance version numbers are useful to manage different implementations
+    * of processes, especially when instances are deserialized from existing
+    * projects, process icons, etc.
+    *
+    * This function may return zero if the version number is undefined for this
+    * instance for some reason, although this should not happen under normal
+    * conditions. Valid version numbers are always &ge; 1.
+    *
+    * The version number that will be assigned to newly created process
+    * instances will always be the value returned by the MetaProcess::Version()
+    * member function (or a reimplementation of it) for the parent process.
+    */
+   uint32 Version() const;
 
    /*!
     * Assignment operator. Returns a reference to this object.
@@ -698,4 +715,4 @@ private:
 #endif   // __PCL_ProcessInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ProcessInstance.h - Released 2022-04-22T19:28:34Z
+// EOF pcl/ProcessInstance.h - Released 2022-05-17T17:14:45Z

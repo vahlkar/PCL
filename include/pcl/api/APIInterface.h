@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// pcl/APIInterface.h - Released 2022-04-22T19:28:34Z
+// pcl/APIInterface.h - Released 2022-05-17T17:14:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -56,7 +56,7 @@
 
 // Global namespace
 
-#define PCL_API_Version 0x0174
+#define PCL_API_Version 0x0175
 
 extern "C"
 {
@@ -274,6 +274,7 @@ struct api_context ProcessDefinitionContext
    void        (api_func* SetProcessDestructionRoutine)( pcl::process_destruction_routine );
    void        (api_func* SetProcessClonationRoutine)( pcl::process_clonation_routine);
    void        (api_func* SetProcessTestClonationRoutine)( pcl::process_test_clonation_routine );
+   void        (api_func* SetProcessSetServerHandleRoutine)( pcl::process_set_handle_routine );
    void        (api_func* SetProcessAssignmentRoutine)( pcl::process_assignment_routine );
    void        (api_func* SetProcessInitializationRoutine)( pcl::process_initialization_routine );
    void        (api_func* SetProcessValidationRoutine)( pcl::process_validation_routine );
@@ -644,6 +645,8 @@ struct api_context ProcessContext
    process_handle       (api_func* CreateProcessInstance)( api_handle, meta_process_handle );
 
    meta_process_handle  (api_func* GetProcessInstanceProcess)( const_process_handle );
+
+   uint32               (api_func* GetProcessInstanceVersion)( const_process_handle );
 
    process_handle       (api_func* CloneProcessInstance)( api_handle, const_process_handle, uint32 flags );
    api_bool             (api_func* AssignProcessInstance)( process_handle, const_process_handle, uint32 flags );
@@ -3079,4 +3082,4 @@ extern "C" void* api_func APIFunctionResolver( const char* );
 #endif   // __PCL_API_APIInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/APIInterface.h - Released 2022-04-22T19:28:34Z
+// EOF pcl/APIInterface.h - Released 2022-05-17T17:14:45Z

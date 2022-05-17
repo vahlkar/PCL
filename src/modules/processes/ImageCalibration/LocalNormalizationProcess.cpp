@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.9.3
+// Standard ImageCalibration Process Module Version 1.9.4
 // ----------------------------------------------------------------------------
-// LocalNormalizationProcess.cpp - Released 2022-04-22T19:29:05Z
+// LocalNormalizationProcess.cpp - Released 2022-05-17T17:15:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -91,6 +91,8 @@ LocalNormalizationProcess::LocalNormalizationProcess()
    new LNPSFHotPixelFilterRadius( this );
    new LNPSFNoiseReductionFilterRadius( this );
    new LNPSFMinStructureSize( this );
+   new LNPSFMinSNR( this );
+   new LNPSFRejectionLimit( this );
    new LNPSFType( this );
    new LNPSFGrowth( this );
    new LNPSFMaxStars( this );
@@ -103,6 +105,7 @@ LocalNormalizationProcess::LocalNormalizationProcess()
    new LNOutputHints( this );
    new LNGenerateNormalizedImages( this );
    new LNGenerateNormalizationData( this );
+   new LNGenerateInvalidData( this );
    new LNShowBackgroundModels( this );
    new LNShowLocalScaleModels( this );
    new LNShowRejectionMaps( this );
@@ -132,6 +135,7 @@ LocalNormalizationProcess::LocalNormalizationProcess()
    new LNScaleFactorRK( TheLNOutputDataParameter );
    new LNScaleFactorG( TheLNOutputDataParameter );
    new LNScaleFactorB( TheLNOutputDataParameter );
+   new LNValid( TheLNOutputDataParameter );
 }
 
 // ----------------------------------------------------------------------------
@@ -195,4 +199,4 @@ ProcessImplementation* LocalNormalizationProcess::Clone( const ProcessImplementa
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationProcess.cpp - Released 2022-04-22T19:29:05Z
+// EOF LocalNormalizationProcess.cpp - Released 2022-05-17T17:15:11Z

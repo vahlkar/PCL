@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.9.3
+// Standard ImageCalibration Process Module Version 1.9.4
 // ----------------------------------------------------------------------------
-// LocalNormalizationInterface.h - Released 2022-04-22T19:29:05Z
+// LocalNormalizationInterface.h - Released 2022-05-17T17:15:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -171,6 +171,8 @@ private:
             HorizontalSizer   PSFNoiseReductionFilterRadius_Sizer;
                Label             PSFNoiseReductionFilterRadius_Label;
                SpinBox           PSFNoiseReductionFilterRadius_SpinBox;
+            NumericEdit       PSFMinSNR_NumericEdit;
+            NumericControl    PSFRejectionLimit_NumericControl;
             HorizontalSizer   PSFType_Sizer;
                Label             PSFType_Label;
                ComboBox          PSFType_ComboBox;
@@ -265,4 +267,4 @@ PCL_END_LOCAL
 #endif   // __LocalNormalizationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationInterface.h - Released 2022-04-22T19:29:05Z
+// EOF LocalNormalizationInterface.h - Released 2022-05-17T17:15:11Z

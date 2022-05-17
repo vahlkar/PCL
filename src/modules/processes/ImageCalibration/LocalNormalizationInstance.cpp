@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.9.3
+// Standard ImageCalibration Process Module Version 1.9.4
 // ----------------------------------------------------------------------------
-// LocalNormalizationInstance.cpp - Released 2022-04-22T19:29:05Z
+// LocalNormalizationInstance.cpp - Released 2022-05-17T17:15:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -115,6 +115,8 @@ LocalNormalizationInstance::LocalNormalizationInstance( const MetaProcess* P )
    , p_psfHotPixelFilterRadius( TheLNPSFHotPixelFilterRadiusParameter->DefaultValue() )
    , p_psfNoiseReductionFilterRadius( TheLNPSFNoiseReductionFilterRadiusParameter->DefaultValue() )
    , p_psfMinStructureSize( TheLNPSFMinStructureSizeParameter->DefaultValue() )
+   , p_psfMinSNR( TheLNPSFMinSNRParameter->DefaultValue() )
+   , p_psfRejectionLimit( TheLNPSFRejectionLimitParameter->DefaultValue() )
    , p_psfType( LNPSFType::Default )
    , p_psfGrowth( TheLNPSFGrowthParameter->DefaultValue() )
    , p_psfMaxStars( TheLNPSFMaxStarsParameter->DefaultValue() )
@@ -124,6 +126,7 @@ LocalNormalizationInstance::LocalNormalizationInstance( const MetaProcess* P )
    , p_outputHints( TheLNOutputHintsParameter->DefaultValue() )
    , p_generateNormalizedImages( LNGenerateNormalizedImages::Default )
    , p_generateNormalizationData( TheLNGenerateNormalizationDataParameter->DefaultValue() )
+   , p_generateInvalidData( TheLNGenerateInvalidDataParameter->DefaultValue() )
    , p_showBackgroundModels( TheLNShowBackgroundModelsParameter->DefaultValue() )
    , p_showLocalScaleModels( TheLNShowLocalScaleModelsParameter->DefaultValue() )
    , p_showRejectionMaps( TheLNShowRejectionMapsParameter->DefaultValue() )
@@ -187,6 +190,8 @@ void LocalNormalizationInstance::Assign( const ProcessImplementation& p )
       p_psfHotPixelFilterRadius       = x->p_psfHotPixelFilterRadius;
       p_psfNoiseReductionFilterRadius = x->p_psfNoiseReductionFilterRadius;
       p_psfMinStructureSize           = x->p_psfMinStructureSize;
+      p_psfMinSNR                     = x->p_psfMinSNR;
+      p_psfRejectionLimit             = x->p_psfRejectionLimit;
       p_psfType                       = x->p_psfType;
       p_psfGrowth                     = x->p_psfGrowth;
       p_psfMaxStars                   = x->p_psfMaxStars;
@@ -197,6 +202,7 @@ void LocalNormalizationInstance::Assign( const ProcessImplementation& p )
       p_outputHints                   = x->p_outputHints;
       p_generateNormalizedImages      = x->p_generateNormalizedImages;
       p_generateNormalizationData     = x->p_generateNormalizationData;
+      p_generateInvalidData           = x->p_generateInvalidData;
       p_showBackgroundModels          = x->p_showBackgroundModels;
       p_showLocalScaleModels          = x->p_showLocalScaleModels;
       p_showRejectionMaps             = x->p_showRejectionMaps;
@@ -419,18 +425,43 @@ public:
       catch ( ... )
       {
          if ( IsRootThread() )
-            throw;
-
-         String text = ConsoleOutputText();
-         ClearConsoleOutputText();
-         try
          {
-            throw;
+            if ( !m_invalid )
+               throw;
+
+            try
+            {
+               throw;
+            }
+            ERROR_HANDLER
+            WriteOutputData();
+            m_success = true;
+            return;
          }
-         ERROR_HANDLER
-         m_errorInfo = ConsoleOutputText();
-         ClearConsoleOutputText();
-         console.Write( text );
+
+         if ( m_invalid )
+         {
+            try
+            {
+               throw;
+            }
+            ERROR_HANDLER
+            WriteOutputData();
+            m_success = true;
+         }
+         else
+         {
+            String text = ConsoleOutputText();
+            ClearConsoleOutputText();
+            try
+            {
+               throw;
+            }
+            ERROR_HANDLER
+            m_errorInfo = ConsoleOutputText();
+            ClearConsoleOutputText();
+            console.Write( text );
+         }
       }
    }
 
@@ -463,9 +494,12 @@ public:
             S[c].Detector().SetHotPixelFilterRadius( m_instance.p_psfHotPixelFilterRadius );
             S[c].Detector().SetNoiseReductionFilterRadius( m_instance.p_psfNoiseReductionFilterRadius );
             S[c].Detector().SetMinStructureSize( m_instance.p_psfMinStructureSize );
+            S[c].Detector().SetMinSNR( m_instance.p_psfMinSNR );
+            S[c].Detector().DisableClusteredSources();
             S[c].SetPSFType( LNPSFType::ToPSFFunction( m_instance.p_psfType ) );
             S[c].SetSaturationThreshold( m_instance.p_saturationThreshold );
             S[c].EnableRelativeSaturation( m_instance.p_saturationRelative );
+            S[c].SetRejectionLimit( m_instance.p_psfRejectionLimit );
             S[c].SetGrowthFactorForFluxMeasurement( m_instance.p_psfGrowth );
             S[c].SetMaxStars( m_instance.p_psfMaxStars );
             S[c].EnableLocalModel( m_instance.p_localScaleCorrections );
@@ -595,10 +629,11 @@ public:
 
    bool GeneratesNormalizedImages() const
    {
-      return m_instance.p_generateNormalizedImages == LNGenerateNormalizedImages::Always ||
-             m_instance.p_generateNormalizedImages == (ExecutedOnView() ?
+      return !m_invalid &&
+             (m_instance.p_generateNormalizedImages == LNGenerateNormalizedImages::Always ||
+              m_instance.p_generateNormalizedImages == (ExecutedOnView() ?
                                     LNGenerateNormalizedImages::ViewExecutionOnly :
-                                    LNGenerateNormalizedImages::GlobalExecutionOnly);
+                                    LNGenerateNormalizedImages::GlobalExecutionOnly));
    }
 
    size_type Index() const
@@ -611,6 +646,7 @@ public:
       o.outputFilePathXNML = m_outputFilePathXNML;
       o.outputFilePath = m_outputFilePath;
       o.scaleFactors = m_scaleFactors;
+      o.valid = !m_invalid;
    }
 
    String TargetFilePath() const
@@ -621,6 +657,11 @@ public:
    bool Succeeded() const
    {
       return m_success;
+   }
+
+   bool Invalid() const
+   {
+      return m_invalid;
    }
 
    String ErrorInfo() const
@@ -651,6 +692,7 @@ private:
          FVector                     m_scaleFactors = Vector( 1.0F, 3 );
          String                      m_errorInfo;
          StatusMonitor               m_monitor;
+         bool                        m_invalid = false;
          bool                        m_success = false;
 
    // -------------------------------------------------------------------------
@@ -1332,7 +1374,10 @@ private:
                   T.SelectChannel( c );
                   PSFScaleEstimator::Estimates se = m_scaleEstimators[c].EstimateScale( ImageVariant( &T ) );
                   if ( !se.IsValid() )
+                  {
+                     m_invalid = m_instance.p_generateInvalidData;
                      throw Error( String().Format( "Unable to compute a valid scale estimate (channel %d)", c ) );
+                  }
 
                   m_s[c] = se;
                   console.WriteLn( String().Format( "<end><cbr>ch %d : scale = %.4f, sigma = %.4e, %d valid PSF fits, %d PSF signal estimates",
@@ -1395,7 +1440,10 @@ private:
                            if ( 1 + (*t - *tb) != 1 )
                               S << double( *r - *rb )/(*t - *tb);
                   if ( S.Length() < 64 )
+                  {
+                     m_invalid = m_instance.p_generateInvalidData;
                      throw Error( String().Format( "Unable to compute a valid scale estimate (channel %d)", c ) );
+                  }
 
                   /*
                    * Robust Chauvenet rejection.
@@ -1475,9 +1523,8 @@ __rcr_end:
                }
             }
             break;
-
          }
-      }
+      } // !m_instance.p_noScale
 
       m_A0.AllocateData( T.Width(), T.Height(), T.NumberOfChannels() );
       m_A1.AllocateData( T.Width(), T.Height(), T.NumberOfChannels() );
@@ -1543,7 +1590,7 @@ __rcr_end:
                *a1 = 1.0;
             }
          }
-      }
+      } // !m_instance.p_noScale
 
       m_monitor.Complete();
 
@@ -1867,16 +1914,26 @@ __rcr_end:
          data.SetTargetFilePath( m_targetFilePath );
          data.SetNormalizationScale( m_instance.p_scale );
          data.SetReferenceDimensions( m_R.Width(), m_R.Height() );
-         data.SetLocalNormalizationParameters( m_A1, m_A0 );
-         if ( !m_instance.p_noScale )
+
+         if ( m_invalid )
          {
-            Vector rs( m_s.Length() );
-            for ( int c = 0; c < m_s.Length(); ++c )
-               rs[c] = m_s[c].scale;
-            data.SetRelativeScaleFactors( rs );
+            console.WarningLn( "** Warning: Writing a local normalization data file tagged as invalid." );
+            data.TagAsInvalid();
          }
-         if ( m_instance.p_globalLocationNormalization )
-            data.SetGlobalNormalizationParameters( m_Rc, m_Tc, Vector( 1.0, m_Tc.Length() ) );
+         else
+         {
+            data.SetLocalNormalizationParameters( m_A1, m_A0 );
+            if ( !m_instance.p_noScale )
+            {
+               Vector rs( m_s.Length() );
+               for ( int c = 0; c < m_s.Length(); ++c )
+                  rs[c] = m_s[c].scale;
+               data.SetRelativeScaleFactors( rs );
+            }
+            if ( m_instance.p_globalLocationNormalization )
+               data.SetGlobalNormalizationParameters( m_Rc, m_Tc, Vector( 1.0, m_Tc.Length() ) );
+         }
+
          {
             volatile AutoLockCounter lock( mutex, count, m_instance.m_maxFileWriteThreads );
             data.SerializeToFile( m_outputFilePathXNML );
@@ -2293,15 +2350,25 @@ bool LocalNormalizationInstance::ExecuteGlobal()
                         /*
                          * A thread has just finished.
                          */
-                        if ( succeeded+failed == 0 )
+                        if ( succeeded + failed == 0 )
                            console.WriteLn();
                         (*i)->FlushConsoleOutputText();
                         console.WriteLn();
-                        String errorInfo;
                         if ( (*i)->Succeeded() )
                            (*i)->GetOutputData( o_output[(*i)->Index()] );
-                        else
+
+                        String errorInfo;
+                        if ( !(*i)->Succeeded() )
                            errorInfo = (*i)->ErrorInfo();
+
+                        /*
+                         * Optional generation of invalid normalization data.
+                         */
+                        if ( (*i)->Invalid() )
+                        {
+                           ++failed;
+                           --succeeded; // compensate ++succeeded below
+                        }
 
                         /*
                          * N.B.: IndirectArray<>::Delete() sets to zero the
@@ -2331,7 +2398,7 @@ bool LocalNormalizationInstance::ExecuteGlobal()
                         ++running;
                         if ( pendingItems.IsEmpty() )
                            console.NoteLn( "<br>* Waiting for running tasks to terminate...<br>" );
-                        else if ( succeeded+failed > 0 )
+                        else if ( succeeded + failed > 0 )
                            console.WriteLn();
                      }
                   }
@@ -2382,7 +2449,10 @@ bool LocalNormalizationInstance::ExecuteGlobal()
                LocalNormalizationThread thread( *this, itemIndex, R, RB, RM, Rc, S );
                thread.Run();
                thread.GetOutputData( o_output[itemIndex] );
-               ++succeeded;
+               if ( thread.Invalid() )
+                  ++failed;
+               else
+                  ++succeeded;
             }
             catch ( ProcessAborted& )
             {
@@ -2522,6 +2592,10 @@ void* LocalNormalizationInstance::LockParameter( const MetaParameter* p, size_ty
       return &p_psfNoiseReductionFilterRadius;
    if ( p == TheLNPSFMinStructureSizeParameter )
       return &p_psfMinStructureSize;
+   if ( p == TheLNPSFMinSNRParameter )
+      return &p_psfMinSNR;
+   if ( p == TheLNPSFRejectionLimitParameter )
+      return &p_psfRejectionLimit;
    if ( p == TheLNPSFTypeParameter )
       return &p_psfType;
    if ( p == TheLNPSFGrowthParameter )
@@ -2544,6 +2618,8 @@ void* LocalNormalizationInstance::LockParameter( const MetaParameter* p, size_ty
       return &p_generateNormalizedImages;
    if ( p == TheLNGenerateNormalizationDataParameter )
       return &p_generateNormalizationData;
+   if ( p == TheLNGenerateInvalidDataParameter )
+      return &p_generateInvalidData;
    if ( p == TheLNShowBackgroundModelsParameter )
       return &p_showBackgroundModels;
    if ( p == TheLNShowLocalScaleModelsParameter )
@@ -2599,6 +2675,8 @@ void* LocalNormalizationInstance::LockParameter( const MetaParameter* p, size_ty
       return o_output[tableRow].scaleFactors.At( 1 );
    if ( p == TheLNScaleFactorBParameter )
       return o_output[tableRow].scaleFactors.At( 2 );
+   if ( p == TheLNValidParameter )
+      return &o_output[tableRow].valid;
 
    return nullptr;
 }
@@ -2730,4 +2808,4 @@ size_type LocalNormalizationInstance::ParameterLength( const MetaParameter* p, s
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationInstance.cpp - Released 2022-04-22T19:29:05Z
+// EOF LocalNormalizationInstance.cpp - Released 2022-05-17T17:15:11Z

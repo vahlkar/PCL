@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// pcl/StarDetector.cpp - Released 2022-04-22T19:28:42Z
+// pcl/StarDetector.cpp - Released 2022-05-17T17:14:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -50,11 +50,13 @@
 // ----------------------------------------------------------------------------
 
 #include <pcl/ATrousWaveletTransform.h>
+#include <pcl/AutoStatusCallbackRestorer.h>
 #include <pcl/Console.h>
 #include <pcl/Convolution.h>
 #include <pcl/GaussianFilter.h>
 #include <pcl/MetaModule.h>
 #include <pcl/MorphologicalTransformation.h>
+#include <pcl/MuteStatus.h>
 #include <pcl/Selection.h>
 #include <pcl/SeparableConvolution.h>
 #include <pcl/StarDetector.h>
@@ -84,7 +86,12 @@ namespace pcl
 /*
  * Computational cost of the structure detection algorithm.
  */
-#define SD_COST      11
+#define SD_COST      12
+
+/*
+ * Computational cost of the local maxima detection algorithm.
+ */
+#define MD_COST      3
 
 // ----------------------------------------------------------------------------
 
@@ -161,20 +168,20 @@ static void GetStructureMap( Image& map, int structureLayers, int noiseLayers, i
    MorphologicalTransformation( DilationFilter(), BoxStructure( 3 ) ) >> map; // N
 
    /*
-    * Adaptive binarization based on noise evaluation.
+    * Adaptive binarization.
     */
    double median = map.Median();
    if ( 1 + median == 1 )
    {
-      // An empty image, or a noise-free synthetic star field.
+      // Black background - probably a noiseless synthetic star field
       map.SetRangeClipping( 0, 1 );
-      median = map.Median();
+      double median = map.Median();
       map.Binarize( median + map.MAD( median ) );  // N
       map.DisableRangeClipping();
    }
    else
    {
-      // A "natural image" or something similar.
+      // A "natural" image - binarize at 3*noise_stdDev
       static const float B3[] =
       {
          0.003906F, 0.015625F, 0.023438F, 0.015625F, 0.003906F,
@@ -196,6 +203,11 @@ static void GetStructureMap( Image& map, int structureLayers, int noiseLayers, i
       float noise = W.NoiseKSigma( 1/*j*/, 3/*k*/, 0.01F/*eps*/, 10/*nit*/ )/B3k[1];
       map.Binarize( median + 3*noise ); // N
    }
+
+   /*
+    * Remove noise residuals with an erosion filter.
+    */
+   MorphologicalTransformation( ErosionFilter(), BoxStructure( 3 ) ) >> map; // N
 
    /*
     * Optional detection mask.
@@ -231,41 +243,130 @@ static void GetStructures( Image& image, int structureLayers, int noiseLayers, i
 
 // ----------------------------------------------------------------------------
 
-struct StarData
+static void GetLocalMaximaMap( Image& map, int filterRadius, float detectionLimit,
+                               const UInt8Image* mask = nullptr )
 {
-   DPoint pos;  // barycenter image coordinates
-   Rect   rect;
-   float  bkg;  // local background
-   float  flux; // total flux
-   float  peak; // peak value
-   int    size; // structure size in square pixels
-};
-
-static void
-GetStarParameters( StarData& data, const Image& image, const Rect& rect, const Array<Point>& sp )
-{
-   /*
-    * Calculate a mean local background as the median of four selected regions
-    * of background pixels.
-    */
+   bool initializeStatus = map.Status().IsInitializationEnabled();
+   if ( initializeStatus )
    {
-      Rect r = rect.InflatedBy( BKG_DELTA );
-      FMatrix bt = FMatrix::FromImage( image, Rect(    r.x0,    r.y0,    r.x1, rect.y0 ) );
-      FMatrix bl = FMatrix::FromImage( image, Rect(    r.x0, rect.y0, rect.x0, rect.y1 ) );
-      FMatrix bb = FMatrix::FromImage( image, Rect(    r.x0, rect.y1,    r.x1,    r.y1 ) );
-      FMatrix br = FMatrix::FromImage( image, Rect( rect.x1, rect.y0,    r.x1, rect.y1 ) );
-      Array<float> b;
-      b.Add( bt.Begin(), bt.End() );
-      b.Add( bl.Begin(), bl.End() );
-      b.Add( bb.Begin(), bb.End() );
-      b.Add( br.Begin(), br.End() );
-      data.rect = r;
-      data.bkg = Median( b.Begin(), b.End() );
+      map.Status().Initialize( "Local maxima map", map.NumberOfPixels()*MD_COST );
+      map.Status().DisableInitialization();
    }
 
    /*
-    * Compute barycenter coordinates.
+    * We apply a dilation filter with a flat structuring element without its
+    * central element. Local maxima are those pixels in the input image with
+    * values greater than the dilated image.
+    *
+    * The detectionLimit parameter allows us to prevent detection of false
+    * multiple maxima on saturated or close to saturated structures.
     */
+   int filterSize = (filterRadius << 1)|1;
+   IsoString B( 'x',  filterSize*filterSize );
+   B[B.Length() >> 1] = '-';
+   const char* Bs = B.c_str();
+   Image s( map );
+   MorphologicalTransformation( DilationFilter(), BitmapStructure( &Bs, filterSize ) ) >> s; // N
+   map.Status() = s.Status();
+   Image::const_sample_iterator d( s );
+   for ( Image::sample_iterator m( map ); m; ++m, ++d, ++map.Status() ) // N
+      *m = (*m > *d && *m < detectionLimit) ? 1.0F : 0.0F;
+
+   /*
+    * Optional detection mask.
+    */
+   if ( mask != nullptr )
+      map.Mul( *mask );          // N
+   else
+      map.Status() += map.NumberOfPixels();
+
+   if ( initializeStatus )
+      map.Status().EnableInitialization();
+}
+
+// ----------------------------------------------------------------------------
+
+struct StarParameters
+{
+   DPoint pos = 0;   // barycenter image coordinates
+   Rect   rect = 0;  // detection region
+   Rect   srect = 0; // sampling region
+   float  bkg = 0;   // local background
+   float  sigma = 0; // local background dispersion
+   float  flux = 0;  // total flux
+   float  max = 0;   // maximum pixel value
+   int    nmax = 0;  // number of local maxima in structure
+   float  peak = 0;  // significant peak value
+   float  kurt = 0;  // kurtosis
+   int    count = 0; // sample length
+};
+
+static bool
+GetStarParameters( StarParameters& params, const Image& image, const Rect& rect, const Array<Point>& sp,
+                   const Image& localMaximaMap, bool noLocalMaximaDetection, bool allowClusteredSources )
+{
+   // Mean local background and local background dispersion.
+   double m0 = 1;
+   for ( int delta = 4, it = 0;; ++delta, ++it )
+   {
+      Rect r = rect.InflatedBy( delta );
+      Array<float> b;
+      for ( Image::const_roi_sample_iterator i( image, Rect(    r.x0,    r.y0,    r.x1, rect.y0 ) ); i; ++i )
+         b << *i;
+      for ( Image::const_roi_sample_iterator i( image, Rect(    r.x0, rect.y0, rect.x0, rect.y1 ) ); i; ++i )
+         b << *i;
+      for ( Image::const_roi_sample_iterator i( image, Rect(    r.x0, rect.y1,    r.x1,    r.y1 ) ); i; ++i )
+         b << *i;
+      for ( Image::const_roi_sample_iterator i( image, Rect( rect.x1, rect.y0,    r.x1, rect.y1 ) ); i; ++i )
+         b << *i;
+      double m = Median( b.Begin(), b.End() );
+      if ( m > m0 || (m0 - m)/m0 < 0.01 )
+      {
+         // Mean local background
+         params.bkg = m;
+         // Local background dispersion
+         params.sigma = Max( float( 1.4826*MAD( b.Begin(), b.End(), m ) ), std::numeric_limits<float>::epsilon() );
+         // Sampling rectangle
+         params.srect = r.Intersection( image.Bounds() );
+         break;
+      }
+      // Guard us against rare ill-posed conditions.
+      if ( it == 200 )
+         return false;
+      m0 = m;
+   }
+
+   // Detection rectangle. Expand it by two pixels to ensure that the entire
+   // structure is included in the detection region.
+   params.rect = rect.InflatedBy( 2 ).Intersection( image.Bounds() );
+
+   // Significant pixel subset
+   Array<float> v;
+   for ( const Point& p : sp )
+   {
+      float f = image( p );
+      if ( f > params.bkg )
+      {
+         // Local maxima
+         if ( !noLocalMaximaDetection )
+            if ( localMaximaMap( p ) != 0 )
+               ++params.nmax;
+         v << f;
+         // Total flux above local background
+         params.flux += f;
+      }
+   }
+
+   // Fail if no significant data
+   if ( v.IsEmpty() )
+      return false;
+
+   // Fail if we have multiple maxima and those are not allowed
+   if ( params.nmax > 1 )
+      if ( !allowClusteredSources )
+         return false;
+
+   // Barycenter coordinates
    {
       FMatrix Z = FMatrix::FromImage( image, rect );
       for ( float& z : Z )
@@ -284,26 +385,41 @@ GetStarParameters( StarData& data, const Image& image, const Rect& rect, const A
                sz += *z;
             }
       if ( 1 + sz == 1 )
-      {
-         data.flux = 0;
-         return;
-      }
-      data.pos.x = sx/sz;
-      data.pos.y = sy/sz;
+         return false;
+      params.pos.x = sx/sz;
+      params.pos.y = sy/sz;
    }
 
-   /*
-    * Total flux, peak value, and structure size.
-    */
-   data.flux = data.peak = 0;
-   for ( Array<Point>::const_iterator i = sp.Begin(); i != sp.End(); ++i )
+   // Sort significant pixels in decreasing flux order
+   v.Sort( []( float a, float b ) { return b < a; } );
+   // Maximum pixel value
+   params.max = v[0];
+   // Find subset of significant high pixel values
+   int mn = 0;
+   for ( size_type i = 0; i < v.Length() && (mn < 5 || v[i] == v[i-1]); ++i, ++mn ) {}
+   for ( int i = 0; i < mn; ++i )
+      params.peak += v[i];
+   // Significant peak value
+   params.peak /= mn;
+   // Significant sample length
+   params.count = int( v.Length() );
+
+   // Kurtosis
+   double s = StdDev( v.Begin(), v.End() );
+   if ( 1 + s != 1 )
    {
-      float f = image( *i );
-      data.flux += f;
-      if ( f > data.peak )
-         data.peak = f;
+      double m = double( params.flux )/params.count;
+      double k = 0;
+      for ( float f : v )
+      {
+         double d = (f - m)/s;
+         d *= d;
+         k += d*d;
+      }
+      params.kurt = k/params.count;
    }
-   data.size = int( sp.Length() );
+
+   return true;
 };
 
 // ----------------------------------------------------------------------------
@@ -312,7 +428,6 @@ struct PSFFitData
 {
    DPoint pos;
    Rect   rect;
-   float  flux;
 };
 
 class PCL_SD_PSFFitThread : public Thread
@@ -361,7 +476,7 @@ public:
          if ( fit )
             if ( DRect( rect ).DeflatedBy( rect.Width()*0.15 ).Includes( fit.psf.c0 ) )
                if ( fit.psf.c0.DistanceTo( d.pos + 0.5 ) < m_tolerance )
-                  stars << StarDetector::Star( fit.psf.c0 - 0.5, rect, fit.psf.flux, fit.psf.signal, fit.psf.mad );
+                  stars << StarDetector::Star( fit.psf.c0 - 0.5, d.rect, rect, fit.psf.flux, fit.psf.signal, fit.psf.mad );
 
          UPDATE_THREAD_MONITOR( 16 )
       }
@@ -422,13 +537,33 @@ StarDetector::star_list StarDetector::DetectStars( Image& image ) const
     */
    Image map( image );
    GetStructureMap( map, m_structureLayers, m_noiseLayers,
-                    (m_noiseReductionFilterRadius <= 0) ? m_hotPixelFilterRadius : 0, nullptr/*m_mask*/ );
+                    (m_noiseReductionFilterRadius <= 0) ? m_hotPixelFilterRadius : 0 );
+
+   /*
+    * Local maxima map
+    */
+   Image lmMap;
+   if ( !m_noLocalMaximaDetection )
+   {
+      lmMap = image;
+      GetLocalMaximaMap( lmMap, m_localDetectionFilterRadius, m_localMaximaDetectionLimit );
+   }
 
    if ( initializeStatus )
    {
       image.Status().Initialize( "Detecting stars", size_type( image.Width()-1 )*size_type( image.Height()-1 ) );
       image.Status().DisableInitialization();
    }
+
+   /*
+    * Internal detection parameters
+    */
+   // Signal detection threshold in SNR units.
+   float snrThreshold = 0.1 + 4.8*(1 - Range( m_sensitivity, 0.0F, 1.0F ));
+   // Peak detection threshold in kurtosis units.
+   float peakThreshold = 0.1 + 9.8*(1 - Range( m_peakResponse, 0.0F, 1.0F ));
+   // Maximum distortion in coverage units.
+   float minCoverage = Const<float>::pi4()*(1 - Range( m_maxDistortion, 0.0F, 1.0F ));
 
    /*
     * Star detection
@@ -511,63 +646,71 @@ StarDetector::star_list StarDetector::DetectStars( Image& image ) const
          }
 
          /*
-          * If this is a reliable star, compute its barycenter coordinates
-          * and add it to the star list.
+          * If this is a reliable star, compute its parameters and add it to
+          * the star list.
           *
           * Rejection criteria:
           *
-          * * If this structure is touching a border of the image, reject
-          *   it. We cannot compute an accurate position for a clipped star.
+          * * Stars whose peak values are greater than the upperLimit parameter
+          *   are rejected.
           *
-          * * Too small structures are rejected. This mainly prevents
-          *   inclusion of hot (or cold) pixels. This condition is enforced
-          *   by the hot pixel removal and noise reduction steps performed
-          *   during the structure detection phase.
+          * * If this structure is touching a border of the image, reject it.
+          *   We cannot compute an accurate position for a clipped star.
+          *
+          * * Too small structures are rejected. This mainly prevents inclusion
+          *   of hot (or cold) pixels. This condition is enforced by the hot
+          *   pixel removal and noise reduction steps performed during the
+          *   structure detection phase, and optionally by increasing the
+          *   minStructureSize parameter.
           *
           * * Too large structures are rejected. This prevents inclusion of
-          *   extended nonstellar objects and saturated bright stars. This
-          *   is also part of the structure detection algorithm.
+          *   extended nonstellar objects and saturated bright stars. This is
+          *   also part of the structure detection algorithm.
           *
-          * * Too elongated stars are rejected. The m_maxDistortion parameter
-          *   determines the maximum distortion allowed. A perfect square
-          *   has distortion = 1. The distortion of a perfect circle is
-          *   pi/4, or about 0.8.
+          * * Too elongated stars are rejected. The minCoverage parameter
+          *   determines the maximum distortion allowed. A perfect square has
+          *   coverage = 1. The coverage of a perfect circle is pi/4.
           *
-          * * We don't trust stars whose centroids are too misplaced with
-          *   respect to their peak positions. This prevents detection of
-          *   multiple stars, where an accurate position cannot be computed.
+          * * Too sparse sources are rejected. This prevents detection of
+          *   multiple stars where centroids cannot be well determined.
           *
-          * * Too flat structures are rejected. The m_peakResponse parameter
-          *   defines a peakedness threshold necessary for a structure to be
-          *   idenfified as a valid star.
+          * * Too dim structures are rejected. The sensitivity parameter
+          *   defines the sensitivity of the star detection algorithm in local
+          *   sigma units. The minSNR parameter can be used to limit star
+          *   detection to a subset of the brightest stars adaptively.
+          *
+          * * Too flat structures are rejected. The peakThreshold parameter
+          *   defines the peak sensitivity of the star detection algorithm in
+          *   kurtosis units.
           */
          if ( r.Width() > 1 && r.Height() > 1 )
             if ( r.y0 > 0 && r.y1 <= y1 && r.x0 > 0 && r.x1 <= x1 )
                if ( sp.Length() >= size_type( m_minStructureSize ) )
                {
-                  int d = Max( r.Width(), r.Height() );
-                  if ( float( sp.Length() )/d/d > m_maxDistortion )
-                  {
-                     StarData data;
-                     GetStarParameters( data, image, r, sp );
-                     if ( data.flux > 0 )
-                        if ( data.peak <= m_upperLimit )
+                  StarParameters params;
+                  if ( GetStarParameters( params, image, r, sp, lmMap, m_noLocalMaximaDetection, m_allowClusteredSources ) )
+                     if ( params.max <= m_upperLimit )
+                     {
+                        int d = Max( r.Width(), r.Height() );
+                        if ( float( params.count )/d/d >= minCoverage )
                         {
-                           Point p = (data.pos + 0.5).TruncatedToInt();
+                           Point p = (params.pos + 0.5).TruncatedToInt();
                            if ( m_mask == nullptr || (*m_mask)( p ) != 0 )
                            {
-                              // Detection level corrected for peak response
-                              float f = data.peak - (1 - m_peakResponse)*data.flux/data.size;
-                              if ( data.bkg == 0 || (f - data.bkg)/data.bkg > m_sensitivity )
-                                 if ( image( p ) > 0.85*data.peak )
-                                    if ( image.Median( r ) < m_peakResponse*data.peak )
+                              float snr = (params.peak - params.bkg)/params.sigma;
+                              if ( snr >= m_minSNR )
+                              {
+                                 float s1 = snr/snrThreshold;
+                                 if ( s1 >= 1 )
+                                    if ( s1 >= m_brightThreshold || params.kurt == 0 || params.kurt/peakThreshold >= 1 )
                                        if ( m_fitPSF )
-                                          psfData << PSFFitData{ data.pos, data.rect, data.flux };
+                                          psfData << PSFFitData{ params.pos, params.rect };
                                        else
-                                          S << Star( data.pos, data.rect, data.flux );
+                                          S << Star( params.pos, params.rect, params.srect, params.flux );
+                              }
                            }
                         }
-                  }
+                     }
                }
 
          // Erase this structure
@@ -615,15 +758,26 @@ StarDetector::star_list StarDetector::DetectStars( Image& image ) const
 StarDetector::star_list StarDetector::DetectStars( const ImageVariant& image ) const
 {
    Image I;
-   ImageVariant V( &I );
-   if ( image.NumberOfSelectedChannels() == image.NumberOfNominalChannels() )
-      image.GetIntensity( V );
-   else
    {
-      image.PushSelections();
-      image.SelectChannel( image.SelectedChannel() );
-      V.AssignImage( image );
-      image.PopSelections();
+      volatile AutoStatusCallbackRestorer saveStatus( image.Status() );
+      bool initializeStatus = image.Status().IsInitializationEnabled();
+      MuteStatus status;
+      image.SetStatusCallback( &status );
+      image.Status().DisableInitialization();
+
+      ImageVariant V( &I );
+      if ( image.NumberOfSelectedChannels() == image.NumberOfNominalChannels() )
+         image.GetIntensity( V );
+      else
+      {
+         image.PushSelections();
+         image.SelectChannel( image.SelectedChannel() );
+         V.AssignImage( image );
+         image.PopSelections();
+      }
+
+      if ( initializeStatus )
+         image.Status().EnableInitialization();
    }
 
    I.Status() = image.Status();
@@ -635,15 +789,26 @@ StarDetector::star_list StarDetector::DetectStars( const ImageVariant& image ) c
 Image StarDetector::StructureMap( const ImageVariant& image ) const
 {
    Image I;
-   ImageVariant V( &I );
-   if ( image.NumberOfSelectedChannels() == image.NumberOfNominalChannels() )
-      image.GetIntensity( V );
-   else
    {
-      image.PushSelections();
-      image.SelectChannel( image.SelectedChannel() );
-      V.AssignImage( image );
-      image.PopSelections();
+      volatile AutoStatusCallbackRestorer saveStatus( image.Status() );
+      bool initializeStatus = image.Status().IsInitializationEnabled();
+      MuteStatus status;
+      image.SetStatusCallback( &status );
+//       image.Status().DisableInitialization();
+
+      ImageVariant V( &I );
+      if ( image.NumberOfSelectedChannels() == image.NumberOfNominalChannels() )
+         image.GetIntensity( V );
+      else
+      {
+         image.PushSelections();
+         image.SelectChannel( image.SelectedChannel() );
+         V.AssignImage( image );
+         image.PopSelections();
+      }
+
+      if ( initializeStatus )
+         image.Status().EnableInitialization();
    }
 
    I.Status() = image.Status();
@@ -658,15 +823,26 @@ Image StarDetector::StructureMap( const ImageVariant& image ) const
 Image StarDetector::Structures( const ImageVariant& image ) const
 {
    Image I;
-   ImageVariant V( &I );
-   if ( image.NumberOfSelectedChannels() == image.NumberOfNominalChannels() )
-      image.GetIntensity( V );
-   else
    {
-      image.PushSelections();
-      image.SelectChannel( image.SelectedChannel() );
-      V.AssignImage( image );
-      image.PopSelections();
+      volatile AutoStatusCallbackRestorer saveStatus( image.Status() );
+      bool initializeStatus = image.Status().IsInitializationEnabled();
+      MuteStatus status;
+      image.SetStatusCallback( &status );
+//       image.Status().DisableInitialization();
+
+      ImageVariant V( &I );
+      if ( image.NumberOfSelectedChannels() == image.NumberOfNominalChannels() )
+         image.GetIntensity( V );
+      else
+      {
+         image.PushSelections();
+         image.SelectChannel( image.SelectedChannel() );
+         V.AssignImage( image );
+         image.PopSelections();
+      }
+
+      if ( initializeStatus )
+         image.Status().EnableInitialization();
    }
 
    I.Status() = image.Status();
@@ -681,4 +857,4 @@ Image StarDetector::Structures( const ImageVariant& image ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/StarDetector.cpp - Released 2022-04-22T19:28:42Z
+// EOF pcl/StarDetector.cpp - Released 2022-05-17T17:14:53Z

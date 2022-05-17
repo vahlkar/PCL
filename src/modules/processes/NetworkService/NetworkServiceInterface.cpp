@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
 // Standard NetworkService Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// NetworkServiceInterface.cpp - Released 2022-04-22T19:29:05Z
+// NetworkServiceInterface.cpp - Released 2022-05-17T17:15:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NetworkService PixInsight module.
 //
@@ -419,4 +419,4 @@ NetworkServiceInterface::GUIData::GUIData( NetworkServiceInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF NetworkServiceInterface.cpp - Released 2022-04-22T19:29:05Z
+// EOF NetworkServiceInterface.cpp - Released 2022-05-17T17:15:11Z

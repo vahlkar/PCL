@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.4.9
+// Standard ImageIntegration Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// ImageIntegrationInstance.cpp - Released 2022-04-22T19:29:05Z
+// ImageIntegrationInstance.cpp - Released 2022-05-17T17:15:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -86,6 +86,7 @@ ImageIntegrationInstance::ImageIntegrationInstance( const MetaProcess* m )
    , p_weightMode( IIWeightMode::Default )
    , p_weightKeyword( TheIIWeightKeywordParameter->DefaultValue() )
    , p_weightScale( IIWeightScale::Default )
+   , p_minWeight( TheIIMinWeightParameter->DefaultValue() )
    , p_adaptiveGridSize( TheIIAdaptiveGridSizeParameter->DefaultValue() )
    , p_adaptiveNoScale( TheIIAdaptiveNoScaleParameter->DefaultValue() )
    , p_ignoreNoiseKeywords( TheIIIgnoreNoiseKeywordsParameter->DefaultValue() )
@@ -170,6 +171,7 @@ void ImageIntegrationInstance::Assign( const ProcessImplementation& p )
       p_weightMode                        = x->p_weightMode;
       p_weightKeyword                     = x->p_weightKeyword;
       p_weightScale                       = x->p_weightScale;
+      p_minWeight                         = x->p_minWeight;
       p_adaptiveGridSize                  = x->p_adaptiveGridSize;
       p_adaptiveNoScale                   = x->p_adaptiveNoScale;
       p_ignoreNoiseKeywords               = x->p_ignoreNoiseKeywords;
@@ -1352,6 +1354,8 @@ void* ImageIntegrationInstance::LockParameter( const MetaParameter* p, size_type
       return p_csvWeights.Begin();
    if ( p == TheIIWeightScaleParameter )
       return &p_weightScale;
+   if ( p == TheIIMinWeightParameter )
+      return &p_minWeight;
    if ( p == TheIIAdaptiveGridSizeParameter )
       return &p_adaptiveGridSize;
    if ( p == TheIIAdaptiveNoScaleParameter )
@@ -2005,6 +2009,8 @@ ImageIntegrationInstance::signal_estimates ImageIntegrationInstance::EvaluatePSF
 
    PSFSignalEstimator E;
    E.Detector().SetStructureLayers( p_psfStructureLayers );
+   E.Detector().EnableClusteredSources();
+   E.Detector().DisableLocalMaximaDetection();
    E.SetPSFType( IIPSFType::ToPSFFunction( p_psfType ) );
    for ( int c = 0; c < image.NumberOfChannels(); ++c )
    {
@@ -2055,4 +2061,4 @@ ImageWindow ImageIntegrationInstance::CreateImageWindow( const IsoString& id, in
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationInstance.cpp - Released 2022-04-22T19:29:05Z
+// EOF ImageIntegrationInstance.cpp - Released 2022-05-17T17:15:11Z

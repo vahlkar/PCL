@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.4.9
+// Standard ImageIntegration Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// ImageIntegrationInterface.cpp - Released 2022-04-22T19:29:05Z
+// ImageIntegrationInterface.cpp - Released 2022-05-17T17:15:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -366,6 +366,8 @@ void ImageIntegrationInterface::UpdateIntegrationControls()
 {
    bool isAverage = m_instance.p_generateIntegratedImage && m_instance.p_combination == IICombination::Average;
    bool isKeywordWeight = m_instance.p_weightMode == IIWeightMode::KeywordWeight;
+   bool needsWeights = (m_instance.p_weightMode != IIWeightMode::DontCare
+                     || !m_instance.p_csvWeights.IsEmpty()) && isAverage || m_instance.p_generateDrizzleData;
 
    GUI->Combination_Label.Enable( m_instance.p_generateIntegratedImage );
 
@@ -390,6 +392,9 @@ void ImageIntegrationInterface::UpdateIntegrationControls()
 
    GUI->WeightKeyword_Edit.Enable( isAverage && isKeywordWeight );
    GUI->WeightKeyword_Edit.SetText( m_instance.p_weightKeyword );
+
+   GUI->MinWeight_NumericEdit.SetValue( m_instance.p_minWeight );
+   GUI->MinWeight_NumericEdit.Enable( needsWeights );
 
    GUI->GenerateIntegratedImage_CheckBox.SetChecked( m_instance.p_generateIntegratedImage );
 
@@ -1024,6 +1029,7 @@ void ImageIntegrationInterface::e_Click( Button& sender, bool checked )
    else if ( sender == GUI->GenerateDrizzleData_CheckBox )
    {
       m_instance.p_generateDrizzleData = checked;
+      UpdateIntegrationControls();
    }
 //    else if ( sender == GUI->AdaptiveNoScale_CheckBox )
 //    {
@@ -1114,7 +1120,9 @@ void ImageIntegrationInterface::e_Click( Button& sender, bool checked )
 
 void ImageIntegrationInterface::e_EditValueUpdated( NumericEdit& sender, double value )
 {
-   if ( sender == GUI->PercentileLow_NumericControl )
+   if ( sender == GUI->MinWeight_NumericEdit )
+      m_instance.p_minWeight = value;
+   else if ( sender == GUI->PercentileLow_NumericControl )
       m_instance.p_pcClipLow = value;
    else if ( sender == GUI->PercentileHigh_NumericControl )
       m_instance.p_pcClipHigh = value;
@@ -1650,6 +1658,19 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    WeightKeyword_Sizer.Add( WeightKeyword_Edit );
    WeightKeyword_Sizer.AddStretch();
 
+   MinWeight_NumericEdit.label.SetText( "Minimum weight:" );
+   MinWeight_NumericEdit.label.SetFixedWidth( labelWidth1 );
+   MinWeight_NumericEdit.SetReal();
+   MinWeight_NumericEdit.SetRange( TheIIMinWeightParameter->MinimumValue(), TheIIMinWeightParameter->MaximumValue() );
+   MinWeight_NumericEdit.SetPrecision( TheIIMinWeightParameter->Precision() );
+   MinWeight_NumericEdit.edit.SetFixedWidth( editWidth2 );
+   MinWeight_NumericEdit.sizer.AddStretch();
+   MinWeight_NumericEdit.SetToolTip( "<p>Minimum normalized weight required for integration.</p>"
+      "<p>Images with normalized weights below the value of this parameter will be excluded for integration. The default "
+      "value is 0.005, which represents a 0.5% of the maximum weight in the integrated data set. To disable this automatic "
+      "image exclusion feature, set this parameter to zero.</p>" );
+   MinWeight_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::e_EditValueUpdated, w );
+
 //    const char* weightScaleToolTip = "<p>Estimator of scale used for image normalization.</p>"
 //       "<p>Statistical estimates of scale, or dispersion, are necessary for output and rejection normalization/scaling "
 //       "algorithms. Robust and efficient scale estimators are crucial to make the data from different images statistically "
@@ -1871,6 +1892,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
 //    Integration_Sizer.Add( AdaptiveNoScale_Sizer );
    Integration_Sizer.Add( WeightMode_Sizer );
    Integration_Sizer.Add( WeightKeyword_Sizer );
+   Integration_Sizer.Add( MinWeight_NumericEdit );
 //    Integration_Sizer.Add( WeightScale_Sizer );
    Integration_Sizer.Add( GenerateIntegratedImage_Sizer );
    Integration_Sizer.Add( Generate64BitResult_Sizer );
@@ -2260,13 +2282,13 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    RCRLimit_NumericControl.SetRange( TheIIRCRLimitParameter->MinimumValue(), TheIIRCRLimitParameter->MaximumValue() );
    RCRLimit_NumericControl.SetPrecision( TheIIRCRLimitParameter->Precision() );
    RCRLimit_NumericControl.edit.SetFixedWidth( editWidth2 );
-   RCRLimit_NumericControl.SetToolTip( "<p>Limit for the altered Chauvenet rejection criterion.</p>"
+   RCRLimit_NumericControl.SetToolTip( "<p>Limit for the modified Chauvenet rejection criterion.</p>"
       "<p>The larger the value of this parameter, the more pixels will be rejected by the Robust Chauvenet Rejection algorithm.</p>"
       "<p>The original Chauvenet rejection criterion is N*P(x > |z|) &lt; 0.5, where N is the number of measurements and P() represents "
-      "the probability of x being more than z standard deviations from the mean. This parameter alters the rejection criterion by "
+      "the probability of x being more than z standard deviations from the mean. This parameter modifies the rejection criterion by "
       "replacing 0.5 with an arbitrary limit in the [0,1] range, in order to make the algorithm controllable. The default value is "
       "0.1, which usually works well with most deep-sky images. Note that a single limit parameter is applied for rejection of both "
-      "low and high pixels, since the implemented iterative rejection method works in a symmetrical manner.</p>" );
+      "low and high pixels, since the implemented iterative rejection method is symmetrical.</p>" );
    RCRLimit_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::e_EditValueUpdated, w );
 
    RangeLow_NumericControl.label.SetText( "Range low:" );
@@ -2727,4 +2749,4 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationInterface.cpp - Released 2022-04-22T19:29:05Z
+// EOF ImageIntegrationInterface.cpp - Released 2022-05-17T17:15:11Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.4.9
+// Standard ImageIntegration Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// IntegrationFile.cpp - Released 2022-04-22T19:29:05Z
+// IntegrationFile.cpp - Released 2022-05-17T17:15:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -262,6 +262,29 @@ void IntegrationFile::OpenFiles( const ImageIntegrationInstance& instance )
       }
    }
 
+   /*
+    * Exclude invalid files
+    */
+   {
+      size_type count = s_files.Length();
+      s_files.Destroy( IntegrationFile(),
+         []( const IntegrationFile& f, const IntegrationFile& )
+         {
+            return !f.IsValid();
+         } );
+      size_type excluded = count - s_files.Length();
+      if ( excluded )
+      {
+         if ( s_files.Length() < 3 )
+            throw Error( "Excluded " + String( excluded ) + " invalid file(s) - less than 3 images available for integration, aborting process." );
+         console.WarningLn( "<end><cbr>** Warning: Excluded " + String( excluded ) + " invalid file(s) - "
+                           + String( s_files.Length() ) + " files available for integration." );
+      }
+   }
+
+   /*
+    * Normalized image weights
+    */
    if ( instance.p_weightMode != IIWeightMode::DontCare || !instance.p_csvWeights.IsEmpty() )
       if ( instance.p_generateIntegratedImage && instance.p_combination == IICombination::Average
         || instance.p_generateDrizzleData )
@@ -279,6 +302,31 @@ void IntegrationFile::OpenFiles( const ImageIntegrationInstance& instance )
          }
 
          NormalizeImageWeights();
+
+         /*
+          * Exclude low-weight images
+          */
+         if ( instance.p_minWeight > 0 )
+         {
+            size_type count = s_files.Length();
+            s_files.Destroy( IntegrationFile(),
+               [&instance]( const IntegrationFile& f, const IntegrationFile& )
+               {
+                  return f.m_weights.L1Norm() < instance.p_minWeight;
+               } );
+            size_type excluded = count - s_files.Length();
+            if ( excluded )
+            {
+               if ( s_files.Length() < 3 )
+                  throw Error( String().Format( "Excluded %u image(s) with weight < %.8g - "
+                                                "less than 3 images available for integration, aborting process.",
+                                                excluded, instance.p_minWeight ) );
+               console.WarningLn( String().Format( "<end><cbr>** Warning: Excluded %u image(s) with weight < %.8g - "
+                                                "%u images available for integration.",
+                                                excluded, instance.p_minWeight, s_files.Length() ) );
+            }
+         }
+
          console.NoteLn( "<end><cbr>Normalized image weights:" );
          int i = 0;
          for ( const IntegrationFile* file : s_files )
@@ -824,22 +872,33 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
      && instance.p_weightMode == IIWeightMode::PSFScaleSNR )
    {
       m_nmlPath = nmlPath.Trimmed();
-      if ( !m_nmlPath.IsEmpty() )
+      if ( m_nmlPath.IsEmpty() )
       {
-         if ( !File::Exists( m_nmlPath ) )
-            throw Error( "No such file: " + m_nmlPath );
-
-         m_localNormalization.Parse( m_nmlPath );
-
-         if ( m_localNormalization.Version() < LN_MIN_VERSION )
-            throw Error( String().Format( "Incompatible local normalization data version. Expected >= %d, got %d: ",
-                                          LN_MIN_VERSION, m_localNormalization.Version() ) + m_nmlPath );
-
-         if ( m_localNormalization.ReferenceWidth() != s_width ||
-              m_localNormalization.ReferenceHeight() != s_height ||
-              m_localNormalization.NumberOfChannels() != s_numberOfChannels )
-            throw Error( "Inconsistent image geometry: " + m_nmlPath );
+         console.WarningLn( "<end><cbr>** Warning: Missing required local normalization data - file will be excluded from the integration." );
+         m_valid = false;
+         return;
       }
+
+      if ( !File::Exists( m_nmlPath ) )
+         throw Error( "No such file: " + m_nmlPath );
+
+      m_localNormalization.Parse( m_nmlPath );
+
+      if ( m_localNormalization.IsTaggedAsInvalid() )
+      {
+         console.WarningLn( "<end><cbr>** Warning: Invalid local normalization data - file will be excluded from the integration." );
+         m_valid = false;
+         return;
+      }
+
+      if ( m_localNormalization.Version() < LN_MIN_VERSION )
+         throw Error( String().Format( "Incompatible local normalization data version. Expected >= %d, got %d: ",
+                                       LN_MIN_VERSION, m_localNormalization.Version() ) + m_nmlPath );
+
+      if ( m_localNormalization.ReferenceWidth() != s_width ||
+           m_localNormalization.ReferenceHeight() != s_height ||
+           m_localNormalization.NumberOfChannels() != s_numberOfChannels )
+         throw Error( "Inconsistent image geometry: " + m_nmlPath );
    }
 
    m_hasLocalNormalization = m_localNormalization.HasInterpolations();
@@ -849,7 +908,7 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
            instance.p_rejection != IIRejection::NoRejection
         && instance.p_rejectionNormalization == IIRejectionNormalization::LocalRejectionNormalization )
       {
-         console.WarningLn( "<end><cbr>** Warning: Local normalization data not available - No normalization will be applied!" );
+         throw Error( "Required local normalization data not available: " + m_nmlPath );
       }
 
    if ( instance.p_generateDrizzleData )
@@ -1313,4 +1372,4 @@ void IntegrationFile::OpenFileThread::Run()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationFile.cpp - Released 2022-04-22T19:29:05Z
+// EOF IntegrationFile.cpp - Released 2022-05-17T17:15:11Z

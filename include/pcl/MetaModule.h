@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// pcl/MetaModule.h - Released 2022-04-22T19:28:34Z
+// pcl/MetaModule.h - Released 2022-05-17T17:14:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -259,7 +259,7 @@ public:
     * Provides a \e brief description of this module.
     *
     * This function is not intended to give a thorough description, but just a
-    * succint sentence to quickly identify this module and its contents.
+    * succinct sentence to quickly identify this module and its contents.
     *
     * Example of good module description:
     * <em>"MyFancyCrop Process Module"</em>.
@@ -1034,4 +1034,4 @@ namespace InstallMode
 #endif   // __PCL_MetaModule_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MetaModule.h - Released 2022-04-22T19:28:34Z
+// EOF pcl/MetaModule.h - Released 2022-05-17T17:14:45Z

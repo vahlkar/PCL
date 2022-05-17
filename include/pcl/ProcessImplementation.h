@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// pcl/ProcessImplementation.h - Released 2022-04-22T19:28:34Z
+// pcl/ProcessImplementation.h - Released 2022-05-17T17:14:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -103,18 +103,22 @@ public:
     * \param m    Pointer to a metaprocess that identifies the process class
     *             that this process instance belongs to.
     */
-   ProcessImplementation( const MetaProcess* m );
+   ProcessImplementation( const MetaProcess* m )
+      : meta( m )
+   {
+   }
 
    /*!
-    * Copy constructor. Constructs a new process instance as a duplicate of an
-    * existing instance.
+    * Copy constructor.
     */
-   ProcessImplementation( const ProcessImplementation& x );
+   ProcessImplementation( const ProcessImplementation& ) = default;
 
    /*!
-    * Destroys this process instance.
+    * Virtual destructor.
     */
-   virtual ~ProcessImplementation();
+   virtual ~ProcessImplementation()
+   {
+   }
 
    /*!
     * Returns a pointer to the metaprocess of this process instance.
@@ -125,6 +129,23 @@ public:
    {
       return meta;
    }
+
+   /*!
+    * Returns the version number of this process instance.
+    *
+    * Instance version numbers are useful to manage different implementations
+    * of processes, especially when instances are deserialized from existing
+    * projects, process icons, etc.
+    *
+    * This function may return zero if the version number is undefined for this
+    * instance for some reason, although this should not happen under normal
+    * conditions. Valid version numbers are always &ge; 1.
+    *
+    * The version number that will be assigned to newly created process
+    * instances will always be the value returned by the MetaProcess::Version()
+    * member function (or a reimplementation of it) for the parent metaprocess.
+    */
+   uint32 Version() const;
 
    /*!
     * Initializes this process instance after construction. This is knwon as
@@ -148,7 +169,7 @@ public:
     * Returns true iff this process instance is currently valid for execution.
     *
     * \param[out] info  If this function returns false, it should return also a
-    *                   brief text (128 characters maximum) in this string,
+    *                   brief text (256 characters maximum) in this string,
     *                   describing why this is an invalid instance.
     *
     * The PixInsight core application calls this function to validate an
@@ -159,14 +180,13 @@ public:
     * reimplements MetaProcess::NeedsValidation() to return true.
     *
     * If this function returns false, giving a brief description of the reasons
-    * in the \a info string is not mandatory, but neglecting it is considered
-    * bad programming practice.
+    * in the \a info string is not mandatory, although strongly recommended and
+    * considered good programming practice.
     */
    virtual bool Validate( String& info );
 
    /*!
-    * Assigns an existing instance \a i to this instance, if it belongs to an
-    * assignable process class.
+    * Assigns an existing \a instance to this object.
     *
     * The PixInsight core application calls this function each time a process
     * instance has to be replaced with a copy of another existing instance.
@@ -186,17 +206,17 @@ public:
     * process (perhaps the only one) is because its instances have no data at
     * all that could be assigned - an example is the standard Invert process.
     */
-   virtual void Assign( const ProcessImplementation& i );
+   virtual void Assign( const ProcessImplementation& instance );
 
    /*!
-    * Returns true iff this process instance could be successfully executed on a
-    * given \a view.
+    * Returns true iff this process instance could be successfully executed on
+    * a given \a view.
     *
     * \param view    Reference to a view on which this process is being tested
     *                to validate execution.
     *
     * \param[out] whyNot   If this function returns false, it should return
-    *                also a brief text (128 characters maximum) in this string,
+    *                also a brief text (256 characters maximum) in this string,
     *                explaining why this instance cannot be executed on the
     *                passed \a view.
     *
@@ -361,7 +381,7 @@ public:
     *                is being tested to validate execution.
     *
     * \param[out] whyNot   If this function returns false, it should return
-    *                also a brief text (128 characters maximum) in this string,
+    *                also a brief text (256 characters maximum) in this string,
     *                explaining why this instance  be executed on the
     *                passed \a image.
     *
@@ -433,7 +453,7 @@ public:
     * the global context.
     *
     * \param[out] whyNot   If this function returns false, it should return
-    *             also a brief text (128 characters maximum) in this string,
+    *             also a brief text (256 characters maximum) in this string,
     *             explaining why this instance couldn't be executed in the
     *             global context.
     *
@@ -516,7 +536,7 @@ public:
     *
     * This function is called when an existing instance is activated in the
     * core application's GUI (e.g., by double-clicking a process icon). When
-    * the process is selected in a generic way (e.g., from the %ProcessImplementation
+    * the process is selected in a generic way (e.g., from the %Process
     * Explorer window), MetaProcess::DefaultInterface() is called instead.
     *
     * This function must be reimplemented if multiple interfaces are
@@ -799,6 +819,12 @@ public:
 protected:
 
    const MetaProcess* meta = nullptr;
+
+private:
+
+   mutable const void* m_serverHandle = nullptr;
+
+   friend class ProcessContextDispatcher;
 };
 
 // ----------------------------------------------------------------------------
@@ -810,4 +836,4 @@ protected:
 #endif   // __PCL_ProcessImplementation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ProcessImplementation.h - Released 2022-04-22T19:28:34Z
+// EOF pcl/ProcessImplementation.h - Released 2022-05-17T17:14:45Z

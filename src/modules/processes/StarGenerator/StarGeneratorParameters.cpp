@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
 // Standard StarGenerator Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// StarGeneratorParameters.cpp - Released 2022-04-22T19:29:05Z
+// StarGeneratorParameters.cpp - Released 2022-05-17T17:15:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarGenerator PixInsight module.
 //
@@ -503,4 +503,4 @@ IsoString SGOutputFilePath::Id() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF StarGeneratorParameters.cpp - Released 2022-04-22T19:29:05Z
+// EOF StarGeneratorParameters.cpp - Released 2022-05-17T17:15:11Z

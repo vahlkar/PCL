@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
 // Standard Debayer Process Module Version 1.11.0
 // ----------------------------------------------------------------------------
-// DebayerInterface.cpp - Released 2022-04-22T19:29:05Z
+// DebayerInterface.cpp - Released 2022-05-17T17:15:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -1207,4 +1207,4 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DebayerInterface.cpp - Released 2022-04-22T19:29:05Z
+// EOF DebayerInterface.cpp - Released 2022-05-17T17:15:11Z

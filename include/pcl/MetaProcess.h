@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// pcl/MetaProcess.h - Released 2022-04-22T19:28:34Z
+// pcl/MetaProcess.h - Released 2022-05-17T17:14:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -220,12 +220,18 @@ public:
    }
 
    /*!
-    * Returns a version number for this process, encoded as a hexadecimal
-    * number.
+    * Returns the current version number of this process.
     *
-    * For example, version 1.0.5 should be returned as 0x105, and version
-    * 3.11.5 as 0x3B5. The default return value is 0x100, corresponding to
+    * Process version numbers are usually encoded in hexadecimal format. For
+    * example, version 1.0.5 should be returned as 0x105, and version
+    * 3.11.5 as 0x3B5. The value returned by default is 0x100, corresponding to
     * version 1.0.0.
+    *
+    * Process version numbers are useful to manage different implementations
+    * of processes, especially when instances are deserialized from existing
+    * projects, process icons, etc. The ProcessInstance::Version() member
+    * function can be used to retrieve the version number of the process
+    * implementation that originated a particular instance of a process.
     */
    uint32 Version() const override
    {
@@ -1027,4 +1033,4 @@ private:
 #endif   // __PCL_MetaProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MetaProcess.h - Released 2022-04-22T19:28:34Z
+// EOF pcl/MetaProcess.h - Released 2022-05-17T17:14:45Z

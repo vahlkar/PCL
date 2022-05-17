@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// CreateAlphaChannelsInstance.h - Released 2022-04-22T19:29:05Z
+// CreateAlphaChannelsInstance.h - Released 2022-05-17T17:15:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -99,4 +99,4 @@ private:
 #endif   // __CreateAlphaChannelsInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF CreateAlphaChannelsInstance.h - Released 2022-04-22T19:29:05Z
+// EOF CreateAlphaChannelsInstance.h - Released 2022-05-17T17:15:11Z

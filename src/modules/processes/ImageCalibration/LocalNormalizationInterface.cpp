@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.9.3
+// Standard ImageCalibration Process Module Version 1.9.4
 // ----------------------------------------------------------------------------
-// LocalNormalizationInterface.cpp - Released 2022-04-22T19:29:05Z
+// LocalNormalizationInterface.cpp - Released 2022-05-17T17:15:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -278,6 +278,8 @@ void LocalNormalizationInterface::UpdateScaleEvaluationControls()
    GUI->PSFMinStructureSize_SpinBox.SetValue( m_instance.p_psfMinStructureSize );
    GUI->PSFHotPixelFilterRadius_SpinBox.SetValue( m_instance.p_psfHotPixelFilterRadius );
    GUI->PSFNoiseReductionFilterRadius_SpinBox.SetValue( m_instance.p_psfNoiseReductionFilterRadius );
+   GUI->PSFMinSNR_NumericEdit.SetValue( m_instance.p_psfMinSNR );
+   GUI->PSFRejectionLimit_NumericControl.SetValue( m_instance.p_psfRejectionLimit );
    GUI->PSFType_ComboBox.SetCurrentItem( m_instance.p_psfType );
    GUI->PSFGrowth_NumericControl.SetValue( m_instance.p_psfGrowth );
    GUI->PSFMaxStars_SpinBox.SetValue( m_instance.p_psfMaxStars );
@@ -635,6 +637,10 @@ void LocalNormalizationInterface::e_ValueUpdated( NumericEdit& sender, double va
       m_instance.p_targetRejectionThreshold = value;
    else if ( sender == GUI->SaturationThreshold_NumericControl )
       m_instance.p_saturationThreshold = value;
+   else if ( sender == GUI->PSFMinSNR_NumericEdit )
+      m_instance.p_psfMinSNR = value;
+   else if ( sender == GUI->PSFRejectionLimit_NumericControl )
+      m_instance.p_psfRejectionLimit = value;
    else if ( sender == GUI->PSFGrowth_NumericControl )
       m_instance.p_psfGrowth = value;
 }
@@ -802,7 +808,7 @@ void LocalNormalizationInterface::e_ViewDrop( Control& sender, const Point& pos,
 LocalNormalizationInterface::GUIData::GUIData( LocalNormalizationInterface& w )
 {
    pcl::Font fnt = w.Font();
-   int labelWidth1 = fnt.Width( String( "Minimum structure size:" ) + 'M' );
+   int labelWidth1 = fnt.Width( String( "Minimum structure size:" ) + "MM" );
    int editWidth1 = fnt.Width( String( '0', 8 ) );
    int editWidth2 = fnt.Width( String( 'M', 5 ) );
    int editWidth3 = fnt.Width( String( '0', 10 ) );
@@ -1388,6 +1394,39 @@ LocalNormalizationInterface::GUIData::GUIData( LocalNormalizationInterface& w )
    PSFNoiseReductionFilterRadius_Sizer.Add( PSFNoiseReductionFilterRadius_SpinBox );
    PSFNoiseReductionFilterRadius_Sizer.AddStretch();
 
+   PSFMinSNR_NumericEdit.label.SetText( "Minimum detection SNR:" );
+   PSFMinSNR_NumericEdit.label.SetFixedWidth( labelWidth1 );
+   PSFMinSNR_NumericEdit.SetReal();
+   PSFMinSNR_NumericEdit.SetRange( TheLNPSFMinSNRParameter->MinimumValue(), TheLNPSFMinSNRParameter->MaximumValue() );
+   PSFMinSNR_NumericEdit.SetPrecision( TheLNPSFMinSNRParameter->Precision() );
+   PSFMinSNR_NumericEdit.edit.SetFixedWidth( editWidth1 );
+   PSFMinSNR_NumericEdit.sizer.AddStretch();
+   PSFMinSNR_NumericEdit.SetToolTip( "<p>Minimum signal-to-noise ratio of a detectable star.</p>"
+      "<p>Given a source with estimated brightness <i>s</i>, local background <i>b</i> and local background dispersion "
+      "<i>n</i>, SNR is evaluated as (<i>s</i> &ndash; <i>b</i>)/<i>n</i>. Stars with measured SNR below the value of this "
+      "parameter won't be used for relative scale evaluation.</p>"
+      "<p>This parameter allows limiting star detection to a subset of the brightest sources in the image adaptively. By "
+      "requiring relatively high SNR levels in the evaluated sources, the accuracy and robustness of the scale evaluation "
+      "process can be largely improved. The default value is 40, which is quite appropriate in most cases.</p>" );
+   PSFMinSNR_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&LocalNormalizationInterface::e_ValueUpdated, w );
+
+   PSFRejectionLimit_NumericControl.label.SetText( "Rejection limit:" );
+   PSFRejectionLimit_NumericControl.label.SetFixedWidth( labelWidth1 );
+   PSFRejectionLimit_NumericControl.slider.SetRange( 0, 250 );
+   PSFRejectionLimit_NumericControl.SetReal();
+   PSFRejectionLimit_NumericControl.SetRange( TheLNPSFRejectionLimitParameter->MinimumValue(), TheLNPSFRejectionLimitParameter->MaximumValue() );
+   PSFRejectionLimit_NumericControl.SetPrecision( TheLNPSFRejectionLimitParameter->Precision() );
+   PSFRejectionLimit_NumericControl.edit.SetFixedWidth( editWidth1 );
+   PSFRejectionLimit_NumericControl.SetToolTip( "<p>Limit for the modified Chauvenet rejection criterion.</p>"
+      "<p>A modified Robust Chauvenet Rejection (RCR) routine is used internally by this implementation for rejection of "
+      "outlier relative scale samples. The larger the value of this parameter, the more samples will be rejected by the RCR "
+      "algorithm.</p>"
+      "<p>The original Chauvenet rejection criterion is N*P(x > |z|) &lt; 0.5, where N is the number of measurements and "
+      "P() represents the probability of x being more than z standard deviations from the mean. This parameter modifies the "
+      "rejection criterion by replacing 0.5 with an arbitrary limit in the [0,1] range, in order to make the algorithm "
+      "controllable. The default rejection limit is 0.3.</p>" );
+   PSFRejectionLimit_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&LocalNormalizationInterface::e_ValueUpdated, w );
+
    const char* psfTypeToolTip = "<p>Point spread function type used for PSF fitting and photometry.</p>"
       "<p>In all cases elliptical functions are fitted to detected star structures, and PSF sampling regions are "
       "defined adaptively using a median stabilization algorithm.</p>"
@@ -1461,6 +1500,8 @@ LocalNormalizationInterface::GUIData::GUIData( LocalNormalizationInterface& w )
    PSFScaleEvaluation_Sizer.Add( PSFMinStructureSize_Sizer );
    PSFScaleEvaluation_Sizer.Add( PSFHotPixelFilterRadius_Sizer );
    PSFScaleEvaluation_Sizer.Add( PSFNoiseReductionFilterRadius_Sizer );
+   PSFScaleEvaluation_Sizer.Add( PSFMinSNR_NumericEdit );
+   PSFScaleEvaluation_Sizer.Add( PSFRejectionLimit_NumericControl );
    PSFScaleEvaluation_Sizer.Add( PSFType_Sizer );
    PSFScaleEvaluation_Sizer.Add( PSFGrowth_NumericControl );
    PSFScaleEvaluation_Sizer.Add( PSFMaxStars_Sizer );
@@ -1729,4 +1770,4 @@ LocalNormalizationInterface::GUIData::GUIData( LocalNormalizationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationInterface.cpp - Released 2022-04-22T19:29:05Z
+// EOF LocalNormalizationInterface.cpp - Released 2022-05-17T17:15:11Z

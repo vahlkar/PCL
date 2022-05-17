@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.4.9
+// Standard ImageIntegration Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// AdaptiveNormalizationData.cpp - Released 2022-04-22T19:29:05Z
+// AdaptiveNormalizationData.cpp - Released 2022-05-17T17:15:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -250,4 +250,4 @@ int AdaptiveNormalizationData::NumberOfGridElements( int width, int height, int 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF AdaptiveNormalizationData.cpp - Released 2022-04-22T19:29:05Z
+// EOF AdaptiveNormalizationData.cpp - Released 2022-05-17T17:15:11Z

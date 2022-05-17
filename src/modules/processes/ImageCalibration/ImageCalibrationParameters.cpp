@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.9.3
+// Standard ImageCalibration Process Module Version 1.9.4
 // ----------------------------------------------------------------------------
-// ImageCalibrationParameters.cpp - Released 2022-04-22T19:29:05Z
+// ImageCalibrationParameters.cpp - Released 2022-05-17T17:15:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -138,7 +138,7 @@ ICOutputPostfix*                   TheICOutputPostfixParameter = nullptr;
 ICOutputSampleFormat*              TheICOutputSampleFormatParameter = nullptr;
 ICOutputPedestal*                  TheICOutputPedestalParameter = nullptr;
 ICOutputPedestalMode*              TheICOutputPedestalModeParameter = nullptr;
-ICAutoPedestalThreshold*         TheICAutoPedestalThresholdParameter = nullptr;
+ICAutoPedestalLimit*         TheICAutoPedestalLimitParameter = nullptr;
 ICOverwriteExistingFiles*          TheICOverwriteExistingFilesParameter = nullptr;
 ICOnError*                         TheICOnErrorParameter = nullptr;
 ICNoGUIMessages*                   TheICNoGUIMessagesParameter = nullptr;
@@ -1594,34 +1594,34 @@ size_type ICOutputPedestalMode::DefaultValueIndex() const
 
 // ----------------------------------------------------------------------------
 
-ICAutoPedestalThreshold::ICAutoPedestalThreshold( MetaProcess* P ) : MetaFloat( P )
+ICAutoPedestalLimit::ICAutoPedestalLimit( MetaProcess* P ) : MetaFloat( P )
 {
-   TheICAutoPedestalThresholdParameter = this;
+   TheICAutoPedestalLimitParameter = this;
 }
 
-IsoString ICAutoPedestalThreshold::Id() const
+IsoString ICAutoPedestalLimit::Id() const
 {
-   return "autoPedestalThreshold";
+   return "autoPedestalLimit";
 }
 
-int ICAutoPedestalThreshold::Precision() const
+int ICAutoPedestalLimit::Precision() const
 {
-   return 4;
+   return 5;
 }
 
-double ICAutoPedestalThreshold::DefaultValue() const
+double ICAutoPedestalLimit::DefaultValue() const
 {
-   return 0.001;
+   return 0.0001;
 }
 
-double ICAutoPedestalThreshold::MinimumValue() const
+double ICAutoPedestalLimit::MinimumValue() const
 {
-   return 0.0;
+   return 0;
 }
 
-double ICAutoPedestalThreshold::MaximumValue() const
+double ICAutoPedestalLimit::MaximumValue() const
 {
-   return 0.1;
+   return 0.01;
 }
 
 // ----------------------------------------------------------------------------
@@ -2818,4 +2818,4 @@ bool ICNoiseAlgorithmB::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationParameters.cpp - Released 2022-04-22T19:29:05Z
+// EOF ImageCalibrationParameters.cpp - Released 2022-05-17T17:15:11Z

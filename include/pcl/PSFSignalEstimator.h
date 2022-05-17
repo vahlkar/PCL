@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// pcl/PSFSignalEstimator.h - Released 2022-04-22T19:28:34Z
+// pcl/PSFSignalEstimator.h - Released 2022-05-17T17:14:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -294,7 +294,7 @@ public:
    {
       if ( sigmaN <= 0 )
          sigmaN = E.NStar;
-      return (8.0832e-6 * E.totalFlux * E.totalMeanFlux) / (9.0e+6 * sigmaN * E.MStar);
+      return (5.326e-6 * E.totalFlux * E.totalMeanFlux) / (9.0e+6 * sigmaN * E.MStar);
    }
 
    /*!
@@ -315,7 +315,7 @@ public:
    {
       if ( sigmaN <= 0 )
          sigmaN = E.NStar;
-      return (1.350e-7 * E.totalFlux * E.totalFlux) / (4.987e+6 * sigmaN * sigmaN);
+      return (1.316e-7 * E.totalFlux * E.totalFlux) / (4.987e+6 * sigmaN * sigmaN);
    }
 
 private:
@@ -330,4 +330,4 @@ private:
 #endif   // __PCL_PSFSignalEstimator_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFSignalEstimator.h - Released 2022-04-22T19:28:34Z
+// EOF pcl/PSFSignalEstimator.h - Released 2022-05-17T17:14:45Z

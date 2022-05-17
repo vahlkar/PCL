@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// pcl/LocalNormalizationData.cpp - Released 2022-04-22T19:28:42Z
+// pcl/LocalNormalizationData.cpp - Released 2022-05-17T17:14:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -109,6 +109,7 @@ void LocalNormalizationData::Clear()
    m_sx = m_sy = 0;
    m_creationTime = TimePoint();
    m_version = 0;
+   m_invalid = false;
 }
 
 // ----------------------------------------------------------------------------
@@ -198,6 +199,14 @@ void LocalNormalizationData::Parse( const XMLElement& root, bool ignoreNormaliza
 {
    Clear();
 
+   {
+      String valid = root.AttributeValue( "valid" );
+      if ( !valid.IsEmpty() )
+         m_invalid = !valid.ToBool();
+      if ( m_invalid )
+         ignoreNormalizationData = true;
+   }
+
    for ( const XMLNode& node : root )
    {
       if ( !node.IsElement() )
@@ -233,19 +242,19 @@ void LocalNormalizationData::Parse( const XMLElement& root, bool ignoreNormaliza
          }
          else if ( element.Name() == "LocalNormalization" )
          {
+            // The normalization scale and data version are always reported.
+            String scale = element.AttributeValue( "scale" );
+            if ( scale.IsEmpty() )
+               throw Error( "Missing local normalization scale attribute." );
+            m_scale = scale.ToInt();
+            if ( m_scale < MIN_NORMALIZATION_SCALE )
+               throw Error( "Invalid local normalization scale attribute value '" + scale + '\'' );
+            String version = element.AttributeValue( "version" );
+            if ( !version.IsEmpty() )
+               m_version = version.ToInt();
+
             if ( !ignoreNormalizationData )
             {
-               String scale = element.AttributeValue( "scale" );
-               if ( scale.IsEmpty() )
-                  throw Error( "Missing local normalization scale attribute." );
-               m_scale = scale.ToInt();
-               if ( m_scale < MIN_NORMALIZATION_SCALE )
-                  throw Error( "Invalid local normalization scale attribute value '" + scale + '\'' );
-
-               String version = element.AttributeValue( "version" );
-               if ( !version.IsEmpty() )
-                  m_version = version.ToInt();
-
                for ( const XMLNode& node : element )
                {
                   if ( !node.IsElement() )
@@ -349,7 +358,7 @@ void LocalNormalizationData::Parse( const XMLElement& root, bool ignoreNormaliza
          throw Error( "Incongruent local normalization matrices." );
 
       if ( m_referenceWidth < m_scale || m_referenceHeight < m_scale ||
-           m_referenceWidth < m_A.Width() || m_referenceHeight < m_A.Height() )
+         m_referenceWidth < m_A.Width() || m_referenceHeight < m_A.Height() )
          throw Error( "Invalid reference dimensions." );
 
       if ( !m_S.IsEmpty() )
@@ -374,13 +383,16 @@ XMLDocument* LocalNormalizationData::Serialize() const
    if ( m_scale < MIN_NORMALIZATION_SCALE ||
         m_referenceWidth < m_scale ||
         m_referenceHeight < m_scale ||
-        m_A.IsEmpty() ||
-        m_B.IsEmpty() ||
-        m_A.Bounds() != m_B.Bounds() ||
-        m_A.NumberOfChannels() != m_B.NumberOfChannels() ||
-        !m_C.IsEmpty() && m_C.Length() != m_B.NumberOfChannels() ||
-        m_referenceWidth < m_A.Width() ||
-        m_referenceHeight < m_A.Height() )
+        !m_invalid &&
+         (
+            m_A.IsEmpty() ||
+            m_B.IsEmpty() ||
+            m_A.Bounds() != m_B.Bounds() ||
+            m_A.NumberOfChannels() != m_B.NumberOfChannels() ||
+            !m_C.IsEmpty() && m_C.Length() != m_B.NumberOfChannels() ||
+            m_referenceWidth < m_A.Width() ||
+            m_referenceHeight < m_A.Height()
+         ) )
       throw Error( "LocalNormalizationData::Serialize(): Uninitialized or invalid local normalization data." );
 
    AutoPointer<XMLDocument> xml = new XMLDocument;
@@ -391,6 +403,7 @@ XMLDocument* LocalNormalizationData::Serialize() const
 
    XMLElement* root = new XMLElement( "xnml", XMLAttributeList()
       << XMLAttribute( "version", "1.0" )
+      << (m_invalid ? XMLAttribute( "valid", "false" ) : XMLAttribute())
       << XMLAttribute( "xmlns", "http://www.pixinsight.com/xnml" )
       << XMLAttribute( "xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance" )
       << XMLAttribute( "xsi:schemaLocation", "http://www.pixinsight.com/xnml http://pixinsight.com/xnml/xnml-1.0.xsd" ) );
@@ -412,22 +425,25 @@ XMLDocument* LocalNormalizationData::Serialize() const
       << XMLAttribute( "scale", String( m_scale ) )
       << XMLAttribute( "version", String( Max( 1, m_version ) ) ) );
 
-   SerializeNormalizationMatrices( new XMLElement( *ln, "Scale" ), m_A );
-   SerializeNormalizationMatrices( new XMLElement( *ln, "ZeroOffset" ), m_B );
-   if ( !m_C.IsEmpty() )
-      *(new XMLElement( *ln, "Bias" )) << new XMLText( String().ToCommaSeparated( m_C ) );
-
-   if ( !m_S.IsEmpty() && !m_Rc.IsEmpty() && !m_Tc.IsEmpty() )
+   if ( !m_invalid )
    {
-      XMLElement* gn = new XMLElement( *root, "GlobalNormalization" );
+      SerializeNormalizationMatrices( new XMLElement( *ln, "Scale" ), m_A );
+      SerializeNormalizationMatrices( new XMLElement( *ln, "ZeroOffset" ), m_B );
+      if ( !m_C.IsEmpty() )
+         *(new XMLElement( *ln, "Bias" )) << new XMLText( String().ToCommaSeparated( m_C ) );
 
-      *(new XMLElement( *gn, "Scale" )) << new XMLText( String().ToCommaSeparated( m_S ) );
-      *(new XMLElement( *gn, "ReferenceLocation" )) << new XMLText( String().ToCommaSeparated( m_Rc ) );
-      *(new XMLElement( *gn, "TargetLocation" )) << new XMLText( String().ToCommaSeparated( m_Tc ) );
+      if ( !m_S.IsEmpty() && !m_Rc.IsEmpty() && !m_Tc.IsEmpty() )
+      {
+         XMLElement* gn = new XMLElement( *root, "GlobalNormalization" );
+
+         *(new XMLElement( *gn, "Scale" )) << new XMLText( String().ToCommaSeparated( m_S ) );
+         *(new XMLElement( *gn, "ReferenceLocation" )) << new XMLText( String().ToCommaSeparated( m_Rc ) );
+         *(new XMLElement( *gn, "TargetLocation" )) << new XMLText( String().ToCommaSeparated( m_Tc ) );
+      }
+
+      if ( !m_relScale.IsEmpty() )
+         *(new XMLElement( *root, "RelativeScaleFactors" )) << new XMLText( String().ToCommaSeparated( m_relScale ) );
    }
-
-   if ( !m_relScale.IsEmpty() )
-      *(new XMLElement( *root, "RelativeScaleFactors" )) << new XMLText( String().ToCommaSeparated( m_relScale ) );
 
    return xml.Release();
 }
@@ -622,4 +638,4 @@ void LocalNormalizationData::SerializeNormalizationMatrices( XMLElement* root, c
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/LocalNormalizationData.cpp - Released 2022-04-22T19:28:42Z
+// EOF pcl/LocalNormalizationData.cpp - Released 2022-05-17T17:14:53Z

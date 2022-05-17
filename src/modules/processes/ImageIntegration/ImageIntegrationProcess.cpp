@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.4.9
+// Standard ImageIntegration Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// ImageIntegrationProcess.cpp - Released 2022-04-22T19:29:05Z
+// ImageIntegrationProcess.cpp - Released 2022-05-17T17:15:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -78,6 +78,7 @@ ImageIntegrationProcess::ImageIntegrationProcess()
    new IIWeightMode( this );
    new IIWeightKeyword( this );
    new IIWeightScale( this );
+   new IIMinWeight( this );
    new IICSVWeights( this );
    new IIAdaptiveGridSize( this );
    new IIAdaptiveNoScale( this );
@@ -296,4 +297,4 @@ ProcessImplementation* ImageIntegrationProcess::Clone( const ProcessImplementati
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationProcess.cpp - Released 2022-04-22T19:29:05Z
+// EOF ImageIntegrationProcess.cpp - Released 2022-05-17T17:15:11Z

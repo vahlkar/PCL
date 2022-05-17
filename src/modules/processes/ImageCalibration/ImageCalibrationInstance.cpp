@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.9.3
+// Standard ImageCalibration Process Module Version 1.9.4
 // ----------------------------------------------------------------------------
-// ImageCalibrationInstance.cpp - Released 2022-04-22T19:29:05Z
+// ImageCalibrationInstance.cpp - Released 2022-05-17T17:15:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -168,7 +168,7 @@ ImageCalibrationInstance::ImageCalibrationInstance( const MetaProcess* m )
    , p_outputSampleFormat( ICOutputSampleFormat::Default )
    , p_outputPedestal( TheICOutputPedestalParameter->DefaultValue() )
    , p_outputPedestalMode( ICOutputPedestalMode::Default )
-   , p_autoPedestalThreshold( TheICAutoPedestalThresholdParameter->DefaultValue() )
+   , p_autoPedestalLimit( TheICAutoPedestalLimitParameter->DefaultValue() )
    , p_overwriteExistingFiles( TheICOverwriteExistingFilesParameter->DefaultValue() )
    , p_onError( ICOnError::Default )
    , p_noGUIMessages( TheICNoGUIMessagesParameter->DefaultValue() ) // ### DEPRECATED
@@ -236,7 +236,7 @@ void ImageCalibrationInstance::Assign( const ProcessImplementation& p )
       p_outputSampleFormat            = x->p_outputSampleFormat;
       p_outputPedestal                = x->p_outputPedestal;
       p_outputPedestalMode            = x->p_outputPedestalMode;
-      p_autoPedestalThreshold         = x->p_autoPedestalThreshold;
+      p_autoPedestalLimit         = x->p_autoPedestalLimit;
       p_overwriteExistingFiles        = x->p_overwriteExistingFiles;
       p_onError                       = x->p_onError;
       p_noGUIMessages                 = x->p_noGUIMessages;
@@ -1244,22 +1244,17 @@ private:
                   for ( Image::const_sample_iterator i( TargetImage(), c ); i; ++i )
                      if ( *i < 2*std::numeric_limits<float>::epsilon() )
                         A << *i;
-               if ( double( A.Length() )/TargetImage().NumberOfPixels() >= m_data.instance->p_autoPedestalThreshold )
+               size_type n = size_type( m_data.instance->p_autoPedestalLimit * double( TargetImage().NumberOfPixels() ) );
+               if ( A.Length() >= n )
                {
-                  double mean, sigma;
-                  size_type i, j;
-                  RobustChauvenetRejection()( i, j, mean, sigma, A );
-                  if ( mean < 2*std::numeric_limits<float>::epsilon() )
-                  {
-                     m_outputPedestal = Max( 1, RoundInt( 65535*(Abs( mean ) + sigma) ) );
-                     console.WarningLn( String().Format( "<end><cbr>** Warning: negative or insignificant "
-                        "pixel sample values detected after calibration.<br>"
-                        "Estimated average low value: %+.6e, sigma = %.4e, %llu samples<br>"
-                        "Applying automatic pedestal: %d DN%s",
-                        mean, sigma, j - i, Min( m_outputPedestal, HUGE_PEDESTAL ), (m_outputPedestal > HUGE_PEDESTAL) ? " (huge!)" : "" ) );
-                     if ( m_outputPedestal > HUGE_PEDESTAL )
-                        m_outputPedestal = HUGE_PEDESTAL;
-                  }
+                  A.Sort();
+                  m_outputPedestal = Max( 1, RoundInt( 65535*Abs( A[n-1] ) ) );
+                  console.WarningLn( String().Format( "<end><cbr>** Warning: negative or insignificant "
+                     "pixel sample values detected after calibration.<br>"
+                     "Applying automatic pedestal: %d DN%s",
+                     Min( m_outputPedestal, HUGE_PEDESTAL ), (m_outputPedestal > HUGE_PEDESTAL) ? " (huge!)" : "" ) );
+                  if ( m_outputPedestal > HUGE_PEDESTAL )
+                     m_outputPedestal = HUGE_PEDESTAL;
                }
             }
          }
@@ -1842,6 +1837,8 @@ private:
          E.Detector().SetHotPixelFilterRadius( m_data.instance->p_hotPixelFilterRadius );
          E.Detector().SetNoiseReductionFilterRadius( m_data.instance->p_noiseReductionFilterRadius );
          E.Detector().SetMinStructureSize( m_data.instance->p_minStructureSize );
+         E.Detector().EnableClusteredSources();
+         E.Detector().DisableLocalMaximaDetection();
          E.SetPSFType( ICPSFType::ToPSFFunction( m_data.instance->p_psfType ) );
          E.SetSaturationThreshold( m_data.instance->p_saturationThreshold );
          E.EnableRelativeSaturation( m_data.instance->p_saturationRelative );
@@ -2931,8 +2928,8 @@ void* ImageCalibrationInstance::LockParameter( const MetaParameter* p, size_type
       return &p_outputPedestal;
    if ( p == TheICOutputPedestalModeParameter )
       return &p_outputPedestalMode;
-   if ( p == TheICAutoPedestalThresholdParameter )
-      return &p_autoPedestalThreshold;
+   if ( p == TheICAutoPedestalLimitParameter )
+      return &p_autoPedestalLimit;
    if ( p == TheICOverwriteExistingFilesParameter )
       return &p_overwriteExistingFiles;
    if ( p == TheICOnErrorParameter )
@@ -3210,4 +3207,4 @@ size_type ImageCalibrationInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInstance.cpp - Released 2022-04-22T19:29:05Z
+// EOF ImageCalibrationInstance.cpp - Released 2022-05-17T17:15:11Z

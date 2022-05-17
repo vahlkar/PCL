@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.8.3
+// Standard SubframeSelector Process Module Version 1.8.5
 // ----------------------------------------------------------------------------
-// SubframeSelectorInstance.h - Released 2022-04-22T19:29:05Z
+// SubframeSelectorInstance.h - Released 2022-05-17T17:15:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -118,7 +118,7 @@ private:
    pcl_bool           p_fileCache;
    subframe_list      p_subframes;
 
-   // The settings for measurements and reporting.
+   // Measurements and reporting.
    float              p_subframeScale;
    float              p_cameraGain;
    pcl_enum           p_cameraResolution;
@@ -127,18 +127,19 @@ private:
    pcl_enum           p_dataUnit;
    float              p_trimmingFactor;
 
-   // The settings for star detection.
+   // Star detection and PSF fitting.
    int32              p_structureLayers;
    int32              p_noiseLayers;
    int32              p_hotPixelFilterRadius;
-   pcl_bool           p_hotPixelFilter;      // ### DEPRECATED
    int32              p_noiseReductionFilterRadius;
+   int32              p_minStructureSize;
    float              p_sensitivity;
    float              p_peakResponse;
+   float              p_brightThreshold;
    float              p_maxDistortion;
+   pcl_bool           p_allowClusteredSources;
+   float              p_localMaximaDetectionLimit;
    float              p_upperLimit;
-   int32              p_backgroundExpansion; // ### DEPRECATED
-   float              p_xyStretch;           // ### DEPRECATED
    pcl_enum           p_psfFit;
    pcl_bool           p_psfFitCircular;
    int32              p_maxPSFFits;
@@ -217,4 +218,4 @@ private:
 #endif   // __SubframeSelectorInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInstance.h - Released 2022-04-22T19:29:05Z
+// EOF SubframeSelectorInstance.h - Released 2022-05-17T17:15:11Z

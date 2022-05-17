@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.8.3
+// Standard SubframeSelector Process Module Version 1.8.5
 // ----------------------------------------------------------------------------
-// SubframeSelectorInstance.cpp - Released 2022-04-22T19:29:05Z
+// SubframeSelectorInstance.cpp - Released 2022-05-17T17:15:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -118,14 +118,14 @@ SubframeSelectorInstance::SubframeSelectorInstance( const MetaProcess* m )
    , p_structureLayers( TheSSStructureLayersParameter->DefaultValue() )
    , p_noiseLayers( TheSSNoiseLayersParameter->DefaultValue() )
    , p_hotPixelFilterRadius( TheSSHotPixelFilterRadiusParameter->DefaultValue() )
-   , p_hotPixelFilter( TheSSApplyHotPixelFilterParameter->DefaultValue() )
    , p_noiseReductionFilterRadius( TheSSNoiseReductionFilterRadiusParameter->DefaultValue() )
+   , p_minStructureSize( TheSSMinStructureSizeParameter->DefaultValue() )
    , p_sensitivity( TheSSSensitivityParameter->DefaultValue() )
    , p_peakResponse( TheSSPeakResponseParameter->DefaultValue() )
+   , p_brightThreshold( TheSSBrightThresholdParameter->DefaultValue() )
    , p_maxDistortion( TheSSMaxDistortionParameter->DefaultValue() )
+   , p_allowClusteredSources( TheSSAllowClusteredSourcesParameter->DefaultValue() )
    , p_upperLimit( TheSSUpperLimitParameter->DefaultValue() )
-   , p_backgroundExpansion( TheSSBackgroundExpansionParameter->DefaultValue() )
-   , p_xyStretch( TheSSXYStretchParameter->DefaultValue() )
    , p_psfFit( SSPSFFit::Default )
    , p_psfFitCircular( TheSSPSFFitCircularParameter->DefaultValue() )
    , p_maxPSFFits( int32( TheSSMaxPSFFitsParameter->DefaultValue() ) )
@@ -179,14 +179,31 @@ void SubframeSelectorInstance::Assign( const ProcessImplementation& p )
       p_structureLayers            = x->p_structureLayers;
       p_noiseLayers                = x->p_noiseLayers;
       p_hotPixelFilterRadius       = x->p_hotPixelFilterRadius;
-      p_hotPixelFilter             = x->p_hotPixelFilter;
       p_noiseReductionFilterRadius = x->p_noiseReductionFilterRadius;
-      p_sensitivity                = x->p_sensitivity;
-      p_peakResponse               = x->p_peakResponse;
-      p_maxDistortion              = x->p_maxDistortion;
+      p_minStructureSize           = x->p_minStructureSize;
+
+      /*
+       * N.B. Some star detector parameters have changed their meaning and/or
+       * valid ranges since core version 1.8.9-1, when the StarDetector class
+       * was redesigned. Replace these parameters with default values for
+       * existing instances created by old versions.
+       */
+      if ( p.Version() < 2 )
+      {
+         p_sensitivity = TheSSSensitivityParameter->DefaultValue();
+         p_peakResponse = TheSSPeakResponseParameter->DefaultValue();
+         p_maxDistortion = TheSSMaxDistortionParameter->DefaultValue();
+      }
+      else
+      {
+         p_sensitivity = x->p_sensitivity;
+         p_peakResponse = x->p_peakResponse;
+         p_maxDistortion = x->p_maxDistortion;
+      }
+
+      p_brightThreshold            = x->p_brightThreshold;
+      p_allowClusteredSources      = x->p_allowClusteredSources;
       p_upperLimit                 = x->p_upperLimit;
-      p_backgroundExpansion        = x->p_backgroundExpansion;
-      p_xyStretch                  = x->p_xyStretch;
       p_psfFit                     = x->p_psfFit;
       p_psfFitCircular             = x->p_psfFitCircular;
       p_maxPSFFits                 = x->p_maxPSFFits;
@@ -585,6 +602,8 @@ private:
             Console().WarningLn( "<end><cbr>** Warning: PSF signal estimates are not available in the image metadata and are being "
                                  "calculated from possibly non-raw or uncalibrated data. Image weights can be inaccurate." );
             PSFSignalEstimator E;
+            E.Detector().EnableClusteredSources();
+            E.Detector().DisableLocalMaximaDetection();
             PSFSignalEstimator::Estimates e = E( m_subframe );
             psfTotalFlux = e.totalFlux;
             psfTotalPowerFlux = e.totalPowerFlux;
@@ -655,15 +674,18 @@ private:
                nml.Parse( m_nmlPath );
             }
 
-            const Vector& s = nml.RelativeScaleFactors();
-            if ( !s.IsEmpty() )
+            if ( !nml.IsTaggedAsInvalid() )
             {
-               if ( s.Length() == 1 )
-                  m_psfScale = s[0];
-               else
-                  m_psfScale = 0.5*(s.MinComponent() + s.MaxComponent());
+               const Vector& s = nml.RelativeScaleFactors();
+               if ( !s.IsEmpty() )
+               {
+                  if ( s.Length() == 1 )
+                     m_psfScale = s[0];
+                  else
+                     m_psfScale = 0.5*(s.MinComponent() + s.MaxComponent());
 
-               m_psfScaleSNR = 1/m_psfScale/m_psfScale/m_noise/m_noise;
+                  m_psfScaleSNR = 1/m_psfScale/m_psfScale/m_noise/m_noise;
+               }
             }
          }
       }
@@ -845,9 +867,11 @@ private:
          Console().WarningLn( "<end><cbr>** Warning: PSF signal estimates are not available in the image metadata and are being "
                               "calculated from possibly non-raw or uncalibrated data. Image weights can be inaccurate." );
          PSFSignalEstimator E;
+         E.Detector().EnableClusteredSources();
+         E.Detector().DisableLocalMaximaDetection();
          PSFSignalEstimator::Estimates e = E( m_subframe );
-         m_outputData.psfSignalWeight = PSFSignalEstimator::PSFSignalWeight( e, m_noise );
-         m_outputData.psfSNR = PSFSignalEstimator::PSFSNR( e, m_noise );
+         m_outputData.psfSignalWeight = PSFSignalEstimator::PSFSignalWeight( e, m_outputData.noise );
+         m_outputData.psfSNR = PSFSignalEstimator::PSFSNR( e, m_outputData.noise );
          m_outputData.psfFlux = e.totalFlux;
          m_outputData.psfFluxPower = e.totalPowerFlux;
          m_outputData.psfTotalMeanFlux = e.totalMeanFlux;
@@ -895,8 +919,42 @@ private:
             m_outputData.snrWeight = e*e;
       }
 
-      m_outputData.psfScale = m_psfScale;
-      m_outputData.psfScaleSNR = m_psfScaleSNR;
+      if ( m_psfScale > 0 && m_psfScaleSNR > 0 )
+      {
+         m_outputData.psfScale = m_psfScale;
+         m_outputData.psfScaleSNR = m_psfScaleSNR;
+      }
+      else
+      {
+         /*
+          * PSF Scale SNR
+          */
+         if ( !m_nmlPath.IsEmpty() )
+         {
+            LocalNormalizationData nml;
+            {
+               static Mutex mutex;
+               static AtomicInt count;
+               volatile AutoLockCounter lock( mutex, count, m_instance.m_maxFileReadThreads );
+               nml.Parse( m_nmlPath );
+            }
+
+            if ( !nml.IsTaggedAsInvalid() )
+            {
+               const Vector& s = nml.RelativeScaleFactors();
+               if ( !s.IsEmpty() )
+               {
+                  if ( s.Length() == 1 )
+                     m_outputData.psfScale = s[0];
+                  else
+                     m_outputData.psfScale = 0.5*(s.MinComponent() + s.MaxComponent());
+
+                  m_outputData.psfScaleSNR = 1/m_outputData.psfScale/m_outputData.psfScale
+                                              /m_outputData.noise/m_outputData.noise;
+               }
+            }
+         }
+      }
    }
 
    void MeasureImage()
@@ -943,10 +1001,14 @@ private:
       S.SetNoiseLayers( m_instance.p_noiseLayers );
       S.SetHotPixelFilterRadius( m_instance.p_hotPixelFilterRadius );
       S.SetNoiseReductionFilterRadius( m_instance.p_noiseReductionFilterRadius );
-//       S.SetMinStructureSize( m_instance.p_minStructureSize );
+      S.SetMinStructureSize( m_instance.p_minStructureSize );
       S.SetSensitivity( m_instance.p_sensitivity );
       S.SetPeakResponse( m_instance.p_peakResponse );
+      S.SetBrightThreshold( m_instance.p_brightThreshold );
       S.SetMaxDistortion( m_instance.p_maxDistortion );
+      S.EnableClusteredSources( m_instance.p_allowClusteredSources );
+      S.DisableLocalMaximaDetection( m_instance.p_allowClusteredSources );
+//       S.SetLocalMaximaDetectionLimit( m_instance.p_localMaximaDetectionLimit );
       S.SetUpperLimit( m_instance.p_upperLimit );
 
       StarDetector::star_list stars = S.DetectStars( m_subframe );
@@ -955,7 +1017,7 @@ private:
          if ( IsRootThread() )
             {
                ImageWindow window( 1, 1, 1, 8/*bitsPerSample*/, false/*floatSample*/,
-                                 false/*color*/, true/*history*/, "structure_map" );
+                                   false/*color*/, true/*history*/, "structure_map" );
                if ( window.IsNull() )
                   throw Error( "Unable to create image window: structure_map" );
                window.MainView().Image().CopyImage( S.StructureMap( m_subframe ) );
@@ -1916,6 +1978,9 @@ private:
             volatile AutoLockCounter lock( mutex, count, m_instance.m_maxFileWriteThreads );
             nml.SerializeToFile( outputFilePathXNML );
          }
+
+         if ( nml.IsTaggedAsInvalid() )
+            console.WarningLn( "** Warning: Writing a local normalization data file tagged as invalid." );
       }
 
       if ( !outputFilePathXDRZ.IsEmpty() )
@@ -2231,9 +2296,13 @@ IsoString SubframeSelectorInstance::EncodedCacheSensitiveParameters() const
                                           << String( p_noiseLayers )
                                           << String( p_hotPixelFilterRadius )
                                           << String( p_noiseReductionFilterRadius )
+                                          << String( p_minStructureSize )
                                           << String().Format( "%.4f", p_sensitivity )
                                           << String().Format( "%.4f", p_peakResponse )
+                                          << String().Format( "%.4f", p_brightThreshold )
                                           << String().Format( "%.4f", p_maxDistortion )
+                                          << String( bool( p_allowClusteredSources ) )
+                                          << String().Format( "%.4f", p_localMaximaDetectionLimit )
                                           << String().Format( "%.4f", p_upperLimit )
                                           << String( p_psfFit )
                                           << String( bool( p_psfFitCircular ) )
@@ -2368,22 +2437,22 @@ void* SubframeSelectorInstance::LockParameter( const MetaParameter* p, size_type
       return &p_noiseLayers;
    if ( p == TheSSHotPixelFilterRadiusParameter )
       return &p_hotPixelFilterRadius;
-   if ( p == TheSSApplyHotPixelFilterParameter )
-      return &p_hotPixelFilter;
    if ( p == TheSSNoiseReductionFilterRadiusParameter )
       return &p_noiseReductionFilterRadius;
+   if ( p == TheSSMinStructureSizeParameter )
+      return &p_minStructureSize;
    if ( p == TheSSSensitivityParameter )
       return &p_sensitivity;
    if ( p == TheSSPeakResponseParameter )
       return &p_peakResponse;
+   if ( p == TheSSBrightThresholdParameter )
+      return &p_brightThreshold;
    if ( p == TheSSMaxDistortionParameter )
       return &p_maxDistortion;
+   if ( p == TheSSAllowClusteredSourcesParameter )
+      return &p_allowClusteredSources;
    if ( p == TheSSUpperLimitParameter )
       return &p_upperLimit;
-   if ( p == TheSSBackgroundExpansionParameter )
-      return &p_backgroundExpansion;
-   if ( p == TheSSXYStretchParameter )
-      return &p_xyStretch;
    if ( p == TheSSPSFFitParameter )
       return &p_psfFit;
    if ( p == TheSSPSFFitCircularParameter )
@@ -2670,4 +2739,4 @@ size_type SubframeSelectorInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInstance.cpp - Released 2022-04-22T19:29:05Z
+// EOF SubframeSelectorInstance.cpp - Released 2022-05-17T17:15:11Z

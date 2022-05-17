@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
 // Standard CloneStamp Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// CloneStampInterface.h - Released 2022-04-22T19:29:05Z
+// CloneStampInterface.h - Released 2022-05-17T17:15:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CloneStamp PixInsight module.
 //
@@ -289,4 +289,4 @@ PCL_END_LOCAL
 #endif   // __CloneStampInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF CloneStampInterface.h - Released 2022-04-22T19:29:05Z
+// EOF CloneStampInterface.h - Released 2022-05-17T17:15:11Z

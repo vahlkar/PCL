@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.4.9
+// Standard ImageIntegration Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// ImageIntegrationParameters.h - Released 2022-04-22T19:29:05Z
+// ImageIntegrationParameters.h - Released 2022-05-17T17:15:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -237,6 +237,23 @@ public:
 };
 
 extern IIWeightScale* TheIIWeightScaleParameter;
+
+// ----------------------------------------------------------------------------
+
+class IIMinWeight : public MetaFloat
+{
+public:
+
+   IIMinWeight( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern IIMinWeight* TheIIMinWeightParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -2478,4 +2495,4 @@ PCL_END_LOCAL
 #endif   // __ImageIntegrationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationParameters.h - Released 2022-04-22T19:29:05Z
+// EOF ImageIntegrationParameters.h - Released 2022-05-17T17:15:11Z

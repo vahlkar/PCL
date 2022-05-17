@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// pcl/MetaParameter.h - Released 2022-04-22T19:28:34Z
+// pcl/MetaParameter.h - Released 2022-05-17T17:14:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -279,7 +279,7 @@ public:
     * information will be written to a console, so you can use the whole
     * functionality of Console to format the text given here.
     *
-    * Try to write succint but meaningful parameter descriptions.
+    * Try to write succinct but meaningful parameter descriptions.
     */
    virtual String Description() const
    {
@@ -1996,4 +1996,4 @@ private:
 #endif   // __PCL_MetaParameter_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MetaParameter.h - Released 2022-04-22T19:28:34Z
+// EOF pcl/MetaParameter.h - Released 2022-05-17T17:14:45Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
 // Standard StarNet Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// StarNetInterface.cpp - Released 2022-04-22T19:29:05Z
+// StarNetInterface.cpp - Released 2022-05-17T17:15:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarNet PixInsight module.
 //
@@ -520,4 +520,4 @@ StarNetInterface::GUIData::GUIData( StarNetInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF StarNetInterface.cpp - Released 2022-04-22T19:29:05Z
+// EOF StarNetInterface.cpp - Released 2022-05-17T17:15:11Z

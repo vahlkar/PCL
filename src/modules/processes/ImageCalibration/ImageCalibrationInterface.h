@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.9.3
+// Standard ImageCalibration Process Module Version 1.9.4
 // ----------------------------------------------------------------------------
-// ImageCalibrationInterface.h - Released 2022-04-22T19:29:05Z
+// ImageCalibrationInterface.h - Released 2022-05-17T17:15:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -147,7 +147,7 @@ private:
          HorizontalSizer   OutputPedestalMode_Sizer;
             Label             OutputPedestalMode_Label;
             ComboBox          OutputPedestalMode_ComboBox;
-         NumericEdit       AutoPedestalThreshold_NumericEdit;
+         NumericEdit       AutoPedestalLimit_NumericEdit;
          HorizontalSizer   OutputPedestal_Sizer;
             Label             OutputPedestal_Label;
             SpinBox           OutputPedestal_SpinBox;
@@ -359,4 +359,4 @@ PCL_END_LOCAL
 #endif   // __ImageCalibrationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInterface.h - Released 2022-04-22T19:29:05Z
+// EOF ImageCalibrationInterface.h - Released 2022-05-17T17:15:11Z

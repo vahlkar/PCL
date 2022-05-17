@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// SampleFormatConversionParameters.cpp - Released 2022-04-22T19:29:05Z
+// SampleFormatConversionParameters.cpp - Released 2022-05-17T17:15:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -114,4 +114,4 @@ size_type SampleFormatConversion::DefaultValueIndex() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SampleFormatConversionParameters.cpp - Released 2022-04-22T19:29:05Z
+// EOF SampleFormatConversionParameters.cpp - Released 2022-05-17T17:15:11Z

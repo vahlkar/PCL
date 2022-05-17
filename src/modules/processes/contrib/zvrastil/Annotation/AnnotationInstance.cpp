@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
 // Standard Annotation Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// AnnotationInstance.cpp - Released 2022-04-22T19:29:05Z
+// AnnotationInstance.cpp - Released 2022-05-17T17:15:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Annotation PixInsight module.
 //
@@ -263,4 +263,4 @@ size_type AnnotationInstance::ParameterLength( const MetaParameter* p, size_type
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF AnnotationInstance.cpp - Released 2022-04-22T19:29:05Z
+// EOF AnnotationInstance.cpp - Released 2022-05-17T17:15:11Z

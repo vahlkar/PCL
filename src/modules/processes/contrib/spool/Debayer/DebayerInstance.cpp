@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
 // Standard Debayer Process Module Version 1.11.0
 // ----------------------------------------------------------------------------
-// DebayerInstance.cpp - Released 2022-04-22T19:29:05Z
+// DebayerInstance.cpp - Released 2022-05-17T17:15:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -354,6 +354,8 @@ public:
          E.Detector().SetHotPixelFilterRadius( m_instance.p_hotPixelFilterRadius );
          E.Detector().SetNoiseReductionFilterRadius( m_instance.p_noiseReductionFilterRadius );
          E.Detector().SetMinStructureSize( m_instance.p_minStructureSize );
+         E.Detector().EnableClusteredSources();
+         E.Detector().DisableLocalMaximaDetection();
          E.SetPSFType( DebayerPSFType::ToPSFFunction( m_instance.p_psfType ) );
          E.SetSaturationThreshold( m_instance.p_saturationThreshold );
          E.EnableRelativeSaturation( m_instance.p_saturationRelative );
@@ -4604,4 +4606,4 @@ size_type DebayerInstance::ParameterLength( const MetaParameter* p, size_type ta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DebayerInstance.cpp - Released 2022-04-22T19:29:05Z
+// EOF DebayerInstance.cpp - Released 2022-05-17T17:15:11Z

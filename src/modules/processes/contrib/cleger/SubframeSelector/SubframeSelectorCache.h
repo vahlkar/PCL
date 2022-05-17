@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.8.3
+// Standard SubframeSelector Process Module Version 1.8.5
 // ----------------------------------------------------------------------------
-// SubframeSelectorCache.h - Released 2022-04-22T19:29:05Z
+// SubframeSelectorCache.h - Released 2022-05-17T17:15:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -123,12 +123,12 @@ public:
 
    int Version() const override
    {
-      return 19;
+      return 21;
    }
 
    int MinSupportedVersion() const override
    {
-      return 19;
+      return 21;
    }
 
 private:
@@ -148,4 +148,4 @@ extern SubframeSelectorCache* TheSubframeSelectorCache;
 #endif   // __SubframeSelectorCache_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorCache.h - Released 2022-04-22T19:29:05Z
+// EOF SubframeSelectorCache.h - Released 2022-05-17T17:15:11Z

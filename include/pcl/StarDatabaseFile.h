@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// pcl/StarDatabaseFile.h - Released 2022-04-22T19:28:34Z
+// pcl/StarDatabaseFile.h - Released 2022-05-17T17:14:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -743,4 +743,4 @@ XPSD::IndexTree::SearchRecursive( uint32 nodeIndex, double ra, double dec, doubl
 #endif  // __PCL_StarDatabaseFile_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/StarDatabaseFile.h - Released 2022-04-22T19:28:34Z
+// EOF pcl/StarDatabaseFile.h - Released 2022-05-17T17:14:45Z

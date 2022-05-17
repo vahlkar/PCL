@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.8.3
+// Standard SubframeSelector Process Module Version 1.8.5
 // ----------------------------------------------------------------------------
-// SubframeSelectorInterface.h - Released 2022-04-22T19:29:05Z
+// SubframeSelectorInterface.h - Released 2022-05-17T17:15:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -172,6 +172,9 @@ private:
          HorizontalSizer   StarDetectorParameters_NoiseLayers_Sizer;
             Label             StarDetectorParameters_NoiseLayers_Label;
             SpinBox           StarDetectorParameters_NoiseLayers_SpinBox;
+         HorizontalSizer   StarDetectorParameters_MinStructureSize_Sizer;
+            Label             StarDetectorParameters_MinStructureSize_Label;
+            SpinBox           StarDetectorParameters_MinStructureSize_SpinBox;
          HorizontalSizer   StarDetectorParameters_HotPixelFilterRadius_Sizer;
             Label             StarDetectorParameters_HotPixelFilterRadius_Label;
             SpinBox           StarDetectorParameters_HotPixelFilterRadius_SpinBox;
@@ -180,8 +183,11 @@ private:
             SpinBox           StarDetectorParameters_NoiseReductionFilterRadius_SpinBox;
          NumericControl    StarDetectorParameters_Sensitivity_Control;
          NumericControl    StarDetectorParameters_PeakResponse_Control;
+         NumericControl    StarDetectorParameters_BrightThreshold_Control;
          NumericControl    StarDetectorParameters_MaxDistortion_Control;
          NumericControl    StarDetectorParameters_UpperLimit_Control;
+         HorizontalSizer   StarDetectorParameters_AllowClusteredSources_Sizer;
+            CheckBox          StarDetectorParameters_AllowClusteredSources_CheckBox;
          HorizontalSizer   StarDetectorParameters_PSFFit_Sizer;
             Label             StarDetectorParameters_PSFFit_Label;
             ComboBox          StarDetectorParameters_PSFFit_ComboBox;
@@ -307,4 +313,4 @@ PCL_END_LOCAL
 #endif   // e_SubframeSelectorInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInterface.h - Released 2022-04-22T19:29:05Z
+// EOF SubframeSelectorInterface.h - Released 2022-05-17T17:15:11Z

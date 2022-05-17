@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
 // Standard StarGenerator Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// ProjectionSystem.h - Released 2022-04-22T19:29:05Z
+// ProjectionSystem.h - Released 2022-05-17T17:15:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarGenerator PixInsight module.
 //
@@ -152,4 +152,4 @@ protected:
 #endif   // __ProjectionSystem_h
 
 // ----------------------------------------------------------------------------
-// EOF ProjectionSystem.h - Released 2022-04-22T19:29:05Z
+// EOF ProjectionSystem.h - Released 2022-05-17T17:15:11Z

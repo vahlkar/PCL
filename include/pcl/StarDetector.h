@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// pcl/StarDetector.h - Released 2022-04-22T19:28:34Z
+// pcl/StarDetector.h - Released 2022-05-17T17:14:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -94,8 +94,9 @@ public:
       DPoint pos = 0.0;     /*!< Star position in image coordinates. Corresponds to the centroid of
                                  the fitted PSF when PSF fitting is enabled; to the barycenter
                                  calculated by the star detection algorithm otherwise. */
-      Rect   rect = 0;      //!< Detection region in pixels, image coordinates.
-      float  flux = 0;      //!< Total flux minus local background.
+      Rect   rect = 0;      //!< Bounding rectangle of the detection region in pixels, image coordinates.
+      Rect   srect = 0;     //!< Sampling region in pixels, image coordinates.
+      float  flux = 0;      //!< Total flux above local background.
       float  signal = 0;    /*!< Estimated mean signal over the local background within the PSF
                                  fitting region. Nonzero only when PSF fitting is enabled. */
       float  mad = 0;       /*!< Robust average absolute deviation of the fitted PSF with respect
@@ -108,12 +109,30 @@ public:
       Star() = default;
 
       /*!
-       * Constructs a new %Star object with the specified position \a p in
-       * image coordinates, total flux \a f, mean signal \a s and PSF average
-       * deviation \a m.
+       * Constructs a new %Star object with the specified position \a p,
+       * detection region \a r, sampling region \a sr, total flux \a f, mean
+       * signal \a s and PSF average deviation \a m.
        */
-      Star( const DPoint& p, const Rect& r, float f = 0, float s = 0, float m = 0 )
-         : pos( p ), rect( r ), flux( f ), signal( s ), mad( m )
+      Star( const DPoint& p, const Rect& r, const Rect& sr = 0, float f = 0, float s = 0, float m = 0 )
+         : pos( p ), rect( r ), srect( sr ), flux( f ), signal( s ), mad( m )
+      {
+      }
+
+      /*!
+       * Constructs a new %Star object with the specified position \a p in
+       * image coordinates and total flux \a f.
+       */
+      Star( const DPoint& p, float f = 0 )
+         : pos( p ), flux( f )
+      {
+      }
+
+      /*!
+       * Constructs a new %Star object with the specified image coordinates
+       * \a x, \a y and total flux \a f.
+       */
+      Star( double x, double y, float f = 0 )
+         : pos( x, y ), flux( f )
       {
       }
 
@@ -157,7 +176,7 @@ public:
    };
 
    /*!
-    * A dynamic array of detected pcl::StarDetector::Star structures.
+    * A dynamic array of pcl::StarDetector::Star structures.
     */
    typedef Array<Star>  star_list;
 
@@ -321,15 +340,23 @@ public:
    }
 
    /*!
-    * Star detection sensitivity.
+    * Sensitivity of the star detection device.
     *
-    * The sensitivity of the star detection algorithm is measured with respect
-    * to the local background of each detected star. Given a star with
-    * estimated brightness \e s and local background \e b, sensitivity is the
-    * minimum value of (\e s - \e b)/\e b necessary to trigger star detection.
+    * Internally, the sensitivity of the star detection algorithm is expressed
+    * in signal-to-noise ratio units with respect to the evaluated dispersion
+    * of local background pixels for each detected structure. Given a source
+    * with estimated brightness \e s, local background \e b and local
+    * background dispersion \e n, sensitivity is the minimum value of
+    * (\e s - \e b)/\e n necessary to trigger star detection.
     *
-    * Decrease this value to favor detection of fainter stars. Increase it to
-    * restrict detection to brighter stars. The default value is 0.1.
+    * To isolate the public interface of this class from its internal
+    * implementation, this parameter is normalized to the [0,1] range, where 0
+    * and 1 represent minimum and maximum sensitivity, respectively. This
+    * abstraction allows us to change the star detection engine without
+    * breaking dependent tools and processes.
+    *
+    * Increase this value to favor detection of fainter stars. Decrease it to
+    * restrict detection to brighter stars. The default value is 0.5.
     */
    float Sensitivity() const
    {
@@ -342,19 +369,31 @@ public:
     */
    void SetSensitivity( float s )
    {
-      PCL_PRECONDITION( s >= 0.001 && s <= 1000 )
-      m_sensitivity = Range( s, 0.001F, 1000.0F );
+      PCL_PRECONDITION( s >= 0 && s <= 1 )
+      m_sensitivity = Range( s, 0.0F, 1.0F );
    }
 
    /*!
-    * Star peak response.
+    * Peak sensitivity of the star detection device.
     *
-    * If you decrease this value, stars will need to have stronger (or more
-    * prominent) peaks to be detected by the star detection algorithm. This is
-    * useful to prevent detection of saturated stars, as well as small
-    * nonstellar features. By increasing this parameter, the star detection
-    * algorithm will be more sensitive to \e peakedness, and hence more
-    * tolerant with relatively flat image features. The default value is 0.8.
+    * Internally, the peak response property of the star detection algorithm is
+    * expressed in kurtosis units. For each detected structure, kurtosis is
+    * evaluated from all significant pixels with values greater than the
+    * estimated mean local background. Peak response is the minimum value of
+    * kurtosis necessary to trigger star detection.
+    *
+    * To isolate the public interface of this class from its internal
+    * implementation, this parameter is normalized to the [0,1] range, where 0
+    * and 1 represent minimum and maximum peak response, respectively. This
+    * abstraction allows us to change the star detection engine without
+    * breaking dependent tools and processes.
+    *
+    * If you decrease this parameter, stars will need to have stronger (or more
+    * prominent) peaks to be detected. This is useful to prevent detection of
+    * saturated stars, as well as small nonstellar features. By increasing this
+    * parameter, the star detection algorithm will be more sensitive to
+    * \e peakedness, and hence more tolerant with relatively flat image
+    * features. The default value is 0.5.
     */
    float PeakResponse() const
    {
@@ -362,7 +401,7 @@ public:
    }
 
    /*!
-    * Sets the star peak response. See PeakResponse() for a description of this
+    * Sets the peak sensitivity. See PeakResponse() for a description of this
     * parameter.
     */
    void SetPeakResponse( float r )
@@ -372,13 +411,73 @@ public:
    }
 
    /*!
+    * Minimum signal-to-noise ratio of a detectable star.
+    *
+    * Given a source with estimated brightness \e s, local background \e b and
+    * local background dispersion \e n, SNR is evaluated as (\e s - \e b)/\e n.
+    * Stars with measured SNR below this parameter won't be detected.
+    *
+    * The value of this parameter can be increased to limit star detection to a
+    * subset of the brightest sources in the image adaptively, instead of
+    * imposing an arbitrary limit on the number of detected stars. The default
+    * value is zero.
+    */
+   float MinSNR() const
+   {
+      return m_minSNR;
+   }
+
+   /*!
+    * Sets the minimum signal-to-noise detection level. See MinSNR() for a
+    * description of this parameter.
+    */
+   void SetMinSNR( float snr )
+   {
+      PCL_PRECONDITION( snr >= 0 )
+      m_minSNR = Max( 0.0F, snr );
+   }
+
+   /*!
+    * Bright stars threshold.
+    *
+    * Stars with measured SNR above this parameter in units of the minimum
+    * detection level (as defined by the sensitivity parameter) will always be
+    * detected, even if their profiles are too flat for the current peak
+    * response. This allows us to force inclusion of bright stars. The default
+    * value is 3.0.
+    */
+   float BrightThreshold() const
+   {
+      return m_brightThreshold;
+   }
+
+   /*!
+    * Sets the bright stars threshold. See BrightThreshold() for a description
+    * of this parameter.
+    */
+   void SetBrightThreshold( float r )
+   {
+      PCL_PRECONDITION( r >= 1 && r <= 100 )
+      m_brightThreshold = Range( r, 1.0F, 100.0F );
+   }
+
+   /*!
     * Maximum star distortion.
     *
-    * Star distortion is measured with respect to a perfect square, whose
-    * distortion is 1. Lower values mean more distortion. The distortion of a
-    * perfectly circular star is about 0.8 (actually, &pi;/4). Use this
-    * parameter, if necessary, to control inclusion of elongated stars,
-    * multiple stars, and nonstellar image features. The default value is 0.5.
+    * Internally, star distortion is evaluated in units of coverage of a square
+    * region circumscribed to each detected structure. The coverage of a
+    * perfectly circular star is &pi;/4 (about 0.8). Lower values denote
+    * elongated or irregular sources.
+    *
+    * To isolate the public interface of this class from its internal
+    * implementation, this parameter is normalized to the [0,1] range, where 0
+    * and 1 represent minimum and maximum distortion, respectively. This
+    * abstraction allows us to change the star detection engine without
+    * breaking dependent tools and processes.
+    *
+    * Use this parameter, if necessary, to control inclusion of elongated
+    * stars, complex clusters of stars, and nonstellar image features. The
+    * default value is 0.6.
     */
    float MaxDistortion() const
    {
@@ -393,6 +492,121 @@ public:
    {
       PCL_PRECONDITION( d >= 0 && d <= 1 )
       m_maxDistortion = Range( d, 0.0F, 1.0F );
+   }
+
+   /*!
+    * Returns true iff detection of clustered sources is allowed.
+    *
+    * If this parameter is false, a local maxima map will be generated to
+    * identify and prevent detection of multiple sources that are too close to
+    * be separated as individual structures, such as double and multiple stars.
+    * In general, barycenter positions cannot be accurately determined for
+    * sources with several local maxima. If this parameter is true,
+    * non-separable multiple sources will be detectable as single objects. The
+    * default value is false.
+    */
+   bool IsClusteredSourcesEnabled() const
+   {
+      return m_allowClusteredSources;
+   }
+
+   /*!
+    * Enables detection of clustered sources. See IsClusteredSourcesEnabled()
+    * for a description of this parameter.
+    */
+   void EnableClusteredSources( bool enable = true )
+   {
+      m_allowClusteredSources = enable;
+   }
+
+   /*!
+    * Disables detection of clustered sources. See IsClusteredSourcesEnabled()
+    * for a description of this parameter.
+    */
+   void DisableClusteredSources( bool disable = true )
+   {
+      EnableClusteredSources( !disable );
+   }
+
+   /*!
+    * Size of the local maxima detection filter.
+    *
+    * This is the radius in pixels of a structuring element used to generate
+    * a local maxima map, when detection of clustered sources is disabled. The
+    * default value is 2, which applies a 5x5 filter.
+    */
+   int LocalDetectionFilterRadius() const
+   {
+      return m_localDetectionFilterRadius;
+   }
+
+   /*!
+    * Sets the radius in pixels of the local maxima detection filter. See
+    * LocalDetectionFilterRadius() for a description of this parameter.
+    */
+   void SetLocalDetectionFilterRadius( int n )
+   {
+      PCL_PRECONDITION( n >= 1 && n <= 5 )
+      m_localDetectionFilterRadius = Range( n, 1, 5 );
+   }
+
+   /*!
+    * Returns the local maxima detection limit.
+    *
+    * This parameter is a normalized pixel value in the [0,1] range. Structures
+    * with pixels above this value will be excluded for local maxima detection.
+    * The default value is 0.75.
+    */
+   float LocalMaximaDetectionLimit() const
+   {
+      return m_localMaximaDetectionLimit;
+   }
+
+   /*!
+    * Sets the local maxima detection limit. See LocalMaximaDetectionLimit()
+    * for a description of this parameter.
+    */
+   void SetLocalMaximaDetectionLimit( float v )
+   {
+      PCL_PRECONDITION( v >= 0 && v <= 1 )
+      m_localMaximaDetectionLimit = Range( v, 0.1F, 1.0F );
+   }
+
+   /*!
+    * Returns true iff detection of local maxima is enabled.
+    *
+    * When this parameter is enabled, each reported Star object will include
+    * the number of local maxima detected in the corresponding image structure,
+    * irrespective of the current state of the <em>detection of clustered
+    * sources</em> parameter (see IsClusteredSourcesEnabled()).
+    *
+    * When disabled, the number of local maxima will be zero for all reported
+    * Star objects, and the <em>detection of clustered sources</em> parameter
+    * will be implicitly disabled.
+    *
+    * The default value is true.
+    */
+   bool IsLocalMaximaDetectionEnabled() const
+   {
+      return !m_noLocalMaximaDetection;
+   }
+
+   /*!
+    * Enables local maxima detection. See IsLocalMaximaDetectionEnabled() for
+    * a description of this parameter.
+    */
+   void EnableLocalMaximaDetection( bool enable = true )
+   {
+      m_noLocalMaximaDetection = !enable;
+   }
+
+   /*!
+    * Disables local maxima detection. See IsLocalMaximaDetectionEnabled() for
+    * a description of this parameter.
+    */
+   void DisableLocalMaximaDetection( bool disable = true )
+   {
+      EnableLocalMaximaDetection( !disable );
    }
 
    /*!
@@ -637,10 +851,16 @@ protected:
          int          m_noiseLayers = 0;
          int          m_hotPixelFilterRadius = 1;
          int          m_noiseReductionFilterRadius = 0;
-         int          m_minStructureSize = 0;
-         float        m_sensitivity = 0.1F;
-         float        m_peakResponse = 0.8F;
-         float        m_maxDistortion = 0.5F;
+         int          m_minStructureSize = 1;
+         float        m_sensitivity = 0.5F;
+         float        m_peakResponse = 0.5F;
+         float        m_minSNR = 0.0F;
+         float        m_brightThreshold = 3.0F;
+         float        m_maxDistortion = 0.6F;
+         bool         m_allowClusteredSources = false;
+         int          m_localDetectionFilterRadius = 2;
+         float        m_localMaximaDetectionLimit = 0.75F;
+         bool         m_noLocalMaximaDetection = false;
          float        m_upperLimit = 1.0F;
          bool         m_invert = false;
          bool         m_fitPSF = false;
@@ -661,4 +881,4 @@ private:
 #endif   // __PCL_StarDetector_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/StarDetector.h - Released 2022-04-22T19:28:34Z
+// EOF pcl/StarDetector.h - Released 2022-05-17T17:14:45Z

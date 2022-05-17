@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// pcl/ElapsedTime.h - Released 2022-04-22T19:28:34Z
+// pcl/ElapsedTime.h - Released 2022-05-17T17:14:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -303,35 +303,41 @@ public:
     * The returned string has one of the following formats:
     *
     * <table border="1" cellpadding="4" cellspacing="0">
-    * <tr><td>(1) u.uuu us</td>   <td>u.uuu is the time t in microseconds if t < 0.001 s</td></tr>
-    * <tr><td>(2) m.mmm ms</td>   <td>m.mmm is the time t in milliseconds if t < 1.0 s</td></tr>
-    * <tr><td>(3) s.sss s</td>    <td>s.sss is the time t in seconds if t < 60.0 s</td></tr>
-    * <tr><td>(4) mm:ss.ss</td>   <td>Zero-padded minutes and seconds if t < 3600 s</td></tr>
-    * <tr><td>(5) hh:mm:ss.s</td> <td>Same as (4) with zero-padded hours if t < 86400 s</td></tr>
-    * <tr><td>(6) d:hh:mm:ss</td> <td>Same as (5) with elapsed days if t >= 86400</td></tr>
+    * <tr><td>(1) u.uuu us</td>   <td>u.uuu is the time t in microseconds if t &le; 0.001 s</td></tr>
+    * <tr><td>(2) m.mmm ms</td>   <td>m.mmm is the time t in milliseconds if t &le; 1.0 s</td></tr>
+    * <tr><td>(3) s.sss s</td>    <td>s.sss is the time t in seconds if t &le; 60.0 s</td></tr>
+    * <tr><td>(4) mm:ss.ss</td>   <td>Zero-padded minutes and seconds if t &le; 3600 s</td></tr>
+    * <tr><td>(5) hh:mm:ss.s</td> <td>Same as (4) with zero-padded hours if t &le; 86400 s</td></tr>
+    * <tr><td>(6) d:hh:mm:ss</td> <td>Same as (5) with elapsed days if t &ge; 86400</td></tr>
     * </table>
     *
     * If \a width > 0 and t &le; 60, the integer part of the represented
     * microseconds, milliseconds or seconds will be right-padded in a field of
     * \a width space characters.
     *
+    * The \a precision argument specifies the maximum number of decimal digits
+    * represented, and must be in the [0,3] range. Depending on the magnitude
+    * of the specified \a seconds argument, the precision will be reduced by
+    * one or two units automatically, with a minimum of zero digits. The
+    * default precision is 3 digits.
+    *
     * The output format is chosen automatically to generate the most
     * significant representation. If the specified interval is negative (toward
     * the past), a minus sign is prepended to the returned string.
     */
-   static IsoString ToIsoString( double seconds, int width = 0 )
+   static IsoString ToIsoString( double seconds, int width = 0, int precision = 3 )
    {
-      return ToString( seconds, width, (IsoString*)0 );
+      return ToString( seconds, width, precision, (IsoString*)0 );
    }
 
    /*!
     * Returns a Unicode string representation of the specified time interval
     * \a s in seconds. See ToIsoString( double ) for information on the
-    * representation format.
+    * representation format and parameters.
     */
-   static String ToString( double s, int width = 0 )
+   static String ToString( double s, int width = 0, int precision = 3 )
    {
-      return ToString( s, width, (String*)0 );
+      return ToString( s, width, precision, (String*)0 );
    }
 
    /*!
@@ -351,16 +357,35 @@ private:
    double m_start; // timestamp in seconds
 
    template <class S>
-   static S ToString( double s, int w, S* )
+   static S ToString( double s, int w, int p, S* )
    {
-      if ( s < 0.001 )
-         return S().Format( "%*.3f us", Max( 5, w+4 ), s*1000000 );
-
-      if ( s < 1 )
-         return S().Format( "%*.3f ms", Max( 5, w+4 ), s*1000 );
+      w = Max( 0, w );
+      p = Range( p, 0, 3 );
 
       if ( s < 60 )
-         return S().Format( "%*.3f s", Max( 5, w+4 ), s );
+      {
+         if ( w > 0 )
+            if ( p > 0 )
+               w = Max( p+2, w+p+1 );
+
+         const char* u;
+         if ( s < 0.001 )
+         {
+            s *= 1000000;
+            u = "us";
+         }
+         else if ( s < 1 )
+         {
+            s *= 1000;
+            u = "ms";
+         }
+         else
+            u = "s";
+
+         if ( w > 0 )
+            return S().Format( "%*.*f %s", w, p, s, u );
+         return S().Format( "%.*f %s", p, s, u );
+      }
 
       int sign = (s < 0) ? -1 : +1;
       s = Abs( s );
@@ -369,7 +394,8 @@ private:
       {
          int m = TruncInt( s/60 );
          s -= m*60;
-         return S().Format( "%02d:%05.2f", m*sign, s );
+         p = Max( 0, p-1 );
+         return S().Format( "%02d:%0*.*f", m*sign, (p > 0) ? 3+p : 2, p, s );
       }
 
       if ( s < 86400 )
@@ -378,7 +404,8 @@ private:
          s -= h*3600;
          int m = TruncInt( s/60 );
          s -= m*60;
-         return S().Format( "%02d:%02d:%04.1f", h*sign, m, s );
+         p = Max( 0, p-2 );
+         return S().Format( "%02d:%02d:%0*.*f", h*sign, m, (p > 0) ? 3+p : 2, p, s );
       }
 
       int d = TruncInt( s/86400 );
@@ -398,4 +425,4 @@ private:
 #endif   // __PCL_ElapsedTime_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ElapsedTime.h - Released 2022-04-22T19:28:34Z
+// EOF pcl/ElapsedTime.h - Released 2022-05-17T17:14:45Z

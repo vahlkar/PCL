@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.8.3
+// Standard SubframeSelector Process Module Version 1.8.5
 // ----------------------------------------------------------------------------
-// SubframeSelectorProcess.cpp - Released 2022-04-22T19:29:05Z
+// SubframeSelectorProcess.cpp - Released 2022-05-17T17:15:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -90,14 +90,14 @@ SubframeSelectorProcess::SubframeSelectorProcess()
    new SSStructureLayers( this );
    new SSNoiseLayers( this );
    new SSHotPixelFilterRadius( this );
-   new SSApplyHotPixelFilter( this );
    new SSNoiseReductionFilterRadius( this );
+   new SSMinStructureSize( this );
    new SSSensitivity( this );
    new SSPeakResponse( this );
+   new SSBrightThreshold( this );
    new SSMaxDistortion( this );
+   new SSAllowClusteredSources( this );
    new SSUpperLimit( this );
-   new SSBackgroundExpansion( this );
-   new SSXYStretch( this );
    new SSPSFFit( this );
    new SSPSFFitCircular( this );
    new SSMaxPSFFits( this );
@@ -191,7 +191,7 @@ IsoString SubframeSelectorProcess::Category() const
 
 uint32 SubframeSelectorProcess::Version() const
 {
-   return 0x140;
+   return 2;
 }
 
 // ----------------------------------------------------------------------------
@@ -243,4 +243,4 @@ ProcessImplementation* SubframeSelectorProcess::Clone( const ProcessImplementati
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorProcess.cpp - Released 2022-04-22T19:29:05Z
+// EOF SubframeSelectorProcess.cpp - Released 2022-05-17T17:15:11Z

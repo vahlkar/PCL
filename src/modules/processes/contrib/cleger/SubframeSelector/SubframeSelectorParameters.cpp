@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.8.3
+// Standard SubframeSelector Process Module Version 1.8.5
 // ----------------------------------------------------------------------------
-// SubframeSelectorParameters.cpp - Released 2022-04-22T19:29:05Z
+// SubframeSelectorParameters.cpp - Released 2022-05-17T17:15:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -79,14 +79,14 @@ SSTrimmingFactor*                   TheSSTrimmingFactorParameter = nullptr;
 SSStructureLayers*                  TheSSStructureLayersParameter = nullptr;
 SSNoiseLayers*                      TheSSNoiseLayersParameter = nullptr;
 SSHotPixelFilterRadius*             TheSSHotPixelFilterRadiusParameter = nullptr;
-SSApplyHotPixelFilter*              TheSSApplyHotPixelFilterParameter = nullptr;
 SSNoiseReductionFilterRadius*       TheSSNoiseReductionFilterRadiusParameter = nullptr;
+SSMinStructureSize*                 TheSSMinStructureSizeParameter = nullptr;
 SSSensitivity*                      TheSSSensitivityParameter = nullptr;
 SSPeakResponse*                     TheSSPeakResponseParameter = nullptr;
+SSBrightThreshold*                  TheSSBrightThresholdParameter = nullptr;
 SSMaxDistortion*                    TheSSMaxDistortionParameter = nullptr;
+SSAllowClusteredSources*            TheSSAllowClusteredSourcesParameter = nullptr;
 SSUpperLimit*                       TheSSUpperLimitParameter = nullptr;
-SSBackgroundExpansion*              TheSSBackgroundExpansionParameter = nullptr;
-SSXYStretch*                        TheSSXYStretchParameter = nullptr;
 SSPSFFit*                           TheSSPSFFitParameter = nullptr;
 SSPSFFitCircular*                   TheSSPSFFitCircularParameter = nullptr;
 SSMaxPSFFits*                       TheSSMaxPSFFitsParameter = nullptr;
@@ -673,9 +673,8 @@ double SSStructureLayers::MaximumValue() const
 
 IsoString SSStructureLayers::Tooltip() const
 {
-   return "<p>This parameter specifies the number of wavelet layers used for star detection. "
-          "With more wavelet layers larger stars and perhaps also some nonstellar objects will be detected. "
-          "Fewer wavelet layers favors detection of smaller, and hence more, stars.</p>";
+   return "<p>Number of wavelet layers used for structure detection.</p>"
+      "<p>With more wavelet layers, larger stars (and perhaps also some nonstellar objects) will be detected.</p>";
 }
 
 // ----------------------------------------------------------------------------
@@ -707,11 +706,10 @@ double SSNoiseLayers::MaximumValue() const
 
 IsoString SSNoiseLayers::Tooltip() const
 {
-   return "<p>This parameter specifies the number of wavelet layers used for noise reduction. "
-          "Noise reduction prevents detection of bright noise structures as false stars, "
-          "including hot pixels and cosmic rays.</p>"
-          "<p>This parameter can also be used to control the sizes of the smallest detected "
-          "stars (increase to exclude more stars).</p>";
+   return "<p>Number of wavelet layers used for noise reduction.</p>"
+      "<p>Noise reduction prevents detection of bright noise structures as false stars, including hot pixels and "
+      "cosmic rays. This parameter can also be used to control the sizes of the smallest detected stars (increase "
+      "to exclude more stars), although the <i>minimum structure size</i> parameter can be more efficient for this purpose.</p>";
 }
 
 // ----------------------------------------------------------------------------
@@ -743,37 +741,11 @@ double SSHotPixelFilterRadius::MaximumValue() const
 
 IsoString SSHotPixelFilterRadius::Tooltip() const
 {
-   return "<p>This parameter specifies the radius in pixels of median filter applied "
-          "before star detection to remove hot pixels.</p>"
-          "<p>To disable hot pixel removal, set this parameter to zero.</p>";
-}
-
-// ----------------------------------------------------------------------------
-
-SSApplyHotPixelFilter::SSApplyHotPixelFilter( MetaProcess* T ) : MetaBoolean( T )
-{
-   TheSSApplyHotPixelFilterParameter = this;
-}
-
-IsoString SSApplyHotPixelFilter::Id() const
-{
-   return "applyHotPixelFilter";
-}
-
-bool SSApplyHotPixelFilter::DefaultValue() const
-{
-   return false;
-}
-
-IsoString SSApplyHotPixelFilter::Tooltip() const
-{
-   return "<p>Whether the hot pixel filter removal should be applied to the image used "
-          "for star detection, or only to the working image used to build the structure map.</p>"
-          "<p>By setting this parameter to true, the detection algorithm is completely "
-          "robust to hot pixels (of sizes not larger than hotPixelFilterRadius), but "
-          "it is also less sensitive, so less stars will in general be detected. "
-          "With the default value of false, some hot pixels may be wrongly detected "
-          "as stars but the number of true stars detected will generally be larger.</p>";
+   return "<p>Size of the hot pixel removal filter.</p>"
+      "<p>This is the radius in pixels of a median filter applied by the star detector before the structure "
+      "detection phase. A median filter is very efficient to remove <i>hot pixels</i>. Hot pixels will be "
+      "identified as false stars, and if present in large amounts, can lead to wrong PSF parameters.</p>"
+      "<p>To disable hot pixel removal, set this parameter to zero.</p>";
 }
 
 // ----------------------------------------------------------------------------
@@ -805,10 +777,53 @@ double SSNoiseReductionFilterRadius::MaximumValue() const
 
 IsoString SSNoiseReductionFilterRadius::Tooltip() const
 {
-   return "<p>Half size in pixels of a Gaussian convolution filter applied for noise "
-          "reduction. Useful for star detection in low-SNR images.</p>"
-          "<p>Setting the value of this parameter > 0 implies "
-          "Hot Pixel Filter To Detection Image.</p>";
+   return "<p>Size of the noise reduction filter.</p>"
+      "<p>This is the radius in pixels of a Gaussian convolution filter applied to the working image used for "
+      "calculation of star positions during the star detection phase. Use it only for very low SNR images, where "
+      "the star detector cannot find reliable stars with default parameters.</p>"
+      "<p>Be aware that noise reduction will modify star profiles and hence the way star positions are calculated, "
+      "resulting in a less accurate PSF fitting. Under extreme low-SNR conditions, however, this is probably "
+      "better than working with the actual data anyway.</p>"
+      "<p>To disable noise reduction, set this parameter to zero.</p>";
+}
+
+// ----------------------------------------------------------------------------
+
+SSMinStructureSize::SSMinStructureSize( MetaProcess* p ) : MetaInt32( p )
+{
+   TheSSMinStructureSizeParameter = this;
+}
+
+IsoString SSMinStructureSize::Id() const
+{
+   return "minStructureSize";
+}
+
+double SSMinStructureSize::DefaultValue() const
+{
+   return 0;
+}
+
+double SSMinStructureSize::MinimumValue() const
+{
+   return 0;
+}
+
+double SSMinStructureSize::MaximumValue() const
+{
+   return 999999;
+}
+
+IsoString SSMinStructureSize::Tooltip() const
+{
+   return "<p>Minimum size of a detectable star structure in square pixels.</p>"
+      "<p>This parameter can be used to prevent detection of small and bright image artifacts as stars. "
+      "This can be useful to work with uncalibrated or wrongly calibrated data, especially demosaiced CFA frames "
+      "where hot pixels have generated large bright artifacts that cannot be removed with a median filter "
+      "(i.e., the <i>Hot pixel removal</i> parameter).</p>"
+      "<p>Changing the default zero value of this parameter should not be necessary with correctly acquired and "
+      "calibrated data. It may help, however, when working with poor quality data such as poorly tracked, poorly focused, "
+      "wrongly calibrated, low-SNR raw frames, for which our algorithms and tools have not been designed specifically.</p>";
 }
 
 // ----------------------------------------------------------------------------
@@ -825,31 +840,37 @@ IsoString SSSensitivity::Id() const
 
 int SSSensitivity::Precision() const
 {
-   return 4;
+   return 2;
 }
 
 double SSSensitivity::DefaultValue() const
 {
-   return 0.1;
+   return 0.5;
 }
 
 double SSSensitivity::MinimumValue() const
 {
-   return 0.0;
+   return 0;
 }
 
 double SSSensitivity::MaximumValue() const
 {
-   return 1.0;
+   return 1;
 }
 
 IsoString SSSensitivity::Tooltip() const
 {
-   return "<p>The sensitivity of the star detection algorithm is measured with respect to the "
-          "local background of each detected star.</p>"
-          "<p>Given a star with estimated brightness "
-          "s and local background b, sensitivity is the minimum value of (s - b)/b "
-          "necessary to trigger star detection.</p>";
+   return "<p>Star detection sensitivity.</p>"
+      "<p>Internally, the sensitivity of the star detection algorithm is expressed in signal-to-noise ratio units with "
+      "respect to the evaluated dispersion of local background pixels for each detected structure. Given a source with "
+      "estimated brightness <i>s</i>, local background <i>b</i> and local background dispersion <i>n</i>, sensitivity "
+      "is the minimum value of (<i>s</i> - <i>b</i>)/<i>n</i> necessary to trigger star detection.</p>"
+      "<p>To isolate this interface from the internal implementation, this parameter is normalized to the [0,1] range, "
+      "where 0 and 1 represent minimum and maximum sensitivity, respectively. This abstraction allows us to change the "
+      "star detection engine without breaking dependent tools and processes.</p>"
+      "<p>Increase this parameter to favor detection of fainter stars. Decrease it to restrict detection to brighter "
+      "stars. The default value is 0.5. In general, you shouldn't need to change the default value of this parameter "
+      "under normal working conditions.</p>";
 }
 
 // ----------------------------------------------------------------------------
@@ -866,30 +887,80 @@ IsoString SSPeakResponse::Id() const
 
 int SSPeakResponse::Precision() const
 {
-   return 4;
+   return 2;
 }
 
 double SSPeakResponse::DefaultValue() const
 {
-   return 0.8;
+   return 0.5;
 }
 
 double SSPeakResponse::MinimumValue() const
 {
-   return 0.0;
+   return 0;
 }
 
 double SSPeakResponse::MaximumValue() const
 {
-   return 1.0;
+   return 1;
 }
 
 IsoString SSPeakResponse::Tooltip() const
 {
-   return "<p>If you decrease this parameter, stars will need to have more prominent "
-          "peaks to be detected by the star detection algorithm. By increasing this "
-          "parameter, the star detection algorithm will be more permissive with "
-          "relatively flat stars.</p>";
+   return "<p>Peak sensitivity of the star detection device.</p>"
+      "<p>Internally, the peak response property of the star detection algorithm is expressed in kurtosis units. For "
+      "each detected structure, kurtosis is evaluated from all significant pixels with values greater than the estimated "
+      "mean local background. Peak response is the minimum value of kurtosis necessary to trigger star detection.</p>"
+      "<p>To isolate this interface from the internal implementation, this parameter is normalized to the [0,1] range, "
+      "where 0 and 1 represent minimum and maximum peak response, respectively. This abstraction allows us to change the "
+      "star detection engine without breaking dependent tools and processes.</p>"
+      "<p>If you decrease this parameter, stars will need to have stronger (or more prominent) peaks to be detected. This "
+      "is useful to prevent detection of saturated stars, as well as small nonstellar features. By increasing this "
+      "parameter, the star detection algorithm will be more sensitive to <i>peakedness</i>, and hence more tolerant with "
+      "relatively flat image features. The default value is 0.5. In general, you shouldn't need to change the default "
+      "value of this parameter under normal working conditions.</p>";
+}
+
+// ----------------------------------------------------------------------------
+
+SSBrightThreshold::SSBrightThreshold( MetaProcess* p ) : MetaFloat( p )
+{
+   TheSSBrightThresholdParameter = this;
+}
+
+IsoString SSBrightThreshold::Id() const
+{
+   return "brightThreshold";
+}
+
+int SSBrightThreshold::Precision() const
+{
+   return 2;
+}
+
+double SSBrightThreshold::DefaultValue() const
+{
+   return 3.0;
+}
+
+double SSBrightThreshold::MinimumValue() const
+{
+   return 1;
+}
+
+double SSBrightThreshold::MaximumValue() const
+{
+   return 100;
+}
+
+IsoString SSBrightThreshold::Tooltip() const
+{
+   return "<p>Bright star detection threshold</p>"
+      "<p>Sources with measured SNR above this parameter in units of the minimum detection level (as defined by the "
+      "sensitivity parameter) will always be detected, even if their profiles are too flat for the current peak response. "
+      "This parameter allows us to force inclusion of relatively bright stars irrespective of their shapes, and also "
+      "provides finer control on the amount of detectable stars, along with the sensitivity parameter. The default value "
+      "is 3.0.</p>";
 }
 
 // ----------------------------------------------------------------------------
@@ -906,30 +977,65 @@ IsoString SSMaxDistortion::Id() const
 
 int SSMaxDistortion::Precision() const
 {
-   return 4;
+   return 2;
 }
 
 double SSMaxDistortion::DefaultValue() const
 {
-   return 0.5;
+   return 0.6;
 }
 
 double SSMaxDistortion::MinimumValue() const
 {
-   return 0.0;
+   return 0;
 }
 
 double SSMaxDistortion::MaximumValue() const
 {
-   return 1.0;
+   return 1;
 }
 
 IsoString SSMaxDistortion::Tooltip() const
 {
-   return "<p>Star distortion is the fractional area of the star's bounding box "
-          "covered by the star. The distortion of a perfectly circular star "
-          "is about 0.75 (actually, pi/4). Decrease this parameter to detect "
-          "stars with larger elongation.</p>";
+   return "<p>Maximum star distortion.</p>"
+      "<p>Internally, star distortion is evaluated in units of coverage of a square region circumscribed to each detected "
+      "structure. The coverage of a perfectly circular star is &pi;/4 (about 0.8). Lower values denote elongated or "
+      "irregular sources.</p>"
+      "<p>To isolate this interface from the internal implementation, this parameter is normalized to the [0,1] range, "
+      "where 0 and 1 represent minimum and maximum distortion, respectively. This abstraction allows us to change the "
+      "star detection engine without breaking dependent tools and processes.</p>"
+      "<p>Use this parameter, if necessary, to control inclusion of elongated stars, complex clusters of stars, and "
+      "nonstellar image features. The default value is 0.6. In general, you shouldn't need to change the default value of "
+      "this parameter under normal working conditions.</p>";
+}
+
+// ----------------------------------------------------------------------------
+
+SSAllowClusteredSources::SSAllowClusteredSources( MetaProcess* p ) : MetaBoolean( p )
+{
+   TheSSAllowClusteredSourcesParameter = this;
+}
+
+IsoString SSAllowClusteredSources::Id() const
+{
+   return "allowClusteredSources";
+}
+
+bool SSAllowClusteredSources::DefaultValue() const
+{
+   return false;
+}
+
+IsoString SSAllowClusteredSources::Tooltip() const
+{
+   return "<p>If this parameter is disabled, a local maxima map will be generated to "
+      "identify and prevent detection of multiple sources that are too close to be separated as individual structures, such "
+      "as double and multiple stars. In general, sources with several local maxima pose difficulties for the determination of "
+      "accurate star positions.</p>"
+      "<p>If this parameter is enabled, non-separable multiple sources will be freely detectable as single objects. This can "
+      "be necessary in special cases where extreme high noise levels and/or distortion of stellar images caused by optical "
+      "aberrations limit the number of detectable sources excessively, preventing image registration.</p>"
+      "<p>The default state is disabled.</p>";
 }
 
 // ----------------------------------------------------------------------------
@@ -966,81 +1072,9 @@ double SSUpperLimit::MaximumValue() const
 
 IsoString SSUpperLimit::Tooltip() const
 {
-   return "<p>Stars with peak values greater than this value won't be detected.</p>";
-}
-
-// ----------------------------------------------------------------------------
-
-SSBackgroundExpansion::SSBackgroundExpansion( MetaProcess* P ) : MetaInt32( P )
-{
-   TheSSBackgroundExpansionParameter = this;
-}
-
-IsoString SSBackgroundExpansion::Id() const
-{
-   return "backgroundExpansion";
-}
-
-double SSBackgroundExpansion::DefaultValue() const
-{
-   return 3;
-}
-
-double SSBackgroundExpansion::MinimumValue() const
-{
-   return 1;
-}
-
-double SSBackgroundExpansion::MaximumValue() const
-{
-   return 10;
-}
-
-IsoString SSBackgroundExpansion::Tooltip() const
-{
-   return "<p>Local background is evaluated for each star on an inflated rectangular region "
-          "around the star detection structure. "
-          "Background Expansion is the inflation distance in pixels.</p>";
-}
-
-// ----------------------------------------------------------------------------
-
-SSXYStretch::SSXYStretch( MetaProcess* P ) : MetaFloat( P )
-{
-   TheSSXYStretchParameter = this;
-}
-
-IsoString SSXYStretch::Id() const
-{
-   return "xyStretch";
-}
-
-int SSXYStretch::Precision() const
-{
-   return 4;
-}
-
-double SSXYStretch::DefaultValue() const
-{
-   return 1.5;
-}
-
-double SSXYStretch::MinimumValue() const
-{
-   return 0.0;
-}
-
-double SSXYStretch::MaximumValue() const
-{
-   return 6.0;
-}
-
-IsoString SSXYStretch::Tooltip() const
-{
-   return "<p>Stretch factor for the barycenter search algorithm, in sigma units. "
-          "Increase it to make the algorithm more robust to nearby structures, such "
-          "as multiple/crowded stars and small nebular features. However, too large "
-          "of a stretch factor will make the algorithm less accurate.</p>";
+   return "<p>Upper star detection limit.</p>"
+      "<p>Stars with peak values larger than this value won't be detected. This can be useful to reject all stars "
+      "brighter than a fixed level systematically. To effectively disable this feature, set this parameter to one.</p>";
 }
 
 // ----------------------------------------------------------------------------
@@ -3040,4 +3074,4 @@ bool SSMeasurementUnused01::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorParameters.cpp - Released 2022-04-22T19:29:05Z
+// EOF SubframeSelectorParameters.cpp - Released 2022-05-17T17:15:11Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.4.9
+// Standard ImageIntegration Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// ImageIntegrationParameters.cpp - Released 2022-04-22T19:29:05Z
+// ImageIntegrationParameters.cpp - Released 2022-05-17T17:15:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -67,6 +67,7 @@ IICombination*                          TheIICombinationParameter = nullptr;
 IIWeightMode*                           TheIIWeightModeParameter = nullptr;
 IIWeightKeyword*                        TheIIWeightKeywordParameter = nullptr;
 IIWeightScale*                          TheIIWeightScaleParameter = nullptr;
+IIMinWeight*                            TheIIMinWeightParameter = nullptr;
 IICSVWeights*                           TheIICSVWeightsParameter = nullptr;
 IIAdaptiveGridSize*                     TheIIAdaptiveGridSizeParameter = nullptr;
 IIAdaptiveNoScale*                      TheIIAdaptiveNoScaleParameter = nullptr;
@@ -457,6 +458,38 @@ int IIWeightScale::ElementValue( size_type i ) const
 size_type IIWeightScale::DefaultValueIndex() const
 {
    return size_type( Default );
+}
+
+// ----------------------------------------------------------------------------
+
+IIMinWeight::IIMinWeight( MetaProcess* P ) : MetaFloat( P )
+{
+   TheIIMinWeightParameter = this;
+}
+
+IsoString IIMinWeight::Id() const
+{
+   return "minWeight";
+}
+
+int IIMinWeight::Precision() const
+{
+   return 6;
+}
+
+double IIMinWeight::DefaultValue() const
+{
+   return 0.005;
+}
+
+double IIMinWeight::MinimumValue() const
+{
+   return 0;
+}
+
+double IIMinWeight::MaximumValue() const
+{
+   return 1;
 }
 
 // ----------------------------------------------------------------------------
@@ -3871,4 +3904,4 @@ bool IIImageRejectedHighB::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationParameters.cpp - Released 2022-04-22T19:29:05Z
+// EOF ImageIntegrationParameters.cpp - Released 2022-05-17T17:15:11Z

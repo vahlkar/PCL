@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.28
+// /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.4.9
+// Standard ImageIntegration Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// IntegrationFile.h - Released 2022-04-22T19:29:05Z
+// IntegrationFile.h - Released 2022-05-17T17:15:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -86,6 +86,11 @@ public:
    typedef ImageIntegrationInstance::signal_estimates signal_estimates;
 
    static void OpenFiles( const ImageIntegrationInstance& );
+
+   bool IsValid() const
+   {
+      return m_valid;
+   }
 
    String Path() const
    {
@@ -368,6 +373,7 @@ private:
    FITSKeywordArray                m_keywords;
    IntegrationMetadata             m_metadata;
    const ImageIntegrationInstance* m_instance = nullptr;
+   bool                            m_valid = true;
 
    static file_list                s_files;
    static Rect                     s_roi;
@@ -488,4 +494,4 @@ private:
 #endif   // __IntegrationFile_h
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationFile.h - Released 2022-04-22T19:29:05Z
+// EOF IntegrationFile.h - Released 2022-05-17T17:15:11Z
