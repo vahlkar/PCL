@@ -75,6 +75,13 @@ LocalNormalizationInterface::LocalNormalizationInterface()
    : m_instance( TheLocalNormalizationProcess )
 {
    TheLocalNormalizationInterface = this;
+
+   /*
+    * The auto save geometry feature is of no good to interfaces that include
+    * both auto-expanding controls (e.g. TreeBox) and collapsible sections
+    * (e.g. SectionBar).
+    */
+   DisableAutoSaveGeometry();
 }
 
 // ----------------------------------------------------------------------------
@@ -137,6 +144,11 @@ bool LocalNormalizationInterface::Launch( const MetaProcess& P, const ProcessImp
       GUI = new GUIData( *this );
       SetWindowTitle( "LocalNormalization" );
       UpdateControls();
+
+      // Restore position only
+      if ( !RestoreGeometry() )
+         SetDefaultPosition();
+      AdjustToContents();
    }
 
    dynamic = false;
@@ -249,9 +261,9 @@ void LocalNormalizationInterface::UpdateOutlierRejectionControls()
    GUI->NoiseReductionFilterRadius_SpinBox.SetValue( m_instance.p_noiseReductionFilterRadius );
    GUI->LowClippingLevel_NumericEdit.SetValue( m_instance.p_lowClippingLevel );
    GUI->HighClippingLevel_NumericControl.SetValue( m_instance.p_highClippingLevel );
-   GUI->BackgroundRejectionLimit_NumericControl.SetValue( m_instance.p_backgroundRejectionLimit );
    GUI->ReferenceRejectionThreshold_NumericControl.SetValue( m_instance.p_referenceRejectionThreshold );
    GUI->TargetRejectionThreshold_NumericControl.SetValue( m_instance.p_targetRejectionThreshold );
+   GUI->ReferenceRejection_CheckBox.SetChecked( m_instance.p_referenceRejection );
    GUI->ShowRejectionMaps_CheckBox.SetChecked( m_instance.p_showRejectionMaps );
 }
 
@@ -517,6 +529,10 @@ void LocalNormalizationInterface::e_Click( Button& sender, bool checked )
    {
       m_instance.p_showBackgroundModels = checked;
    }
+   else if ( sender == GUI->ReferenceRejection_CheckBox )
+   {
+      m_instance.p_referenceRejection = checked;
+   }
    else if ( sender == GUI->ShowRejectionMaps_CheckBox )
    {
       m_instance.p_showRejectionMaps = checked;
@@ -629,8 +645,6 @@ void LocalNormalizationInterface::e_ValueUpdated( NumericEdit& sender, double va
       m_instance.p_lowClippingLevel = value;
    else if ( sender == GUI->HighClippingLevel_NumericControl )
       m_instance.p_highClippingLevel = value;
-   else if ( sender == GUI->BackgroundRejectionLimit_NumericControl )
-      m_instance.p_backgroundRejectionLimit = value;
    else if ( sender == GUI->ReferenceRejectionThreshold_NumericControl )
       m_instance.p_referenceRejectionThreshold = value;
    else if ( sender == GUI->TargetRejectionThreshold_NumericControl )
@@ -1019,7 +1033,6 @@ LocalNormalizationInterface::GUIData::GUIData( LocalNormalizationInterface& w )
    GeneralParameters_Sizer.Add( GlobalLocationNormalization_Sizer );
    GeneralParameters_Sizer.Add( GenerateNormalizationData_Sizer );
    GeneralParameters_Sizer.Add( ShowBackgroundModels_Sizer );
-   GeneralParameters_Sizer.Add( ShowRejectionMaps_Sizer );
 //    GeneralParameters_Sizer.Add( PlotNormalizationFunctions_Sizer );
 
    //
@@ -1121,54 +1134,46 @@ LocalNormalizationInterface::GUIData::GUIData( LocalNormalizationInterface& w )
 
    //
 
-   BackgroundRejectionLimit_NumericControl.label.SetText( "Background limit:" );
-   BackgroundRejectionLimit_NumericControl.label.SetFixedWidth( labelWidth1 );
-   BackgroundRejectionLimit_NumericControl.slider.SetRange( 1, 500 );
-   BackgroundRejectionLimit_NumericControl.SetReal();
-   BackgroundRejectionLimit_NumericControl.SetRange( TheLNBackgroundRejectionLimitParameter->MinimumValue(), TheLNBackgroundRejectionLimitParameter->MaximumValue() );
-   BackgroundRejectionLimit_NumericControl.SetPrecision( TheLNBackgroundRejectionLimitParameter->Precision() );
-   BackgroundRejectionLimit_NumericControl.edit.SetFixedWidth( editWidth1 );
-   BackgroundRejectionLimit_NumericControl.SetToolTip( "<p>LocalNormalization computes an initial, approximate model of the "
-      "<i>local background</i> for the reference and target images. This model is used, among other tasks, for classification "
-      "of small-scale image structures to detect potential outliers.</p>"
-      "<p>This parameter is the minimum relative difference with respect to the approximate local background, in absolute value, "
-      "for a structure to be considered as significant.</p>"
-      "<p>Increase this parameter to force a stronger outlier rejection. Decrease it to relax the outlier detection algorithm. "
-      "The default value of 0.05 is a good option in most cases. For difficult cases where the images are very noisy and/or "
-      "there are large outliers such as plane trails, you can use the <i>show rejection maps</i> option to evaluate outlier "
-      "rejection with different values of normalization rejection parameters.</p>" );
-   BackgroundRejectionLimit_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&LocalNormalizationInterface::e_ValueUpdated, w );
-
-   //
-
    ReferenceRejectionThreshold_NumericControl.label.SetText( "Reference threshold:" );
    ReferenceRejectionThreshold_NumericControl.label.SetFixedWidth( labelWidth1 );
-   ReferenceRejectionThreshold_NumericControl.slider.SetRange( 1, 500 );
+   ReferenceRejectionThreshold_NumericControl.slider.SetRange( 0, 200 );
    ReferenceRejectionThreshold_NumericControl.SetReal();
    ReferenceRejectionThreshold_NumericControl.SetRange( TheLNReferenceRejectionThresholdParameter->MinimumValue(), TheLNReferenceRejectionThresholdParameter->MaximumValue() );
    ReferenceRejectionThreshold_NumericControl.SetPrecision( TheLNReferenceRejectionThresholdParameter->Precision() );
    ReferenceRejectionThreshold_NumericControl.edit.SetFixedWidth( editWidth1 );
-   ReferenceRejectionThreshold_NumericControl.SetToolTip( "<p>This is the minimum relative difference with respect to the local "
-      "background, in absolute value, for a structure to be classified as a potential outlier in the reference image. See the "
-      "<i>background limit</i> parameter for more information on the local background and its role for local normalization.</p>"
-      "<p>Increase this parameter to relax the outlier rejection algorithm with respect to the reference image. Decrease it to "
-      "strengthen outlier rejection. The default value is 0.5.</p>" );
+   ReferenceRejectionThreshold_NumericControl.SetToolTip( "<p>Reference image: maximum difference in units of the standard "
+      "deviation of the noise over the local background for detection of outlier structures. Increasing this parameter will "
+      "tend to relax outlier detection. The default value is 3 sigmas.</p>" );
    ReferenceRejectionThreshold_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&LocalNormalizationInterface::e_ValueUpdated, w );
 
    //
 
    TargetRejectionThreshold_NumericControl.label.SetText( "Target threshold:" );
    TargetRejectionThreshold_NumericControl.label.SetFixedWidth( labelWidth1 );
-   TargetRejectionThreshold_NumericControl.slider.SetRange( 1, 500 );
+   TargetRejectionThreshold_NumericControl.slider.SetRange( 0, 200 );
    TargetRejectionThreshold_NumericControl.SetReal();
    TargetRejectionThreshold_NumericControl.SetRange( TheLNTargetRejectionThresholdParameter->MinimumValue(), TheLNTargetRejectionThresholdParameter->MaximumValue() );
    TargetRejectionThreshold_NumericControl.SetPrecision( TheLNTargetRejectionThresholdParameter->Precision() );
    TargetRejectionThreshold_NumericControl.edit.SetFixedWidth( editWidth1 );
-   TargetRejectionThreshold_NumericControl.SetToolTip( "<p>This is the minimum relative difference with respect to the local "
-      "background, in absolute value, for a structure to be considered as a potential outlier in the target image. See the "
-      "<i>reference threshold</i> and <i>background limit</i> parameters for more information on outlier rejection and its role "
-      "for local normalization.</p>" );
+   TargetRejectionThreshold_NumericControl.SetToolTip( "<p>Target image: minimum difference in units of the standard "
+      "deviation of the noise over the local background for detection of outlier structures. Increasing this parameter will "
+      "tend to relax outlier detection. The default value is 3.2 sigmas.</p>" );
    TargetRejectionThreshold_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&LocalNormalizationInterface::e_ValueUpdated, w );
+
+   //
+
+   ReferenceRejection_CheckBox.SetText( "Reference rejection" );
+   ReferenceRejection_CheckBox.SetToolTip( "<p>Perform outlier rejection for the normalization reference image.</p>"
+      "<p>If this option is enabled, the target image (either the target view or the first target file available) will be used "
+      "to perform rejection of outlier pixels on the reference image. This is only necessary when the reference image can "
+      "contain relatively large outlier structures, such as big plane trails.</p>"
+      "<p>This option should normally be disabled when the normalization reference image is of good quality and does not have "
+      "significant outliers.</p>" );
+   ReferenceRejection_CheckBox.OnClick( (Button::click_event_handler)&LocalNormalizationInterface::e_Click, w );
+
+   ReferenceRejection_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   ReferenceRejection_Sizer.Add( ReferenceRejection_CheckBox );
+   ReferenceRejection_Sizer.AddStretch();
 
    //
 
@@ -1191,9 +1196,9 @@ LocalNormalizationInterface::GUIData::GUIData( LocalNormalizationInterface& w )
    OutlierRejection_Sizer.Add( NoiseReductionFilterRadius_Sizer );
    OutlierRejection_Sizer.Add( LowClippingLevel_NumericEdit );
    OutlierRejection_Sizer.Add( HighClippingLevel_NumericControl );
-   OutlierRejection_Sizer.Add( BackgroundRejectionLimit_NumericControl );
    OutlierRejection_Sizer.Add( ReferenceRejectionThreshold_NumericControl );
    OutlierRejection_Sizer.Add( TargetRejectionThreshold_NumericControl );
+   OutlierRejection_Sizer.Add( ReferenceRejection_Sizer );
    OutlierRejection_Sizer.Add( ShowRejectionMaps_Sizer );
 
    OutlierRejection_Control.SetSizer( OutlierRejection_Sizer );

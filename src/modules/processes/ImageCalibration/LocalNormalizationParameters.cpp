@@ -60,12 +60,12 @@ namespace pcl
 LNScale*                         TheLNScaleParameter = nullptr;
 LNNoScale*                       TheLNNoScaleParameter = nullptr;
 LNGlobalLocationNormalization*   TheLNGlobalLocationNormalizationParameter = nullptr;
-LNRejection*                     TheLNRejectionParameter = nullptr;
 LNTruncate*                      TheLNTruncateParameter = nullptr;
 LNBackgroundSamplingDelta*       TheLNBackgroundSamplingDeltaParameter = nullptr;
+LNRejection*                     TheLNRejectionParameter = nullptr;
+LNReferenceRejection*            TheLNReferenceRejectionParameter = nullptr;
 LNLowClippingLevel*              TheLNLowClippingLevelParameter = nullptr;
 LNHighClippingLevel*             TheLNHighClippingLevelParameter = nullptr;
-LNBackgroundRejectionLimit*      TheLNBackgroundRejectionLimitParameter = nullptr;
 LNReferenceRejectionThreshold*   TheLNReferenceRejectionThresholdParameter = nullptr;
 LNTargetRejectionThreshold*      TheLNTargetRejectionThresholdParameter = nullptr;
 LNHotPixelFilterRadius*          TheLNHotPixelFilterRadiusParameter = nullptr;
@@ -189,23 +189,6 @@ bool LNGlobalLocationNormalization::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-LNRejection::LNRejection( MetaProcess* P ) : MetaBoolean( P )
-{
-   TheLNRejectionParameter = this;
-}
-
-IsoString LNRejection::Id() const
-{
-   return "rejection";
-}
-
-bool LNRejection::DefaultValue() const
-{
-   return true;
-}
-
-// ----------------------------------------------------------------------------
-
 LNTruncate::LNTruncate( MetaProcess* P ) : MetaBoolean( P )
 {
    TheLNTruncateParameter = this;
@@ -246,6 +229,40 @@ double LNBackgroundSamplingDelta::MaximumValue() const
 double LNBackgroundSamplingDelta::DefaultValue() const
 {
    return 32;
+}
+
+// ----------------------------------------------------------------------------
+
+LNRejection::LNRejection( MetaProcess* P ) : MetaBoolean( P )
+{
+   TheLNRejectionParameter = this;
+}
+
+IsoString LNRejection::Id() const
+{
+   return "rejection";
+}
+
+bool LNRejection::DefaultValue() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+LNReferenceRejection::LNReferenceRejection( MetaProcess* P ) : MetaBoolean( P )
+{
+   TheLNReferenceRejectionParameter = this;
+}
+
+IsoString LNReferenceRejection::Id() const
+{
+   return "referenceRejection";
+}
+
+bool LNReferenceRejection::DefaultValue() const
+{
+   return false;
 }
 
 // ----------------------------------------------------------------------------
@@ -314,38 +331,6 @@ double LNHighClippingLevel::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-LNBackgroundRejectionLimit::LNBackgroundRejectionLimit( MetaProcess* P ) : MetaFloat( P )
-{
-   TheLNBackgroundRejectionLimitParameter = this;
-}
-
-IsoString LNBackgroundRejectionLimit::Id() const
-{
-   return "backgroundRejectionLimit";
-}
-
-int LNBackgroundRejectionLimit::Precision() const
-{
-   return 3;
-}
-
-double LNBackgroundRejectionLimit::DefaultValue() const
-{
-   return 0.050;
-}
-
-double LNBackgroundRejectionLimit::MinimumValue() const
-{
-   return 0.001;
-}
-
-double LNBackgroundRejectionLimit::MaximumValue() const
-{
-   return 0.500;
-}
-
-// ----------------------------------------------------------------------------
-
 LNReferenceRejectionThreshold::LNReferenceRejectionThreshold( MetaProcess* P ) : MetaFloat( P )
 {
    TheLNReferenceRejectionThresholdParameter = this;
@@ -358,12 +343,12 @@ IsoString LNReferenceRejectionThreshold::Id() const
 
 int LNReferenceRejectionThreshold::Precision() const
 {
-   return 3;
+   return 2;
 }
 
 double LNReferenceRejectionThreshold::DefaultValue() const
 {
-   return 0.500;
+   return 3;
 }
 
 double LNReferenceRejectionThreshold::MinimumValue() const
@@ -373,7 +358,7 @@ double LNReferenceRejectionThreshold::MinimumValue() const
 
 double LNReferenceRejectionThreshold::MaximumValue() const
 {
-   return 1;
+   return 10;
 }
 
 // ----------------------------------------------------------------------------
@@ -390,12 +375,12 @@ IsoString LNTargetRejectionThreshold::Id() const
 
 int LNTargetRejectionThreshold::Precision() const
 {
-   return 3;
+   return 2;
 }
 
 double LNTargetRejectionThreshold::DefaultValue() const
 {
-   return 0.500;
+   return 3.2;
 }
 
 double LNTargetRejectionThreshold::MinimumValue() const
@@ -405,7 +390,7 @@ double LNTargetRejectionThreshold::MinimumValue() const
 
 double LNTargetRejectionThreshold::MaximumValue() const
 {
-   return 1;
+   return 10;
 }
 
 // ----------------------------------------------------------------------------

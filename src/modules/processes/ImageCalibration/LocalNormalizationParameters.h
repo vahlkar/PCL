@@ -107,20 +107,6 @@ extern LNGlobalLocationNormalization* TheLNGlobalLocationNormalizationParameter;
 
 // ----------------------------------------------------------------------------
 
-class LNRejection : public MetaBoolean
-{
-public:
-
-   LNRejection( MetaProcess* );
-
-   IsoString Id() const override;
-   bool DefaultValue() const override;
-};
-
-extern LNRejection* TheLNRejectionParameter;
-
-// ----------------------------------------------------------------------------
-
 class LNTruncate : public MetaBoolean
 {
 public:
@@ -148,6 +134,34 @@ public:
 };
 
 extern LNBackgroundSamplingDelta* TheLNBackgroundSamplingDeltaParameter;
+
+// ----------------------------------------------------------------------------
+
+class LNRejection : public MetaBoolean
+{
+public:
+
+   LNRejection( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern LNRejection* TheLNRejectionParameter;
+
+// ----------------------------------------------------------------------------
+
+class LNReferenceRejection : public MetaBoolean
+{
+public:
+
+   LNReferenceRejection( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern LNReferenceRejection* TheLNReferenceRejectionParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -182,23 +196,6 @@ public:
 };
 
 extern LNHighClippingLevel* TheLNHighClippingLevelParameter;
-
-// ----------------------------------------------------------------------------
-
-class LNBackgroundRejectionLimit : public MetaFloat
-{
-public:
-
-   LNBackgroundRejectionLimit( MetaProcess* );
-
-   IsoString Id() const override;
-   int Precision() const override;
-   double DefaultValue() const override;
-   double MinimumValue() const override;
-   double MaximumValue() const override;
-};
-
-extern LNBackgroundRejectionLimit* TheLNBackgroundRejectionLimitParameter;
 
 // ----------------------------------------------------------------------------
 

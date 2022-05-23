@@ -69,7 +69,6 @@ public:
    IsoString Id() const override;
    IsoString Category() const override;
    uint32 Version() const override;
-   String Description() const override;
    String IconImageSVGFile() const override;
    ProcessInterface* DefaultInterface() const override;
    ProcessImplementation* Create() const override;

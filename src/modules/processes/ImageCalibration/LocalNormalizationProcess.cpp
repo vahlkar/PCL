@@ -71,12 +71,12 @@ LocalNormalizationProcess::LocalNormalizationProcess()
    new LNScale( this );
    new LNNoScale( this );
    new LNGlobalLocationNormalization( this );
-   new LNRejection( this );
    new LNTruncate( this );
    new LNBackgroundSamplingDelta( this );
+   new LNRejection( this );
+   new LNReferenceRejection( this );
    new LNLowClippingLevel( this );
    new LNHighClippingLevel( this );
-   new LNBackgroundRejectionLimit( this );
    new LNReferenceRejectionThreshold( this );
    new LNTargetRejectionThreshold( this );
    new LNHotPixelFilterRadius( this );
@@ -156,14 +156,7 @@ IsoString LocalNormalizationProcess::Category() const
 
 uint32 LocalNormalizationProcess::Version() const
 {
-   return 0x100;
-}
-
-// ----------------------------------------------------------------------------
-
-String LocalNormalizationProcess::Description() const
-{
-   return "";
+   return 0x101; // 2022 MAY 23 | core 1.8.9-1
 }
 
 // ----------------------------------------------------------------------------

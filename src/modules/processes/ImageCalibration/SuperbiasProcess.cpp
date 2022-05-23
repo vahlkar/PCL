@@ -101,13 +101,6 @@ uint32 SuperbiasProcess::Version() const
 
 // ----------------------------------------------------------------------------
 
-String SuperbiasProcess::Description() const
-{
-   return "";
-}
-
-// ----------------------------------------------------------------------------
-
 String SuperbiasProcess::IconImageSVGFile() const
 {
    return "@module_icons_dir/Superbias.svg";

@@ -205,13 +205,6 @@ uint32 ImageCalibrationProcess::Version() const
 
 // ----------------------------------------------------------------------------
 
-String ImageCalibrationProcess::Description() const
-{
-   return "";
-}
-
-// ----------------------------------------------------------------------------
-
 String ImageCalibrationProcess::IconImageSVGFile() const
 {
    return "@module_icons_dir/ImageCalibration.svg";

@@ -76,9 +76,11 @@ ImageCalibrationInterface::ImageCalibrationInterface()
 {
    TheImageCalibrationInterface = this;
 
-   // The auto save geometry feature is of no good to interfaces that include
-   // both auto-expanding controls (e.g. TreeBox) and collapsible sections
-   // (e.g. SectionBar).
+   /*
+    * The auto save geometry feature is of no good to interfaces that include
+    * both auto-expanding controls (e.g. TreeBox) and collapsible sections
+    * (e.g. SectionBar).
+    */
    DisableAutoSaveGeometry();
 }
 

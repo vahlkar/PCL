@@ -102,16 +102,6 @@ uint32 DefectMapProcess::Version() const
 
 // ----------------------------------------------------------------------------
 
-String DefectMapProcess::Description() const
-{
-   return
-   "<p>DefectMap uses a <i>defect map image</i> to find defective pixels, "
-   "then it replaces all defective pixels with data computed from neighbor pixels.</p>"
-   "<p>In a defect map image, defective pixels are signaled by zero pixel values.</p>";
-}
-
-// ----------------------------------------------------------------------------
-
 String DefectMapProcess::IconImageSVGFile() const
 {
    return "@module_icons_dir/DefectMap.svg";

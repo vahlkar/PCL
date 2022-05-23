@@ -135,9 +135,10 @@ private:
             SpinBox           NoiseReductionFilterRadius_SpinBox;
          NumericEdit       LowClippingLevel_NumericEdit;
          NumericControl    HighClippingLevel_NumericControl;
-         NumericControl    BackgroundRejectionLimit_NumericControl;
          NumericControl    ReferenceRejectionThreshold_NumericControl;
          NumericControl    TargetRejectionThreshold_NumericControl;
+         HorizontalSizer   ReferenceRejection_Sizer;
+            CheckBox          ReferenceRejection_CheckBox;
          HorizontalSizer   ShowRejectionMaps_Sizer;
             CheckBox          ShowRejectionMaps_CheckBox;
 

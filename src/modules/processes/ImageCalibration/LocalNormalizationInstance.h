@@ -105,14 +105,15 @@ private:
    int32       p_scale;   // working scale in pixels
    pcl_bool    p_noScale; // only compute offset component with constant scale = 1
    pcl_bool    p_globalLocationNormalization; // compute global location normalization parameters
-   pcl_bool    p_rejection;
    pcl_bool    p_truncate; // truncate normalized images - not exposed
    int32       p_backgroundSamplingDelta;
+   pcl_bool    p_rejection;
+   pcl_bool    p_referenceRejection; // perform outlier rejection for the reference image
    double      p_lowClippingLevel;
    float       p_highClippingLevel;
-   float       p_backgroundRejectionLimit;
    float       p_referenceRejectionThreshold;
    float       p_targetRejectionThreshold;
+
    int32       p_hotPixelFilterRadius;
    int32       p_noiseReductionFilterRadius;
    float       p_modelScalingFactor;

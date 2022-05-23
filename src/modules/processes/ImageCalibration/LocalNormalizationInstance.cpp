@@ -90,17 +90,33 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
+/*
+ * B3-Spline wavelet scaling function.
+ */
+static const float s_B3[] =
+{
+   0.003906F, 0.015625F, 0.023438F, 0.015625F, 0.003906F,
+   0.015625F, 0.062500F, 0.093750F, 0.062500F, 0.015625F,
+   0.023438F, 0.093750F, 0.140625F, 0.093750F, 0.023438F,
+   0.015625F, 0.062500F, 0.093750F, 0.062500F, 0.015625F,
+   0.003906F, 0.015625F, 0.023438F, 0.015625F, 0.003906F
+};
+static const float s_B3v[] = { 0.0625F, 0.25F, 0.375F, 0.25F, 0.0625F };
+static const float s_B3k[] = { 0.8907F, 0.2007F, 0.0856F };
+
+// ----------------------------------------------------------------------------
+
 LocalNormalizationInstance::LocalNormalizationInstance( const MetaProcess* P )
    : ProcessImplementation( P )
    , p_scale( TheLNScaleParameter->DefaultValue() )
    , p_noScale( TheLNNoScaleParameter->DefaultValue() )
    , p_globalLocationNormalization( TheLNGlobalLocationNormalizationParameter->DefaultValue() )
-   , p_rejection( TheLNRejectionParameter->DefaultValue() )
    , p_truncate( TheLNTruncateParameter->DefaultValue() )
    , p_backgroundSamplingDelta( TheLNBackgroundSamplingDeltaParameter->DefaultValue() )
+   , p_rejection( TheLNRejectionParameter->DefaultValue() )
+   , p_referenceRejection( TheLNReferenceRejectionParameter->DefaultValue() )
    , p_lowClippingLevel( TheLNLowClippingLevelParameter->DefaultValue() )
    , p_highClippingLevel( TheLNHighClippingLevelParameter->DefaultValue() )
-   , p_backgroundRejectionLimit( TheLNBackgroundRejectionLimitParameter->DefaultValue() )
    , p_referenceRejectionThreshold( TheLNReferenceRejectionThresholdParameter->DefaultValue() )
    , p_targetRejectionThreshold( TheLNTargetRejectionThresholdParameter->DefaultValue() )
    , p_hotPixelFilterRadius( TheLNHotPixelFilterRadiusParameter->DefaultValue() )
@@ -170,14 +186,30 @@ void LocalNormalizationInstance::Assign( const ProcessImplementation& p )
       p_scale                         = x->p_scale;
       p_noScale                       = x->p_noScale;
       p_globalLocationNormalization   = x->p_globalLocationNormalization;
-      p_rejection                     = x->p_rejection;
       p_truncate                      = x->p_truncate;
       p_backgroundSamplingDelta       = x->p_backgroundSamplingDelta;
+      p_rejection                     = x->p_rejection;
+      p_referenceRejection            = x->p_referenceRejection;
       p_lowClippingLevel              = x->p_lowClippingLevel;
       p_highClippingLevel             = x->p_highClippingLevel;
-      p_backgroundRejectionLimit      = x->p_backgroundRejectionLimit;
-      p_referenceRejectionThreshold   = x->p_referenceRejectionThreshold;
-      p_targetRejectionThreshold      = x->p_targetRejectionThreshold;
+
+      /*
+       * N.B. Some outlier rejection parameters have changed their meanings and
+       * valid ranges after a redesign of the outlier rejection algorithms.
+       * Replace these parameters with default values for existing instances
+       * created by older versions.
+       */
+      if ( p.Version() < 0x101 )
+      {
+         p_referenceRejectionThreshold = TheLNReferenceRejectionThresholdParameter->DefaultValue();
+         p_targetRejectionThreshold    = TheLNTargetRejectionThresholdParameter->DefaultValue();
+      }
+      else
+      {
+         p_referenceRejectionThreshold = x->p_referenceRejectionThreshold;
+         p_targetRejectionThreshold    = x->p_targetRejectionThreshold;
+      }
+
       p_hotPixelFilterRadius          = x->p_hotPixelFilterRadius;
       p_noiseReductionFilterRadius    = x->p_noiseReductionFilterRadius;
       p_modelScalingFactor            = x->p_modelScalingFactor;
@@ -467,7 +499,7 @@ public:
 
    template <class P>
    void ProcessReferenceImage( Image& R, Image& RB, UInt8Image& RM, Vector& Rc, Array<PSFScaleEstimator>& S,
-                               const GenericImage<P>& referenceImage,
+                               const GenericImage<P>& referenceImage, ImageVariant& rejectionImage,
                                bool showImages )
    {
       Console console;
@@ -520,15 +552,69 @@ public:
       m_monitor.Initialize( "Pixel rejection" );
       m_monitor.DisableInitialization();
 
+      UInt8Image Rmap;
+      Rmap.AllocateData( R.Width(), R.Height(), R.NumberOfChannels(), R.ColorSpace() ).Fill( uint8( 0 ) );
+
       /*
        * Rejection of insignificant and saturated pixel samples.
        */
       for ( int c = 0; c < R.NumberOfChannels(); ++c )
       {
-         for ( Image::sample_iterator r( R, c ); r; ++r )
+         UInt8Image::sample_iterator rm( Rmap, c );
+         for ( Image::sample_iterator r( R, c ); r; ++r, ++rm )
+         {
             if ( *r <= m_instance.p_lowClippingLevel || *r >= m_instance.p_highClippingLevel )
                *r = 0;
+            if ( *r == 0 )
+               *rm = uint8( 0xff );
+         }
          ++m_monitor;
+      }
+
+      if ( m_instance.p_rejection )
+      {
+         /*
+          * Outlier rejection for the reference image. If this option is
+          * enabled then we have received a reference to the selected target
+          * image for comparison as the rejectionImage function argument.
+          */
+         if ( m_instance.p_referenceRejection )
+         {
+            Image& T = static_cast<Image&>( *rejectionImage );
+            for ( int c = 0; c < T.NumberOfChannels(); ++c )
+            {
+               for ( Image::sample_iterator t( T, c ); t; ++t )
+                  if ( *t <= m_instance.p_lowClippingLevel || *t >= m_instance.p_highClippingLevel )
+                     *t = 0;
+               ++m_monitor;
+            }
+
+            background_models Rz = FixZero( R );
+            background_models Tz = FixZero( T );
+
+            for ( int c = 0; c < R.NumberOfChannels(); ++c )
+            {
+               float rs = m_instance.p_targetRejectionThreshold * Noise( R, c );
+               float ts = m_instance.p_referenceRejectionThreshold * Noise( T, c );
+               UInt8Image::sample_iterator rm( Rmap, c );
+               Image::sample_iterator r( R, c );
+               Image::const_sample_iterator t( T, c );
+               for ( int y = 0; y < R.Height(); ++y )
+                  for ( int x = 0; x < R.Width(); ++x, ++r, ++rm, ++t )
+                     if ( *t < Tz[c]( x, y ) + ts )
+                        if ( *r > Rz[c]( x, y ) + rs )
+                        {
+                           *r = 0;
+                           *rm = uint8( 0xff );
+                        }
+
+               ++m_monitor;
+            }
+         }
+
+         if ( showImages )
+            if ( m_instance.p_showRejectionMaps )
+               CreateImageWindow( Rmap, "LN_rmap_r" );
       }
 
       Image R0 = R;
@@ -536,22 +622,6 @@ public:
       FixZero( R );
 
       m_monitor.Complete();
-
-      if ( showImages )
-         if ( m_instance.p_showRejectionMaps )
-            if ( m_instance.p_rejection )
-            {
-               UInt8Image Rmap;
-               Rmap.AllocateData( R.Width(), R.Height(), R.NumberOfChannels(), R.ColorSpace() ).Fill( uint8( 0 ) );
-               for ( int c = 0; c < R.NumberOfChannels(); ++c )
-               {
-                  UInt8Image::sample_iterator rm( Rmap, c );
-                  for ( Image::const_sample_iterator r0( R0, c ); r0; ++r0, ++rm )
-                     if ( *r0 == 0 )
-                        *rm = uint8( 0xff );
-               }
-               CreateImageWindow( Rmap, "LN_rmap_r" );
-            }
 
       m_monitor.EnableInitialization();
       m_monitor.Initialize( "Local background" );
@@ -604,21 +674,21 @@ public:
    }
 
    void ProcessReferenceImage( Image& R, Image& RB, UInt8Image& RM, Vector& Rc, Array<PSFScaleEstimator>& S,
-                               const ImageVariant& referenceImage,
+                               const ImageVariant& referenceImage, ImageVariant& rejectionImage,
                                bool showImages )
    {
       if ( referenceImage.IsFloatSample() )
          switch ( referenceImage.BitsPerSample() )
          {
-         case 32: ProcessReferenceImage( R, RB, RM, Rc, S, static_cast<const Image&>( *referenceImage ), showImages ); break;
-         case 64: ProcessReferenceImage( R, RB, RM, Rc, S, static_cast<const DImage&>( *referenceImage ), showImages ); break;
+         case 32: ProcessReferenceImage( R, RB, RM, Rc, S, static_cast<const Image&>( *referenceImage ), rejectionImage, showImages ); break;
+         case 64: ProcessReferenceImage( R, RB, RM, Rc, S, static_cast<const DImage&>( *referenceImage ), rejectionImage, showImages ); break;
          }
       else
          switch ( referenceImage.BitsPerSample() )
          {
-         case  8: ProcessReferenceImage( R, RB, RM, Rc, S, static_cast<const UInt8Image&>( *referenceImage ), showImages ); break;
-         case 16: ProcessReferenceImage( R, RB, RM, Rc, S, static_cast<const UInt16Image&>( *referenceImage ), showImages ); break;
-         case 32: ProcessReferenceImage( R, RB, RM, Rc, S, static_cast<const UInt32Image&>( *referenceImage ), showImages ); break;
+         case  8: ProcessReferenceImage( R, RB, RM, Rc, S, static_cast<const UInt8Image&>( *referenceImage ), rejectionImage, showImages ); break;
+         case 16: ProcessReferenceImage( R, RB, RM, Rc, S, static_cast<const UInt16Image&>( *referenceImage ), rejectionImage, showImages ); break;
+         case 32: ProcessReferenceImage( R, RB, RM, Rc, S, static_cast<const UInt32Image&>( *referenceImage ), rejectionImage, showImages ); break;
          }
    }
 
@@ -810,7 +880,24 @@ private:
 
    // -------------------------------------------------------------------------
 
-   void Reject( Image& T, UInt8Image& Tmap )
+   float Noise( const Image& image, int c )
+   {
+      ATrousWaveletTransform::WaveletScalingFunction H;
+      if ( SeparableConvolution::FasterThanNonseparableFilterSize( Thread::NumberOfThreads( PCL_MAX_PROCESSORS ) ) > 5 )
+         H.Set( KernelFilter( s_B3, 5 ) );
+      else
+         H.Set( SeparableFilter( s_B3v, s_B3v, 5 ) );
+      ATrousWaveletTransform W( H, 2 );
+      image.PushSelections();
+      image.SelectChannel( c );
+      W << image; // 2*N
+      image.PopSelections();
+      return W.NoiseKSigma( 1/*j*/, 3/*k*/, 0.01F/*eps*/, 10/*nit*/ )/s_B3k[1];
+   }
+
+   // -------------------------------------------------------------------------
+
+   void Reject( Image& T, UInt8Image& Tmap, const Image& R, const Image& RB )
    {
       /*
        * Setup rejection map.
@@ -875,41 +962,21 @@ private:
       {
          for ( int c = 0; c < T.NumberOfChannels(); ++c )
          {
-            UInt8Image Tr( T.Width(), T.Height() );
-            {
-               Image::const_sample_iterator r( m_R, c );
-               Image::const_sample_iterator rb( m_RB, c );
-               Image::const_sample_iterator t( T, c );
-               UInt8Image::sample_iterator tr( Tr );
-               for ( int y = 0; y < T.Height(); ++y )
-                  for ( int x = 0; x < T.Width(); ++x, ++r, ++rb, ++t, ++tr )
-                  {
-                     double tb = Tz[c]( x, y );
-                     double rk = Abs( *r - *rb ) / *rb;
-                     double tk = Abs( *t - tb ) / tb;
-                     *tr = rk < m_instance.p_backgroundRejectionLimit && tk > m_instance.p_targetRejectionThreshold;
-                  }
-            }
-
-            ++m_monitor;
-
-            {
-               MorphologicalTransformation M( DilationFilter(), BoxStructure( 3 ) );
-               M >> Tr;
-            }
-
-            ++m_monitor;
-
-            {
-               UInt8Image::sample_iterator tm( Tmap, c );
-               UInt8Image::const_sample_iterator tr( Tr );
-               for ( Image::sample_iterator t( T, c ); t; ++t, ++tr, ++tm )
-                  if ( *tr )
-                  {
-                     *t = 0;
-                     *tm = uint8( 0xff );
-                  }
-            }
+            float rs = m_instance.p_referenceRejectionThreshold * Noise( R, c );
+            float ts = m_instance.p_targetRejectionThreshold * Noise( T, c );
+            Image::const_sample_iterator r( R, c );
+            Image::const_sample_iterator rb( RB, c );
+            Image::sample_iterator t( T, c );
+            UInt8Image::sample_iterator tm( Tmap, c );
+            for ( int y = 0; y < T.Height(); ++y )
+               for ( int x = 0; x < T.Width(); ++x, ++r, ++rb, ++t, ++tm )
+                  if ( *t != 0 && *r != 0 )
+                     if ( *r < *rb + rs )
+                        if ( *t > Tz[c]( x, y ) + ts )
+                        {
+                           *t = 0;
+                           *tm = uint8( 0xff );
+                        }
 
             ++m_monitor;
          }
@@ -1020,21 +1087,11 @@ private:
 
    UInt8Image StructureMap( const Image& image, const Image& background ) // 2*N
    {
-      static const float B3[] =
-      {
-         0.003906F, 0.015625F, 0.023438F, 0.015625F, 0.003906F,
-         0.015625F, 0.062500F, 0.093750F, 0.062500F, 0.015625F,
-         0.023438F, 0.093750F, 0.140625F, 0.093750F, 0.023438F,
-         0.015625F, 0.062500F, 0.093750F, 0.062500F, 0.015625F,
-         0.003906F, 0.015625F, 0.023438F, 0.015625F, 0.003906F
-      };
-      static const float B3v[] = { 0.0625F, 0.25F, 0.375F, 0.25F, 0.0625F };
-
       ATrousWaveletTransform::WaveletScalingFunction H;
       if ( SeparableConvolution::FasterThanNonseparableFilterSize( m_maxThreads ) > 5 )
-         H.Set( KernelFilter( B3, 5 ) );
+         H.Set( KernelFilter( s_B3, 5 ) );
       else
-         H.Set( SeparableFilter( B3v, B3v, 5 ) );
+         H.Set( SeparableFilter( s_B3v, s_B3v, 5 ) );
 
       UInt8Image map( image.Width(), image.Height(), image.ColorSpace() );
 
@@ -1322,7 +1379,8 @@ private:
       m_monitor.DisableInitialization();
 
       UInt8Image Tmap;
-      Reject( T, Tmap );
+      Reject( T, Tmap, m_R, m_RB );
+      //Reject( T, Tmap );
 
       m_monitor.Complete();
 
@@ -2071,11 +2129,11 @@ bool LocalNormalizationInstance::CanExecuteOn( const View& view, String& whyNot 
 
 // ----------------------------------------------------------------------------
 
-static void LoadReferenceImage( ImageVariant& image, const String& path, const String& inputHints )
+static void LoadImage( ImageVariant& image, const String& path, const String& inputHints, const String& whatImage )
 {
    Console console;
 
-   console.WriteLn( "<end><cbr>Loading reference image: <raw>" + path + "</raw>" );
+   console.WriteLn( "<end><cbr>Loading " + whatImage + " image: <raw>" + path + "</raw>" );
 
    FileFormat format( File::ExtractExtension( path ), true/*read*/, false/*write*/ );
    FileFormatInstance file( format );
@@ -2086,9 +2144,9 @@ static void LoadReferenceImage( ImageVariant& image, const String& path, const S
       throw CaughtException();
 
    if ( images.IsEmpty() )
-      throw Error( "Empty reference image: " + path );
+      throw Error( "Empty image: " + path );
    if ( images.Length() > 1 )
-      console.NoteLn( String().Format( "<end><cbr>* Ignoring %u additional image(s) in reference file.", images.Length()-1 ) );
+      console.NoteLn( String().Format( "<end><cbr>* Ignoring %u additional image(s) in file.", images.Length()-1 ) );
 
    image.CreateSharedImage( images[0].options.ieeefpSampleFormat,
                             false/*isComplex*/,
@@ -2145,7 +2203,7 @@ bool LocalNormalizationInstance::ExecuteOn( View& view )
       referenceImage = referenceView.Image();
    }
    else
-      LoadReferenceImage( referenceImage, p_referencePathOrViewId, p_inputHints );
+      LoadImage( referenceImage, p_referencePathOrViewId, p_inputHints, "reference" );
 
    if ( Min( referenceImage.Width(), referenceImage.Height() ) < 2*p_scale )
       throw Error( "Insufficient image dimensions for the selected normalization scale: " + p_referencePathOrViewId );
@@ -2169,7 +2227,13 @@ bool LocalNormalizationInstance::ExecuteOn( View& view )
    UInt8Image RM;
    Vector Rc;
    Array<PSFScaleEstimator> S;
-   LocalNormalizationThread( *this, R, RB, RM, Rc, S ).ProcessReferenceImage( R, RB, RM, Rc, S, referenceImage, true/*showImages*/ );
+   ImageVariant rejectionImage;
+   if ( p_rejection && p_referenceRejection )
+      rejectionImage.CreateFloatImage().CopyImage( targetImage );
+   LocalNormalizationThread( *this, R, RB, RM, Rc, S ).ProcessReferenceImage( R, RB, RM, Rc, S, referenceImage, rejectionImage, true/*showImages*/ );
+   if ( p_rejection && p_referenceRejection )
+      rejectionImage.FreeImage();
+
    LocalNormalizationThread( *this, targetImage, R, RB, RM, Rc, S ).Run();
 
    return true;
@@ -2278,7 +2342,7 @@ bool LocalNormalizationInstance::ExecuteGlobal()
          referenceImage = referenceView.Image();
       }
       else
-         LoadReferenceImage( referenceImage, p_referencePathOrViewId, p_inputHints );
+         LoadImage( referenceImage, p_referencePathOrViewId, p_inputHints, "reference" );
 
       if ( Min( referenceImage.Width(), referenceImage.Height() ) < 2*p_scale )
          throw Error( "Insufficient image dimensions for the selected normalization scale: " + p_referencePathOrViewId );
@@ -2290,7 +2354,24 @@ bool LocalNormalizationInstance::ExecuteGlobal()
       UInt8Image RM;
       Vector Rc;
       Array<PSFScaleEstimator> S;
-      LocalNormalizationThread( *this, R, RB, RM, Rc, S ).ProcessReferenceImage( R, RB, RM, Rc, S, referenceImage, false/*showImages*/ );
+      ImageVariant rejectionImage;
+      if ( p_rejection && p_referenceRejection )
+      {
+         String path;
+         for ( size_type i = 0; i < p_targets.Length(); ++i )
+            if ( p_targets[i].enabled )
+               if ( p_referenceIsView || !File::SameFile( p_targets[i].path, p_referencePathOrViewId ) )
+               {
+                  path = p_targets[i].path;
+                  break;
+               }
+         if ( path.IsEmpty() )
+            throw Error( "No file available for reference outlier rejection" );
+         LoadImage( rejectionImage, path, p_inputHints, "reference outlier rejection" );
+      }
+      LocalNormalizationThread( *this, R, RB, RM, Rc, S ).ProcessReferenceImage( R, RB, RM, Rc, S, referenceImage, rejectionImage, false/*showImages*/ );
+      if ( p_rejection && p_referenceRejection )
+         rejectionImage.FreeImage();
 
       console.WriteLn( String().Format( "<end><cbr><br>Normalization of %u target files.", p_targets.Length() ) );
 
@@ -2552,18 +2633,18 @@ void* LocalNormalizationInstance::LockParameter( const MetaParameter* p, size_ty
       return &p_noScale;
    if ( p == TheLNGlobalLocationNormalizationParameter )
       return &p_globalLocationNormalization;
-   if ( p == TheLNRejectionParameter )
-      return &p_rejection;
    if ( p == TheLNTruncateParameter )
       return &p_truncate;
    if ( p == TheLNBackgroundSamplingDeltaParameter )
       return &p_backgroundSamplingDelta;
+   if ( p == TheLNRejectionParameter )
+      return &p_rejection;
+   if ( p == TheLNReferenceRejectionParameter )
+      return &p_referenceRejection;
    if ( p == TheLNLowClippingLevelParameter )
       return &p_lowClippingLevel;
    if ( p == TheLNHighClippingLevelParameter )
       return &p_highClippingLevel;
-   if ( p == TheLNBackgroundRejectionLimitParameter )
-      return &p_backgroundRejectionLimit;
    if ( p == TheLNReferenceRejectionThresholdParameter )
       return &p_referenceRejectionThreshold;
    if ( p == TheLNTargetRejectionThresholdParameter )
