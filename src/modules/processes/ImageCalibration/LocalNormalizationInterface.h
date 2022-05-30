@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.9.4
+// Standard ImageCalibration Process Module Version 1.9.6
 // ----------------------------------------------------------------------------
-// LocalNormalizationInterface.h - Released 2022-05-17T17:15:11Z
+// LocalNormalizationInterface.h - Released 2022-05-25T08:24:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -158,6 +158,7 @@ private:
          NumericControl    SaturationThreshold_NumericControl;
          HorizontalSizer   SaturationRelative_Sizer;
             CheckBox          SaturationRelative_CheckBox;
+         NumericControl    RejectionLimit_NumericControl;
          Control           PSFScaleEvaluation_Control;
          VerticalSizer     PSFScaleEvaluation_Sizer;
             HorizontalSizer   PSFNoiseLayers_Sizer;
@@ -173,7 +174,6 @@ private:
                Label             PSFNoiseReductionFilterRadius_Label;
                SpinBox           PSFNoiseReductionFilterRadius_SpinBox;
             NumericEdit       PSFMinSNR_NumericEdit;
-            NumericControl    PSFRejectionLimit_NumericControl;
             HorizontalSizer   PSFType_Sizer;
                Label             PSFType_Label;
                ComboBox          PSFType_ComboBox;
@@ -181,6 +181,8 @@ private:
             HorizontalSizer   PSFMaxStars_Sizer;
                Label             PSFMaxStars_Label;
                SpinBox           PSFMaxStars_SpinBox;
+         HorizontalSizer   PSFAllowClusteredSources_Sizer;
+            CheckBox          PSFAllowClusteredSources_CheckBox;
          HorizontalSizer   ShowStructureMaps_Sizer;
             CheckBox          ShowStructureMaps_CheckBox;
 
@@ -268,4 +270,4 @@ PCL_END_LOCAL
 #endif   // __LocalNormalizationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationInterface.h - Released 2022-05-17T17:15:11Z
+// EOF LocalNormalizationInterface.h - Released 2022-05-25T08:24:23Z

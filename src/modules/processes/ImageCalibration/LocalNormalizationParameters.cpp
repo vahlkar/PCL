@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.9.4
+// Standard ImageCalibration Process Module Version 1.9.6
 // ----------------------------------------------------------------------------
-// LocalNormalizationParameters.cpp - Released 2022-05-17T17:15:11Z
+// LocalNormalizationParameters.cpp - Released 2022-05-25T08:24:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -76,12 +76,13 @@ LNLocalScaleCorrections*         TheLNLocalScaleCorrectionsParameter = nullptr;
 LNStructureLayers*               TheLNStructureLayersParameter = nullptr;
 LNSaturationThreshold*           TheLNSaturationThresholdParameter = nullptr;
 LNSaturationRelative*            TheLNSaturationRelativeParameter = nullptr;
+LNRejectionLimit*                TheLNRejectionLimitParameter = nullptr;
 LNPSFNoiseLayers*                TheLNPSFNoiseLayersParameter = nullptr;
 LNPSFHotPixelFilterRadius*       TheLNPSFHotPixelFilterRadiusParameter = nullptr;
 LNPSFNoiseReductionFilterRadius* TheLNPSFNoiseReductionFilterRadiusParameter = nullptr;
 LNPSFMinStructureSize*           TheLNPSFMinStructureSizeParameter = nullptr;
 LNPSFMinSNR*                     TheLNPSFMinSNRParameter = nullptr;
-LNPSFRejectionLimit*             TheLNPSFRejectionLimitParameter = nullptr;
+LNPSFAllowClusteredSources*      TheLNPSFAllowClusteredSourcesParameter = nullptr;
 LNPSFType*                       TheLNPSFTypeParameter = nullptr;
 LNPSFGrowth*                     TheLNPSFGrowthParameter = nullptr;
 LNPSFMaxStars*                   TheLNPSFMaxStarsParameter = nullptr;
@@ -751,32 +752,54 @@ double LNPSFMinSNR::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-LNPSFRejectionLimit::LNPSFRejectionLimit( MetaProcess* P ) : MetaFloat( P )
+LNPSFAllowClusteredSources::LNPSFAllowClusteredSources( MetaProcess* p ) : MetaBoolean( p )
 {
-   TheLNPSFRejectionLimitParameter = this;
+   TheLNPSFAllowClusteredSourcesParameter = this;
 }
 
-IsoString LNPSFRejectionLimit::Id() const
+IsoString LNPSFAllowClusteredSources::Id() const
+{
+   return "psfAllowClusteredSources";
+}
+
+bool LNPSFAllowClusteredSources::DefaultValue() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+LNRejectionLimit::LNRejectionLimit( MetaProcess* P ) : MetaFloat( P )
+{
+   TheLNRejectionLimitParameter = this;
+}
+
+IsoString LNRejectionLimit::Id() const
+{
+   return "rejectionLimit";
+}
+
+IsoString LNRejectionLimit::Aliases() const
 {
    return "psfRejectionLimit";
 }
 
-int LNPSFRejectionLimit::Precision() const
+int LNRejectionLimit::Precision() const
 {
    return 2;
 }
 
-double LNPSFRejectionLimit::DefaultValue() const
+double LNRejectionLimit::DefaultValue() const
 {
    return 0.3;
 }
 
-double LNPSFRejectionLimit::MinimumValue() const
+double LNRejectionLimit::MinimumValue() const
 {
    return 0;
 }
 
-double LNPSFRejectionLimit::MaximumValue() const
+double LNRejectionLimit::MaximumValue() const
 {
    return 1;
 }
@@ -1703,4 +1726,4 @@ bool LNValid::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationParameters.cpp - Released 2022-05-17T17:15:11Z
+// EOF LocalNormalizationParameters.cpp - Released 2022-05-25T08:24:23Z

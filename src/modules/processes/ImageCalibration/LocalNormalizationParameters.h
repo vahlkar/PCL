@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.9.4
+// Standard ImageCalibration Process Module Version 1.9.6
 // ----------------------------------------------------------------------------
-// LocalNormalizationParameters.h - Released 2022-05-17T17:15:11Z
+// LocalNormalizationParameters.h - Released 2022-05-25T08:24:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -365,6 +365,24 @@ extern LNSaturationRelative* TheLNSaturationRelativeParameter;
 
 // ----------------------------------------------------------------------------
 
+class LNRejectionLimit : public MetaFloat
+{
+public:
+
+   LNRejectionLimit( MetaProcess* );
+
+   IsoString Id() const override;
+   IsoString Aliases() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern LNRejectionLimit* TheLNRejectionLimitParameter;
+
+// ----------------------------------------------------------------------------
+
 class LNPSFNoiseLayers : public MetaInt32
 {
 public:
@@ -444,22 +462,20 @@ public:
 
 extern LNPSFMinSNR* TheLNPSFMinSNRParameter;
 
+
 // ----------------------------------------------------------------------------
 
-class LNPSFRejectionLimit : public MetaFloat
+class LNPSFAllowClusteredSources : public MetaBoolean
 {
 public:
 
-   LNPSFRejectionLimit( MetaProcess* );
+   LNPSFAllowClusteredSources( MetaProcess* );
 
    IsoString Id() const override;
-   int Precision() const override;
-   double DefaultValue() const override;
-   double MinimumValue() const override;
-   double MaximumValue() const override;
+   bool DefaultValue() const override;
 };
 
-extern LNPSFRejectionLimit* TheLNPSFRejectionLimitParameter;
+extern LNPSFAllowClusteredSources* TheLNPSFAllowClusteredSourcesParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -1140,4 +1156,4 @@ PCL_END_LOCAL
 #endif   // __LocalNormalizationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationParameters.h - Released 2022-05-17T17:15:11Z
+// EOF LocalNormalizationParameters.h - Released 2022-05-25T08:24:23Z

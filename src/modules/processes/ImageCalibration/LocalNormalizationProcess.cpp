@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.9.4
+// Standard ImageCalibration Process Module Version 1.9.6
 // ----------------------------------------------------------------------------
-// LocalNormalizationProcess.cpp - Released 2022-05-17T17:15:11Z
+// LocalNormalizationProcess.cpp - Released 2022-05-25T08:24:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -87,12 +87,13 @@ LocalNormalizationProcess::LocalNormalizationProcess()
    new LNStructureLayers( this );
    new LNSaturationThreshold( this );
    new LNSaturationRelative( this );
+   new LNRejectionLimit( this );
    new LNPSFNoiseLayers( this );
    new LNPSFHotPixelFilterRadius( this );
    new LNPSFNoiseReductionFilterRadius( this );
    new LNPSFMinStructureSize( this );
    new LNPSFMinSNR( this );
-   new LNPSFRejectionLimit( this );
+   new LNPSFAllowClusteredSources( this );
    new LNPSFType( this );
    new LNPSFGrowth( this );
    new LNPSFMaxStars( this );
@@ -192,4 +193,4 @@ ProcessImplementation* LocalNormalizationProcess::Clone( const ProcessImplementa
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationProcess.cpp - Released 2022-05-17T17:15:11Z
+// EOF LocalNormalizationProcess.cpp - Released 2022-05-25T08:24:23Z

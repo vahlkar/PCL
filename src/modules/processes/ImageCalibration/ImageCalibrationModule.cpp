@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.9.4
+// Standard ImageCalibration Process Module Version 1.9.6
 // ----------------------------------------------------------------------------
-// ImageCalibrationModule.cpp - Released 2022-05-17T17:15:11Z
+// ImageCalibrationModule.cpp - Released 2022-05-25T08:24:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -52,13 +52,13 @@
 
 #define MODULE_VERSION_MAJOR     1
 #define MODULE_VERSION_MINOR     9
-#define MODULE_VERSION_REVISION  5
+#define MODULE_VERSION_REVISION  6
 #define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2022
 #define MODULE_RELEASE_MONTH     5
-#define MODULE_RELEASE_DAY       23
+#define MODULE_RELEASE_DAY       25
 
 #include "DefectMapInterface.h"
 #include "DefectMapProcess.h"
@@ -185,4 +185,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationModule.cpp - Released 2022-05-17T17:15:11Z
+// EOF ImageCalibrationModule.cpp - Released 2022-05-25T08:24:23Z

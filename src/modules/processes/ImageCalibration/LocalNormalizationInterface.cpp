@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.9.4
+// Standard ImageCalibration Process Module Version 1.9.6
 // ----------------------------------------------------------------------------
-// LocalNormalizationInterface.cpp - Released 2022-05-17T17:15:11Z
+// LocalNormalizationInterface.cpp - Released 2022-05-25T08:24:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -286,15 +286,17 @@ void LocalNormalizationInterface::UpdateScaleEvaluationControls()
 
    GUI->SaturationRelative_CheckBox.SetChecked( m_instance.p_saturationRelative );
 
+   GUI->RejectionLimit_NumericControl.SetValue( m_instance.p_rejectionLimit );
+
    GUI->PSFNoiseLayers_SpinBox.SetValue( m_instance.p_psfNoiseLayers );
    GUI->PSFMinStructureSize_SpinBox.SetValue( m_instance.p_psfMinStructureSize );
    GUI->PSFHotPixelFilterRadius_SpinBox.SetValue( m_instance.p_psfHotPixelFilterRadius );
    GUI->PSFNoiseReductionFilterRadius_SpinBox.SetValue( m_instance.p_psfNoiseReductionFilterRadius );
    GUI->PSFMinSNR_NumericEdit.SetValue( m_instance.p_psfMinSNR );
-   GUI->PSFRejectionLimit_NumericControl.SetValue( m_instance.p_psfRejectionLimit );
    GUI->PSFType_ComboBox.SetCurrentItem( m_instance.p_psfType );
    GUI->PSFGrowth_NumericControl.SetValue( m_instance.p_psfGrowth );
    GUI->PSFMaxStars_SpinBox.SetValue( m_instance.p_psfMaxStars );
+   GUI->PSFAllowClusteredSources_CheckBox.SetChecked( m_instance.p_psfAllowClusteredSources );
 
    GUI->PSFScaleEvaluation_Control.Enable( m_instance.p_scaleEvaluationMethod == LNScaleEvaluationMethod::PSFSignal );
 
@@ -550,6 +552,10 @@ void LocalNormalizationInterface::e_Click( Button& sender, bool checked )
    {
       m_instance.p_saturationRelative = checked;
    }
+   else if ( sender == GUI->PSFAllowClusteredSources_CheckBox )
+   {
+      m_instance.p_psfAllowClusteredSources = checked;
+   }
    else if ( sender == GUI->ShowStructureMaps_CheckBox )
    {
       m_instance.p_showStructureMaps = checked;
@@ -651,10 +657,10 @@ void LocalNormalizationInterface::e_ValueUpdated( NumericEdit& sender, double va
       m_instance.p_targetRejectionThreshold = value;
    else if ( sender == GUI->SaturationThreshold_NumericControl )
       m_instance.p_saturationThreshold = value;
+   else if ( sender == GUI->RejectionLimit_NumericControl )
+      m_instance.p_rejectionLimit = value;
    else if ( sender == GUI->PSFMinSNR_NumericEdit )
       m_instance.p_psfMinSNR = value;
-   else if ( sender == GUI->PSFRejectionLimit_NumericControl )
-      m_instance.p_psfRejectionLimit = value;
    else if ( sender == GUI->PSFGrowth_NumericControl )
       m_instance.p_psfGrowth = value;
 }
@@ -1310,6 +1316,23 @@ LocalNormalizationInterface::GUIData::GUIData( LocalNormalizationInterface& w )
    SaturationRelative_Sizer.Add( SaturationRelative_CheckBox );
    SaturationRelative_Sizer.AddStretch();
 
+   RejectionLimit_NumericControl.label.SetText( "Rejection limit:" );
+   RejectionLimit_NumericControl.label.SetFixedWidth( labelWidth1 );
+   RejectionLimit_NumericControl.slider.SetRange( 0, 250 );
+   RejectionLimit_NumericControl.SetReal();
+   RejectionLimit_NumericControl.SetRange( TheLNRejectionLimitParameter->MinimumValue(), TheLNRejectionLimitParameter->MaximumValue() );
+   RejectionLimit_NumericControl.SetPrecision( TheLNRejectionLimitParameter->Precision() );
+   RejectionLimit_NumericControl.edit.SetFixedWidth( editWidth1 );
+   RejectionLimit_NumericControl.SetToolTip( "<p>Limit for the modified Chauvenet rejection criterion.</p>"
+      "<p>A modified Robust Chauvenet Rejection (RCR) routine is used internally by this implementation for rejection of "
+      "outlier relative scale samples. The larger the value of this parameter, the more samples will be rejected by the RCR "
+      "algorithm.</p>"
+      "<p>The original Chauvenet rejection criterion is N*P(x > |z|) &lt; 0.5, where N is the number of measurements and "
+      "P() represents the probability of x being more than z standard deviations from the mean. This parameter modifies the "
+      "rejection criterion by replacing 0.5 with an arbitrary limit in the [0,1] range, in order to make the algorithm "
+      "controllable. The default rejection limit is 0.3.</p>" );
+   RejectionLimit_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&LocalNormalizationInterface::e_ValueUpdated, w );
+
    const char* psfNoiseLayersToolTip =
       "<p>Star detector: Number of wavelet layers used for noise reduction.</p>"
       "<p>Noise reduction prevents detection of bright noise structures as false stars, including hot pixels and "
@@ -1415,23 +1438,6 @@ LocalNormalizationInterface::GUIData::GUIData( LocalNormalizationInterface& w )
       "process can be largely improved. The default value is 40, which is quite appropriate in most cases.</p>" );
    PSFMinSNR_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&LocalNormalizationInterface::e_ValueUpdated, w );
 
-   PSFRejectionLimit_NumericControl.label.SetText( "Rejection limit:" );
-   PSFRejectionLimit_NumericControl.label.SetFixedWidth( labelWidth1 );
-   PSFRejectionLimit_NumericControl.slider.SetRange( 0, 250 );
-   PSFRejectionLimit_NumericControl.SetReal();
-   PSFRejectionLimit_NumericControl.SetRange( TheLNPSFRejectionLimitParameter->MinimumValue(), TheLNPSFRejectionLimitParameter->MaximumValue() );
-   PSFRejectionLimit_NumericControl.SetPrecision( TheLNPSFRejectionLimitParameter->Precision() );
-   PSFRejectionLimit_NumericControl.edit.SetFixedWidth( editWidth1 );
-   PSFRejectionLimit_NumericControl.SetToolTip( "<p>Limit for the modified Chauvenet rejection criterion.</p>"
-      "<p>A modified Robust Chauvenet Rejection (RCR) routine is used internally by this implementation for rejection of "
-      "outlier relative scale samples. The larger the value of this parameter, the more samples will be rejected by the RCR "
-      "algorithm.</p>"
-      "<p>The original Chauvenet rejection criterion is N*P(x > |z|) &lt; 0.5, where N is the number of measurements and "
-      "P() represents the probability of x being more than z standard deviations from the mean. This parameter modifies the "
-      "rejection criterion by replacing 0.5 with an arbitrary limit in the [0,1] range, in order to make the algorithm "
-      "controllable. The default rejection limit is 0.3.</p>" );
-   PSFRejectionLimit_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&LocalNormalizationInterface::e_ValueUpdated, w );
-
    const char* psfTypeToolTip = "<p>Point spread function type used for PSF fitting and photometry.</p>"
       "<p>In all cases elliptical functions are fitted to detected star structures, and PSF sampling regions are "
       "defined adaptively using a median stabilization algorithm.</p>"
@@ -1500,16 +1506,29 @@ LocalNormalizationInterface::GUIData::GUIData( LocalNormalizationInterface& w )
    PSFMaxStars_Sizer.Add( PSFMaxStars_SpinBox );
    PSFMaxStars_Sizer.AddStretch();
 
+   PSFAllowClusteredSources_CheckBox.SetText( "Allow clustered sources" );
+   PSFAllowClusteredSources_CheckBox.SetToolTip( "<p>If this parameter is disabled, multiple sources that are too close to be "
+      "separated as individual structures, such as double and multiple stars, won't be detected for relative scale evaluation.</p>"
+      "<p>If this parameter is enabled, non-separable multiple sources will be freely detectable as single objects.</p>"
+      "<p>In general, sources with several local maxima pose difficulties for the determination of accurate star positions and PSF "
+      "parameters, although this is usually a minor problem for scale evaluation. For this reason this parameter is enabled by "
+      "default.</p>" );
+   PSFAllowClusteredSources_CheckBox.OnClick( (Button::click_event_handler)&LocalNormalizationInterface::e_Click, w );
+
+   PSFAllowClusteredSources_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   PSFAllowClusteredSources_Sizer.Add( PSFAllowClusteredSources_CheckBox );
+   PSFAllowClusteredSources_Sizer.AddStretch();
+
    PSFScaleEvaluation_Sizer.SetSpacing( 4 );
    PSFScaleEvaluation_Sizer.Add( PSFNoiseLayers_Sizer );
    PSFScaleEvaluation_Sizer.Add( PSFMinStructureSize_Sizer );
    PSFScaleEvaluation_Sizer.Add( PSFHotPixelFilterRadius_Sizer );
    PSFScaleEvaluation_Sizer.Add( PSFNoiseReductionFilterRadius_Sizer );
    PSFScaleEvaluation_Sizer.Add( PSFMinSNR_NumericEdit );
-   PSFScaleEvaluation_Sizer.Add( PSFRejectionLimit_NumericControl );
    PSFScaleEvaluation_Sizer.Add( PSFType_Sizer );
    PSFScaleEvaluation_Sizer.Add( PSFGrowth_NumericControl );
    PSFScaleEvaluation_Sizer.Add( PSFMaxStars_Sizer );
+   PSFScaleEvaluation_Sizer.Add( PSFAllowClusteredSources_Sizer );
 
    PSFScaleEvaluation_Control.SetSizer( PSFScaleEvaluation_Sizer );
 
@@ -1531,6 +1550,7 @@ LocalNormalizationInterface::GUIData::GUIData( LocalNormalizationInterface& w )
    ScaleEvaluation_Sizer.Add( StructureLayers_Sizer );
    ScaleEvaluation_Sizer.Add( SaturationThreshold_NumericControl );
    ScaleEvaluation_Sizer.Add( SaturationRelative_Sizer );
+   ScaleEvaluation_Sizer.Add( RejectionLimit_NumericControl );
    ScaleEvaluation_Sizer.Add( PSFScaleEvaluation_Control );
    ScaleEvaluation_Sizer.Add( ShowStructureMaps_Sizer );
 
@@ -1775,4 +1795,4 @@ LocalNormalizationInterface::GUIData::GUIData( LocalNormalizationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationInterface.cpp - Released 2022-05-17T17:15:11Z
+// EOF LocalNormalizationInterface.cpp - Released 2022-05-25T08:24:23Z

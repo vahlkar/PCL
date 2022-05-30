@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.9.4
+// Standard ImageCalibration Process Module Version 1.9.6
 // ----------------------------------------------------------------------------
-// SuperbiasInterface.cpp - Released 2022-05-17T17:15:11Z
+// SuperbiasInterface.cpp - Released 2022-05-25T08:24:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -316,4 +316,4 @@ SuperbiasInterface::GUIData::GUIData( SuperbiasInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SuperbiasInterface.cpp - Released 2022-05-17T17:15:11Z
+// EOF SuperbiasInterface.cpp - Released 2022-05-25T08:24:23Z
