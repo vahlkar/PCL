@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/PropertyDescription.h - Released 2022-05-17T17:14:45Z
+// pcl/PropertyDescription.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -79,7 +79,7 @@ struct PCL_CLASS PropertyDescription
    /*!
     * An enumeration of supported property data types.
     */
-   typedef VariantType::value_type  data_type;
+   using data_type = VariantType::value_type;
 
    IsoString id;                          //!< Identifier of this property.
    data_type type = VariantType::Invalid; //!< Property data type.
@@ -152,7 +152,7 @@ struct PCL_CLASS PropertyDescription
  * %PropertyDescriptionArray is a template instantiation of Array for
  * PropertyDescription.
  */
-typedef Array<PropertyDescription>  PropertyDescriptionArray;
+using PropertyDescriptionArray = Array<PropertyDescription>;
 
 // ----------------------------------------------------------------------------
 
@@ -161,4 +161,4 @@ typedef Array<PropertyDescription>  PropertyDescriptionArray;
 #endif   // __PCL_PropertyDescription_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PropertyDescription.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/PropertyDescription.h - Released 2022-08-10T16:36:28Z

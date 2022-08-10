@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.5.1
+// Standard ColorCalibration Process Module Version 1.5.2
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationInstance.h - Released 2022-05-17T17:15:11Z
+// PhotometricColorCalibrationInstance.h - Released 2022-05-20T16:28:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -119,9 +119,14 @@ private:
    pcl_bool p_solverAutoCatalog;
    int32    p_solverLimitMagnitude;
    pcl_bool p_solverAutoLimitMagnitude;
-   float    p_solverAutoLimitMagnitudeFactor;
-   float    p_solverStarSensitivity;
-   int32    p_solverNoiseLayers;
+
+   /*
+    * Advanced plate solving parameters.
+    */
+   int32    p_solverStructureLayers;
+   int32    p_solverMinStructureSize;
+   int32    p_solverNoiseReductionFilterRadius;
+   float    p_solverSensitivity;
    pcl_enum p_solverAlignmentDevice;
    pcl_bool p_solverDistortionCorrection;
    float    p_solverSplineSmoothing;
@@ -164,4 +169,4 @@ private:
 #endif   // __PhotometricColorCalibrationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationInstance.h - Released 2022-05-17T17:15:11Z
+// EOF PhotometricColorCalibrationInstance.h - Released 2022-05-20T16:28:45Z

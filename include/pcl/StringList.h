@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/StringList.h - Released 2022-05-17T17:14:45Z
+// pcl/StringList.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -76,7 +76,7 @@ namespace pcl
  *
  * %StringList is a template instantiation of Array for the String class.
  */
-typedef Array<String>                  StringList;
+using StringList = Array<String>;
 
 /*!
  * \class pcl::SortedStringList
@@ -85,7 +85,7 @@ typedef Array<String>                  StringList;
  *
  * %SortedStringList is a template instantiation of SortedArray for String.
  */
-typedef SortedArray<String>            SortedStringList;
+using SortedStringList = SortedArray<String>;
 
 /*!
  * \class pcl::IsoStringList
@@ -94,7 +94,7 @@ typedef SortedArray<String>            SortedStringList;
  *
  * %IsoStringList is a template instantiation of Array for IsoString.
  */
-typedef Array<IsoString>               IsoStringList;
+using IsoStringList = Array<IsoString>;
 
 /*!
  * \class pcl::SortedIsoStringList
@@ -104,7 +104,7 @@ typedef Array<IsoString>               IsoStringList;
  * %SortedIsoStringList is a template instantiation of SortedArray for the
  * IsoString class.
  */
-typedef SortedArray<IsoString>         SortedIsoStringList;
+using SortedIsoStringList = SortedArray<IsoString>;
 
 /*!
  * \defgroup key_value_string_lists Key-Value String List Classes
@@ -116,7 +116,7 @@ typedef SortedArray<IsoString>         SortedIsoStringList;
  * \ingroup key_value_string_lists
  * \brief Dynamic list of key-value associations implemented as Unicode (UTF-16) strings.
  */
-typedef Array<StringKeyValue>          StringKeyValueList;
+using StringKeyValueList = Array<StringKeyValue>;
 
 /*!
  * \class pcl::SortedStringKeyValueList
@@ -124,7 +124,7 @@ typedef Array<StringKeyValue>          StringKeyValueList;
  * \ingroup key_value_string_lists
  * \brief Dynamic sorted list of key-value associations implemented as Unicode (UTF-16) strings.
  */
-typedef SortedArray<StringKeyValue>    SortedStringKeyValueList;
+using SortedStringKeyValueList = SortedArray<StringKeyValue>;
 
 /*!
  * \class pcl::IsoStringKeyValueList
@@ -132,7 +132,7 @@ typedef SortedArray<StringKeyValue>    SortedStringKeyValueList;
  * \ingroup key_value_string_lists
  * \brief Dynamic list of key-value associations implemented as 8-bit strings.
  */
-typedef Array<IsoStringKeyValue>       IsoStringKeyValueList;
+using IsoStringKeyValueList = Array<IsoStringKeyValue>;
 
 /*!
  * \class pcl::SortedIsoStringKeyValueList
@@ -140,7 +140,7 @@ typedef Array<IsoStringKeyValue>       IsoStringKeyValueList;
  * \ingroup key_value_string_lists
  * \brief Dynamic sorted list of key-value associations implemented as 8-bit strings.
  */
-typedef SortedArray<IsoStringKeyValue> SortedIsoStringKeyValueList;
+using SortedIsoStringKeyValueList = SortedArray<IsoStringKeyValue>;
 
 // ----------------------------------------------------------------------------
 
@@ -149,4 +149,4 @@ typedef SortedArray<IsoStringKeyValue> SortedIsoStringKeyValueList;
 #endif   // __PCL_StringList_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/StringList.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/StringList.h - Released 2022-08-10T16:36:28Z

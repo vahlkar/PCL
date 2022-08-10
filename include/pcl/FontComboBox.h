@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/FontComboBox.h - Released 2022-05-17T17:14:45Z
+// pcl/FontComboBox.h - Released 2022-08-10T16:36:27Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -327,7 +327,7 @@ public:
     *
     * \ingroup fontcombobox_event_handlers
     */
-   typedef void (Control::*font_event_handler)( FontComboBox& sender, const String& font );
+   using font_event_handler = void (Control::*)( FontComboBox& sender, const String& font );
 
    /*!
     * Sets the <em>font selected</em> event handler for this font combo box.
@@ -390,4 +390,4 @@ private:
 #endif   // __PCL_FontComboBox_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FontComboBox.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/FontComboBox.h - Released 2022-08-10T16:36:27Z

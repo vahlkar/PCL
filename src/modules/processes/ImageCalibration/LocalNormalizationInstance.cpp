@@ -1049,22 +1049,28 @@ private:
       int n, r;
       switch ( m_instance.p_scale )
       {
-      case 1024: n = 7; r = 8; break;
-      case  768: n = 7; r = 6; break;
+      case 8192: n = 9; r = 16; break;
+      case 6144: n = 9; r = 12; break;
+      case 4096: n = 9; r =  8; break;
+      case 3072: n = 8; r = 12; break;
+      case 2048: n = 8; r =  8; break;
+      case 1536: n = 8; r =  6; break;
       default: // ?!
-      case  512: n = 6; r = 8; break;
-      case  384: n = 6; r = 6; break;
-      case  256: n = 6; r = 4; break;
-      case  192: n = 6; r = 3; break;
-      case  128: n = 6; r = 2; break;
-      case   64: n = 5; r = 2; break;
-      case   32: n = 4; r = 2; break;
+      case 1024: n = 7; r =  8; break;
+      case  768: n = 7; r =  6; break;
+      case  512: n = 6; r =  8; break;
+      case  384: n = 6; r =  6; break;
+      case  256: n = 6; r =  4; break;
+      case  192: n = 6; r =  3; break;
+      case  128: n = 6; r =  2; break;
+      case   64: n = 5; r =  2; break;
+      case   32: n = 4; r =  2; break;
       }
 
       /*
        * MMT
        */
-      MultiscaleMedianTransform M( n, 0 );
+      MultiscaleMedianTransform M( n, 0/*dyadic*/ );
       M.SetMaxProcessors( m_maxThreads );
       for ( int i = 0; i < M.NumberOfLayers(); ++i )
          M.DisableLayer( i );

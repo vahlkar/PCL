@@ -57,47 +57,54 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-GCommand*               TheGCommandParameter = nullptr;
-GCenterRA*              TheGCenterRAParameter = nullptr;
-GCenterDec*             TheGCenterDecParameter = nullptr;
-GRadius*                TheGRadiusParameter = nullptr;
-GMagnitudeLow*          TheGMagnitudeLowParameter = nullptr;
-GMagnitudeHigh*         TheGMagnitudeHighParameter = nullptr;
-GSourceLimit*           TheGSourceLimitParameter = nullptr;
-GRequiredFlags*         TheGRequiredFlagsParameter = nullptr;
-GInclusionFlags*        TheGInclusionFlagsParameter = nullptr;
-GExclusionFlags*        TheGExclusionFlagsParameter = nullptr;
-GVerbosity*             TheGVerbosityParameter = nullptr;
-GDataRelease*           TheGDataReleaseParameter = nullptr;
-GSortBy*                TheGSortByParameter = nullptr;
-GGenerateTextOutput*    TheGGenerateTextOutputParameter = nullptr;
-GTextFormat*            TheGTextFormatParameter = nullptr;
-GTextHeaders*           TheGTextHeadersParameter = nullptr;
-GOutputFilePath*        TheGOutputFilePathParameter = nullptr;
-GDatabaseFilePaths*     TheGDatabaseFilePathsParameter = nullptr;
-GDatabaseFilePath*      TheGDatabaseFilePathParameter = nullptr;
+GCommand*                     TheGCommandParameter = nullptr;
+GCenterRA*                    TheGCenterRAParameter = nullptr;
+GCenterDec*                   TheGCenterDecParameter = nullptr;
+GRadius*                      TheGRadiusParameter = nullptr;
+GMagnitudeLow*                TheGMagnitudeLowParameter = nullptr;
+GMagnitudeHigh*               TheGMagnitudeHighParameter = nullptr;
+GSourceLimit*                 TheGSourceLimitParameter = nullptr;
+GRequiredFlags*               TheGRequiredFlagsParameter = nullptr;
+GInclusionFlags*              TheGInclusionFlagsParameter = nullptr;
+GExclusionFlags*              TheGExclusionFlagsParameter = nullptr;
+GNormalizeSpectrum*           TheGNormalizeSpectrumParameter = nullptr;
+GVerbosity*                   TheGVerbosityParameter = nullptr;
+GDataRelease*                 TheGDataReleaseParameter = nullptr;
+GSortBy*                      TheGSortByParameter = nullptr;
+GGenerateTextOutput*          TheGGenerateTextOutputParameter = nullptr;
+GTextFormat*                  TheGTextFormatParameter = nullptr;
+GTextHeaders*                 TheGTextHeadersParameter = nullptr;
+GOutputFilePath*              TheGOutputFilePathParameter = nullptr;
+GDatabaseFilePaths*           TheGDatabaseFilePathsParameter = nullptr;
+GDatabaseFilePath*            TheGDatabaseFilePathParameter = nullptr;
 
-GSources*               TheGSourcesParameter = nullptr;
-GSourceRA*              TheGSourceRAParameter = nullptr;
-GSourceDec*             TheGSourceDecParameter = nullptr;
-GSourceParx*            TheGSourceParxParameter = nullptr;
-GSourcePMRA*            TheGSourcePMRAParameter = nullptr;
-GSourcePMDec*           TheGSourcePMDecParameter = nullptr;
-GSourceMagG*            TheGSourceMagGParameter = nullptr;
-GSourceMagBP*           TheGSourceMagBPParameter = nullptr;
-GSourceMagRP*           TheGSourceMagRPParameter = nullptr;
-GSourceFlags*           TheGSourceFlagsParameter = nullptr;
-GExcessCount*           TheGExcessCountParameter = nullptr;
-GRejectCount*           TheGRejectCountParameter = nullptr;
-GTimeTotal*             TheGTimeTotalParameter = nullptr;
-GTimeIO*                TheGTimeIOParameter = nullptr;
-GCountIO*               TheGCountIOParameter = nullptr;
-GTimeUncompress*        TheGTimeUncompressParameter = nullptr;
-GTimeDecode*            TheGTimeDecodeParameter = nullptr;
-GIsValid*               TheGIsValidParameter = nullptr;
-GOutputDataRelease*     TheGOutputDataReleaseParameter = nullptr;
-GDatabaseMagnitudeLow*  TheGDatabaseMagnitudeLowParameter = nullptr;
-GDatabaseMagnitudeHigh* TheGDatabaseMagnitudeHighParameter = nullptr;
+GSources*                     TheGSourcesParameter = nullptr;
+GSourceRA*                    TheGSourceRAParameter = nullptr;
+GSourceDec*                   TheGSourceDecParameter = nullptr;
+GSourceParx*                  TheGSourceParxParameter = nullptr;
+GSourcePMRA*                  TheGSourcePMRAParameter = nullptr;
+GSourcePMDec*                 TheGSourcePMDecParameter = nullptr;
+GSourceMagG*                  TheGSourceMagGParameter = nullptr;
+GSourceMagBP*                 TheGSourceMagBPParameter = nullptr;
+GSourceMagRP*                 TheGSourceMagRPParameter = nullptr;
+GSourceFlags*                 TheGSourceFlagsParameter = nullptr;
+GSourceFlux*                  TheGSourceFluxParameter = nullptr;
+GExcessCount*                 TheGExcessCountParameter = nullptr;
+GRejectCount*                 TheGRejectCountParameter = nullptr;
+GTimeTotal*                   TheGTimeTotalParameter = nullptr;
+GTimeIO*                      TheGTimeIOParameter = nullptr;
+GCountIO*                     TheGCountIOParameter = nullptr;
+GTimeUncompress*              TheGTimeUncompressParameter = nullptr;
+GTimeDecode*                  TheGTimeDecodeParameter = nullptr;
+GIsValid*                     TheGIsValidParameter = nullptr;
+GOutputDataRelease*           TheGOutputDataReleaseParameter = nullptr;
+GDatabaseMagnitudeLow*        TheGDatabaseMagnitudeLowParameter = nullptr;
+GDatabaseMagnitudeHigh*       TheGDatabaseMagnitudeHighParameter = nullptr;
+GDatabaseHasMeanSpectrumData* TheGDatabaseHasMeanSpectrumDataParameter = nullptr;
+GDatabaseSpectrumStart*       TheGDatabaseSpectrumStartParameter = nullptr;
+GDatabaseSpectrumStep*        TheGDatabaseSpectrumStepParameter = nullptr;
+GDatabaseSpectrumCount*       TheGDatabaseSpectrumCountParameter = nullptr;
+GDatabaseSpectrumBits*        TheGDatabaseSpectrumBitsParameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -306,6 +313,24 @@ double GExclusionFlags::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
+GNormalizeSpectrum::GNormalizeSpectrum( MetaProcess* P )
+   : MetaBoolean( P )
+{
+   TheGNormalizeSpectrumParameter = this;
+}
+
+IsoString GNormalizeSpectrum::Id() const
+{
+   return "normalizeSpectrum";
+}
+
+bool GNormalizeSpectrum::DefaultValue() const
+{
+   return false;
+}
+
+// ----------------------------------------------------------------------------
+
 GVerbosity::GVerbosity( MetaProcess* P )
    : MetaInt32( P )
 {
@@ -344,10 +369,12 @@ IsoString GDataRelease::ElementId( size_type index ) const
 {
    switch ( index )
    {
-   case DR2:           return "DataRelease_2";
-   default:
-   case EDR3:          return "DataRelease_E3";
    case BestAvailable: return "DataRelease_BestAvailable";
+   case DR2:           return "DataRelease_2";
+   case EDR3:          return "DataRelease_E3";
+   default:
+   case DR3:           return "DataRelease_3";
+   case DR3SP:         return "DataRelease_3_SP";
    }
 }
 
@@ -763,6 +790,29 @@ bool GSourceFlags::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
+GSourceFlux::GSourceFlux( MetaTable* T )
+   : MetaBlock( T )
+{
+   TheGSourceFluxParameter = this;
+}
+
+IsoString GSourceFlux::Id() const
+{
+   return "flux";
+}
+
+MetaBlock::data_interpretation GSourceFlux::DataInterpretation() const
+{
+   return DataAsFloat;
+}
+
+bool GSourceFlux::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
 GExcessCount::GExcessCount( MetaProcess* P )
    : MetaUInt32( P )
 {
@@ -985,6 +1035,106 @@ int GDatabaseMagnitudeHigh::Precision() const
 }
 
 bool GDatabaseMagnitudeHigh::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+GDatabaseHasMeanSpectrumData::GDatabaseHasMeanSpectrumData( MetaProcess* P )
+   : MetaBoolean( P )
+{
+   TheGDatabaseHasMeanSpectrumDataParameter = this;
+}
+
+IsoString GDatabaseHasMeanSpectrumData::Id() const
+{
+   return "databaseHasMeanSpectrumData";
+}
+
+bool GDatabaseHasMeanSpectrumData::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+GDatabaseSpectrumStart::GDatabaseSpectrumStart( MetaProcess* P )
+   : MetaFloat( P )
+{
+   TheGDatabaseSpectrumStartParameter = this;
+}
+
+IsoString GDatabaseSpectrumStart::Id() const
+{
+   return "databaseSpectrumStart";
+}
+
+int GDatabaseSpectrumStart::Precision() const
+{
+   return 2;
+}
+
+bool GDatabaseSpectrumStart::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+GDatabaseSpectrumStep::GDatabaseSpectrumStep( MetaProcess* P )
+   : MetaFloat( P )
+{
+   TheGDatabaseSpectrumStepParameter = this;
+}
+
+IsoString GDatabaseSpectrumStep::Id() const
+{
+   return "databaseSpectrumStep";
+}
+
+int GDatabaseSpectrumStep::Precision() const
+{
+   return 2;
+}
+
+bool GDatabaseSpectrumStep::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+GDatabaseSpectrumCount::GDatabaseSpectrumCount( MetaProcess* P )
+   : MetaInt32( P )
+{
+   TheGDatabaseSpectrumCountParameter = this;
+}
+
+IsoString GDatabaseSpectrumCount::Id() const
+{
+   return "databaseSpectrumCount";
+}
+
+bool GDatabaseSpectrumCount::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+GDatabaseSpectrumBits::GDatabaseSpectrumBits( MetaProcess* P )
+   : MetaInt32( P )
+{
+   TheGDatabaseSpectrumBitsParameter = this;
+}
+
+IsoString GDatabaseSpectrumBits::Id() const
+{
+   return "databaseSpectrumBits";
+}
+
+bool GDatabaseSpectrumBits::IsReadOnly() const
 {
    return true;
 }

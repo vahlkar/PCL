@@ -98,6 +98,11 @@ public:
    const ReferenceArray<GaiaDatabaseFile>& Databases( int dr ) const;
    float MagnitudeLow( int dr ) const;
    float MagnitudeHigh( int dr ) const;
+   bool HasMeanSpectrumData( int dr ) const;
+   float SpectrumStart( int dr ) const;
+   float SpectrumStep( int dr ) const;
+   int SpectrumCount( int dr ) const;
+   int SpectrumBits( int dr ) const;
 
    bool PreferencesLoaded( int dr ) const;
    void LoadPreferences( int dr );

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/SectionBar.h - Released 2022-05-17T17:14:45Z
+// pcl/SectionBar.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -295,7 +295,7 @@ public:
     *
     * \ingroup section_bar_event_handlers
     */
-   typedef void (Control::*section_event_handler)( SectionBar& sender, Control& section, bool start );
+   using section_event_handler = void (Control::*)( SectionBar& sender, Control& section, bool start );
 
    /*!
     * Sets the section event handler for this %SectionBar control.
@@ -324,7 +324,7 @@ public:
     *
     * \ingroup section_bar_event_handlers
     */
-   typedef void (Control::*check_event_handler)( SectionBar& sender, bool checked );
+   using check_event_handler = void (Control::*)( SectionBar& sender, bool checked );
 
    /*!
     * Sets the check event handler for this %SectionBar control.
@@ -376,4 +376,4 @@ private:
 #endif   // __PCL_SectionBar_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SectionBar.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/SectionBar.h - Released 2022-08-10T16:36:28Z

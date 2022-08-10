@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/TreeBox.h - Released 2022-05-17T17:14:45Z
+// pcl/TreeBox.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -332,14 +332,16 @@ public:
       /*!
        * \internal
        */
-      Node( void* h ) : UIObject( h )
+      Node( void* h )
+         : UIObject( h )
       {
       }
 
       /*!
        * \internal
        */
-      Node( std::nullptr_t ) : UIObject( nullptr )
+      Node( std::nullptr_t )
+         : UIObject( nullptr )
       {
       }
 
@@ -350,7 +352,7 @@ public:
 
    private:
 
-      typedef SortedArray<Node*> child_node_list;
+      using child_node_list = SortedArray<Node*>;
       child_node_list m_children;
       bool            m_removed = false;
 
@@ -833,22 +835,22 @@ public:
    /*! #
     * \ingroup tree_box_event_handlers
     */
-   typedef void (Control::*tree_event_handler)( TreeBox& );
+   using tree_event_handler = void (Control::*)( TreeBox& );
 
    /*! #
     * \ingroup tree_box_event_handlers
     */
-   typedef void (Control::*node_event_handler)( TreeBox&, TreeBox::Node&, int );
+   using node_event_handler = void (Control::*)( TreeBox&, TreeBox::Node&, int );
 
    /*! #
     * \ingroup tree_box_event_handlers
     */
-   typedef void (Control::*node_expand_event_handler)( TreeBox&, TreeBox::Node& );
+   using node_expand_event_handler = void (Control::*)( TreeBox&, TreeBox::Node& );
 
    /*! #
     * \ingroup tree_box_event_handlers
     */
-   typedef void (Control::*node_navigation_event_handler)( TreeBox&, TreeBox::Node&, TreeBox::Node& );
+   using node_navigation_event_handler = void (Control::*)( TreeBox&, TreeBox::Node&, TreeBox::Node& );
 
    /*! #
     * \ingroup tree_box_event_handlers
@@ -916,7 +918,7 @@ private:
 
    AutoPointer<EventHandlers> m_handlers;
 
-   typedef SortedArray<Node*> child_node_list;
+   using child_node_list = SortedArray<Node*>;
    child_node_list m_children;
 
    static pcl::Font FontFromHandle( void* h )
@@ -959,4 +961,4 @@ protected:
 #endif   // __PCL_TreeBox_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/TreeBox.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/TreeBox.h - Released 2022-08-10T16:36:28Z

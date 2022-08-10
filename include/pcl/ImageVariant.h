@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/ImageVariant.h - Released 2022-05-17T17:14:45Z
+// pcl/ImageVariant.h - Released 2022-08-10T16:36:27Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -323,21 +323,21 @@ public:
     * Valid constants for this enumeration are defined in the ColorSpace
     * namespace.
     */
-   typedef AbstractImage::color_space     color_space;
+   using color_space = AbstractImage::color_space;
 
    /*!
     * An enumerated type that represents the set of supported arithmetic and
     * bitwise pixel operations. Valid constants for this enumeration are
     * defined in the ImageOp namespace.
     */
-   typedef ImageOp::value_type            image_op;
+   using image_op = ImageOp::value_type;
 
    /*
     * An enumerated type that represents a compression algorithm for raw
     * storage file generation. Valid constants for this enumeration are defined
     * in the SwapCompression namespace.
     */
-   typedef SwapCompression::value_type    swap_compression;
+   using swap_compression = SwapCompression::value_type;
 
    /*!
     * Constructs an empty %ImageVariant. An empty %ImageVariant instance does
@@ -7275,4 +7275,4 @@ GenericImage<P>& GenericImage<P>::SetLightness( const ImageVariant& L, const Poi
 #endif   // __PCL_ImageVariant_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ImageVariant.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/ImageVariant.h - Released 2022-08-10T16:36:27Z

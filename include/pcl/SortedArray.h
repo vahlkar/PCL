@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/SortedArray.h - Released 2022-05-17T17:14:45Z
+// pcl/SortedArray.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -85,37 +85,31 @@ public:
 
    /*! #
     */
-   typedef Array<T,A>               array_implementation;
+   using array_implementation = Array<T,A>;
 
    /*! #
     */
-   typedef typename array_implementation::block_allocator
-                                    block_allocator;
+   using block_allocator = typename array_implementation::block_allocator;
 
    /*! #
     */
-   typedef typename array_implementation::allocator
-                                    allocator;
+   using allocator = typename array_implementation::allocator;
 
    /*! #
     */
-   typedef typename array_implementation::iterator
-                                    iterator;
+   using iterator = typename array_implementation::iterator;
 
    /*! #
     */
-   typedef typename array_implementation::const_iterator
-                                    const_iterator;
+   using const_iterator = typename array_implementation::const_iterator;
 
    /*! #
     */
-   typedef typename array_implementation::reverse_iterator
-                                    reverse_iterator;
+   using reverse_iterator = typename array_implementation::reverse_iterator;
 
    /*! #
     */
-   typedef typename array_implementation::const_reverse_iterator
-                                    const_reverse_iterator;
+   using const_reverse_iterator = typename array_implementation::const_reverse_iterator;
 
    // -------------------------------------------------------------------------
 
@@ -1101,4 +1095,4 @@ SortedArray<T,A>& operator <<( SortedArray<T,A>&& x1, const Array<T,A>& x2 )
 #endif  // __PCL_SortedArray_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SortedArray.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/SortedArray.h - Released 2022-08-10T16:36:28Z

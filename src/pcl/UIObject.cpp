@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/UIObject.cpp - Released 2022-05-17T17:14:53Z
+// pcl/UIObject.cpp - Released 2022-08-10T16:36:36Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -177,9 +177,9 @@ public:
       }
    };
 
-   typedef SortedArray<IndexItem>               index_implementation;
-   typedef index_implementation::iterator       iterator;
-   typedef index_implementation::const_iterator const_iterator;
+   using index_implementation = SortedArray<IndexItem>;
+   using iterator             = index_implementation::iterator;
+   using const_iterator       = index_implementation::const_iterator;
 
    UIObjectIndex() = default;
 
@@ -474,4 +474,4 @@ void UIObject::TransferHandle( void* newHandle )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/UIObject.cpp - Released 2022-05-17T17:14:53Z
+// EOF pcl/UIObject.cpp - Released 2022-08-10T16:36:36Z

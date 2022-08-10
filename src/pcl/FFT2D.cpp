@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/FFT2D.cpp - Released 2022-05-17T17:14:53Z
+// pcl/FFT2D.cpp - Released 2022-08-10T16:36:36Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -62,9 +62,9 @@ class PCL_FFT2DEngineBase
 {
 public:
 
-   typedef Ti             input_type;
-   typedef To             output_type;
-   typedef ReferenceArray<Thread> thread_list;
+   using input_type = Ti;
+   using output_type = To;
+   using thread_list = ReferenceArray<Thread>;
 
    PCL_FFT2DEngineBase( int rows, int cols, To* output, const Ti* input, int dir, StatusMonitor* monitor, bool parallel, int maxProcessors )
       : m_rows( rows )
@@ -121,9 +121,9 @@ class PCL_FFT2DEngine : public PCL_FFT2DEngineBase<Complex<T>,Complex<T> >
 {
 public:
 
-   typedef Complex<T>                           complex;
-   typedef PCL_FFT2DEngineBase<complex,complex> base;
-   typedef typename base::thread_list           thread_list;
+   using complex     = Complex<T>;
+   using base        = PCL_FFT2DEngineBase<complex,complex>;
+   using thread_list = typename base::thread_list;
 
    PCL_FFT2DEngine( int rows, int cols, complex* output, const complex* input, int dir, StatusMonitor* monitor, bool parallel, int maxProcessors )
       : base( rows, cols, output, input, dir, monitor, parallel, maxProcessors )
@@ -255,8 +255,8 @@ class PCL_FFT2DRealEngineBase : public PCL_FFT2DEngineBase<To,Ti>
 {
 public:
 
-   typedef PCL_FFT2DEngineBase<To,Ti> base;
-   typedef typename base::thread_list thread_list;
+   using base        = PCL_FFT2DEngineBase<To,Ti>;
+   using thread_list = typename base::thread_list;
 
    PCL_FFT2DRealEngineBase( int _rows, int _cols, To* _output, const Ti* _input, int dir, StatusMonitor* _monitor, bool parallel, int maxProcessors )
       : base( _rows, _cols, _output, _input, dir, _monitor, parallel, maxProcessors )
@@ -283,10 +283,10 @@ class PCL_FFT2DRealEngine : public PCL_FFT2DRealEngineBase<Complex<T>,T>
 {
 public:
 
-   typedef T                                       scalar;
-   typedef Complex<T>                              complex;
-   typedef PCL_FFT2DRealEngineBase<complex,scalar> base;
-   typedef typename base::thread_list              thread_list;
+   using scalar      = T;
+   using complex     = Complex<T>;
+   using base        = PCL_FFT2DRealEngineBase<complex,scalar>;
+   using thread_list = typename base::thread_list;
 
    PCL_FFT2DRealEngine( int rows, int cols, complex* output, const scalar* input, StatusMonitor* monitor, bool parallel, int maxProcessors )
       : base( rows, cols, output, input, PCL_FFT_FORWARD, monitor, parallel, maxProcessors )
@@ -391,11 +391,11 @@ class PCL_FFT2DRealInverseEngine : public PCL_FFT2DRealEngineBase<T,Complex<T> >
 {
 public:
 
-   typedef T                                       scalar;
-   typedef Complex<T>                              complex;
-   typedef GenericMatrix<complex>                  transform;
-   typedef PCL_FFT2DRealEngineBase<scalar,complex> base;
-   typedef typename base::thread_list              thread_list;
+   using scalar = T;
+   using complex = Complex<T>;
+   using transform = GenericMatrix<complex>;
+   using base = PCL_FFT2DRealEngineBase<scalar,complex>;
+   using thread_list = typename base::thread_list;
 
    PCL_FFT2DRealInverseEngine( int rows, int cols, scalar* output, const complex* input, StatusMonitor* monitor, bool parallel, int maxProcessors )
       : base( rows, cols, output, input, PCL_FFT_BACKWARD, monitor, parallel, maxProcessors )
@@ -530,4 +530,4 @@ void FFT2DBase::Transform( int rows, int cols, double* y, const dcomplex* x, Sta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FFT2D.cpp - Released 2022-05-17T17:14:53Z
+// EOF pcl/FFT2D.cpp - Released 2022-08-10T16:36:36Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/ColorComboBox.h - Released 2022-05-17T17:14:45Z
+// pcl/ColorComboBox.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -183,7 +183,7 @@ public:
     *
     * \ingroup colorcombobox_event_handlers
     */
-   typedef void (Control::*color_event_handler)( ColorComboBox& sender, RGBA color );
+   using color_event_handler = void (Control::*)( ColorComboBox& sender, RGBA color );
 
    /*!
     * Sets the <em>color selected</em> event handler for this color combo box.
@@ -266,4 +266,4 @@ private:
 #endif   // __PCL_ColorComboBox_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ColorComboBox.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/ColorComboBox.h - Released 2022-08-10T16:36:28Z

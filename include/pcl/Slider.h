@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/Slider.h - Released 2022-05-17T17:14:45Z
+// pcl/Slider.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -99,7 +99,7 @@ namespace TickStyle
 /*!
  * A collection of slider tick style flags.
  */
-typedef Flags<TickStyle::mask_type> TickStyles;
+using TickStyles = Flags<TickStyle::mask_type>;
 
 // ----------------------------------------------------------------------------
 
@@ -364,7 +364,7 @@ public:
     *
     * \ingroup slider_event_handlers
     */
-   typedef void (Control::*value_event_handler)( Slider& sender, int value );
+   using value_event_handler = void (Control::*)( Slider& sender, int value );
 
    /*!
     * Defines the prototype of a <em>slider range event handler</em>.
@@ -379,7 +379,7 @@ public:
     *
     * \ingroup slider_event_handlers
     */
-   typedef void (Control::*range_event_handler)( Slider& sender, int minValue, int maxValue );
+   using range_event_handler = void (Control::*)( Slider& sender, int minValue, int maxValue );
 
    /*!
     * Sets the slider value event handler for this %Slider control.
@@ -489,4 +489,4 @@ public:
 #endif   // __PCL_Slider_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Slider.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/Slider.h - Released 2022-08-10T16:36:28Z

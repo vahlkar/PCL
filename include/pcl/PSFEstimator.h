@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/PSFEstimator.h - Released 2022-05-17T17:14:45Z
+// pcl/PSFEstimator.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -76,7 +76,7 @@ public:
    /*!
     * Represents a point spread function type.
     */
-   typedef StarDetector::psf_function  psf_function;
+   using psf_function = StarDetector::psf_function;
 
    /*!
     * Default constructor.
@@ -363,6 +363,20 @@ public:
       EnablePSFWeighting( !disable );
    }
 
+   /*!
+    * Performs star detection, PSF fitting and signal evaluation for the
+    * specified \a image. Returns a list of PSFData structures for all valid
+    * PSF fits performed.
+    *
+    * Star detection and PSF fitting will be performed for the current
+    * selection in the specified \a image, including its current rectangular
+    * selection and currently selected channel.
+    *
+    * \note This function is thread-safe. It can be invoked from multiple
+    * threads running concurrently.
+    */
+   Array<PSFData> FitStars( const ImageVariant& image ) const;
+
 protected:
 
    mutable pcl::StarDetector m_starDetector;
@@ -374,12 +388,6 @@ protected:
            float             m_growthForFlux = 1.0F;
            int               m_maxStars = 0;
            bool              m_weighted = false;
-
-   /*!
-    * \internal
-    * Thread-safe PSF fitting routine.
-    */
-   Array<PSFData> FitStars( const ImageVariant& ) const;
 };
 
 // ----------------------------------------------------------------------------
@@ -389,4 +397,4 @@ protected:
 #endif   // __PCL_PSFEstimator_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFEstimator.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/PSFEstimator.h - Released 2022-08-10T16:36:28Z

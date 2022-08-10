@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/Complex.h - Released 2022-05-17T17:14:45Z
+// pcl/Complex.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -87,7 +87,7 @@ public:
    /*!
     * Represents a component of a complex number: real or imaginary part.
     */
-   typedef T   component;
+   using component = T;
 
    /*!
     * Constructs an uninitialized complex number. The real and imaginary
@@ -1053,7 +1053,7 @@ S& operator <<( S& s, const Complex<T>& c )
  *
  * Complex32 is a template instantiation of Complex for the \c float type.
  */
-typedef Complex<float>        Complex32;
+using Complex32 = Complex<float>;
 
 /*!
  * \class pcl::fcomplex
@@ -1064,7 +1064,7 @@ typedef Complex<float>        Complex32;
  * fcomplex is an alias for Complex32. It is a template instantiation of
  * Complex for the \c float type.
  */
-typedef Complex32             fcomplex;
+using fcomplex = Complex32;
 
 /*!
  * \class pcl::Complex64
@@ -1074,7 +1074,7 @@ typedef Complex32             fcomplex;
  *
  * Complex64 is a template instantiation of Complex for the \c double type.
  */
-typedef Complex<double>       Complex64;
+using Complex64 = Complex<double>;
 
 /*!
  * \class pcl::dcomplex
@@ -1085,7 +1085,7 @@ typedef Complex<double>       Complex64;
  * dcomplex is an alias for Complex64. It is a template instantiation of
  * Complex for the \c double type.
  */
-typedef Complex64             dcomplex;
+using dcomplex = Complex64;
 
 /*!
  * \class pcl::complex
@@ -1096,7 +1096,7 @@ typedef Complex64             dcomplex;
  * complex is an alias for dcomplex. It is a template instantiation of Complex
  * for the \c double type.
  */
-typedef dcomplex              complex;
+using complex = dcomplex;
 
 #endif   // __PCL_NO_COMPLEX_INSTANTIATE
 
@@ -1107,4 +1107,4 @@ typedef dcomplex              complex;
 #endif   // __PCL_Complex_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Complex.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/Complex.h - Released 2022-08-10T16:36:28Z

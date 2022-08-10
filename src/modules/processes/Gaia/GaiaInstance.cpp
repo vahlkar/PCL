@@ -105,6 +105,11 @@ void GaiaInstance::Assign( const ProcessImplementation& p )
       o_dataRelease = x->o_dataRelease;
       o_databaseMagnitudeLow = x->o_databaseMagnitudeLow;
       o_databaseMagnitudeHigh = x->o_databaseMagnitudeHigh;
+      o_hasMeanSpectrumData = x->o_hasMeanSpectrumData;
+      o_spectrumStart = x->o_spectrumStart;
+      o_spectrumStep = x->o_spectrumStep;
+      o_spectrumCount = x->o_spectrumCount;
+      o_spectrumBits = x->o_spectrumBits;
    }
 }
 
@@ -112,6 +117,7 @@ void GaiaInstance::Assign( const ProcessImplementation& p )
 
 bool GaiaInstance::CanExecuteOn( const View&, String& whyNot ) const
 {
+   whyNot = "Gaia can only be executed in the global context.";
    return false;
 }
 
@@ -119,7 +125,6 @@ bool GaiaInstance::CanExecuteOn( const View&, String& whyNot ) const
 
 bool GaiaInstance::CanExecuteGlobal( String& whyNot ) const
 {
-   whyNot = "Gaia can only be executed in the global context.";
    return true;
 }
 
@@ -131,6 +136,9 @@ bool GaiaInstance::ExecuteGlobal()
    o_isValid = false;
    o_dataRelease = OutputDataRelease();
    o_databaseMagnitudeLow = o_databaseMagnitudeHigh = 0;
+   o_hasMeanSpectrumData = false;
+   o_spectrumStart = o_spectrumStep = 0;
+   o_spectrumCount = o_spectrumBits = 0;
 
    if ( likely( p_command == "search" ) )
    {
@@ -393,7 +401,10 @@ void GaiaInstance::GenerateTextOutput() const
       if ( p_textHeaders == GTextHeaders::TableColumns
         || p_textHeaders == GTextHeaders::SearchParametersAndTableColumns )
       {
-         f.OutTextLn( "ra,dec,parallax,pmra,pmdec,phot_g_mean_mag,phot_bp_mean_mag,phot_rp_mean_mag,flags" );
+         IsoString hdr = "ra,dec,parallax,pmra,pmdec,phot_g_mean_mag,phot_bp_mean_mag,phot_rp_mean_mag,flags";
+         if ( GDataRelease::HasMeanSpectrumData( o_dataRelease ) )
+            hdr << ",flux";
+         f.OutTextLn( hdr );
       }
       for ( const GaiaStarData& star : p_searchData.stars )
       {
@@ -414,7 +425,21 @@ void GaiaInstance::GenerateTextOutput() const
 
          IsoString sflags = IsoString().Format( "%x", star.flags );
 
-         f.OutTextLn( sa + ',' + sd + ',' + smotion + ',' + smagG + ',' + smagBP + ',' + smagRP + ',' + sflags );
+         IsoString text = sa + ',' + sd + ',' + smotion + ',' + smagG + ',' + smagBP + ',' + smagRP + ',' + sflags;
+
+         if ( GDataRelease::HasMeanSpectrumData( o_dataRelease ) )
+         {
+            text << ",\"[";
+            if ( !star.flux.IsEmpty() )
+            {
+               text.AppendFormat( "%.3e", star.flux[0] );
+               for ( int i = 1; i < star.flux.Length(); ++i )
+                  text.AppendFormat( ",%.3e", star.flux[i] );
+            }
+            text << "]\"";
+         }
+
+         f.OutTextLn( text );
       }
       break;
 
@@ -423,7 +448,7 @@ void GaiaInstance::GenerateTextOutput() const
         || p_textHeaders == GTextHeaders::SearchParametersAndTableColumns )
       {
          f.OutTextLn( "Gaia " + GDataRelease::ReleaseName( o_dataRelease ) + " Search"
-           + IsoString().Format( "\n================"
+           + IsoString().Format( "\n=========================="
                                  "\nTotal sources ............ %u"
                                  "\nCenter Right Ascension ... %13.9f deg"
                                  "\nCenter Declination ....... %+13.9f deg"
@@ -492,7 +517,7 @@ void GaiaInstance::GenerateTextOutput() const
          IsoString sd = IsoString::ToSexagesimal( p_searchData.centerDec, DecConversionOptions( 3/*precision*/ ) );
          IsoString sr = IsoString::ToSexagesimal( p_searchData.radius, AngleConversionOptions( 3/*precision*/ ) );
          f.OutTextLn(            "Gaia " + GDataRelease::ReleaseName( o_dataRelease ) + " Search"
-                                 "\n================"
+                                 "\n=========================="
                                  "\nTotal sources ............ " + IsoString( p_searchData.stars.Length() ) +
                                  "\nCenter Right Ascension ... " + sa + " (hms)"
 #ifdef _MSC_VER
@@ -576,6 +601,11 @@ void GaiaInstance::GetInfo()
    o_isValid = TheGaiaProcess->IsValid( o_dataRelease );
    o_databaseMagnitudeLow = TheGaiaProcess->MagnitudeLow( o_dataRelease );
    o_databaseMagnitudeHigh = TheGaiaProcess->MagnitudeHigh( o_dataRelease );
+   o_hasMeanSpectrumData = TheGaiaProcess->HasMeanSpectrumData( o_dataRelease );
+   o_spectrumStart = TheGaiaProcess->SpectrumStart( o_dataRelease );
+   o_spectrumStep = TheGaiaProcess->SpectrumStep( o_dataRelease );
+   o_spectrumCount = TheGaiaProcess->SpectrumCount( o_dataRelease );
+   o_spectrumBits = TheGaiaProcess->SpectrumBits( o_dataRelease );
 }
 
 // ----------------------------------------------------------------------------
@@ -627,6 +657,8 @@ void* GaiaInstance::LockParameter( const MetaParameter* p, size_type tableRow )
       return &p_searchData.inclusionFlags;
    if ( p == TheGExclusionFlagsParameter )
       return &p_searchData.exclusionFlags;
+   if ( p == TheGNormalizeSpectrumParameter )
+      return &p_searchData.normalizeSpectrum;
 
    if ( p == TheGSourceRAParameter )
       return &p_searchData.stars[tableRow].ra;
@@ -646,6 +678,9 @@ void* GaiaInstance::LockParameter( const MetaParameter* p, size_type tableRow )
       return &p_searchData.stars[tableRow].magRP;
    if ( p == TheGSourceFlagsParameter )
       return &p_searchData.stars[tableRow].flags;
+   if ( p == TheGSourceFluxParameter )
+      return p_searchData.stars[tableRow].flux.Begin();
+
    if ( p == TheGExcessCountParameter )
       return &p_searchData.excessCount;
    if ( p == TheGRejectCountParameter )
@@ -670,6 +705,16 @@ void* GaiaInstance::LockParameter( const MetaParameter* p, size_type tableRow )
       return &o_databaseMagnitudeLow;
    if ( p == TheGDatabaseMagnitudeHighParameter )
       return &o_databaseMagnitudeHigh;
+   if ( p == TheGDatabaseHasMeanSpectrumDataParameter )
+      return &o_hasMeanSpectrumData;
+   if ( p == TheGDatabaseSpectrumStartParameter )
+      return &o_spectrumStart;
+   if ( p == TheGDatabaseSpectrumStepParameter )
+      return &o_spectrumStep;
+   if ( p == TheGDatabaseSpectrumCountParameter )
+      return &o_spectrumCount;
+   if ( p == TheGDatabaseSpectrumBitsParameter )
+      return &o_spectrumBits;
 
    return nullptr;
 }
@@ -695,6 +740,12 @@ bool GaiaInstance::AllocateParameter( size_type sizeOrLength, const MetaParamete
       p_searchData.stars.Clear();
       if ( sizeOrLength > 0 )
          p_searchData.stars.Add( GaiaStarData(), sizeOrLength );
+   }
+   else if ( p == TheGSourceFluxParameter )
+   {
+      p_searchData.stars[tableRow].flux.Clear();
+      if ( sizeOrLength > 0 )
+         p_searchData.stars[tableRow].flux = FVector( sizeOrLength/sizeof( float ) );
    }
    else if ( p == TheGDatabaseFilePathsParameter )
    {
@@ -724,6 +775,8 @@ size_type GaiaInstance::ParameterLength( const MetaParameter* p, size_type table
       return p_outputFilePath.Length();
    if ( p == TheGSourcesParameter )
       return p_searchData.stars.Length();
+   if ( p == TheGSourceFluxParameter )
+      return p_searchData.stars[tableRow].flux.Size(); // in bytes
    if ( p == TheGDatabaseFilePathsParameter )
       return p_databaseFilePaths.Length();
    if ( p == TheGDatabaseFilePathParameter )
@@ -739,15 +792,19 @@ int GaiaInstance::OutputDataRelease() const
    switch ( p_dataRelease )
    {
    case GDataRelease::DR2:
-   default:
    case GDataRelease::EDR3:
+   default:
+   case GDataRelease::DR3:
+   case GDataRelease::DR3SP:
       return p_dataRelease;
    case GDataRelease::BestAvailable:
+      if ( TheGaiaProcess->HasDatabaseFiles( GDataRelease::DR3 ) )
+         return GDataRelease::DR3;
       if ( TheGaiaProcess->HasDatabaseFiles( GDataRelease::EDR3 ) )
          return GDataRelease::EDR3;
       if ( TheGaiaProcess->HasDatabaseFiles( GDataRelease::DR2 ) )
          return GDataRelease::DR2;
-      return GDataRelease::EDR3;
+      return GDataRelease::DR3;
    }
 }
 

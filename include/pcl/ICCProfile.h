@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/ICCProfile.h - Released 2022-05-17T17:14:45Z
+// pcl/ICCProfile.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -107,7 +107,7 @@ namespace ICCProfileClass
  * \brief A combination of ICCProfileClass values.
  * \ingroup color_management
  */
-typedef Flags<ICCProfileClass::mask_type>   ICCProfileClasses;
+using ICCProfileClasses = Flags<ICCProfileClass::mask_type>;
 
 // ----------------------------------------------------------------------------
 
@@ -162,7 +162,7 @@ namespace ICCColorSpace
  * \brief A combination of ICCColorSpace values.
  * \ingroup color_management
  */
-typedef Flags<ICCColorSpace::mask_type>  ICCColorSpaces;
+using ICCColorSpaces = Flags<ICCColorSpace::mask_type>;
 
 // ----------------------------------------------------------------------------
 
@@ -238,27 +238,27 @@ public:
    /*!
     * Represents an opaque handle to an internal ICC profile.
     */
-   typedef void*                                handle;
+   using handle = void*;
 
    /*!
     * Represents an ICC profile device class.
     */
-   typedef ICCProfileClass::mask_type           profile_class;
+   using profile_class = ICCProfileClass::mask_type;
 
    /*!
     * Represents an ICC profile color space.
     */
-   typedef ICCColorSpace::mask_type             color_space;
+   using color_space = ICCColorSpace::mask_type;
 
    /*!
     * Represents an ICC rendering intent.
     */
-   typedef ICCRenderingIntent::value_type       rendering_intent;
+   using rendering_intent = ICCRenderingIntent::value_type;
 
    /*!
     * Represents an ICC transform rendering direction.
     */
-   typedef ICCRenderingDirection::value_type    rendering_direction;
+   using rendering_direction = ICCRenderingDirection::value_type;
 
    /*!
     * Constructs an empty %ICCProfile object. An empty %ICCProfile doesn't
@@ -863,7 +863,7 @@ public:
    /*!
     * Represents a sorted list of ICC profile information items.
     */
-   typedef SortedArray<Info> profile_list;
+   using profile_list = SortedArray<Info>;
 
    /*!
     * Returns a sorted list of profile information items (full file paths and
@@ -902,4 +902,4 @@ private:
 #endif   // __PCL_ICCProfile_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ICCProfile.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/ICCProfile.h - Released 2022-08-10T16:36:28Z

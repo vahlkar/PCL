@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/PSFFit.cpp - Released 2022-05-17T17:14:53Z
+// pcl/PSFFit.cpp - Released 2022-08-10T16:36:36Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -647,7 +647,7 @@ private:
          float         m_growthForFlux;
 };
 
-typedef int (*cminpack_callback)( void*, int, int, const double*, double*, int );
+using cminpack_callback = int (*)( void*, int, int, const double*, double*, int );
 
 PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
                 psf_function function, bool circular,
@@ -1609,4 +1609,4 @@ String PSFData::StatusText() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFFit.cpp - Released 2022-05-17T17:14:53Z
+// EOF pcl/PSFFit.cpp - Released 2022-08-10T16:36:36Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/IndirectArray.h - Released 2022-05-17T17:14:45Z
+// pcl/IndirectArray.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -94,51 +94,47 @@ public:
 
    /*! #
     */
-   typedef A                        block_allocator;
+   using block_allocator = A;
 
    /*! #
     */
-   typedef pcl::Allocator<T,A>      allocator;
+   using allocator = pcl::Allocator<T,A>;
 
    /*! #
     */
-   typedef T**                      iterator;
+   using iterator = T**;
 
    /*! #
     */
-   typedef T* const*                const_iterator;
+   using const_iterator = T* const*;
 
    /*! #
     */
-   typedef Array<void*, A>          array_implementation;
+   using array_implementation = Array<void*, A>;
 
    /*! #
     */
-   typedef typename array_implementation::iterator
-                                    array_iterator;
+   using array_iterator = typename array_implementation::iterator;
 
    /*! #
     */
-   typedef typename array_implementation::const_iterator
-                                    const_array_iterator;
+   using const_array_iterator = typename array_implementation::const_iterator;
 
    /*! #
     */
-   typedef ReverseRandomAccessIterator<iterator, T*>
-                                    reverse_iterator;
+   using reverse_iterator = ReverseRandomAccessIterator<iterator, T*>;
 
    /*! #
     */
-   typedef ReverseRandomAccessIterator<const_iterator, const T*>
-                                    const_reverse_iterator;
+   using const_reverse_iterator = ReverseRandomAccessIterator<const_iterator, const T*>;
 
    /*! #
     */
-   typedef IndirectEqual<const T*>  equal;
+   using equal = IndirectEqual<const T*>;
 
    /*! #
     */
-   typedef IndirectLess<const T*>   less;
+   using less = IndirectLess<const T*>;
 
    // -------------------------------------------------------------------------
 
@@ -2020,4 +2016,4 @@ IndirectArray<T,A>& operator <<( IndirectArray<T,A>&& x1, const IndirectArray<T,
 #endif  // __PCL_IndirectArray_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/IndirectArray.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/IndirectArray.h - Released 2022-08-10T16:36:28Z

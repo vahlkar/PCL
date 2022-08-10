@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/ImageView.h - Released 2022-05-17T17:14:45Z
+// pcl/ImageView.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -84,28 +84,28 @@ public:
     * Represents a GUI working mode. Valid modes are defined in the ImageMode
     * namespace.
     */
-   typedef ImageMode::value_type          gui_mode;
+   using gui_mode = ImageMode::value_type;
 
    /*!
     * Represents a display image channel supported by the PixInsight core
     * application. Valid display channels and components are defined in the
     * DisplayChannel namespace.
     */
-   typedef DisplayChannel::value_type     display_channel;
+   using display_channel = DisplayChannel::value_type;
 
    /*!
     * Represents a transparency background brush supported by the PixInsight
     * core application. Valid transparency brushes are defined in the
     * BackgroundBrush namespace.
     */
-   typedef BackgroundBrush::value_type    background_brush;
+   using background_brush = BackgroundBrush::value_type;
 
    /*!
     * Represents a transparency rendering mode supported by the PixInsight core
     * application. Valid transparency rendering modes are defined in the
     * TransparencyMode namespace.
     */
-   typedef TransparencyMode::value_type   transparency_mode;
+   using transparency_mode = TransparencyMode::value_type;
 
    /*!
     * Creates a new %ImageView control with the specified image parameters.
@@ -1404,7 +1404,7 @@ public:
     *
     * \ingroup image_view_event_handlers
     */
-   typedef void (Control::*scroll_event_handler)( ImageView& sender, int dx, int dy );
+   using scroll_event_handler = void (Control::*)( ImageView& sender, int dx, int dy );
 
    /*!
     * Sets the scroll event handler for this %ImageView control.
@@ -1456,4 +1456,4 @@ protected:
 #endif   // __PCL_ImageView_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ImageView.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/ImageView.h - Released 2022-08-10T16:36:28Z

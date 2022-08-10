@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.5.1
+// Standard ColorCalibration Process Module Version 1.5.2
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationParameters.cpp - Released 2022-05-17T17:15:11Z
+// PhotometricColorCalibrationParameters.cpp - Released 2022-05-20T16:28:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -60,65 +60,66 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-PCCWorkingMode*                    ThePCCWorkingModeParameter = nullptr;
-PCCApplyCalibration*               ThePCCApplyCalibrationParameter = nullptr;
+PCCWorkingMode*                      ThePCCWorkingModeParameter = nullptr;
+PCCApplyCalibration*                 ThePCCApplyCalibrationParameter = nullptr;
 
-PCCRedFilterWavelength*            ThePCCRedFilterWavelengthParameter = nullptr;
-PCCRedFilterBandwidth*             ThePCCRedFilterBandwidthParameter = nullptr;
-PCCGreenFilterWavelength*          ThePCCGreenFilterWavelengthParameter = nullptr;
-PCCGreenFilterBandwidth*           ThePCCGreenFilterBandwidthParameter = nullptr;
-PCCBlueFilterWavelength*           ThePCCBlueFilterWavelengthParameter = nullptr;
-PCCBlueFilterBandwidth*            ThePCCBlueFilterBandwidthParameter = nullptr;
+PCCRedFilterWavelength*              ThePCCRedFilterWavelengthParameter = nullptr;
+PCCRedFilterBandwidth*               ThePCCRedFilterBandwidthParameter = nullptr;
+PCCGreenFilterWavelength*            ThePCCGreenFilterWavelengthParameter = nullptr;
+PCCGreenFilterBandwidth*             ThePCCGreenFilterBandwidthParameter = nullptr;
+PCCBlueFilterWavelength*             ThePCCBlueFilterWavelengthParameter = nullptr;
+PCCBlueFilterBandwidth*              ThePCCBlueFilterBandwidthParameter = nullptr;
 
-PCCWhiteReferenceId*               ThePCCWhiteReferenceIdParameter = nullptr;
-PCCWhiteReferenceName*             ThePCCWhiteReferenceNameParameter = nullptr;
-PCCWhiteReferenceSr_JV*            ThePCCWhiteReferenceSr_JVParameter = nullptr;
-PCCWhiteReferenceJB_JV*            ThePCCWhiteReferenceJB_JVParameter = nullptr;
-PCCZeroPointSr_JV*                 ThePCCZeroPointSr_JVParameter = nullptr;
-PCCZeroPointJB_JV*                 ThePCCZeroPointJB_JVParameter = nullptr;
+PCCWhiteReferenceId*                 ThePCCWhiteReferenceIdParameter = nullptr;
+PCCWhiteReferenceName*               ThePCCWhiteReferenceNameParameter = nullptr;
+PCCWhiteReferenceSr_JV*              ThePCCWhiteReferenceSr_JVParameter = nullptr;
+PCCWhiteReferenceJB_JV*              ThePCCWhiteReferenceJB_JVParameter = nullptr;
+PCCZeroPointSr_JV*                   ThePCCZeroPointSr_JVParameter = nullptr;
+PCCZeroPointJB_JV*                   ThePCCZeroPointJB_JVParameter = nullptr;
 
-PCCFocalLength*                    ThePCCFocalLengthParameter = nullptr;
-PCCPixelSize*                      ThePCCPixelSizeParameter = nullptr;
-PCCCenterRA*                       ThePCCCenterRAParameter = nullptr;
-PCCCenterDec*                      ThePCCCenterDecParameter = nullptr;
-PCCEpochJD*                        ThePCCEpochJDParameter = nullptr;
-PCCForcePlateSolve*                ThePCCForcePlateSolveParameter = nullptr;
-PCCIgnoreImagePositionAndScale*    ThePCCIgnoreImagePositionAndScaleParameter = nullptr;
-PCCServerURL*                      ThePCCServerURLParameter = nullptr;
-PCCSolverCatalogName*              ThePCCSolverCatalogNameParameter = nullptr;
-PCCSolverAutoCatalog*              ThePCCSolverAutoCatalogParameter = nullptr;
-PCCSolverLimitMagnitude*           ThePCCSolverLimitMagnitudeParameter = nullptr;
-PCCSolverAutoLimitMagnitude*       ThePCCSolverAutoLimitMagnitudeParameter = nullptr;
-PCCSolverAutoLimitMagnitudeFactor* ThePCCSolverAutoLimitMagnitudeFactorParameter= nullptr;
-PCCSolverStarSensitivity*          ThePCCSolverStarSensitivityParameter = nullptr;
-PCCSolverNoiseLayers*              ThePCCSolverNoiseLayersParameter = nullptr;
-PCCSolverAlignmentDevice*          ThePCCSolverAlignmentDeviceParameter = nullptr;
-PCCSolverDistortionCorrection*     ThePCCSolverDistortionCorrectionParameter = nullptr;
-PCCSolverSplineSmoothing*          ThePCCSolverSplineSmoothingParameter = nullptr;
-PCCSolverProjection*               ThePCCSolverProjectionParameter = nullptr;
+PCCFocalLength*                      ThePCCFocalLengthParameter = nullptr;
+PCCPixelSize*                        ThePCCPixelSizeParameter = nullptr;
+PCCCenterRA*                         ThePCCCenterRAParameter = nullptr;
+PCCCenterDec*                        ThePCCCenterDecParameter = nullptr;
+PCCEpochJD*                          ThePCCEpochJDParameter = nullptr;
+PCCForcePlateSolve*                  ThePCCForcePlateSolveParameter = nullptr;
+PCCIgnoreImagePositionAndScale*      ThePCCIgnoreImagePositionAndScaleParameter = nullptr;
+PCCServerURL*                        ThePCCServerURLParameter = nullptr;
+PCCSolverCatalogName*                ThePCCSolverCatalogNameParameter = nullptr;
+PCCSolverAutoCatalog*                ThePCCSolverAutoCatalogParameter = nullptr;
+PCCSolverLimitMagnitude*             ThePCCSolverLimitMagnitudeParameter = nullptr;
+PCCSolverAutoLimitMagnitude*         ThePCCSolverAutoLimitMagnitudeParameter = nullptr;
+PCCSolverStructureLayers*            ThePCCSolverStructureLayersParameter;
+PCCSolverMinStructureSize*           ThePCCSolverMinStructureSizeParameter;
+PCCSolverNoiseReductionFilterRadius* ThePCCSolverNoiseReductionFilterRadiusParameter;
+PCCSolverSensitivity*                ThePCCSolverSensitivityParameter = nullptr;
+PCCSolverAlignmentDevice*            ThePCCSolverAlignmentDeviceParameter = nullptr;
+PCCSolverDistortionCorrection*       ThePCCSolverDistortionCorrectionParameter = nullptr;
+PCCSolverSplineSmoothing*            ThePCCSolverSplineSmoothingParameter = nullptr;
+PCCSolverProjection*                 ThePCCSolverProjectionParameter = nullptr;
 
-PCCPhotCatalogName*                ThePCCPhotCatalogNameParameter = nullptr;
-PCCPhotAutoCatalog*                ThePCCPhotAutoCatalogParameter = nullptr;
-PCCPhotLimitMagnitude*             ThePCCPhotLimitMagnitudeParameter = nullptr;
-PCCPhotAutoLimitMagnitude*         ThePCCPhotAutoLimitMagnitudeParameter = nullptr;
-PCCPhotAutoLimitMagnitudeFactor*   ThePCCPhotAutoLimitMagnitudeFactorParameter= nullptr;
-PCCPhotAutoAperture*               ThePCCPhotAutoApertureParameter = nullptr;
-PCCPhotAperture*                   ThePCCPhotApertureParameter = nullptr;
-PCCPhotUsePSF*                     ThePCCPhotUsePSFParameter = nullptr;
-PCCPhotSaturationThreshold*        ThePCCPhotSaturationThresholdParameter = nullptr;
-PCCPhotShowDetectedStars*          ThePCCPhotShowDetectedStarsParameter = nullptr;
-PCCPhotShowBackgroundModels*       ThePCCPhotShowBackgroundModelsParameter = nullptr;
-PCCPhotGenerateGraphs*             ThePCCPhotGenerateGraphsParameter = nullptr;
+PCCPhotCatalogName*                  ThePCCPhotCatalogNameParameter = nullptr;
+PCCPhotAutoCatalog*                  ThePCCPhotAutoCatalogParameter = nullptr;
+PCCPhotLimitMagnitude*               ThePCCPhotLimitMagnitudeParameter = nullptr;
+PCCPhotAutoLimitMagnitude*           ThePCCPhotAutoLimitMagnitudeParameter = nullptr;
+PCCPhotAutoLimitMagnitudeFactor*     ThePCCPhotAutoLimitMagnitudeFactorParameter= nullptr;
+PCCPhotAutoAperture*                 ThePCCPhotAutoApertureParameter = nullptr;
+PCCPhotAperture*                     ThePCCPhotApertureParameter = nullptr;
+PCCPhotUsePSF*                       ThePCCPhotUsePSFParameter = nullptr;
+PCCPhotSaturationThreshold*          ThePCCPhotSaturationThresholdParameter = nullptr;
+PCCPhotShowDetectedStars*            ThePCCPhotShowDetectedStarsParameter = nullptr;
+PCCPhotShowBackgroundModels*         ThePCCPhotShowBackgroundModelsParameter = nullptr;
+PCCPhotGenerateGraphs*               ThePCCPhotGenerateGraphsParameter = nullptr;
 
-PCCNeutralizeBackground*           ThePCCNeutralizeBackgroundParameter = nullptr;
-PCCBackgroundReferenceViewId*      ThePCCBackgroundReferenceViewIdParameter = nullptr;
-PCCBackgroundLow*                  ThePCCBackgroundLowParameter = nullptr;
-PCCBackgroundHigh*                 ThePCCBackgroundHighParameter = nullptr;
-PCCBackgroundUseROI*               ThePCCBackgroundUseROIParameter = nullptr;
-PCCBackgroundROIX0*                ThePCCBackgroundROIX0Parameter = nullptr;
-PCCBackgroundROIY0*                ThePCCBackgroundROIY0Parameter = nullptr;
-PCCBackgroundROIX1*                ThePCCBackgroundROIX1Parameter = nullptr;
-PCCBackgroundROIY1*                ThePCCBackgroundROIY1Parameter = nullptr;
+PCCNeutralizeBackground*             ThePCCNeutralizeBackgroundParameter = nullptr;
+PCCBackgroundReferenceViewId*        ThePCCBackgroundReferenceViewIdParameter = nullptr;
+PCCBackgroundLow*                    ThePCCBackgroundLowParameter = nullptr;
+PCCBackgroundHigh*                   ThePCCBackgroundHighParameter = nullptr;
+PCCBackgroundUseROI*                 ThePCCBackgroundUseROIParameter = nullptr;
+PCCBackgroundROIX0*                  ThePCCBackgroundROIX0Parameter = nullptr;
+PCCBackgroundROIY0*                  ThePCCBackgroundROIY0Parameter = nullptr;
+PCCBackgroundROIX1*                  ThePCCBackgroundROIX1Parameter = nullptr;
+PCCBackgroundROIY1*                  ThePCCBackgroundROIY1Parameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -755,93 +756,115 @@ bool PCCSolverAutoLimitMagnitude::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-PCCSolverAutoLimitMagnitudeFactor::PCCSolverAutoLimitMagnitudeFactor( MetaProcess* P ) : MetaFloat( P )
+PCCSolverStructureLayers::PCCSolverStructureLayers( MetaProcess* p ) : MetaInt32( p )
 {
-   ThePCCSolverAutoLimitMagnitudeFactorParameter = this;
+   ThePCCSolverStructureLayersParameter = this;
 }
 
-IsoString PCCSolverAutoLimitMagnitudeFactor::Id() const
+IsoString PCCSolverStructureLayers::Id() const
 {
-   return "solverAutoLimitMagnitudeFactor";
+   return "solverStructureLayers";
 }
 
-int PCCSolverAutoLimitMagnitudeFactor::Precision() const
-{
-   return 2;
-}
-
-double PCCSolverAutoLimitMagnitudeFactor::MinimumValue() const
-{
-   return 10;
-}
-
-double PCCSolverAutoLimitMagnitudeFactor::MaximumValue() const
-{
-   return 25;
-}
-
-double PCCSolverAutoLimitMagnitudeFactor::DefaultValue() const
-{
-   return 16.5;
-}
-
-// ----------------------------------------------------------------------------
-
-PCCSolverStarSensitivity::PCCSolverStarSensitivity( MetaProcess* P ) : MetaFloat( P )
-{
-   ThePCCSolverStarSensitivityParameter = this;
-}
-
-IsoString PCCSolverStarSensitivity::Id() const
-{
-   return "solverStarSensitivity";
-}
-
-int PCCSolverStarSensitivity::Precision() const
-{
-   return 2;
-}
-
-double PCCSolverStarSensitivity::MinimumValue() const
-{
-   return -3;
-}
-
-double PCCSolverStarSensitivity::MaximumValue() const
-{
-   return +3;
-}
-
-double PCCSolverStarSensitivity::DefaultValue() const
-{
-   return -1; // J2000.0
-}
-
-// ----------------------------------------------------------------------------
-
-PCCSolverNoiseLayers::PCCSolverNoiseLayers( MetaProcess* P ) : MetaInt32( P )
-{
-   ThePCCSolverNoiseLayersParameter = this;
-}
-
-IsoString PCCSolverNoiseLayers::Id() const
-{
-   return "solverNoiseLayers";
-}
-
-double PCCSolverNoiseLayers::MinimumValue() const
-{
-   return 0;
-}
-
-double PCCSolverNoiseLayers::MaximumValue() const
+double PCCSolverStructureLayers::DefaultValue() const
 {
    return 5;
 }
 
-double PCCSolverNoiseLayers::DefaultValue() const
+double PCCSolverStructureLayers::MinimumValue() const
+{
+   return 1;
+}
+
+double PCCSolverStructureLayers::MaximumValue() const
+{
+   return 8;
+}
+
+// ----------------------------------------------------------------------------
+
+PCCSolverMinStructureSize::PCCSolverMinStructureSize( MetaProcess* p ) : MetaInt32( p )
+{
+   ThePCCSolverMinStructureSizeParameter = this;
+}
+
+IsoString PCCSolverMinStructureSize::Id() const
+{
+   return "solverMinStructureSize";
+}
+
+double PCCSolverMinStructureSize::DefaultValue() const
 {
    return 0;
+}
+
+double PCCSolverMinStructureSize::MinimumValue() const
+{
+   return 0;
+}
+
+double PCCSolverMinStructureSize::MaximumValue() const
+{
+   return 999999;
+}
+
+// ----------------------------------------------------------------------------
+
+PCCSolverNoiseReductionFilterRadius::PCCSolverNoiseReductionFilterRadius( MetaProcess* p ) : MetaInt32( p )
+{
+   ThePCCSolverNoiseReductionFilterRadiusParameter = this;
+}
+
+IsoString PCCSolverNoiseReductionFilterRadius::Id() const
+{
+   return "solverNoiseReductionFilterRadius";
+}
+
+double PCCSolverNoiseReductionFilterRadius::DefaultValue() const
+{
+   return 0;
+}
+
+double PCCSolverNoiseReductionFilterRadius::MinimumValue() const
+{
+   return 0;
+}
+
+double PCCSolverNoiseReductionFilterRadius::MaximumValue() const
+{
+   return 50;
+}
+
+// ----------------------------------------------------------------------------
+
+PCCSolverSensitivity::PCCSolverSensitivity( MetaProcess* p ) : MetaFloat( p )
+{
+   ThePCCSolverSensitivityParameter = this;
+}
+
+IsoString PCCSolverSensitivity::Id() const
+{
+   return "solverSensitivity";
+}
+
+int PCCSolverSensitivity::Precision() const
+{
+   return 2;
+}
+
+double PCCSolverSensitivity::DefaultValue() const
+{
+   return 0.5;
+}
+
+double PCCSolverSensitivity::MinimumValue() const
+{
+   return 0;
+}
+
+double PCCSolverSensitivity::MaximumValue() const
+{
+   return 1;
 }
 
 // ----------------------------------------------------------------------------
@@ -1449,4 +1472,4 @@ double PCCBackgroundROIY1::MaximumValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationParameters.cpp - Released 2022-05-17T17:15:11Z
+// EOF PhotometricColorCalibrationParameters.cpp - Released 2022-05-20T16:28:45Z

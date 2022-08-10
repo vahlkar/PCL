@@ -350,10 +350,10 @@ IsoString ADataRelease::ElementId( size_type index ) const
 {
    switch ( index )
    {
+   case BestAvailable: return "DataRelease_BestAvailable";
    case DR9:           return "DataRelease_9";
    default:
    case DR10:          return "DataRelease_10";
-   case BestAvailable: return "DataRelease_BestAvailable";
    }
 }
 

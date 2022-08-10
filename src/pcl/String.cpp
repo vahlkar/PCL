@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/String.cpp - Released 2022-05-17T17:14:53Z
+// pcl/String.cpp - Released 2022-08-10T16:36:36Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -834,6 +834,90 @@ bool IsoString::TryToUInt64( unsigned long long& value, int base ) const noexcep
 }
 
 // ----------------------------------------------------------------------------
+
+static float ParseFloat( IsoString::const_iterator p1, IsoString::const_iterator p2 )
+{
+   p1 = IsoString::char_traits::SearchTrimLeft( p1, p2 );
+   if ( p1 == p2 )
+      throw ParseError( "Parsing 32-bit floating point expression: empty string" );
+   p2 = IsoString::char_traits::SearchTrimRight( p1, p2 );
+   IsoString::iterator endptr = nullptr;
+   errno = 0;
+   float val = ::strtof( p1, &endptr );
+   if ( errno == ERANGE )
+      throw ParseError( "Parsing 32-bit floating point expression: out of the representable range", IsoString( p1, p2 ) );
+   if ( errno != 0 || (endptr != nullptr && endptr != p2) )
+      throw ParseError( "Parsing 32-bit floating point expression: conversion error", IsoString( p1, p2 ) );
+   return val;
+}
+
+Array<float> IsoString::ParseListOfFloat( char separator, size_type maxCount ) const
+{
+   if (  IsoCharTraits::IsDigit( separator )
+      || IsoCharTraits::IsSign( separator )
+      || IsoCharTraits::IsDecimalSeparator( separator )
+      || IsoCharTraits::IsExponentDelimiter( separator ) )
+      throw ParseError( "Parsing real numeric list: invalid separator specified" );
+   Array<float> v;
+   for ( const_iterator p1 = char_traits::SearchTrimLeft( Begin(), End() ),
+                        p2 = char_traits::SearchTrimRight( p1, End() ); p1 < p2; ++p1 )
+   {
+      const_iterator s;
+      for ( s = p1; s < p2; ++s )
+         if ( *s == separator )
+            break;
+      float x = ParseFloat( p1, s );
+      if ( v.Length() == maxCount )
+         throw ParseError( "Parsing real numeric list: too many items: expected a maximum of " + String( maxCount ) + '.', IsoString( p1, s ) );
+      v << x;
+      p1 = s;
+   }
+   return v;
+}
+
+// ----------------------------------------------------------------------------
+
+static double ParseDouble( IsoString::const_iterator p1, IsoString::const_iterator p2 )
+{
+   p1 = IsoString::char_traits::SearchTrimLeft( p1, p2 );
+   if ( p1 == p2 )
+      throw ParseError( "Parsing 64-bit floating point expression: empty string" );
+   p2 = IsoString::char_traits::SearchTrimRight( p1, p2 );
+   IsoString::iterator endptr = nullptr;
+   errno = 0;
+   double val = ::strtod( p1, &endptr );
+   if ( errno == ERANGE )
+      throw ParseError( "Parsing 64-bit floating point expression: out of the representable range", IsoString( p1, p2 ) );
+   if ( errno != 0 || (endptr != nullptr && endptr != p2) )
+      throw ParseError( "Parsing 64-bit floating point expression: conversion error", IsoString( p1, p2 ) );
+   return val;
+}
+
+Array<double> IsoString::ParseListOfDouble( char separator, size_type maxCount ) const
+{
+   if (  IsoCharTraits::IsDigit( separator )
+      || IsoCharTraits::IsSign( separator )
+      || IsoCharTraits::IsDecimalSeparator( separator )
+      || IsoCharTraits::IsExponentDelimiter( separator ) )
+      throw ParseError( "Parsing real numeric list: invalid separator specified" );
+   Array<double> v;
+   for ( const_iterator p1 = char_traits::SearchTrimLeft( Begin(), End() ),
+                        p2 = char_traits::SearchTrimRight( p1, End() ); p1 < p2; ++p1 )
+   {
+      const_iterator s;
+      for ( s = p1; s < p2; ++s )
+         if ( *s == separator )
+            break;
+      double x = ParseDouble( p1, s );
+      if ( v.Length() == maxCount )
+         throw ParseError( "Parsing real numeric list: too many items: expected a maximum of " + String( maxCount ) + '.', IsoString( p1, s ) );
+      v << x;
+      p1 = s;
+   }
+   return v;
+}
+
+// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 void String::Assign( const wchar_t* t )
@@ -1489,6 +1573,116 @@ bool String::TryToUInt64( unsigned long long& value, int base ) const noexcept
       }
    }
    return false;
+}
+
+// ----------------------------------------------------------------------------
+
+static float ParseFloat( String::const_iterator p1, String::const_iterator p2 )
+{
+   p1 = String::char_traits::SearchTrimLeft( p1, p2 );
+   if ( p1 == p2 )
+      throw ParseError( "Parsing 32-bit floating point expression: empty string" );
+   p2 = String::char_traits::SearchTrimRight( p1, p2 );
+   wchar_t* endptr = nullptr;
+   errno = 0;
+#ifdef __PCL_WINDOWS
+   float val = ::wcstof( (const wchar_t*)p1, &endptr );
+#else
+   Array<wchar_t> a( p2-p1+1 );
+   Array<wchar_t>::iterator w = a.Begin();
+   for ( String::const_iterator s = p1; s < p2; ++w, ++s )
+      *w = wchar_t( *s );
+   *w = wchar_t( 0 );
+   float val = ::wcstof( a.Begin(), &endptr );
+#endif // __PCL_WINDOWS
+   if ( errno == ERANGE )
+      throw ParseError( "Parsing 32-bit floating point expression: out of the representable range", String( p1, p2 ) );
+#ifdef __PCL_WINDOWS
+   if ( errno != 0 || (endptr != nullptr && endptr != (const wchar_t*)p2) )
+#else
+   if ( errno != 0 || (endptr != nullptr && endptr != a.End()-1) )
+#endif // __PCL_WINDOWS
+      throw ParseError( "Parsing 32-bit floating point expression: conversion error", String( p1, p2 ) );
+   return val;
+}
+
+Array<float> String::ParseListOfFloat( char separator, size_type maxCount ) const
+{
+   if (  IsoCharTraits::IsDigit( separator )
+      || IsoCharTraits::IsSign( separator )
+      || IsoCharTraits::IsDecimalSeparator( separator )
+      || IsoCharTraits::IsExponentDelimiter( separator ) )
+      throw ParseError( "Parsing real numeric list: invalid separator specified" );
+   Array<float> v;
+   for ( const_iterator p1 = char_traits::SearchTrimLeft( Begin(), End() ),
+                        p2 = char_traits::SearchTrimRight( p1, End() ); p1 < p2; ++p1 )
+   {
+      const_iterator s;
+      for ( s = p1; s < p2; ++s )
+         if ( *s == separator )
+            break;
+      float x = ParseFloat( p1, s );
+      if ( v.Length() == maxCount )
+         throw ParseError( "Parsing real numeric list: too many items: expected a maximum of " + String( maxCount ) + '.', String( p1, s ) );
+      v << x;
+      p1 = s;
+   }
+   return v;
+}
+
+// ----------------------------------------------------------------------------
+
+static double ParseDouble( String::const_iterator p1, String::const_iterator p2 )
+{
+   p1 = String::char_traits::SearchTrimLeft( p1, p2 );
+   if ( p1 == p2 )
+      throw ParseError( "Parsing 64-bit floating point expression: empty string" );
+   p2 = String::char_traits::SearchTrimRight( p1, p2 );
+   wchar_t* endptr = nullptr;
+   errno = 0;
+#ifdef __PCL_WINDOWS
+   double val = ::wcstod( (const wchar_t*)p1, &endptr );
+#else
+   Array<wchar_t> a( p2-p1+1 );
+   Array<wchar_t>::iterator w = a.Begin();
+   for ( String::const_iterator s = p1; s < p2; ++w, ++s )
+      *w = wchar_t( *s );
+   *w = wchar_t( 0 );
+   double val = ::wcstod( a.Begin(), &endptr );
+#endif // __PCL_WINDOWS
+   if ( errno == ERANGE )
+      throw ParseError( "Parsing 64-bit floating point expression: out of the representable range", String( p1, p2 ) );
+#ifdef __PCL_WINDOWS
+   if ( errno != 0 || (endptr != nullptr && endptr != (const wchar_t*)p2) )
+#else
+   if ( errno != 0 || (endptr != nullptr && endptr != a.End()-1) )
+#endif // __PCL_WINDOWS
+      throw ParseError( "Parsing 64-bit floating point expression: conversion error", String( p1, p2 ) );
+   return val;
+}
+
+Array<double> String::ParseListOfDouble( char separator, size_type maxCount ) const
+{
+   if (  IsoCharTraits::IsDigit( separator )
+      || IsoCharTraits::IsSign( separator )
+      || IsoCharTraits::IsDecimalSeparator( separator )
+      || IsoCharTraits::IsExponentDelimiter( separator ) )
+      throw ParseError( "Parsing real numeric list: invalid separator specified" );
+   Array<double> v;
+   for ( const_iterator p1 = char_traits::SearchTrimLeft( Begin(), End() ),
+                        p2 = char_traits::SearchTrimRight( p1, End() ); p1 < p2; ++p1 )
+   {
+      const_iterator s;
+      for ( s = p1; s < p2; ++s )
+         if ( *s == separator )
+            break;
+      double x = ParseDouble( p1, s );
+      if ( v.Length() == maxCount )
+         throw ParseError( "Parsing real numeric list: too many items: expected a maximum of " + String( maxCount ) + '.', String( p1, s ) );
+      v << x;
+      p1 = s;
+   }
+   return v;
 }
 
 // ----------------------------------------------------------------------------
@@ -2598,4 +2792,4 @@ IsoString IsoString::CurrentLocalISO8601DateTime( const ISO8601ConversionOptions
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/String.cpp - Released 2022-05-17T17:14:53Z
+// EOF pcl/String.cpp - Released 2022-08-10T16:36:36Z

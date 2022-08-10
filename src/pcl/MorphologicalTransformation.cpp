@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/MorphologicalTransformation.cpp - Released 2022-05-17T17:14:53Z
+// pcl/MorphologicalTransformation.cpp - Released 2022-08-10T16:36:36Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -162,11 +162,9 @@ private:
    {
    public:
 
-      typedef GenericImage<P>                         region;
-
-      typedef GenericVector<typename P::sample>       raw_vector;
-
-      typedef GenericMultiVector<typename P::sample>  raw_data;
+      using region = GenericImage<P>;
+      using raw_vector = GenericVector<typename P::sample>;
+      using raw_data = GenericMultiVector<typename P::sample>;
 
       Thread( ThreadData<P>& m_data, int firstRow, int endRow, bool upperOvRgn, bool lowerOvRgn )
          : m_data( m_data )
@@ -431,4 +429,4 @@ void MorphologicalTransformation::Validate() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MorphologicalTransformation.cpp - Released 2022-05-17T17:14:53Z
+// EOF pcl/MorphologicalTransformation.cpp - Released 2022-08-10T16:36:36Z

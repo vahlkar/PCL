@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/SurfaceSimplifier.h - Released 2022-05-17T17:14:45Z
+// pcl/SurfaceSimplifier.h - Released 2022-08-10T16:36:27Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -154,7 +154,7 @@ private:
     */
    struct point
    {
-      typedef double component;
+      using component = double;
 
       component x, y, z;
 
@@ -200,11 +200,9 @@ private:
       }
    };
 
-   typedef QuadTree<point>             tree;
-
-   typedef typename tree::rectangle    rectangle;
-
-   typedef typename tree::point_list   point_list;
+   using tree = QuadTree<point>;
+   using rectangle = typename tree::rectangle;
+   using point_list = typename tree::point_list;
 
 public:
 
@@ -578,4 +576,4 @@ private:
 #endif   // __PCL_SurfaceSimplifier_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SurfaceSimplifier.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/SurfaceSimplifier.h - Released 2022-08-10T16:36:27Z

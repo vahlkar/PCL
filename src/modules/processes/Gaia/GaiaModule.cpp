@@ -52,13 +52,13 @@
 
 #define MODULE_VERSION_MAJOR     1
 #define MODULE_VERSION_MINOR     1
-#define MODULE_VERSION_REVISION  0
+#define MODULE_VERSION_REVISION  3
 #define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2022
-#define MODULE_RELEASE_MONTH     5
-#define MODULE_RELEASE_DAY       17
+#define MODULE_RELEASE_MONTH     7
+#define MODULE_RELEASE_DAY       29
 
 #include "GaiaInterface.h"
 #include "GaiaModule.h"
@@ -164,6 +164,10 @@ void GaiaModule::OnUnload()
          TheGaiaProcess->SavePreferences( GDataRelease::DR2 );
       if ( TheGaiaProcess->PreferencesLoaded( GDataRelease::EDR3 ) )
          TheGaiaProcess->SavePreferences( GDataRelease::EDR3 );
+      if ( TheGaiaProcess->PreferencesLoaded( GDataRelease::DR3 ) )
+         TheGaiaProcess->SavePreferences( GDataRelease::DR3 );
+      if ( TheGaiaProcess->PreferencesLoaded( GDataRelease::DR3SP ) )
+         TheGaiaProcess->SavePreferences( GDataRelease::DR3SP );
    }
 }
 

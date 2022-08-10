@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/Defs.h - Released 2022-05-17T17:14:45Z
+// pcl/Defs.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -607,13 +607,13 @@ namespace pcl
  * A type used to represent block sizes, lengths and absolute positions.
  * \ingroup size_distance_types
  */
-typedef size_t                size_type;
+using size_type = size_t;
 
 /*!
  * A type used to represent distances and relative positions.
  * \ingroup size_distance_types
  */
-typedef ptrdiff_t             distance_type;
+using distance_type = ptrdiff_t;
 
 }  // pcl
 
@@ -634,53 +634,53 @@ namespace pcl
  * Signed two's complement 8-bit integer type.
  * \ingroup portable_integer_types
  */
-typedef signed char           int8;
+using int8 = signed char;
 
 /*!
  * Unsigned 8-bit integer type.
  * \ingroup portable_integer_types
  */
-typedef unsigned char         uint8;
+using uint8 = unsigned char;
 
 /*!
  * Signed two's complement 16-bit integer type.
  * \ingroup portable_integer_types
  */
-typedef signed short          int16;
+using int16 = signed short;
 
 /*!
  * Unsigned 16-bit integer type.
  * \ingroup portable_integer_types
  */
-typedef unsigned short        uint16;
+using uint16 = unsigned short;
 
 /*!
  * Signed two's complement 32-bit integer type.
  * \ingroup portable_integer_types
  */
-typedef signed int            int32;
+using int32 = signed int;
 
 /*!
  * Unsigned 32-bit integer type.
  * \ingroup portable_integer_types
  */
-typedef unsigned int          uint32;
+using uint32 = unsigned int;
 
 #ifdef _MSC_VER   // Valid for MS Visual C++
-typedef signed __int64        int64;
-typedef unsigned __int64      uint64;
+using int64 = signed __int64;
+using uint64 = unsigned __int64;
 #else             // Valid for gcc
 /*!
  * Signed two's complement 64-bit integer type.
  * \ingroup portable_integer_types
  */
-typedef signed long long      int64;
+using int64 = signed long long;
 
 /*!
  * Unsigned 64-bit integer type.
  * \ingroup portable_integer_types
  */
-typedef unsigned long long    uint64;
+using uint64 = unsigned long long;
 #endif // _MSC_VER
 
 struct PCL_AssertScalarSizes
@@ -1139,13 +1139,13 @@ namespace pcl
  * 16-bit Unicode character (UTF-16)
  * \ingroup unicode_char_types
  */
-typedef uint16                char16_type;
+using char16_type = uint16;
 
 /*!
  * 32-bit Unicode character (UTF-32)
  * \ingroup unicode_char_types
  */
-typedef uint32                char32_type;
+using char32_type = uint32;
 
 } // pcl
 
@@ -1177,13 +1177,13 @@ namespace pcl
  * A type used to store a byte position or a byte offset in a file.
  * \ingroup file_size_and_pos_types
  */
-typedef int64                 fpos_type;
+using fpos_type = int64;
 
 /*!
  * A type used to store the length of a file in bytes.
  * \ingroup file_size_and_pos_types
  */
-typedef int64                 fsize_type;
+using fsize_type = int64;
 
 }  // pcl
 
@@ -1202,4 +1202,4 @@ typedef int64                 fsize_type;
 #endif   // __PCL_Defs_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Defs.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/Defs.h - Released 2022-08-10T16:36:28Z

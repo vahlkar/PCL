@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/Histogram.h - Released 2022-05-17T17:14:45Z
+// pcl/Histogram.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -80,13 +80,13 @@ public:
     * Represents a histogram bin count, or the value of the discrete histogram
     * function at a specific abscissa or range of abscissae.
     */
-   typedef uint64       count_type;
+   using count_type = uint64;
 
    /*!
     * A vector of histogram bin counts, which is the type used internally to
     * store the values of the discrete histogram function.
     */
-   typedef UI64Vector   histogram_type;
+   using histogram_type = UI64Vector;
 
    /*!
     * Constructs an empty %Histogram object with the specified \a resolution.
@@ -657,4 +657,4 @@ protected:
 #endif  // __PCL_Histogram_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Histogram.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/Histogram.h - Released 2022-08-10T16:36:28Z

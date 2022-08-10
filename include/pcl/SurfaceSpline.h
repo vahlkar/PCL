@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/SurfaceSpline.h - Released 2022-05-17T17:14:45Z
+// pcl/SurfaceSpline.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -154,7 +154,7 @@ public:
     * Represents a radial basis function (RBF) supported by this surface spline
     * implementation.
     */
-   typedef RadialBasisFunction::value_type   rbf_type;
+   using rbf_type = RadialBasisFunction::value_type;
 
 protected:
 
@@ -265,30 +265,30 @@ public:
     * The numeric type used to represent coordinates, function values and
     * spline coefficients.
     */
-   typedef T                           scalar;
+   using scalar = T;
 
    /*!
     * Represents a vector of coordinates, function values or spline
     * coefficients.
     */
-   typedef GenericVector<scalar>       vector;
+   using vector = GenericVector<scalar>;
 
    /*!
     * The numeric type used to represent the interpolation strength of a
     * surface interpolation node.
     */
-   typedef float                       weight;
+   using weight = float;
 
    /*!
     * Represents a vector of interpolation node weights.
     */
-   typedef GenericVector<weight>       weight_vector;
+   using weight_vector = GenericVector<weight>;
 
    /*!
     * Represents a radial basis function (RBF) supported by this surface spline
     * implementation.
     */
-   typedef SurfaceSplineBase::rbf_type rbf_type;
+   using rbf_type = SurfaceSplineBase::rbf_type;
 
    /*!
     * Default constructor. Constructs an empty, two-dimensional interpolating
@@ -933,23 +933,23 @@ public:
    /*!
     * Represents an interpolation point in two dimensions.
     */
-   typedef P                     point;
+   using point = P;
 
    /*!
     * Represents a sequence of interpolation points.
     */
-   typedef Array<point>          point_list;
+   using point_list = Array<point>;
 
    /*!
     * Represents a coordinate interpolating/approximating surface spline.
     */
-   typedef SurfaceSpline<double> spline;
+   using spline = SurfaceSpline<double>;
 
    /*!
     * Represents a radial basis function (RBF) supported by this point surface
     * spline implementation.
     */
-   typedef spline::rbf_type      rbf_type;
+   using rbf_type = spline::rbf_type;
 
    /*!
     * Default constructor. Yields an empty instance that cannot be used without
@@ -1350,22 +1350,22 @@ public:
    /*!
     * Represents a point surface spline.
     */
-   typedef PointSurfaceSpline<P>             spline;
+   using spline = PointSurfaceSpline<P>;
 
    /*
     * Represents a recursive point surface spline.
     */
-   typedef RecursivePointSurfaceSpline<P>    recursive_spline;
+   using recursive_spline = RecursivePointSurfaceSpline<P>;
 
    /*!
     * Represents an interpolation point in two dimensions.
     */
-   typedef typename spline::point            point;
+   using point = typename spline::point;
 
    /*!
     * Represents a sequence of interpolation points.
     */
-   typedef typename spline::point_list       point_list;
+   using point_list = typename spline::point_list;
 
    /*!
     * Default constructor. Yields an empty instance that cannot be used without
@@ -1871,7 +1871,7 @@ private:
     */
    struct Node
    {
-      typedef typename point::component   component;
+      using component = typename point::component;
 
       point position, value;
       float weight;
@@ -1902,11 +1902,11 @@ private:
       }
    };
 
-   typedef QuadTree<Node>                  tree;
-   typedef typename tree::point_list       node_list;
-   typedef typename tree::rectangle        search_rectangle;
-   typedef typename tree::coordinate       search_coordinate;
-   typedef GenericPoint<search_coordinate> search_point;
+   using tree = QuadTree<Node>;
+   using node_list = typename tree::point_list;
+   using search_rectangle = typename tree::rectangle;
+   using search_coordinate = typename tree::coordinate;
+   using search_point = GenericPoint<search_coordinate>;
 
    tree             m_tree;   // the tree of subsplines
    spline           m_spline; // final point spline if there is no further recursion
@@ -2008,4 +2008,4 @@ private:
 #endif   // __PCL_SurfaceSpline_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SurfaceSpline.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/SurfaceSpline.h - Released 2022-08-10T16:36:28Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/ReferenceArray.h - Released 2022-05-17T17:14:45Z
+// pcl/ReferenceArray.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -98,27 +98,23 @@ public:
 
    /*! #
     */
-   typedef IndirectArray<T,A>       array_implementation;
+   using array_implementation = IndirectArray<T,A>;
 
    /*! #
     */
-   typedef typename array_implementation::block_allocator
-                                    block_allocator;
+   using block_allocator = typename array_implementation::block_allocator;
 
    /*! #
     */
-   typedef typename array_implementation::allocator
-                                    allocator;
+   using allocator = typename array_implementation::allocator;
 
    /*! #
     */
-   typedef typename array_implementation::iterator
-                                    indirect_iterator;
+   using indirect_iterator = typename array_implementation::iterator;
 
    /*! #
     */
-   typedef typename array_implementation::const_iterator
-                                    const_indirect_iterator;
+   using const_indirect_iterator = typename array_implementation::const_iterator;
 
    /*!
     * \class pcl::ReferenceArray::iterator
@@ -128,12 +124,9 @@ public:
    {
    public:
 
-      typedef Iterator<RandomAccessIterator, T> iterator_base;
-
-      typedef typename iterator_base::iterator_class
-                                                iterator_class;
-
-      typedef typename iterator_base::item_type item_type;
+      using iterator_base = Iterator<RandomAccessIterator, T>;
+      using iterator_class = typename iterator_base::iterator_class;
+      using item_type = typename iterator_base::item_type;
 
       /*!
        * Default constructor. Constructs an uninitialized iterator object.
@@ -326,12 +319,9 @@ public:
    {
    public:
 
-      typedef Iterator<RandomAccessIterator, T> iterator_base;
-
-      typedef typename iterator_base::iterator_class
-                                                iterator_class;
-
-      typedef typename iterator_base::item_type item_type;
+      using iterator_base = Iterator<RandomAccessIterator, T>;
+      using iterator_class = typename iterator_base::iterator_class;
+      using item_type = typename iterator_base::item_type;
 
       /*!
        * Default constructor. Constructs an uninitialized iterator object.
@@ -564,15 +554,13 @@ public:
     * \class pcl::ReferenceArray::reverse_iterator
     * \brief Mutable %ReferenceArray reverse iterator.
     */
-   typedef ReverseRandomAccessIterator<iterator, T>
-                                    reverse_iterator;
+   using reverse_iterator = ReverseRandomAccessIterator<iterator, T>;
 
    /*!
     * \class pcl::ReferenceArray::const_reverse_iterator
     * \brief Immutable %ReferenceArray reverse iterator.
     */
-   typedef ReverseRandomAccessIterator<const_iterator, const T>
-                                    const_reverse_iterator;
+   using const_reverse_iterator = ReverseRandomAccessIterator<const_iterator, const T>;
 
    // -------------------------------------------------------------------------
 
@@ -2250,4 +2238,4 @@ ReferenceArray<T,A>& operator <<( ReferenceArray<T,A>&& x1, const ReferenceArray
 #endif   // __PCL_ReferenceArray_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ReferenceArray.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/ReferenceArray.h - Released 2022-08-10T16:36:28Z

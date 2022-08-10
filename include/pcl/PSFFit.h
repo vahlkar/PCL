@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/PSFFit.h - Released 2022-05-17T17:14:45Z
+// pcl/PSFFit.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -148,18 +148,18 @@ struct PSFData
    /*!
     * Represents a point spread function type.
     */
-   typedef PSFunction::value_type      psf_function;
+   using psf_function = PSFunction::value_type;
 
    /*!
     * Represents a PSF fitting process status.
     */
-   typedef PSFFitStatus::value_type    psf_fit_status;
+   using psf_fit_status = PSFFitStatus::value_type;
 
    /*!
     * Represents a component of a centroid position vector (required for
     * QuadTree compatibility).
     */
-   typedef DPoint::component           component;
+   using component = DPoint::component;
 
    psf_function   function = PSFunction::Invalid;   //!< Point spread function type (PSFunction namespace).
    bool           circular = false;                 //!< Circular or elliptical PSF.
@@ -178,8 +178,7 @@ struct PSFData
    double         signal = 0; //!< Total flux above the local background, measured over the elliptical PSF region.
    unsigned       signalCount = 0; //!< Number of pixels used for signal evaluation.
    double         mad = 0;    /*!< Goodness of fit estimate. A robust, mean absolute difference between the
-                                   fitted PSF and the sample of source image pixels over the fitting region, scaled
-                                   by the total signal estimate. */
+                                   fitted PSF and the sample of source image pixels over the fitting region. */
    /*!
     * Default constructor.
     */
@@ -466,12 +465,12 @@ public:
    /*!
     * Represents a point spread function type.
     */
-   typedef PSFData::psf_function    psf_function;
+   using psf_function = PSFData::psf_function;
 
    /*!
     * Represents a PSF fitting process status.
     */
-   typedef PSFData::psf_fit_status  psf_fit_status;
+   using psf_fit_status = PSFData::psf_fit_status;
 
    /*!
     * Fitted PSF parameters.
@@ -610,4 +609,4 @@ private:
 #endif   // __PCL_PSFFit_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFFit.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/PSFFit.h - Released 2022-08-10T16:36:28Z

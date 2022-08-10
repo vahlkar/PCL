@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/FFT1D.h - Released 2022-05-17T17:14:45Z
+// pcl/FFT1D.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -168,28 +168,28 @@ public:
    /*!
     * Represents a scalar in the context of this %FFT class.
     */
-   typedef T                        scalar;
+   using scalar = T;
 
    /*!
     * Represents a complex number in the context of this %FFT class.
     */
-   typedef Complex<T>               complex;
+   using complex = Complex<T>;
 
    /*!
     * Represents a vector of real numbers.
     */
-   typedef GenericVector<scalar>    vector;
+   using vector = GenericVector<scalar>;
 
    /*!
     * Represents a vector of complex numbers.
     */
-   typedef GenericVector<complex>   complex_vector;
+   using complex_vector = GenericVector<complex>;
 
    /*!
     * Represents the container type used to store an out-of-place discrete
     * Fourier transform.
     */
-   typedef complex_vector           transform;
+   using transform = complex_vector;
 
    /*!
     * Constructs an %AbstractFFT object of the specified \a length.
@@ -335,33 +335,33 @@ public:
    /*!
     * Identifies the base class of this %FFT class.
     */
-   typedef AbstractFFT<T>                 base;
+   using base = AbstractFFT<T>;
 
    /*!
     * Represents a scalar in the context of this %FFT class.
     */
-   typedef typename base::scalar          scalar;
+   using scalar = typename base::scalar;
 
    /*!
     * Represents a complex number in the context of this %FFT class.
     */
-   typedef typename base::complex         complex;
+   using complex = typename base::complex;
 
    /*!
     * Represents a vector of real numbers.
     */
-   typedef typename base::vector          vector;
+   using vector = typename base::vector;
 
    /*!
     * Represents a vector of complex numbers.
     */
-   typedef typename base::complex_vector  complex_vector;
+   using complex_vector = typename base::complex_vector;
 
    /*!
     * Represents the container type used to store an out-of-place discrete
     * Fourier transform.
     */
-   typedef typename base::transform       transform;
+   using transform = typename base::transform;
 
    /*!
     * Constructs a %GenericFFT object of the specified length \a n.
@@ -549,33 +549,33 @@ public:
    /*!
     * Identifies the base class of this %FFT class.
     */
-   typedef AbstractFFT<T>                 base;
+   using base = AbstractFFT<T>;
 
    /*!
     * Represents a scalar in the context of this %FFT class.
     */
-   typedef typename base::scalar          scalar;
+   using scalar = typename base::scalar;
 
    /*!
     * Represents a complex number in the context of this %FFT class.
     */
-   typedef typename base::complex         complex;
+   using complex = typename base::complex;
 
    /*!
     * Represents a vector of real numbers.
     */
-   typedef typename base::vector          vector;
+   using vector = typename base::vector;
 
    /*!
     * Represents a vector of complex numbers.
     */
-   typedef typename base::complex_vector  complex_vector;
+   using complex_vector = typename base::complex_vector;
 
    /*!
     * Represents the container type used to store an out-of-place discrete
     * Fourier transform.
     */
-   typedef typename base::transform       transform;
+   using transform = typename base::transform;
 
    /*!
     * Constructs a %GenericRealFFT object of the specified \a length.
@@ -777,7 +777,7 @@ public:
  *
  * %FFFT is a template instantiation of GenericFFT for the \c float type.
  */
-typedef GenericFFT<float>           FFFT;
+using FFFT = GenericFFT<float>;
 
 /*!
  * \class pcl::DFFT
@@ -786,7 +786,7 @@ typedef GenericFFT<float>           FFFT;
  *
  * %DFFT is a template instantiation of GenericFFT for the \c double type.
  */
-typedef GenericFFT<double>          DFFT;
+using DFFT = GenericFFT<double>;
 
 /*!
  * \class pcl::FRealFFT
@@ -795,7 +795,7 @@ typedef GenericFFT<double>          DFFT;
  *
  * %FRealFFT is a template instantiation of GenericRealFFT for \c float.
  */
-typedef GenericRealFFT<float>       FRealFFT;
+using FRealFFT = GenericRealFFT<float>;
 
 /*!
  * \class pcl::DRealFFT
@@ -804,7 +804,7 @@ typedef GenericRealFFT<float>       FRealFFT;
  *
  * %DRealFFT is a template instantiation of GenericRealFFT for \c double.
  */
-typedef GenericRealFFT<double>      DRealFFT;
+using DRealFFT = GenericRealFFT<double>;
 
 /*!
  * \class pcl::FFT
@@ -814,7 +814,7 @@ typedef GenericRealFFT<double>      DRealFFT;
  * %FFT is an alias for FFFT. It is a template instantiation of GenericFFT for
  * the \c float type.
  */
-typedef FFFT                        FFT;
+using FFT = FFFT;
 
 /*!
  * \class pcl::RealFFT
@@ -824,7 +824,7 @@ typedef FFFT                        FFT;
  * %RealFFT is an alias for FRealFFT. It is a template instantiation of
  * GenericRealFFT for the \c float type.
  */
-typedef FRealFFT                    RealFFT;
+using RealFFT = FRealFFT;
 
 #endif // __PCL_NO_FFT1D_INSTANTIATE
 
@@ -835,4 +835,4 @@ typedef FRealFFT                    RealFFT;
 #endif   // __PCL_FFT1D_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FFT1D.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/FFT1D.h - Released 2022-08-10T16:36:28Z

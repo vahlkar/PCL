@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/IndirectSortedArray.h - Released 2022-05-17T17:14:45Z
+// pcl/IndirectSortedArray.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -94,47 +94,39 @@ public:
 
    /*! #
     */
-   typedef IndirectArray<T,A>       array_implementation;
+   using array_implementation = IndirectArray<T,A>;
 
    /*! #
     */
-   typedef typename array_implementation::block_allocator
-                                    block_allocator;
+   using block_allocator = typename array_implementation::block_allocator;
 
    /*! #
     */
-   typedef typename array_implementation::allocator
-                                    allocator;
+   using allocator = typename array_implementation::allocator;
 
    /*! #
     */
-   typedef typename array_implementation::iterator
-                                    iterator;
+   using iterator = typename array_implementation::iterator;
 
    /*! #
     */
-   typedef typename array_implementation::const_iterator
-                                    const_iterator;
+   using const_iterator = typename array_implementation::const_iterator;
 
    /*! #
     */
-   typedef typename array_implementation::reverse_iterator
-                                    reverse_iterator;
+   using reverse_iterator = typename array_implementation::reverse_iterator;
 
    /*! #
     */
-   typedef typename array_implementation::const_reverse_iterator
-                                    const_reverse_iterator;
+   using const_reverse_iterator = typename array_implementation::const_reverse_iterator;
 
    /*! #
     */
-   typedef typename array_implementation::equal
-                                    equal;
+   using equal = typename array_implementation::equal;
 
    /*! #
     */
-   typedef typename array_implementation::less
-                                    less;
+   using less = typename array_implementation::less;
 
    // -------------------------------------------------------------------------
 
@@ -1308,4 +1300,4 @@ IndirectSortedArray<T,A>& operator <<( IndirectSortedArray<T,A>&& x1, const Indi
 #endif  // __PCL_IndirectSortedArray_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/IndirectSortedArray.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/IndirectSortedArray.h - Released 2022-08-10T16:36:28Z

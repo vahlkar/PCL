@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/Edit.h - Released 2022-05-17T17:14:45Z
+// pcl/Edit.h - Released 2022-08-10T16:36:27Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -403,19 +403,19 @@ public:
 
    /*! #
     */
-   typedef void (Control::*edit_event_handler)( Edit& sender );
+   using edit_event_handler = void (Control::*)( Edit& sender );
 
    /*! #
     */
-   typedef void (Control::*text_event_handler)( Edit& sender, const String& );
+   using text_event_handler = void (Control::*)( Edit& sender, const String& );
 
    /*! #
     */
-   typedef void (Control::*caret_event_handler)( Edit& sender, int oldPos, int newPos );
+   using caret_event_handler = void (Control::*)( Edit& sender, int oldPos, int newPos );
 
    /*! #
     */
-   typedef void (Control::*selection_event_handler)( Edit& sender, int newStart, int newEnd );
+   using selection_event_handler = void (Control::*)( Edit& sender, int newStart, int newEnd );
 
    /*! #
     */
@@ -466,4 +466,4 @@ private:
 #endif   // __PCL_Edit_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Edit.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/Edit.h - Released 2022-08-10T16:36:27Z

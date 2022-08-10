@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/ChebyshevFit.h - Released 2022-05-17T17:14:45Z
+// pcl/ChebyshevFit.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -105,22 +105,22 @@ public:
    /*!
     * Represents an ordered list of Chebyshev polynomial coefficients.
     */
-   typedef GenericVector<Ty>        coefficients;
+   using coefficients = GenericVector<Ty>;
 
    /*!
     * Represents a set of ordered lists of Chebyshev polynomial coefficients.
     */
-   typedef GenericMultiVector<Ty>   coefficient_series;
+   using coefficient_series = GenericMultiVector<Ty>;
 
    /*!
     * Represents a function value.
     */
-   typedef GenericVector<Ty>        function_value;
+   using function_value = GenericVector<Ty>;
 
    /*!
     * Represents a set of function values.
     */
-   typedef GenericMultiVector<Ty>   function_values;
+   using function_values = GenericMultiVector<Ty>;
 
    /*!
     * Constructs a truncated Chebyshev polynomial expansion with \a n
@@ -776,7 +776,7 @@ private:
  * %F32ChebyshevFit is a template instantiation of GenericChebyshevFit for the
  * \c float type.
  */
-typedef GenericChebyshevFit<float, float>             F32ChebyshevFit;
+using F32ChebyshevFit = GenericChebyshevFit<float, float>;
 
 /*!
  * \class pcl::FChebyshevFit
@@ -786,7 +786,7 @@ typedef GenericChebyshevFit<float, float>             F32ChebyshevFit;
  * %FChebyshevFit is an alias for F32ChebyshevFit. It is a template
  * instantiation of GenericChebyshevFit for the \c float type.
  */
-typedef F32ChebyshevFit                               FChebyshevFit;
+using FChebyshevFit = F32ChebyshevFit;
 
 /*!
  * \class pcl::F64ChebyshevFit
@@ -796,7 +796,7 @@ typedef F32ChebyshevFit                               FChebyshevFit;
  * %F64ChebyshevFit is a template instantiation of GenericChebyshevFit for the
  * \c double type.
  */
-typedef GenericChebyshevFit<double, double>           F64ChebyshevFit;
+using F64ChebyshevFit = GenericChebyshevFit<double, double>;
 
 /*!
  * \class pcl::DChebyshevFit
@@ -806,7 +806,7 @@ typedef GenericChebyshevFit<double, double>           F64ChebyshevFit;
  * %DChebyshevFit is an alias for F64ChebyshevFit. It is a template
  * instantiation of GenericChebyshevFit for the \c double type.
  */
-typedef F64ChebyshevFit                               DChebyshevFit;
+using DChebyshevFit = F64ChebyshevFit;
 
 /*!
  * \class pcl::ChebyshevFit
@@ -816,7 +816,7 @@ typedef F64ChebyshevFit                               DChebyshevFit;
  * %ChebyshevFit is an alias for DChebyshevFit. It is a template instantiation
  * of GenericChebyshevFit for the \c double type.
  */
-typedef DChebyshevFit                                 ChebyshevFit;
+using ChebyshevFit = DChebyshevFit;
 
 #ifndef _MSC_VER
 
@@ -832,7 +832,7 @@ typedef DChebyshevFit                                 ChebyshevFit;
  * \note This template instantiation is not available on Windows with Visual
  * C++ compilers.
  */
-typedef GenericChebyshevFit<long double, long double> F80ChebyshevFit;
+using F80ChebyshevFit = GenericChebyshevFit<long double, long double>;
 
 /*!
  * \class pcl::LDChebyshevFit
@@ -846,7 +846,7 @@ typedef GenericChebyshevFit<long double, long double> F80ChebyshevFit;
  * \note This template instantiation is not available on Windows with Visual
  * C++ compilers.
  */
-typedef F80ChebyshevFit                               LDChebyshevFit;
+using LDChebyshevFit = F80ChebyshevFit;
 
 #endif   // !_MSC_VER
 
@@ -858,7 +858,7 @@ typedef F80ChebyshevFit                               LDChebyshevFit;
  * %F32ScalarChebyshevFit is a template instantiation of
  * GenericScalarChebyshevFit for the \c float type.
  */
-typedef GenericScalarChebyshevFit<float, float>       F32ScalarChebyshevFit;
+using F32ScalarChebyshevFit = GenericScalarChebyshevFit<float, float>;
 
 /*!
  * \class pcl::FScalarChebyshevFit
@@ -868,7 +868,7 @@ typedef GenericScalarChebyshevFit<float, float>       F32ScalarChebyshevFit;
  * %FScalarChebyshevFit is an alias for F32ScalarChebyshevFit. It is a template
  * instantiation of GenericScalarChebyshevFit for the \c float type.
  */
-typedef F32ScalarChebyshevFit                         FScalarChebyshevFit;
+using FScalarChebyshevFit = F32ScalarChebyshevFit;
 
 /*!
  * \class pcl::F64ScalarChebyshevFit
@@ -878,7 +878,7 @@ typedef F32ScalarChebyshevFit                         FScalarChebyshevFit;
  * %F64ScalarChebyshevFit is a template instantiation of
  * GenericScalarChebyshevFit for the \c double type.
  */
-typedef GenericScalarChebyshevFit<double, double>     F64ScalarChebyshevFit;
+using F64ScalarChebyshevFit = GenericScalarChebyshevFit<double, double>;
 
 /*!
  * \class pcl::DScalarChebyshevFit
@@ -888,7 +888,7 @@ typedef GenericScalarChebyshevFit<double, double>     F64ScalarChebyshevFit;
  * %DScalarChebyshevFit is an alias for F64ScalarChebyshevFit. It is a template
  * instantiation of GenericScalarChebyshevFit for the \c double type.
  */
-typedef F64ScalarChebyshevFit                         DScalarChebyshevFit;
+using DScalarChebyshevFit = F64ScalarChebyshevFit;
 
 /*!
  * \class pcl::ScalarChebyshevFit
@@ -898,7 +898,7 @@ typedef F64ScalarChebyshevFit                         DScalarChebyshevFit;
  * %ScalarChebyshevFit is an alias for DScalarChebyshevFit. It is a template
  * instantiation of GenericScalarChebyshevFit for the \c double type.
  */
-typedef DScalarChebyshevFit                           ScalarChebyshevFit;
+using ScalarChebyshevFit = DScalarChebyshevFit;
 
 #ifndef _MSC_VER
 
@@ -914,7 +914,7 @@ typedef DScalarChebyshevFit                           ScalarChebyshevFit;
  * \note This template instantiation is not available on Windows with Visual
  * C++ compilers.
  */
-typedef GenericScalarChebyshevFit<long double, long double> F80ScalarChebyshevFit;
+using F80ScalarChebyshevFit = GenericScalarChebyshevFit<long double, long double>;
 
 /*!
  * \class pcl::LDScalarChebyshevFit
@@ -929,7 +929,7 @@ typedef GenericScalarChebyshevFit<long double, long double> F80ScalarChebyshevFi
  * \note This template instantiation is not available on Windows with Visual
  * C++ compilers.
  */
-typedef F80ScalarChebyshevFit                         LDScalarChebyshevFit;
+using LDScalarChebyshevFit = F80ScalarChebyshevFit;
 
 #endif   // !_MSC_VER
 
@@ -942,4 +942,4 @@ typedef F80ScalarChebyshevFit                         LDScalarChebyshevFit;
 #endif  // __PCL_ChebyshevFit_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ChebyshevFit.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/ChebyshevFit.h - Released 2022-08-10T16:36:28Z

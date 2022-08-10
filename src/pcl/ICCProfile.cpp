@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/ICCProfile.cpp - Released 2022-05-17T17:14:53Z
+// pcl/ICCProfile.cpp - Released 2022-08-10T16:36:36Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -154,7 +154,7 @@ public:
 
 private:
 
-   typedef SortedArray<LCMSErrorMessage> message_list;
+   using message_list = SortedArray<LCMSErrorMessage>;
 
    static Mutex        s_mutex;
    static message_list s_messages;
@@ -947,4 +947,4 @@ ICCProfile::profile_list ICCProfile::FindProfilesByColorSpace( ICCColorSpaces co
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ICCProfile.cpp - Released 2022-05-17T17:14:53Z
+// EOF pcl/ICCProfile.cpp - Released 2022-08-10T16:36:36Z

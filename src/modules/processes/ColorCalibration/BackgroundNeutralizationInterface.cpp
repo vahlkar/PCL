@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.5.1
+// Standard ColorCalibration Process Module Version 1.5.2
 // ----------------------------------------------------------------------------
-// BackgroundNeutralizationInterface.cpp - Released 2022-05-17T17:15:11Z
+// BackgroundNeutralizationInterface.cpp - Released 2022-05-20T16:28:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -571,4 +571,4 @@ BackgroundNeutralizationInterface::GUIData::GUIData( BackgroundNeutralizationInt
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BackgroundNeutralizationInterface.cpp - Released 2022-05-17T17:15:11Z
+// EOF BackgroundNeutralizationInterface.cpp - Released 2022-05-20T16:28:45Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/PixelTraits.h - Released 2022-05-17T17:14:45Z
+// pcl/PixelTraits.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -180,7 +180,7 @@ public:
    /*!
     * Represents a pixel sample value.
     */
-   typedef S   sample;
+   using sample = S;
 
    enum { bytesPerSample = sizeof( sample ) };
    enum { bitsPerSample = bytesPerSample << 3 };
@@ -372,19 +372,19 @@ public:
    /*!
     * Represents this template instantiation.
     */
-   typedef GenericPixelTraits<float>   traits_type;
+   using traits_type = GenericPixelTraits<float>;
 
    /*!
     * Represents a pixel sample value.
     */
-   typedef traits_type::sample         sample;
+   using sample = traits_type::sample;
 
    /*!
     * Represents a component of a complex pixel sample, or a pixel sample value
     * for real pixel sample types. For %FloatPixelTraits, this is equivalent to
     * \c float.
     */
-   typedef sample                      component;
+   using component = sample;
 
    /*!
     * Returns true iff this pixel traits class corresponds to a floating point
@@ -966,19 +966,19 @@ public:
    /*!
     * Represents this template instantiation.
     */
-   typedef GenericPixelTraits<double>  traits_type;
+   using traits_type = GenericPixelTraits<double>;
 
    /*!
     * Represents a pixel sample value.
     */
-   typedef traits_type::sample         sample;
+   using sample = traits_type::sample;
 
    /*!
     * Represents a component of a complex pixel sample, or a pixel sample value
     * for real pixel sample types. For %DoublePixelTraits, this is equivalent
     * to \c double.
     */
-   typedef sample                      component;
+   using component = sample;
 
    /*!
     * Returns true iff this pixel traits class corresponds to a floating point
@@ -1560,18 +1560,18 @@ public:
    /*!
     * Represents this template instantiation.
     */
-   typedef GenericPixelTraits<Complex<float> >  traits_type;
+   using traits_type = GenericPixelTraits<Complex<float> >;
 
    /*!
     * Represents a pixel sample value.
     */
-   typedef traits_type::sample                  sample;
+   using sample = traits_type::sample;
 
    /*!
     * Represents a component of a complex pixel sample. For
     * %ComplexPixelTraits, this is equivalent to \c float.
     */
-   typedef sample::component                    component;
+   using component = sample::component;
 
    static constexpr int BitsPerSample() noexcept
    {
@@ -2313,18 +2313,18 @@ public:
    /*!
     * Represents this template instantiation.
     */
-   typedef GenericPixelTraits<Complex<double> > traits_type;
+   using traits_type = GenericPixelTraits<Complex<double> >;
 
    /*!
     * Represents a pixel sample value.
     */
-   typedef traits_type::sample                  sample;
+   using sample = traits_type::sample;
 
    /*!
     * Represents a component of a complex pixel sample. For
     * %DComplexPixelTraits, this is equivalent to \c double.
     */
-   typedef sample::component                    component;
+   using component = sample::component;
 
    /*!
     */
@@ -3073,19 +3073,19 @@ public:
    /*!
     * Represents this template instantiation.
     */
-   typedef GenericPixelTraits<uint8>   traits_type;
+   using traits_type = GenericPixelTraits<uint8>;
 
    /*!
     * Represents a pixel sample value.
     */
-   typedef traits_type::sample         sample;
+   using sample = traits_type::sample;
 
    /*!
     * Represents a component of a complex pixel sample, or a pixel sample value
     * for real pixel sample types. For %UInt8PixelTraits, this is equivalent to
     * \c uint8.
     */
-   typedef sample                      component;
+   using component = sample;
 
    /*!
     * Returns true iff this pixel traits class corresponds to a floating point
@@ -3937,19 +3937,19 @@ public:
    /*!
     * Represents this template instantiation.
     */
-   typedef GenericPixelTraits<uint16>  traits_type;
+   using traits_type = GenericPixelTraits<uint16>;
 
    /*!
     * Represents a pixel sample value.
     */
-   typedef traits_type::sample         sample;
+   using sample = traits_type::sample;
 
    /*!
     * Represents a component of a complex pixel sample, or a pixel sample value
     * for real pixel sample types. For %UInt16PixelTraits, this is equivalent
     * to \c uint16.
     */
-   typedef sample                      component;
+   using component = sample;
 
    /*!
     * Returns true iff this pixel traits class corresponds to a floating point
@@ -4801,19 +4801,19 @@ public:
    /*!
     * Represents this template instantiation.
     */
-   typedef GenericPixelTraits<uint32>  traits_type;
+   using traits_type = GenericPixelTraits<uint32>;
 
    /*!
     * Represents a pixel sample value.
     */
-   typedef traits_type::sample         sample;
+   using sample = traits_type::sample;
 
    /*!
     * Represents a component of a complex pixel sample, or a pixel sample value
     * for real pixel sample types. For %UInt32PixelTraits, this is equivalent
     * to \c uint32.
     */
-   typedef sample                      component;
+   using component = sample;
 
    /*!
     * Returns true iff this pixel traits class corresponds to a floating point
@@ -5656,19 +5656,19 @@ public:
    /*!
     * Represents this template instantiation.
     */
-   typedef GenericPixelTraits<uint32>  traits_type;
+   using traits_type = GenericPixelTraits<uint32>;
 
    /*!
     * Represents a pixel sample value.
     */
-   typedef traits_type::sample         sample;
+   using sample = traits_type::sample;
 
    /*!
     * Represents a component of a complex pixel sample, or a pixel sample value
     * for real pixel sample types. For %UInt20PixelTraits, this is equivalent
     * to \c uint32.
     */
-   typedef sample                      component;
+   using component = sample;
 
    /*!
     * Returns true iff this pixel traits class corresponds to a floating point
@@ -5981,19 +5981,19 @@ public:
    /*!
     * Represents this template instantiation.
     */
-   typedef GenericPixelTraits<uint32>  traits_type;
+   using traits_type = GenericPixelTraits<uint32>;
 
    /*!
     * Represents a pixel sample value.
     */
-   typedef traits_type::sample         sample;
+   using sample = traits_type::sample;
 
    /*!
     * Represents a component of a complex pixel sample, or a pixel sample value
     * for real pixel sample types. For %UInt24PixelTraits, this is equivalent
     * to \c uint32.
     */
-   typedef sample                      component;
+   using component = sample;
 
    /*!
     * Returns true iff this pixel traits class corresponds to a floating point
@@ -6291,4 +6291,4 @@ public:
 #endif   // __PCL_PixelTraits_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PixelTraits.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/PixelTraits.h - Released 2022-08-10T16:36:28Z

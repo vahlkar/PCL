@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/Thread.h - Released 2022-05-17T17:14:45Z
+// pcl/Thread.h - Released 2022-08-10T16:36:27Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -133,7 +133,7 @@ public:
    /*!
     * Represents a thread priority.
     */
-   typedef ThreadPriority::value_type  priority;
+   using priority = ThreadPriority::value_type;
 
    /*!
     * Constructs a %Thread object.
@@ -750,4 +750,4 @@ void PCL_FUNC Sleep( unsigned ms );
 #endif   // __PCL_Thread_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Thread.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/Thread.h - Released 2022-08-10T16:36:27Z

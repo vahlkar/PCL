@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/SurfacePolynomial.h - Released 2022-05-17T17:14:45Z
+// pcl/SurfacePolynomial.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -91,13 +91,13 @@ public:
     * Represents a vector of coordinates, function values or polynomial
     * coefficients.
     */
-   typedef GenericVector<T>               vector_type;
+   using vector_type = GenericVector<T>;
 
    /*!
     * The numeric type used to represent coordinates, function values and
     * polynomial coefficients.
     */
-   typedef typename vector_type::scalar   scalar;
+   using scalar = typename vector_type::scalar;
 
    /*!
     * Default constructor. Constructs an empty, two-dimensional interpolating
@@ -355,17 +355,17 @@ public:
    /*!
     * Represents an interpolation point in two dimensions.
     */
-   typedef P                           point;
+   using point = P;
 
    /*!
     * Represents a sequence of interpolation points.
     */
-   typedef Array<point>                point_list;
+   using point_list = Array<point>;
 
    /*!
     * Represents a coordinate interpolating/approximating surface.
     */
-   typedef SurfacePolynomial<double>   surface;
+   using surface = SurfacePolynomial<double>;
 
    /*!
     * Default constructor. Yields an empty instance that cannot be used without
@@ -543,4 +543,4 @@ private:
 #endif   // __PCL_SurfacePolynomial_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SurfacePolynomial.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/SurfacePolynomial.h - Released 2022-08-10T16:36:28Z

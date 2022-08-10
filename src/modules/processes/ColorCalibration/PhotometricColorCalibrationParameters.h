@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.5.1
+// Standard ColorCalibration Process Module Version 1.5.2
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationParameters.h - Released 2022-05-17T17:15:11Z
+// PhotometricColorCalibrationParameters.h - Released 2022-05-20T16:28:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -460,11 +460,59 @@ extern PCCSolverAutoLimitMagnitude* ThePCCSolverAutoLimitMagnitudeParameter;
 
 // ----------------------------------------------------------------------------
 
-class PCCSolverAutoLimitMagnitudeFactor : public MetaFloat
+class PCCSolverStructureLayers : public MetaInt32
 {
 public:
 
-   PCCSolverAutoLimitMagnitudeFactor( MetaProcess* );
+   PCCSolverStructureLayers( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern PCCSolverStructureLayers* ThePCCSolverStructureLayersParameter;
+
+// ----------------------------------------------------------------------------
+
+class PCCSolverMinStructureSize : public MetaInt32
+{
+public:
+
+   PCCSolverMinStructureSize( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern PCCSolverMinStructureSize* ThePCCSolverMinStructureSizeParameter;
+
+// ----------------------------------------------------------------------------
+
+class PCCSolverNoiseReductionFilterRadius : public MetaInt32
+{
+public:
+
+   PCCSolverNoiseReductionFilterRadius( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern PCCSolverNoiseReductionFilterRadius* ThePCCSolverNoiseReductionFilterRadiusParameter;
+
+// ----------------------------------------------------------------------------
+
+class PCCSolverSensitivity : public MetaFloat
+{
+public:
+
+   PCCSolverSensitivity( MetaProcess* );
 
    IsoString Id() const override;
    int Precision() const override;
@@ -473,40 +521,7 @@ public:
    double DefaultValue() const override;
 };
 
-extern PCCSolverAutoLimitMagnitudeFactor* ThePCCSolverAutoLimitMagnitudeFactorParameter;
-
-// ----------------------------------------------------------------------------
-
-class PCCSolverStarSensitivity : public MetaFloat
-{
-public:
-
-   PCCSolverStarSensitivity( MetaProcess* );
-
-   IsoString Id() const override;
-   int Precision() const override;
-   double MinimumValue() const override;
-   double MaximumValue() const override;
-   double DefaultValue() const override;
-};
-
-extern PCCSolverStarSensitivity* ThePCCSolverStarSensitivityParameter;
-
-// ----------------------------------------------------------------------------
-
-class PCCSolverNoiseLayers : public MetaInt32
-{
-public:
-
-   PCCSolverNoiseLayers( MetaProcess* );
-
-   IsoString Id() const override;
-   double DefaultValue() const override;
-   double MinimumValue() const override;
-   double MaximumValue() const override;
-};
-
-extern PCCSolverNoiseLayers* ThePCCSolverNoiseLayersParameter;
+extern PCCSolverSensitivity* ThePCCSolverSensitivityParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -916,4 +931,4 @@ PCL_END_LOCAL
 #endif   // __PhotometricColorCalibrationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationParameters.h - Released 2022-05-17T17:15:11Z
+// EOF PhotometricColorCalibrationParameters.h - Released 2022-05-20T16:28:45Z

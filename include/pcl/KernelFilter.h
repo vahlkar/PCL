@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/KernelFilter.h - Released 2022-05-17T17:14:45Z
+// pcl/KernelFilter.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -93,12 +93,12 @@ public:
    /*!
     * Represents a filter coefficient.
     */
-   typedef float                       coefficient;
+   using coefficient = float;
 
    /*!
     * Represents a filter coefficient matrix.
     */
-   typedef GenericMatrix<coefficient>  coefficient_matrix;
+   using coefficient_matrix = GenericMatrix<coefficient>;
 
    /*!
     * Constructs an empty %KernelFilter object with optional \a name.
@@ -580,4 +580,4 @@ protected:
 #endif   // __PCL_KernelFilter_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/KernelFilter.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/KernelFilter.h - Released 2022-08-10T16:36:28Z

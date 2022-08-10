@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/ViewList.h - Released 2022-05-17T17:14:45Z
+// pcl/ViewList.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -271,7 +271,7 @@ public:
     *
     * \ingroup view_list_event_handlers
     */
-   typedef void (Control::*view_event_handler)( ViewList& sender, View& view );
+   using view_event_handler = void (Control::*)( ViewList& sender, View& view );
 
    /*!
     * Sets the <em>view selection</em> event handler of this %ViewList control.
@@ -326,4 +326,4 @@ private:
 #endif   // __PCL_ViewList_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ViewList.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/ViewList.h - Released 2022-08-10T16:36:28Z

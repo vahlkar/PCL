@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/JPLEphemeris.h - Released 2022-05-17T17:14:45Z
+// pcl/JPLEphemeris.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -165,18 +165,18 @@ public:
     * Represents an ephemeris item. See the JPLEphemerisItem namespace for a
     * list of the available items.
     */
-   typedef JPLEphemerisItem::value_type   item_index;
+   using item_index = JPLEphemerisItem::value_type;
 
    /*!
     * Represents a numerical integration ephemeris constant defined by its
     * name and value.
     */
-   typedef EphemerisConstant              constant;
+   using constant = EphemerisConstant;
 
    /*!
     * Represents a list of integration ephemeris constants.
     */
-   typedef EphemerisConstantList          constant_list;
+   using constant_list = EphemerisConstantList;
 
    /*!
     * Constructs a &JPLEphemeris instance initialized from the specified DE/LE
@@ -511,9 +511,8 @@ private:
       int subblocks = 0;         // number of subblocks
    };
 
-   typedef Array<block_index_item>  block_index;
-
-   typedef MultiVector              block_list;
+   using block_index = Array<block_index_item>;
+   using block_list = MultiVector;
 
    double        m_ephStartJD = 0;  // ephemeris start time
    double        m_ephEndJD = 0;    // ephemeris end time
@@ -608,4 +607,4 @@ private:
 #endif  // __PCL_JPLEphemeris_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/JPLEphemeris.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/JPLEphemeris.h - Released 2022-08-10T16:36:28Z

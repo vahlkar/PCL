@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/Color.h - Released 2022-05-17T17:14:45Z
+// pcl/Color.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -89,7 +89,7 @@ namespace pcl
  *
  * \ingroup rgba_utility_functions
  */
-typedef uint32 RGBA;
+using RGBA = uint32;
 
 /*!
  * Returns the alpha (transparency) component of an RGBA pixel value.
@@ -409,4 +409,4 @@ IsoString PCL_FUNC CSSColorName( RGBA );
 #endif   // __PCL_Color_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Color.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/Color.h - Released 2022-08-10T16:36:28Z

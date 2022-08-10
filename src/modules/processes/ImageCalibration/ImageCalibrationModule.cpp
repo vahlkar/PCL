@@ -52,13 +52,13 @@
 
 #define MODULE_VERSION_MAJOR     1
 #define MODULE_VERSION_MINOR     9
-#define MODULE_VERSION_REVISION  6
+#define MODULE_VERSION_REVISION  7
 #define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2022
-#define MODULE_RELEASE_MONTH     5
-#define MODULE_RELEASE_DAY       25
+#define MODULE_RELEASE_MONTH     7
+#define MODULE_RELEASE_DAY       6
 
 #include "DefectMapInterface.h"
 #include "DefectMapProcess.h"

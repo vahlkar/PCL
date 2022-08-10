@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/GlobalSettings.h - Released 2022-05-17T17:14:45Z
+// pcl/GlobalSettings.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -378,7 +378,7 @@ public:
    /*!
     * Represents the data type of a global variable.
     */
-   typedef GlobalVariableType::value_type variable_type;
+   using variable_type = GlobalVariableType::value_type;
 
    /*!
     * Default constructor. This constructor is disabled because
@@ -525,4 +525,4 @@ public:
 #endif   // __PCL_GlobalSettings_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/GlobalSettings.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/GlobalSettings.h - Released 2022-08-10T16:36:28Z

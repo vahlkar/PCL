@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/AbstractImage.h - Released 2022-05-17T17:14:45Z
+// pcl/AbstractImage.h - Released 2022-08-10T16:36:27Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -124,14 +124,14 @@ public:
    /*!
     * A type used to implement a stack of stored image selections.
     */
-   typedef Array<ImageSelections>   selection_stack;
+   using selection_stack = Array<ImageSelections>;
 
    /*!
     * An enumerated type that represents the set of supported color spaces.
     * Valid constants for this enumeration are defined in the ColorSpace
     * namespace.
     */
-   typedef ImageColor::color_space  color_space;
+   using color_space = ImageColor::color_space;
 
    /*!
     * Virtual destructor.
@@ -1425,4 +1425,4 @@ protected:
 #endif   // __PCL_AbstractImage_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AbstractImage.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/AbstractImage.h - Released 2022-08-10T16:36:27Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/ProcessParameter.h - Released 2022-05-17T17:14:45Z
+// pcl/ProcessParameter.h - Released 2022-08-10T16:36:27Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -195,7 +195,7 @@ public:
    /*!
     * Represents a parameter data type.
     */
-   typedef ProcessParameterType::value_type  data_type;
+   using data_type = ProcessParameterType::value_type;
 
    /*!
     * A list of process parameters.
@@ -203,7 +203,7 @@ public:
     * This type is returned by the TableColumns() member function to describe
     * and identify the set of column parameters of a table process parameter.
     */
-   typedef Array<ProcessParameter>  parameter_list;
+   using parameter_list = Array<ProcessParameter>;
 
    /*!
     * \struct EnumerationElement
@@ -222,7 +222,7 @@ public:
     * This type is returned by the EnumerationElements() member function to
     * describe an enumeration process parameter.
     */
-   typedef Array<EnumerationElement>   enumeration_element_list;
+   using enumeration_element_list = Array<EnumerationElement>;
 
    /*!
     * Constructs a %ProcessParameter object.
@@ -692,4 +692,4 @@ private:
 #endif   // __PCL_ProcessParameter_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ProcessParameter.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/ProcessParameter.h - Released 2022-08-10T16:36:27Z

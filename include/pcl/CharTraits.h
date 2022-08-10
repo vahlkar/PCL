@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/CharTraits.h - Released 2022-05-17T17:14:45Z
+// pcl/CharTraits.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -319,7 +319,7 @@ public:
    /*!
     * Represents the character data type used by this traits class.
     */
-   typedef T   char_type;
+   using char_type = T;
 
    /*!
     * Number of bytes per character.
@@ -862,12 +862,12 @@ public:
    /*!
     * Base class of this char traits class.
     */
-   typedef GenericCharTraits<char>  traits_base;
+   using traits_base = GenericCharTraits<char>;
 
    /*!
     * Represents the character data type used by this traits class.
     */
-   typedef traits_base::char_type   char_type;
+   using char_type = traits_base::char_type;
 
    /*!
     * Returns the length of a null-terminated 8-bit string in characters
@@ -1122,12 +1122,12 @@ public:
    /*!
     * Base class of this char traits class.
     */
-   typedef GenericCharTraits<char16_type>    traits_base;
+   using traits_base = GenericCharTraits<char16_type>;
 
    /*!
     * Represents the character data type used by this traits class.
     */
-   typedef traits_base::char_type            char_type;
+   using char_type = traits_base::char_type;
 
    /*!
     * Returns the length of a null-terminated UTF-16 string in characters
@@ -1450,4 +1450,4 @@ public:
 #endif   // __PCL_CharTraits_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/CharTraits.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/CharTraits.h - Released 2022-08-10T16:36:28Z

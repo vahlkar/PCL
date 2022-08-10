@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/XML.h - Released 2022-05-17T17:14:45Z
+// pcl/XML.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -417,7 +417,7 @@ namespace XMLNodeType
  * \brief A collection of %XML node types
  * \ingroup xml_parsing_and_generation
  */
-typedef Flags<XMLNodeType::mask_type>  XMLNodeTypes;
+using XMLNodeTypes = Flags<XMLNodeType::mask_type>;
 
 // ----------------------------------------------------------------------------
 
@@ -504,7 +504,7 @@ public:
     * Represents the type of an %XML document node. Supported/valid node types
     * are defined in the XMLNodeType namespace.
     */
-   typedef XMLNodeType::mask_type   node_type;
+   using node_type = XMLNodeType::mask_type;
 
    /*!
     * Default constructor. Constructs a default %XMLNode object of the
@@ -639,7 +639,7 @@ private:
  *
  * \ingroup xml_parsing_and_generation
  */
-typedef ReferenceArray<XMLNode>  XMLNodeList;
+using XMLNodeList = ReferenceArray<XMLNode>;
 
 // ----------------------------------------------------------------------------
 
@@ -842,17 +842,17 @@ public:
     * Represents the dynamic container class used internally to implement an
     * %XML element attribute list.
     */
-   typedef Array<XMLAttribute>                  list_implementation;
+   using list_implementation = Array<XMLAttribute>;
 
    /*!
     * Represents a mutable %XML element attribute list iterator.
     */
-   typedef list_implementation::iterator        iterator;
+   using iterator = list_implementation::iterator;
 
    /*!
     * Represents an immutable %XML element attribute list iterator.
     */
-   typedef list_implementation::const_iterator  const_iterator;
+   using const_iterator = list_implementation::const_iterator;
 
    /*!
     * Constructs a new %XMLAttributeList object by parsing the specified
@@ -1141,18 +1141,18 @@ public:
    /*!
     * Represents a mutable child node list iterator.
     */
-   typedef XMLNodeList::iterator          iterator;
+   using iterator = XMLNodeList::iterator;
 
    /*!
     * Represents an immutable child node list iterator.
     */
-   typedef XMLNodeList::const_iterator    const_iterator;
+   using const_iterator = XMLNodeList::const_iterator;
 
    /*!
     * A list of child %XML elements. Implemented as a template instantiation of
     * ReferenceArray<> for the XMLElement class.
     */
-   typedef ReferenceArray<XMLElement>     child_element_list;
+   using child_element_list = ReferenceArray<XMLElement>;
 
    /*!
     * Default constructor. Constructs an uninitialized %XMLElement structure.
@@ -1854,7 +1854,7 @@ private:
  *
  * \ingroup xml_parsing_and_generation
  */
-typedef XMLElement::child_element_list XMLElementList;
+using XMLElementList = XMLElement::child_element_list;
 
 // ----------------------------------------------------------------------------
 
@@ -2473,7 +2473,7 @@ namespace XMLParserOption
  * \brief A collection of %XML document parsing options
  * \ingroup xml_parsing_and_generation
  */
-typedef Flags<XMLParserOption::mask_type>  XMLParserOptions;
+using XMLParserOptions = Flags<XMLParserOption::mask_type>;
 
 // ----------------------------------------------------------------------------
 
@@ -2564,18 +2564,18 @@ public:
    /*!
     * Represents a mutable child node list iterator.
     */
-   typedef XMLNodeList::iterator          iterator;
+   using iterator = XMLNodeList::iterator;
 
    /*!
     * Represents an immutable child node list iterator.
     */
-   typedef XMLNodeList::const_iterator    const_iterator;
+   using const_iterator = XMLNodeList::const_iterator;
 
    /*!
     * Represents an option to control the %XML parser behavior. Valid options
     * are defined in the XMLParserOption namespace.
     */
-   typedef XMLParserOption::mask_type     parser_option;
+   using parser_option = XMLParserOption::mask_type;
 
    /*!
     * Default constructor. Constructs an empty %XML document.
@@ -3083,4 +3083,4 @@ private:
 #endif   // __PCL_XML_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/XML.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/XML.h - Released 2022-08-10T16:36:28Z

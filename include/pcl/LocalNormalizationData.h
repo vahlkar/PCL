@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/LocalNormalizationData.h - Released 2022-05-17T17:14:45Z
+// pcl/LocalNormalizationData.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -124,24 +124,23 @@ public:
    /*!
     * Represents a per-channel set of local image normalization matrices.
     */
-   typedef Image                             normalization_matrices;
+   using normalization_matrices = Image;
 
    /*!
     * Represents a local normalization function coefficient.
     */
-   typedef normalization_matrices::sample    normalization_coefficient;
+   using normalization_coefficient = normalization_matrices::sample;
 
    /*!
     * Represents a smooth interpolation used for calculation of local
     * normalization function values at image pixel coordinates.
     */
-   typedef BicubicBSplineInterpolation<normalization_coefficient>
-                                             matrix_interpolation;
+   using matrix_interpolation = BicubicBSplineInterpolation<normalization_coefficient>;
 
    /*!
     * Represents an array of local normalization interpolators.
     */
-   typedef Array<matrix_interpolation>       matrix_interpolations;
+   using matrix_interpolations = Array<matrix_interpolation>;
 
    /*!
     * Constructs an empty %LocalNormalizationData object.
@@ -811,4 +810,4 @@ private:
 #endif   // __PCL_LocalNormalizationData_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/LocalNormalizationData.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/LocalNormalizationData.h - Released 2022-08-10T16:36:28Z

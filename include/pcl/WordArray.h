@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/WordArray.h - Released 2022-05-17T17:14:45Z
+// pcl/WordArray.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -76,7 +76,7 @@ namespace pcl
  * \ingroup word_arrays
  * \ingroup dynamic_arrays
  */
-typedef Array<uint16>         WordArray;
+using WordArray = Array<uint16>;
 
 /*!
  * \class pcl::SortedWordArray
@@ -87,7 +87,7 @@ typedef Array<uint16>         WordArray;
  * \ingroup word_arrays
  * \ingroup dynamic_arrays
  */
-typedef SortedArray<uint16>   SortedWordArray;
+using SortedWordArray = SortedArray<uint16>;
 
 /*!
  * \class pcl::ShortArray
@@ -98,7 +98,7 @@ typedef SortedArray<uint16>   SortedWordArray;
  * \ingroup word_arrays
   * \ingroup dynamic_arrays
 */
-typedef Array<int16>          ShortArray;
+using ShortArray = Array<int16>;
 
 /*!
  * \class pcl::SortedShortArray
@@ -109,7 +109,7 @@ typedef Array<int16>          ShortArray;
  * \ingroup word_arrays
  * \ingroup dynamic_arrays
  */
-typedef SortedArray<int16>    SortedShortArray;
+using SortedShortArray = SortedArray<int16>;
 
 // ----------------------------------------------------------------------------
 
@@ -118,4 +118,4 @@ typedef SortedArray<int16>    SortedShortArray;
 #endif   // __PCL_WordArray_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/WordArray.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/WordArray.h - Released 2022-08-10T16:36:28Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/EphemerisFile.h - Released 2022-05-17T17:14:45Z
+// pcl/EphemerisFile.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -195,7 +195,7 @@ struct PCL_CLASS EphemerisConstant
  *
  * \ingroup solar_system_ephemerides
  */
-typedef Array<EphemerisConstant> EphemerisConstantList;
+using EphemerisConstantList = Array<EphemerisConstant>;
 
 // ----------------------------------------------------------------------------
 
@@ -283,7 +283,7 @@ struct PCL_CLASS SerializableEphemerisData
  *
  * \ingroup solar_system_ephemerides
  */
-typedef Array<SerializableEphemerisData> SerializableEphemerisDataList;
+using SerializableEphemerisDataList = Array<SerializableEphemerisData>;
 
 // ----------------------------------------------------------------------------
 
@@ -438,7 +438,7 @@ struct PCL_CLASS SerializableEphemerisObjectData
  * \brief Dynamic list of per-object data for ephemeris serialization.
  * \ingroup solar_system_ephemerides
  */
-typedef Array<SerializableEphemerisObjectData> SerializableEphemerisObjectDataList;
+using SerializableEphemerisObjectDataList = Array<SerializableEphemerisObjectData>;
 
 // ----------------------------------------------------------------------------
 
@@ -575,7 +575,7 @@ struct PCL_CLASS EphemerisObject
  * \brief Dynamic list of object identifiers and descriptions.
  * \ingroup solar_system_ephemerides
  */
-typedef Array<EphemerisObject> EphemerisObjectList;
+using EphemerisObjectList = Array<EphemerisObject>;
 
 // ----------------------------------------------------------------------------
 
@@ -2301,4 +2301,4 @@ private:
 #endif  // __PCL_EphemerisFile_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/EphemerisFile.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/EphemerisFile.h - Released 2022-08-10T16:36:28Z

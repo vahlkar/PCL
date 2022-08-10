@@ -553,8 +553,10 @@ public:
 
 private:
 
-   pcl_enum   m_dataRelease = GDataRelease::EDR3;
-   StringList m_databaseFilePaths;
+   StringList m_databaseFilePaths[ 4 ];
+   bool       m_modified[ 4 ] = { false };
+   pcl_enum   m_dataRelease = GDataRelease::DR3;
+#define       m_currentPage   (m_dataRelease-1) // 0 = GDataRelease::BestAvailable
 
    VerticalSizer     Global_Sizer;
       HorizontalSizer   DataRelease_Sizer;
@@ -584,8 +586,10 @@ GaiaPreferencesDialog::GaiaPreferencesDialog()
 {
    pcl::Font fnt = Font();
 
-   const char* dataReleaseToolTip = "<p>You can choose between Gaia Data Release 2 (Gaia DR2) and Gaia Early Data Release 3 (EDR3). "
-      "Both catalogs are available in XPSD format and are fully supported by this implementation.</p>";
+   const char* dataReleaseToolTip = "<p>You can choose among Gaia Data Release 2 (Gaia DR2), "
+      "Gaia Early Data Release 3 (EDR3), and Gaia Data Release 3 (DR3). The DR3/SP variant "
+      "includes BP/RP sampled mean spectrum data for a subset of Gaia DR3 stars.</p>"
+      "<p>All catalogs are available in XPSD format and are fully supported by this implementation.</p>";
 
    DataRelease_Label.SetText( "Data release:" );
    DataRelease_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
@@ -593,6 +597,8 @@ GaiaPreferencesDialog::GaiaPreferencesDialog()
 
    DataRelease_ComboBox.AddItem( "Gaia DR2" );
    DataRelease_ComboBox.AddItem( "Gaia EDR3" );
+   DataRelease_ComboBox.AddItem( "Gaia DR3" );
+   DataRelease_ComboBox.AddItem( "Gaia DR3/SP" );
    DataRelease_ComboBox.SetToolTip( dataReleaseToolTip );
    DataRelease_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&GaiaPreferencesDialog::e_ItemSelected, *this );
 
@@ -665,31 +671,44 @@ GaiaPreferencesDialog::GaiaPreferencesDialog()
 
    OnReturn( (pcl::Dialog::return_event_handler)&GaiaPreferencesDialog::e_Return, *this );
 
+   if ( !TheGaiaProcess->PreferencesLoaded( GDataRelease::DR2 ) )
+      TheGaiaProcess->LoadPreferences( GDataRelease::DR2 );
+   m_databaseFilePaths[0] = TheGaiaProcess->DatabaseFilePaths( GDataRelease::DR2 );
+
+   if ( !TheGaiaProcess->PreferencesLoaded( GDataRelease::EDR3 ) )
+      TheGaiaProcess->LoadPreferences( GDataRelease::EDR3 );
+   m_databaseFilePaths[1] = TheGaiaProcess->DatabaseFilePaths( GDataRelease::EDR3 );
+
+   if ( !TheGaiaProcess->PreferencesLoaded( GDataRelease::DR3 ) )
+      TheGaiaProcess->LoadPreferences( GDataRelease::DR3 );
+   m_databaseFilePaths[2] = TheGaiaProcess->DatabaseFilePaths( GDataRelease::DR3 );
+
+   if ( !TheGaiaProcess->PreferencesLoaded( GDataRelease::DR3SP ) )
+      TheGaiaProcess->LoadPreferences( GDataRelease::DR3SP );
+   m_databaseFilePaths[3] = TheGaiaProcess->DatabaseFilePaths( GDataRelease::DR3SP );
+
    if ( TheGaiaInterface != nullptr )
       m_dataRelease = TheGaiaInterface->m_instance.OutputDataRelease();
 
-   if ( !TheGaiaProcess->PreferencesLoaded( m_dataRelease ) )
-      TheGaiaProcess->LoadPreferences( m_dataRelease );
-   m_databaseFilePaths = TheGaiaProcess->DatabaseFilePaths( m_dataRelease );
    UpdateControls();
 }
 
 void GaiaPreferencesDialog::UpdateControls()
 {
-   DataRelease_ComboBox.SetCurrentItem( m_dataRelease );
+   DataRelease_ComboBox.SetCurrentItem( m_currentPage );
 
    Title_Label.SetText( "Gaia " + GDataRelease::ReleaseName( m_dataRelease ) + " Database Files" );
 
-   int currentIdx = FilePaths_TreeBox.ChildIndex( FilePaths_TreeBox.CurrentNode() );
+   int currentTreeIndex = FilePaths_TreeBox.ChildIndex( FilePaths_TreeBox.CurrentNode() );
 
    FilePaths_TreeBox.DisableUpdates();
    FilePaths_TreeBox.Clear();
 
-   for ( size_type i = 0; i < m_databaseFilePaths.Length(); ++i )
-      (new TreeBox::Node( FilePaths_TreeBox ))->SetText( 0, m_databaseFilePaths[i] );
+   for ( size_type i = 0; i < m_databaseFilePaths[m_currentPage].Length(); ++i )
+      (new TreeBox::Node( FilePaths_TreeBox ))->SetText( 0, m_databaseFilePaths[m_currentPage][i] );
 
-   if ( currentIdx >= 0 && currentIdx < int( m_databaseFilePaths.Length() ) )
-      FilePaths_TreeBox.SetCurrentNode( FilePaths_TreeBox[currentIdx] );
+   if ( currentTreeIndex >= 0 && currentTreeIndex < int( m_databaseFilePaths[m_currentPage].Length() ) )
+      FilePaths_TreeBox.SetCurrentNode( FilePaths_TreeBox[currentTreeIndex] );
 
    FilePaths_TreeBox.EnableUpdates();
 
@@ -704,20 +723,20 @@ void GaiaPreferencesDialog::e_NodeActivated( TreeBox& sender, TreeBox::Node& nod
    d.DisableMultipleSelections();
    d.SetFilter( FileFilter( "XPSD Files", ".xpsd" ) );
    if ( d.Execute() )
-      m_databaseFilePaths[sender.ChildIndex( &node )] = d.FileName();
+   {
+      m_databaseFilePaths[m_currentPage][sender.ChildIndex( &node )] = d.FileName();
+      m_modified[m_currentPage] = true;
+      UpdateControls();
+   }
 }
 
 void GaiaPreferencesDialog::e_ItemSelected( ComboBox& sender, int itemIndex )
 {
    if ( sender == DataRelease_ComboBox )
-      if ( m_dataRelease != itemIndex )
-      {
-         m_dataRelease = itemIndex;
-         if ( !TheGaiaProcess->PreferencesLoaded( m_dataRelease ) )
-            TheGaiaProcess->LoadPreferences( m_dataRelease );
-         m_databaseFilePaths = TheGaiaProcess->DatabaseFilePaths( m_dataRelease );
-         UpdateControls();
-      }
+   {
+      m_dataRelease = itemIndex + 1; // 0 = GDataRelease::BestAvailable
+      UpdateControls();
+   }
 }
 
 void GaiaPreferencesDialog::e_Click( Button& sender, bool checked )
@@ -730,7 +749,8 @@ void GaiaPreferencesDialog::e_Click( Button& sender, bool checked )
       d.SetFilter( FileFilter( "XPSD Files", ".xpsd" ) );
       if ( d.Execute() )
       {
-         m_databaseFilePaths = d.FileNames();
+         m_databaseFilePaths[m_currentPage] = d.FileNames();
+         m_modified[m_currentPage] = true;
          UpdateControls();
       }
    }
@@ -739,13 +759,16 @@ void GaiaPreferencesDialog::e_Click( Button& sender, bool checked )
       const TreeBox::Node* n = FilePaths_TreeBox.CurrentNode();
       if ( n != nullptr )
       {
-         m_databaseFilePaths.Remove( m_databaseFilePaths.At( FilePaths_TreeBox.ChildIndex( n ) ) );
+         m_databaseFilePaths[m_currentPage].Remove(
+            m_databaseFilePaths[m_currentPage].At( FilePaths_TreeBox.ChildIndex( n ) ) );
+         m_modified[m_currentPage] = true;
          UpdateControls();
       }
    }
    else if ( sender == ClearFiles_PushButton )
    {
-      m_databaseFilePaths.Clear();
+      m_databaseFilePaths[m_currentPage].Clear();
+      m_modified[m_currentPage] = true;
       UpdateControls();
    }
    else if ( sender == OK_PushButton )
@@ -780,7 +803,8 @@ void GaiaPreferencesDialog::e_FileDrop( Control& sender, const Point& pos, const
                inputFiles << file;
       if ( !inputFiles.IsEmpty() )
       {
-         m_databaseFilePaths = inputFiles;
+         m_databaseFilePaths[m_currentPage] = inputFiles;
+         m_modified[m_currentPage] = true;
          UpdateControls();
       }
    }
@@ -790,11 +814,21 @@ void GaiaPreferencesDialog::e_Return( Dialog& sender, int retVal )
 {
    if ( retVal == StdDialogCode::Ok )
    {
-      TheGaiaProcess->SetDatabaseFilePaths( m_dataRelease, m_databaseFilePaths );
+      if ( m_modified[0] )
+         TheGaiaProcess->SetDatabaseFilePaths( GDataRelease::DR2, m_databaseFilePaths[0] );
+      if ( m_modified[1] )
+         TheGaiaProcess->SetDatabaseFilePaths( GDataRelease::EDR3, m_databaseFilePaths[1] );
+      if ( m_modified[2] )
+         TheGaiaProcess->SetDatabaseFilePaths( GDataRelease::DR3, m_databaseFilePaths[2] );
+      if ( m_modified[3] )
+         TheGaiaProcess->SetDatabaseFilePaths( GDataRelease::DR3SP, m_databaseFilePaths[3] );
+
       if ( TheGaiaInterface != nullptr )
          TheGaiaInterface->UpdateControls();
    }
 }
+
+#undef m_currentPage
 
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
@@ -922,7 +956,7 @@ void GaiaInterface::UpdateControls()
 {
    if ( GUI != nullptr )
    {
-      GUI->DataRelease_ComboBox.SetCurrentItem( m_instance.OutputDataRelease() );
+      GUI->DataRelease_ComboBox.SetCurrentItem( m_instance.OutputDataRelease() - 1 ); // 0 = GDataRelease::BestAvailable
 
       GUI->CenterRA_Edit.SetText( RAToString( m_instance.p_searchData.centerRA ) );
 
@@ -1116,7 +1150,7 @@ void GaiaInterface::e_EditValueUpdated( NumericEdit& sender, double value )
 void GaiaInterface::e_ItemSelected( ComboBox& sender, int itemIndex )
 {
    if ( sender == GUI->DataRelease_ComboBox )
-      m_instance.p_dataRelease = itemIndex;
+      m_instance.p_dataRelease = itemIndex + 1; // skip 0 = GDataRelease::BestAvailable
    else if ( sender == GUI->TextFormat_ComboBox )
       m_instance.p_textFormat = itemIndex;
    else if ( sender == GUI->TextHeaders_ComboBox )
@@ -1245,8 +1279,10 @@ GaiaInterface::GUIData::GUIData( GaiaInterface& w )
 
    //
 
-   const char* dataReleaseToolTip = "<p>You can choose between Gaia Data Release 2 (Gaia DR2) and Gaia Early Data Release 3 (EDR3). "
-      "Both catalogs are available in XPSD format and are fully supported by this implementation.</p>";
+   const char* dataReleaseToolTip = "<p>You can choose among Gaia Data Release 2 (Gaia DR2), "
+      "Gaia Early Data Release 3 (EDR3), and Gaia Data Release 3 (DR3). The DR3/SP variant "
+      "includes BP/RP sampled mean spectrum data for a subset of Gaia DR3 stars.</p>"
+      "<p>All catalogs are available in XPSD format and are fully supported by this implementation.</p>";
 
    DataRelease_Label.SetText( "Data release:" );
    DataRelease_Label.SetFixedWidth( labelWidth1 );
@@ -1255,6 +1291,8 @@ GaiaInterface::GUIData::GUIData( GaiaInterface& w )
 
    DataRelease_ComboBox.AddItem( "Gaia DR2" );
    DataRelease_ComboBox.AddItem( "Gaia EDR3" );
+   DataRelease_ComboBox.AddItem( "Gaia DR3" );
+   DataRelease_ComboBox.AddItem( "Gaia DR3/SP" );
    DataRelease_ComboBox.SetToolTip( dataReleaseToolTip );
    DataRelease_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&GaiaInterface::e_ItemSelected, w );
 

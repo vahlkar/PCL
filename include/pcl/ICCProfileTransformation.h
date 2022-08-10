@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/ICCProfileTransformation.h - Released 2022-05-17T17:14:45Z
+// pcl/ICCProfileTransformation.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -98,17 +98,17 @@ public:
    /*!
     * Represents an ICC rendering intent.
     */
-   typedef ICCRenderingIntent::value_type    rendering_intent;
+   using rendering_intent = ICCRenderingIntent::value_type;
 
    /*!
     * Represents an opaque handle to a server-side ICC transformation.
     */
-   typedef void*                             transformation_handle;
+   using transformation_handle = void*;
 
    /*!
     * Represents a list of handles to open ICC profiles.
     */
-   typedef Array<ICCProfile::handle>         profile_list;
+   using profile_list = Array<ICCProfile::handle>;
 
    /*!
     * Constructs an empty %ICCPRofileTransformation object.
@@ -688,4 +688,4 @@ public:
 #endif   // __PCL_ICCProfileTransformation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ICCProfileTransformation.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/ICCProfileTransformation.h - Released 2022-08-10T16:36:28Z

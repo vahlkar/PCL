@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/ScrollBox.h - Released 2022-05-17T17:14:45Z
+// pcl/ScrollBox.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -551,7 +551,7 @@ public:
     *
     * \ingroup scroll_box_event_handlers
     */
-   typedef void (Control::*pos_event_handler)( ScrollBox& sender, int pos );
+   using pos_event_handler = void (Control::*)( ScrollBox& sender, int pos );
 
    /*!
     * Defines the prototype of a <em>scroll range event handler</em>.
@@ -565,7 +565,7 @@ public:
     *
     * \ingroup scroll_box_event_handlers
     */
-   typedef void (Control::*range_event_handler)( ScrollBox& sender, int minValue, int maxValue );
+   using range_event_handler = void (Control::*)( ScrollBox& sender, int minValue, int maxValue );
 
    /*!
     * Sets the scroll position event handler for the horizontal scroll bar.
@@ -661,4 +661,4 @@ protected:
 #endif   // __PCL_ScrollBox_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ScrollBox.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/ScrollBox.h - Released 2022-08-10T16:36:28Z

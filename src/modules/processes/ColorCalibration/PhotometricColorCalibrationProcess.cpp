@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.5.1
+// Standard ColorCalibration Process Module Version 1.5.2
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationProcess.cpp - Released 2022-05-17T17:15:11Z
+// PhotometricColorCalibrationProcess.cpp - Released 2022-05-20T16:28:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -99,9 +99,10 @@ PhotometricColorCalibrationProcess::PhotometricColorCalibrationProcess()
    new PCCSolverAutoCatalog( this );
    new PCCSolverLimitMagnitude( this );
    new PCCSolverAutoLimitMagnitude( this );
-   new PCCSolverAutoLimitMagnitudeFactor( this );
-   new PCCSolverStarSensitivity( this );
-   new PCCSolverNoiseLayers( this );
+   new PCCSolverStructureLayers( this );
+   new PCCSolverMinStructureSize( this );
+   new PCCSolverNoiseReductionFilterRadius( this );
+   new PCCSolverSensitivity( this );
    new PCCSolverAlignmentDevice( this );
    new PCCSolverDistortionCorrection( this );
    new PCCSolverSplineSmoothing( this );
@@ -147,7 +148,7 @@ IsoString PhotometricColorCalibrationProcess::Category() const
 
 uint32 PhotometricColorCalibrationProcess::Version() const
 {
-   return 0x100;
+   return 2;
 }
 
 // ----------------------------------------------------------------------------
@@ -357,4 +358,4 @@ int PhotometricColorCalibrationProcess::FindWhiteReferenceById( const String& id
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationProcess.cpp - Released 2022-05-17T17:15:11Z
+// EOF PhotometricColorCalibrationProcess.cpp - Released 2022-05-20T16:28:45Z

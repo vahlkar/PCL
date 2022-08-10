@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/ATrousWaveletTransform.h - Released 2022-05-17T17:14:45Z
+// pcl/ATrousWaveletTransform.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -127,17 +127,17 @@ public:
    /*!
     * Represents a wavelet layer.
     */
-   typedef RedundantMultiscaleTransform::layer           layer;
+   using layer = RedundantMultiscaleTransform::layer;
 
    /*!
     * Represents a set of wavelet layers, or wavelet transform.
     */
-   typedef RedundantMultiscaleTransform::transform       transform;
+   using transform = RedundantMultiscaleTransform::transform;
 
    /*!
     * Represents a set of layer enabled/disabled states.
     */
-   typedef RedundantMultiscaleTransform::layer_state_set layer_state_set;
+   using layer_state_set = RedundantMultiscaleTransform::layer_state_set;
 
    /*!
     * \brief The scaling function of a wavelet transform.
@@ -674,7 +674,7 @@ private:
  *
  * \ingroup multiscale_transforms
  */
-typedef ATrousWaveletTransform   StarletTransform;
+using StarletTransform = ATrousWaveletTransform;
 
 // ----------------------------------------------------------------------------
 
@@ -683,4 +683,4 @@ typedef ATrousWaveletTransform   StarletTransform;
 #endif   // __PCL_ATrousWaveletTransform_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ATrousWaveletTransform.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/ATrousWaveletTransform.h - Released 2022-08-10T16:36:28Z

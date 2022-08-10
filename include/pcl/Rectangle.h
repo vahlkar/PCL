@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/Rectangle.h - Released 2022-05-17T17:14:45Z
+// pcl/Rectangle.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -101,7 +101,7 @@ namespace Clip
 /*!
  * A collection of Sutherland-Cohen clip code flags.
  */
-typedef Flags<Clip::mask_type>   ClipFlags;
+using ClipFlags = Flags<Clip::mask_type>;
 
 // ----------------------------------------------------------------------------
 
@@ -317,12 +317,12 @@ public:
    /*!
     * Represents the type of a point or rectangle component.
     */
-   typedef T                        component;
+   using component = T;
 
    /*!
     * Represents a point on the plane.
     */
-   typedef GenericPoint<component>  point;
+   using point = GenericPoint<component>;
 
    /*
     * Rectangle coordinates: x0=left, y0=top, x1=right, y1=bottom.
@@ -2962,7 +2962,7 @@ void Swap( GenericRectangle<T>& r1, GenericRectangle<T>& r2 ) noexcept
  *
  * %I32Rect is a template instantiation of GenericRectangle for \c int32.
  */
-typedef GenericRectangle<int32>     I32Rect;
+using I32Rect = GenericRectangle<int32>;
 
 /*!
  * \class pcl::Rect
@@ -2972,7 +2972,7 @@ typedef GenericRectangle<int32>     I32Rect;
  * %Rect is an alias for I32Rect. It is a template instantiation of
  * GenericRectangle for \c int32.
  */
-typedef I32Rect                     Rect;
+using Rect = I32Rect;
 
 /*!
  * \class pcl::F32Rect
@@ -2981,7 +2981,7 @@ typedef I32Rect                     Rect;
  *
  * %F32Rect is a template instantiation of GenericRectangle for \c float.
  */
-typedef GenericRectangle<float>     F32Rect;
+using F32Rect = GenericRectangle<float>;
 
 /*!
  * \class pcl::FRect
@@ -2991,7 +2991,7 @@ typedef GenericRectangle<float>     F32Rect;
  * %FRect is an alias for F32Rect. It is a template instantiation of
  * GenericRectangle for \c float.
  */
-typedef F32Rect                     FRect;
+using FRect = F32Rect;
 
 /*!
  * \class pcl::F64Rect
@@ -3000,7 +3000,7 @@ typedef F32Rect                     FRect;
  *
  * %F64Rect is a template instantiation of GenericRectangle for \c double.
  */
-typedef GenericRectangle<double>    F64Rect;
+using F64Rect = GenericRectangle<double>;
 
 /*!
  * \class pcl::DRect
@@ -3010,7 +3010,7 @@ typedef GenericRectangle<double>    F64Rect;
  * %DRect is an alias for F64Rect. It is a template instantiation of
  * GenericRectangle for \c double.
  */
-typedef F64Rect                     DRect;
+using DRect = F64Rect;
 
 #endif
 
@@ -3021,4 +3021,4 @@ typedef F64Rect                     DRect;
 #endif  // __PCL_Rectangle_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Rectangle.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/Rectangle.h - Released 2022-08-10T16:36:28Z

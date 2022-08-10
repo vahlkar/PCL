@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/File.h - Released 2022-05-17T17:14:45Z
+// pcl/File.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -153,7 +153,7 @@ namespace FileMode
  * \brief A combination of file access, share and opening/creation mode flags
  * \ingroup file_utilities
  */
-typedef Flags<FileMode::mask_type>  FileModes;
+using FileModes = Flags<FileMode::mask_type>;
 
 // ----------------------------------------------------------------------------
 
@@ -272,7 +272,7 @@ namespace FileAttribute
  * \brief A combination of file type, attribute and access mode flags
  * \ingroup file_utilities
  */
-typedef Flags<FileAttribute::mask_type>   FileAttributes;
+using FileAttributes = Flags<FileAttribute::mask_type>;
 
 // ----------------------------------------------------------------------------
 
@@ -481,7 +481,7 @@ namespace ReadTextOption
  * \ingroup file_utilities
  * \sa File::ReadLines(), File::ScanLines()
  */
-typedef Flags<ReadTextOption::mask_type>  ReadTextOptions;
+using ReadTextOptions = Flags<ReadTextOption::mask_type>;
 
 // ----------------------------------------------------------------------------
 
@@ -515,12 +515,12 @@ public:
    /*!
     * Represents a low-level opaque handle to a file.
     */
-   typedef void*  handle;
+   using handle = void*;
 
    /*!
     * Represents a file seek mode.
     */
-   typedef SeekMode::value_type  seek_mode;
+   using seek_mode = SeekMode::value_type;
 
    /*!
     * \class pcl::File::Error
@@ -2412,4 +2412,4 @@ protected:
 #endif   // __PCL_File_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/File.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/File.h - Released 2022-08-10T16:36:28Z

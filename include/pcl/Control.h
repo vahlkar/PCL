@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/Control.h - Released 2022-05-17T17:14:45Z
+// pcl/Control.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -106,7 +106,7 @@ namespace FocusStyle
 /*!
  * A combination of focus styles.
  */
-typedef Flags<FocusStyle::mask_type>   FocusStyles;
+using FocusStyles = Flags<FocusStyle::mask_type>   ;
 
 // ----------------------------------------------------------------------------
 
@@ -1548,72 +1548,72 @@ public:
    /*! #
     * \ingroup control_event_handlers
     */
-   typedef void (Control::*event_handler)( Control& sender );
+   using event_handler = void (Control::*)( Control& sender );
 
    /*! #
     * \ingroup control_event_handlers
     */
-   typedef void (Control::*close_event_handler)( Control& sender, bool& allowClose );
+   using close_event_handler = void (Control::*)( Control& sender, bool& allowClose );
 
    /*! #
     * \ingroup control_event_handlers
     */
-   typedef void (Control::*move_event_handler)( Control& sender, const pcl::Point& newPos, const pcl::Point& oldPos );
+   using move_event_handler = void (Control::*)( Control& sender, const pcl::Point& newPos, const pcl::Point& oldPos );
 
    /*! #
     * \ingroup control_event_handlers
     */
-   typedef void (Control::*resize_event_handler)( Control& sender, int newWidth, int newHeight, int oldWidth, int oldHeight );
+   using resize_event_handler = void (Control::*)( Control& sender, int newWidth, int newHeight, int oldWidth, int oldHeight );
 
    /*! #
     * \ingroup control_event_handlers
     */
-   typedef void (Control::*paint_event_handler)( Control& sender, const pcl::Rect& updateRect );
+   using paint_event_handler = void (Control::*)( Control& sender, const pcl::Rect& updateRect );
 
    /*! #
     * \ingroup control_event_handlers
     */
-   typedef void (Control::*keyboard_event_handler)( Control& sender, int key, unsigned modifiers, bool& wantsKey );
+   using keyboard_event_handler = void (Control::*)( Control& sender, int key, unsigned modifiers, bool& wantsKey );
 
    /*! #
     * \ingroup control_event_handlers
     */
-   typedef void (Control::*mouse_event_handler)( Control& sender, const pcl::Point& pos, unsigned buttons, unsigned modifiers );
+   using mouse_event_handler = void (Control::*)( Control& sender, const pcl::Point& pos, unsigned buttons, unsigned modifiers );
 
    /*! #
     * \ingroup control_event_handlers
     */
-   typedef void (Control::*mouse_button_event_handler)( Control& sender, const pcl::Point& pos, int button, unsigned buttons, unsigned modifiers );
+   using mouse_button_event_handler = void (Control::*)( Control& sender, const pcl::Point& pos, int button, unsigned buttons, unsigned modifiers );
 
    /*! #
     * \ingroup control_event_handlers
     */
-   typedef void (Control::*mouse_wheel_event_handler)( Control& sender, const pcl::Point& pos, int delta, unsigned buttons, unsigned modifiers );
+   using mouse_wheel_event_handler = void (Control::*)( Control& sender, const pcl::Point& pos, int delta, unsigned buttons, unsigned modifiers );
 
    /*! #
     * \ingroup control_event_handlers
     */
-   typedef void (Control::*file_drag_event_handler)( Control& sender, const pcl::Point& pos, const StringList& files, unsigned modifiers, bool& wantsFiles );
+   using file_drag_event_handler = void (Control::*)( Control& sender, const pcl::Point& pos, const StringList& files, unsigned modifiers, bool& wantsFiles );
 
    /*! #
     * \ingroup control_event_handlers
     */
-   typedef void (Control::*file_drop_event_handler)( Control& sender, const pcl::Point& pos, const StringList& files, unsigned modifiers );
+   using file_drop_event_handler = void (Control::*)( Control& sender, const pcl::Point& pos, const StringList& files, unsigned modifiers );
 
    /*! #
     * \ingroup control_event_handlers
     */
-   typedef void (Control::*view_drag_event_handler)( Control& sender, const pcl::Point& pos, const View& view, unsigned modifiers, bool& wantsView );
+   using view_drag_event_handler = void (Control::*)( Control& sender, const pcl::Point& pos, const View& view, unsigned modifiers, bool& wantsView );
 
    /*! #
     * \ingroup control_event_handlers
     */
-   typedef void (Control::*view_drop_event_handler)( Control& sender, const pcl::Point& pos, const View& view, unsigned modifiers );
+   using view_drop_event_handler = void (Control::*)( Control& sender, const pcl::Point& pos, const View& view, unsigned modifiers );
 
    /*! #
     * \ingroup control_event_handlers
     */
-   typedef void (Control::*child_event_handler)( Control& sender, Control& child );
+   using child_event_handler = void (Control::*)( Control& sender, Control& child );
 
    /*! #
     * \ingroup control_event_handlers
@@ -1866,4 +1866,4 @@ int CanonicalControlHeightImplementation()
 #endif   // __PCL_Control_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Control.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/Control.h - Released 2022-08-10T16:36:28Z

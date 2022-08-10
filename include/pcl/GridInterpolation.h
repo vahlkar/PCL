@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/GridInterpolation.h - Released 2022-05-17T17:14:45Z
+// pcl/GridInterpolation.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -329,7 +329,7 @@ private:
     * lobes, in order to prevent small-scale oscillations. Other options are
     * BilinearInterpolation and CubicBSplineFilter.
     */
-   typedef BicubicBSplineInterpolation<double> grid_interpolation;
+   using grid_interpolation = BicubicBSplineInterpolation<double>;
 
    Rect               m_rect;
    int                m_delta;
@@ -807,7 +807,7 @@ private:
     * lobes, in order to prevent small-scale oscillations. Other options are
     * BilinearInterpolation and CubicBSplineFilter.
     */
-   typedef BicubicBSplineInterpolation<double> grid_interpolation;
+   using grid_interpolation = BicubicBSplineInterpolation<double> ;
 
    Rect               m_rect;
    int                m_delta;
@@ -984,4 +984,4 @@ private:
 #endif   // __PCL_GridInterpolation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/GridInterpolation.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/GridInterpolation.h - Released 2022-08-10T16:36:28Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/ButtonCodes.h - Released 2022-05-17T17:14:45Z
+// pcl/ButtonCodes.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -92,7 +92,7 @@ namespace MouseButton
 /*!
  * A combination of mouse button codes.
  */
-typedef Flags<MouseButton::mask_type>  MouseButtons;
+using MouseButtons = Flags<MouseButton::mask_type>;
 
 // ----------------------------------------------------------------------------
 
@@ -123,7 +123,7 @@ namespace KeyModifier
 /*!
  * A combination of keyboard modifiers.
  */
-typedef Flags<KeyModifier::mask_type>  KeyModifiers;
+using KeyModifiers = Flags<KeyModifier::mask_type>;
 
 // ----------------------------------------------------------------------------
 
@@ -132,4 +132,4 @@ typedef Flags<KeyModifier::mask_type>  KeyModifiers;
 #endif   // __PCL_ButtonCodes_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ButtonCodes.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/ButtonCodes.h - Released 2022-08-10T16:36:28Z

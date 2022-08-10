@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/FileDialog.cpp - Released 2022-05-17T17:14:53Z
+// pcl/FileDialog.cpp - Released 2022-08-10T16:36:36Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -121,7 +121,7 @@ class FileDialogPrivate
 {
 public:
 
-   typedef FileDialog::filter_list filter_list;
+   using filter_list = FileDialog::filter_list;
 
    String MakeAPIFilters() const
    {
@@ -515,4 +515,4 @@ String GetDirectoryDialog::Directory() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FileDialog.cpp - Released 2022-05-17T17:14:53Z
+// EOF pcl/FileDialog.cpp - Released 2022-08-10T16:36:36Z

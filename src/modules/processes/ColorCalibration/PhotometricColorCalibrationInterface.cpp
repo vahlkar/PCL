@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.5.1
+// Standard ColorCalibration Process Module Version 1.5.2
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationInterface.cpp - Released 2022-05-17T17:15:11Z
+// PhotometricColorCalibrationInterface.cpp - Released 2022-05-20T16:28:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -354,9 +354,13 @@ void PhotometricColorCalibrationInterface::UpdateControls()
 
    GUI->ProjectionSystem_ComboBox.SetCurrentItem( m_instance.p_solverProjection );
 
-   GUI->StarSensitivity_NumericControl.SetValue( m_instance.p_solverStarSensitivity );
+   GUI->StructureLayers_SpinBox.SetValue( m_instance.p_solverStructureLayers );
 
-   GUI->NoiseReduction_SpinBox.SetValue( m_instance.p_solverNoiseLayers );
+   GUI->MinStructureSize_SpinBox.SetValue( m_instance.p_solverMinStructureSize );
+
+   GUI->NoiseReductionFilterRadius_SpinBox.SetValue( m_instance.p_solverNoiseReductionFilterRadius );
+
+   GUI->Sensitivity_NumericControl.SetValue( m_instance.p_solverSensitivity );
 
    GUI->AlignmentDevice_ComboBox.SetCurrentItem( m_instance.p_solverAlignmentDevice );
 
@@ -896,9 +900,9 @@ void PhotometricColorCalibrationInterface::e_EditValueUpdated( NumericEdit& send
    {
       m_instance.p_solverSplineSmoothing = value;
    }
-   else if ( sender == GUI->StarSensitivity_NumericControl )
+   else if ( sender == GUI->Sensitivity_NumericControl )
    {
-      m_instance.p_solverStarSensitivity = value;
+      m_instance.p_solverSensitivity = value;
    }
    else if ( sender == GUI->SaturationThreshold_NumericControl )
    {
@@ -926,9 +930,17 @@ void PhotometricColorCalibrationInterface::e_SpinValueUpdated( SpinBox& sender, 
    {
       m_instance.p_solverLimitMagnitude = value;
    }
-   else if ( sender == GUI->NoiseReduction_SpinBox )
+   else if ( sender == GUI->StructureLayers_SpinBox )
    {
-      m_instance.p_solverNoiseLayers = value;
+      m_instance.p_solverStructureLayers = value;
+   }
+   else if ( sender == GUI->MinStructureSize_SpinBox )
+   {
+      m_instance.p_solverMinStructureSize = value;
+   }
+   else if ( sender == GUI->NoiseReductionFilterRadius_SpinBox )
+   {
+      m_instance.p_solverNoiseReductionFilterRadius = value;
    }
    else if ( sender == GUI->PhotometryLimitMagnitude_SpinBox )
    {
@@ -1001,7 +1013,7 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
    //
 
    pcl::Font fnt = w.Font();
-   int labelWidth1 = fnt.Width( "Saturation threshold:m" );
+   int labelWidth1 = fnt.Width( "Minimum structure size:m" );
    int labelWidth2 = fnt.Width( "Height:m" );
    int editWidth1 = fnt.Width( "2000-01-01T12:00:00Zmm" );
    int editWidth2 = fnt.Width( "9999999999m" );
@@ -1579,38 +1591,92 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
 
    //
 
-   StarSensitivity_NumericControl.label.SetText( "Log(sensitivity):" );
-   StarSensitivity_NumericControl.label.SetFixedWidth( labelWidth1 );
-   StarSensitivity_NumericControl.slider.SetRange( 0, 50 );
-   StarSensitivity_NumericControl.slider.SetScaledMinWidth( 250 );
-   StarSensitivity_NumericControl.SetReal();
-   StarSensitivity_NumericControl.SetRange( ThePCCSolverStarSensitivityParameter->MinimumValue(), ThePCCSolverStarSensitivityParameter->MaximumValue() );
-   StarSensitivity_NumericControl.SetPrecision( ThePCCSolverStarSensitivityParameter->Precision() );
-   StarSensitivity_NumericControl.SetToolTip( "<p>Logarithm of the star detection sensitivity. Increase this parameter to "
-      "detect less stars. The default value of -1 is normally appropriate for most linear images.</p>" );
-   StarSensitivity_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&PhotometricColorCalibrationInterface::e_EditValueUpdated, w );
+   const char* structureLayersToolTip = "<p>Number of wavelet layers used for structure detection.</p>"
+      "<p>With more wavelet layers, larger stars (and perhaps also some nonstellar objects) will be detected.</p>";
 
-   //
+   StructureLayers_Label.SetText( "Detection scales:" );
+   StructureLayers_Label.SetFixedWidth( labelWidth1 );
+   StructureLayers_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   StructureLayers_Label.SetToolTip( structureLayersToolTip );
 
-   const char* noiseReductionToolTip = "<p>Some images have so much noise that the star detection algorithm can mistake "
-      "noise for stars. This parameter removes noise from the image in order to improve star detection. This value is the "
-      "number of wavelet layers that will be removed for noise reduction. Use 0 for no noise reduction.</p>";
+   StructureLayers_SpinBox.SetRange( int( ThePCCSolverStructureLayersParameter->MinimumValue() ), int( ThePCCSolverStructureLayersParameter->MaximumValue() ) );
+   StructureLayers_SpinBox.SetToolTip( structureLayersToolTip );
+   StructureLayers_SpinBox.SetFixedWidth( editWidth2 );
+   StructureLayers_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&PhotometricColorCalibrationInterface::e_SpinValueUpdated, w );
 
-   NoiseReduction_Label.SetText( "Noise reduction:" );
-   NoiseReduction_Label.SetFixedWidth( labelWidth1 );
-   NoiseReduction_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
-   NoiseReduction_Label.SetToolTip( noiseReductionToolTip );
+   StructureLayers_Sizer.SetSpacing( 4 );
+   StructureLayers_Sizer.Add( StructureLayers_Label );
+   StructureLayers_Sizer.Add( StructureLayers_SpinBox );
+   StructureLayers_Sizer.AddStretch();
 
-   NoiseReduction_SpinBox.SetRange( int( ThePCCSolverNoiseLayersParameter->MinimumValue() ),
-                                    int( ThePCCSolverNoiseLayersParameter->MaximumValue() ) );
-   NoiseReduction_SpinBox.SetToolTip( noiseReductionToolTip );
-//    NoiseReduction_SpinBox.SetFixedWidth( editWidth1 );
-   NoiseReduction_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&PhotometricColorCalibrationInterface::e_SpinValueUpdated, w );
+   const char* minStructureSizeToolTip = "<p>Minimum size of a detectable star structure in square pixels.</p>"
+      "<p>This parameter can be used to prevent detection of small and bright image artifacts as stars. "
+      "This can be useful to work with uncalibrated or wrongly calibrated data, especially demosaiced CFA frames "
+      "where hot pixels have generated large bright artifacts that cannot be removed with a median filter "
+      "(i.e., the <i>Hot pixel removal</i> parameter).</p>"
+      "<p>Changing the default zero value of this parameter should not be necessary with correctly acquired and "
+      "calibrated data. It may help, however, when working with poor quality data such as poorly tracked, poorly focused, "
+      "wrongly calibrated, low-SNR raw frames, for which our image registration algorithms and tools have not been "
+      "designed specifically.</p>";
 
-   NoiseReduction_Sizer.SetSpacing( 4 );
-   NoiseReduction_Sizer.Add( NoiseReduction_Label );
-   NoiseReduction_Sizer.Add( NoiseReduction_SpinBox );
-   NoiseReduction_Sizer.AddStretch();
+   MinStructureSize_Label.SetText( "Minimum structure size:" );
+   MinStructureSize_Label.SetFixedWidth( labelWidth1 );
+   MinStructureSize_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   MinStructureSize_Label.SetToolTip( minStructureSizeToolTip );
+
+   MinStructureSize_SpinBox.SetRange( int( ThePCCSolverMinStructureSizeParameter->MinimumValue() ), int( ThePCCSolverMinStructureSizeParameter->MaximumValue() ) );
+   MinStructureSize_SpinBox.SetToolTip( minStructureSizeToolTip );
+   MinStructureSize_SpinBox.SetFixedWidth( editWidth2 );
+   MinStructureSize_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&PhotometricColorCalibrationInterface::e_SpinValueUpdated, w );
+
+   MinStructureSize_Sizer.SetSpacing( 4 );
+   MinStructureSize_Sizer.Add( MinStructureSize_Label );
+   MinStructureSize_Sizer.Add( MinStructureSize_SpinBox );
+   MinStructureSize_Sizer.AddStretch();
+
+   const char* noiseReductionFilterRadiusToolTip = "<p>Size of the noise reduction filter.</p>"
+      "<p>This is the radius in pixels of a Gaussian convolution filter applied to the working image used for "
+      "calculation of star positions during the star detection phase. Use it only for very low SNR images, where "
+      "the star detector cannot find reliable stars with default parameters.</p>"
+      "<p>Be aware that noise reduction will modify star profiles and hence the way star positions are calculated, "
+      "resulting in a less accurate image registration. Under extreme low-SNR conditions, however, this is probably "
+      "better than working with the actual data anyway.</p>"
+      "<p>To disable noise reduction, set this parameter to zero.</p>";
+
+   NoiseReductionFilterRadius_Label.SetText( "Noise reduction:" );
+   NoiseReductionFilterRadius_Label.SetFixedWidth( labelWidth1 );
+   NoiseReductionFilterRadius_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   NoiseReductionFilterRadius_Label.SetToolTip( noiseReductionFilterRadiusToolTip );
+
+   NoiseReductionFilterRadius_SpinBox.SetRange( int( ThePCCSolverNoiseReductionFilterRadiusParameter->MinimumValue() ), int( ThePCCSolverNoiseReductionFilterRadiusParameter->MaximumValue() ) );
+   NoiseReductionFilterRadius_SpinBox.SetToolTip( noiseReductionFilterRadiusToolTip );
+   NoiseReductionFilterRadius_SpinBox.SetFixedWidth( editWidth2 );
+   NoiseReductionFilterRadius_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&PhotometricColorCalibrationInterface::e_SpinValueUpdated, w );
+
+   NoiseReductionFilterRadius_Sizer.SetSpacing( 4 );
+   NoiseReductionFilterRadius_Sizer.Add( NoiseReductionFilterRadius_Label );
+   NoiseReductionFilterRadius_Sizer.Add( NoiseReductionFilterRadius_SpinBox );
+   NoiseReductionFilterRadius_Sizer.AddStretch();
+
+   Sensitivity_NumericControl.label.SetText( "Sensitivity:" );
+   Sensitivity_NumericControl.label.SetFixedWidth( labelWidth1 );
+   Sensitivity_NumericControl.slider.SetRange( 0, 100 );
+   Sensitivity_NumericControl.SetReal();
+   Sensitivity_NumericControl.SetRange( ThePCCSolverSensitivityParameter->MinimumValue(), ThePCCSolverSensitivityParameter->MaximumValue() );
+   Sensitivity_NumericControl.SetPrecision( ThePCCSolverSensitivityParameter->Precision() );
+   Sensitivity_NumericControl.edit.SetFixedWidth( editWidth2 );
+   Sensitivity_NumericControl.SetToolTip( "<p>Star detection sensitivity.</p>"
+      "<p>Internally, the sensitivity of the star detection algorithm is expressed in signal-to-noise ratio units with "
+      "respect to the evaluated dispersion of local background pixels for each detected structure. Given a source with "
+      "estimated brightness <i>s</i>, local background <i>b</i> and local background dispersion <i>n</i>, sensitivity "
+      "is the minimum value of (<i>s</i> - <i>b</i>)/<i>n</i> necessary to trigger star detection.</p>"
+      "<p>To isolate this interface from the internal implementation, this parameter is normalized to the [0,1] range, "
+      "where 0 and 1 represent minimum and maximum sensitivity, respectively. This abstraction allows us to change the "
+      "star detection engine without breaking dependent tools and processes.</p>"
+      "<p>Increase this parameter to favor detection of fainter stars. Decrease it to restrict detection to brighter "
+      "stars. The default value is 0.5. In general, you shouldn't need to change the default value of this parameter "
+      "under normal working conditions.</p>" );
+   Sensitivity_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&PhotometricColorCalibrationInterface::e_EditValueUpdated, w );
 
    //
 
@@ -1654,8 +1720,10 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
 
    AdvancedPlateSolverParameters_Sizer.SetSpacing( 4 );
    AdvancedPlateSolverParameters_Sizer.Add( ProjectionSystem_Sizer );
-   AdvancedPlateSolverParameters_Sizer.Add( StarSensitivity_NumericControl );
-   AdvancedPlateSolverParameters_Sizer.Add( NoiseReduction_Sizer );
+   AdvancedPlateSolverParameters_Sizer.Add( StructureLayers_Sizer );
+   AdvancedPlateSolverParameters_Sizer.Add( MinStructureSize_Sizer );
+   AdvancedPlateSolverParameters_Sizer.Add( NoiseReductionFilterRadius_Sizer );
+   AdvancedPlateSolverParameters_Sizer.Add( Sensitivity_NumericControl );
    AdvancedPlateSolverParameters_Sizer.Add( AlignmentDevice_Sizer );
    AdvancedPlateSolverParameters_Sizer.Add( SplineSmoothing_NumericControl );
 
@@ -2093,4 +2161,4 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationInterface.cpp - Released 2022-05-17T17:15:11Z
+// EOF PhotometricColorCalibrationInterface.cpp - Released 2022-05-20T16:28:45Z

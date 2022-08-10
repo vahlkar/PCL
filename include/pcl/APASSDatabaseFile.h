@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/APASSDatabaseFile.h - Released 2022-05-17T17:14:45Z
+// pcl/APASSDatabaseFile.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -56,7 +56,6 @@
 
 #include <pcl/Defs.h>
 
-#include <pcl/ElapsedTime.h>
 #include <pcl/Flags.h>
 #include <pcl/StarDatabaseFile.h>
 
@@ -138,7 +137,7 @@ struct PCL_CLASS APASSStarData
  *
  * \ingroup point_source_databases
  */
-typedef XPSD::SearchData<APASSStarData> APASSSearchData;
+using APASSSearchData = XPSD::SearchData<APASSStarData>;
 
 // ----------------------------------------------------------------------------
 
@@ -288,7 +287,7 @@ private:
 
    IsoString m_dr; // data release, one of "DR9", "DR10"
 
-   typedef void (APASSDatabaseFile::*star_decoder)( const ByteArray&, const XPSD::IndexTree&, const XPSD::IndexNode&, void* ) const;
+   using star_decoder = void (APASSDatabaseFile::*)( const ByteArray&, const XPSD::IndexTree&, const XPSD::IndexNode&, void* ) const;
    star_decoder m_decoder = nullptr;
 
 #pragma pack(push, 1)
@@ -354,21 +353,6 @@ private:
    };
 
 #pragma pack(pop)
-
-   void LoadData( void* block, uint64 offset, uint32 size, void* searchData ) const override
-   {
-      ElapsedTime T;
-      StarDatabaseFile::LoadData( block, offset, size, searchData );
-      reinterpret_cast<APASSSearchData*>( searchData )->timeIO += T();
-      ++reinterpret_cast<APASSSearchData*>( searchData )->countIO;
-   }
-
-   void Uncompress( ByteArray& block, uint32 uncompressedSize, void* searchData ) const override
-   {
-      ElapsedTime T;
-      StarDatabaseFile::Uncompress( block, uncompressedSize, searchData );
-      reinterpret_cast<APASSSearchData*>( searchData )->timeUncompress += T();
-   }
 
    void GetEncodedData( const ByteArray& data, const XPSD::IndexTree& tree, const XPSD::IndexNode& node, void* searchData ) const override
    {
@@ -506,4 +490,4 @@ private:
 #endif  // __PCL_APASSDatabaseFile_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/APASSDatabaseFile.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/APASSDatabaseFile.h - Released 2022-08-10T16:36:28Z

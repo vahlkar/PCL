@@ -225,11 +225,13 @@ class GDataRelease : public MetaEnumeration
 {
 public:
 
-   enum { DR2,
+   enum { BestAvailable,
+          DR2,
           EDR3,
-          BestAvailable,
+          DR3,
+          DR3SP,
           NumberOfItems,
-          Default = EDR3 };
+          Default = DR3 };
 
    GDataRelease( MetaProcess* );
 
@@ -243,10 +245,17 @@ public:
    {
       switch ( dr )
       {
-      case DR2:  return "DR2";
+      case DR2:   return "DR2";
+      case EDR3:  return "EDR3";
       default:
-      case EDR3: return "EDR3";
+      case DR3:   return "DR3";
+      case DR3SP: return "DR3SP";
       }
+   }
+
+   static bool HasMeanSpectrumData( pcl_enum dr )
+   {
+      return dr == DR3SP;
    }
 };
 
@@ -339,6 +348,20 @@ public:
 };
 
 extern GTextHeaders* TheGTextHeadersParameter;
+
+// ----------------------------------------------------------------------------
+
+class GNormalizeSpectrum : public MetaBoolean
+{
+public:
+
+   GNormalizeSpectrum( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern GNormalizeSpectrum* TheGNormalizeSpectrumParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -530,6 +553,21 @@ extern GSourceFlags* TheGSourceFlagsParameter;
 
 // ----------------------------------------------------------------------------
 
+class GSourceFlux : public MetaBlock
+{
+public:
+
+   GSourceFlux( MetaTable* );
+
+   IsoString Id() const override;
+   MetaBlock::data_interpretation DataInterpretation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern GSourceFlux* TheGSourceFluxParameter;
+
+// ----------------------------------------------------------------------------
+
 class GExcessCount : public MetaUInt32
 {
 public:
@@ -687,6 +725,78 @@ public:
 };
 
 extern GDatabaseMagnitudeHigh* TheGDatabaseMagnitudeHighParameter;
+
+// ----------------------------------------------------------------------------
+
+class GDatabaseHasMeanSpectrumData: public MetaBoolean
+{
+public:
+
+   GDatabaseHasMeanSpectrumData( MetaProcess* );
+
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
+};
+
+extern GDatabaseHasMeanSpectrumData* TheGDatabaseHasMeanSpectrumDataParameter;
+
+// ----------------------------------------------------------------------------
+
+class GDatabaseSpectrumStart : public MetaFloat
+{
+public:
+
+   GDatabaseSpectrumStart( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool IsReadOnly() const override;
+};
+
+extern GDatabaseSpectrumStart* TheGDatabaseSpectrumStartParameter;
+
+// ----------------------------------------------------------------------------
+
+class GDatabaseSpectrumStep : public MetaFloat
+{
+public:
+
+   GDatabaseSpectrumStep( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool IsReadOnly() const override;
+};
+
+extern GDatabaseSpectrumStep* TheGDatabaseSpectrumStepParameter;
+
+// ----------------------------------------------------------------------------
+
+class GDatabaseSpectrumCount : public MetaInt32
+{
+public:
+
+   GDatabaseSpectrumCount( MetaProcess* );
+
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
+};
+
+extern GDatabaseSpectrumCount* TheGDatabaseSpectrumCountParameter;
+
+// ----------------------------------------------------------------------------
+
+class GDatabaseSpectrumBits : public MetaInt32
+{
+public:
+
+   GDatabaseSpectrumBits( MetaProcess* );
+
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
+};
+
+extern GDatabaseSpectrumBits* TheGDatabaseSpectrumBitsParameter;
 
 // ----------------------------------------------------------------------------
 

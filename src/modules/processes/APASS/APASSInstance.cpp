@@ -112,6 +112,7 @@ void APASSInstance::Assign( const ProcessImplementation& p )
 
 bool APASSInstance::CanExecuteOn( const View&, String& whyNot ) const
 {
+   whyNot = "APASS can only be executed in the global context.";
    return false;
 }
 
@@ -119,7 +120,6 @@ bool APASSInstance::CanExecuteOn( const View&, String& whyNot ) const
 
 bool APASSInstance::CanExecuteGlobal( String& whyNot ) const
 {
-   whyNot = "APASS can only be executed in the global context.";
    return true;
 }
 

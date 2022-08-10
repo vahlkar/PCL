@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/Convolution.cpp - Released 2022-05-17T17:14:53Z
+// pcl/Convolution.cpp - Released 2022-08-10T16:36:36Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -226,8 +226,8 @@ private:
    {
    public:
 
-      typedef GenericImage<P>                         region;
-      typedef GenericMultiVector<typename P::sample>  raw_data;
+      using region   = GenericImage<P>;
+      using raw_data = GenericMultiVector<typename P::sample>;
 
       Thread( ThreadData<P>& data, int startRow, int endRow, bool upperOvRgn, bool lowerOvRgn )
          : m_data( data )
@@ -629,4 +629,4 @@ void Convolution::ValidateFilter() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Convolution.cpp - Released 2022-05-17T17:14:53Z
+// EOF pcl/Convolution.cpp - Released 2022-08-10T16:36:36Z

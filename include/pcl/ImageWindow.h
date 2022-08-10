@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/ImageWindow.h - Released 2022-05-17T17:14:45Z
+// pcl/ImageWindow.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -264,7 +264,7 @@ namespace UndoFlag
  * \class pcl::UndoFlags
  * \brief A collection of history data item specifiers.
  */
-typedef Flags<UndoFlag::mask_type>  UndoFlags;
+using UndoFlags = Flags<UndoFlag::mask_type>;
 
 // ----------------------------------------------------------------------------
 
@@ -289,35 +289,35 @@ public:
     * Represents a GUI working mode. Valid modes are defined in the ImageMode
     * namespace.
     */
-   typedef ImageMode::value_type          gui_mode;
+   using gui_mode = ImageMode::value_type;
 
    /*!
     * Represents a display image channel supported by the PixInsight core
     * application. Valid display channels and components are defined in the
     * DisplayChannel namespace.
     */
-   typedef DisplayChannel::value_type     display_channel;
+   using display_channel = DisplayChannel::value_type;
 
    /*!
     * Represents a mask rendering mode supported by the PixInsight core
     * application. Valid mask rendering modes are defined in the MaskMode
     * namespace.
     */
-   typedef MaskMode::value_type           mask_mode;
+   using mask_mode = MaskMode::value_type;
 
    /*!
     * Represents a transparency background brush supported by the PixInsight
     * core application. Valid transparency brushes are defined in the
     * BackgroundBrush namespace.
     */
-   typedef BackgroundBrush::value_type    background_brush;
+   using background_brush = BackgroundBrush::value_type;
 
    /*!
     * Represents a transparency rendering mode supported by the PixInsight core
     * application. Valid transparency rendering modes are defined in the
     * TransparencyMode namespace.
     */
-   typedef TransparencyMode::value_type   transparency_mode;
+   using transparency_mode = TransparencyMode::value_type;
 
    /*!
     * Constructs a null image window. A null %ImageWindow does not correspond
@@ -1392,10 +1392,10 @@ public:
     * declination, respectively, and the function returns true. Right ascension
     * and declination are provided expressed in degrees in the ranges [0,360)
     * (if \a rawRA is false; see below) and [-90,+90], respectively. Note that
-    * both input image and output equatorial coordinates can legally be outside
-    * image bounds. Output equatorial coordinates will be referred to the
-    * reference system of the astrometric solution associated with this image
-    * window (ICRS or GCRS).
+    * both input image coordinates and output equatorial coordinates can
+    * legally be outside image bounds. Output equatorial coordinates will be
+    * referred to the reference system of the astrometric solution associated
+    * with this image window (ICRS or GCRS).
     *
     * If \a rawRA is true, the output right ascension is \e not constrained to
     * the [0,360) range. This is useful for interpolation schemes where
@@ -1885,10 +1885,6 @@ public:
     *     ...
     * </pre>
     *
-    *                A zoom factor of -1 should not be used explicitly; it is a
-    *                reserved value for internal use, and there is no guarantee
-    *                that future versions of PCL continue accepting it.
-    *
     * If the specified viewport location cannot correspond to the viewport
     * central position with the specified zoom factor, the nearest image
     * coordinates are always selected automatically. For example, if you
@@ -1905,6 +1901,10 @@ public:
     * immediate regeneration of the screen rendition for the visible viewport
     * region. This includes regeneration of screen renditions depending on
     * active dynamic interfaces.
+    *
+    * \note A zoom factor of -1 should not be used explicitly; it is a reserved
+    * value for internal use, and there is no guarantee that future versions of
+    * PCL will continue accepting it.
     */
    void SetViewport( double cx, double cy, int zoom = 0 );
 
@@ -3022,4 +3022,4 @@ private:
 #endif   // __PCL_ImageWindow_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ImageWindow.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/ImageWindow.h - Released 2022-08-10T16:36:28Z

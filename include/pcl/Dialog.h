@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/Dialog.h - Released 2022-05-17T17:14:45Z
+// pcl/Dialog.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -100,7 +100,7 @@ public:
    /*!
     * Represents a standard dialog return code.
     */
-   typedef StdDialogCode::value_type   std_code;
+   using std_code = StdDialogCode::value_type;
 
    /*!
     * Constructs a %Dialog object.
@@ -237,7 +237,7 @@ public:
     *
     * \ingroup dialog_event_handlers
     */
-   typedef void (Control::*execute_event_handler)( Dialog& sender );
+   using execute_event_handler = void (Control::*)( Dialog& sender );
 
    /*!
     * Defines the prototype of a <em>dialog return</em> event handler.
@@ -252,7 +252,7 @@ public:
     *
     * \ingroup dialog_event_handlers
     */
-   typedef void (Control::*return_event_handler)( Dialog& sender, int retCode );
+   using return_event_handler = void (Control::*)( Dialog& sender, int retCode );
 
    /*!
     * Sets the execution event handler for this dialog.
@@ -306,4 +306,4 @@ private:
 #endif   // __PCL_Dialog_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Dialog.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/Dialog.h - Released 2022-08-10T16:36:28Z

@@ -265,8 +265,10 @@ public:
 
 private:
 
+   StringList m_databaseFilePaths[ 2 ];
+   bool       m_modified[ 2 ] = { false };
    pcl_enum   m_dataRelease = ADataRelease::DR10;
-   StringList m_databaseFilePaths;
+#define       m_currentPage   (m_dataRelease-1) // 0 = ADataRelease::BestAvailable
 
    VerticalSizer     Global_Sizer;
       HorizontalSizer   DataRelease_Sizer;
@@ -377,31 +379,36 @@ APASSPreferencesDialog::APASSPreferencesDialog()
 
    OnReturn( (pcl::Dialog::return_event_handler)&APASSPreferencesDialog::e_Return, *this );
 
+   if ( !TheAPASSProcess->PreferencesLoaded( ADataRelease::DR9 ) )
+      TheAPASSProcess->LoadPreferences( ADataRelease::DR9 );
+   m_databaseFilePaths[0] = TheAPASSProcess->DatabaseFilePaths( ADataRelease::DR9 );
+
+   if ( !TheAPASSProcess->PreferencesLoaded( ADataRelease::DR10 ) )
+      TheAPASSProcess->LoadPreferences( ADataRelease::DR10 );
+   m_databaseFilePaths[1] = TheAPASSProcess->DatabaseFilePaths( ADataRelease::DR10 );
+
    if ( TheAPASSInterface != nullptr )
       m_dataRelease = TheAPASSInterface->m_instance.OutputDataRelease();
 
-   if ( !TheAPASSProcess->PreferencesLoaded( m_dataRelease ) )
-      TheAPASSProcess->LoadPreferences( m_dataRelease );
-   m_databaseFilePaths = TheAPASSProcess->DatabaseFilePaths( m_dataRelease );
    UpdateControls();
 }
 
 void APASSPreferencesDialog::UpdateControls()
 {
-   DataRelease_ComboBox.SetCurrentItem( m_dataRelease );
+   DataRelease_ComboBox.SetCurrentItem( m_currentPage );
 
    Title_Label.SetText( "APASS " + ADataRelease::ReleaseName( m_dataRelease ) + " Database Files" );
 
-   int currentIdx = FilePaths_TreeBox.ChildIndex( FilePaths_TreeBox.CurrentNode() );
+   int currentTreeIndex = FilePaths_TreeBox.ChildIndex( FilePaths_TreeBox.CurrentNode() );
 
    FilePaths_TreeBox.DisableUpdates();
    FilePaths_TreeBox.Clear();
 
-   for ( size_type i = 0; i < m_databaseFilePaths.Length(); ++i )
-      (new TreeBox::Node( FilePaths_TreeBox ))->SetText( 0, m_databaseFilePaths[i] );
+   for ( size_type i = 0; i < m_databaseFilePaths[m_currentPage].Length(); ++i )
+      (new TreeBox::Node( FilePaths_TreeBox ))->SetText( 0, m_databaseFilePaths[m_currentPage][i] );
 
-   if ( currentIdx >= 0 && currentIdx < int( m_databaseFilePaths.Length() ) )
-      FilePaths_TreeBox.SetCurrentNode( FilePaths_TreeBox[currentIdx] );
+   if ( currentTreeIndex >= 0 && currentTreeIndex < int( m_databaseFilePaths[m_currentPage].Length() ) )
+      FilePaths_TreeBox.SetCurrentNode( FilePaths_TreeBox[currentTreeIndex] );
 
    FilePaths_TreeBox.EnableUpdates();
 
@@ -416,18 +423,19 @@ void APASSPreferencesDialog::e_NodeActivated( TreeBox& sender, TreeBox::Node& no
    d.DisableMultipleSelections();
    d.SetFilter( FileFilter( "XPSD Files", ".xpsd" ) );
    if ( d.Execute() )
-      m_databaseFilePaths[sender.ChildIndex( &node )] = d.FileName();
+   {
+      m_databaseFilePaths[m_currentPage][sender.ChildIndex( &node )] = d.FileName();
+      m_modified[m_currentPage] = true;
+      UpdateControls();
+   }
 }
 
 void APASSPreferencesDialog::e_ItemSelected( ComboBox& sender, int itemIndex )
 {
    if ( sender == DataRelease_ComboBox )
-      if ( m_dataRelease != itemIndex )
+      if ( m_dataRelease != itemIndex + 1 )
       {
-         m_dataRelease = itemIndex;
-         if ( !TheAPASSProcess->PreferencesLoaded( m_dataRelease ) )
-            TheAPASSProcess->LoadPreferences( m_dataRelease );
-         m_databaseFilePaths = TheAPASSProcess->DatabaseFilePaths( m_dataRelease );
+         m_dataRelease = itemIndex + 1; // 0 = ADataRelease::BestAvailable
          UpdateControls();
       }
 }
@@ -442,7 +450,8 @@ void APASSPreferencesDialog::e_Click( Button& sender, bool checked )
       d.SetFilter( FileFilter( "XPSD Files", ".xpsd" ) );
       if ( d.Execute() )
       {
-         m_databaseFilePaths = d.FileNames();
+         m_databaseFilePaths[m_currentPage] = d.FileNames();
+         m_modified[m_currentPage] = true;
          UpdateControls();
       }
    }
@@ -451,13 +460,16 @@ void APASSPreferencesDialog::e_Click( Button& sender, bool checked )
       const TreeBox::Node* n = FilePaths_TreeBox.CurrentNode();
       if ( n != nullptr )
       {
-         m_databaseFilePaths.Remove( m_databaseFilePaths.At( FilePaths_TreeBox.ChildIndex( n ) ) );
+         m_databaseFilePaths[m_currentPage].Remove(
+            m_databaseFilePaths[m_currentPage].At( FilePaths_TreeBox.ChildIndex( n ) ) );
+         m_modified[m_currentPage] = true;
          UpdateControls();
       }
    }
    else if ( sender == ClearFiles_PushButton )
    {
-      m_databaseFilePaths.Clear();
+      m_databaseFilePaths[m_currentPage].Clear();
+      m_modified[m_currentPage] = true;
       UpdateControls();
    }
    else if ( sender == OK_PushButton )
@@ -492,7 +504,8 @@ void APASSPreferencesDialog::e_FileDrop( Control& sender, const Point& pos, cons
                inputFiles << file;
       if ( !inputFiles.IsEmpty() )
       {
-         m_databaseFilePaths = inputFiles;
+         m_databaseFilePaths[m_currentPage] = inputFiles;
+         m_modified[m_currentPage] = true;
          UpdateControls();
       }
    }
@@ -502,7 +515,11 @@ void APASSPreferencesDialog::e_Return( Dialog& sender, int retVal )
 {
    if ( retVal == StdDialogCode::Ok )
    {
-      TheAPASSProcess->SetDatabaseFilePaths( m_dataRelease, m_databaseFilePaths );
+      if ( m_modified[0] )
+         TheAPASSProcess->SetDatabaseFilePaths( ADataRelease::DR9, m_databaseFilePaths[0] );
+      if ( m_modified[1] )
+         TheAPASSProcess->SetDatabaseFilePaths( ADataRelease::DR10, m_databaseFilePaths[1] );
+
       if ( TheAPASSInterface != nullptr )
          TheAPASSInterface->UpdateControls();
    }
@@ -634,7 +651,7 @@ void APASSInterface::UpdateControls()
 {
    if ( GUI != nullptr )
    {
-      GUI->DataRelease_ComboBox.SetCurrentItem( m_instance.OutputDataRelease() );
+      GUI->DataRelease_ComboBox.SetCurrentItem( m_instance.OutputDataRelease() - 1 ); // 0 = ADataRelease::BestAvailable
 
       GUI->CenterRA_Edit.SetText( RAToString( m_instance.p_searchData.centerRA ) );
 
@@ -828,7 +845,7 @@ void APASSInterface::e_EditValueUpdated( NumericEdit& sender, double value )
 void APASSInterface::e_ItemSelected( ComboBox& sender, int itemIndex )
 {
    if ( sender == GUI->DataRelease_ComboBox )
-      m_instance.p_dataRelease = itemIndex;
+      m_instance.p_dataRelease = itemIndex + 1; // 0 = ADataRelease::BestAvailable
    else if ( sender == GUI->TextFormat_ComboBox )
       m_instance.p_textFormat = itemIndex;
    else if ( sender == GUI->TextHeaders_ComboBox )

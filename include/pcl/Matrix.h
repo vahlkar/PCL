@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/Matrix.h - Released 2022-05-17T17:14:45Z
+// pcl/Matrix.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -126,26 +126,26 @@ public:
    /*!
     * Represents a matrix element.
     */
-   typedef T                        element;
+   using element = T;
 
    /*!
     * Represents a vector of matrix elements.
     */
-   typedef GenericVector<element>   vector;
+   using vector = GenericVector<element>;
 
    /*!
     * Represents a mutable matrix block iterator. In a matrix of n rows and m
     * columns, a block iterator allows iteration on the entire set of matrix
     * elements from {0,0} to {n-1,m-1} in row-column order.
     */
-   typedef element*                 block_iterator;
+   using block_iterator = element*;
 
    /*!
     * Represents an immutable matrix block iterator. In a matrix of n rows and
     * m columns, a block iterator allows iteration on the entire set of matrix
     * elements from {0,0} to {n-1,m-1} in row-column order.
     */
-   typedef const element*           const_block_iterator;
+   using const_block_iterator = const element*;
 
    /*!
     * Constructs an empty matrix.
@@ -3536,7 +3536,7 @@ GenericMatrix<T> operator ^( const T& x, const GenericMatrix<T>& A )
  *
  * %I8Matrix is a template instantiation of GenericMatrix for \c int8.
  */
-typedef GenericMatrix<int8>         I8Matrix;
+using I8Matrix = GenericMatrix<int8>;
 
 /*!
  * \class pcl::CharMatrix
@@ -3546,7 +3546,7 @@ typedef GenericMatrix<int8>         I8Matrix;
  * %CharMatrix is an alias for I8Matrix. It is a template instantiation of
  * GenericMatrix for \c int8.
  */
-typedef I8Matrix                    CharMatrix;
+using CharMatrix = I8Matrix;
 
 /*!
  * \class pcl::UI8Matrix
@@ -3555,7 +3555,7 @@ typedef I8Matrix                    CharMatrix;
  *
  * %UI8Matrix is a template instantiation of GenericMatrix for \c uint8.
  */
-typedef GenericMatrix<uint8>        UI8Matrix;
+using UI8Matrix = GenericMatrix<uint8>;
 
 /*!
  * \class pcl::ByteMatrix
@@ -3565,7 +3565,7 @@ typedef GenericMatrix<uint8>        UI8Matrix;
  * %ByteMatrix is an alias for UI8Matrix. It is a template instantiation of
  * GenericMatrix for \c uint8.
  */
-typedef UI8Matrix                   ByteMatrix;
+using ByteMatrix = UI8Matrix;
 
 /*!
  * \class pcl::I16Matrix
@@ -3574,7 +3574,7 @@ typedef UI8Matrix                   ByteMatrix;
  *
  * %I16Matrix is a template instantiation of GenericMatrix for \c int16.
  */
-typedef GenericMatrix<int16>        I16Matrix;
+using I16Matrix = GenericMatrix<int16>;
 
 /*!
  * \class pcl::UI16Matrix
@@ -3583,7 +3583,7 @@ typedef GenericMatrix<int16>        I16Matrix;
  *
  * %UI16Matrix is a template instantiation of GenericMatrix for \c uint16.
  */
-typedef GenericMatrix<uint16>       UI16Matrix;
+using UI16Matrix = GenericMatrix<uint16>;
 
 /*!
  * \class pcl::I32Matrix
@@ -3592,7 +3592,7 @@ typedef GenericMatrix<uint16>       UI16Matrix;
  *
  * %I32Matrix is a template instantiation of GenericMatrix for \c int32.
  */
-typedef GenericMatrix<int32>        I32Matrix;
+using I32Matrix = GenericMatrix<int32>;
 
 /*!
  * \class pcl::IMatrix
@@ -3602,7 +3602,7 @@ typedef GenericMatrix<int32>        I32Matrix;
  * %IMatrix is an alias for I32Matrix. It is a template instantiation of
  * GenericMatrix for \c int32.
  */
-typedef I32Matrix                   IMatrix;
+using IMatrix = I32Matrix;
 
 /*!
  * \class pcl::UI32Matrix
@@ -3611,7 +3611,7 @@ typedef I32Matrix                   IMatrix;
  *
  * %UI32Matrix is a template instantiation of GenericMatrix for \c uint32.
  */
-typedef GenericMatrix<uint32>       UI32Matrix;
+using UI32Matrix = GenericMatrix<uint32>;
 
 /*!
  * \class pcl::UIMatrix
@@ -3621,7 +3621,7 @@ typedef GenericMatrix<uint32>       UI32Matrix;
  * %UIMatrix is an alias for UI32Matrix. It is a template instantiation of
  * GenericMatrix for \c uint32.
  */
-typedef UI32Matrix                  UIMatrix;
+using UIMatrix = UI32Matrix;
 
 /*!
  * \class pcl::I64Matrix
@@ -3630,7 +3630,7 @@ typedef UI32Matrix                  UIMatrix;
  *
  * %I64Matrix is a template instantiation of GenericMatrix for \c int64.
  */
-typedef GenericMatrix<int64>        I64Matrix;
+using I64Matrix = GenericMatrix<int64>;
 
 /*!
  * \class pcl::UI64Matrix
@@ -3639,7 +3639,7 @@ typedef GenericMatrix<int64>        I64Matrix;
  *
  * %UI64Matrix is a template instantiation of GenericMatrix for \c uint64.
  */
-typedef GenericMatrix<uint64>       UI64Matrix;
+using UI64Matrix = GenericMatrix<uint64>;
 
 /*!
  * \class pcl::F32Matrix
@@ -3648,7 +3648,7 @@ typedef GenericMatrix<uint64>       UI64Matrix;
  *
  * %F32Matrix is a template instantiation of GenericMatrix for \c float.
  */
-typedef GenericMatrix<float>        F32Matrix;
+using F32Matrix = GenericMatrix<float>;
 
 /*!
  * \class pcl::FMatrix
@@ -3658,7 +3658,7 @@ typedef GenericMatrix<float>        F32Matrix;
  * %FMatrix is an alias for F32Matrix. It is a template instantiation of
  * GenericMatrix for \c float.
  */
-typedef F32Matrix                   FMatrix;
+using FMatrix = F32Matrix;
 
 /*!
  * \class pcl::F64Matrix
@@ -3667,7 +3667,7 @@ typedef F32Matrix                   FMatrix;
  *
  * %F64Matrix is a template instantiation of GenericMatrix for \c double.
  */
-typedef GenericMatrix<double>       F64Matrix;
+using F64Matrix = GenericMatrix<double>;
 
 /*!
  * \class pcl::DMatrix
@@ -3677,7 +3677,7 @@ typedef GenericMatrix<double>       F64Matrix;
  * %DMatrix is an alias for F64Matrix. It is a template instantiation of
  * GenericMatrix for \c double.
  */
-typedef F64Matrix                   DMatrix;
+using DMatrix = F64Matrix;
 
 /*!
  * \class pcl::Matrix
@@ -3687,7 +3687,7 @@ typedef F64Matrix                   DMatrix;
  * %Matrix is an alias for DMatrix. It is a template instantiation of
  * GenericMatrix for the \c double type.
  */
-typedef DMatrix                     Matrix;
+using Matrix = DMatrix;
 
 /*!
  * \class pcl::C32Matrix
@@ -3696,7 +3696,7 @@ typedef DMatrix                     Matrix;
  *
  * %C32Matrix is a template instantiation of GenericMatrix for \c Complex32.
  */
-typedef GenericMatrix<Complex32>    C32Matrix;
+using C32Matrix = GenericMatrix<Complex32>;
 
 /*!
  * \class pcl::C64Matrix
@@ -3705,7 +3705,7 @@ typedef GenericMatrix<Complex32>    C32Matrix;
  *
  * %C64Matrix is a template instantiation of GenericMatrix for \c Complex64.
  */
-typedef GenericMatrix<Complex64>    C64Matrix;
+using C64Matrix = GenericMatrix<Complex64>;
 
 #ifndef _MSC_VER
 
@@ -3720,7 +3720,7 @@ typedef GenericMatrix<Complex64>    C64Matrix;
  * \note This template instantiation is not available on Windows with Visual
  * C++ compilers.
  */
-typedef GenericMatrix<long double>  F80Matrix;
+using F80Matrix = GenericMatrix<long double>;
 
 /*!
  * \class pcl::LDMatrix
@@ -3733,7 +3733,7 @@ typedef GenericMatrix<long double>  F80Matrix;
  * \note This template instantiation is not available on Windows with Visual
  * C++ compilers.
  */
-typedef F80Matrix                   LDMatrix;
+using LDMatrix = F80Matrix;
 
 #endif   // !_MSC_VER
 
@@ -3746,4 +3746,4 @@ typedef F80Matrix                   LDMatrix;
 #endif   // __PCL_Matrix_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Matrix.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/Matrix.h - Released 2022-08-10T16:36:28Z

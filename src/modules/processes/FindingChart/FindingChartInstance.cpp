@@ -179,7 +179,7 @@ bool FindingChartInstance::CanExecuteOn( const View& view, String& whyNot ) cons
 
       if ( !File::DirectoryExists( outputDirectory ) )
       {
-         whyNot = "The specified outout directory does not exist: " + outputDirectory;
+         whyNot = "The specified output directory does not exist: " + outputDirectory;
          return false;
       }
    }

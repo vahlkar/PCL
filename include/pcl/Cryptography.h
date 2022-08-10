@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/Cryptography.h - Released 2022-05-17T17:14:45Z
+// pcl/Cryptography.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -939,13 +939,13 @@ public:
    /*!
     * Represents a 256-bit cipher key for the AES-256 algorithm.
     */
-   typedef uint8  key_type[ key_length ];
+   using key_type = uint8[ key_length ];
 
    /*!
     * Represents a 16-byte ECB encryption/decription block for the AES-256
     * algorithm.
     */
-   typedef uint8  block_type[ block_length ];
+   using block_type = uint8[ block_length ];
 
    /*!
     * Constructs an AES-256 cipher object.
@@ -1100,4 +1100,4 @@ private:
 #endif   // __PCL_Cryptography_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Cryptography.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/Cryptography.h - Released 2022-08-10T16:36:28Z

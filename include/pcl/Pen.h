@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/Pen.h - Released 2022-05-17T17:14:45Z
+// pcl/Pen.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -166,17 +166,17 @@ public:
    /*!
     * Represents a pen drawing style.
     */
-   typedef PenStyle::value_type  style;
+   using style = PenStyle::value_type;
 
    /*!
     * Represents a pen cap style.
     */
-   typedef PenCap::value_type    cap;
+   using cap = PenCap::value_type;
 
    /*!
     * Represents a pen join style.
     */
-   typedef PenJoin::value_type   join;
+   using join = PenJoin::value_type;
 
    /*!
     * Constructs a %Pen object with the specified \a color, \a width in pixels,
@@ -368,4 +368,4 @@ private:
 #endif   // __PCL_Pen_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Pen.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/Pen.h - Released 2022-08-10T16:36:28Z

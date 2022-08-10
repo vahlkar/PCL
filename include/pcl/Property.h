@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/Property.h - Released 2022-05-17T17:14:45Z
+// pcl/Property.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -82,17 +82,17 @@ public:
    /*!
     * Represents the string class used to transport property identifiers.
     */
-   typedef IsoString                identifier_type;
+   using identifier_type = IsoString;
 
    /*!
     * Represents the class used to transport property values.
     */
-   typedef Variant                  value_type;
+   using value_type = Variant;
 
    /*!
     * Represents the data type of a property value.
     */
-   typedef value_type::data_type    data_type;
+   using data_type = value_type::data_type;
 
    /*!
     * Default constructor. Constructs an invalid %Property object with an empty
@@ -266,7 +266,7 @@ protected:
  *
  * %PropertyArray is a template instantiation of Array<> for Property.
  */
-typedef Array<Property> PropertyArray;
+using PropertyArray = Array<Property>;
 
 // ----------------------------------------------------------------------------
 
@@ -275,4 +275,4 @@ typedef Array<Property> PropertyArray;
 #endif   // __PCL_Property_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Property.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/Property.h - Released 2022-08-10T16:36:28Z

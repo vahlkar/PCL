@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/XISFWriter.cpp - Released 2022-05-17T17:14:53Z
+// pcl/XISFWriter.cpp - Released 2022-08-10T16:36:36Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -65,11 +65,9 @@ namespace pcl
  */
 struct XISFOutputBlock
 {
-   typedef Compression::subblock_list  subblock_list;
-
-   typedef XISF::block_checksum        block_checksum;
-
-   typedef XISF::block_compression     block_compression;
+   using subblock_list     = Compression::subblock_list;
+   using block_checksum    = XISF::block_checksum;
+   using block_compression = XISF::block_compression;
 
    IsoString         attachmentPos;
    block_compression compressionCodec  = XISFCompression::None;
@@ -262,7 +260,7 @@ private:
    }
 };
 
-typedef Array<XISFOutputBlock> XISFOutputBlockArray;
+using XISFOutputBlockArray = Array<XISFOutputBlock>;
 
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
@@ -295,7 +293,7 @@ struct XISFOutputProperty
    }
 };
 
-typedef SortedArray<XISFOutputProperty> XISFOutputPropertyArray;
+using XISFOutputPropertyArray = SortedArray<XISFOutputProperty>;
 
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
@@ -1817,4 +1815,4 @@ void XISFWriter::CheckClosedStream( const char* memberFunction ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/XISFWriter.cpp - Released 2022-05-17T17:14:53Z
+// EOF pcl/XISFWriter.cpp - Released 2022-08-10T16:36:36Z

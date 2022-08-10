@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/StarDetector.h - Released 2022-05-17T17:14:45Z
+// pcl/StarDetector.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -77,7 +77,7 @@ public:
    /*!
     * Represents a point spread function type.
     */
-   typedef PSFFit::psf_function  psf_function;
+   using psf_function = PSFFit::psf_function;
 
    /*!
     * \struct pcl::StarDetector::Star
@@ -89,7 +89,7 @@ public:
        * The type of a coordinate used to represent star positions (barycenter
        * or PSF centroid coordinates).
        */
-      typedef DPoint::component  component;
+      using component = DPoint::component;
 
       DPoint pos = 0.0;     /*!< Star position in image coordinates. Corresponds to the centroid of
                                  the fitted PSF when PSF fitting is enabled; to the barycenter
@@ -178,7 +178,7 @@ public:
    /*!
     * A dynamic array of pcl::StarDetector::Star structures.
     */
-   typedef Array<Star>  star_list;
+   using star_list = Array<Star>;
 
    /*!
     * Default constructor.
@@ -881,4 +881,4 @@ private:
 #endif   // __PCL_StarDetector_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/StarDetector.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/StarDetector.h - Released 2022-08-10T16:36:28Z

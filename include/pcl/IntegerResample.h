@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/IntegerResample.h - Released 2022-05-17T17:14:45Z
+// pcl/IntegerResample.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -101,7 +101,7 @@ public:
    /*!
     * Represents a downsample operation.
     */
-   typedef IntegerDownsampleMode::value_type downsample_mode;
+   using downsample_mode = IntegerDownsampleMode::value_type;
 
    /*!
     * Constructs an %IntegerResample object with zoom factor \a z and
@@ -217,4 +217,4 @@ protected:
 #endif   // __PCL_IntegerResample_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/IntegerResample.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/IntegerResample.h - Released 2022-08-10T16:36:28Z

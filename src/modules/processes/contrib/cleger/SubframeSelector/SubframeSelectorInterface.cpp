@@ -92,6 +92,13 @@ SubframeSelectorInterface::SubframeSelectorInterface()
 
    if ( TheSubframeSelectorMeasurementsInterface == nullptr )
       new SubframeSelectorMeasurementsInterface( m_instance );
+
+   /*
+    * The auto save geometry feature is of no good to interfaces that include
+    * both auto-expanding controls (e.g. TreeBox) and collapsible sections
+    * (e.g. SectionBar).
+    */
+   DisableAutoSaveGeometry();
 }
 
 // ----------------------------------------------------------------------------
@@ -156,6 +163,11 @@ bool SubframeSelectorInterface::Launch( const MetaProcess& P, const ProcessImple
    {
       GUI = new GUIData( *this );
       SetWindowTitle( "SubframeSelector" );
+
+      // Restore position only
+      if ( !RestoreGeometry() )
+         SetDefaultPosition();
+      AdjustToContents();
    }
 
    /*

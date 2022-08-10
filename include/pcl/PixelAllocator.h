@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/PixelAllocator.h - Released 2022-05-17T17:14:45Z
+// pcl/PixelAllocator.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -115,13 +115,13 @@ public:
     * GenericPixelTraits. It identifies a class implementing basic storage and
     * functional primitives optimized for a particular pixel sample type.
     */
-   typedef P                                 pixel_traits;
+   using pixel_traits = P;
 
    /*!
     * Represents the data type used to store pixel sample values in this
     * template instantiation of %PixelAllocator.
     */
-   typedef typename pixel_traits::sample     sample;
+   using sample = typename pixel_traits::sample;
 
    /*!
     * Returns true iff this allocator and another instance are working for the
@@ -248,4 +248,4 @@ private:
 #endif   // __PCL_PixelAllocator_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PixelAllocator.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/PixelAllocator.h - Released 2022-08-10T16:36:28Z

@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.5.1
+// Standard ColorCalibration Process Module Version 1.5.2
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationInstance.cpp - Released 2022-05-17T17:15:11Z
+// PhotometricColorCalibrationInstance.cpp - Released 2022-05-20T16:28:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -115,9 +115,10 @@ PhotometricColorCalibrationInstance::PhotometricColorCalibrationInstance( const 
    , p_solverAutoCatalog( ThePCCSolverAutoCatalogParameter->DefaultValue() )
    , p_solverLimitMagnitude( ThePCCSolverLimitMagnitudeParameter->DefaultValue() )
    , p_solverAutoLimitMagnitude( ThePCCSolverAutoLimitMagnitudeParameter->DefaultValue() )
-   , p_solverAutoLimitMagnitudeFactor( ThePCCSolverAutoLimitMagnitudeFactorParameter->DefaultValue() )
-   , p_solverStarSensitivity( ThePCCSolverStarSensitivityParameter->DefaultValue() )
-   , p_solverNoiseLayers( ThePCCSolverNoiseLayersParameter->DefaultValue() )
+   , p_solverStructureLayers( ThePCCSolverStructureLayersParameter->DefaultValue()  )
+   , p_solverMinStructureSize( ThePCCSolverMinStructureSizeParameter->DefaultValue()  )
+   , p_solverNoiseReductionFilterRadius( ThePCCSolverNoiseReductionFilterRadiusParameter->DefaultValue()  )
+   , p_solverSensitivity( ThePCCSolverSensitivityParameter->DefaultValue() )
    , p_solverAlignmentDevice( PCCSolverAlignmentDevice::Default )
    , p_solverDistortionCorrection( ThePCCSolverDistortionCorrectionParameter->DefaultValue() )
    , p_solverSplineSmoothing( ThePCCSolverSplineSmoothingParameter->DefaultValue() )
@@ -157,57 +158,58 @@ void PhotometricColorCalibrationInstance::Assign( const ProcessImplementation& p
    const PhotometricColorCalibrationInstance* x = dynamic_cast<const PhotometricColorCalibrationInstance*>( &p );
    if ( x != nullptr )
    {
-      p_workingMode                    = x->p_workingMode;
-      p_applyCalibration               = x->p_applyCalibration;
-      p_redFilterWavelength            = x->p_redFilterWavelength;
-      p_redFilterBandwidth             = x->p_redFilterBandwidth;
-      p_greenFilterWavelength          = x->p_greenFilterWavelength;
-      p_greenFilterBandwidth           = x->p_greenFilterBandwidth;
-      p_blueFilterWavelength           = x->p_blueFilterWavelength;
-      p_blueFilterBandwidth            = x->p_blueFilterBandwidth;
-      p_whiteReferenceId               = x->p_whiteReferenceId;
-      p_whiteReferenceName             = x->p_whiteReferenceName;
-      p_whiteReferenceSr_JV            = x->p_whiteReferenceSr_JV;
-      p_whiteReferenceJB_JV            = x->p_whiteReferenceJB_JV;
-      p_zeroPointSr_JV                 = x->p_zeroPointSr_JV;
-      p_zeroPointJB_JV                 = x->p_zeroPointJB_JV;
-      p_focalLength                    = x->p_focalLength;
-      p_pixelSize                      = x->p_pixelSize;
-      p_centerRA                       = x->p_centerRA;
-      p_centerDec                      = x->p_centerDec;
-      p_epochJD                        = x->p_epochJD;
-      p_forcePlateSolve                = x->p_forcePlateSolve;
-      p_ignorePositionAndScale         = x->p_ignorePositionAndScale;
-      p_serverURL                      = x->p_serverURL;
-      p_solverCatalogName              = x->p_solverCatalogName;
-      p_solverAutoCatalog              = x->p_solverAutoCatalog;
-      p_solverLimitMagnitude           = x->p_solverLimitMagnitude;
-      p_solverAutoLimitMagnitude       = x->p_solverAutoLimitMagnitude;
-      p_solverAutoLimitMagnitudeFactor = x->p_solverAutoLimitMagnitudeFactor;
-      p_solverStarSensitivity          = x->p_solverStarSensitivity;
-      p_solverNoiseLayers              = x->p_solverNoiseLayers;
-      p_solverAlignmentDevice          = x->p_solverAlignmentDevice;
-      p_solverDistortionCorrection     = x->p_solverDistortionCorrection;
-      p_solverSplineSmoothing          = x->p_solverSplineSmoothing;
-      p_solverProjection               = x->p_solverProjection;
-      p_photCatalogName                = x->p_photCatalogName;
-      p_photAutoCatalog                = x->p_photAutoCatalog;
-      p_photLimitMagnitude             = x->p_photLimitMagnitude;
-      p_photAutoLimitMagnitude         = x->p_photAutoLimitMagnitude;
-      p_photAutoLimitMagnitudeFactor   = x->p_photAutoLimitMagnitudeFactor;
-      p_photAutoAperture               = x->p_photAutoAperture;
-      p_photAperture                   = x->p_photAperture;
-      p_photUsePSF                     = x->p_photUsePSF;
-      p_photSaturationThreshold        = x->p_photSaturationThreshold;
-      p_photShowDetectedStars          = x->p_photShowDetectedStars;
-      p_photShowBackgroundModels       = x->p_photShowBackgroundModels;
-      p_photGenerateGraphs             = x->p_photGenerateGraphs;
-      p_neutralizeBackground           = x->p_neutralizeBackground;
-      p_backgroundReferenceViewId      = x->p_backgroundReferenceViewId;
-      p_backgroundLow                  = x->p_backgroundLow;
-      p_backgroundHigh                 = x->p_backgroundHigh;
-      p_backgroundUseROI               = x->p_backgroundUseROI;
-      p_backgroundROI                  = x->p_backgroundROI;
+      p_workingMode                      = x->p_workingMode;
+      p_applyCalibration                 = x->p_applyCalibration;
+      p_redFilterWavelength              = x->p_redFilterWavelength;
+      p_redFilterBandwidth               = x->p_redFilterBandwidth;
+      p_greenFilterWavelength            = x->p_greenFilterWavelength;
+      p_greenFilterBandwidth             = x->p_greenFilterBandwidth;
+      p_blueFilterWavelength             = x->p_blueFilterWavelength;
+      p_blueFilterBandwidth              = x->p_blueFilterBandwidth;
+      p_whiteReferenceId                 = x->p_whiteReferenceId;
+      p_whiteReferenceName               = x->p_whiteReferenceName;
+      p_whiteReferenceSr_JV              = x->p_whiteReferenceSr_JV;
+      p_whiteReferenceJB_JV              = x->p_whiteReferenceJB_JV;
+      p_zeroPointSr_JV                   = x->p_zeroPointSr_JV;
+      p_zeroPointJB_JV                   = x->p_zeroPointJB_JV;
+      p_focalLength                      = x->p_focalLength;
+      p_pixelSize                        = x->p_pixelSize;
+      p_centerRA                         = x->p_centerRA;
+      p_centerDec                        = x->p_centerDec;
+      p_epochJD                          = x->p_epochJD;
+      p_forcePlateSolve                  = x->p_forcePlateSolve;
+      p_ignorePositionAndScale           = x->p_ignorePositionAndScale;
+      p_serverURL                        = x->p_serverURL;
+      p_solverCatalogName                = x->p_solverCatalogName;
+      p_solverAutoCatalog                = x->p_solverAutoCatalog;
+      p_solverLimitMagnitude             = x->p_solverLimitMagnitude;
+      p_solverAutoLimitMagnitude         = x->p_solverAutoLimitMagnitude;
+      p_solverStructureLayers            = x->p_solverStructureLayers;
+      p_solverMinStructureSize           = x->p_solverMinStructureSize;
+      p_solverNoiseReductionFilterRadius = x->p_solverNoiseReductionFilterRadius;
+      p_solverSensitivity                = x->p_solverSensitivity;
+      p_solverAlignmentDevice            = x->p_solverAlignmentDevice;
+      p_solverDistortionCorrection       = x->p_solverDistortionCorrection;
+      p_solverSplineSmoothing            = x->p_solverSplineSmoothing;
+      p_solverProjection                 = x->p_solverProjection;
+      p_photCatalogName                  = x->p_photCatalogName;
+      p_photAutoCatalog                  = x->p_photAutoCatalog;
+      p_photLimitMagnitude               = x->p_photLimitMagnitude;
+      p_photAutoLimitMagnitude           = x->p_photAutoLimitMagnitude;
+      p_photAutoLimitMagnitudeFactor     = x->p_photAutoLimitMagnitudeFactor;
+      p_photAutoAperture                 = x->p_photAutoAperture;
+      p_photAperture                     = x->p_photAperture;
+      p_photUsePSF                       = x->p_photUsePSF;
+      p_photSaturationThreshold          = x->p_photSaturationThreshold;
+      p_photShowDetectedStars            = x->p_photShowDetectedStars;
+      p_photShowBackgroundModels         = x->p_photShowBackgroundModels;
+      p_photGenerateGraphs               = x->p_photGenerateGraphs;
+      p_neutralizeBackground             = x->p_neutralizeBackground;
+      p_backgroundReferenceViewId        = x->p_backgroundReferenceViewId;
+      p_backgroundLow                    = x->p_backgroundLow;
+      p_backgroundHigh                   = x->p_backgroundHigh;
+      p_backgroundUseROI                 = x->p_backgroundUseROI;
+      p_backgroundROI                    = x->p_backgroundROI;
    }
 }
 
@@ -690,8 +692,10 @@ bool PhotometricColorCalibrationInstance::ExecuteOn( View& view )
                                              << StringKeyValue( "solver_catalogMode", p_solverAutoCatalog ? "2" : "1" )
                                              << StringKeyValue( "solver_magnitude", String( p_solverLimitMagnitude ) )
                                              << StringKeyValue( "solver_autoMagnitude", String( bool( p_solverAutoLimitMagnitude ) ) )
-                                             << StringKeyValue( "solver_sensitivity", String( p_solverStarSensitivity ) )
-                                             << StringKeyValue( "solver_noiseLayers", String( p_solverNoiseLayers ) )
+                                             << StringKeyValue( "solver_structureLayers", String( p_solverStructureLayers ) )
+                                             << StringKeyValue( "solver_minStructureSize", String( p_solverMinStructureSize ) )
+                                             << StringKeyValue( "solver_noiseReductionFilterRadius", String( p_solverNoiseReductionFilterRadius ) )
+                                             << StringKeyValue( "solver_sensitivity", String( p_solverSensitivity ) )
                                              << StringKeyValue( "solver_alignAlgorithm", String( p_solverAlignmentDevice ) )
                                              << StringKeyValue( "solver_distortionCorrection", String( bool( p_solverDistortionCorrection ) ) )
                                              << StringKeyValue( "solver_distortedCorners", "false" )
@@ -1361,12 +1365,14 @@ void* PhotometricColorCalibrationInstance::LockParameter( const MetaParameter* p
       return &p_solverLimitMagnitude;
    if ( p == ThePCCSolverAutoLimitMagnitudeParameter )
       return &p_solverAutoLimitMagnitude;
-   if ( p == ThePCCSolverAutoLimitMagnitudeFactorParameter )
-      return &p_solverAutoLimitMagnitudeFactor;
-   if ( p == ThePCCSolverStarSensitivityParameter )
-      return &p_solverStarSensitivity;
-   if ( p == ThePCCSolverNoiseLayersParameter )
-      return &p_solverNoiseLayers;
+   if ( p == ThePCCSolverStructureLayersParameter )
+      return &p_solverStructureLayers;
+   if ( p == ThePCCSolverMinStructureSizeParameter )
+      return &p_solverMinStructureSize;
+   if ( p == ThePCCSolverNoiseReductionFilterRadiusParameter )
+      return &p_solverNoiseReductionFilterRadius;
+   if ( p == ThePCCSolverSensitivityParameter )
+      return &p_solverSensitivity;
    if ( p == ThePCCSolverAlignmentDeviceParameter )
       return &p_solverAlignmentDevice;
    if ( p == ThePCCSolverDistortionCorrectionParameter )
@@ -1492,4 +1498,4 @@ size_type PhotometricColorCalibrationInstance::ParameterLength( const MetaParame
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationInstance.cpp - Released 2022-05-17T17:15:11Z
+// EOF PhotometricColorCalibrationInstance.cpp - Released 2022-05-20T16:28:45Z

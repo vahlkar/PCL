@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/StarDetector.cpp - Released 2022-05-17T17:14:53Z
+// pcl/StarDetector.cpp - Released 2022-08-10T16:36:36Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -434,7 +434,7 @@ class PCL_SD_PSFFitThread : public Thread
 {
 public:
 
-   typedef StarDetector::psf_function  psf_function;
+   using psf_function = StarDetector::psf_function;
 
    StarDetector::star_list stars;
 
@@ -857,4 +857,4 @@ Image StarDetector::Structures( const ImageVariant& image ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/StarDetector.cpp - Released 2022-05-17T17:14:53Z
+// EOF pcl/StarDetector.cpp - Released 2022-08-10T16:36:36Z

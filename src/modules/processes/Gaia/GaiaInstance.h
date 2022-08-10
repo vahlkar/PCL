@@ -83,7 +83,7 @@ private:
 
    String         p_command;
    int32          p_verbosity;   // Verbosity level: 0=silent 1=minimal 2=full
-   pcl_enum       p_dataRelease; // DR2, EDR3, BestAvailable
+   pcl_enum       p_dataRelease; // BestAvailable, DR2, EDR3, DR3, DR3SP
    pcl_enum       p_sortBy;
    pcl_bool       p_generateTextOutput;
    pcl_enum       p_textFormat;
@@ -92,9 +92,14 @@ private:
    GaiaSearchData p_searchData;
    StringList     p_databaseFilePaths;
    pcl_bool       o_isValid = false;
-   pcl_enum       o_dataRelease = -1; // DR2, EDR3
+   pcl_enum       o_dataRelease = -1; // DR2, EDR3, DR3, DR3SP
    float          o_databaseMagnitudeLow = 0;
    float          o_databaseMagnitudeHigh = 0;
+   pcl_bool       o_hasMeanSpectrumData = false;
+   float          o_spectrumStart = 0;
+   float          o_spectrumStep = 0;
+   int32          o_spectrumCount = 0;
+   int32          o_spectrumBits = 0;
 
    void Search();
    void GenerateTextOutput() const;

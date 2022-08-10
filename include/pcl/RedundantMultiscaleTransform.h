@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/RedundantMultiscaleTransform.h - Released 2022-05-17T17:14:45Z
+// pcl/RedundantMultiscaleTransform.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -107,17 +107,17 @@ public:
    /*!
     * Represents a multiscale layer.
     */
-   typedef Image                 layer;
+   using layer = Image;
 
    /*!
     * Represents a set of multiscale layers, or multiscale transform.
     */
-   typedef Array<layer>          transform;
+   using transform = Array<layer>;
 
    /*!
     * Represents a set of layer enabled/disabled states.
     */
-   typedef GenericVector<bool>   layer_state_set;
+   using layer_state_set = GenericVector<bool>;
 
    /*!
     * Constructs a redundant multiscale transform.
@@ -573,4 +573,4 @@ protected:
 #endif   // __PCL_RedundantMultiscaleTransform_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/RedundantMultiscaleTransform.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/RedundantMultiscaleTransform.h - Released 2022-08-10T16:36:28Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/NetworkTransfer.h - Released 2022-05-17T17:14:45Z
+// pcl/NetworkTransfer.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -491,7 +491,7 @@ public:
     *
     * \ingroup network_transfer_event_handlers
     */
-   typedef bool (Control::*download_event_handler)( NetworkTransfer& sender, const void* buffer, fsize_type size );
+   using download_event_handler = bool (Control::*)( NetworkTransfer& sender, const void* buffer, fsize_type size );
 
    /*!
     * Defines the prototype of an <em>upload event handler</em>.
@@ -523,7 +523,7 @@ public:
     *
     * \ingroup network_transfer_event_handlers
     */
-   typedef fsize_type (Control::*upload_event_handler)( NetworkTransfer& sender, void* buffer, fsize_type maxSize );
+   using upload_event_handler = fsize_type (Control::*)( NetworkTransfer& sender, void* buffer, fsize_type maxSize );
 
    /*!
     * Defines the prototype of a <em>progress event handler</em>.
@@ -548,7 +548,7 @@ public:
     *
     * \ingroup network_transfer_event_handlers
     */
-   typedef bool (Control::*progress_event_handler)( NetworkTransfer& sender,
+   using progress_event_handler = bool (Control::*)( NetworkTransfer& sender,
                                     fsize_type downloadTotal, fsize_type downloadCurrent,
                                     fsize_type uploadTotal, fsize_type uploadCurrent );
 
@@ -618,4 +618,4 @@ private:
 #endif   // __PCL_NetworkTransfer_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/NetworkTransfer.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/NetworkTransfer.h - Released 2022-08-10T16:36:28Z

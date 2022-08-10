@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/Console.h - Released 2022-05-17T17:14:45Z
+// pcl/Console.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -826,4 +826,4 @@ inline Console& operator >>( Console& o, String& s )
 #endif   // __PCL_Console_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Console.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/Console.h - Released 2022-08-10T16:36:28Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/QuadTree.h - Released 2022-05-17T17:14:45Z
+// pcl/QuadTree.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -127,27 +127,27 @@ public:
    /*!
     * Represents a two-dimensional point stored in this quadtree.
     */
-   typedef T                           point;
+   using point = T;
 
    /*!
     * Represents a point component.
     */
-   typedef typename point::component   component;
+   using component = typename point::component;
 
    /*!
     * A list of points. Used for tree build and search operations.
     */
-   typedef Array<point>                point_list;
+   using point_list = Array<point>;
 
    /*!
     * A rectangular region. Used for rectangular range search operations.
     */
-   typedef DRect                       rectangle;
+   using rectangle = DRect;
 
    /*!
     * The type of rectangular region coordinates.
     */
-   typedef rectangle::component        coordinate;
+   using coordinate = rectangle::component;
 
    // -------------------------------------------------------------------------
 
@@ -1450,4 +1450,4 @@ private:
 #endif   // __PCL_QuadTree_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/QuadTree.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/QuadTree.h - Released 2022-08-10T16:36:28Z

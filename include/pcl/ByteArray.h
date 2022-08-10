@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/ByteArray.h - Released 2022-05-17T17:14:45Z
+// pcl/ByteArray.h - Released 2022-08-10T16:36:27Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -77,7 +77,7 @@ namespace pcl
  * \ingroup byte_arrays
  * \ingroup dynamic_arrays
  */
-typedef Array<uint8>          ByteArray;
+using ByteArray = Array<uint8>;
 
 /*!
  * \class pcl::SortedByteArray
@@ -88,7 +88,7 @@ typedef Array<uint8>          ByteArray;
  * \ingroup byte_arrays
  * \ingroup dynamic_arrays
  */
-typedef SortedArray<uint8>    SortedByteArray;
+using SortedByteArray = SortedArray<uint8>;
 
 // ----------------------------------------------------------------------------
 
@@ -97,4 +97,4 @@ typedef SortedArray<uint8>    SortedByteArray;
 #endif   // __PCL_ByteArray_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ByteArray.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/ByteArray.h - Released 2022-08-10T16:36:27Z

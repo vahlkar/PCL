@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.29
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.5.1
+// Standard ColorCalibration Process Module Version 1.5.2
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationInterface.h - Released 2022-05-17T17:15:11Z
+// PhotometricColorCalibrationInterface.h - Released 2022-05-20T16:28:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -184,10 +184,16 @@ private:
             HorizontalSizer   ProjectionSystem_Sizer;
                Label             ProjectionSystem_Label;
                ComboBox          ProjectionSystem_ComboBox;
-            NumericControl    StarSensitivity_NumericControl;
-            HorizontalSizer   NoiseReduction_Sizer;
-               Label             NoiseReduction_Label;
-               SpinBox           NoiseReduction_SpinBox;
+            HorizontalSizer   StructureLayers_Sizer;
+               Label             StructureLayers_Label;
+               SpinBox           StructureLayers_SpinBox;
+            HorizontalSizer   MinStructureSize_Sizer;
+               Label             MinStructureSize_Label;
+               SpinBox           MinStructureSize_SpinBox;
+            HorizontalSizer   NoiseReductionFilterRadius_Sizer;
+               Label             NoiseReductionFilterRadius_Label;
+               SpinBox           NoiseReductionFilterRadius_SpinBox;
+            NumericControl    Sensitivity_NumericControl;
             HorizontalSizer   AlignmentDevice_Sizer;
                Label             AlignmentDevice_Label;
                ComboBox          AlignmentDevice_ComboBox;
@@ -282,4 +288,4 @@ PCL_END_LOCAL
 #endif   // __PhotometricColorCalibrationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationInterface.h - Released 2022-05-17T17:15:11Z
+// EOF PhotometricColorCalibrationInterface.h - Released 2022-05-20T16:28:45Z

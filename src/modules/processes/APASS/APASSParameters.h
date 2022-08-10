@@ -225,9 +225,9 @@ class ADataRelease : public MetaEnumeration
 {
 public:
 
-   enum { DR9,
+   enum { BestAvailable,
+          DR9,
           DR10,
-          BestAvailable,
           NumberOfItems,
           Default = DR10 };
 

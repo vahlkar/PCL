@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/String.h - Released 2022-05-17T17:14:45Z
+// pcl/String.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -96,7 +96,7 @@
 #  include <QtCore/QString>
 #  define PCL_GET_CHARPTR_FROM_QSTRING( qs )    (qs.toLatin1().data())
 #  define PCL_GET_CHAR16PTR_FROM_QSTRING( qs )  ((char16_type*)( qs.utf16() ))
-#  define PCL_GET_QSTRING_FROM_CHAR16PTR( s )   (QString::fromUtf16( (const ushort*)(s) ))
+#  define PCL_GET_QSTRING_FROM_CHAR16PTR( s )   (QString::fromUtf16( (const char16_t*)(s) ))
 #  define PCL_GET_CHARPTR_FROM_QBYTEARRAY( qb ) (qb.data())
 #  define PCL_QDATE_FMT_STR                     "yyyy/MM/dd"
 #  define PCL_QDATETIME_FMT_STR                 "yyyy/MM/dd hh:mm:ss"
@@ -143,7 +143,7 @@ namespace RandomizationOption
  * \class pcl::RandomizationOptions
  * \brief A collection of string randomization options.
  */
-typedef Flags<RandomizationOption::mask_type>  RandomizationOptions;
+using RandomizationOptions = Flags<RandomizationOption::mask_type>;
 
 // ----------------------------------------------------------------------------
 
@@ -471,54 +471,52 @@ public:
    /*!
     * Represents a string character.
     */
-   typedef T                     char_type;
+   using char_type = T;
 
    /*!
     * The character traits class used by this string class.
     */
-   typedef R                     char_traits;
+   using char_traits = R;
 
    /*!
     * The block allocator used by this string class.
     */
-   typedef A                     block_allocator;
+   using block_allocator = A;
 
    /*!
     * The allocator class used by this string class.
     */
-   typedef pcl::Allocator<T,A>   allocator;
+   using allocator = pcl::Allocator<T,A>;
 
    /*!
     * Null-terminated string of char_type characters.
     */
-   typedef T*                    c_string;
+   using c_string = T*;
 
    /*!
     * Immutable null-terminated string of char_type characters.
     */
-   typedef const T*              const_c_string;
+   using const_c_string = const T*;
 
    /*!
     * String iterator.
     */
-   typedef T*                    iterator;
+   using iterator = T*;
 
    /*!
     * Immutable string iterator.
     */
-   typedef const T*              const_iterator;
+   using const_iterator = const T*;
 
    /*!
     * Reverse string iterator.
     */
-   typedef ReverseRandomAccessIterator<iterator, T>
-                                 reverse_iterator;
+   using reverse_iterator = ReverseRandomAccessIterator<iterator, T>;
 
    /*!
     * Reverse immutable string iterator.
     */
-   typedef ReverseRandomAccessIterator<const_iterator, const T>
-                                 const_reverse_iterator;
+   using const_reverse_iterator = ReverseRandomAccessIterator<const_iterator, const T>;
 
    // -------------------------------------------------------------------------
 
@@ -5401,96 +5399,94 @@ public:
    /*!
     * Base class of %IsoString.
     */
-   typedef GenericString<char, IsoCharTraits, PCL_STRING_ALLOCATOR>
-                                                string_base;
+   using string_base = GenericString<char, IsoCharTraits, PCL_STRING_ALLOCATOR>;
 
    /*!
     * Represents a character pertaining to an %IsoString object.
     */
-   typedef string_base::char_type               char_type;
+   using char_type = string_base::char_type;
 
    /*!
     * The character traits class used by this template instantiation.
     */
-   typedef string_base::char_traits             char_traits;
+   using char_traits = string_base::char_traits;
 
    /*!
     * The block allocator used by this template instantiation.
     */
-   typedef string_base::block_allocator         block_allocator;
+   using block_allocator = string_base::block_allocator;
 
    /*!
     * The allocator class used by this template instantiation.
     */
-   typedef string_base::allocator               allocator;
+   using allocator = string_base::allocator;
 
    /*!
     * Null-terminated sequence of 8-bit characters.
     */
-   typedef string_base::c_string                c_string;
+   using c_string = string_base::c_string;
 
    /*!
     * Immutable null-terminated sequence of 8-bit characters.
     */
-   typedef string_base::const_c_string          const_c_string;
+   using const_c_string = string_base::const_c_string;
 
    /*!
     * %IsoString iterator.
     */
-   typedef string_base::iterator                iterator;
+   using iterator = string_base::iterator;
 
    /*!
     * Immutable %IsoString iterator.
     */
-   typedef string_base::const_iterator          const_iterator;
+   using const_iterator = string_base::const_iterator;
 
    /*!
     * Reverse %IsoString iterator.
     */
-   typedef string_base::reverse_iterator        reverse_iterator;
+   using reverse_iterator = string_base::reverse_iterator;
 
    /*!
     * Immutable reverse %IsoString iterator.
     */
-   typedef string_base::const_reverse_iterator  const_reverse_iterator;
+   using const_reverse_iterator = string_base::const_reverse_iterator;
 
    /*!
     * Represents a Unicode (UTF-16) string.
     * \note This type must be defined as the same template instantiation used
     * for the String class.
     */
-   typedef GenericString<char16_type, CharTraits, PCL_STRING_ALLOCATOR>
-                                                ustring_base;
+   using ustring_base = GenericString<char16_type, CharTraits, PCL_STRING_ALLOCATOR>;
 
    /*!
     * Represents a Unicode (UTF-16) character.
     */
-   typedef ustring_base::char_type              uchar_type;
+   using uchar_type = ustring_base::char_type;
 
    /*!
     * Unicode (UTF-16) character traits class.
     */
-   typedef ustring_base::char_traits            uchar_traits;
+   using uchar_traits = ustring_base::char_traits;
 
    /*!
     * Null-terminated sequence of UTF-16 characters.
     */
-   typedef ustring_base::c_string               c_ustring;
+   using c_ustring = ustring_base::c_string;
 
    /*!
     * Immutable null-terminated sequence of UTF-16 characters.
     */
-   typedef ustring_base::const_c_string         const_c_ustring;
+   using const_c_ustring = ustring_base::const_c_string;
 
    /*!
     * Unicode (UTF-16) string iterator.
     */
-   typedef ustring_base::iterator               uchar_iterator;
+   using uchar_iterator = ustring_base::iterator;
 
    /*!
     * Immutable Unicode (UTF-16) string iterator.
     */
-   typedef ustring_base::const_iterator         const_uchar_iterator;
+   using const_uchar_iterator = ustring_base::const_iterator;
 
    // -------------------------------------------------------------------------
 
@@ -7114,6 +7110,72 @@ public:
    bool TryToUInt64( unsigned long long& value, int base ) const noexcept;
 
    /*!
+    * Evaluates this string as a sequence:
+    *
+    * \<f1\>\<sep\>\<f2\>\<sep\> ... \<sep\>\<fn\>
+    *
+    * as a list \<f1\>\<f2\>...\<fn\> of 32-bit floating point values separated
+    * by \<sep\> separator characters.
+    *
+    * \param separator     The separator character. Cannot be a character
+    *                      pertaining to a floating point numeric
+    *                      representation (decimal digit [09], sign character
+    *                      [+-], decimal separator '.' or exponent delimiter
+    *                      [eE]). If not specified, the default separator is a
+    *                      comma character ','.
+    *
+    * \param maxCount      The maximum number of values allowed. If the parsed
+    *                      list includes more than this number of elements, a
+    *                      ParseError exception will be thrown with the
+    *                      appropriate error message. If this parameter is not
+    *                      specified, there is no practical limit on the list's
+    *                      length by default.
+    *
+    * Returns a dynamic array of \c float values. Returns an empty array if
+    * this string is empty of completely componsed of trimmable characters.
+    *
+    * For each element in the parsed list, trimmable characters (whitespace)
+    * are ignored. Empty list elements (that is, sequences of contiguous
+    * separator characters, or separators separated by trimmable characters)
+    * are not allowed. In the event of syntactic errors or invalid or
+    * unrepresentable values, this function throws a ParseError exception.
+    */
+   Array<float> ParseListOfFloat( char separator = ',', size_type maxCount = ~size_type( 0 ) ) const;
+
+   /*!
+    * Evaluates this string as a sequence:
+    *
+    * \<f1\>\<sep\>\<f2\>\<sep\> ... \<sep\>\<fn\>
+    *
+    * as a list \<f1\>\<f2\>...\<fn\> of 64-bit floating point values separated
+    * by \<sep\> separator characters.
+    *
+    * \param separator     The separator character. Cannot be a character
+    *                      pertaining to a floating point numeric
+    *                      representation (decimal digit [09], sign character
+    *                      [+-], decimal separator '.' or exponent delimiter
+    *                      [eE]). If not specified, the default separator is a
+    *                      comma character ','.
+    *
+    * \param maxCount      The maximum number of values allowed. If the parsed
+    *                      list includes more than this number of elements, a
+    *                      ParseError exception will be thrown with the
+    *                      appropriate error message. If this parameter is not
+    *                      specified, there is no practical limit on the list's
+    *                      length by default.
+    *
+    * Returns a dynamic array of \c double values. Returns an empty array if
+    * this string is empty of completely componsed of trimmable characters.
+    *
+    * For each element in the parsed list, trimmable characters (whitespace)
+    * are ignored. Empty list elements (that is, sequences of contiguous
+    * separator characters, or separators separated by trimmable characters)
+    * are not allowed. In the event of syntactic errors or invalid or
+    * unrepresentable values, this function throws a ParseError exception.
+    */
+   Array<double> ParseListOfDouble( char separator = ',', size_type maxCount = ~size_type( 0 ) ) const;
+
+   /*!
     * Evaluates this string as a sexagesimal numeric literal representation,
     * and returns the result as a \c double value.
     *
@@ -7927,68 +7989,67 @@ public:
    /*!
     * Base class of %String.
     */
-   typedef GenericString<char16_type, CharTraits, PCL_STRING_ALLOCATOR>
-                                                string_base;
+   using string_base = GenericString<char16_type, CharTraits, PCL_STRING_ALLOCATOR>;
 
    /*!
     * Represents a character pertaining to a %String object.
     */
-   typedef string_base::char_type               char_type;
+   using char_type = string_base::char_type;
 
    /*!
     * The character traits class used by this template instantiation.
     */
-   typedef string_base::char_traits             char_traits;
+   using char_traits = string_base::char_traits;
 
    /*!
     * The block allocator used by this template instantiation.
     */
-   typedef string_base::block_allocator         block_allocator;
+   using block_allocator = string_base::block_allocator;
 
    /*!
     * The allocator class used by this template instantiation.
     */
-   typedef string_base::allocator               allocator;
+   using allocator = string_base::allocator;
 
    /*!
     * Null-terminated sequence of UTF-16 characters.
     */
-   typedef string_base::c_string                c_string;
+   using c_string = string_base::c_string;
 
    /*!
     * Immutable null-terminated sequence of UTF-16 characters.
     */
-   typedef string_base::const_c_string          const_c_string;
+   using const_c_string = string_base::const_c_string;
 
    /*
     * Null-terminated UTF-16 string - C++11 compatibility.
     */
-   typedef char16_t*                            c16_string;
+   using c16_string = char16_t*;
 
    /*
     * Immutable null-terminated UTF-16 string - C++11 compatibility.
     */
-   typedef const char16_t*                      const_c16_string;
+   using const_c16_string = const char16_t*;
 
    /*!
     * %String iterator.
     */
-   typedef string_base::iterator                iterator;
+   using iterator = string_base::iterator;
 
    /*!
     * Immutable %String iterator.
     */
-   typedef string_base::const_iterator          const_iterator;
+   using const_iterator = string_base::const_iterator;
 
    /*!
     * Reverse %String iterator.
     */
-   typedef string_base::reverse_iterator        reverse_iterator;
+   using reverse_iterator = string_base::reverse_iterator;
 
    /*!
     * Immutable reverse %String iterator.
     */
-   typedef string_base::const_reverse_iterator  const_reverse_iterator;
+   using const_reverse_iterator = string_base::const_reverse_iterator;
 
    /*!
     * Represents an 8-bit string. Depending on the context, this type
@@ -7997,38 +8058,37 @@ public:
     * \note This type must be defined as the same template instantiation used
     * for the IsoString class.
     */
-   typedef GenericString<char, IsoCharTraits, PCL_STRING_ALLOCATOR>
-                                                string8_base;
+   using string8_base = GenericString<char, IsoCharTraits, PCL_STRING_ALLOCATOR>;
 
    /*!
     * Represents an 8-bit character (ISO/IEC-8859-1, ASCII or UTF-8).
     */
-   typedef string8_base::char_type              char8_type;
+   using char8_type = string8_base::char_type;
 
    /*!
     * 8-bit character traits class.
     */
-   typedef string8_base::char_traits            char8_traits;
+   using char8_traits = string8_base::char_traits;
 
    /*!
     * Null-terminated sequence of 8-bit characters.
     */
-   typedef string8_base::c_string               c_string8;
+   using c_string8 = string8_base::c_string;
 
    /*!
     * Immutable null-terminated sequence of 8-bit characters.
     */
-   typedef string8_base::const_c_string         const_c_string8;
+   using const_c_string8 = string8_base::const_c_string;
 
    /*!
     * 8-bit string iterator.
     */
-   typedef string8_base::iterator               char8_iterator;
+   using char8_iterator = string8_base::iterator;
 
    /*!
     * Immutable 8-bit string iterator.
     */
-   typedef string8_base::const_iterator         const_char8_iterator;
+   using const_char8_iterator = string8_base::const_iterator;
 
    // -------------------------------------------------------------------------
 
@@ -11681,6 +11741,72 @@ public:
    bool TryToUInt64( unsigned long long& value, int base ) const noexcept;
 
    /*!
+    * Evaluates this string as a sequence:
+    *
+    * \<f1\>\<sep\>\<f2\>\<sep\> ... \<sep\>\<fn\>
+    *
+    * as a list \<f1\>\<f2\>...\<fn\> of 32-bit floating point values separated
+    * by \<sep\> separator characters.
+    *
+    * \param separator     The separator character. Cannot be a character
+    *                      pertaining to a floating point numeric
+    *                      representation (decimal digit [09], sign character
+    *                      [+-], decimal separator '.' or exponent delimiter
+    *                      [eE]). If not specified, the default separator is a
+    *                      comma character ','.
+    *
+    * \param maxCount      The maximum number of values allowed. If the parsed
+    *                      list includes more than this number of elements, a
+    *                      ParseError exception will be thrown with the
+    *                      appropriate error message. If this parameter is not
+    *                      specified, there is no practical limit on the list's
+    *                      length by default.
+    *
+    * Returns a dynamic array of \c float values. Returns an empty array if
+    * this string is empty of completely componsed of trimmable characters.
+    *
+    * For each element in the parsed list, trimmable characters (whitespace)
+    * are ignored. Empty list elements (that is, sequences of contiguous
+    * separator characters, or separators separated by trimmable characters)
+    * are not allowed. In the event of syntactic errors or invalid or
+    * unrepresentable values, this function throws a ParseError exception.
+    */
+   Array<float> ParseListOfFloat( char separator = ',', size_type maxCount = ~size_type( 0 ) ) const;
+
+   /*!
+    * Evaluates this string as a sequence:
+    *
+    * \<f1\>\<sep\>\<f2\>\<sep\> ... \<sep\>\<fn\>
+    *
+    * as a list \<f1\>\<f2\>...\<fn\> of 64-bit floating point values separated
+    * by \<sep\> separator characters.
+    *
+    * \param separator     The separator character. Cannot be a character
+    *                      pertaining to a floating point numeric
+    *                      representation (decimal digit [09], sign character
+    *                      [+-], decimal separator '.' or exponent delimiter
+    *                      [eE]). If not specified, the default separator is a
+    *                      comma character ','.
+    *
+    * \param maxCount      The maximum number of values allowed. If the parsed
+    *                      list includes more than this number of elements, a
+    *                      ParseError exception will be thrown with the
+    *                      appropriate error message. If this parameter is not
+    *                      specified, there is no practical limit on the list's
+    *                      length by default.
+    *
+    * Returns a dynamic array of \c double values. Returns an empty array if
+    * this string is empty of completely componsed of trimmable characters.
+    *
+    * For each element in the parsed list, trimmable characters (whitespace)
+    * are ignored. Empty list elements (that is, sequences of contiguous
+    * separator characters, or separators separated by trimmable characters)
+    * are not allowed. In the event of syntactic errors or invalid or
+    * unrepresentable values, this function throws a ParseError exception.
+    */
+   Array<double> ParseListOfDouble( char separator = ',', size_type maxCount = ~size_type( 0 ) ) const;
+
+   /*!
     * Evaluates this string as a sexagesimal numeric literal representation,
     * and returns the result as a \c double value.
     *
@@ -13711,4 +13837,4 @@ inline std::ostream& operator <<( std::ostream& o, const String& s )
 #endif   // __PCL_String_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/String.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/String.h - Released 2022-08-10T16:36:28Z

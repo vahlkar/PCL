@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/StarDatabaseFile.cpp - Released 2022-05-17T17:14:53Z
+// pcl/StarDatabaseFile.cpp - Released 2022-08-10T16:36:36Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -200,6 +200,8 @@ void StarDatabaseFile::Open( const String& filePath )
                   }
                }
             }
+
+            m_parameters = element.AttributeValue( "parameters" );
          }
          else if ( element.Name() == "Tree" )
          {
@@ -354,7 +356,8 @@ void StarDatabaseFile::Serialize( const String& filePath,
                                   float magnitudeLow, float magnitudeHigh,
                                   const Array<XPSD::IndexTree>& index,
                                   const ByteArray& data,
-                                  const Compression* compression )
+                                  const Compression* compression,
+                                  const String& parameters )
 {
    // Validate data
    if ( filePath.IsEmpty() )
@@ -443,6 +446,8 @@ void StarDatabaseFile::Serialize( const String& filePath,
       XMLElement* dataElement = new XMLElement( *root, "Data" );
       dataElement->SetAttribute( "magnitudeRange", String().Format( "%.2f,%.2f", magnitudeLow, magnitudeHigh ) );
       dataElement->SetAttribute( "position", dataPosition = IsoString::Random( 16 ) );
+      if ( !parameters.IsEmpty() )
+         dataElement->SetAttribute( "parameters", parameters );
 
       if ( compression != nullptr )
       {
@@ -542,4 +547,4 @@ XPSD::projection_type XPSD::ProjectionFromAttributeValue( const String& value )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/StarDatabaseFile.cpp - Released 2022-05-17T17:14:53Z
+// EOF pcl/StarDatabaseFile.cpp - Released 2022-08-10T16:36:36Z

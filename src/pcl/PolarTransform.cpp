@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/PolarTransform.cpp - Released 2022-05-17T17:14:53Z
+// pcl/PolarTransform.cpp - Released 2022-08-10T16:36:36Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -161,7 +161,7 @@ private:
    template <class P>
    struct ThreadData : public AbstractImage::ThreadData
    {
-      typedef typename GenericImage<P>::sample_array sample_array;
+      using sample_array = typename GenericImage<P>::sample_array;
 
       ThreadData( sample_array& a_result,
                   const DVector& a_sin, const DVector& a_cos, const DVector& a_r,
@@ -192,7 +192,7 @@ private:
    {
    public:
 
-      typedef PixelInterpolation::Interpolator<P>  interpolator_type;
+      using interpolator_type = PixelInterpolation::Interpolator<P>;
 
       Thread( ThreadData<P>& data, interpolator_type* interpolator, int firstRow, int endRow )
          : m_data( data )
@@ -301,4 +301,4 @@ void LogPolarTransform::Apply( pcl::UInt32Image& image ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PolarTransform.cpp - Released 2022-05-17T17:14:53Z
+// EOF pcl/PolarTransform.cpp - Released 2022-08-10T16:36:36Z

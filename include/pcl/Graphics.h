@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/Graphics.h - Released 2022-05-17T17:14:45Z
+// pcl/Graphics.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -211,12 +211,12 @@ public:
    /*!
     * Represents a Porter-Duff alpha composition operator.
     */
-   typedef CompositionOp::value_type   composition_op;
+   using composition_op = CompositionOp::value_type;
 
    /*!
     * Represents a polygon fill rule.
     */
-   typedef FillRule::value_type        fill_rule;
+   using fill_rule = FillRule::value_type;
 
    /*!
     * Constructs an inactive graphics context.
@@ -649,12 +649,12 @@ public:
    /*!
     * Represents a Porter-Duff alpha composition operator.
     */
-   typedef GraphicsContextBase::composition_op  composition_op;
+   using composition_op = GraphicsContextBase::composition_op;
 
    /*!
     * Represents a polygon fill rule.
     */
-   typedef GraphicsContextBase::fill_rule       fill_rule;
+   using fill_rule = GraphicsContextBase::fill_rule;
 
    /*!
     * Constructs an inactive graphics context.
@@ -1466,12 +1466,12 @@ public:
    /*!
     * Represents a Porter-Duff alpha composition operator.
     */
-   typedef GraphicsContextBase::composition_op  composition_op;
+   using composition_op = GraphicsContextBase::composition_op;
 
    /*!
     * Represents a polygon fill rule.
     */
-   typedef GraphicsContextBase::fill_rule       fill_rule;
+   using fill_rule = GraphicsContextBase::fill_rule;
 
    /*!
     * Constructs an inactive vector graphics context.
@@ -2326,4 +2326,4 @@ private:
 #endif   // __PCL_Graphics_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Graphics.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/Graphics.h - Released 2022-08-10T16:36:28Z

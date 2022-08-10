@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/Checksum.h - Released 2022-05-17T17:14:45Z
+// pcl/Checksum.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -158,4 +158,4 @@ uint32 CRC32( const C& data )
 #endif   // __PCL_Checksum_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Checksum.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/Checksum.h - Released 2022-08-10T16:36:28Z

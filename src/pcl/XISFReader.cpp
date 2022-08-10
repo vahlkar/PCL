@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/XISFReader.cpp - Released 2022-05-17T17:14:53Z
+// pcl/XISFReader.cpp - Released 2022-08-10T16:36:36Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -96,27 +96,27 @@ struct XISFInputDataBlock
    /*
     * A list of compressed subblock dimensions.
     */
-   typedef Array<SubblockDimensions>   subblock_info;
+   using subblock_info = Array<SubblockDimensions>;
 
    /*
     * Compressed subblocks.
     */
-   typedef Compression::subblock_list  subblock_list;
+   using subblock_list = Compression::subblock_list;
 
    /*
     * Block checksum algorithm.
     */
-   typedef XISF::block_checksum        block_checksum;
+   using block_checksum = XISF::block_checksum;
 
    /*
     * Block compression codec.
     */
-   typedef XISF::block_compression     block_compression;
+   using block_compression = XISF::block_compression;
 
    /*
     * Block byte order.
     */
-   typedef XISF::block_endianness      block_endianness;
+   using block_endianness = XISF::block_endianness;
 
    /*
     * For blocks stored as attachments, the position and size members provide
@@ -444,7 +444,7 @@ struct XISFInputImageBlock : public XISFInputDataBlock
  */
 struct XISFInputPropertyBlock : public XISFInputDataBlock
 {
-   typedef XISF::property_type   property_type;
+   using property_type = XISF::property_type;
 
            IsoString     id;         // unique property identifier
            property_type type;       // property data type
@@ -476,7 +476,7 @@ struct XISFInputPropertyBlock : public XISFInputDataBlock
    }
 };
 
-typedef SortedArray<XISFInputPropertyBlock> XISFInputPropertyBlockArray;
+using XISFInputPropertyBlockArray = SortedArray<XISFInputPropertyBlock>;
 
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
@@ -1318,7 +1318,7 @@ private:
       XISFInputPropertyBlockArray properties; // image properties
    };
 
-   typedef Array<ImageData> ImageDataArray;
+   using ImageDataArray = Array<ImageData>;
 
    /*
     * Stream data
@@ -3043,4 +3043,4 @@ XMLDocument* XISFReader::ExtractHeader( const String& path, XMLParserOptions opt
 } //pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/XISFReader.cpp - Released 2022-05-17T17:14:53Z
+// EOF pcl/XISFReader.cpp - Released 2022-08-10T16:36:36Z

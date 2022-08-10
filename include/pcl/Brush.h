@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/Brush.h - Released 2022-05-17T17:14:45Z
+// pcl/Brush.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -162,7 +162,7 @@ public:
     * Represents the brush style.
     * Supported values are defined in the BrushStyle namespace.
     */
-   typedef BrushStyle::value_type   style;
+   using style = BrushStyle::value_type;
 
    /*!
     * Constructs a brush with the specified \a color and \a style.
@@ -344,7 +344,7 @@ public:
     * Represents a gradient spread mode.
     * Supported values are defined in the GradientSpreadMode namespace.
     */
-   typedef GradientSpreadMode::value_type    spread_mode;
+   using spread_mode = GradientSpreadMode::value_type;
 
    /*! \struct Stop
     *  \brief Gradient stop.
@@ -402,7 +402,7 @@ public:
    /*!
     * Represents a list of gradient stops.
     */
-   typedef Array<Stop>  stop_list;
+   using stop_list = Array<Stop>;
 
    /*!
     * Returns the list of stops in this gradient brush.
@@ -452,12 +452,12 @@ public:
     * Represents a gradient spread mode.
     * Supported values are defined in the GradientSpreadMode namespace.
     */
-   typedef GradientBrush::spread_mode  spread_mode;
+   using spread_mode = GradientBrush::spread_mode;
 
    /*!
     * Represents a list of gradient stops.
     */
-   typedef GradientBrush::stop_list    stop_list;
+   using stop_list = GradientBrush::stop_list;
 
    /*!
     * Constructs a %LinearGradientBrush object.
@@ -579,12 +579,12 @@ public:
     * Represents a gradient spread mode.
     * Supported values are defined in the GradientSpreadMode namespace.
     */
-   typedef GradientBrush::spread_mode  spread_mode;
+   using spread_mode = GradientBrush::spread_mode;
 
    /*!
     * Represents a list of gradient stops.
     */
-   typedef GradientBrush::stop_list    stop_list;
+   using stop_list = GradientBrush::stop_list;
 
    /*!
     * Constructs a %RadialGradientBrush object.
@@ -711,7 +711,7 @@ public:
    /*!
     * Represents a list of gradient stops.
     */
-   typedef GradientBrush::stop_list    stop_list;
+   using stop_list = GradientBrush::stop_list;
 
    /*!
     * Constructs a %ConicalGradientBrush object.
@@ -817,4 +817,4 @@ public:
 #endif   // __PCL_Brush_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Brush.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/Brush.h - Released 2022-08-10T16:36:28Z

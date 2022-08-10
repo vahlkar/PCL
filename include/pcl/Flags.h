@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/Flags.h - Released 2022-05-17T17:14:45Z
+// pcl/Flags.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -69,8 +69,8 @@ namespace pcl
 // ----------------------------------------------------------------------------
 
 template <bool> struct FlagType {};
-template <>     struct FlagType<true>  { typedef unsigned type; };
-template <>     struct FlagType<false> { typedef int      type; };
+template <>     struct FlagType<true>  { using type = unsigned; };
+template <>     struct FlagType<false> { using type = int; };
 
 // ----------------------------------------------------------------------------
 
@@ -91,13 +91,12 @@ public:
    /*!
     * Represents the enumerated type that defines individual flags.
     */
-   typedef                          E enum_type;
+   using enum_type = E;
 
    /*!
     * Represents the integral type used to store flags.
     */
-   typedef typename FlagType<std::is_unsigned<enum_type>::value>::type
-                                    flag_type;
+   using flag_type = typename FlagType<std::is_unsigned<enum_type>::value>::type;
 
    /*!
     * Constructs an empty (zero) %Flags instance.
@@ -406,4 +405,4 @@ private:
 #endif   // __PCL_Flags_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Flags.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/Flags.h - Released 2022-08-10T16:36:28Z

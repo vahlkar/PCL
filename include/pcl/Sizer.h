@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/Sizer.h - Released 2022-05-17T17:14:45Z
+// pcl/Sizer.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -150,7 +150,7 @@ public:
    /*!
     * Represents the alignment of a %Sizer item.
     */
-   typedef Align::value_type  item_alignment;
+   using item_alignment = Align::value_type;
 
    /*!
     * Constructs a %Sizer object.
@@ -582,7 +582,7 @@ public:
 
    /*!
     */
-   typedef Sizer::item_alignment item_alignment;
+   using item_alignment = Sizer::item_alignment;
 
    /*!
     * Constructs a %HorizontalSizer object.
@@ -614,7 +614,7 @@ public:
 
    /*!
     */
-   typedef Sizer::item_alignment item_alignment;
+   using item_alignment = Sizer::item_alignment;
 
    /*!
     * Constructs a %VerticalSizer object.
@@ -641,4 +641,4 @@ public:
 #endif   // __PCL_Sizer_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Sizer.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/Sizer.h - Released 2022-08-10T16:36:28Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/ComboBox.h - Released 2022-05-17T17:14:45Z
+// pcl/ComboBox.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -478,7 +478,7 @@ public:
     *
     * \ingroup combobox_event_handlers
     */
-   typedef void (Control::*item_event_handler)( ComboBox& sender, int itemIndex );
+   using item_event_handler = void (Control::*)( ComboBox& sender, int itemIndex );
 
    /*!
     * Defines the prototype of a <em>combo box edit event handler</em>.
@@ -490,7 +490,7 @@ public:
     *
     * \ingroup combobox_event_handlers
     */
-   typedef void (Control::*edit_event_handler)( ComboBox& sender );
+   using edit_event_handler = void (Control::*)( ComboBox& sender );
 
    /*!
     * Sets the <em>item selected</em> event handler for this combo box.
@@ -564,4 +564,4 @@ private:
 #endif   // __PCL_ComboBox_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ComboBox.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/ComboBox.h - Released 2022-08-10T16:36:28Z

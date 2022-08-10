@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/AstrometricMetadata.h - Released 2022-05-17T17:14:45Z
+// pcl/AstrometricMetadata.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -180,7 +180,7 @@ public:
     *                            system.
     *
     * \param worldTransformation Pointer to a dynamically allocated world
-    *                            transformation.
+    *                            coordinate transformation.
     *
     * \param width               Width in pixels of the image with which this
     *                            astrometric solution is associated.
@@ -308,8 +308,8 @@ public:
 
    /*!
     * Returns true if this object uses a world transformation based on 2-D
-    * surface splines (or <em>thin plates</em>), false if a WCS linear
-    * transformation is being used.
+    * surface splines (or <em>thin plate splines</em>). Returns false if a
+    * standard WCS linear transformation is being used.
     */
    bool HasSplineWorldTransformation() const
    {
@@ -435,6 +435,21 @@ public:
    int Height() const
    {
       return m_height;
+   }
+
+   /*!
+    * Returns the bounding rectangle in pixels of the image associated with the
+    * astrometric solution represented by this object.
+    *
+    * The returned rectangle is equivalent to:
+    *
+    * \code
+    * Rect( Width(), Height() )
+    * \endcode
+    */
+   Rect Bounds() const
+   {
+      return Rect( m_width, m_height );
    }
 
    /*!
@@ -1118,4 +1133,4 @@ private:
 #endif // __AstrometricMetadata_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AstrometricMetadata.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/AstrometricMetadata.h - Released 2022-08-10T16:36:28Z

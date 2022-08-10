@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/DrizzleData.h - Released 2022-05-17T17:14:45Z
+// pcl/DrizzleData.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -93,7 +93,7 @@ namespace DrizzleParserOption
  * \class pcl::DrizzleParserOptions
  * \brief A collection of %Drizzle data parsing options
  */
-typedef Flags<DrizzleParserOption::mask_type>  DrizzleParserOptions;
+using DrizzleParserOptions = Flags<DrizzleParserOption::mask_type>;
 
 // ----------------------------------------------------------------------------
 
@@ -149,37 +149,37 @@ public:
     * dimensions. This class is used to implement image alignment with
     * arbitrary distortion correction.
     */
-   typedef PointSurfaceSpline<DPoint>           vector_spline;
+   using vector_spline = PointSurfaceSpline<DPoint>;
 
    /*!
     * Represents a coordinate interpolating/approximating surface spline used
     * for image registration with arbitrary distortion correction.
     */
-   typedef vector_spline::spline                spline;
+   using spline = vector_spline::spline;
 
    /*!
     * An ordered list of image coordinates. Used to store reference image
     * coordinates or image displacements in local distortion models. Also used
     * to store interpolation node coordinates for adaptive normalization.
     */
-   typedef Array<DPoint>                        point_list;
+   using point_list = Array<DPoint>;
 
    /*!
     * An ordered list of statistical weights corresponding to points in a local
     * distortion model.
     */
-   typedef Array<float>                         weight_vector;
+   using weight_vector = Array<float>;
 
    /*!
     * A list of coordinates corresponding to pixels rejected by an image
     * integration task.
     */
-   typedef Array<Point>                         rejection_coordinates;
+   using rejection_coordinates = Array<Point>;
 
    /*!
     * A set of per-channel pixel rejection coordinates.
     */
-   typedef Array<rejection_coordinates>         rejection_data;
+   using rejection_data = Array<rejection_coordinates>;
 
    /*!
     * Default constructor. Constructs an empty %DrizzleData object.
@@ -1517,4 +1517,4 @@ private:
 #endif   // __PCL_DrizzleData_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/DrizzleData.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/DrizzleData.h - Released 2022-08-10T16:36:28Z

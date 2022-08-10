@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/Point.h - Released 2022-05-17T17:14:45Z
+// pcl/Point.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -103,7 +103,7 @@ public:
    /*!
     * Represents the type of a point component.
     */
-   typedef T   component;
+   using component = T;
 
    /*
     * Point coordinates
@@ -1422,7 +1422,7 @@ void Swap( GenericPoint<T>& p1, GenericPoint<T>& p2 ) noexcept
  *
  * %I32Point is a template instantiation of GenericPoint for the \c int32 type.
  */
-typedef GenericPoint<int32>         I32Point;
+using I32Point = GenericPoint<int32>;
 
 /*!
  * \class pcl::Point
@@ -1432,7 +1432,7 @@ typedef GenericPoint<int32>         I32Point;
  * %Point is an alias for I32Point. It is a template instantiation of
  * GenericPoint for \c int32.
  */
-typedef I32Point                    Point;
+using Point = I32Point;
 
 /*!
  * \class pcl::F32Point
@@ -1441,7 +1441,7 @@ typedef I32Point                    Point;
  *
  * %F32Point is a template instantiation of GenericPoint for the \c float type.
  */
-typedef GenericPoint<float>         F32Point;
+using F32Point = GenericPoint<float>;
 
 /*!
  * \class pcl::FPoint
@@ -1451,7 +1451,7 @@ typedef GenericPoint<float>         F32Point;
  * %FPoint is an alias for F32Point. It is a template instantiation of
  * GenericPoint for \c float.
  */
-typedef F32Point                    FPoint;
+using FPoint = F32Point;
 
 /*!
  * \class pcl::F64Point
@@ -1460,7 +1460,7 @@ typedef F32Point                    FPoint;
  *
  * %F64Point is a template instantiation of GenericPoint for \c double.
  */
-typedef GenericPoint<double>        F64Point;
+using F64Point = GenericPoint<double>;
 
 /*!
  * \class pcl::DPoint
@@ -1470,7 +1470,7 @@ typedef GenericPoint<double>        F64Point;
  * %DPoint is an alias for F64Point. It is a template instantiation of
  * GenericPoint for \c double.
  */
-typedef F64Point                    DPoint;
+using DPoint = F64Point;
 
 #endif   // !__PCL_NO_POINT_INSTANTIATE
 
@@ -1481,4 +1481,4 @@ typedef F64Point                    DPoint;
 #endif  // __PCL_Point_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Point.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/Point.h - Released 2022-08-10T16:36:28Z

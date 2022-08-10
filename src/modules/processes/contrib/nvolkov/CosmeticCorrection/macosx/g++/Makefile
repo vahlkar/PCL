@@ -2,7 +2,7 @@
 # PixInsight Makefile Generator Script v1.126
 # Copyright (C) 2009-2022 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2022-05-17T19:53:40.025Z
+# Generated on .... 2022-08-10T19:01:07.486Z
 # Project id ...... CosmeticCorrection
 # Project type .... Module
 # Platform ........ MacOSX/g++

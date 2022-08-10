@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/TabBox.h - Released 2022-05-17T17:14:45Z
+// pcl/TabBox.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -100,7 +100,7 @@ public:
    /*!
     * Represents a tab position.
     */
-   typedef TabPosition::value_type  tab_position;
+   using tab_position = TabPosition::value_type;
 
    /*!
     * Constructs a %TabBox as a child control of \a parent.
@@ -348,7 +348,7 @@ public:
     *
     * \ingroup tab_box_event_handlers
     */
-   typedef void (Control::*page_event_handler)( TabBox& sender, int pageIndex );
+   using page_event_handler = void (Control::*)( TabBox& sender, int pageIndex );
 
    /*!
     * Sets the tab box page selected event handler for this %TabBox control.
@@ -388,4 +388,4 @@ private:
 #endif   // __PCL_TabBox_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/TabBox.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/TabBox.h - Released 2022-08-10T16:36:28Z

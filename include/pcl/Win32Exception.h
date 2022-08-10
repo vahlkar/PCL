@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/Win32Exception.h - Released 2022-05-17T17:14:45Z
+// pcl/Win32Exception.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -89,18 +89,18 @@ public:
     * Represents a memory address associated with an exception. For example,
     * the address that has been accessed to cause an access violation error.
     */
-   typedef const void*  exception_address;
+   using exception_address = const void*;
 
    /*!
     * Represents a pointer to a data block that describes an exception. This is
     * an opaque pointer to an EXCEPTION_RECORD structure.
     */
-   typedef const void*  exception_data_pointer;
+   using exception_data_pointer = const void*;
 
    /*!
     * The type of an exception error code.
     */
-   typedef unsigned     exception_code;
+   using exception_code = unsigned;
 
    /*!
     * Constructs a new %Win32Exception object with the specified exception
@@ -314,4 +314,4 @@ DECLARE_WIN32_EXCEPTION( EWin32StackOverflow,
 #endif   // __PCL_Win32Exception_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Win32Exception.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/Win32Exception.h - Released 2022-08-10T16:36:28Z

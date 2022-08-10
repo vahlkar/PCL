@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/Iterator.h - Released 2022-05-17T17:14:45Z
+// pcl/Iterator.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -103,8 +103,8 @@ class PCL_CLASS RandomAccessIterator : public BidirectionalIterator
 template <class C, class T>
 struct PCL_CLASS Iterator
 {
-   typedef C iterator_class;  //!< Represents the iterator class
-   typedef T item_type;       //!< Represents the item type
+   using iterator_class = C;  //!< Represents the iterator class
+   using item_type = T;       //!< Represents the item type
 };
 
 // ----------------------------------------------------------------------------
@@ -379,8 +379,8 @@ bool operator ==( const ReverseIteratorBase<BI,C,T>& i, const ReverseIteratorBas
 template <class BI, class T>
 class PCL_CLASS ReverseBidirectionalIterator : public ReverseIteratorBase<BI,BidirectionalIterator,T>
 {
-   typedef ReverseIteratorBase<BI,BidirectionalIterator,T>  __R__;
-   typedef ReverseBidirectionalIterator                     __I__;
+   using __R__ = ReverseIteratorBase<BI,BidirectionalIterator,T>;
+   using __I__ = ReverseBidirectionalIterator;
 
 public:
 
@@ -418,8 +418,8 @@ public:
 template <class RI, class T>
 class PCL_CLASS ReverseRandomAccessIterator : public ReverseIteratorBase<RI,RandomAccessIterator,T>
 {
-   typedef ReverseIteratorBase<RI,RandomAccessIterator,T>   __R__;
-   typedef ReverseRandomAccessIterator                      __I__;
+   using __R__ = ReverseIteratorBase<RI,RandomAccessIterator,T>;
+   using __I__ = ReverseRandomAccessIterator;
 
 public:
 
@@ -554,7 +554,7 @@ class PCL_CLASS ReverseIterable
 {
 public:
 
-   typedef C   container;
+   using container = C;
 
    ReverseIterable( container& c )
       : m_container( c )
@@ -731,4 +731,4 @@ private:
 #endif  // __PCL_Iterator_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Iterator.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/Iterator.h - Released 2022-08-10T16:36:28Z

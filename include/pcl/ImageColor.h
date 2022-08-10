@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/ImageColor.h - Released 2022-05-17T17:14:45Z
+// pcl/ImageColor.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -102,7 +102,7 @@ public:
     * Valid constants for this enumeration are defined in the ColorSpace
     * namespace.
     */
-   typedef ColorSpace::value_type   color_space;
+   using color_space = ColorSpace::value_type;
 
    /*!
     * Returns a reference to the RGB working space associated with this image.
@@ -255,4 +255,4 @@ protected:
 #endif   // __PCL_ImageColor_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ImageColor.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/ImageColor.h - Released 2022-08-10T16:36:28Z

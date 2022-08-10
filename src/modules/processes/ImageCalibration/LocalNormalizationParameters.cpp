@@ -146,12 +146,12 @@ double LNScale::MinimumValue() const
 
 double LNScale::MaximumValue() const
 {
-   return 1024;
+   return 8192;
 }
 
 double LNScale::DefaultValue() const
 {
-   return 512;
+   return 1024;
 }
 
 // ----------------------------------------------------------------------------

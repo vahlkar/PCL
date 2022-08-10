@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/GaiaDatabaseFile.h - Released 2022-05-17T17:14:45Z
+// pcl/GaiaDatabaseFile.h - Released 2022-08-10T16:36:27Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -56,8 +56,8 @@
 
 #include <pcl/Defs.h>
 
-#include <pcl/ElapsedTime.h>
 #include <pcl/Flags.h>
+#include <pcl/MetaParameter.h> // pcl_bool
 #include <pcl/StarDatabaseFile.h>
 
 namespace pcl
@@ -112,12 +112,13 @@ namespace pcl
  * <tr><td>GaiaStarFlag::BronzePhotometry</td> <td>Equivalent to BronzeGMag|BronzeGBPMag|BronzeGRPMag.</td></tr>
 
  * <tr><td>GaiaStarFlag::BPRPExcess</td>       <td>BP-RP excess factor &ge; 2.0</td></tr>
- * <tr><td>GaiaStarFlag::BPRPExcessHigh</td>   <td>BP-RP excess factor &ge; 5.0 (Gaia EDR3 only)</td></tr>
+ * <tr><td>GaiaStarFlag::BPRPExcessHigh</td>   <td>BP-RP excess factor &ge; 5.0 (Gaia EDR3 and DR3 only)</td></tr>
 
  * </table>
  *
- * The above data quality ranges correspond to the Gaia EDR3 XPSD database
- * version 1.0.0, released December 4, 2020.
+ * The above data quality ranges correspond to the Gaia EDR3 and DR3 XPSD
+ * databases (EDR3 and DR3 XPSD version 1.0.0, released 2020 December 4 and
+ * 2022 July 20, respectively).
  *
  * \ingroup point_source_databases
  */
@@ -183,15 +184,20 @@ namespace GaiaStarFlag
  */
 struct PCL_CLASS GaiaStarData
 {
-   double ra = 0;     //!< Right ascension in degrees, in the range [0,360).
-   double dec = 0;    //!< Declination in degrees, in the range [-90,+90].
-   float  parx = 0;   //!< Parallax in mas.
-   float  pmra = 0;   //!< Proper motion in right ascension * cos(dec), in mas/year.
-   float  pmdec = 0;  //!< Proper motion in declination, in mas/year.
-   float  magG = 0;   //!< Mean G magnitude.
-   float  magBP = 0;  //!< Mean G_BP magnitude.
-   float  magRP = 0;  //!< Mean G_RP magnitude.
-   uint32 flags = 0u; //!< Data availability and quality flags. See the GaiaStarFlag namespace.
+   double  ra = 0;     //!< Right ascension in degrees, in the range [0,360).
+   double  dec = 0;    //!< Declination in degrees, in the range [-90,+90].
+   float   parx = 0;   //!< Parallax in mas.
+   float   pmra = 0;   //!< Proper motion in right ascension * cos(dec), in mas/year.
+   float   pmdec = 0;  //!< Proper motion in declination, in mas/year.
+   float   magG = 0;   //!< Mean G magnitude.
+   float   magBP = 0;  //!< Mean G_BP magnitude.
+   float   magRP = 0;  //!< Mean G_RP magnitude.
+   uint32  flags = 0u; //!< Data availability and quality flags. See the GaiaStarFlag namespace.
+   FVector flux;       /*!< BP/RP sampled mean spectrum. Only available for special DR3 databases
+                           with mean spectrum data. The components of this vector can be normalized
+                           to [0,1] or expressed in original flux units (W.m**-2.nm**-1). See the
+                           GaiaDatabaseFile::IsSpectrumNormalizationEnabled() member function for
+                           more information. */
 };
 
 // ----------------------------------------------------------------------------
@@ -202,7 +208,15 @@ struct PCL_CLASS GaiaStarData
  *
  * \ingroup point_source_databases
  */
-typedef XPSD::SearchData<GaiaStarData> GaiaSearchData;
+struct GaiaSearchData : public XPSD::SearchData<GaiaStarData>
+{
+   pcl_bool normalizeSpectrum = false; /*!< When enabled, search operations
+                           provide sampled spectrum data normalized to the
+                           [0,1] range for each star. When normalization is
+                           disabled, spectrum data is provided in the original
+                           flux units of W.m**-2.nm**-1. Spectrum normalization
+                           is disabled by default. */
+};
 
 // ----------------------------------------------------------------------------
 
@@ -211,22 +225,24 @@ typedef XPSD::SearchData<GaiaStarData> GaiaSearchData;
  * \brief Gaia catalog star database file (XPSD format).
  *
  * This class implements an interface to XPSD files serializing encoded Gaia
- * star data. As of writing this documentation (December 2020), Gaia DR2 and
- * EDR3 are supported and have been implemented.
- *
+ * star data. As of writing this documentation (July 2022), Gaia DR2, EDR3 and
+ * DR3 are supported and have been implemented. In addition, a special variant
+ * with BP/RP sampled mean spectrum data is also supported for Gaia DR3.
+
  * The most important functionality of this class is performing fast indexed
  * search operations to retrieve point source data for Gaia stars matching a
  * set of user-defined criteria. See the GaiaDatabaseFile::Search() member
  * function and the GaiaSearchData structure for detailed information.
  *
- * This implementation provides the following data for the complete Gaia DR2
- * and EDR3 catalogs:
+ * This implementation provides the following data for the complete Gaia DR2,
+ * EDR3 and DR3 catalogs:
  *
  * \li Source positions.
  * \li Parallaxes.
  * \li Proper motions.
  * \li Mean magnitudes on the G, GBP and GRP bands.
  * \li Data availability and quality flags.
+ * \li BP/RP sampled mean spectrum data (DR3 only, special XPSD variant).
  *
  * \b References
  *
@@ -251,6 +267,17 @@ typedef XPSD::SearchData<GaiaStarData> GaiaSearchData;
  * \li Gaia Early Data Release 3. Documentation release 1.0:
  * https://gea.esac.esa.int/archive/documentation/GEDR3/index.html
  *
+ * \li Gaia Data Release 3 - online resources:
+ * https://www.cosmos.esa.int/web/gaia/dr3
+ *
+ * \li <em>Gaia Data Release 3: Summary of the content and survey
+ * properties.</em> Gaia Collaboration, A. Vallenari 1, A.G.A. Brown 2,
+ * T. Prusti 3, J.H.J. de Bruijne, et al.:
+ * https://www.aanda.org/articles/aa/pdf/forth/aa43940-22.pdf
+ *
+ * \li Gaia Data Release 3. Documentation release 1.1:
+ * https://gea.esac.esa.int/archive/documentation/GDR3/index.html
+ *
  * \b Credits
  *
  * This work has made use of data from the European Space Agency (ESA) mission
@@ -263,7 +290,7 @@ typedef XPSD::SearchData<GaiaStarData> GaiaSearchData;
  * \sa StarDatabaseFile, APASSDatabaseFile
  * \ingroup point_source_databases
  */
-class PCL_CLASS GaiaDatabaseFile : public StarDatabaseFile
+class GaiaDatabaseFile : public StarDatabaseFile
 {
 public:
 
@@ -278,8 +305,9 @@ public:
    /*!
     * Constructs a &GaiaDatabaseFile instance initialized from the specified
     * point source database file in XPSD format. As of writing this
-    * documentation (December 2020), The Gaia DR2 and EDR3 catalogs are
-    * available.
+    * documentation (July 2022), The Gaia DR2, EDR3 and DR3 catalogs are
+    * available, as well as a special DR3/SP variant with BP/RP sampled mean
+    * spectrum data.
     *
     * In the event of errors or invalid data, this constructor will throw the
     * appropriate Error exception.
@@ -288,7 +316,39 @@ public:
       : StarDatabaseFile( filePath )
    {
       static_assert( sizeof( EncodedStarData ) == 32, "Invalid sizeof( GaiaDatabaseFile::EncodedStarData )" );
-      if ( Metadata().databaseIdentifier == "GaiaEDR3" )
+      static_assert( sizeof( EncodedStarSPData ) == 41, "Invalid sizeof( GaiaDatabaseFile::EncodedStarSPData )" );
+      if ( Metadata().databaseIdentifier == "GaiaDR3" )
+         m_dr = "DR3";
+      else if ( Metadata().databaseIdentifier == "GaiaDR3SP" )
+      {
+         m_dr = "DR3";
+         m_hasSpectrumData = true;
+         // spectrumStart=<f>,spectrumStep=<f>,spectrumCount=<n>,spectrumBits=<n>
+         if ( m_parameters.IsEmpty() )
+            throw Error( "Missing parameters Data element attribute: " + filePath );
+         StringList tokens;
+         m_parameters.Break( tokens, ',' );
+         for ( const String& token : tokens )
+         {
+            StringList items;
+            token.Break( items, '=' );
+            if ( items.Length() != 2 )
+               throw Error( "Invalid parameter specification '" + token + "': " + filePath );
+            if ( items[0] == "spectrumStart" )
+               m_spectrumStart = items[1].ToFloat();
+            else if ( items[0] == "spectrumStep" )
+               m_spectrumStep = items[1].ToFloat();
+            else if ( items[0] == "spectrumCount" )
+               m_spectrumCount = items[1].ToInt();
+            else if ( items[0] == "spectrumBits" )
+               m_spectrumBits = items[1].ToInt();
+         }
+         if ( m_spectrumStart <= 0 || m_spectrumStep <= 0 || m_spectrumCount <= 0 ||
+              m_spectrumBits != 8 && m_spectrumBits != 16 )
+            throw Error( "Invalid parameters attribute value '" + m_parameters + "': " + filePath );
+         m_spectrumRange = (1 << m_spectrumBits) - 1;
+      }
+      else if ( Metadata().databaseIdentifier == "GaiaEDR3" )
          m_dr = "EDR3";
       else if ( Metadata().databaseIdentifier == "GaiaDR2" )
       {
@@ -311,16 +371,83 @@ public:
    GaiaDatabaseFile& operator =( GaiaDatabaseFile&& ) = default;
 
    /*!
-    * Deleted copy constructor. %GaiaDatabaseFile instances are unique,
-    * hence cannot be copied.
+    * Deleted copy constructor. %GaiaDatabaseFile instances are unique, hence
+    * cannot be copied.
     */
    GaiaDatabaseFile( const GaiaDatabaseFile& ) = delete;
 
    /*!
-    * Deleted copy assignment operator. %GaiaDatabaseFile instances are
-    * unique, hence cannot be copied.
+    * Deleted copy assignment operator. %GaiaDatabaseFile instances are unique,
+    * hence cannot be copied.
     */
    GaiaDatabaseFile& operator =( const GaiaDatabaseFile& ) = delete;
+
+   /*!
+    * Returns the name of the Gaia data release corresponding to the data
+    * available in this database file. As of writing this documentation (July
+    * 2022), this member function can return one of "DR2", "EDR3", "DR3".
+    */
+   const IsoString& DataRelease() const
+   {
+      return m_dr;
+   }
+
+   /*!
+    * Returns true iff this database file includes BP/RP sampled mean spectrum
+    * data (Gaia DR3/SP database files only).
+    */
+   bool HasMeanSpectrumData() const
+   {
+      return m_hasSpectrumData;
+   }
+
+   /*!
+    * Returns the starting wavelength in nm of the sampled spectrum data.
+    *
+    * The value returned by this function is only meaningful for database files
+    * containing BP/RP sampled mean spectrum data (see HasMeanSpectrumData()).
+    * For other databases this function returns zero.
+    */
+   float SpectrumStart() const
+   {
+      return m_spectrumStart;
+   }
+
+   /*!
+    * Returns the wavelength step size in nm of the sampled spectrum data.
+    *
+    * The value returned by this function is only meaningful for database files
+    * containing BP/RP sampled mean spectrum data (see HasMeanSpectrumData()).
+    * For other databases this function returns zero.
+    */
+   float SpectrumStep() const
+   {
+      return m_spectrumStep;
+   }
+
+   /*!
+    * Returns the number of items in the array of sampled spectrum data.
+    *
+    * The value returned by this function is only meaningful for database files
+    * containing BP/RP sampled mean spectrum data (see HasMeanSpectrumData()).
+    * For other databases this function returns zero.
+    */
+   int SpectrumCount() const
+   {
+      return m_spectrumCount;
+   }
+
+   /*!
+    * Returns the bit resolution of the sampled spectrum data.
+    *
+    * The value returned by this function can be 8 or 16 for database files
+    * containing BP/RP sampled mean spectrum data (see HasMeanSpectrumData()).
+    * For other databases this function returns zero.
+    */
+   int SpectrumBits() const
+   {
+      return m_spectrumBits;
+   }
 
    /*!
     * Performs a search operation for point sources matching the specified
@@ -347,7 +474,8 @@ public:
     * The result of the search operation is also returned in the specified
     * \a data structure, including, among others, the following items:
     *
-    * \li The list of point sources found.
+    * \li The list of point sources found, including BP/RP sampled mean
+    * spectrum data if the database contains mean spectrum data.
     *
     * \li Instrumentation items for performance analysis, including: total
     * search time, time used for I/O operations, total I/O operations, time
@@ -361,21 +489,18 @@ public:
       data.timeTotal += T();
    }
 
-   /*!
-    * Returns the name of the Gaia data release corresponding to the data
-    * available in this database file. As of writing this documentation
-    * (December 2020), this member function can return either "DR2" or "EDR3".
-    */
-   const IsoString& DataRelease() const
-   {
-      return m_dr;
-   }
-
 private:
 
-   IsoString m_dr; // data release, one of "DR2", "EDR3"
+   IsoString m_dr;            // data release, one of "DR2", "EDR3", "DR3"
+   bool      m_hasSpectrumData = false;   // with BP/RP mean spectrum data?
+   float     m_spectrumStart = 0;         // nm
+   float     m_spectrumStep = 0;          // nm
+   int       m_spectrumCount = 0;
+   int       m_spectrumBits = 0;          // 8 | 16
+   float     m_spectrumRange = 0;         // (1 << m_spectrumBits) - 1
 
 #pragma pack(push, 1)
+
    /*
     * Encoded star record (32 bytes uncompressed).
     */
@@ -399,32 +524,36 @@ private:
       // Data availability and quality flags.
       uint32 flags;
    };
+
+   /*
+    * Encoded star record with mean spectrum data.
+    * Uncompressed size in bytes: 40 + (m_spectrumBits/8)*m_spectrumCount.
+    */
+   struct EncodedStarSPData : public EncodedStarData
+   {
+      float fluxMin;
+      float fluxMul; // (fluxMax - fluxMin)/(2**m_spectrumBits - 1)
+      uint8 flux[ 1 ];
+   };
+
+   constexpr size_type EncodedStarSPDataSize() const
+   {
+      return sizeof( EncodedStarSPData ) + (m_spectrumBits >> 3)*m_spectrumCount;
+   }
+
 #pragma pack(pop)
-
-   void LoadData( void* block, uint64 offset, uint32 size, void* searchData ) const override
-   {
-      ElapsedTime T;
-      StarDatabaseFile::LoadData( block, offset, size, searchData );
-      reinterpret_cast<GaiaSearchData*>( searchData )->timeIO += T();
-      ++reinterpret_cast<GaiaSearchData*>( searchData )->countIO;
-   }
-
-   void Uncompress( ByteArray& block, uint32 uncompressedSize, void* searchData ) const override
-   {
-      ElapsedTime T;
-      StarDatabaseFile::Uncompress( block, uncompressedSize, searchData );
-      reinterpret_cast<GaiaSearchData*>( searchData )->timeUncompress += T();
-   }
 
    void GetEncodedData( const ByteArray& data, const XPSD::IndexTree& tree, const XPSD::IndexNode& node, void* searchData ) const override
    {
       ElapsedTime T;
       GaiaSearchData* search = reinterpret_cast<GaiaSearchData*>( searchData );
-      double r = Rad( search->radius );
-      const EncodedStarData* S = reinterpret_cast<const EncodedStarData*>( data.Begin() );
-      int count = int( data.Size() / sizeof( EncodedStarData ) );
-      int matched = 0;
-      for ( int i = 0; i < count; ++i, ++S )
+      double searchRadius = Rad( search->radius );
+      int itemSize = m_hasSpectrumData ? EncodedStarSPDataSize() : sizeof( EncodedStarData );
+      int count = int( data.Size() / itemSize );
+      int matchCount = 0;
+      for ( int i = 0; i < count; ++i )
+      {
+         const EncodedStarData* S = reinterpret_cast<const EncodedStarData*>( data.Begin() + i*itemSize );
          if ( search->requiredFlags == 0 || (S->flags & search->requiredFlags) == search->requiredFlags )
             if ( search->inclusionFlags == 0 || (S->flags & search->inclusionFlags) != 0 )
                if ( search->exclusionFlags == 0 || (S->flags & search->exclusionFlags) == 0 )
@@ -433,9 +562,9 @@ private:
                   if ( magG >= search->magnitudeLow )
                      if ( magG <= search->magnitudeHigh )
                      {
-                        GaiaStarData star;
                         double x = node.x0 + double( S->dx )/3600/1000/500;
                         double y = node.y0 + double( S->dy )/3600/1000/500;
+                        GaiaStarData star;
                         tree.Unproject( star.ra, star.dec, x, y );
                         if ( unlikely( S->dra != 0 ) )
                         {
@@ -445,8 +574,10 @@ private:
                            else if ( star.ra >= 360 )
                               star.ra -= 360;
                         }
-                        if ( Distance( search->centerRA, search->centerDec, star.ra, star.dec ) < r )
+                        if ( Distance( search->centerRA, search->centerDec, star.ra, star.dec ) < searchRadius )
                         {
+                           ++matchCount;
+
                            if ( search->stars.Length() < size_type( search->sourceLimit ) )
                            {
                               star.parx = S->parx;
@@ -456,21 +587,36 @@ private:
                               star.magBP = 0.001*S->magBP - 1.5;
                               star.magRP = 0.001*S->magRP - 1.5;
                               star.flags = S->flags;
+
+                              if ( m_hasSpectrumData )
+                              {
+                                 const EncodedStarSPData* SS = static_cast<const EncodedStarSPData*>( S );
+                                 star.flux = FVector( m_spectrumCount );
+                                 if ( search->normalizeSpectrum )
+                                    for ( int j = 0; j < m_spectrumCount; ++j )
+                                       star.flux[j] = SS->flux[j]/m_spectrumRange;
+                                 else
+                                    for ( int j = 0; j < m_spectrumCount; ++j )
+                                       star.flux[j] = SS->flux[j]*SS->fluxMul + SS->fluxMin;
+                              }
+
                               search->stars << star;
                            }
                            else
                               ++search->excessCount;
-                           ++matched;
                         }
                      }
                }
+      }
 
-      search->rejectCount += count - matched;
+      search->rejectCount += count - matchCount;
       search->timeDecode += T();
    }
 
    friend class GaiaDR2DatabaseFileGenerator;
    friend class GaiaEDR3DatabaseFileGenerator;
+   friend class GaiaDR3DatabaseFileGenerator;
+   friend class GaiaDR3SPDatabaseFileGenerator;
 };
 
 // ----------------------------------------------------------------------------
@@ -480,4 +626,4 @@ private:
 #endif  // __PCL_GaiaDatabaseFile_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/GaiaDatabaseFile.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/GaiaDatabaseFile.h - Released 2022-08-10T16:36:27Z

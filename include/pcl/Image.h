@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/Image.h - Released 2022-05-17T17:14:45Z
+// pcl/Image.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -285,7 +285,7 @@ public:
     * The \c pixel_traits type identifies a class implementing basic storage
     * and functional primitives adapted to a particular sample data type.
     */
-   typedef P                                    pixel_traits;
+   using pixel_traits = P;
 
    /*!
     * Represents a class responsible for allocation and deallocation of pixel
@@ -296,43 +296,43 @@ public:
     * By default, %GenericImage uses an instantiation of the PixelAllocator
     * template class for \c pixel_traits.
     */
-   typedef PixelAllocator<P>                    pixel_allocator;
+   using pixel_allocator = PixelAllocator<P>;
 
    /*!
     * Represents the data type used to store pixel sample values in this
     * template instantiation of %GenericImage.
     */
-   typedef typename pixel_traits::sample        sample;
+   using sample = typename pixel_traits::sample;
 
    /*!
     * An enumerated type that represents the set of supported color spaces.
     * Valid constants for this enumeration are defined in the ColorSpace
     * namespace.
     */
-   typedef AbstractImage::color_space           color_space;
+   using color_space = AbstractImage::color_space;
 
    /*!
     * The type of a container class used to store rectangular and channel range
     * selections.
     */
-   typedef AbstractImage::selection_stack       selection_stack;
+   using selection_stack = AbstractImage::selection_stack;
 
    /*!
     * An enumerated type that represents the set of supported arithmetic and
     * bitwise pixel operations. Valid constants for this enumeration are
     * defined in the ImageOp namespace.
     */
-   typedef ImageOp::value_type                  image_op;
+   using image_op = ImageOp::value_type;
 
    /*!
     * A vector of pixel sample values.
     */
-   typedef GenericVector<sample>                sample_vector;
+   using sample_vector = GenericVector<sample>;
 
    /*!
     * A dynamic array of pixel sample values.
     */
-   typedef Array<sample>                        sample_array;
+   using sample_array = Array<sample>;
 
    // -------------------------------------------------------------------------
 
@@ -358,17 +358,17 @@ public:
       /*!
        * Represents the type of the iterated image.
        */
-      typedef GenericImage<P>                   image_type;
+      using image_type = GenericImage<P>;
 
       /*!
        * Represents the pixel traits class used by the iterated image.
        */
-      typedef typename image_type::pixel_traits pixel_traits;
+      using pixel_traits = typename image_type::pixel_traits;
 
       /*!
        * Represents a pixel sample of the iterated image.
        */
-      typedef typename image_type::sample       sample;
+      using sample = typename image_type::sample;
 
       /*!
        * Default constructor. Initializes an invalid iterator.
@@ -692,17 +692,17 @@ public:
       /*!
        * Represents the type of the iterated image.
        */
-      typedef GenericImage<P>                   image_type;
+      using image_type = GenericImage<P>;
 
       /*!
        * Represents the pixel traits class used by the iterated image.
        */
-      typedef typename image_type::pixel_traits pixel_traits;
+      using pixel_traits = typename image_type::pixel_traits;
 
       /*!
        * Represents a pixel sample of the iterated image.
        */
-      typedef typename image_type::sample       sample;
+      using sample = typename image_type::sample;
 
       /*!
        * Default constructor. Initializes an invalid iterator.
@@ -1136,20 +1136,19 @@ public:
       /*!
        * Represents the type of the iterated image.
        */
-      typedef GenericImage<P>                   image_type;
+      using image_type = GenericImage<P>;
 
       /*!
        * Represents the pixel traits class used by the iterated image.
        */
-      typedef typename image_type::pixel_traits pixel_traits;
+      using pixel_traits = typename image_type::pixel_traits;
 
       /*!
        * Represents a pixel sample of the iterated image.
        */
-      typedef typename image_type::sample       sample;
+      using sample = typename image_type::sample;
 
-      typedef roi_sample_iterator_base<GenericImage<P>, sample*>
-                                                iterator_base;
+      using iterator_base = roi_sample_iterator_base<GenericImage<P>, sample*>;
 
       /*!
        * Default constructor. Initializes an invalid iterator.
@@ -1458,20 +1457,19 @@ public:
       /*!
        * Represents the type of the iterated image.
        */
-      typedef GenericImage<P>                   image_type;
+      using image_type = GenericImage<P>;
 
       /*!
        * Represents the pixel traits class used by the iterated image.
        */
-      typedef typename image_type::pixel_traits pixel_traits;
+      using pixel_traits = typename image_type::pixel_traits;
 
       /*!
        * Represents a pixel sample of the iterated image.
        */
-      typedef typename image_type::sample       sample;
+      using sample = typename image_type::sample;
 
-      typedef roi_sample_iterator_base<const GenericImage<P>, const sample*>
-                                                iterator_base;
+      using iterator_base = roi_sample_iterator_base<const GenericImage<P>, const sample*>;
 
       /*!
        * Default constructor. Initializes an invalid iterator.
@@ -1892,26 +1890,25 @@ public:
       /*!
        * Represents the type of the iterated image.
        */
-      typedef GenericImage<P>                   image_type;
+      using image_type = GenericImage<P>;
 
       /*!
        * Represents the pixel traits class used by the iterated image.
        */
-      typedef typename image_type::pixel_traits pixel_traits;
+      using pixel_traits = typename image_type::pixel_traits;
 
       /*!
        * Represents a pixel sample of the iterated image.
        */
-      typedef typename image_type::sample       sample;
+      using sample = typename image_type::sample;
 
       /*!
        * Represents the type of the unary predicate used by this filter
        * iterator.
        */
-      typedef F                                 filter_type;
+      using filter_type = F;
 
-      typedef filter_sample_iterator_base<GenericImage<P>, sample_iterator, sample*, F>
-                                                iterator_base;
+      using iterator_base = filter_sample_iterator_base<GenericImage<P>, sample_iterator, sample*, F>;
 
       /*!
        * Default constructor. Initializes an invalid iterator.
@@ -2282,26 +2279,25 @@ public:
       /*!
        * Represents the type of the iterated image.
        */
-      typedef GenericImage<P>                   image_type;
+      using image_type = GenericImage<P>;
 
       /*!
        * Represents the pixel traits class used by the iterated image.
        */
-      typedef typename image_type::pixel_traits pixel_traits;
+      using pixel_traits = typename image_type::pixel_traits;
 
       /*!
        * Represents a pixel sample of the iterated image.
        */
-      typedef typename image_type::sample       sample;
+      using sample = typename image_type::sample;
 
       /*!
        * Represents the type of the unary predicate used by this filter
        * iterator.
        */
-      typedef F                                 filter_type;
+      using filter_type = F;
 
-      typedef filter_sample_iterator_base<const GenericImage<P>, const_sample_iterator, const sample*, F>
-                                                iterator_base;
+      using iterator_base = filter_sample_iterator_base<const GenericImage<P>, const_sample_iterator, const sample*, F>;
 
       /*!
        * Default constructor. Initializes an invalid iterator.
@@ -2666,8 +2662,7 @@ public:
    {
    protected:
 
-      typedef roi_sample_iterator_base<image_type, sample_pointer>
-                                                roi_iterator_base;
+      using roi_iterator_base = roi_sample_iterator_base<image_type, sample_pointer>;
 
       filter_type    m_filter;
       sample_pointer m_begin = nullptr;
@@ -2742,26 +2737,25 @@ public:
       /*!
        * Represents the type of the iterated image.
        */
-      typedef GenericImage<P>                   image_type;
+      using image_type = GenericImage<P>;
 
       /*!
        * Represents the pixel traits class used by the iterated image.
        */
-      typedef typename image_type::pixel_traits pixel_traits;
+      using pixel_traits = typename image_type::pixel_traits;
 
       /*!
        * Represents a pixel sample of the iterated image.
        */
-      typedef typename image_type::sample       sample;
+      using sample = typename image_type::sample;
 
       /*!
        * Represents the type of the unary predicate used by this filter
        * iterator.
        */
-      typedef F                                 filter_type;
+      using filter_type = F;
 
-      typedef roi_filter_sample_iterator_base<GenericImage<P>, sample*, F>
-                                                iterator_base;
+      using iterator_base = roi_filter_sample_iterator_base<GenericImage<P>, sample*, F>;
 
       /*!
        * Default constructor. Initializes an invalid iterator.
@@ -3118,26 +3112,25 @@ public:
       /*!
        * Represents the type of the iterated image.
        */
-      typedef GenericImage<P>                   image_type;
+      using image_type = GenericImage<P>;
 
       /*!
        * Represents the pixel traits class used by the iterated image.
        */
-      typedef typename image_type::pixel_traits pixel_traits;
+      using pixel_traits = typename image_type::pixel_traits;
 
       /*!
        * Represents a pixel sample of the iterated image.
        */
-      typedef typename image_type::sample       sample;
+      using sample = typename image_type::sample;
 
       /*!
        * Represents the type of the unary predicate used by this filter
        * iterator.
        */
-      typedef F                                 filter_type;
+      using filter_type = F;
 
-      typedef roi_filter_sample_iterator_base<const GenericImage<P>, const sample*, F>
-                                                iterator_base;
+      using iterator_base = roi_filter_sample_iterator_base<const GenericImage<P>, const sample*, F>;
 
       /*!
        * Default constructor. Initializes an invalid iterator.
@@ -3494,19 +3487,19 @@ public:
       /*!
        * Represents the type of the iterated image.
        */
-      typedef GenericImage<P>                   image_type;
+      using image_type = GenericImage<P>;
 
       /*!
        * Represents the pixel traits class used by the iterated image.
        */
-      typedef typename image_type::pixel_traits pixel_traits;
+      using pixel_traits = typename image_type::pixel_traits;
 
       /*!
        * Represents a pixel sample of the iterated image.
        */
-      typedef typename image_type::sample       sample;
+      using sample = typename image_type::sample;
 
-      typedef GenericVector<sample*>            iterator_type;
+      using iterator_type = GenericVector<sample*>;
 
       /*!
        * Default constructor. Initializes an invalid iterator.
@@ -3757,19 +3750,19 @@ public:
       /*!
        * Represents the type of the iterated image.
        */
-      typedef GenericImage<P>                   image_type;
+      using image_type = GenericImage<P>;
 
       /*!
        * Represents the pixel traits class used by the iterated image.
        */
-      typedef typename image_type::pixel_traits pixel_traits;
+      using pixel_traits = typename image_type::pixel_traits;
 
       /*!
        * Represents a pixel sample of the iterated image.
        */
-      typedef typename image_type::sample       sample;
+      using sample = typename image_type::sample;
 
-      typedef GenericVector<const sample*>      iterator_type;
+      using iterator_type = GenericVector<const sample*>;
 
       /*!
        * Default constructor. Initializes an invalid iterator.
@@ -4009,7 +4002,7 @@ public:
    {
    protected:
 
-      typedef GenericVector<sample_pointer>     iterator_type;
+      using iterator_type = GenericVector<sample_pointer>;
 
       image_type*    m_image = nullptr;
       iterator_type  m_iterator;
@@ -4107,20 +4100,19 @@ public:
       /*!
        * Represents the type of the iterated image.
        */
-      typedef GenericImage<P>                   image_type;
+      using image_type = GenericImage<P>;
 
       /*!
        * Represents the pixel traits class used by the iterated image.
        */
-      typedef typename image_type::pixel_traits pixel_traits;
+      using pixel_traits = typename image_type::pixel_traits;
 
       /*!
        * Represents a pixel sample of the iterated image.
        */
-      typedef typename image_type::sample       sample;
+      using sample = typename image_type::sample;
 
-      typedef roi_pixel_iterator_base<GenericImage<P>, sample*>
-                                                iterator_base;
+      using iterator_base = roi_pixel_iterator_base<GenericImage<P>, sample*>;
 
       /*!
        * Default constructor. Initializes an invalid iterator.
@@ -4364,20 +4356,19 @@ public:
       /*!
        * Represents the type of the iterated image.
        */
-      typedef GenericImage<P>                   image_type;
+      using image_type = GenericImage<P>;
 
       /*!
        * Represents the pixel traits class used by the iterated image.
        */
-      typedef typename image_type::pixel_traits pixel_traits;
+      using pixel_traits = typename image_type::pixel_traits;
 
       /*!
        * Represents a pixel sample of the iterated image.
        */
-      typedef typename image_type::sample       sample;
+      using sample = typename image_type::sample;
 
-      typedef roi_pixel_iterator_base<const GenericImage<P>, const sample*>
-                                                iterator_base;
+      using iterator_base = roi_pixel_iterator_base<const GenericImage<P>, const sample*>;
 
       /*!
        * Default constructor. Initializes an invalid iterator.
@@ -4703,26 +4694,25 @@ public:
       /*!
        * Represents the type of the iterated image.
        */
-      typedef GenericImage<P>                   image_type;
+      using image_type = GenericImage<P>;
 
       /*!
        * Represents the pixel traits class used by the iterated image.
        */
-      typedef typename image_type::pixel_traits pixel_traits;
+      using pixel_traits = typename image_type::pixel_traits;
 
       /*!
        * Represents a pixel sample of the iterated image.
        */
-      typedef typename image_type::sample       sample;
+      using sample = typename image_type::sample;
 
       /*!
        * Represents the type of the unary predicate used by this filter
        * iterator.
        */
-      typedef F                                 filter_type;
+      using filter_type = F;
 
-      typedef filter_pixel_iterator_base<GenericImage<P>, pixel_iterator, sample*, F>
-                                                iterator_base;
+      using iterator_base = filter_pixel_iterator_base<GenericImage<P>, pixel_iterator, sample*, F>;
 
       /*!
        * Default constructor. Initializes an invalid iterator.
@@ -5035,26 +5025,25 @@ public:
       /*!
        * Represents the type of the iterated image.
        */
-      typedef GenericImage<P>                   image_type;
+      using image_type = GenericImage<P>;
 
       /*!
        * Represents the pixel traits class used by the iterated image.
        */
-      typedef typename image_type::pixel_traits pixel_traits;
+      using pixel_traits = typename image_type::pixel_traits;
 
       /*!
        * Represents a pixel sample of the iterated image.
        */
-      typedef typename image_type::sample       sample;
+      using sample = typename image_type::sample;
 
       /*!
        * Represents the type of the unary predicate used by this filter
        * iterator.
        */
-      typedef F                                 filter_type;
+      using filter_type = F;
 
-      typedef filter_pixel_iterator_base<const GenericImage<P>, const_pixel_iterator, const sample*, F>
-                                                iterator_base;
+      using iterator_base = filter_pixel_iterator_base<const GenericImage<P>, const_pixel_iterator, const sample*, F>;
 
       /*!
        * Default constructor. Initializes an invalid iterator.
@@ -5329,8 +5318,7 @@ public:
    {
    protected:
 
-      typedef roi_pixel_iterator_base<image_type, sample_pointer>
-                                                roi_iterator_base;
+      using roi_iterator_base = roi_pixel_iterator_base<image_type, sample_pointer>;
 
       filter_type    m_filter;
       sample_pointer m_begin = nullptr;
@@ -5397,26 +5385,25 @@ public:
       /*!
        * Represents the type of the iterated image.
        */
-      typedef GenericImage<P>                   image_type;
+      using image_type = GenericImage<P>;
 
       /*!
        * Represents the pixel traits class used by the iterated image.
        */
-      typedef typename image_type::pixel_traits pixel_traits;
+      using pixel_traits = typename image_type::pixel_traits;
 
       /*!
        * Represents a pixel sample of the iterated image.
        */
-      typedef typename image_type::sample       sample;
+      using sample = typename image_type::sample;
 
       /*!
        * Represents the type of the unary predicate used by this filter
        * iterator.
        */
-      typedef F                                 filter_type;
+      using filter_type = F;
 
-      typedef roi_filter_pixel_iterator_base<GenericImage<P>, sample*, F>
-                                                iterator_base;
+      using iterator_base = roi_filter_pixel_iterator_base<GenericImage<P>, sample*, F>;
 
       /*!
        * Default constructor. Initializes an invalid iterator.
@@ -5708,26 +5695,25 @@ public:
       /*!
        * Represents the type of the iterated image.
        */
-      typedef GenericImage<P>                   image_type;
+      using image_type = GenericImage<P>;
 
       /*!
        * Represents the pixel traits class used by the iterated image.
        */
-      typedef typename image_type::pixel_traits pixel_traits;
+      using pixel_traits = typename image_type::pixel_traits;
 
       /*!
        * Represents a pixel sample of the iterated image.
        */
-      typedef typename image_type::sample       sample;
+      using sample = typename image_type::sample;
 
       /*!
        * Represents the type of the unary predicate used by this filter
        * iterator.
        */
-      typedef F                                 filter_type;
+      using filter_type = F;
 
-      typedef roi_filter_pixel_iterator_base<const GenericImage<P>, const sample*, F>
-                                                iterator_base;
+      using iterator_base = roi_filter_pixel_iterator_base<const GenericImage<P>, const sample*, F>;
 
       /*!
        * Default constructor. Initializes an invalid iterator.
@@ -12630,7 +12616,7 @@ public:
          }
 
 __madNextSide:
-         ;
+;
       }
 
       threads.Destroy();
@@ -17712,7 +17698,7 @@ GenericImage<P1> operator ^( const GenericImage<P1>& image1, const GenericImage<
  *
  * %FImage is a template instantiation of GenericImage for FloatPixelTraits.
  */
-typedef GenericImage<FloatPixelTraits>    FImage;
+using FImage = GenericImage<FloatPixelTraits>;
 
 /*!
  * \class pcl::DImage
@@ -17721,7 +17707,7 @@ typedef GenericImage<FloatPixelTraits>    FImage;
  *
  * %DImage is a template instantiation of GenericImage for DoublePixelTraits.
  */
-typedef GenericImage<DoublePixelTraits>   DImage;
+using DImage = GenericImage<DoublePixelTraits>;
 
 /*!
  * \class pcl::FComplexImage
@@ -17731,7 +17717,7 @@ typedef GenericImage<DoublePixelTraits>   DImage;
  * %FComplexImage is a template instantiation of GenericImage for the
  * ComplexPixelTraits class.
  */
-typedef GenericImage<ComplexPixelTraits>  FComplexImage;
+using FComplexImage = GenericImage<ComplexPixelTraits>;
 
 /*!
  * \class pcl::DComplexImage
@@ -17741,7 +17727,7 @@ typedef GenericImage<ComplexPixelTraits>  FComplexImage;
  * %DComplexImage is a template instantiation of GenericImage for the
  * DComplexPixelTraits class.
  */
-typedef GenericImage<DComplexPixelTraits> DComplexImage;
+using DComplexImage = GenericImage<DComplexPixelTraits>;
 
 /*!
  * \class pcl::UInt8Image
@@ -17751,7 +17737,7 @@ typedef GenericImage<DComplexPixelTraits> DComplexImage;
  * %UInt8Image is a template instantiation of GenericImage for the
  * UInt8PixelTraits class.
  */
-typedef GenericImage<UInt8PixelTraits>    UInt8Image;
+using UInt8Image = GenericImage<UInt8PixelTraits>;
 
 /*!
  * \class pcl::UInt16Image
@@ -17761,7 +17747,7 @@ typedef GenericImage<UInt8PixelTraits>    UInt8Image;
  * %UInt16Image is a template instantiation of GenericImage for the
  * UInt16PixelTraits class.
  */
-typedef GenericImage<UInt16PixelTraits>   UInt16Image;
+using UInt16Image = GenericImage<UInt16PixelTraits>;
 
 /*!
  * \class pcl::UInt32Image
@@ -17771,7 +17757,7 @@ typedef GenericImage<UInt16PixelTraits>   UInt16Image;
  * %UInt32Image is a template instantiation of GenericImage for the
  * UInt32PixelTraits class.
  */
-typedef GenericImage<UInt32PixelTraits>   UInt32Image;
+using UInt32Image = GenericImage<UInt32PixelTraits>;
 
 /*!
  * \class pcl::Image
@@ -17781,7 +17767,7 @@ typedef GenericImage<UInt32PixelTraits>   UInt32Image;
  * %Image is an alias for FImage. It is a template instantiation of
  * GenericImage for the FloatPixelTraits class.
  */
-typedef FImage                            Image;
+using Image = FImage;
 
 /*!
  * \class pcl::ComplexImage
@@ -17791,7 +17777,7 @@ typedef FImage                            Image;
  * %ComplexImage is an alias for FComplexImage. It is a template instantiation
  * of GenericImage for the ComplexPixelTraits class.
  */
-typedef FComplexImage                     ComplexImage;
+using ComplexImage = FComplexImage;
 
 #endif   // __PCL_NO_IMAGE_INSTANTIATE
 
@@ -17814,4 +17800,4 @@ typedef FComplexImage                     ComplexImage;
 #endif   // __PCL_Image_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Image.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/Image.h - Released 2022-08-10T16:36:28Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/ImageVariant.cpp - Released 2022-05-17T17:14:53Z
+// pcl/ImageVariant.cpp - Released 2022-08-10T16:36:36Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -135,7 +135,7 @@ class SwapFileThread : public Thread
 {
 public:
 
-   typedef ReferenceArray<SwapFileThread>   thread_list;
+   using thread_list = ReferenceArray<SwapFileThread>;
 
    SwapFileThread( const String& path, size_type offsetBegin, size_type offsetEnd, bool hasHeader )
       : m_path( path )
@@ -1370,4 +1370,4 @@ void ImageVariant::MaskImage( const ImageVariant& src, const ImageVariant& mask,
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ImageVariant.cpp - Released 2022-05-17T17:14:53Z
+// EOF pcl/ImageVariant.cpp - Released 2022-08-10T16:36:36Z

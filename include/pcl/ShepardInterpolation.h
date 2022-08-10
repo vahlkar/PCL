@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/ShepardInterpolation.h - Released 2022-05-17T17:14:45Z
+// pcl/ShepardInterpolation.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -129,22 +129,22 @@ public:
    /*!
     * Represents a vector of coordinates or function values.
     */
-   typedef GenericVector<T>                  vector_type;
+   using vector_type = GenericVector<T>;
 
    /*!
     * The numeric type used to represent coordinates and function values.
     */
-   typedef typename vector_type::scalar      scalar;
+   using scalar = typename vector_type::scalar;
 
    /*!
     * The class used to implement fast coordinate search operations.
     */
-   typedef QuadTree<vector_type>             search_tree;
+   using search_tree = QuadTree<vector_type>;
 
    /*!
     * The class used to specify interpolation regions.
     */
-   typedef typename search_tree::rectangle   search_rect;
+   using search_rect = typename search_tree::rectangle;
 
    /*!
     * The maximum number of interpolation points in a leaf quadtree node.
@@ -624,17 +624,17 @@ public:
    /*!
     * Represents an interpolation point in two dimensions.
     */
-   typedef P                           point;
+   using point = P;
 
    /*!
     * Represents a sequence of interpolation points.
     */
-   typedef Array<point>                point_list;
+   using point_list = Array<point>;
 
    /*!
     * Represents a coordinate interpolating/approximating surface.
     */
-   typedef ShepardInterpolation<double> surface;
+   using surface = ShepardInterpolation<double>;
 
    /*!
     * Default constructor. Yields an empty instance that cannot be used without
@@ -839,4 +839,4 @@ private:
 #endif   // __PCL_ShepardInterpolation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ShepardInterpolation.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/ShepardInterpolation.h - Released 2022-08-10T16:36:28Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/Font.h - Released 2022-05-17T17:14:45Z
+// pcl/Font.h - Released 2022-08-10T16:36:27Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -210,17 +210,17 @@ public:
    /*!
     * Represents a standard font family.
     */
-   typedef FontFamily::value_type      family;
+   using family = FontFamily::value_type;
 
    /*!
     * Represents a standard font weight.
     */
-   typedef FontWeight::value_type      std_weight;
+   using std_weight = FontWeight::value_type;
 
    /*!
     * Represents a standard font stretch.
     */
-   typedef FontStretch::value_type     std_stretch;
+   using std_stretch = FontStretch::value_type;
 
    /*!
     * Constructs a %Font object with the specified family and \a size in
@@ -544,4 +544,4 @@ private:
 #endif   // __PCL_Font_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Font.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/Font.h - Released 2022-08-10T16:36:27Z

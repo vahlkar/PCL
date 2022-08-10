@@ -76,14 +76,16 @@ struct DatabaseData
    bool                             preferencesLoaded = false;
 };
 
-static DatabaseData s_data[ 2 ]; // DR2, EDR3
+static DatabaseData s_data[ 4 ]; // DR2, EDR3, DR3, DR3SP
 
 static int DRParameterValueToDRIndex( pcl_enum p )
 {
    switch( p )
    {
-   case GDataRelease::DR2:  return 0;
-   case GDataRelease::EDR3: return 1;
+   case GDataRelease::DR2:   return 0;
+   case GDataRelease::EDR3:  return 1;
+   case GDataRelease::DR3:   return 2;
+   case GDataRelease::DR3SP: return 3;
    default:
       throw Error( "Internal error: Invalid Gaia data release parameter." );
    }
@@ -95,6 +97,8 @@ static IsoString DRIndexToDRName( int dr )
    {
    case 0: return "DR2";
    case 1: return "EDR3";
+   case 2: return "DR3";
+   case 3: return "DR3SP";
    default:
       throw Error( "Internal error: Invalid Gaia data release index." );
    }
@@ -121,6 +125,7 @@ GaiaProcess::GaiaProcess()
    new GRequiredFlags( this );
    new GInclusionFlags( this );
    new GExclusionFlags( this );
+   new GNormalizeSpectrum( this );
    new GVerbosity( this );
    new GDataRelease( this );
    new GSortBy( this );
@@ -141,6 +146,7 @@ GaiaProcess::GaiaProcess()
    new GSourceMagBP( TheGSourcesParameter );
    new GSourceMagRP( TheGSourcesParameter );
    new GSourceFlags( TheGSourcesParameter );
+   new GSourceFlux( TheGSourcesParameter );
    new GExcessCount( this );
    new GRejectCount( this );
    new GTimeTotal( this );
@@ -152,6 +158,11 @@ GaiaProcess::GaiaProcess()
    new GOutputDataRelease( this );
    new GDatabaseMagnitudeLow( this );
    new GDatabaseMagnitudeHigh( this );
+   new GDatabaseHasMeanSpectrumData( this );
+   new GDatabaseSpectrumStart( this );
+   new GDatabaseSpectrumStep( this );
+   new GDatabaseSpectrumCount( this );
+   new GDatabaseSpectrumBits( this );
 }
 
 // ----------------------------------------------------------------------------
@@ -172,7 +183,7 @@ IsoString GaiaProcess::Category() const
 
 uint32 GaiaProcess::Version() const
 {
-   return 0x100;
+   return 1;
 }
 
 // ----------------------------------------------------------------------------
@@ -418,10 +429,14 @@ void GaiaProcess::IPCWorker::GetParameters( const String& parameters )
          m_task = tokens[1];
       else if ( tokens[0] == "dataRelease" )
       {
-         if ( tokens[1].CompareIC( "DR2" ) == 0 )
-            m_dataRelease = GDataRelease::DR2;
+         if ( tokens[1].CompareIC( "DR3" ) == 0 )
+            m_dataRelease = GDataRelease::DR3;
+         else if ( tokens[1].CompareIC( "DR3SP" ) == 0 )
+            m_dataRelease = GDataRelease::DR3SP;
          else if ( tokens[1].CompareIC( "EDR3" ) == 0 )
             m_dataRelease = GDataRelease::EDR3;
+         else if ( tokens[1].CompareIC( "DR2" ) == 0 )
+            m_dataRelease = GDataRelease::DR2;
       }
       else if ( tokens[0] == "xpsdBaseDir" )
          xpsdBaseDir = tokens[1];
@@ -476,7 +491,7 @@ void GaiaProcess::IPCWorker::ClearData()
 {
    volatile AutoLock lock( m_mutex );
    m_task.Clear();
-   m_dataRelease = GDataRelease::EDR3;
+   m_dataRelease = GDataRelease::DR3;
    m_xpsdFilePaths.Clear();
    m_verbosity = 2; // full
 }
@@ -495,8 +510,8 @@ void GaiaProcess::IPCWorker::ClearStatus()
 void GaiaProcess::SetDatabaseFilePaths( int dr, const StringList& paths )
 {
    CloseDatabases( dr );
-   dr = DRParameterValueToDRIndex( dr );
-   s_data[dr].databaseFilePaths = paths;
+   int dri = DRParameterValueToDRIndex( dr );
+   s_data[dri].databaseFilePaths = paths;
    SavePreferences( dr );
 }
 
@@ -504,10 +519,10 @@ void GaiaProcess::SetDatabaseFilePaths( int dr, const StringList& paths )
 
 const StringList& GaiaProcess::DatabaseFilePaths( int dr ) const
 {
-   dr = DRParameterValueToDRIndex( dr );
-   if ( s_data[dr].databaseFilePaths.IsEmpty() )
+   int dri = DRParameterValueToDRIndex( dr );
+   if ( s_data[dri].databaseFilePaths.IsEmpty() )
       const_cast<GaiaProcess*>( this )->LoadPreferences( dr );
-   return s_data[dr].databaseFilePaths;
+   return s_data[dri].databaseFilePaths;
 }
 
 // ----------------------------------------------------------------------------
@@ -521,18 +536,18 @@ bool GaiaProcess::IsValid( int dr ) const
 
 bool GaiaProcess::HasDatabaseFiles( int dr ) const
 {
-   dr = DRParameterValueToDRIndex( dr );
-   if ( s_data[dr].databaseFilePaths.IsEmpty() )
+   int dri = DRParameterValueToDRIndex( dr );
+   if ( s_data[dri].databaseFilePaths.IsEmpty() )
       const_cast<GaiaProcess*>( this )->LoadPreferences( dr );
-   return !s_data[dr].databaseFilePaths.IsEmpty();
+   return !s_data[dri].databaseFilePaths.IsEmpty();
 }
 
 // ----------------------------------------------------------------------------
 
 void GaiaProcess::EnsureDatabasesInitialized( int dr, int verbosity )
 {
-   dr = DRParameterValueToDRIndex( dr );
-   DatabaseData& data = s_data[dr];
+   int dri = DRParameterValueToDRIndex( dr );
+   DatabaseData& data = s_data[dri];
    if ( !data.databasesInitialized )
    {
       volatile AutoLock lock( data.mutex );
@@ -552,7 +567,7 @@ void GaiaProcess::EnsureDatabasesInitialized( int dr, int verbosity )
             if ( verbosity > 1 )
             {
                console.Show();
-               console.WriteLn( "<end><cbr><br>Installing Gaia " + DRIndexToDRName( dr ) + " database files...\n" );
+               console.WriteLn( "<end><cbr><br>Installing Gaia " + DRIndexToDRName( dri ) + " database files...\n" );
                Module->ProcessEvents();
             }
 
@@ -560,9 +575,20 @@ void GaiaProcess::EnsureDatabasesInitialized( int dr, int verbosity )
             {
                GaiaDatabaseFile* file = new GaiaDatabaseFile( filePath );
                data.databases.Add( file );
-               if ( file->DataRelease() != DRIndexToDRName( dr ) )
-                  throw Error( "Unexpected Gaia " + file->DataRelease() + " database file; "
-                               "expected a Gaia " + DRIndexToDRName( dr ) + " file: <raw>" + file->FilePath() + "</raw>" );
+
+               if ( DRIndexToDRName( dri ) == "DR3SP" )
+               {
+                  if ( file->DataRelease() != "DR3" || !file->HasMeanSpectrumData() )
+                     throw Error( "Unexpected Gaia " + file->DataRelease() + " database file; "
+                                 "expected a Gaia DR3 file with BP/RP sampled mean spectrum data: <raw>" + file->FilePath() + "</raw>" );
+               }
+               else
+               {
+                  if ( file->DataRelease() != DRIndexToDRName( dri ) )
+                     throw Error( "Unexpected Gaia " + file->DataRelease() + " database file; "
+                                 "expected a Gaia " + DRIndexToDRName( dri ) + " file: <raw>" + file->FilePath() + "</raw>" );
+               }
+
                if ( verbosity > 1 )
                {
                   if ( data.databases.Length() == 1 )
@@ -575,7 +601,7 @@ void GaiaProcess::EnsureDatabasesInitialized( int dr, int verbosity )
                   console.WriteLn( "<b><raw>" + file->FilePath() + "</raw></b>\n"
                      +  "Database version .... " + file->Metadata().databaseIdentifier + ' ' + file->Metadata().databaseVersion + '\n'
                      + String().Format(
-                        "Magnitude range ..... %.2f -> %.2f\n"
+                        "Magnitude range ..... (%.2f,%.2f]\n"
                         "Total sources ....... %llu\n"
                         "Total index nodes ... %u"
                         , file->MagnitudeLow()
@@ -616,67 +642,107 @@ void GaiaProcess::EnsureDatabasesInitialized( int dr, int verbosity )
 
 void GaiaProcess::CloseDatabases( int dr )
 {
-   dr = DRParameterValueToDRIndex( dr );
-   s_data[dr].databases.Destroy();
-   s_data[dr].databasesInitialized = 0;
+   int dri = DRParameterValueToDRIndex( dr );
+   s_data[dri].databases.Destroy();
+   s_data[dri].databasesInitialized = 0;
 }
 
 // ----------------------------------------------------------------------------
 
 const ReferenceArray<GaiaDatabaseFile>& GaiaProcess::Databases( int dr ) const
 {
-   dr = DRParameterValueToDRIndex( dr );
-   return s_data[dr].databases;
+   int dri = DRParameterValueToDRIndex( dr );
+   return s_data[dri].databases;
 }
 
 // ----------------------------------------------------------------------------
 
 float GaiaProcess::MagnitudeLow( int dr ) const
 {
-   dr = DRParameterValueToDRIndex( dr );
-   return s_data[dr].databases.IsEmpty() ? .0F : s_data[dr].databases.Begin()->MagnitudeLow();
+   int dri = DRParameterValueToDRIndex( dr );
+   return s_data[dri].databases.IsEmpty() ? .0F : s_data[dri].databases.Begin()->MagnitudeLow();
 }
 
 // ----------------------------------------------------------------------------
 
 float GaiaProcess::MagnitudeHigh( int dr ) const
 {
-   dr = DRParameterValueToDRIndex( dr );
-   return s_data[dr].databases.IsEmpty() ? .0F : s_data[dr].databases.ReverseBegin()->MagnitudeHigh();
+   int dri = DRParameterValueToDRIndex( dr );
+   return s_data[dri].databases.IsEmpty() ? .0F : s_data[dri].databases.ReverseBegin()->MagnitudeHigh();
+}
+
+// ----------------------------------------------------------------------------
+
+bool GaiaProcess::HasMeanSpectrumData( int dr ) const
+{
+   int dri = DRParameterValueToDRIndex( dr );
+   return s_data[dri].databases.IsEmpty() ? false : s_data[dri].databases.Begin()->HasMeanSpectrumData();
+}
+
+// ----------------------------------------------------------------------------
+
+float GaiaProcess::SpectrumStart( int dr ) const
+{
+   int dri = DRParameterValueToDRIndex( dr );
+   return s_data[dri].databases.IsEmpty() ? .0F : s_data[dri].databases.Begin()->SpectrumStart();
+}
+
+// ----------------------------------------------------------------------------
+
+float GaiaProcess::SpectrumStep( int dr ) const
+{
+   int dri = DRParameterValueToDRIndex( dr );
+   return s_data[dri].databases.IsEmpty() ? .0F : s_data[dri].databases.Begin()->SpectrumStep();
+}
+
+// ----------------------------------------------------------------------------
+
+int GaiaProcess::SpectrumCount( int dr ) const
+{
+   int dri = DRParameterValueToDRIndex( dr );
+   return s_data[dri].databases.IsEmpty() ? 0 : s_data[dri].databases.Begin()->SpectrumCount();
+}
+
+// ----------------------------------------------------------------------------
+
+int GaiaProcess::SpectrumBits( int dr ) const
+{
+   int dri = DRParameterValueToDRIndex( dr );
+   return s_data[dri].databases.IsEmpty() ? 0 : s_data[dri].databases.Begin()->SpectrumBits();
 }
 
 // ----------------------------------------------------------------------------
 
 bool GaiaProcess::PreferencesLoaded( int dr ) const
 {
-   dr = DRParameterValueToDRIndex( dr );
-   return s_data[dr].preferencesLoaded;
+   int dri = DRParameterValueToDRIndex( dr );
+   return s_data[dri].preferencesLoaded;
 }
 
 // ----------------------------------------------------------------------------
 
 void GaiaProcess::LoadPreferences( int dr )
 {
-   dr = DRParameterValueToDRIndex( dr );
-   s_data[dr].databaseFilePaths.Clear();
+   int dri = DRParameterValueToDRIndex( dr );
+   s_data[dri].databaseFilePaths.Clear();
    for ( int i = 0;; ++i )
    {
       String filePath;
-      if ( !Settings::Read( PreferencesKeyForDRIndex( dr, i ), filePath ) )
+      if ( !Settings::Read( PreferencesKeyForDRIndex( dri, i ), filePath ) )
          break;
-      s_data[dr].databaseFilePaths << filePath;
+      s_data[dri].databaseFilePaths << filePath;
    }
-   s_data[dr].preferencesLoaded = true;
+   s_data[dri].preferencesLoaded = true;
 }
 
 // ----------------------------------------------------------------------------
 
 void GaiaProcess::SavePreferences( int dr )
 {
-   dr = DRParameterValueToDRIndex( dr );
+   int dri = DRParameterValueToDRIndex( dr );
    for ( int i = 0;; ++i )
    {
-      IsoString key = PreferencesKeyForDRIndex( dr, i );
+      IsoString key = PreferencesKeyForDRIndex( dri, i );
       String filePath;
       if ( !Settings::Read( key, filePath ) )
          break;
@@ -684,8 +750,8 @@ void GaiaProcess::SavePreferences( int dr )
    }
 
    int i = 0;
-   for ( const String& filePath : s_data[dr].databaseFilePaths )
-      Settings::Write( PreferencesKeyForDRIndex( dr, i++ ), filePath );
+   for ( const String& filePath : s_data[dri].databaseFilePaths )
+      Settings::Write( PreferencesKeyForDRIndex( dri, i++ ), filePath );
 }
 
 // ----------------------------------------------------------------------------

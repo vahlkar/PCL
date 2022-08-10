@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/PSFEstimator.cpp - Released 2022-05-17T17:14:53Z
+// pcl/PSFEstimator.cpp - Released 2022-08-10T16:36:36Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -62,7 +62,7 @@ class PCL_PSFE_PSFFitThread : public Thread
 {
 public:
 
-   typedef PSFEstimator::psf_function  psf_function;
+   using psf_function = PSFEstimator::psf_function;
 
    Array<PSFData> psfs;
 
@@ -255,4 +255,4 @@ Array<PSFData> PSFEstimator::FitStars( const ImageVariant& image ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFEstimator.cpp - Released 2022-05-17T17:14:53Z
+// EOF pcl/PSFEstimator.cpp - Released 2022-08-10T16:36:36Z

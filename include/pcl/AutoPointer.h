@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/AutoPointer.h - Released 2022-05-17T17:14:45Z
+// pcl/AutoPointer.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -99,13 +99,12 @@ public:
    /*!
     * Represents the type of objects to destroy and deallocate.
     */
-   typedef T         value_type;
+   using value_type = T;
 
    /*!
     * Represents a pointer to an object to destroy and deallocate.
     */
-
-   typedef T*        pointer;
+   using pointer = T*;
 
    /*!
     * Function call operator. Destroys and deallocates the object pointed to by
@@ -245,22 +244,22 @@ public:
    /*!
     * Represents the type of the object pointed to by this smart pointer.
     */
-   typedef T         value_type;
+   using value_type = T;
 
    /*!
     * Represents a pointer stored in this smart pointer.
     */
-   typedef T*        pointer;
+   using pointer = T*;
 
    /*!
     * Represents a pointer to an immutable object stored in this smart pointer.
     */
-   typedef const T*  const_pointer;
+   using const_pointer = const T*;
 
    /*!
     * Represents the type of the object responsible for object deletion.
     */
-   typedef D         deleter;
+   using deleter = D;
 
    /*!
     * Constructs a null smart pointer.
@@ -697,27 +696,27 @@ class PCL_CLASS AutoPointerCloner : public AutoPointer<T,D>
 {
 public:
 
-   typedef AutoPointer<T,D>                  base_type;
+   using base_type = AutoPointer<T,D>;
 
    /*!
     * Represents the type of the object pointed to by this smart pointer.
     */
-   typedef typename base_type::value_type    value_type;
+   using value_type = typename base_type::value_type;
 
    /*!
     * Represents a pointer stored in this smart pointer.
     */
-   typedef typename base_type::pointer       pointer;
+   using pointer = typename base_type::pointer;
 
    /*!
     * Represents a pointer to an immutable object stored in this smart pointer.
     */
-   typedef typename base_type::const_pointer const_pointer;
+   using const_pointer = typename base_type::const_pointer;
 
    /*!
     * Represents the type of the object responsible for object deletion.
     */
-   typedef typename base_type::deleter       deleter;
+   using deleter = typename base_type::deleter;
 
    /*!
     * Constructs a null smart pointer cloner.
@@ -909,4 +908,4 @@ public:
 #endif  // __PCL_AutoPointer_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AutoPointer.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/AutoPointer.h - Released 2022-08-10T16:36:28Z

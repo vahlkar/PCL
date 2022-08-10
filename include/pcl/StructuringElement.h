@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/StructuringElement.h - Released 2022-05-17T17:14:45Z
+// pcl/StructuringElement.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -111,22 +111,22 @@ public:
    /*!
     * Represents an element of a structure existence mask.
     */
-   typedef uint32                                  existence_mask_element;
+   using existence_mask_element = uint32;
 
    /*!
     * Represents a structure existence mask.
     */
-   typedef GenericVector<existence_mask_element>   existence_mask;
+   using existence_mask = GenericVector<existence_mask_element>;
 
    /*!
     * Represents a set of structure existence masks.
     */
-   typedef GenericVector<existence_mask>           existence_mask_set;
+   using existence_mask_set = GenericVector<existence_mask>;
 
    /*!
     * A vector type used to store the number of existing structure elements.
     */
-   typedef GenericVector<int>                      existence_mask_count;
+   using existence_mask_count = GenericVector<int>;
 
    /*!
     * Constructs a default \e box %StructuringElement object of the specified
@@ -885,13 +885,13 @@ public:
     * Represents a structure bitmap. Each bitmap defines the existence matrix
     * for a \e way of the structuring element.
     */
-   typedef IsoString       bitmap;
+   using bitmap = IsoString;
 
    /*!
     * Represents a set of bitmaps used to define the structure ways in a
     * %BitmapStructure object.
     */
-   typedef IsoStringList   bitmap_set;
+   using bitmap_set = IsoStringList;
 
    /*!
     * Constructs a %BitmapStructure object of the specified \a size and \a n
@@ -953,4 +953,4 @@ protected:
 #endif   // __PCL_StructuringElement_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/StructuringElement.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/StructuringElement.h - Released 2022-08-10T16:36:28Z

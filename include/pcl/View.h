@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/View.h - Released 2022-05-17T17:14:45Z
+// pcl/View.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -163,7 +163,7 @@ namespace ViewPropertyAttribute
  * A combination of ViewPropertyAttribute flags.
  * \ingroup view_properties
  */
-typedef Flags<ViewPropertyAttribute::mask_type>  ViewPropertyAttributes;
+using ViewPropertyAttributes = Flags<ViewPropertyAttribute::mask_type>;
 
 // ----------------------------------------------------------------------------
 
@@ -218,7 +218,7 @@ public:
     * managed Screen Transfer Functions (STF) of a view object in the core
     * PixInsight application.
     */
-   typedef Array<HistogramTransformation> stf_list;
+   using stf_list = Array<HistogramTransformation>;
 
    /*!
     * Constructs a null view. A null view does not correspond to an existing
@@ -235,7 +235,8 @@ public:
     * and aliased objects are completely interchangeable; they behave exactly
     * in the same way because both refer to the same server-side object.
     */
-   View( const View& v ) : UIObject( v )
+   View( const View& v )
+      : UIObject( v )
    {
    }
 
@@ -1118,4 +1119,4 @@ protected:
 #endif   // __PCL_View_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/View.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/View.h - Released 2022-08-10T16:36:28Z

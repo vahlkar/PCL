@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/PixelInterpolation.h - Released 2022-05-17T17:14:45Z
+// pcl/PixelInterpolation.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -113,7 +113,7 @@ public:
       /*!
        * Represents a pixel sample value.
        */
-      typedef typename P::sample sample;
+      using sample = typename P::sample;
 
       /*!
        * Constructs and initializes a new %Interpolator object.
@@ -1129,4 +1129,4 @@ private:
 #endif   // __PCL_PixelInterpolation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PixelInterpolation.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/PixelInterpolation.h - Released 2022-08-10T16:36:28Z

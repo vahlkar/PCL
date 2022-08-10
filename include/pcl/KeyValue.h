@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/KeyValue.h - Released 2022-05-17T17:14:45Z
+// pcl/KeyValue.h - Released 2022-08-10T16:36:27Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -165,14 +165,14 @@ public:
  * \ingroup string_key_value_associations
  * \brief Key-value association of two Unicode (UTF-16) strings.
  */
-typedef KeyValue<String, String>       StringKeyValue;
+using StringKeyValue = KeyValue<String, String>;
 
 /*!
  * \class pcl::IsoStringKeyValue
  * \ingroup string_key_value_associations
  * \brief Key-value association of two 8-bit strings.
  */
-typedef KeyValue<IsoString, IsoString> IsoStringKeyValue;
+using IsoStringKeyValue = KeyValue<IsoString, IsoString>;
 
 // ----------------------------------------------------------------------------
 
@@ -181,4 +181,4 @@ typedef KeyValue<IsoString, IsoString> IsoStringKeyValue;
 #endif  // __PCL_KeyValue_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/KeyValue.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/KeyValue.h - Released 2022-08-10T16:36:27Z

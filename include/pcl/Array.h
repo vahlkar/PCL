@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/Array.h - Released 2022-05-17T17:14:45Z
+// pcl/Array.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -102,29 +102,27 @@ public:
 
    /*! #
     */
-   typedef A                        block_allocator;
+   using block_allocator = A;
 
    /*! #
     */
-   typedef pcl::Allocator<T,A>      allocator;
+   using allocator = pcl::Allocator<T,A>;
 
    /*! #
     */
-   typedef T*                       iterator;
+   using iterator = T*;
 
    /*! #
     */
-   typedef const T*                 const_iterator;
+   using const_iterator = const T*;
 
    /*! #
     */
-   typedef ReverseRandomAccessIterator<iterator, T>
-                                    reverse_iterator;
+   using reverse_iterator = ReverseRandomAccessIterator<iterator, T>;
 
    /*! #
     */
-   typedef ReverseRandomAccessIterator<const_iterator, const T>
-                                    const_reverse_iterator;
+   using const_reverse_iterator = ReverseRandomAccessIterator<const_iterator, const T>;
 
    // -------------------------------------------------------------------------
 
@@ -2168,4 +2166,4 @@ Array<T,A>& operator <<( Array<T,A>&& x1, const Array<T,A>& x2 )
 #endif  // __PCL_Array_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Array.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/Array.h - Released 2022-08-10T16:36:28Z

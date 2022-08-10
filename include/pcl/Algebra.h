@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/Algebra.h - Released 2022-05-17T17:14:45Z
+// pcl/Algebra.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -106,12 +106,12 @@ public:
    /*!
     * Represents a matrix involved in the solution of a linear system.
     */
-   typedef GenericMatrix<T>         matrix;
+   using matrix = GenericMatrix<T>;
 
    /*!
     * Represents a matrix element.
     */
-   typedef typename matrix::element matrix_element;
+   using matrix_element = typename matrix::element;
 
    /*!
     * Inverse matrix
@@ -153,17 +153,17 @@ public:
     * Identifies the parent template class, which implements the underlying
     * algorithm for this class.
     */
-   typedef GenericGaussJordan<double>        algorithm_implementation;
+   using algorithm_implementation = GenericGaussJordan<double>;
 
    /*!
     * Represents a matrix involved in the solution of a linear system.
     */
-   typedef algorithm_implementation::matrix  matrix;
+   using matrix = algorithm_implementation::matrix;
 
    /*!
     * Represents a matrix element.
     */
-   typedef matrix::element                   matrix_element;
+   using matrix_element = matrix::element;
 
    /*!
     * Solution to the linear system A*X = B
@@ -193,17 +193,17 @@ public:
     * Identifies the parent template class, which implements the underlying
     * algorithm for this class.
     */
-   typedef GenericGaussJordan<float>         algorithm_implementation;
+   using algorithm_implementation = GenericGaussJordan<float>;
 
    /*!
     * Represents a matrix involved in the solution of a linear system.
     */
-   typedef algorithm_implementation::matrix  matrix;
+   using matrix = algorithm_implementation::matrix;
 
    /*!
     * Represents a matrix element.
     */
-   typedef matrix::element                   matrix_element;
+   using matrix_element = matrix::element;
 
    /*!
     * Solution to the linear system A*X = B
@@ -234,22 +234,22 @@ public:
    /*!
     * Represents a vector involved in a singular value decomposition.
     */
-   typedef GenericVector<T>            vector;
+   using vector = GenericVector<T>;
 
    /*!
     * Represents a matrix involved in a singular value decomposition.
     */
-   typedef GenericMatrix<T>            matrix;
+   using matrix = GenericMatrix<T>;
 
    /*!
     * Represents a vector component.
     */
-   typedef typename vector::component  vector_component;
+   using vector_component = typename vector::component;
 
    /*!
     * Represents a matrix element.
     */
-   typedef typename matrix::element    matrix_element;
+   using matrix_element = typename matrix::element;
 
    /*!
     * The components of this vector are the m (positive) diagonal elements of
@@ -335,27 +335,27 @@ public:
     * Identifies the parent template class, which implements the underlying
     * algorithm for this class.
     */
-   typedef GenericInPlaceSVD<double>         algorithm_implementation;
+   using algorithm_implementation = GenericInPlaceSVD<double>;
 
    /*!
     * Represents a vector involved in a singular value decomposition.
     */
-   typedef algorithm_implementation::vector  vector;
+   using vector = algorithm_implementation::vector;
 
    /*!
     * Represents a matrix involved in a singular value decomposition.
     */
-   typedef algorithm_implementation::matrix  matrix;
+   using matrix = algorithm_implementation::matrix;
 
    /*!
     * Represents a vector component.
     */
-   typedef vector::component                 vector_component;
+   using vector_component = vector::component;
 
    /*!
     * Represents a matrix element.
     */
-   typedef matrix::element                   matrix_element;
+   using matrix_element = matrix::element;
 
    /*!
     * Singular Value Decomposition: A = U*W*Vt
@@ -392,27 +392,27 @@ public:
     * Identifies the parent template class, which implements the underlying
     * algorithm for this class.
     */
-   typedef GenericInPlaceSVD<float>          algorithm_implementation;
+   using algorithm_implementation = GenericInPlaceSVD<float>;
 
    /*!
     * Represents a vector involved in a singular value decomposition.
     */
-   typedef algorithm_implementation::vector  vector;
+   using vector = algorithm_implementation::vector;
 
    /*!
     * Represents a matrix involved in a singular value decomposition.
     */
-   typedef algorithm_implementation::matrix  matrix;
+   using matrix = algorithm_implementation::matrix;
 
    /*!
     * Represents a vector component.
     */
-   typedef vector::component                 vector_component;
+   using vector_component = vector::component;
 
    /*!
     * Represents a matrix element.
     */
-   typedef matrix::element                   matrix_element;
+   using matrix_element = matrix::element;
 
    /*!
     * Singular Value Decomposition: A = U*W*Vt
@@ -445,27 +445,27 @@ public:
     * Identifies the parent template class, which implements the underlying
     * algorithm for this class.
     */
-   typedef GenericInPlaceSVD<T>                       algorithm_implementation;
+   using algorithm_implementation = GenericInPlaceSVD<T>;
 
    /*!
     * Represents a vector involved in a singular value decomposition.
     */
-   typedef typename algorithm_implementation::vector  vector;
+   using vector = typename algorithm_implementation::vector;
 
    /*!
     * Represents a matrix involved in a singular value decomposition.
     */
-   typedef typename algorithm_implementation::matrix  matrix;
+   using matrix = typename algorithm_implementation::matrix;
 
    /*!
     * Represents a vector component.
     */
-   typedef typename vector::component                 vector_component;
+   using vector_component = typename vector::component;
 
    /*!
     * Represents a matrix element.
     */
-   typedef typename matrix::element                   matrix_element;
+   using matrix_element = typename matrix::element;
 
    /*!
     * This is the n x m matrix resulting from the singular value decomposition
@@ -556,27 +556,27 @@ public:
     * Identifies the parent template class, which implements the underlying
     * algorithm for this class.
     */
-   typedef GenericSVD<double>                algorithm_implementation;
+   using algorithm_implementation = GenericSVD<double>;
 
    /*!
     * Represents a vector involved in a singular value decomposition.
     */
-   typedef algorithm_implementation::vector  vector;
+   using vector = algorithm_implementation::vector;
 
    /*!
     * Represents a matrix involved in a singular value decomposition.
     */
-   typedef algorithm_implementation::matrix  matrix;
+   using matrix = algorithm_implementation::matrix;
 
    /*!
     * Represents a vector component.
     */
-   typedef vector::component                 vector_component;
+   using vector_component = vector::component;
 
    /*!
     * Represents a matrix element.
     */
-   typedef matrix::element                   matrix_element;
+   using matrix_element = matrix::element;
 
    /*!
     * Singular Value Decomposition: A = U*W*Vt
@@ -611,27 +611,27 @@ public:
     * Identifies the parent template class, which implements the underlying
     * algorithm for this class.
     */
-   typedef GenericSVD<float>                 algorithm_implementation;
+   using algorithm_implementation = GenericSVD<float>;
 
    /*!
     * Represents a vector involved in a singular value decomposition.
     */
-   typedef algorithm_implementation::vector  vector;
+   using vector = algorithm_implementation::vector;
 
    /*!
     * Represents a matrix involved in a singular value decomposition.
     */
-   typedef algorithm_implementation::matrix  matrix;
+   using matrix = algorithm_implementation::matrix;
 
    /*!
     * Represents a vector component.
     */
-   typedef vector::component                 vector_component;
+   using vector_component = vector::component;
 
    /*!
     * Represents a matrix element.
     */
-   typedef matrix::element                   matrix_element;
+   using matrix_element = matrix::element;
 
    /*!
     * Singular Value Decomposition: A = U*W*Vt
@@ -656,4 +656,4 @@ public:
 #endif   // __PCL_Algebra_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Algebra.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/Algebra.h - Released 2022-08-10T16:36:28Z

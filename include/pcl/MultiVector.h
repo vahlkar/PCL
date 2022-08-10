@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/MultiVector.h - Released 2022-05-17T17:14:45Z
+// pcl/MultiVector.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -104,44 +104,42 @@ public:
    /*!
     * The structure implementing this multivector class.
     */
-   typedef Array<GenericVector<T> >             multivector_implementation;
+   using multivector_implementation = Array<GenericVector<T> >;
 
    /*!
     * Represents a vector.
     */
-   typedef GenericVector<T>                     vector;
+   using vector = GenericVector<T>;
 
    /*!
     * Represents a scalar.
     */
-   typedef typename vector::scalar              scalar;
+   using scalar = typename vector::scalar;
 
    /*!
     * Represents a vector component.
     */
-   typedef typename vector::component           component;
+   using component = typename vector::component;
 
    /*!
     * Represents a mutable multivector iterator.
     */
-   typedef typename multivector_implementation::iterator
-                                                iterator;
+   using iterator = typename multivector_implementation::iterator;
 
    /*!
     * Represents an immutable multivector iterator.
     */
-   typedef typename multivector_implementation::const_iterator
-                                                const_iterator;
+   using const_iterator = typename multivector_implementation::const_iterator;
 
    /*!
     * Represents a mutable vector iterator.
     */
-   typedef typename vector::iterator            vector_iterator;
+   using vector_iterator = typename vector::iterator;
 
    /*!
     * Represents an immutable vector iterator.
     */
-   typedef typename vector::const_iterator      const_vector_iterator;
+   using const_vector_iterator = typename vector::const_iterator;
 
    /*!
     * Constructs an empty multivector. An empty multivector has no component
@@ -388,7 +386,7 @@ public:
  * %DMultiVector is a template instantiation of GenericMultiVector for the
  * \c double data type.
  */
-typedef GenericMultiVector<double> DMultiVector;
+using DMultiVector = GenericMultiVector<double>;
 
 /*!
  * \class pcl::FMultiVector
@@ -398,7 +396,7 @@ typedef GenericMultiVector<double> DMultiVector;
  * %FMultiVector is a template instantiation of GenericMultiVector for the
  * \c float data type.
  */
-typedef GenericMultiVector<float>  FMultiVector;
+using FMultiVector = GenericMultiVector<float>;
 
 /*!
  * \class pcl::IMultiVector
@@ -408,7 +406,7 @@ typedef GenericMultiVector<float>  FMultiVector;
  * %IMultiVector is a template instantiation of GenericMultiVector for the
  * \c int data type.
  */
-typedef GenericMultiVector<int>    IMultiVector;
+using IMultiVector = GenericMultiVector<int>;
 
 /*!
  * \class pcl::MultiVector
@@ -418,7 +416,7 @@ typedef GenericMultiVector<int>    IMultiVector;
  * %MultiVector is an alias for DMultiVector. It is a template instantiation of
  * GenericMultiVector for the \c double data type.
  */
-typedef DMultiVector               MultiVector;
+using MultiVector = DMultiVector;
 
 #endif   // !__PCL_NO_MULTIVECTOR_INSTANTIATE
 
@@ -429,4 +427,4 @@ typedef DMultiVector               MultiVector;
 #endif   // __PCL_MultiVector_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MultiVector.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/MultiVector.h - Released 2022-08-10T16:36:28Z

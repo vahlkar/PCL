@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/Bitmap.h - Released 2022-05-17T17:14:45Z
+// pcl/Bitmap.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -149,7 +149,7 @@ namespace SVGRenderOption
  * \brief A collection of rendering options for raster image representation of
  * SVG documents.
  */
-typedef Flags<SVGRenderOption::mask_type>  SVGRenderOptions;
+using SVGRenderOptions = Flags<SVGRenderOption::mask_type>;
 
 // ----------------------------------------------------------------------------
 
@@ -208,21 +208,21 @@ public:
     * Represents a bitmap pixel format. See the BitmapFormat namespace for
     * supported values.
     */
-   typedef BitmapFormat::value_type    pixel_format;
+   using pixel_format = BitmapFormat::value_type;
 
    /*!
     * The %display_channel type represents a display channel supported by the
     * PixInsight core application. Valid channels are defined in the
     * DisplayChannel namespace.
     */
-   typedef DisplayChannel::value_type  display_channel;
+   using display_channel = DisplayChannel::value_type;
 
    /*!
     * The %mask_mode type represents a mask rendering mode supported by
     * the PixInsight core application. Valid mask rendering modes are defined
     * in the MaskMode namespace.
     */
-   typedef MaskMode::value_type        mask_mode;
+   using mask_mode = MaskMode::value_type;
 
    /*!
     * Constructs an empty %Bitmap object.
@@ -1528,4 +1528,4 @@ private:
 #endif   // __PCL_Bitmap_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Bitmap.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/Bitmap.h - Released 2022-08-10T16:36:28Z

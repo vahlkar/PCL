@@ -178,7 +178,7 @@ IsoString APASSProcess::Category() const
 
 uint32 APASSProcess::Version() const
 {
-   return 0x100;
+   return 1;
 }
 
 // ----------------------------------------------------------------------------
@@ -502,8 +502,8 @@ void APASSProcess::IPCWorker::ClearStatus()
 void APASSProcess::SetDatabaseFilePaths( int dr, const StringList& paths )
 {
    CloseDatabases( dr );
-   dr = DRParameterValueToDRIndex( dr );
-   s_data[dr].databaseFilePaths = paths;
+   int dri = DRParameterValueToDRIndex( dr );
+   s_data[dri].databaseFilePaths = paths;
    SavePreferences( dr );
 }
 
@@ -511,10 +511,10 @@ void APASSProcess::SetDatabaseFilePaths( int dr, const StringList& paths )
 
 const StringList& APASSProcess::DatabaseFilePaths( int dr ) const
 {
-   dr = DRParameterValueToDRIndex( dr );
-   if ( s_data[dr].databaseFilePaths.IsEmpty() )
+   int dri = DRParameterValueToDRIndex( dr );
+   if ( s_data[dri].databaseFilePaths.IsEmpty() )
       const_cast<APASSProcess*>( this )->LoadPreferences( dr );
-   return s_data[dr].databaseFilePaths;
+   return s_data[dri].databaseFilePaths;
 }
 
 // ----------------------------------------------------------------------------
@@ -528,18 +528,18 @@ bool APASSProcess::IsValid( int dr ) const
 
 bool APASSProcess::HasDatabaseFiles( int dr ) const
 {
-   dr = DRParameterValueToDRIndex( dr );
-   if ( s_data[dr].databaseFilePaths.IsEmpty() )
+   int dri = DRParameterValueToDRIndex( dr );
+   if ( s_data[dri].databaseFilePaths.IsEmpty() )
       const_cast<APASSProcess*>( this )->LoadPreferences( dr );
-   return !s_data[dr].databaseFilePaths.IsEmpty();
+   return !s_data[dri].databaseFilePaths.IsEmpty();
 }
 
 // ----------------------------------------------------------------------------
 
 void APASSProcess::EnsureDatabasesInitialized( int dr, int verbosity )
 {
-   dr = DRParameterValueToDRIndex( dr );
-   DatabaseData& data = s_data[dr];
+   int dri = DRParameterValueToDRIndex( dr );
+   DatabaseData& data = s_data[dri];
    if ( !data.databasesInitialized )
    {
       volatile AutoLock lock( data.mutex );
@@ -559,7 +559,7 @@ void APASSProcess::EnsureDatabasesInitialized( int dr, int verbosity )
             if ( verbosity > 1 )
             {
                console.Show();
-               console.WriteLn( "<end><cbr><br>Installing APASS " + DRIndexToDRName( dr ) + " database files...\n" );
+               console.WriteLn( "<end><cbr><br>Installing APASS " + DRIndexToDRName( dri ) + " database files...\n" );
                Module->ProcessEvents();
             }
 
@@ -567,9 +567,9 @@ void APASSProcess::EnsureDatabasesInitialized( int dr, int verbosity )
             {
                APASSDatabaseFile* file = new APASSDatabaseFile( filePath );
                data.databases.Add( file );
-               if ( file->DataRelease() != DRIndexToDRName( dr ) )
+               if ( file->DataRelease() != DRIndexToDRName( dri ) )
                   throw Error( "Unexpected APASS " + file->DataRelease() + " database file; "
-                               "expected a APASS " + DRIndexToDRName( dr ) + " file: <raw>" + file->FilePath() + "</raw>" );
+                               "expected a APASS " + DRIndexToDRName( dri ) + " file: <raw>" + file->FilePath() + "</raw>" );
                if ( verbosity > 1 )
                {
                   if ( data.databases.Length() == 1 )
@@ -582,7 +582,7 @@ void APASSProcess::EnsureDatabasesInitialized( int dr, int verbosity )
                   console.WriteLn( "<b><raw>" + file->FilePath() + "</raw></b>\n"
                      +  "Database version .... " + file->Metadata().databaseIdentifier + ' ' + file->Metadata().databaseVersion + '\n'
                      + String().Format(
-                        "Magnitude range ..... %.2f -> %.2f\n"
+                        "Magnitude range ..... (%.2f,%.2f]\n"
                         "Total sources ....... %llu\n"
                         "Total index nodes ... %u"
                         , file->MagnitudeLow()
@@ -624,67 +624,67 @@ void APASSProcess::EnsureDatabasesInitialized( int dr, int verbosity )
 
 void APASSProcess::CloseDatabases( int dr )
 {
-   dr = DRParameterValueToDRIndex( dr );
-   s_data[dr].databases.Destroy();
-   s_data[dr].databasesInitialized = 0;
+   int dri = DRParameterValueToDRIndex( dr );
+   s_data[dri].databases.Destroy();
+   s_data[dri].databasesInitialized = 0;
 }
 
 // ----------------------------------------------------------------------------
 
 const ReferenceArray<APASSDatabaseFile>& APASSProcess::Databases( int dr ) const
 {
-   dr = DRParameterValueToDRIndex( dr );
-   return s_data[dr].databases;
+   int dri = DRParameterValueToDRIndex( dr );
+   return s_data[dri].databases;
 }
 
 // ----------------------------------------------------------------------------
 
 float APASSProcess::MagnitudeLow( int dr ) const
 {
-   dr = DRParameterValueToDRIndex( dr );
-   return s_data[dr].databases.IsEmpty() ? .0F : s_data[dr].databases.Begin()->MagnitudeLow();
+   int dri = DRParameterValueToDRIndex( dr );
+   return s_data[dri].databases.IsEmpty() ? .0F : s_data[dri].databases.Begin()->MagnitudeLow();
 }
 
 // ----------------------------------------------------------------------------
 
 float APASSProcess::MagnitudeHigh( int dr ) const
 {
-   dr = DRParameterValueToDRIndex( dr );
-   return s_data[dr].databases.IsEmpty() ? .0F : s_data[dr].databases.ReverseBegin()->MagnitudeHigh();
+   int dri = DRParameterValueToDRIndex( dr );
+   return s_data[dri].databases.IsEmpty() ? .0F : s_data[dri].databases.ReverseBegin()->MagnitudeHigh();
 }
 
 // ----------------------------------------------------------------------------
 
 bool APASSProcess::PreferencesLoaded( int dr ) const
 {
-   dr = DRParameterValueToDRIndex( dr );
-   return s_data[dr].preferencesLoaded;
+   int dri = DRParameterValueToDRIndex( dr );
+   return s_data[dri].preferencesLoaded;
 }
 
 // ----------------------------------------------------------------------------
 
 void APASSProcess::LoadPreferences( int dr )
 {
-   dr = DRParameterValueToDRIndex( dr );
-   s_data[dr].databaseFilePaths.Clear();
+   int dri = DRParameterValueToDRIndex( dr );
+   s_data[dri].databaseFilePaths.Clear();
    for ( int i = 0;; ++i )
    {
       String filePath;
-      if ( !Settings::Read( PreferencesKeyForDRIndex( dr, i ), filePath ) )
+      if ( !Settings::Read( PreferencesKeyForDRIndex( dri, i ), filePath ) )
          break;
-      s_data[dr].databaseFilePaths << filePath;
+      s_data[dri].databaseFilePaths << filePath;
    }
-   s_data[dr].preferencesLoaded = true;
+   s_data[dri].preferencesLoaded = true;
 }
 
 // ----------------------------------------------------------------------------
 
 void APASSProcess::SavePreferences( int dr )
 {
-   dr = DRParameterValueToDRIndex( dr );
+   int dri = DRParameterValueToDRIndex( dr );
    for ( int i = 0;; ++i )
    {
-      IsoString key = PreferencesKeyForDRIndex( dr, i );
+      IsoString key = PreferencesKeyForDRIndex( dri, i );
       String filePath;
       if ( !Settings::Read( key, filePath ) )
          break;
@@ -692,8 +692,8 @@ void APASSProcess::SavePreferences( int dr )
    }
 
    int i = 0;
-   for ( const String& filePath : s_data[dr].databaseFilePaths )
-      Settings::Write( PreferencesKeyForDRIndex( dr, i++ ), filePath );
+   for ( const String& filePath : s_data[dri].databaseFilePaths )
+      Settings::Write( PreferencesKeyForDRIndex( dri, i++ ), filePath );
 }
 
 // ----------------------------------------------------------------------------

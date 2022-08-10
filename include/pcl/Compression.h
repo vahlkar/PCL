@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/Compression.h - Released 2022-05-17T17:14:45Z
+// pcl/Compression.h - Released 2022-08-10T16:36:27Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -109,7 +109,7 @@ public:
    /*!
     * A dynamic, ordered list of compression subblocks.
     */
-   typedef Array<Subblock>    subblock_list;
+   using subblock_list = Array<Subblock>;
 
    /*!
     * Default constructor. This object will be initialized with the following
@@ -264,7 +264,7 @@ public:
     */
    void SetItemSize( size_type itemSize )
    {
-      m_itemSize = uint8( Range( itemSize, size_type( 1 ), size_type( 128 ) ) );
+      m_itemSize = pcl::Max( size_type( 1 ), itemSize );
    }
 
    /*!
@@ -465,7 +465,7 @@ private:
 
    int       m_compressionLevel = 0; // 0 = use codec's default
    size_type m_subblockSize = 0;     // 0 = use largest possible subblocks
-   uint8     m_itemSize = 1;
+   size_type m_itemSize = 1;
    bool      m_byteShuffle = true;
    bool      m_checksums = true;
 
@@ -806,4 +806,4 @@ private:
 #endif   // __PCL_Compression_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Compression.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/Compression.h - Released 2022-08-10T16:36:27Z

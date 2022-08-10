@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/Vector.h - Released 2022-05-17T17:14:45Z
+// pcl/Vector.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -110,22 +110,22 @@ public:
    /*!
     * Represents a scalar.
     */
-   typedef T                        scalar;
+   using scalar = T;
 
    /*!
     * Represents a vector component.
     */
-   typedef T                        component;
+   using component = T;
 
    /*!
     * Represents a mutable vector iterator.
     */
-   typedef T*                       iterator;
+   using iterator = T*;
 
    /*!
     * Represents an immutable vector iterator.
     */
-   typedef const T*                 const_iterator;
+   using const_iterator = const T*;
 
    /*!
     * Constructs an empty vector. An empty vector has no components and its
@@ -3103,7 +3103,7 @@ GenericVector<T> operator ^( const S& x, GenericVector<T>&& A )
  *
  * %I8Vector is a template instantiation of GenericVector for \c int8.
  */
-typedef GenericVector<int8>         I8Vector;
+using I8Vector = GenericVector<int8>;
 
 /*!
  * \class pcl::CharVector
@@ -3113,7 +3113,7 @@ typedef GenericVector<int8>         I8Vector;
  * %CharVector is an alias for I8Vector. It is a template instantiation of
  * GenericVector for \c int8.
  */
-typedef I8Vector                    CharVector;
+using CharVector = I8Vector;
 
 /*!
  * \class pcl::UI8Vector
@@ -3122,7 +3122,7 @@ typedef I8Vector                    CharVector;
  *
  * %UI8Vector is a template instantiation of GenericVector for \c uint8.
  */
-typedef GenericVector<uint8>        UI8Vector;
+using UI8Vector = GenericVector<uint8>;
 
 /*!
  * \class pcl::ByteVector
@@ -3132,7 +3132,7 @@ typedef GenericVector<uint8>        UI8Vector;
  * %ByteVector is an alias for UI8Vector. It is a template instantiation of
  * GenericVector for \c uint8.
  */
-typedef UI8Vector                   ByteVector;
+using ByteVector = UI8Vector;
 
 /*!
  * \class pcl::I16Vector
@@ -3141,7 +3141,7 @@ typedef UI8Vector                   ByteVector;
  *
  * %I16Vector is a template instantiation of GenericVector for \c int16.
  */
-typedef GenericVector<int16>        I16Vector;
+using I16Vector = GenericVector<int16>;
 
 /*!
  * \class pcl::UI16Vector
@@ -3150,7 +3150,7 @@ typedef GenericVector<int16>        I16Vector;
  *
  * %UI16Vector is a template instantiation of GenericVector for \c uint16.
  */
-typedef GenericVector<uint16>       UI16Vector;
+using UI16Vector = GenericVector<uint16>;
 
 /*!
  * \class pcl::I32Vector
@@ -3159,7 +3159,7 @@ typedef GenericVector<uint16>       UI16Vector;
  *
  * %I32Vector is a template instantiation of GenericVector for \c int32.
  */
-typedef GenericVector<int32>        I32Vector;
+using I32Vector = GenericVector<int32>;
 
 /*!
  * \class pcl::IVector
@@ -3169,7 +3169,7 @@ typedef GenericVector<int32>        I32Vector;
  * %IVector is an alias for I32Vector. It is a template instantiation of
  * GenericVector for \c int32.
  */
-typedef I32Vector                   IVector;
+using IVector = I32Vector;
 
 /*!
  * \class pcl::UI32Vector
@@ -3178,7 +3178,7 @@ typedef I32Vector                   IVector;
  *
  * %UI32Vector is a template instantiation of GenericVector for \c uint32.
  */
-typedef GenericVector<uint32>       UI32Vector;
+using UI32Vector = GenericVector<uint32>;
 
 /*!
  * \class pcl::UIVector
@@ -3188,7 +3188,7 @@ typedef GenericVector<uint32>       UI32Vector;
  * %UIVector is an alias for UI32Vector. It is a template instantiation of
  * GenericVector for \c uint32.
  */
-typedef UI32Vector                  UIVector;
+using UIVector = UI32Vector;
 
 /*!
  * \class pcl::I64Vector
@@ -3197,7 +3197,7 @@ typedef UI32Vector                  UIVector;
  *
  * %I64Vector is a template instantiation of GenericVector for \c int64.
  */
-typedef GenericVector<int64>        I64Vector;
+using I64Vector = GenericVector<int64>;
 
 /*!
  * \class pcl::UI64Vector
@@ -3206,7 +3206,7 @@ typedef GenericVector<int64>        I64Vector;
  *
  * %UI64Vector is a template instantiation of GenericVector for \c uint64.
  */
-typedef GenericVector<uint64>       UI64Vector;
+using UI64Vector = GenericVector<uint64>;
 
 /*!
  * \class pcl::SzVector
@@ -3215,7 +3215,7 @@ typedef GenericVector<uint64>       UI64Vector;
  *
  * %SzVector is a template instantiation of GenericVector for \c size_type.
  */
-typedef GenericVector<size_type>    SzVector;
+using SzVector = GenericVector<size_type>;
 
 /*!
  * \class pcl::F32Vector
@@ -3224,7 +3224,7 @@ typedef GenericVector<size_type>    SzVector;
  *
  * %F32Vector is a template instantiation of GenericVector for \c float.
  */
-typedef GenericVector<float>        F32Vector;
+using F32Vector = GenericVector<float>;
 
 /*!
  * \class pcl::FVector
@@ -3234,7 +3234,7 @@ typedef GenericVector<float>        F32Vector;
  * %FVector is an alias for F32Vector. It is a template instantiation of
  * GenericVector for \c float.
  */
-typedef F32Vector                   FVector;
+using FVector = F32Vector;
 
 /*!
  * \class pcl::F64Vector
@@ -3243,7 +3243,7 @@ typedef F32Vector                   FVector;
  *
  * %F64Vector is a template instantiation of GenericVector for \c double.
  */
-typedef GenericVector<double>       F64Vector;
+using F64Vector = GenericVector<double>;
 
 /*!
  * \class pcl::DVector
@@ -3253,7 +3253,7 @@ typedef GenericVector<double>       F64Vector;
  * %DVector is an alias for F64Vector. It is a template instantiation of
  * GenericVector for \c double.
  */
-typedef F64Vector                   DVector;
+using DVector = F64Vector;
 
 /*!
  * \class pcl::Vector
@@ -3263,7 +3263,7 @@ typedef F64Vector                   DVector;
  * %Vector is an alias for DVector. It is a template instantiation of
  * GenericVector for \c double.
  */
-typedef DVector                     Vector;
+using Vector = DVector;
 
 /*!
  * \class pcl::C32Vector
@@ -3272,7 +3272,7 @@ typedef DVector                     Vector;
  *
  * %C32Vector is a template instantiation of GenericVector for \c Complex32.
  */
-typedef GenericVector<Complex32>    C32Vector;
+using C32Vector = GenericVector<Complex32>;
 
 /*!
  * \class pcl::C64Vector
@@ -3281,7 +3281,7 @@ typedef GenericVector<Complex32>    C32Vector;
  *
  * %C64Vector is a template instantiation of GenericVector for \c Complex64.
  */
-typedef GenericVector<Complex64>    C64Vector;
+using C64Vector = GenericVector<Complex64>;
 
 #ifndef _MSC_VER
 
@@ -3296,7 +3296,7 @@ typedef GenericVector<Complex64>    C64Vector;
  * \note This template instantiation is not available on Windows with Visual
  * C++ compilers.
  */
-typedef GenericVector<long double>  F80Vector;
+using F80Vector = GenericVector<long double>;
 
 /*!
  * \class pcl::LDVector
@@ -3309,7 +3309,7 @@ typedef GenericVector<long double>  F80Vector;
  * \note This template instantiation is not available on Windows with Visual
  * C++ compilers.
  */
-typedef F80Vector                   LDVector;
+using LDVector = F80Vector;
 
 #endif   // !_MSC_VER
 
@@ -3322,4 +3322,4 @@ typedef F80Vector                   LDVector;
 #endif   // __PCL_Vector_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Vector.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/Vector.h - Released 2022-08-10T16:36:28Z

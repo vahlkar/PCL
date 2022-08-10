@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/SpinBox.h - Released 2022-05-17T17:14:45Z
+// pcl/SpinBox.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -412,7 +412,7 @@ public:
     *
     * \ingroup spin_box_event_handlers
     */
-   typedef void (Control::*value_event_handler)( SpinBox& sender, int value );
+   using value_event_handler = void (Control::*)( SpinBox& sender, int value );
 
    /*!
     * Defines the prototype of a <em>spin box range event handler</em>.
@@ -427,7 +427,7 @@ public:
     *
     * \ingroup slider_event_handlers
     */
-   typedef void (Control::*range_event_handler)( SpinBox& sender, int minValue, int maxValue );
+   using range_event_handler = void (Control::*)( SpinBox& sender, int minValue, int maxValue );
 
    /*!
     * Sets the spin box value event handler for this %SpinBox control.
@@ -481,4 +481,4 @@ private:
 #endif   // __PCL_SpinBox_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SpinBox.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/SpinBox.h - Released 2022-08-10T16:36:28Z

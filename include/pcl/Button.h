@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/Button.h - Released 2022-05-17T17:14:45Z
+// pcl/Button.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -104,7 +104,7 @@ public:
     * Represents a button check state. Supported values are defined in the
     * CheckState namespace.
     */
-   typedef CheckState::value_type   check_state;
+   using check_state = CheckState::value_type;
 
    /*!
     * Destroys a %Button control.
@@ -310,7 +310,7 @@ public:
     *
     * \ingroup button_event_handlers
     */
-   typedef void (Control::*click_event_handler)( Button& sender, bool checked );
+   using click_event_handler = void (Control::*)( Button& sender, bool checked );
 
    /*!
     * Defines the prototype of a <em>button press event handler</em>.
@@ -322,7 +322,7 @@ public:
     *
     * \ingroup button_event_handlers
     */
-   typedef void (Control::*press_event_handler)( Button& sender );
+   using press_event_handler = void (Control::*)( Button& sender );
 
    /*!
     * Defines the prototype of a <em>button check event handler</em>.
@@ -336,7 +336,7 @@ public:
     *
     * \ingroup button_event_handlers
     */
-   typedef void (Control::*check_event_handler)( Button& sender, Button::check_state state );
+   using check_event_handler = void (Control::*)( Button& sender, Button::check_state state );
 
    /*!
     * Sets the button click event handler for this button.
@@ -427,4 +427,4 @@ protected:
 #endif   // __PCL_Button_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Button.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/Button.h - Released 2022-08-10T16:36:28Z

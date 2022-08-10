@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/Render.cpp - Released 2022-05-17T17:14:53Z
+// pcl/Render.cpp - Released 2022-08-10T16:36:36Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -187,8 +187,8 @@ protected:
 
 private:
 
-   typedef GenericVector<IVector>   subsample_index_list;
-   static subsample_index_list      subsample_index;
+   using subsample_index_list = GenericVector<IVector>;
+   static subsample_index_list subsample_index;
 
    static void InitSubsampleIndex();
 };
@@ -1393,4 +1393,4 @@ bool Render( Bitmap& bitmap, int x, int y, int zoom, int channel,
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Render.cpp - Released 2022-05-17T17:14:53Z
+// EOF pcl/Render.cpp - Released 2022-08-10T16:36:36Z

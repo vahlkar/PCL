@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/Timer.h - Released 2022-05-17T17:14:45Z
+// pcl/Timer.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -197,7 +197,7 @@ public:
     *
     * \ingroup timer_event_handlers
     */
-   typedef void (Control::*timer_event_handler)( Timer& sender );
+   using timer_event_handler = void (Control::*)( Timer& sender );
 
    /*!
     * Sets the timer event handler for this %Timer object.
@@ -235,4 +235,4 @@ private:
 #endif   // __PCL_Timer_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Timer.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/Timer.h - Released 2022-08-10T16:36:28Z

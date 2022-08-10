@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/XISF.h - Released 2022-05-17T17:14:45Z
+// pcl/XISF.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -206,27 +206,27 @@ public:
    /*!
     * Represents a supported %XISF property type.
     */
-   typedef VariantType::value_type     property_type;
+   using property_type = VariantType::value_type;
 
    /*!
     * Represents a supported color space.
     */
-   typedef ColorSpace::value_type      color_space;
+   using color_space = ColorSpace::value_type;
 
    /*!
     * Represents a supported block checksum algorithm.
     */
-   typedef XISFChecksum::value_type    block_checksum;
+   using block_checksum = XISFChecksum::value_type;
 
    /*!
     * Represents a supported block compression codec.
     */
-   typedef XISFCompression::value_type block_compression;
+   using block_compression = XISFCompression::value_type;
 
    /*!
     * Represents a block byte order (endianness).
     */
-   typedef XISFByteOrder::value_type   block_endianness;
+   using block_endianness = XISFByteOrder::value_type;
 
    /*!
     * Default constructor. This constructor is disabled because %XISF is not an
@@ -802,7 +802,7 @@ public:
     * Represents a log message type. Supported values are enumerated in the
     * XISFMessageType namespace.
     */
-   typedef XISFMessageType::value_type    message_type;
+   using message_type = XISFMessageType::value_type;
 
    /*!
     * Default constructor.
@@ -1626,4 +1626,4 @@ private:
 #endif   // __PCL_XISF_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/XISF.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/XISF.h - Released 2022-08-10T16:36:28Z

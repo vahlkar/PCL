@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.30
 // ----------------------------------------------------------------------------
-// pcl/FFT2D.h - Released 2022-05-17T17:14:45Z
+// pcl/FFT2D.h - Released 2022-08-10T16:36:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -133,37 +133,37 @@ public:
    /*!
     * Represents a scalar in the context of this %FFT class.
     */
-   typedef T                        scalar;
+   using scalar = T;
 
    /*!
     * Represents a complex number in the context of this %FFT class.
     */
-   typedef Complex<T>               complex;
+   using complex = Complex<T>;
 
    /*!
     * Represents a vector of real numbers.
     */
-   typedef GenericVector<scalar>    vector;
+   using vector = GenericVector<scalar>;
 
    /*!
     * Represents a vector of complex numbers.
     */
-   typedef GenericVector<complex>   complex_vector;
+   using complex_vector = GenericVector<complex>;
 
    /*!
     * Represents a real matrix.
     */
-   typedef GenericMatrix<scalar>    matrix;
+   using matrix = GenericMatrix<scalar>;
 
    /*!
     * Represents a complex matrix.
     */
-   typedef GenericMatrix<complex>   complex_matrix;
+   using complex_matrix = GenericMatrix<complex>;
 
    /*!
     * Represents a discrete Fourier transform matrix.
     */
-   typedef complex_matrix           transform;
+   using transform = complex_matrix;
 
    /*!
     * Constructs an %AbstractFFT2D object of the specified dimensions
@@ -314,42 +314,42 @@ public:
    /*!
     * Identifies the base class of this %FFT class.
     */
-   typedef AbstractFFT2D<T>               base;
+   using base = AbstractFFT2D<T>;
 
    /*!
     * Represents a scalar in the context of this %FFT class.
     */
-   typedef typename base::scalar          scalar;
+   using scalar = typename base::scalar;
 
    /*!
     * Represents a complex number in the context of this %FFT class.
     */
-   typedef typename base::complex         complex;
+   using complex = typename base::complex;
 
    /*!
     * Represents a vector of real numbers.
     */
-   typedef typename base::vector          vector;
+   using vector = typename base::vector;
 
    /*!
     * Represents a vector of complex numbers.
     */
-   typedef typename base::complex_vector  complex_vector;
+   using complex_vector = typename base::complex_vector;
 
    /*!
     * Represents a real matrix.
     */
-   typedef typename base::matrix          matrix;
+   using matrix = typename base::matrix;
 
    /*!
     * Represents a complex matrix.
     */
-   typedef typename base::complex_matrix  complex_matrix;
+   using complex_matrix = typename base::complex_matrix;
 
    /*!
     * Represents a discrete Fourier transform matrix.
     */
-   typedef typename base::transform       transform;
+   using transform = typename base::transform;
 
    /*!
     * Constructs a %GenericFFT2D object of the specified dimensions \a rows and
@@ -547,42 +547,42 @@ public:
    /*!
     * Identifies the base class of this %FFT class.
     */
-   typedef AbstractFFT2D<T>               base;
+   using base = AbstractFFT2D<T>;
 
    /*!
     * Represents a scalar in the context of this %FFT class.
     */
-   typedef typename base::scalar          scalar;
+   using scalar = typename base::scalar;
 
    /*!
     * Represents a complex number in the context of this %FFT class.
     */
-   typedef typename base::complex         complex;
+   using complex = typename base::complex;
 
    /*!
     * Represents a vector of real numbers.
     */
-   typedef typename base::vector          vector;
+   using vector = typename base::vector;
 
    /*!
     * Represents a vector of complex numbers.
     */
-   typedef typename base::complex_vector  complex_vector;
+   using complex_vector = typename base::complex_vector;
 
    /*!
     * Represents a real matrix.
     */
-   typedef typename base::matrix          matrix;
+   using matrix = typename base::matrix;
 
    /*!
     * Represents a complex matrix.
     */
-   typedef typename base::complex_matrix  complex_matrix;
+   using complex_matrix = typename base::complex_matrix;
 
    /*!
     * Represents a discrete Fourier transform matrix.
     */
-   typedef typename base::transform       transform;
+   using transform = typename base::transform;
 
    /*!
     * Constructs a %GenericRealFFT2D object of the specified dimensions \a rows
@@ -808,7 +808,7 @@ public:
  *
  * %FFFT2D is a template instantiation of GenericFFT2D for the \c float type.
  */
-typedef GenericFFT2D<float>         FFFT2D;
+using FFFT2D = GenericFFT2D<float>;
 
 /*!
  * \class pcl::DFFT2D
@@ -817,7 +817,7 @@ typedef GenericFFT2D<float>         FFFT2D;
  *
  * %DFFT2D is a template instantiation of GenericFFT2D for the \c double type.
  */
-typedef GenericFFT2D<double>        DFFT2D;
+using DFFT2D = GenericFFT2D<double>;
 
 /*!
  * \class pcl::FRealFFT2D
@@ -826,7 +826,7 @@ typedef GenericFFT2D<double>        DFFT2D;
  *
  * %FRealFFT2D is a template instantiation of GenericRealFFT2DT for \c float.
  */
-typedef GenericRealFFT2D<float>     FRealFFT2D;
+using FRealFFT2D = GenericRealFFT2D<float>;
 
 /*!
  * \class pcl::DRealFFT2D
@@ -835,7 +835,7 @@ typedef GenericRealFFT2D<float>     FRealFFT2D;
  *
  * %DRealFFT2D is a template instantiation of GenericRealFFT2D for \c double.
  */
-typedef GenericRealFFT2D<double>    DRealFFT2D;
+using DRealFFT2D = GenericRealFFT2D<double>;
 
 /*!
  * \class pcl::FFT2D
@@ -845,7 +845,7 @@ typedef GenericRealFFT2D<double>    DRealFFT2D;
  * %FFT2D is an alias for FFFT2D. It is a template instantiation of
  * GenericFFT2D for the \c float type.
  */
-typedef FFFT2D                      FFT2D;
+using FFT2D = FFFT2D;
 
 /*!
  * \class pcl::RealFFT2D
@@ -855,7 +855,7 @@ typedef FFFT2D                      FFT2D;
  * %RealFFT2D is an alias for FRealFFT2D. It is a template instantiation of
  * GenericRealFFT2D for the \c float type.
  */
-typedef FRealFFT2D                  RealFFT2D;
+using RealFFT2D = FRealFFT2D;
 
 #endif // __PCL_NO_FFT2D_INSTANTIATE
 
@@ -866,4 +866,4 @@ typedef FRealFFT2D                  RealFFT2D;
 #endif   // __PCL_FFT2D_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FFT2D.h - Released 2022-05-17T17:14:45Z
+// EOF pcl/FFT2D.h - Released 2022-08-10T16:36:28Z
