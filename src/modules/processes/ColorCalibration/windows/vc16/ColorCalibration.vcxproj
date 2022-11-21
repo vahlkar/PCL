@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.126
+# PixInsight Makefile Generator Script v1.127
 # Copyright (C) 2009-2022 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2022-08-10T19:00:41.591Z
+# Generated on .... 2022-11-21T14:48:21.280Z
 # Project id ...... ColorCalibration
 # Project type .... Module
 # Platform ........ Windows/vc16
@@ -33,7 +33,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{E15BF1FA-F4E5-4E80-BE71-A2A12933FBCD}</ProjectGuid>
+    <ProjectGuid>{309B0821-A8D9-4EE9-A916-6BF00563D0CC}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -236,11 +236,15 @@
     <ClCompile Include="..\..\BackgroundNeutralizationInterface.cpp"/>
     <ClCompile Include="..\..\BackgroundNeutralizationParameters.cpp"/>
     <ClCompile Include="..\..\BackgroundNeutralizationProcess.cpp"/>
+    <ClCompile Include="..\..\CalibrationUtility.cpp"/>
+    <ClCompile Include="..\..\ColorCalibrationGraphInterface.cpp"/>
     <ClCompile Include="..\..\ColorCalibrationInstance.cpp"/>
     <ClCompile Include="..\..\ColorCalibrationInterface.cpp"/>
     <ClCompile Include="..\..\ColorCalibrationModule.cpp"/>
     <ClCompile Include="..\..\ColorCalibrationParameters.cpp"/>
     <ClCompile Include="..\..\ColorCalibrationProcess.cpp"/>
+    <ClCompile Include="..\..\CurveExplorerDialog.cpp"/>
+    <ClCompile Include="..\..\FilterManagementDialog.cpp"/>
     <ClCompile Include="..\..\LinearFitInstance.cpp"/>
     <ClCompile Include="..\..\LinearFitInterface.cpp"/>
     <ClCompile Include="..\..\LinearFitParameters.cpp"/>
@@ -250,17 +254,27 @@
     <ClCompile Include="..\..\PhotometricColorCalibrationInterface.cpp"/>
     <ClCompile Include="..\..\PhotometricColorCalibrationParameters.cpp"/>
     <ClCompile Include="..\..\PhotometricColorCalibrationProcess.cpp"/>
+    <ClCompile Include="..\..\SpectrophotometricColorCalibrationGraphInterface.cpp"/>
+    <ClCompile Include="..\..\SpectrophotometricColorCalibrationInstance.cpp"/>
+    <ClCompile Include="..\..\SpectrophotometricColorCalibrationInterface.cpp"/>
+    <ClCompile Include="..\..\SpectrophotometricColorCalibrationParameters.cpp"/>
+    <ClCompile Include="..\..\SpectrophotometricColorCalibrationPreferencesDialog.cpp"/>
+    <ClCompile Include="..\..\SpectrophotometricColorCalibrationProcess.cpp"/>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\BackgroundNeutralizationInstance.h"/>
     <ClInclude Include="..\..\BackgroundNeutralizationInterface.h"/>
     <ClInclude Include="..\..\BackgroundNeutralizationParameters.h"/>
     <ClInclude Include="..\..\BackgroundNeutralizationProcess.h"/>
+    <ClInclude Include="..\..\CalibrationUtility.h"/>
+    <ClInclude Include="..\..\ColorCalibrationGraphInterface.h"/>
     <ClInclude Include="..\..\ColorCalibrationInstance.h"/>
     <ClInclude Include="..\..\ColorCalibrationInterface.h"/>
     <ClInclude Include="..\..\ColorCalibrationModule.h"/>
     <ClInclude Include="..\..\ColorCalibrationParameters.h"/>
     <ClInclude Include="..\..\ColorCalibrationProcess.h"/>
+    <ClInclude Include="..\..\CurveExplorerDialog.h"/>
+    <ClInclude Include="..\..\FilterManagementDialog.h"/>
     <ClInclude Include="..\..\LinearFitInstance.h"/>
     <ClInclude Include="..\..\LinearFitInterface.h"/>
     <ClInclude Include="..\..\LinearFitParameters.h"/>
@@ -270,12 +284,20 @@
     <ClInclude Include="..\..\PhotometricColorCalibrationInterface.h"/>
     <ClInclude Include="..\..\PhotometricColorCalibrationParameters.h"/>
     <ClInclude Include="..\..\PhotometricColorCalibrationProcess.h"/>
+    <ClInclude Include="..\..\SampledSpectrumData.h"/>
+    <ClInclude Include="..\..\SpectrophotometricColorCalibrationGraphInterface.h"/>
+    <ClInclude Include="..\..\SpectrophotometricColorCalibrationInstance.h"/>
+    <ClInclude Include="..\..\SpectrophotometricColorCalibrationInterface.h"/>
+    <ClInclude Include="..\..\SpectrophotometricColorCalibrationParameters.h"/>
+    <ClInclude Include="..\..\SpectrophotometricColorCalibrationPreferencesDialog.h"/>
+    <ClInclude Include="..\..\SpectrophotometricColorCalibrationProcess.h"/>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\icons\BackgroundNeutralization.svg"/>
     <None Include="..\..\icons\ColorCalibration.svg"/>
     <None Include="..\..\icons\LinearFit.svg"/>
     <None Include="..\..\icons\PhotometricColorCalibration.svg"/>
+    <None Include="..\..\icons\SpectrophotometricColorCalibration.svg"/>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets"/>
   <ImportGroup Label="ExtensionTargets">

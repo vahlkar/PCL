@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard APASS Process Module Version 1.1.0
+// Standard APASS Process Module Version 1.1.4
 // ----------------------------------------------------------------------------
-// APASSInstance.h - Released 2022-05-17T17:15:11Z
+// APASSInstance.h - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard APASS PixInsight module.
 //
@@ -86,6 +86,7 @@ private:
    pcl_enum        p_dataRelease; // DR9, DR10, BestAvailable
    pcl_enum        p_sortBy;
    pcl_bool        p_generateTextOutput;
+   pcl_bool        p_generateBinaryOutput;
    pcl_enum        p_textFormat;
    pcl_enum        p_textHeaders;
    String          p_outputFilePath;
@@ -98,6 +99,7 @@ private:
 
    void Search();
    void GenerateTextOutput() const;
+   void GenerateBinaryOutput() const;
    void GetInfo();
    void Configure();
 
@@ -107,9 +109,23 @@ private:
 
 // ----------------------------------------------------------------------------
 
+struct APASSBinaryHeader
+{
+   uint32 version = 0;
+   uint32 reserved1 = 0;
+   uint32 reserved2 = 0;
+   uint32 reserved3 = 0;
+   uint32 dataRelease = 0;
+   uint32 sourceCount = 0;
+   uint32 reserved4 = 0;
+   uint32 reserved5 = 0;
+};
+
+// ----------------------------------------------------------------------------
+
 } // pcl
 
 #endif   // __APASSInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF APASSInstance.h - Released 2022-05-17T17:15:11Z
+// EOF APASSInstance.h - Released 2022-11-21T14:47:17Z

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.126
+# PixInsight Makefile Generator Script v1.127
 # Copyright (C) 2009-2022 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2022-08-10T19:01:06.858Z
+# Generated on .... 2022-11-21T14:48:54.346Z
 # Project id ...... CometAlignment
 # Project type .... Module
 # Platform ........ Windows/vc16
@@ -33,7 +33,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{981DFF49-B073-4331-BAB1-56A098563CCF}</ProjectGuid>
+    <ProjectGuid>{088CFB8C-BB35-4312-A2C7-BB82E6A1F36A}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>

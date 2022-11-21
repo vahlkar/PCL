@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard ColorSpaces Process Module Version 1.1.2
+// Standard ColorSpaces Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// ChannelParameters.cpp - Released 2022-05-17T17:15:11Z
+// ChannelParameters.cpp - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -57,7 +57,8 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-ColorSpaceId::ColorSpaceId( MetaProcess* P ) : MetaEnumeration( P )
+ColorSpaceId::ColorSpaceId( MetaProcess* P )
+   : MetaEnumeration( P )
 {
 }
 
@@ -125,7 +126,8 @@ IsoString ColorSpaceId::ChannelId( int cs, int c )
 
 // ----------------------------------------------------------------------------
 
-ChannelTable::ChannelTable( MetaProcess* P ) : MetaTable( P )
+ChannelTable::ChannelTable( MetaProcess* P )
+   : MetaTable( P )
 {
 }
 
@@ -146,7 +148,8 @@ size_type ChannelTable::MaxLength() const
 
 // ----------------------------------------------------------------------------
 
-ChannelEnabled::ChannelEnabled( MetaTable* T ) : MetaBoolean( T )
+ChannelEnabled::ChannelEnabled( MetaTable* T )
+   : MetaBoolean( T )
 {
 }
 
@@ -162,7 +165,8 @@ bool ChannelEnabled::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-ChannelId::ChannelId( MetaTable* T ) : MetaString( T )
+ChannelId::ChannelId( MetaTable* T )
+   : MetaString( T )
 {
 }
 
@@ -183,7 +187,8 @@ String ChannelId::AllowedCharacters() const
 
 // ----------------------------------------------------------------------------
 
-ChannelSampleFormat::ChannelSampleFormat( MetaProcess* p ) : MetaEnumeration( p )
+ChannelSampleFormat::ChannelSampleFormat( MetaProcess* p )
+   : MetaEnumeration( p )
 {
 }
 
@@ -223,7 +228,24 @@ size_type ChannelSampleFormat::DefaultValueIndex() const
 
 // ----------------------------------------------------------------------------
 
+CSInheritAstrometricSolution::CSInheritAstrometricSolution( MetaProcess* P )
+   : MetaBoolean( P )
+{
+}
+
+IsoString CSInheritAstrometricSolution::Id() const
+{
+   return "inheritAstrometricSolution";
+}
+
+bool CSInheritAstrometricSolution::DefaultValue() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ChannelParameters.cpp - Released 2022-05-17T17:15:11Z
+// EOF ChannelParameters.cpp - Released 2022-11-21T14:47:17Z

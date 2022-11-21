@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 1.2.4
+// Standard Geometry Process Module Version 1.3.1
 // ----------------------------------------------------------------------------
-// RotationInstance.h - Released 2022-05-17T17:15:11Z
+// RotationInstance.h - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -88,8 +88,9 @@ private:
    pcl_enum p_interpolation;     // interpolation algorithm
    float    p_clampingThreshold; // deringing clamping for bicubic spline and Lanczos
    float    p_smoothness;        // smoothness for cubic filter interpolations
+   pcl_bool p_gammaCorrection;   // interpolate with gamma correction
    DVector  p_fillColor;         // filling values for unused areas (R/K,G,B,A)
-   pcl_bool p_noGUIMessages;    // only show warning messages on the console
+   pcl_bool p_noGUIMessages;     // only show warning messages on the console
 
    friend class RotationEngine;
    friend class RotationInterface;
@@ -102,4 +103,4 @@ private:
 #endif   // __RotationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF RotationInstance.h - Released 2022-05-17T17:15:11Z
+// EOF RotationInstance.h - Released 2022-11-21T14:47:17Z

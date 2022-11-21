@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard ColorSpaces Process Module Version 1.1.2
+// Standard ColorSpaces Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// ChannelExtractionInterface.h - Released 2022-05-17T17:15:11Z
+// ChannelExtractionInterface.h - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -121,17 +121,19 @@ private:
             HorizontalSizer   SampleFormat_Sizer;
                Label             SampleFormat_Label;
                ComboBox          SampleFormat_ComboBox;
+            HorizontalSizer   InheritAstrometricSolution_Sizer;
+               CheckBox          InheritAstrometricSolution_CheckBox;
    };
 
    GUIData* GUI = nullptr;
 
    void UpdateControls();
 
-   void __ColorSpace_Click( Button& sender, bool checked );
-   void __Channel_Click( Button& sender, bool checked );
-   void __ChannelId_GetFocus( Control& sender );
-   void __ChannelId_EditCompleted( Edit& sender );
-   void __SampleFormat_ItemSelected( ComboBox& sender, int itemIndex );
+   void e_ColorSpace_Click( Button& sender, bool checked );
+   void e_Channel_Click( Button& sender, bool checked );
+   void e_ChannelId_GetFocus( Control& sender );
+   void e_ChannelId_EditCompleted( Edit& sender );
+   void e_SampleFormat_ItemSelected( ComboBox& sender, int itemIndex );
 
    friend struct GUIData;
 };
@@ -149,4 +151,4 @@ PCL_END_LOCAL
 #endif   // __ChannelExtractionInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF ChannelExtractionInterface.h - Released 2022-05-17T17:15:11Z
+// EOF ChannelExtractionInterface.h - Released 2022-11-21T14:47:17Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// NewImageInterface.cpp - Released 2022-05-17T17:15:11Z
+// NewImageInterface.cpp - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -691,4 +691,4 @@ NewImageInterface::GUIData::GUIData( NewImageInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF NewImageInterface.cpp - Released 2022-05-17T17:15:11Z
+// EOF NewImageInterface.cpp - Released 2022-11-21T14:47:17Z

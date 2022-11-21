@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.30
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// pcl/LinearFit.h - Released 2022-08-10T16:36:28Z
+// pcl/LinearFit.h - Released 2022-11-21T14:46:30Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -119,6 +119,24 @@ public:
    bool IsValid() const
    {
       return IsFinite( b );
+   }
+
+   /*!
+    * Returns true iff the fitted straight line is coincident with the X axis.
+    * This is true when both line parameters a = b = 0 to machine epsilon.
+    */
+   bool IsXAxis() const
+   {
+      return 1 + a == 1 && 1 + b == 1;
+   }
+
+   /*!
+    * Returns true iff this is an identity function. This is true when the line
+    * parameters are a = 0 and b = 1 to machine epsilon.
+    */
+   bool IsIdentity() const
+   {
+      return 1 + a == 1 && 1 - b == 0;
    }
 
    /*!
@@ -248,4 +266,4 @@ private:
 #endif   // __LinearFit_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/LinearFit.h - Released 2022-08-10T16:36:28Z
+// EOF pcl/LinearFit.h - Released 2022-11-21T14:46:30Z

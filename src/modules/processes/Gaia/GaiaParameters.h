@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard Gaia Process Module Version 1.1.0
+// Standard Gaia Process Module Version 1.2.5
 // ----------------------------------------------------------------------------
-// GaiaParameters.h - Released 2022-05-17T17:15:11Z
+// GaiaParameters.h - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Gaia PixInsight module.
 //
@@ -304,6 +304,20 @@ extern GGenerateTextOutput* TheGGenerateTextOutputParameter;
 
 // ----------------------------------------------------------------------------
 
+class GGenerateBinaryOutput : public MetaBoolean
+{
+public:
+
+   GGenerateBinaryOutput( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern GGenerateBinaryOutput* TheGGenerateBinaryOutputParameter;
+
+// ----------------------------------------------------------------------------
+
 class GTextFormat : public MetaEnumeration
 {
 public:
@@ -362,6 +376,20 @@ public:
 };
 
 extern GNormalizeSpectrum* TheGNormalizeSpectrumParameter;
+
+// ----------------------------------------------------------------------------
+
+class GPhotonFluxUnits : public MetaBoolean
+{
+public:
+
+   GPhotonFluxUnits( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern GPhotonFluxUnits* TheGPhotonFluxUnitsParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -807,4 +835,4 @@ PCL_END_LOCAL
 #endif   // __GaiaParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF GaiaParameters.h - Released 2022-05-17T17:15:11Z
+// EOF GaiaParameters.h - Released 2022-11-21T14:47:17Z

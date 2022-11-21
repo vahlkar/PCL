@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 1.2.4
+// Standard Geometry Process Module Version 1.3.1
 // ----------------------------------------------------------------------------
-// DynamicCropInterface.cpp - Released 2022-05-17T17:15:11Z
+// DynamicCropInterface.cpp - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -1344,6 +1344,8 @@ void DynamicCropInterface::UpdateInterpolationControls()
 
    GUI->Smoothness_NumericEdit.SetValue( m_instance.p_smoothness );
    GUI->Smoothness_NumericEdit.Enable( InterpolationAlgorithm::IsCubicFilterInterpolation( m_instance.p_interpolation ) );
+
+   GUI->GammaCorrection_CheckBox.SetChecked( m_instance.p_gammaCorrection );
 }
 
 // ----------------------------------------------------------------------------
@@ -1411,7 +1413,7 @@ void DynamicCropInterface::UpdateView()
 
 // ----------------------------------------------------------------------------
 
-void DynamicCropInterface::__Size_ValueUpdated( NumericEdit& sender, double value )
+void DynamicCropInterface::e_ValueUpdated( NumericEdit& sender, double value )
 {
    if ( m_view.IsNull() )
       return;
@@ -1480,16 +1482,7 @@ void DynamicCropInterface::__Size_ValueUpdated( NumericEdit& sender, double valu
          ResizeBy( 0, dT, 0, dB );
       }
    }
-}
-
-// ----------------------------------------------------------------------------
-
-void DynamicCropInterface::__Pos_ValueUpdated( NumericEdit& sender, double value )
-{
-   if ( m_view.IsNull() )
-      return;
-
-   if ( sender == GUI->PosX_NumericEdit )
+   else if ( sender == GUI->PosX_NumericEdit )
    {
       if ( value != m_anchor.x )
          MoveTo( m_center + DPoint( value - m_anchor.x, 0.0 ) );
@@ -1499,298 +1492,48 @@ void DynamicCropInterface::__Pos_ValueUpdated( NumericEdit& sender, double value
       if ( value != m_anchor.y )
          MoveTo( m_center + DPoint( 0.0, value - m_anchor.y ) );
    }
-}
-
-// ----------------------------------------------------------------------------
-
-void DynamicCropInterface::__AnchorSelector_Paint( Control& sender, const Rect& updateRect )
-{
-   Rect r( sender.BoundsRect() );
-
-   double x3 = r.Width()/3.0;
-   double x6 = x3 + x3;
-   double y3 = r.Height()/3.0;
-   double y6 = y3 + y3;
-   double f = sender.DisplayPixelRatio();
-
-   VectorGraphics g( sender );
-   if ( f > 1 )
-      g.EnableAntialiasing();
-
-   g.FillRect( r, RGBAColor( 0, 0, 0 ) );
-
-   g.SetBrush( Brush::Null() );
-   g.SetPen( 0xff7f7f7f, f );
-
-   g.DrawLine( x3, 0, x3, r.y1 );
-   g.DrawLine( x6, 0, x6, r.y1 );
-   g.DrawLine( 0, y3, r.x1, y3 );
-   g.DrawLine( 0, y6, r.x1, y6 );
-
-   double x0, y0;
-   if ( m_anchorPoint < 3 )
+   else if ( sender == GUI->Angle_NumericEdit )
    {
-      y0 = 0;
-      x0 = (m_anchorPoint == 0) ? 0 : ((m_anchorPoint == 1) ? x3 : x6);
+      double a = Rad( value );
+      if ( GUI->Clockwise_CheckBox.IsChecked() )
+         a = -a;
+      SetRotationAngle( a );
    }
-   else if ( m_anchorPoint < 6 )
+   else if ( sender == GUI->CenterX_NumericEdit )
    {
-      y0 = y3;
-      x0 = (m_anchorPoint == 3) ? 0 : ((m_anchorPoint == 4) ? x3 : x6);
-   }
-   else
-   {
-      y0 = y6;
-      x0 = (m_anchorPoint == 6) ? 0 : ((m_anchorPoint == 7) ? x3 : x6);
-   }
-
-   g.SetPen( 0xffffffff, f );
-   double d3 = f*3;
-   g.DrawLine( x0+d3, y0+d3, x0+x3-d3, y0+y3-d3 );
-   g.DrawLine( x0+d3, y0+y3-d3, x0+x3-d3, y0+d3 );
-}
-
-// ----------------------------------------------------------------------------
-
-void DynamicCropInterface::__AnchorSelector_MousePress( Control& sender, const Point& pos, int button, unsigned buttons, unsigned modifiers )
-{
-   if ( button != MouseButton::Left )
-      return;
-
-   Rect r( sender.BoundsRect() );
-   int x3 = RoundInt( r.Width()/3.0 );
-   int x6 = RoundInt( 2*r.Width()/3.0 );
-   int y3 = RoundInt( r.Height()/3.0 );
-   int y6 = RoundInt( 2*r.Height()/3.0 );
-   int row = (pos.y < y3) ? 0 : ((pos.y < y6) ? 1 : 2);
-   int col = (pos.x < x3) ? 0 : ((pos.x < x6) ? 1 : 2);
-
-   m_anchorPoint = 3*row + col;
-
-   UpdateAnchorPosition();
-   UpdateSizePosControls();
-}
-
-// ----------------------------------------------------------------------------
-
-void DynamicCropInterface::__AnchorSelector_MouseRelease( Control& sender, const Point& pos, int button, unsigned buttons, unsigned modifiers )
-{
-   m_dragging = false;
-}
-
-// ----------------------------------------------------------------------------
-
-void DynamicCropInterface::__AnchorSelector_MouseDoubleClick( Control& sender, const Point& pos, unsigned buttons, unsigned modifiers )
-{
-   if ( m_view.IsNull() )
-      return;
-
-   if ( modifiers & KeyModifier::Shift )
-   {
-      // Shift+DoubleClick: Move cropping rectangle to anchor position.
-      int w = m_view.Width();
-      int h = m_view.Height();
-
-      DPoint p = m_center;
-
-      switch ( m_anchorPoint )
-      {
-      case 0 : // top left
-         p = m_center - m_anchor;
-         break;
-      case 1 : // top middle
-         p = m_center + DPoint( 0.5*w - m_anchor.x, -m_anchor.y );
-         break;
-      case 2 : // top right
-         p = m_center + DPoint( w-m_anchor.x, -m_anchor.y );
-         break;
-      case 3 : // middle left
-         p = m_center + DPoint( -m_anchor.x, 0.5*h - m_anchor.y );
-         break;
-      case 4 : // center
-         p = DPoint( 0.5*w, 0.5*h );
-         break;
-      case 5 : // middle right
-         p = m_center + DPoint( w - m_anchor.x, 0.5*h - m_anchor.y );
-         break;
-      case 6 : // bottom left
-         p = m_center + DPoint( -m_anchor.x, h - m_anchor.y );
-         break;
-      case 7 : // bottom middle
-         p = m_center + DPoint( 0.5*w - m_anchor.x, h - m_anchor.y );
-         break;
-      case 8 : // bottom right
-         p = m_center + DPoint( w - m_anchor.x, h - m_anchor.y );
-         break;
-      }
-
-      MoveTo( p );
-   }
-   else if ( modifiers & KeyModifier::Control )
-   {
-      // Ctrl+DoubleClick: Set center of rotation to anchor.
-      SetRotationCenter( m_anchor );
-   }
-   else
-   {
-      // DoubleClick: Center view on anchor position coordinates.
-      m_view.Window().BringToFront();
-      m_view.Window().SelectMainView();
-      m_view.Window().SetViewport( m_anchor );
-   }
-}
-
-// ----------------------------------------------------------------------------
-
-void DynamicCropInterface::__Angle_ValueUpdated( NumericEdit& sender, double value )
-{
-   if ( m_view.IsNull() )
-      return;
-
-   double a = Rad( value );
-   if ( GUI->Clockwise_CheckBox.IsChecked() )
-      a = -a;
-
-   SetRotationAngle( a );
-}
-
-// ----------------------------------------------------------------------------
-
-void DynamicCropInterface::__Clockwise_Click( Button& sender, bool checked )
-{
-   if ( m_view.IsNull() )
-      return;
-
-   if ( Round( Abs( Deg( m_instance.p_angle ) ), 3 ) < 180 )
-      SetRotationAngle( -m_instance.p_angle );
-   else
-      GUI->Clockwise_CheckBox.Uncheck();
-}
-
-// ----------------------------------------------------------------------------
-
-void DynamicCropInterface::__Center_ValueUpdated( NumericEdit& sender, double value )
-{
-   if ( m_view.IsNull() )
-      return;
-
-   if ( sender == GUI->CenterX_NumericEdit )
       SetRotationCenter( DPoint( value, m_rotationCenter.y ) );
-   else if ( sender == GUI->CenterY_NumericEdit )
-      SetRotationCenter( DPoint( m_rotationCenter.x, value ) );
-}
-
-// ----------------------------------------------------------------------------
-
-void DynamicCropInterface::__OptimizeFast_Click( Button& sender, bool checked )
-{
-   m_instance.p_optimizeFast = checked;
-}
-
-// ----------------------------------------------------------------------------
-
-void DynamicCropInterface::__AngleDial_Paint( Control& sender, const Rect& updateRect )
-{
-   Rect r( sender.BoundsRect() );
-
-   int w = r.Width();
-   int h = r.Height();
-   double x0 = w/2.0;
-   double y0 = h/2.0;
-   double f = sender.DisplayPixelRatio();
-
-   VectorGraphics g( sender );
-   if ( f > 1 )
-      g.EnableAntialiasing();
-
-   g.FillRect( r, 0xff000000 );
-
-   g.SetBrush( Brush::Null() );
-   g.SetPen( 0xff7f7f7f, f );
-   g.DrawLine( x0, 0, x0, h );
-   g.DrawLine( 0, y0, w, y0 );
-
-   g.EnableAntialiasing();
-   g.DrawEllipse( r );
-
-   double sa, ca;
-   SinCos( m_instance.p_angle, sa, ca );
-   double x1 = x0 + 0.5*w*ca;
-   double y1 = y0 - 0.5*h*sa;
-
-   g.SetPen( 0xffffffff, f );
-   g.SetBrush( 0xffffffff );
-   g.DrawLine( x0, y0, x1, y1 );
-   double d3 = f*3;
-   g.DrawRect( x1-d3, y1-d3, x1+d3, y1+d3 );
-}
-
-// ----------------------------------------------------------------------------
-
-void DynamicCropInterface::__AngleDial_MouseMove( Control& sender, const Point& pos, unsigned buttons, unsigned modifiers )
-{
-   if ( m_dragging )
-   {
-      double a = Round( Deg( ArcTan( double( (sender.ClientHeight() >> 1) - pos.y ),
-                                     double( pos.x - (sender.ClientWidth() >> 1) ) ) ), 3 );
-      SetRotationAngle( Rad( a ) );
-      //sender.Update();
    }
-}
-
-// ----------------------------------------------------------------------------
-
-void DynamicCropInterface::__AngleDial_MousePress( Control& sender, const Point& pos, int button, unsigned buttons, unsigned modifiers )
-{
-   if ( button != MouseButton::Left )
-      return;
-
-   m_dragging = true;
-   __AngleDial_MouseMove( sender, pos, buttons, modifiers );
-}
-
-// ----------------------------------------------------------------------------
-
-void DynamicCropInterface::__AngleDial_MouseRelease( Control& sender, const Point& pos, int button, unsigned buttons, unsigned modifiers )
-{
-   m_dragging = false;
-}
-
-// ----------------------------------------------------------------------------
-
-void DynamicCropInterface::__Scale_ValueUpdated( NumericEdit& sender, double value )
-{
-   if ( sender == GUI->ScaleX_NumericEdit )
+   else if ( sender == GUI->CenterY_NumericEdit )
+   {
+      SetRotationCenter( DPoint( m_rotationCenter.x, value ) );
+   }
+   else if ( sender == GUI->ScaleX_NumericEdit )
    {
       m_instance.p_scaleX = value;
       if ( GUI->PreserveAspectRatio_CheckBox.IsChecked() )
          m_instance.p_scaleY = value;
+      UpdateScaleControls();
    }
    else if ( sender == GUI->ScaleY_NumericEdit )
    {
       m_instance.p_scaleY = value;
       if ( GUI->PreserveAspectRatio_CheckBox.IsChecked() )
          m_instance.p_scaleX = value;
+      UpdateScaleControls();
    }
-
-   UpdateScaleControls();
-}
-
-// ----------------------------------------------------------------------------
-
-void DynamicCropInterface::__ScaledSize_ValueUpdated( NumericEdit& sender, double value )
-{
-   if ( sender == GUI->ScaledWidthPx_NumericEdit )
+   else if ( sender == GUI->ScaledWidthPx_NumericEdit )
    {
       m_instance.p_scaleX = value/m_width;
       if ( GUI->PreserveAspectRatio_CheckBox.IsChecked() )
          m_instance.p_scaleY = m_instance.p_scaleX;
+      UpdateScaleControls();
    }
    else if ( sender == GUI->ScaledHeightPx_NumericEdit )
    {
       m_instance.p_scaleY = value/m_height;
       if ( GUI->PreserveAspectRatio_CheckBox.IsChecked() )
          m_instance.p_scaleX = m_instance.p_scaleY;
+      UpdateScaleControls();
    }
    else if ( sender == GUI->ScaledWidthCm_NumericEdit )
    {
@@ -1802,6 +1545,7 @@ void DynamicCropInterface::__ScaledSize_ValueUpdated( NumericEdit& sender, doubl
       m_instance.p_scaleX = wPx/m_width;
       if ( GUI->PreserveAspectRatio_CheckBox.IsChecked() )
          m_instance.p_scaleY = m_instance.p_scaleX;
+      UpdateScaleControls();
    }
    else if ( sender == GUI->ScaledHeightCm_NumericEdit )
    {
@@ -1813,6 +1557,7 @@ void DynamicCropInterface::__ScaledSize_ValueUpdated( NumericEdit& sender, doubl
       m_instance.p_scaleY = hPx/m_height;
       if ( GUI->PreserveAspectRatio_CheckBox.IsChecked() )
          m_instance.p_scaleX = m_instance.p_scaleY;
+      UpdateScaleControls();
    }
    else if ( sender == GUI->ScaledWidthIn_NumericEdit )
    {
@@ -1824,6 +1569,7 @@ void DynamicCropInterface::__ScaledSize_ValueUpdated( NumericEdit& sender, doubl
       m_instance.p_scaleX = wPx/m_width;
       if ( GUI->PreserveAspectRatio_CheckBox.IsChecked() )
          m_instance.p_scaleY = m_instance.p_scaleX;
+      UpdateScaleControls();
    }
    else if ( sender == GUI->ScaledHeightIn_NumericEdit )
    {
@@ -1835,14 +1581,89 @@ void DynamicCropInterface::__ScaledSize_ValueUpdated( NumericEdit& sender, doubl
       m_instance.p_scaleY = hPx/m_height;
       if ( GUI->PreserveAspectRatio_CheckBox.IsChecked() )
          m_instance.p_scaleX = m_instance.p_scaleY;
+      UpdateScaleControls();
    }
-
-   UpdateScaleControls();
+   else if ( sender == GUI->ClampingThreshold_NumericEdit )
+   {
+      m_instance.p_clampingThreshold = value;
+   }
+   else if ( sender == GUI->Smoothness_NumericEdit )
+   {
+      m_instance.p_smoothness = value;
+   }
+   else if ( sender == GUI->HorizontalResolution_NumericEdit )
+   {
+      m_instance.p_resolution.x = value;
+      UpdateScaleControls();
+   }
+   else if ( sender == GUI->VerticalResolution_NumericEdit )
+   {
+      m_instance.p_resolution.y = value;
+      UpdateScaleControls();
+   }
+   else if ( sender == GUI->Red_NumericControl )
+   {
+      m_instance.p_fillColor[0] = value;
+      GUI->ColorSample_Control.Update();
+   }
+   else if ( sender == GUI->Green_NumericControl )
+   {
+      m_instance.p_fillColor[1] = value;
+      GUI->ColorSample_Control.Update();
+   }
+   else if ( sender == GUI->Blue_NumericControl )
+   {
+      m_instance.p_fillColor[2] = value;
+      GUI->ColorSample_Control.Update();
+   }
+   else if ( sender == GUI->Alpha_NumericControl )
+   {
+      m_instance.p_fillColor[3] = value;
+      GUI->ColorSample_Control.Update();
+   }
 }
 
 // ----------------------------------------------------------------------------
 
-void DynamicCropInterface::__Algorithm_ItemSelected( ComboBox& sender, int itemIndex )
+void DynamicCropInterface::e_ButtonClick( Button& sender, bool checked )
+{
+   if ( sender == GUI->Clockwise_CheckBox )
+   {
+      if ( m_view.IsNull() )
+         return;
+
+      if ( Round( Abs( Deg( m_instance.p_angle ) ), 3 ) < 180 )
+         SetRotationAngle( -m_instance.p_angle );
+      else
+         GUI->Clockwise_CheckBox.Uncheck();
+   }
+   else if ( sender == GUI->OptimizeFast_CheckBox )
+   {
+      m_instance.p_optimizeFast = checked;
+   }
+   else if ( sender == GUI->GammaCorrection_CheckBox )
+   {
+      m_instance.p_gammaCorrection = checked;
+   }
+   else if ( sender == GUI->CentimeterUnits_RadioButton )
+   {
+      m_instance.p_metric = true;
+      UpdateScaleControls();
+   }
+   else if ( sender == GUI->InchUnits_RadioButton )
+   {
+      m_instance.p_metric = false;
+      UpdateScaleControls();
+   }
+   else if ( sender == GUI->ForceResolution_CheckBox  )
+   {
+      m_instance.p_forceResolution = checked;
+   }
+}
+
+// ----------------------------------------------------------------------------
+
+void DynamicCropInterface::e_ItemSelected( ComboBox& sender, int itemIndex )
 {
    if ( sender == GUI->Algorithm_ComboBox )
    {
@@ -1853,96 +1674,239 @@ void DynamicCropInterface::__Algorithm_ItemSelected( ComboBox& sender, int itemI
 
 // ----------------------------------------------------------------------------
 
-void DynamicCropInterface::__Algorithm_ValueUpdated( NumericEdit& sender, double value )
+void DynamicCropInterface::e_Paint( Control& sender, const Rect& updateRect )
 {
-   if ( sender == GUI->ClampingThreshold_NumericEdit )
-      m_instance.p_clampingThreshold = value;
-   else if ( sender == GUI->Smoothness_NumericEdit )
-      m_instance.p_smoothness = value;
-}
-
-// ----------------------------------------------------------------------------
-
-void DynamicCropInterface::__Resolution_ValueUpdated( NumericEdit& sender, double value )
-{
-   if ( sender == GUI->HorizontalResolution_NumericEdit )
-      m_instance.p_resolution.x = value;
-   else if ( sender == GUI->VerticalResolution_NumericEdit )
-      m_instance.p_resolution.y = value;
-   UpdateScaleControls();
-}
-
-// ----------------------------------------------------------------------------
-
-void DynamicCropInterface::__Units_ButtonClick( Button& sender, bool checked )
-{
-   if ( sender == GUI->CentimeterUnits_RadioButton )
-      m_instance.p_metric = true;
-   else if ( sender == GUI->InchUnits_RadioButton )
-      m_instance.p_metric = false;
-   UpdateScaleControls();
-}
-
-// ----------------------------------------------------------------------------
-
-void DynamicCropInterface::__ForceResolution_ButtonClick( Button& sender, bool checked )
-{
-   if ( sender == GUI->ForceResolution_CheckBox  )
-      m_instance.p_forceResolution = checked;
-}
-
-// ----------------------------------------------------------------------------
-
-void DynamicCropInterface::__FilColor_ValueUpdated( NumericEdit& sender, double value )
-{
-   if ( sender == GUI->Red_NumericControl )
-      m_instance.p_fillColor[0] = value;
-   else if ( sender == GUI->Green_NumericControl )
-      m_instance.p_fillColor[1] = value;
-   else if ( sender == GUI->Blue_NumericControl )
-      m_instance.p_fillColor[2] = value;
-   else if ( sender == GUI->Alpha_NumericControl )
-      m_instance.p_fillColor[3] = value;
-
-   GUI->ColorSample_Control.Update();
-}
-
-// ----------------------------------------------------------------------------
-
-void DynamicCropInterface::__ColorSample_Paint( Control& sender, const Rect& updateRect )
-{
-   Graphics g( sender );
-
-   RGBA color;
-
-   if ( m_view.IsNull() || m_view.IsColor() )
+   if ( sender == GUI->AnchorSelectors_Control )
    {
-      color = RGBAColor( float( m_instance.p_fillColor[0] ),
-                         float( m_instance.p_fillColor[1] ),
-                         float( m_instance.p_fillColor[2] ) );
+      Rect r( sender.BoundsRect() );
+      double x3 = r.Width()/3.0;
+      double x6 = x3 + x3;
+      double y3 = r.Height()/3.0;
+      double y6 = y3 + y3;
+      double f = sender.DisplayPixelRatio();
+
+      VectorGraphics g( sender );
+      if ( f > 1 )
+         g.EnableAntialiasing();
+
+      g.FillRect( r, RGBAColor( 0, 0, 0 ) );
+
+      g.SetBrush( Brush::Null() );
+      g.SetPen( 0xff7f7f7f, f );
+
+      g.DrawLine( x3, 0, x3, r.y1 );
+      g.DrawLine( x6, 0, x6, r.y1 );
+      g.DrawLine( 0, y3, r.x1, y3 );
+      g.DrawLine( 0, y6, r.x1, y6 );
+
+      double x0, y0;
+      if ( m_anchorPoint < 3 )
+      {
+         y0 = 0;
+         x0 = (m_anchorPoint == 0) ? 0 : ((m_anchorPoint == 1) ? x3 : x6);
+      }
+      else if ( m_anchorPoint < 6 )
+      {
+         y0 = y3;
+         x0 = (m_anchorPoint == 3) ? 0 : ((m_anchorPoint == 4) ? x3 : x6);
+      }
+      else
+      {
+         y0 = y6;
+         x0 = (m_anchorPoint == 6) ? 0 : ((m_anchorPoint == 7) ? x3 : x6);
+      }
+
+      g.SetPen( 0xffffffff, f );
+      double d3 = f*3;
+      g.DrawLine( x0+d3, y0+d3, x0+x3-d3, y0+y3-d3 );
+      g.DrawLine( x0+d3, y0+y3-d3, x0+x3-d3, y0+d3 );
    }
-   else
+   else if ( sender == GUI->Dial_Control )
    {
-      RGBColorSystem rgb;
-      m_view.Window().GetRGBWS( rgb );
-      float L = rgb.Lightness( m_instance.p_fillColor[0],
-                               m_instance.p_fillColor[1],
-                               m_instance.p_fillColor[2] );
-      color = RGBAColor( L, L, L );
+      Rect r( sender.BoundsRect() );
+      int w = r.Width();
+      int h = r.Height();
+      double x0 = w/2.0;
+      double y0 = h/2.0;
+      double f = sender.DisplayPixelRatio();
+
+      VectorGraphics g( sender );
+      if ( f > 1 )
+         g.EnableAntialiasing();
+
+      g.FillRect( r, 0xff000000 );
+
+      g.SetBrush( Brush::Null() );
+      g.SetPen( 0xff7f7f7f, f );
+      g.DrawLine( x0, 0, x0, h );
+      g.DrawLine( 0, y0, w, y0 );
+
+      g.EnableAntialiasing();
+      g.DrawEllipse( r );
+
+      double sa, ca;
+      SinCos( m_instance.p_angle, sa, ca );
+      double x1 = x0 + 0.5*w*ca;
+      double y1 = y0 - 0.5*h*sa;
+
+      g.SetPen( 0xffffffff, f );
+      g.SetBrush( 0xffffffff );
+      g.DrawLine( x0, y0, x1, y1 );
+      double d3 = f*3;
+      g.DrawRect( x1-d3, y1-d3, x1+d3, y1+d3 );
    }
-
-   SetAlpha( color, uint8( RoundInt( 255*m_instance.p_fillColor[3] ) ) );
-
-   if ( Alpha( color ) != 0 )
+   else if ( sender == GUI->ColorSample_Control )
    {
-      g.SetBrush( Bitmap( sender.ScaledResource( ":/image-window/transparent-small.png" ) ) );
-      g.SetPen( Pen::Null() );
+      Graphics g( sender );
+
+      RGBA color;
+
+      if ( m_view.IsNull() || m_view.IsColor() )
+      {
+         color = RGBAColor( float( m_instance.p_fillColor[0] ),
+                           float( m_instance.p_fillColor[1] ),
+                           float( m_instance.p_fillColor[2] ) );
+      }
+      else
+      {
+         RGBColorSystem rgb;
+         m_view.Window().GetRGBWS( rgb );
+         float L = rgb.Lightness( m_instance.p_fillColor[0],
+                                 m_instance.p_fillColor[1],
+                                 m_instance.p_fillColor[2] );
+         color = RGBAColor( L, L, L );
+      }
+
+      SetAlpha( color, uint8( RoundInt( 255*m_instance.p_fillColor[3] ) ) );
+
+      if ( Alpha( color ) != 0 )
+      {
+         g.SetBrush( Bitmap( sender.ScaledResource( ":/image-window/transparent-small.png" ) ) );
+         g.SetPen( Pen::Null() );
+         g.DrawRect( sender.BoundsRect() );
+      }
+
+      g.SetBrush( color );
+      g.SetPen( 0xff000000, sender.DisplayPixelRatio() );
       g.DrawRect( sender.BoundsRect() );
    }
+}
 
-   g.SetBrush( color );
-   g.SetPen( 0xff000000, sender.DisplayPixelRatio() );
-   g.DrawRect( sender.BoundsRect() );
+// ----------------------------------------------------------------------------
+
+void DynamicCropInterface::e_MousePress( Control& sender, const Point& pos, int button, unsigned buttons, unsigned modifiers )
+{
+   if ( button != MouseButton::Left )
+      return;
+
+   if ( sender == GUI->AnchorSelectors_Control )
+   {
+      Rect r( sender.BoundsRect() );
+      int x3 = RoundInt( r.Width()/3.0 );
+      int x6 = RoundInt( 2*r.Width()/3.0 );
+      int y3 = RoundInt( r.Height()/3.0 );
+      int y6 = RoundInt( 2*r.Height()/3.0 );
+      int row = (pos.y < y3) ? 0 : ((pos.y < y6) ? 1 : 2);
+      int col = (pos.x < x3) ? 0 : ((pos.x < x6) ? 1 : 2);
+
+      m_anchorPoint = 3*row + col;
+
+      UpdateAnchorPosition();
+      UpdateSizePosControls();
+   }
+   else if ( sender == GUI->Dial_Control )
+   {
+      m_dragging = true;
+      e_MouseMove( sender, pos, buttons, modifiers );
+   }
+
+}
+
+// ----------------------------------------------------------------------------
+
+void DynamicCropInterface::e_MouseMove( Control& sender, const Point& pos, unsigned buttons, unsigned modifiers )
+{
+   if ( sender == GUI->Dial_Control )
+      if ( m_dragging )
+      {
+         double a = Round( Deg( ArcTan( double( (sender.ClientHeight() >> 1) - pos.y ),
+                                       double( pos.x - (sender.ClientWidth() >> 1) ) ) ), 3 );
+         SetRotationAngle( Rad( a ) );
+         //sender.Update();
+      }
+}
+
+// ----------------------------------------------------------------------------
+
+void DynamicCropInterface::e_MouseRelease( Control& sender, const Point& pos, int button, unsigned buttons, unsigned modifiers )
+{
+   if ( sender == GUI->Dial_Control )
+      m_dragging = false;
+}
+
+// ----------------------------------------------------------------------------
+
+void DynamicCropInterface::e_MouseDoubleClick( Control& sender, const Point& pos, unsigned buttons, unsigned modifiers )
+{
+   if ( m_view.IsNull() )
+      return;
+
+   if ( sender == GUI->AnchorSelectors_Control )
+   {
+      if ( modifiers & KeyModifier::Shift )
+      {
+         // Shift+DoubleClick: Move cropping rectangle to anchor position.
+         int w = m_view.Width();
+         int h = m_view.Height();
+
+         DPoint p = m_center;
+
+         switch ( m_anchorPoint )
+         {
+         case 0 : // top left
+            p = m_center - m_anchor;
+            break;
+         case 1 : // top middle
+            p = m_center + DPoint( 0.5*w - m_anchor.x, -m_anchor.y );
+            break;
+         case 2 : // top right
+            p = m_center + DPoint( w-m_anchor.x, -m_anchor.y );
+            break;
+         case 3 : // middle left
+            p = m_center + DPoint( -m_anchor.x, 0.5*h - m_anchor.y );
+            break;
+         case 4 : // center
+            p = DPoint( 0.5*w, 0.5*h );
+            break;
+         case 5 : // middle right
+            p = m_center + DPoint( w - m_anchor.x, 0.5*h - m_anchor.y );
+            break;
+         case 6 : // bottom left
+            p = m_center + DPoint( -m_anchor.x, h - m_anchor.y );
+            break;
+         case 7 : // bottom middle
+            p = m_center + DPoint( 0.5*w - m_anchor.x, h - m_anchor.y );
+            break;
+         case 8 : // bottom right
+            p = m_center + DPoint( w - m_anchor.x, h - m_anchor.y );
+            break;
+         }
+
+         MoveTo( p );
+      }
+      else if ( modifiers & KeyModifier::Control )
+      {
+         // Ctrl+DoubleClick: Set center of rotation to anchor.
+         SetRotationCenter( m_anchor );
+      }
+      else
+      {
+         // DoubleClick: Center view on anchor position coordinates.
+         m_view.Window().BringToFront();
+         m_view.Window().SelectMainView();
+         m_view.Window().SetViewport( m_anchor );
+      }
+   }
 }
 
 // ----------------------------------------------------------------------------
@@ -1968,7 +1932,7 @@ DynamicCropInterface::GUIData::GUIData( DynamicCropInterface& w )
    Width_NumericEdit.label.SetText( "Width:" );
    Width_NumericEdit.label.SetFixedWidth( labelWidth1 );
    Width_NumericEdit.edit.SetFixedWidth( editWidth );
-   Width_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::__Size_ValueUpdated, w );
+   Width_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::e_ValueUpdated, w );
 
    Height_NumericEdit.SetReal();
    Height_NumericEdit.SetPrecision( 2 );
@@ -1977,7 +1941,7 @@ DynamicCropInterface::GUIData::GUIData( DynamicCropInterface& w )
    Height_NumericEdit.label.SetText( "Height:" );
    Height_NumericEdit.label.SetFixedWidth( labelWidth1 );
    Height_NumericEdit.edit.SetFixedWidth( editWidth );
-   Height_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::__Size_ValueUpdated, w );
+   Height_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::e_ValueUpdated, w );
 
    PosX_NumericEdit.SetReal();
    PosX_NumericEdit.SetPrecision( 2 );
@@ -1986,7 +1950,7 @@ DynamicCropInterface::GUIData::GUIData( DynamicCropInterface& w )
    PosX_NumericEdit.label.SetText( "Anchor X:" );
    PosX_NumericEdit.label.SetFixedWidth( labelWidth1 );
    PosX_NumericEdit.edit.SetFixedWidth( editWidth );
-   PosX_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::__Pos_ValueUpdated, w );
+   PosX_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::e_ValueUpdated, w );
 
    PosY_NumericEdit.SetReal();
    PosY_NumericEdit.SetPrecision( 2 );
@@ -1995,7 +1959,7 @@ DynamicCropInterface::GUIData::GUIData( DynamicCropInterface& w )
    PosY_NumericEdit.label.SetText( "Anchor Y:" );
    PosY_NumericEdit.label.SetFixedWidth( labelWidth1 );
    PosY_NumericEdit.edit.SetFixedWidth( editWidth );
-   PosY_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::__Pos_ValueUpdated, w );
+   PosY_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::e_ValueUpdated, w );
 
    SizePosLeft_Sizer.SetSpacing( 4 );
    SizePosLeft_Sizer.Add( Width_NumericEdit );
@@ -2004,9 +1968,9 @@ DynamicCropInterface::GUIData::GUIData( DynamicCropInterface& w )
    SizePosLeft_Sizer.Add( PosY_NumericEdit );
 
    AnchorSelectors_Control.SetBackgroundColor( RGBAColor( "black" ) );
-   AnchorSelectors_Control.OnPaint( (Control::paint_event_handler)&DynamicCropInterface::__AnchorSelector_Paint, w );
-   AnchorSelectors_Control.OnMousePress( (Control::mouse_button_event_handler)&DynamicCropInterface::__AnchorSelector_MousePress, w );
-   AnchorSelectors_Control.OnMouseDoubleClick( (Control::mouse_event_handler)&DynamicCropInterface::__AnchorSelector_MouseDoubleClick, w );
+   AnchorSelectors_Control.OnPaint( (Control::paint_event_handler)&DynamicCropInterface::e_Paint, w );
+   AnchorSelectors_Control.OnMousePress( (Control::mouse_button_event_handler)&DynamicCropInterface::e_MousePress, w );
+   AnchorSelectors_Control.OnMouseDoubleClick( (Control::mouse_event_handler)&DynamicCropInterface::e_MouseDoubleClick, w );
 
    SizePos_Sizer.SetSpacing( 6 );
    SizePos_Sizer.Add( SizePosLeft_Sizer );
@@ -2032,13 +1996,13 @@ DynamicCropInterface::GUIData::GUIData( DynamicCropInterface& w )
    Angle_NumericEdit.label.SetText( "Angle (\xb0):" );
    Angle_NumericEdit.label.SetFixedWidth( labelWidth1 );
    Angle_NumericEdit.edit.SetFixedWidth( editWidth );
-   Angle_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::__Angle_ValueUpdated, w );
+   Angle_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::e_ValueUpdated, w );
 
    Clockwise_Label.SetText( "Clockwise:" );
    Clockwise_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
    Clockwise_Label.SetFixedWidth( labelWidth1 );
 
-   Clockwise_CheckBox.OnClick( (Button::click_event_handler)&DynamicCropInterface::__Clockwise_Click, w );
+   Clockwise_CheckBox.OnClick( (Button::click_event_handler)&DynamicCropInterface::e_ButtonClick, w );
 
    Clockwise_Sizer.Add( Clockwise_Label );
    Clockwise_Sizer.AddSpacing( 4 );
@@ -2052,7 +2016,7 @@ DynamicCropInterface::GUIData::GUIData( DynamicCropInterface& w )
    CenterX_NumericEdit.label.SetText( "Center X:" );
    CenterX_NumericEdit.label.SetFixedWidth( labelWidth1 );
    CenterX_NumericEdit.edit.SetFixedWidth( editWidth );
-   CenterX_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::__Center_ValueUpdated, w );
+   CenterX_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::e_ValueUpdated, w );
 
    CenterY_NumericEdit.SetReal();
    CenterY_NumericEdit.SetPrecision( 2 );
@@ -2061,7 +2025,7 @@ DynamicCropInterface::GUIData::GUIData( DynamicCropInterface& w )
    CenterY_NumericEdit.label.SetText( "Center Y:" );
    CenterY_NumericEdit.label.SetFixedWidth( labelWidth1 );
    CenterY_NumericEdit.edit.SetFixedWidth( editWidth );
-   CenterY_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::__Center_ValueUpdated, w );
+   CenterY_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::e_ValueUpdated, w );
 
    RotationLeft_Sizer.SetSpacing( 4 );
    RotationLeft_Sizer.Add( Angle_NumericEdit );
@@ -2071,17 +2035,17 @@ DynamicCropInterface::GUIData::GUIData( DynamicCropInterface& w )
 
    Dial_Control.SetBackgroundColor( StringToRGBAColor( "black" ) );
    Dial_Control.SetFixedSize( panelSize, panelSize );
-   Dial_Control.OnPaint( (Control::paint_event_handler)&DynamicCropInterface::__AngleDial_Paint, w );
-   Dial_Control.OnMousePress( (Control::mouse_button_event_handler)&DynamicCropInterface::__AngleDial_MousePress, w );
-   Dial_Control.OnMouseRelease( (Control::mouse_button_event_handler)&DynamicCropInterface::__AngleDial_MouseRelease, w );
-   Dial_Control.OnMouseMove( (Control::mouse_event_handler)&DynamicCropInterface::__AngleDial_MouseMove, w );
+   Dial_Control.OnPaint( (Control::paint_event_handler)&DynamicCropInterface::e_Paint, w );
+   Dial_Control.OnMousePress( (Control::mouse_button_event_handler)&DynamicCropInterface::e_MousePress, w );
+   Dial_Control.OnMouseRelease( (Control::mouse_button_event_handler)&DynamicCropInterface::e_MouseRelease, w );
+   Dial_Control.OnMouseMove( (Control::mouse_event_handler)&DynamicCropInterface::e_MouseMove, w );
 
    RotationTop_Sizer.SetSpacing( 6 );
    RotationTop_Sizer.Add( RotationLeft_Sizer );
    RotationTop_Sizer.Add( Dial_Control );
 
    OptimizeFast_CheckBox.SetText( "Use fast rotations" );
-   OptimizeFast_CheckBox.OnClick( (Button::click_event_handler)&DynamicCropInterface::__OptimizeFast_Click, w );
+   OptimizeFast_CheckBox.OnClick( (Button::click_event_handler)&DynamicCropInterface::e_ButtonClick, w );
 
    RotationBottom_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    RotationBottom_Sizer.Add( OptimizeFast_CheckBox );
@@ -2105,7 +2069,7 @@ DynamicCropInterface::GUIData::GUIData( DynamicCropInterface& w )
    ScaleX_NumericEdit.label.SetFixedWidth( labelWidth1 );
    ScaleX_NumericEdit.edit.SetFixedWidth( editWidth );
    ScaleX_NumericEdit.sizer.AddStretch();
-   ScaleX_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::__Scale_ValueUpdated, w );
+   ScaleX_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::e_ValueUpdated, w );
 
    ScaleY_NumericEdit.SetReal();
    ScaleY_NumericEdit.SetPrecision( 5 );
@@ -2114,7 +2078,7 @@ DynamicCropInterface::GUIData::GUIData( DynamicCropInterface& w )
    ScaleY_NumericEdit.label.SetFixedWidth( labelWidth1 );
    ScaleY_NumericEdit.edit.SetFixedWidth( editWidth );
    ScaleY_NumericEdit.sizer.AddStretch();
-   ScaleY_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::__Scale_ValueUpdated, w );
+   ScaleY_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::e_ValueUpdated, w );
 
    ScaledWidthPx_NumericEdit.SetInteger();
    ScaledWidthPx_NumericEdit.SetRange( 1, uint16_max );
@@ -2122,7 +2086,7 @@ DynamicCropInterface::GUIData::GUIData( DynamicCropInterface& w )
    ScaledWidthPx_NumericEdit.label.SetFixedWidth( labelWidth1 );
    ScaledWidthPx_NumericEdit.edit.SetFixedWidth( editWidth );
    ScaledWidthPx_NumericEdit.sizer.AddStretch();
-   ScaledWidthPx_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::__ScaledSize_ValueUpdated, w );
+   ScaledWidthPx_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::e_ValueUpdated, w );
 
    ScaledHeightPx_NumericEdit.SetInteger();
    ScaledHeightPx_NumericEdit.SetRange( 1, uint16_max );
@@ -2130,7 +2094,7 @@ DynamicCropInterface::GUIData::GUIData( DynamicCropInterface& w )
    ScaledHeightPx_NumericEdit.label.SetFixedWidth( labelWidth1 );
    ScaledHeightPx_NumericEdit.edit.SetFixedWidth( editWidth );
    ScaledHeightPx_NumericEdit.sizer.AddStretch();
-   ScaledHeightPx_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::__ScaledSize_ValueUpdated, w );
+   ScaledHeightPx_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::e_ValueUpdated, w );
 
    ScaledWidthCm_NumericEdit.SetReal();
    ScaledWidthCm_NumericEdit.SetPrecision( 4 );
@@ -2139,7 +2103,7 @@ DynamicCropInterface::GUIData::GUIData( DynamicCropInterface& w )
    ScaledWidthCm_NumericEdit.label.SetFixedWidth( labelWidth1 );
    ScaledWidthCm_NumericEdit.edit.SetFixedWidth( editWidth );
    ScaledWidthCm_NumericEdit.sizer.AddStretch();
-   ScaledWidthCm_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::__ScaledSize_ValueUpdated, w );
+   ScaledWidthCm_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::e_ValueUpdated, w );
 
    ScaledHeightCm_NumericEdit.SetReal();
    ScaledHeightCm_NumericEdit.SetPrecision( 4 );
@@ -2148,7 +2112,7 @@ DynamicCropInterface::GUIData::GUIData( DynamicCropInterface& w )
    ScaledHeightCm_NumericEdit.label.SetFixedWidth( labelWidth1 );
    ScaledHeightCm_NumericEdit.edit.SetFixedWidth( editWidth );
    ScaledHeightCm_NumericEdit.sizer.AddStretch();
-   ScaledHeightCm_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::__ScaledSize_ValueUpdated, w );
+   ScaledHeightCm_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::e_ValueUpdated, w );
 
    ScaledWidthIn_NumericEdit.SetReal();
    ScaledWidthIn_NumericEdit.SetPrecision( 3 );
@@ -2157,7 +2121,7 @@ DynamicCropInterface::GUIData::GUIData( DynamicCropInterface& w )
    ScaledWidthIn_NumericEdit.label.SetFixedWidth( labelWidth1 );
    ScaledWidthIn_NumericEdit.edit.SetFixedWidth( editWidth );
    ScaledWidthIn_NumericEdit.sizer.AddStretch();
-   ScaledWidthIn_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::__ScaledSize_ValueUpdated, w );
+   ScaledWidthIn_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::e_ValueUpdated, w );
 
    ScaledHeightIn_NumericEdit.SetReal();
    ScaledHeightIn_NumericEdit.SetPrecision( 3 );
@@ -2166,7 +2130,7 @@ DynamicCropInterface::GUIData::GUIData( DynamicCropInterface& w )
    ScaledHeightIn_NumericEdit.label.SetFixedWidth( labelWidth1 );
    ScaledHeightIn_NumericEdit.edit.SetFixedWidth( editWidth );
    ScaledHeightIn_NumericEdit.sizer.AddStretch();
-   ScaledHeightIn_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::__ScaledSize_ValueUpdated, w );
+   ScaledHeightIn_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::e_ValueUpdated, w );
 
    PreserveAspectRatio_CheckBox.SetText( "Preserve aspect ratio" );
    PreserveAspectRatio_CheckBox.Check(); // default = on
@@ -2208,7 +2172,7 @@ DynamicCropInterface::GUIData::GUIData( DynamicCropInterface& w )
    Algorithm_ComboBox.AddItem( "Cubic B-Spline" );
    Algorithm_ComboBox.AddItem( "Auto" );
    Algorithm_ComboBox.SetMaxVisibleItemCount( 16 );
-   Algorithm_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&DynamicCropInterface::__Algorithm_ItemSelected, w );
+   Algorithm_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&DynamicCropInterface::e_ItemSelected, w );
 
    Algorithm_Sizer.SetSpacing( 4 );
    Algorithm_Sizer.Add( Algorithm_Label );
@@ -2223,7 +2187,7 @@ DynamicCropInterface::GUIData::GUIData( DynamicCropInterface& w )
    ClampingThreshold_NumericEdit.edit.SetFixedWidth( editWidth );
    ClampingThreshold_NumericEdit.sizer.AddStretch();
    ClampingThreshold_NumericEdit.SetToolTip( "<p>Deringing clamping threshold for bicubic spline and Lanczos interpolation algorithms.</p>" );
-   ClampingThreshold_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::__Algorithm_ValueUpdated, w );
+   ClampingThreshold_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::e_ValueUpdated, w );
 
    Smoothness_NumericEdit.SetReal();
    Smoothness_NumericEdit.SetPrecision( TheDCSmoothnessParameter->Precision() );
@@ -2234,12 +2198,23 @@ DynamicCropInterface::GUIData::GUIData( DynamicCropInterface& w )
    Smoothness_NumericEdit.edit.SetFixedWidth( editWidth );
    Smoothness_NumericEdit.sizer.AddStretch();
    Smoothness_NumericEdit.SetToolTip( "<p>Smoothness level for cubic filter interpolation algorithms.</p>" );
-   Smoothness_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::__Algorithm_ValueUpdated, w );
+   Smoothness_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::e_ValueUpdated, w );
+
+   GammaCorrection_CheckBox.SetText( "Gamma correction" );
+   GammaCorrection_CheckBox.SetToolTip( "<p>Interpolate pixel sample values with gamma correction. In general, this option should be enabled to "
+      "rotate and/or scale nonlinear images, i.e. images whose pixel values have been stretched nonlinearly. The applied transformations "
+      "(gamma exponent or sRGB gamma function) depend on the RGB working space of the target image.</p>" );
+   GammaCorrection_CheckBox.OnClick( (Button::click_event_handler)&DynamicCropInterface::e_ButtonClick, w );
+
+   GammaCorrection_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   GammaCorrection_Sizer.Add( GammaCorrection_CheckBox );
+   GammaCorrection_Sizer.AddStretch();
 
    Interpolation_Sizer.SetSpacing( 4 );
    Interpolation_Sizer.Add( Algorithm_Sizer );
    Interpolation_Sizer.Add( ClampingThreshold_NumericEdit );
    Interpolation_Sizer.Add( Smoothness_NumericEdit );
+   Interpolation_Sizer.Add( GammaCorrection_Sizer );
 
    Interpolation_Control.SetSizer( Interpolation_Sizer );
 
@@ -2255,7 +2230,7 @@ DynamicCropInterface::GUIData::GUIData( DynamicCropInterface& w )
    HorizontalResolution_NumericEdit.label.SetFixedWidth( labelWidth1 );
    HorizontalResolution_NumericEdit.edit.SetFixedWidth( editWidth );
    HorizontalResolution_NumericEdit.sizer.AddStretch();
-   HorizontalResolution_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::__Resolution_ValueUpdated, w );
+   HorizontalResolution_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::e_ValueUpdated, w );
 
    VerticalResolution_NumericEdit.SetReal();
    VerticalResolution_NumericEdit.SetPrecision( 3 );
@@ -2264,13 +2239,13 @@ DynamicCropInterface::GUIData::GUIData( DynamicCropInterface& w )
    VerticalResolution_NumericEdit.label.SetFixedWidth( labelWidth1 );
    VerticalResolution_NumericEdit.edit.SetFixedWidth( editWidth );
    VerticalResolution_NumericEdit.sizer.AddStretch();
-   VerticalResolution_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::__Resolution_ValueUpdated, w );
+   VerticalResolution_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::e_ValueUpdated, w );
 
    CentimeterUnits_RadioButton.SetText( "Centimeters" );
-   CentimeterUnits_RadioButton.OnClick( (Button::click_event_handler)&DynamicCropInterface::__Units_ButtonClick, w );
+   CentimeterUnits_RadioButton.OnClick( (Button::click_event_handler)&DynamicCropInterface::e_ButtonClick, w );
 
    InchUnits_RadioButton.SetText( "Inches" );
-   InchUnits_RadioButton.OnClick( (Button::click_event_handler)&DynamicCropInterface::__Units_ButtonClick, w );
+   InchUnits_RadioButton.OnClick( (Button::click_event_handler)&DynamicCropInterface::e_ButtonClick, w );
 
    ResolutionUnit_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    ResolutionUnit_Sizer.Add( CentimeterUnits_RadioButton );
@@ -2280,7 +2255,7 @@ DynamicCropInterface::GUIData::GUIData( DynamicCropInterface& w )
 
    ForceResolution_CheckBox.SetText( "Force resolution" );
    ForceResolution_CheckBox.SetToolTip( "Modify resolution metadata of target image(s)" );
-   ForceResolution_CheckBox.OnClick( (Button::click_event_handler)&DynamicCropInterface::__ForceResolution_ButtonClick, w );
+   ForceResolution_CheckBox.OnClick( (Button::click_event_handler)&DynamicCropInterface::e_ButtonClick, w );
 
    ForceResolution_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    ForceResolution_Sizer.Add( ForceResolution_CheckBox );
@@ -2305,7 +2280,7 @@ DynamicCropInterface::GUIData::GUIData( DynamicCropInterface& w )
    Red_NumericControl.SetReal();
    Red_NumericControl.SetRange( 0, 1 );
    Red_NumericControl.SetPrecision( 6 );
-   Red_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::__FilColor_ValueUpdated, w );
+   Red_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::e_ValueUpdated, w );
 
    Green_NumericControl.label.SetText( "G:" );
    Green_NumericControl.label.SetFixedWidth( labelWidth3 );
@@ -2313,7 +2288,7 @@ DynamicCropInterface::GUIData::GUIData( DynamicCropInterface& w )
    Green_NumericControl.SetReal();
    Green_NumericControl.SetRange( 0, 1 );
    Green_NumericControl.SetPrecision( 6 );
-   Green_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::__FilColor_ValueUpdated, w );
+   Green_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::e_ValueUpdated, w );
 
    Blue_NumericControl.label.SetText( "B:" );
    Blue_NumericControl.label.SetFixedWidth( labelWidth3 );
@@ -2321,7 +2296,7 @@ DynamicCropInterface::GUIData::GUIData( DynamicCropInterface& w )
    Blue_NumericControl.SetReal();
    Blue_NumericControl.SetRange( 0, 1 );
    Blue_NumericControl.SetPrecision( 6 );
-   Blue_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::__FilColor_ValueUpdated, w );
+   Blue_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::e_ValueUpdated, w );
 
    Alpha_NumericControl.label.SetText( "A:" );
    Alpha_NumericControl.label.SetFixedWidth( labelWidth3 );
@@ -2329,10 +2304,10 @@ DynamicCropInterface::GUIData::GUIData( DynamicCropInterface& w )
    Alpha_NumericControl.SetReal();
    Alpha_NumericControl.SetRange( 0, 1 );
    Alpha_NumericControl.SetPrecision( 6 );
-   Alpha_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::__FilColor_ValueUpdated, w );
+   Alpha_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&DynamicCropInterface::e_ValueUpdated, w );
 
    ColorSample_Control.SetScaledFixedHeight( 20 );
-   ColorSample_Control.OnPaint( (Control::paint_event_handler)&DynamicCropInterface::__ColorSample_Paint, w );
+   ColorSample_Control.OnPaint( (Control::paint_event_handler)&DynamicCropInterface::e_Paint, w );
 
    FillColor_Sizer.SetSpacing( 4 );
    FillColor_Sizer.Add( Red_NumericControl );
@@ -2367,7 +2342,6 @@ DynamicCropInterface::GUIData::GUIData( DynamicCropInterface& w )
    w.SetFixedWidth();
 
    Scale_Control.Hide();
-   Interpolation_Control.Hide();
    Resolution_Control.Hide();
    FillColor_Control.Hide();
 
@@ -2380,4 +2354,4 @@ DynamicCropInterface::GUIData::GUIData( DynamicCropInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DynamicCropInterface.cpp - Released 2022-05-17T17:15:11Z
+// EOF DynamicCropInterface.cpp - Released 2022-11-21T14:47:17Z

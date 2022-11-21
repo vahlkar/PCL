@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard ColorSpaces Process Module Version 1.1.2
+// Standard ColorSpaces Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// LRGBCombinationParameters.h - Released 2022-05-17T17:15:11Z
+// LRGBCombinationParameters.h - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -209,6 +209,10 @@ extern LRGBLayersProtected* TheLRGBLayersProtectedParameter;
 
 // ----------------------------------------------------------------------------
 
+extern CSInheritAstrometricSolution* TheLRGBCInheritAstrometricSolutionParameter;
+
+// ----------------------------------------------------------------------------
+
 PCL_END_LOCAL
 
 } // pcl
@@ -216,4 +220,4 @@ PCL_END_LOCAL
 #endif   // __LRGBCombinationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF LRGBCombinationParameters.h - Released 2022-05-17T17:15:11Z
+// EOF LRGBCombinationParameters.h - Released 2022-11-21T14:47:17Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.30
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// pcl/View.cpp - Released 2022-08-10T16:36:36Z
+// pcl/View.cpp - Released 2022-11-21T14:46:37Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -83,6 +83,20 @@ bool View::IsMainView() const
 bool View::IsPreview() const
 {
    return (*API->View->IsPreview)( handle ) != api_false;
+}
+
+// ----------------------------------------------------------------------------
+
+bool View::IsPartialPreview() const
+{
+   return IsPreview() && Bounds() != Window().MainView().Bounds();
+}
+
+// ----------------------------------------------------------------------------
+
+bool View::IsCompletePreview() const
+{
+   return IsPreview() && Bounds() == Window().MainView().Bounds();
 }
 
 // ----------------------------------------------------------------------------
@@ -618,4 +632,4 @@ Array<View> View::AllPreviews()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/View.cpp - Released 2022-08-10T16:36:36Z
+// EOF pcl/View.cpp - Released 2022-11-21T14:46:37Z

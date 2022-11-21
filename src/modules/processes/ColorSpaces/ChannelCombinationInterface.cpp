@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard ColorSpaces Process Module Version 1.1.2
+// Standard ColorSpaces Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// ChannelCombinationInterface.cpp - Released 2022-05-17T17:15:11Z
+// ChannelCombinationInterface.cpp - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -211,11 +211,13 @@ void ChannelCombinationInterface::UpdateControls()
    GUI->C2_Edit.Enable( m_instance.IsChannelEnabled( 2 ) );
 
    GUI->C2_ToolButton.Enable( m_instance.IsChannelEnabled( 2 ) );
+
+   GUI->InheritAstrometricSolution_CheckBox.SetChecked( m_instance.p_inheritAstrometricSolution );
 }
 
 // ----------------------------------------------------------------------------
 
-void ChannelCombinationInterface::__ColorSpace_Click( Button& sender, bool checked )
+void ChannelCombinationInterface::e_ColorSpace_Click( Button& sender, bool checked )
 {
    if ( sender == GUI->RGB_RadioButton )
       m_instance.p_colorSpace = ColorSpaceId::RGB;
@@ -237,7 +239,7 @@ void ChannelCombinationInterface::__ColorSpace_Click( Button& sender, bool check
 
 // ----------------------------------------------------------------------------
 
-void ChannelCombinationInterface::__Channel_Click( Button& sender, bool checked )
+void ChannelCombinationInterface::e_Channel_Click( Button& sender, bool checked )
 {
    int i;
    if ( sender == GUI->C0_CheckBox )
@@ -246,6 +248,11 @@ void ChannelCombinationInterface::__Channel_Click( Button& sender, bool checked 
       i = 1;
    else if ( sender == GUI->C2_CheckBox )
       i = 2;
+   else if ( sender == GUI->InheritAstrometricSolution_CheckBox )
+   {
+      m_instance.p_inheritAstrometricSolution = checked;
+      return;
+   }
    else
       return;
 
@@ -267,7 +274,7 @@ void ChannelCombinationInterface::__Channel_Click( Button& sender, bool checked 
 
 // ----------------------------------------------------------------------------
 
-void ChannelCombinationInterface::__ChannelId_GetFocus( Control& sender )
+void ChannelCombinationInterface::e_ChannelId_GetFocus( Control& sender )
 {
    Edit* e = dynamic_cast<Edit*>( &sender );
    if ( e != nullptr )
@@ -277,7 +284,7 @@ void ChannelCombinationInterface::__ChannelId_GetFocus( Control& sender )
 
 // ----------------------------------------------------------------------------
 
-void ChannelCombinationInterface::__ChannelId_EditCompleted( Edit& sender )
+void ChannelCombinationInterface::e_ChannelId_EditCompleted( Edit& sender )
 {
    int i;
    if ( sender == GUI->C0_Edit )
@@ -310,7 +317,7 @@ void ChannelCombinationInterface::__ChannelId_EditCompleted( Edit& sender )
 
 // ----------------------------------------------------------------------------
 
-void ChannelCombinationInterface::__Channel_SelectSource_Click( Button& sender, bool /*checked*/ )
+void ChannelCombinationInterface::e_Channel_SelectSource_Click( Button& sender, bool /*checked*/ )
 {
    int i;
    if ( sender == GUI->C0_ToolButton )
@@ -335,7 +342,7 @@ void ChannelCombinationInterface::__Channel_SelectSource_Click( Button& sender, 
 
 // ----------------------------------------------------------------------------
 
-void ChannelCombinationInterface::__ViewDrag( Control& sender, const Point& pos, const View& view, unsigned modifiers, bool& wantsView )
+void ChannelCombinationInterface::e_ViewDrag( Control& sender, const Point& pos, const View& view, unsigned modifiers, bool& wantsView )
 {
    if ( sender == GUI->C0_Edit || sender == GUI->C1_Edit || sender == GUI->C2_Edit )
       wantsView = view.IsMainView() && !view.IsColor();
@@ -343,7 +350,7 @@ void ChannelCombinationInterface::__ViewDrag( Control& sender, const Point& pos,
 
 // ----------------------------------------------------------------------------
 
-void ChannelCombinationInterface::__ViewDrop( Control& sender, const Point& pos, const View& view, unsigned modifiers )
+void ChannelCombinationInterface::e_ViewDrop( Control& sender, const Point& pos, const View& view, unsigned modifiers )
 {
    if ( view.IsMainView() )
       if ( !view.IsColor() )
@@ -375,13 +382,13 @@ ChannelCombinationInterface::GUIData::GUIData( ChannelCombinationInterface& w )
    //
 
    RGB_RadioButton.SetText( "RGB" );
-   RGB_RadioButton.OnClick( (pcl::Button::click_event_handler)&ChannelCombinationInterface::__ColorSpace_Click, w );
+   RGB_RadioButton.OnClick( (pcl::Button::click_event_handler)&ChannelCombinationInterface::e_ColorSpace_Click, w );
 
    HSV_RadioButton.SetText( "HSV" );
-   HSV_RadioButton.OnClick( (pcl::Button::click_event_handler)&ChannelCombinationInterface::__ColorSpace_Click, w );
+   HSV_RadioButton.OnClick( (pcl::Button::click_event_handler)&ChannelCombinationInterface::e_ColorSpace_Click, w );
 
    HSI_RadioButton.SetText( "HSI" );
-   HSI_RadioButton.OnClick( (pcl::Button::click_event_handler)&ChannelCombinationInterface::__ColorSpace_Click, w );
+   HSI_RadioButton.OnClick( (pcl::Button::click_event_handler)&ChannelCombinationInterface::e_ColorSpace_Click, w );
 
    ColorSpaceLeft_Sizer.Add( RGB_RadioButton );
    ColorSpaceLeft_Sizer.Add( HSV_RadioButton );
@@ -390,13 +397,13 @@ ChannelCombinationInterface::GUIData::GUIData( ChannelCombinationInterface& w )
    //
 
    CIEXYZ_RadioButton.SetText( "CIE XYZ" );
-   CIEXYZ_RadioButton.OnClick( (pcl::Button::click_event_handler)&ChannelCombinationInterface::__ColorSpace_Click, w );
+   CIEXYZ_RadioButton.OnClick( (pcl::Button::click_event_handler)&ChannelCombinationInterface::e_ColorSpace_Click, w );
 
    CIELab_RadioButton.SetText( "CIE L*a*b*" );
-   CIELab_RadioButton.OnClick( (pcl::Button::click_event_handler)&ChannelCombinationInterface::__ColorSpace_Click, w );
+   CIELab_RadioButton.OnClick( (pcl::Button::click_event_handler)&ChannelCombinationInterface::e_ColorSpace_Click, w );
 
    CIELch_RadioButton.SetText( "CIE L*c*h*" );
-   CIELch_RadioButton.OnClick( (pcl::Button::click_event_handler)&ChannelCombinationInterface::__ColorSpace_Click, w );
+   CIELch_RadioButton.OnClick( (pcl::Button::click_event_handler)&ChannelCombinationInterface::e_ColorSpace_Click, w );
 
    ColorSpaceRight_Sizer.Add( CIEXYZ_RadioButton );
    ColorSpaceRight_Sizer.Add( CIELab_RadioButton );
@@ -415,21 +422,21 @@ ChannelCombinationInterface::GUIData::GUIData( ChannelCombinationInterface& w )
 
    //
 
-   C0_CheckBox.OnClick( (pcl::Button::click_event_handler)&ChannelCombinationInterface::__Channel_Click, w );
+   C0_CheckBox.OnClick( (pcl::Button::click_event_handler)&ChannelCombinationInterface::e_Channel_Click, w );
 
    C0_Label.SetFixedWidth( chLabelWidth );
    C0_Label.SetTextAlignment( TextAlign::Center|TextAlign::VertCenter );
 
    C0_Edit.SetMinWidth( chEditWidth );
-   C0_Edit.OnGetFocus( (Control::event_handler)&ChannelCombinationInterface::__ChannelId_GetFocus, w );
-   C0_Edit.OnEditCompleted( (Edit::edit_event_handler)&ChannelCombinationInterface::__ChannelId_EditCompleted, w );
-   C0_Edit.OnViewDrag( (Control::view_drag_event_handler)&ChannelCombinationInterface::__ViewDrag, w );
-   C0_Edit.OnViewDrop( (Control::view_drop_event_handler)&ChannelCombinationInterface::__ViewDrop, w );
+   C0_Edit.OnGetFocus( (Control::event_handler)&ChannelCombinationInterface::e_ChannelId_GetFocus, w );
+   C0_Edit.OnEditCompleted( (Edit::edit_event_handler)&ChannelCombinationInterface::e_ChannelId_EditCompleted, w );
+   C0_Edit.OnViewDrag( (Control::view_drag_event_handler)&ChannelCombinationInterface::e_ViewDrag, w );
+   C0_Edit.OnViewDrop( (Control::view_drop_event_handler)&ChannelCombinationInterface::e_ViewDrop, w );
 
    C0_ToolButton.SetIcon( Bitmap( w.ScaledResource( ":/icons/select-view.png" ) ) );
    C0_ToolButton.SetScaledFixedSize( 20, 20 );
    C0_ToolButton.SetToolTip( "Select channel #0 source image" );
-   C0_ToolButton.OnClick( (ToolButton::click_event_handler)&ChannelCombinationInterface::__Channel_SelectSource_Click, w );
+   C0_ToolButton.OnClick( (ToolButton::click_event_handler)&ChannelCombinationInterface::e_Channel_SelectSource_Click, w );
 
    C0_Sizer.Add( C0_CheckBox );
    C0_Sizer.Add( C0_Label );
@@ -440,21 +447,21 @@ ChannelCombinationInterface::GUIData::GUIData( ChannelCombinationInterface& w )
 
    //
 
-   C1_CheckBox.OnClick( (pcl::Button::click_event_handler)&ChannelCombinationInterface::__Channel_Click, w );
+   C1_CheckBox.OnClick( (pcl::Button::click_event_handler)&ChannelCombinationInterface::e_Channel_Click, w );
 
    C1_Label.SetFixedWidth( chLabelWidth );
    C1_Label.SetTextAlignment( TextAlign::Center|TextAlign::VertCenter );
 
    C1_Edit.SetMinWidth( chEditWidth );
-   C1_Edit.OnGetFocus( (Control::event_handler)&ChannelCombinationInterface::__ChannelId_GetFocus, w );
-   C1_Edit.OnEditCompleted( (Edit::edit_event_handler)&ChannelCombinationInterface::__ChannelId_EditCompleted, w );
-   C1_Edit.OnViewDrag( (Control::view_drag_event_handler)&ChannelCombinationInterface::__ViewDrag, w );
-   C1_Edit.OnViewDrop( (Control::view_drop_event_handler)&ChannelCombinationInterface::__ViewDrop, w );
+   C1_Edit.OnGetFocus( (Control::event_handler)&ChannelCombinationInterface::e_ChannelId_GetFocus, w );
+   C1_Edit.OnEditCompleted( (Edit::edit_event_handler)&ChannelCombinationInterface::e_ChannelId_EditCompleted, w );
+   C1_Edit.OnViewDrag( (Control::view_drag_event_handler)&ChannelCombinationInterface::e_ViewDrag, w );
+   C1_Edit.OnViewDrop( (Control::view_drop_event_handler)&ChannelCombinationInterface::e_ViewDrop, w );
 
    C1_ToolButton.SetIcon( Bitmap( w.ScaledResource( ":/icons/select-view.png" ) ) );
    C1_ToolButton.SetScaledFixedSize( 20, 20 );
    C1_ToolButton.SetToolTip( "Select channel #1 source image" );
-   C1_ToolButton.OnClick( (ToolButton::click_event_handler)&ChannelCombinationInterface::__Channel_SelectSource_Click, w );
+   C1_ToolButton.OnClick( (ToolButton::click_event_handler)&ChannelCombinationInterface::e_Channel_SelectSource_Click, w );
 
    C1_Sizer.Add( C1_CheckBox );
    C1_Sizer.Add( C1_Label );
@@ -465,21 +472,21 @@ ChannelCombinationInterface::GUIData::GUIData( ChannelCombinationInterface& w )
 
    //
 
-   C2_CheckBox.OnClick( (pcl::Button::click_event_handler)&ChannelCombinationInterface::__Channel_Click, w );
+   C2_CheckBox.OnClick( (pcl::Button::click_event_handler)&ChannelCombinationInterface::e_Channel_Click, w );
 
    C2_Label.SetFixedWidth( chLabelWidth );
    C2_Label.SetTextAlignment( TextAlign::Center|TextAlign::VertCenter );
 
    C2_Edit.SetMinWidth( chEditWidth );
-   C2_Edit.OnGetFocus( (Control::event_handler)&ChannelCombinationInterface::__ChannelId_GetFocus, w );
-   C2_Edit.OnEditCompleted( (Edit::edit_event_handler)&ChannelCombinationInterface::__ChannelId_EditCompleted, w );
-   C2_Edit.OnViewDrag( (Control::view_drag_event_handler)&ChannelCombinationInterface::__ViewDrag, w );
-   C2_Edit.OnViewDrop( (Control::view_drop_event_handler)&ChannelCombinationInterface::__ViewDrop, w );
+   C2_Edit.OnGetFocus( (Control::event_handler)&ChannelCombinationInterface::e_ChannelId_GetFocus, w );
+   C2_Edit.OnEditCompleted( (Edit::edit_event_handler)&ChannelCombinationInterface::e_ChannelId_EditCompleted, w );
+   C2_Edit.OnViewDrag( (Control::view_drag_event_handler)&ChannelCombinationInterface::e_ViewDrag, w );
+   C2_Edit.OnViewDrop( (Control::view_drop_event_handler)&ChannelCombinationInterface::e_ViewDrop, w );
 
    C2_ToolButton.SetIcon( Bitmap( w.ScaledResource( ":/icons/select-view.png" ) ) );
    C2_ToolButton.SetScaledFixedSize( 20, 20 );
    C2_ToolButton.SetToolTip( "Select channel #2 source image" );
-   C2_ToolButton.OnClick( (ToolButton::click_event_handler)&ChannelCombinationInterface::__Channel_SelectSource_Click, w );
+   C2_ToolButton.OnClick( (ToolButton::click_event_handler)&ChannelCombinationInterface::e_Channel_SelectSource_Click, w );
 
    C2_Sizer.Add( C2_CheckBox );
    C2_Sizer.Add( C2_Label );
@@ -490,18 +497,33 @@ ChannelCombinationInterface::GUIData::GUIData( ChannelCombinationInterface& w )
 
    //
 
+   InheritAstrometricSolution_CheckBox.SetText( "Inherit astrometric solution" );
+   InheritAstrometricSolution_CheckBox.SetToolTip( "<p>Copy an existing astrometric solution to the combined image.</p>"
+      "<p>This option is only applicable to global execution, that is, when ChannelCombination creates a new combined image, "
+      "or to execution on main views. This option is always ignored when ChannelCombination is executed on previews.</p>"
+      "<p>When this option is enabled, a valid astrometric solution is inherited if it exists in the "
+      "green, CIE Y, CIE L*, V or I source image, depending on the target color space. If a valid solution does not "
+      "exist in that image, the process looks for a valid astrometric solution in one of the other source channel "
+      "images. If no valid astrometric solution can be found, this option is silently ignored.</p>" );
+   InheritAstrometricSolution_CheckBox.OnClick( (pcl::Button::click_event_handler)&ChannelCombinationInterface::e_Channel_SelectSource_Click, w );
+
+   InheritAstrometricSolution_Sizer.Add( InheritAstrometricSolution_CheckBox );
+   InheritAstrometricSolution_Sizer.AddStretch();
+
+   //
+
    Channels_Sizer.SetMargin( 6 );
    Channels_Sizer.SetSpacing( 4 );
    Channels_Sizer.Add( C0_Sizer );
    Channels_Sizer.Add( C1_Sizer );
    Channels_Sizer.Add( C2_Sizer );
+   Channels_Sizer.AddSpacing( 4 );
+   Channels_Sizer.Add( InheritAstrometricSolution_Sizer );
    Channels_Sizer.AddStretch();
 
    Channels_GroupBox.SetTitle( "Channels / Source Images" );
    Channels_GroupBox.SetSizer( Channels_Sizer );
    Channels_GroupBox.AdjustToContents();
-
-   //
 
    C0_CheckBox.SetFixedWidth();
    C1_CheckBox.SetFixedWidth();
@@ -526,4 +548,4 @@ ChannelCombinationInterface::GUIData::GUIData( ChannelCombinationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ChannelCombinationInterface.cpp - Released 2022-05-17T17:15:11Z
+// EOF ChannelCombinationInterface.cpp - Released 2022-11-21T14:47:17Z

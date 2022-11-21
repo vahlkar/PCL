@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard Gaia Process Module Version 1.1.0
+// Standard Gaia Process Module Version 1.2.5
 // ----------------------------------------------------------------------------
-// GaiaInterface.cpp - Released 2022-05-17T17:15:11Z
+// GaiaInterface.cpp - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Gaia PixInsight module.
 //
@@ -115,7 +115,6 @@ private:
       PushButton        Cancel_PushButton;
 
    void e_Click( Button& sender, bool checked );
-   void e_Return( Dialog& sender, int retVal );
 };
 
 GaiaFlagsSelectionDialog::GaiaFlagsSelectionDialog( uint32 a_flags )
@@ -957,49 +956,35 @@ void GaiaInterface::UpdateControls()
    if ( GUI != nullptr )
    {
       GUI->DataRelease_ComboBox.SetCurrentItem( m_instance.OutputDataRelease() - 1 ); // 0 = GDataRelease::BestAvailable
-
       GUI->CenterRA_Edit.SetText( RAToString( m_instance.p_searchData.centerRA ) );
-
       GUI->CenterDec_Edit.SetText( DecToString( m_instance.p_searchData.centerDec ) );
-
       GUI->Radius_Edit.SetText( DistToString( m_instance.p_searchData.radius ) );
-
       GUI->ShowCompoundAngles_CheckBox.SetChecked( m_showCompoundAngles );
-
       GUI->RAInTimeUnits_CheckBox.SetChecked( m_raInTimeUnits );
-
       GUI->MagnitudeLow_NumericEdit.SetValue( m_instance.p_searchData.magnitudeLow );
-
       GUI->MagnitudeHigh_NumericEdit.SetValue( m_instance.p_searchData.magnitudeHigh );
-
       GUI->RequiredFlags_Edit.SetText( String().Format( "%08x", m_instance.p_searchData.requiredFlags ) );
-
       GUI->InclusionFlags_Edit.SetText( String().Format( "%08x", m_instance.p_searchData.inclusionFlags ) );
-
       GUI->ExclusionFlags_Edit.SetText( String().Format( "%08x", m_instance.p_searchData.exclusionFlags ) );
-
       GUI->SourceLimit_NumericEdit.SetValue( m_instance.p_searchData.sourceLimit );
-
       GUI->SortBy_ComboBox.SetCurrentItem( m_instance.p_sortBy );
-
       GUI->GenerateTextOutput_CheckBox.SetChecked( m_instance.p_generateTextOutput );
-
-      GUI->TextFormat_Label.Enable( m_instance.p_generateTextOutput );
-
+      GUI->GenerateBinaryOutput_CheckBox.SetChecked( m_instance.p_generateBinaryOutput );
       GUI->TextFormat_ComboBox.SetCurrentItem( m_instance.p_textFormat );
-      GUI->TextFormat_ComboBox.Enable( m_instance.p_generateTextOutput );
-
-      GUI->TextHeaders_Label.Enable( m_instance.p_generateTextOutput );
-
       GUI->TextHeaders_ComboBox.SetCurrentItem( m_instance.p_textHeaders );
-      GUI->TextHeaders_ComboBox.Enable( m_instance.p_generateTextOutput );
-
-      GUI->OutputFilePath_Label.Enable( m_instance.p_generateTextOutput );
-
       GUI->OutputFilePath_Edit.SetText( m_instance.p_outputFilePath );
-      GUI->OutputFilePath_Edit.Enable( m_instance.p_generateTextOutput );
 
-      GUI->OutputFilePath_ToolButton.Enable( m_instance.p_generateTextOutput );
+      bool generateOutput = m_instance.p_generateTextOutput || m_instance.p_generateBinaryOutput;
+      bool generateTextOutput = m_instance.p_generateTextOutput && !m_instance.p_generateBinaryOutput;
+
+      GUI->GenerateTextOutput_CheckBox.Enable( generateTextOutput );
+      GUI->TextFormat_Label.Enable( generateTextOutput );
+      GUI->TextFormat_ComboBox.Enable( generateTextOutput );
+      GUI->TextHeaders_Label.Enable( generateTextOutput );
+      GUI->TextHeaders_ComboBox.Enable( generateTextOutput );
+      GUI->OutputFilePath_Label.Enable( generateOutput );
+      GUI->OutputFilePath_Edit.Enable( generateOutput );
+      GUI->OutputFilePath_ToolButton.Enable( generateOutput );
    }
 }
 
@@ -1198,6 +1183,11 @@ void GaiaInterface::e_Click( Button& sender, bool checked )
       m_instance.p_generateTextOutput = checked;
       UpdateControls();
    }
+   else if ( sender == GUI->GenerateBinaryOutput_CheckBox )
+   {
+      m_instance.p_generateBinaryOutput = checked;
+      UpdateControls();
+   }
    else if ( sender == GUI->RequiredFlagsClear_ToolButton )
    {
       m_instance.p_searchData.requiredFlags = 0;
@@ -1246,10 +1236,13 @@ void GaiaInterface::e_Click( Button& sender, bool checked )
    else if ( sender == GUI->OutputFilePath_ToolButton )
    {
       SaveFileDialog d;
-      d.SetCaption( "Gaia: Output CSV File" );
-      d.SetFilters( FileDialog::filter_list() << FileFilter( "Any Files", "*" )
-                                              << FileFilter( "Plain Text Files", ".txt" )
-                                              << FileFilter( "CSV Files", ".csv" ) );
+      d.SetCaption( m_instance.p_generateBinaryOutput ? "Gaia: Output binary File" : "Gaia: Output Text File" );
+      FileDialog::filter_list filters;
+      filters << FileFilter( "Any Files", "*" );
+      if ( !m_instance.p_generateBinaryOutput )
+         filters << FileFilter( "Plain Text Files", ".txt" )
+                 << FileFilter( "CSV Files", ".csv" );
+      d.SetFilters( filters );
       d.EnableOverwritePrompt();
       if ( d.Execute() )
       {
@@ -1614,6 +1607,20 @@ GaiaInterface::GUIData::GUIData( GaiaInterface& w )
 
    //
 
+   GenerateBinaryOutput_CheckBox.SetText( "Generate binary output" );
+   GenerateBinaryOutput_CheckBox.SetToolTip( "<p>When enabled, the search operation will generate an output "
+      "binary file including available data for all sources fulfilling the specified search criteria.</p>"
+      "<p>Note that enabling this option will cause the process to ignore the state of the <i>Generate text output</i> "
+      "parameter. In other words, generation of output binary files always takes precedence and implicitly "
+      "disables generation of text files. See the process documentation for information on the format used "
+      "by Gaia output binary files.</p>" );
+   GenerateBinaryOutput_CheckBox.OnClick( (Button::click_event_handler)&GaiaInterface::e_Click, w );
+
+   GenerateBinaryOutput_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   GenerateBinaryOutput_Sizer.Add( GenerateBinaryOutput_CheckBox );
+
+   //
+
    const char* textFormatToolTip = "<p>The format of generated output text files.</p>"
       "<p>CSV will generate standard comma-separated files (CSV format).</p>"
       "<p>Tabular formats can be selected to write coordinates either as scalars in degrees, or using compound "
@@ -1662,8 +1669,8 @@ GaiaInterface::GUIData::GUIData( GaiaInterface& w )
    //
 
    const char* outputFilePathToolTip = "<p>Output file path.</p>"
-      "<p>When the <i>Generate text output</i> option is enabled, the search process will write its output "
-      "data to the specified file in a plain text format.</p>";
+      "<p>When one of the <i>Generate text output</i> or <i>Generate binary output</i> options is enabled, "
+      "the search process will write its output data to the specified file.</p>";
 
    OutputFilePath_Label.SetText( "Output file:" );
    OutputFilePath_Label.SetFixedWidth( labelWidth1 );
@@ -1688,6 +1695,7 @@ GaiaInterface::GUIData::GUIData( GaiaInterface& w )
    OutputParameters_Sizer.SetSpacing( 4 );
    OutputParameters_Sizer.Add( SortBy_Sizer );
    OutputParameters_Sizer.Add( GenerateTextOutput_Sizer );
+   OutputParameters_Sizer.Add( GenerateBinaryOutput_Sizer );
    OutputParameters_Sizer.Add( TextFormat_Sizer );
    OutputParameters_Sizer.Add( TextHeaders_Sizer );
    OutputParameters_Sizer.Add( OutputFilePath_Sizer );
@@ -1717,4 +1725,4 @@ GaiaInterface::GUIData::GUIData( GaiaInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GaiaInterface.cpp - Released 2022-05-17T17:15:11Z
+// EOF GaiaInterface.cpp - Released 2022-11-21T14:47:17Z

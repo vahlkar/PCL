@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 1.2.4
+// Standard Geometry Process Module Version 1.3.1
 // ----------------------------------------------------------------------------
-// ResampleInstance.cpp - Released 2022-05-17T17:15:11Z
+// ResampleInstance.cpp - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -77,6 +77,7 @@ ResampleInstance::ResampleInstance( const MetaProcess* P )
    , p_interpolation( TheRSInterpolationAlgorithmParameter->Default )
    , p_clampingThreshold( TheRSClampingThresholdParameter->DefaultValue() )
    , p_smoothness( TheRSSmoothnessParameter->DefaultValue() )
+   , p_gammaCorrection( TheRSGammaCorrectionParameter->DefaultValue() )
    , p_noGUIMessages( TheRSNoGUIMessagesParameter->DefaultValue() )
 {
 }
@@ -105,6 +106,7 @@ void ResampleInstance::Assign( const ProcessImplementation& p )
       p_interpolation = x->p_interpolation;
       p_clampingThreshold = x->p_clampingThreshold;
       p_smoothness = x->p_smoothness;
+      p_gammaCorrection = x->p_gammaCorrection;
       p_noGUIMessages = x->p_noGUIMessages;
    }
 }
@@ -194,6 +196,11 @@ bool ResampleInstance::ExecuteOn( View& view )
 
       if ( width != w0 || height != h0 )
       {
+         console.EnableAbort();
+
+         StandardStatus status;
+         image.SetStatusCallback( &status );
+
          /*
           * On 32-bit systems, make sure the resulting image requires less than 4 GiB.
           */
@@ -204,24 +211,30 @@ bool ResampleInstance::ExecuteOn( View& view )
                throw Error( "Resample: Invalid operation: The resulting image would require more than 4 GiB" );
          }
 
-         AutoPointer<PixelInterpolation> interpolation( NewInterpolation(
-            p_interpolation, width, height, w0, h0, false, p_clampingThreshold, p_smoothness, image ) );
-
          double pixelScaleX = double( w0 )/width;
          double pixelScaleY = double( h0 )/height;
          DeleteAstrometryMetadataAndPreviewsAndMask( window,
                                  false,                                   /*deleteCenterMetadata*/
                                  Abs( pixelScaleX - pixelScaleY ) > 0.01, /*deleteScaleMetadata*/
                                  pixelScaleX                              /*pixelSizeScalingFactor*/ );
-         console.EnableAbort();
 
-         StandardStatus status;
-         image.SetStatusCallback( &status );
+         AutoPointer<PixelInterpolation> interpolation( NewInterpolation(
+            p_interpolation, width, height, w0, h0, false, p_clampingThreshold, p_smoothness, image ) );
 
          Resample S( *interpolation, p_size.x, p_size.y );
+
          S.SetSizes( width, height );
          S.SetMode( ResizeMode::AbsolutePixels );
          S.SetAbsMode( AbsoluteResizeMode::ForceWidthAndHeight );
+
+         if ( p_gammaCorrection )
+         {
+            RGBColorSystem rgbws;
+            window.GetRGBWS( rgbws );
+            S.EnableGammaCorrection();
+            S.SetRGBWorkingSpace( rgbws );
+         }
+
          S >> image;
       }
       else
@@ -266,6 +279,8 @@ void* ResampleInstance::LockParameter( const MetaParameter* p, size_type /*table
       return &p_clampingThreshold;
    if ( p == TheRSSmoothnessParameter )
       return &p_smoothness;
+   if ( p == TheRSGammaCorrectionParameter )
+      return &p_gammaCorrection;
    if ( p == TheRSNoGUIMessagesParameter )
       return &p_noGUIMessages;
    return nullptr;
@@ -276,4 +291,4 @@ void* ResampleInstance::LockParameter( const MetaParameter* p, size_type /*table
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ResampleInstance.cpp - Released 2022-05-17T17:15:11Z
+// EOF ResampleInstance.cpp - Released 2022-11-21T14:47:17Z

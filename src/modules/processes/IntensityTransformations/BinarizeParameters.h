@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// BinarizeParameters.h - Released 2022-05-17T17:15:11Z
+// BinarizeParameters.h - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -134,4 +134,4 @@ PCL_END_LOCAL
 #endif   // __BinarizeParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF BinarizeParameters.h - Released 2022-05-17T17:15:11Z
+// EOF BinarizeParameters.h - Released 2022-11-21T14:47:17Z

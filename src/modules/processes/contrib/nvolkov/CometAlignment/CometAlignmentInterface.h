@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
 // Standard CometAlignment Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// CometAlignmentInterface.h - Released 2022-05-17T17:15:11Z
+// CometAlignmentInterface.h - Released 2022-11-21T14:47:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CometAlignment PixInsight module.
 //
@@ -267,4 +267,4 @@ PCL_END_LOCAL
 #endif // __CometAlignmentInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF CometAlignmentInterface.h - Released 2022-05-17T17:15:11Z
+// EOF CometAlignmentInterface.h - Released 2022-11-21T14:47:18Z

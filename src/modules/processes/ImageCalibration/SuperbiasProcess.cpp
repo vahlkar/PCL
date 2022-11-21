@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.9.6
+// Standard ImageCalibration Process Module Version 1.9.7
 // ----------------------------------------------------------------------------
-// SuperbiasProcess.cpp - Released 2022-05-25T08:24:23Z
+// SuperbiasProcess.cpp - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -133,4 +133,4 @@ ProcessImplementation* SuperbiasProcess::Clone( const ProcessImplementation& p )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SuperbiasProcess.cpp - Released 2022-05-25T08:24:23Z
+// EOF SuperbiasProcess.cpp - Released 2022-11-21T14:47:17Z

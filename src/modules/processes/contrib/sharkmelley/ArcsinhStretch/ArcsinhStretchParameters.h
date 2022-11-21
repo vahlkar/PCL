@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
 // Standard ArcsinhStretch Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// ArcsinhStretchParameters.h - Released 2022-05-17T17:15:11Z
+// ArcsinhStretchParameters.h - Released 2022-11-21T14:47:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ArcsinhStretch PixInsight module.
 //
@@ -145,4 +145,4 @@ PCL_END_LOCAL
 #endif   // __ArcsinhStretchs_h
 
 // ----------------------------------------------------------------------------
-// EOF ArcsinhStretchParameters.h - Released 2022-05-17T17:15:11Z
+// EOF ArcsinhStretchParameters.h - Released 2022-11-21T14:47:18Z

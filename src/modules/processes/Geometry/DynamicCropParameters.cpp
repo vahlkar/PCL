@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 1.2.4
+// Standard Geometry Process Module Version 1.3.1
 // ----------------------------------------------------------------------------
-// DynamicCropParameters.cpp - Released 2022-05-17T17:15:11Z
+// DynamicCropParameters.cpp - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -70,6 +70,7 @@ OptimizeFastRotations*  TheDCOptimizeFastRotationsParameter = nullptr;
 InterpolationAlgorithm* TheDCInterpolationAlgorithmParameter = nullptr;
 ClampingThreshold*      TheDCClampingThresholdParameter = nullptr;
 Smoothness*             TheDCSmoothnessParameter = nullptr;
+GammaCorrection*        TheDCGammaCorrectionParameter = nullptr;
 XResolution*            TheDCXResolutionParameter = nullptr;
 YResolution*            TheDCYResolutionParameter = nullptr;
 MetricResolution*       TheDCMetricResolutionParameter = nullptr;
@@ -217,4 +218,4 @@ double DCScaleY::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DynamicCropParameters.cpp - Released 2022-05-17T17:15:11Z
+// EOF DynamicCropParameters.cpp - Released 2022-11-21T14:47:17Z

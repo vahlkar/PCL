@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 1.2.4
+// Standard Geometry Process Module Version 1.3.1
 // ----------------------------------------------------------------------------
-// FastRotationInterface.cpp - Released 2022-05-17T17:15:11Z
+// FastRotationInterface.cpp - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -187,7 +187,7 @@ void FastRotationInterface::UpdateControls()
 
 // ----------------------------------------------------------------------------
 
-void FastRotationInterface::__ButtonClick( Button& sender, bool /*checked*/ )
+void FastRotationInterface::e_ButtonClick( Button& sender, bool /*checked*/ )
 {
    if ( sender == GUI->Rotate180_RadioButton )
       m_instance.p_mode = FRMode::Rotate180;
@@ -207,19 +207,19 @@ void FastRotationInterface::__ButtonClick( Button& sender, bool /*checked*/ )
 FastRotationInterface::GUIData::GUIData( FastRotationInterface& w )
 {
    Rotate180_RadioButton.SetText( "Rotate 180\xb0" );
-   Rotate180_RadioButton.OnClick( (Button::click_event_handler)&FastRotationInterface::__ButtonClick, w );
+   Rotate180_RadioButton.OnClick( (Button::click_event_handler)&FastRotationInterface::e_ButtonClick, w );
 
    Rotate90CW_RadioButton.SetText( "Rotate 90\xb0 Clockwise" );
-   Rotate90CW_RadioButton.OnClick( (Button::click_event_handler)&FastRotationInterface::__ButtonClick, w );
+   Rotate90CW_RadioButton.OnClick( (Button::click_event_handler)&FastRotationInterface::e_ButtonClick, w );
 
    Rotate90CCW_RadioButton.SetText( "Rotate 90\xb0 Counter-clockwise" );
-   Rotate90CCW_RadioButton.OnClick( (Button::click_event_handler)&FastRotationInterface::__ButtonClick, w );
+   Rotate90CCW_RadioButton.OnClick( (Button::click_event_handler)&FastRotationInterface::e_ButtonClick, w );
 
    HorizontalMirror_RadioButton.SetText( "Horizontal Mirror" );
-   HorizontalMirror_RadioButton.OnClick( (Button::click_event_handler)&FastRotationInterface::__ButtonClick, w );
+   HorizontalMirror_RadioButton.OnClick( (Button::click_event_handler)&FastRotationInterface::e_ButtonClick, w );
 
    VerticalMirror_RadioButton.SetText( "Vertical Mirror" );
-   VerticalMirror_RadioButton.OnClick( (Button::click_event_handler)&FastRotationInterface::__ButtonClick, w );
+   VerticalMirror_RadioButton.OnClick( (Button::click_event_handler)&FastRotationInterface::e_ButtonClick, w );
 
    Transform_Sizer.SetMargin( 6 );
    Transform_Sizer.SetSpacing( 4 );
@@ -248,4 +248,4 @@ FastRotationInterface::GUIData::GUIData( FastRotationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FastRotationInterface.cpp - Released 2022-05-17T17:15:11Z
+// EOF FastRotationInterface.cpp - Released 2022-11-21T14:47:17Z

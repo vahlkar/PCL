@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.30
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// pcl/String.h - Released 2022-08-10T16:36:28Z
+// pcl/String.h - Released 2022-11-21T14:46:30Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -104,6 +104,10 @@
 
 namespace pcl
 {
+
+#ifndef __PCL_NO_STRING_VECTOR
+   template <typename T> class PCL_CLASS GenericVector;
+#endif
 
 // ----------------------------------------------------------------------------
 
@@ -4393,9 +4397,11 @@ protected:
                for ( iterator p = m_data->string + i, p1 = p + n; p < p1; ++p )
                   if ( *p == c1 )
                   {
+                     distance_type d = p - m_data->string;
                      EnsureUnique();
+                     p = m_data->string + d;
                      *p = c2;
-                     for ( ; ++p < p1; )
+                     for ( iterator p1 = m_data->string + i + n; ++p < p1; )
                         if ( *p == c1 )
                            *p = c2;
                      break;
@@ -4407,9 +4413,11 @@ protected:
                for ( iterator p = m_data->string + i, p1 = p + n; p < p1; ++p )
                   if ( R::ToCaseFolded( *p ) == c1 )
                   {
+                     distance_type d = p - m_data->string;
                      EnsureUnique();
+                     p = m_data->string + d;
                      *p = c2;
-                     for ( ; ++p < p1; )
+                     for ( iterator p1 = m_data->string + i + n; ++p < p1; )
                         if ( R::ToCaseFolded( *p ) == c1 )
                            *p = c2;
                      break;
@@ -7132,7 +7140,7 @@ public:
     *                      length by default.
     *
     * Returns a dynamic array of \c float values. Returns an empty array if
-    * this string is empty of completely componsed of trimmable characters.
+    * this string is either empty or entirely composed of trimmable characters.
     *
     * For each element in the parsed list, trimmable characters (whitespace)
     * are ignored. Empty list elements (that is, sequences of contiguous
@@ -7165,7 +7173,7 @@ public:
     *                      length by default.
     *
     * Returns a dynamic array of \c double values. Returns an empty array if
-    * this string is empty of completely componsed of trimmable characters.
+    * this string is either empty or entirely composed of trimmable characters.
     *
     * For each element in the parsed list, trimmable characters (whitespace)
     * are ignored. Empty list elements (that is, sequences of contiguous
@@ -7174,6 +7182,28 @@ public:
     * unrepresentable values, this function throws a ParseError exception.
     */
    Array<double> ParseListOfDouble( char separator = ',', size_type maxCount = ~size_type( 0 ) ) const;
+
+#ifndef __PCL_NO_STRING_VECTOR
+
+   /*!
+    * Returns a new vector initialized with 32-bit floating point component
+    * values evaluated from this string.
+    *
+    * This function performs the same task as ParseListOfFloat() but builds and
+    * returns a GenericVector object instead of Array.
+    */
+   GenericVector<float> ParseListOfFloatAsVector( char separator = ',', int maxCount = int_max ) const;
+
+   /*!
+    * Returns a new vector initialized with 64-bit floating point component
+    * values evaluated from this string.
+    *
+    * This function performs the same task as ParseListOfDouble() but builds
+    * and returns a GenericVector object instead of Array.
+    */
+   GenericVector<double> ParseListOfDoubleAsVector( char separator = ',', int maxCount = int_max ) const;
+
+#endif   // !__PCL_NO_STRING_VECTOR
 
    /*!
     * Evaluates this string as a sexagesimal numeric literal representation,
@@ -11763,7 +11793,7 @@ public:
     *                      length by default.
     *
     * Returns a dynamic array of \c float values. Returns an empty array if
-    * this string is empty of completely componsed of trimmable characters.
+    * this string is either empty or entirely composed of trimmable characters.
     *
     * For each element in the parsed list, trimmable characters (whitespace)
     * are ignored. Empty list elements (that is, sequences of contiguous
@@ -11796,7 +11826,7 @@ public:
     *                      length by default.
     *
     * Returns a dynamic array of \c double values. Returns an empty array if
-    * this string is empty of completely componsed of trimmable characters.
+    * this string is either empty or entirely composed of trimmable characters.
     *
     * For each element in the parsed list, trimmable characters (whitespace)
     * are ignored. Empty list elements (that is, sequences of contiguous
@@ -11805,6 +11835,28 @@ public:
     * unrepresentable values, this function throws a ParseError exception.
     */
    Array<double> ParseListOfDouble( char separator = ',', size_type maxCount = ~size_type( 0 ) ) const;
+
+#ifndef __PCL_NO_STRING_VECTOR
+
+   /*!
+    * Returns a new vector initialized with 32-bit floating point component
+    * values evaluated from this string.
+    *
+    * This function performs the same task as ParseListOfFloat() but builds and
+    * returns a GenericVector object instead of Array.
+    */
+   GenericVector<float> ParseListOfFloatAsVector( char separator = ',', int maxCount = int_max ) const;
+
+   /*!
+    * Returns a new vector initialized with 64-bit floating point component
+    * values evaluated from this string.
+    *
+    * This function performs the same task as ParseListOfDouble() but builds
+    * and returns a GenericVector object instead of Array.
+    */
+   GenericVector<double> ParseListOfDoubleAsVector( char separator = ',', int maxCount = int_max ) const;
+
+#endif   // !__PCL_NO_STRING_VECTOR
 
    /*!
     * Evaluates this string as a sexagesimal numeric literal representation,
@@ -13837,4 +13889,4 @@ inline std::ostream& operator <<( std::ostream& o, const String& s )
 #endif   // __PCL_String_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/String.h - Released 2022-08-10T16:36:28Z
+// EOF pcl/String.h - Released 2022-11-21T14:46:30Z

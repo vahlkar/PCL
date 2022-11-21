@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard APASS Process Module Version 1.1.0
+// Standard APASS Process Module Version 1.1.4
 // ----------------------------------------------------------------------------
-// APASSParameters.h - Released 2022-05-17T17:15:11Z
+// APASSParameters.h - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard APASS PixInsight module.
 //
@@ -294,6 +294,20 @@ public:
 };
 
 extern AGenerateTextOutput* TheAGenerateTextOutputParameter;
+
+// ----------------------------------------------------------------------------
+
+class AGenerateBinaryOutput : public MetaBoolean
+{
+public:
+
+   AGenerateBinaryOutput( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern AGenerateBinaryOutput* TheAGenerateBinaryOutputParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -789,4 +803,4 @@ PCL_END_LOCAL
 #endif   // __APASSParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF APASSParameters.h - Released 2022-05-17T17:15:11Z
+// EOF APASSParameters.h - Released 2022-11-21T14:47:17Z

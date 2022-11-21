@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard Gaia Process Module Version 1.1.0
+// Standard Gaia Process Module Version 1.2.5
 // ----------------------------------------------------------------------------
-// GaiaParameters.cpp - Released 2022-05-17T17:15:11Z
+// GaiaParameters.cpp - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Gaia PixInsight module.
 //
@@ -68,10 +68,12 @@ GRequiredFlags*               TheGRequiredFlagsParameter = nullptr;
 GInclusionFlags*              TheGInclusionFlagsParameter = nullptr;
 GExclusionFlags*              TheGExclusionFlagsParameter = nullptr;
 GNormalizeSpectrum*           TheGNormalizeSpectrumParameter = nullptr;
+GPhotonFluxUnits*             TheGPhotonFluxUnitsParameter = nullptr;
 GVerbosity*                   TheGVerbosityParameter = nullptr;
 GDataRelease*                 TheGDataReleaseParameter = nullptr;
 GSortBy*                      TheGSortByParameter = nullptr;
 GGenerateTextOutput*          TheGGenerateTextOutputParameter = nullptr;
+GGenerateBinaryOutput*        TheGGenerateBinaryOutputParameter = nullptr;
 GTextFormat*                  TheGTextFormatParameter = nullptr;
 GTextHeaders*                 TheGTextHeadersParameter = nullptr;
 GOutputFilePath*              TheGOutputFilePathParameter = nullptr;
@@ -331,6 +333,24 @@ bool GNormalizeSpectrum::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
+GPhotonFluxUnits::GPhotonFluxUnits( MetaProcess* P )
+   : MetaBoolean( P )
+{
+   TheGPhotonFluxUnitsParameter = this;
+}
+
+IsoString GPhotonFluxUnits::Id() const
+{
+   return "photonFluxUnits";
+}
+
+bool GPhotonFluxUnits::DefaultValue() const
+{
+   return false;
+}
+
+// ----------------------------------------------------------------------------
+
 GVerbosity::GVerbosity( MetaProcess* P )
    : MetaInt32( P )
 {
@@ -447,6 +467,24 @@ IsoString GGenerateTextOutput::Id() const
 bool GGenerateTextOutput::DefaultValue() const
 {
    return true;
+}
+
+// ----------------------------------------------------------------------------
+
+GGenerateBinaryOutput::GGenerateBinaryOutput( MetaProcess* P )
+   : MetaBoolean( P )
+{
+   TheGGenerateBinaryOutputParameter = this;
+}
+
+IsoString GGenerateBinaryOutput::Id() const
+{
+   return "generateBinaryOutput";
+}
+
+bool GGenerateBinaryOutput::DefaultValue() const
+{
+   return false;
 }
 
 // ----------------------------------------------------------------------------
@@ -1144,4 +1182,4 @@ bool GDatabaseSpectrumBits::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GaiaParameters.cpp - Released 2022-05-17T17:15:11Z
+// EOF GaiaParameters.cpp - Released 2022-11-21T14:47:17Z

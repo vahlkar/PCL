@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard Gaia Process Module Version 1.1.0
+// Standard Gaia Process Module Version 1.2.5
 // ----------------------------------------------------------------------------
-// GaiaInstance.cpp - Released 2022-05-17T17:15:11Z
+// GaiaInstance.cpp - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Gaia PixInsight module.
 //
@@ -71,6 +71,7 @@ GaiaInstance::GaiaInstance( const MetaProcess* P )
    , p_dataRelease( GDataRelease::Default )
    , p_sortBy( GSortBy::Default )
    , p_generateTextOutput( TheGGenerateTextOutputParameter->DefaultValue() )
+   , p_generateBinaryOutput( TheGGenerateBinaryOutputParameter->DefaultValue() )
    , p_textFormat( GTextFormat::Default )
    , p_textHeaders( GTextHeaders::Default )
 {
@@ -96,6 +97,7 @@ void GaiaInstance::Assign( const ProcessImplementation& p )
       p_dataRelease = x->p_dataRelease;
       p_sortBy = x->p_sortBy;
       p_generateTextOutput = x->p_generateTextOutput;
+      p_generateBinaryOutput = x->p_generateBinaryOutput;
       p_textFormat = x->p_textFormat;
       p_textHeaders = x->p_textHeaders;
       p_outputFilePath = x->p_outputFilePath;
@@ -144,7 +146,9 @@ bool GaiaInstance::ExecuteGlobal()
    {
       // thread-safe
       Search();
-      if ( p_generateTextOutput )
+      if ( p_generateBinaryOutput )
+         GenerateBinaryOutput();
+      else if ( p_generateTextOutput )
          GenerateTextOutput();
    }
    else if ( p_command == "get-info" )
@@ -589,6 +593,45 @@ void GaiaInstance::GenerateTextOutput() const
 
 // ----------------------------------------------------------------------------
 
+void GaiaInstance::GenerateBinaryOutput() const
+{
+   if ( p_outputFilePath.Trimmed().IsEmpty() )
+   {
+      if ( p_verbosity > 0 )
+         Console().WarningLn( "<end><cbr><br>** Warning: No output file path has been specified." );
+      return;
+   }
+
+   File f = File::CreateFileForWriting( p_outputFilePath.Trimmed() );
+
+   GaiaBinaryHeader header;
+   header.version = TheGaiaProcess->Version();
+   header.dataRelease = o_dataRelease;
+   header.sourceCount = uint32( p_searchData.stars.Length() );
+   f.Write( header );
+
+   for ( const GaiaStarData& star : p_searchData.stars )
+   {
+      f.Write( static_cast<const GaiaStarDataBase&>( star ) );
+
+      if ( GDataRelease::HasMeanSpectrumData( o_dataRelease ) )
+         if ( !star.flux.IsEmpty() )
+            f.Write( reinterpret_cast<const void*>( star.flux.Begin() ), star.flux.Size() );
+         else
+         {
+            FVector x( .0F, o_spectrumCount );
+            f.Write( (const void*)x.Begin(), x.Size() );
+         }
+   }
+
+   f.Flush();
+
+   if ( p_verbosity > 0 )
+      Console().WriteLn( "<end><cbr><br>* Output binary file generated: " + p_outputFilePath );
+}
+
+// ----------------------------------------------------------------------------
+
 void GaiaInstance::GetInfo()
 {
    /*
@@ -633,6 +676,8 @@ void* GaiaInstance::LockParameter( const MetaParameter* p, size_type tableRow )
       return &p_sortBy;
    if ( p == TheGGenerateTextOutputParameter )
       return &p_generateTextOutput;
+   if ( p == TheGGenerateBinaryOutputParameter )
+      return &p_generateBinaryOutput;
    if ( p == TheGTextFormatParameter )
       return &p_textFormat;
    if ( p == TheGTextHeadersParameter )
@@ -659,7 +704,8 @@ void* GaiaInstance::LockParameter( const MetaParameter* p, size_type tableRow )
       return &p_searchData.exclusionFlags;
    if ( p == TheGNormalizeSpectrumParameter )
       return &p_searchData.normalizeSpectrum;
-
+   if ( p == TheGPhotonFluxUnitsParameter )
+      return &p_searchData.photonFluxUnits;
    if ( p == TheGSourceRAParameter )
       return &p_searchData.stars[tableRow].ra;
    if ( p == TheGSourceDecParameter )
@@ -813,4 +859,4 @@ int GaiaInstance::OutputDataRelease() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GaiaInstance.cpp - Released 2022-05-17T17:15:11Z
+// EOF GaiaInstance.cpp - Released 2022-11-21T14:47:17Z

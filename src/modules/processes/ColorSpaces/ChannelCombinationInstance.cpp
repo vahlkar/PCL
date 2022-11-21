@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard ColorSpaces Process Module Version 1.1.2
+// Standard ColorSpaces Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// ChannelCombinationInstance.cpp - Released 2022-05-17T17:15:11Z
+// ChannelCombinationInstance.cpp - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -54,6 +54,7 @@
 #include "ChannelCombinationParameters.h"
 #include "ChannelCombinationProcess.h"
 
+#include <pcl/AstrometricMetadata.h>
 #include <pcl/AutoViewLock.h>
 #include <pcl/ImageWindow.h>
 #include <pcl/IntegrationMetadata.h>
@@ -68,6 +69,7 @@ namespace pcl
 ChannelCombinationInstance::ChannelCombinationInstance( const MetaProcess* P )
    : ProcessImplementation( P )
    , p_colorSpace( TheColorSpaceIdCombinationParameter->ElementValue( TheColorSpaceIdCombinationParameter->Default ) )
+   , p_inheritAstrometricSolution( TheCCInheritAstrometricSolutionParameter )
 {
    for ( int i = 0; i < 3; ++i )
    {
@@ -81,6 +83,7 @@ ChannelCombinationInstance::ChannelCombinationInstance( const MetaProcess* P )
 ChannelCombinationInstance::ChannelCombinationInstance( const ChannelCombinationInstance& x )
    : ProcessImplementation( x )
    , p_colorSpace( x.p_colorSpace )
+   , p_inheritAstrometricSolution( x.p_inheritAstrometricSolution )
 {
    for ( int i = 0; i < 3; ++i )
    {
@@ -129,6 +132,8 @@ void ChannelCombinationInstance::Assign( const ProcessImplementation& p )
          p_channelEnabled[i] = x->p_channelEnabled[i];
          p_channelId[i] = x->p_channelId[i];
       }
+
+      p_inheritAstrometricSolution = x->p_inheritAstrometricSolution;
    }
 }
 
@@ -138,7 +143,11 @@ UndoFlags ChannelCombinationInstance::UndoMode( const View& view ) const
 {
    UndoFlags flags = UndoFlag::PixelData;
    if ( !view.IsPreview() )
+   {
       flags |= UndoFlag::Keywords;
+      if ( p_inheritAstrometricSolution )
+         flags |= UndoFlag::AstrometricSolution;
+   }
    return flags;
 }
 
@@ -424,25 +433,25 @@ bool ChannelCombinationInstance::ExecuteOn( View& view )
    StandardStatus status;
    image->SetStatusCallback( &status );
 
+   ImageWindow window = view.Window();
+
    String baseId;
-   Rect r;
+   Rect rect;
    int w0, h0;
 
    if ( view.IsPreview() )
    {
-      ImageWindow w = view.Window();
-      View mainView = w.MainView();
-
+      View mainView = window.MainView();
       baseId = mainView.Id();
-      r = w.PreviewRect( view.Id() );
+      rect = window.PreviewRect( view.Id() );
       mainView.GetSize( w0, h0 );
    }
    else
    {
       baseId = view.Id();
-      r = image->Bounds();
-      w0 = r.Width();
-      h0 = r.Height();
+      rect = image->Bounds();
+      w0 = rect.Width();
+      h0 = rect.Height();
    }
 
    int numberOfSources = 0;
@@ -480,25 +489,33 @@ bool ChannelCombinationInstance::ExecuteOn( View& view )
       return false;
 
    const char* what = "";
+   int asChannel = 0;
    switch ( p_colorSpace )
    {
+   default: // ?!
    case ColorSpaceId::RGB:
       what = "RGB channels";
+      asChannel = 1; // green
       break;
    case ColorSpaceId::CIEXYZ:
       what = "normalized CIE XYZ components";
+      asChannel = 1; // Y
       break;
    case ColorSpaceId::CIELab:
       what = "normalized CIE L*a*b* components";
+      asChannel = 0; // L*
       break;
    case ColorSpaceId::CIELch:
       what = "normalized CIE L*c*h* components";
+      asChannel = 0; // L*
       break;
    case ColorSpaceId::HSV:
       what = "normalized HSV components";
+      asChannel = 2; // V
       break;
    case ColorSpaceId::HSI:
       what = "normalized HSI components";
+      asChannel = 2; // I
       break;
    }
    image->Status().Initialize( String( "Combining " ) + what, image->NumberOfPixels() );
@@ -507,11 +524,11 @@ bool ChannelCombinationInstance::ExecuteOn( View& view )
       switch ( image.BitsPerSample() )
       {
       case 32:
-         CombineChannels( static_cast<Image&>( *image ), p_colorSpace, baseId, r,
+         CombineChannels( static_cast<Image&>( *image ), p_colorSpace, baseId, rect,
                           sourceImage[0], sourceImage[1], sourceImage[2] );
          break;
       case 64:
-         CombineChannels( static_cast<DImage&>( *image ), p_colorSpace, baseId, r,
+         CombineChannels( static_cast<DImage&>( *image ), p_colorSpace, baseId, rect,
                           sourceImage[0], sourceImage[1], sourceImage[2] );
          break;
       }
@@ -519,15 +536,15 @@ bool ChannelCombinationInstance::ExecuteOn( View& view )
       switch ( image.BitsPerSample() )
       {
       case  8:
-         CombineChannels( static_cast<UInt8Image&>( *image ), p_colorSpace, baseId, r,
+         CombineChannels( static_cast<UInt8Image&>( *image ), p_colorSpace, baseId, rect,
                           sourceImage[0], sourceImage[1], sourceImage[2] );
          break;
       case 16:
-         CombineChannels( static_cast<UInt16Image&>( *image ), p_colorSpace, baseId, r,
+         CombineChannels( static_cast<UInt16Image&>( *image ), p_colorSpace, baseId, rect,
                           sourceImage[0], sourceImage[1], sourceImage[2] );
          break;
       case 32:
-         CombineChannels( static_cast<UInt32Image&>( *image ), p_colorSpace, baseId, r,
+         CombineChannels( static_cast<UInt32Image&>( *image ), p_colorSpace, baseId, rect,
                           sourceImage[0], sourceImage[1], sourceImage[2] );
          break;
       }
@@ -535,13 +552,48 @@ bool ChannelCombinationInstance::ExecuteOn( View& view )
    if ( !view.IsPreview() )
    {
       PropertyArray properties;
-      FITSKeywordArray keywords = view.Window().Keywords();
+      FITSKeywordArray keywords = window.Keywords();
 
       IntegrationMetadata metadata = IntegrationMetadata::Summary( sourceMetadata );
       metadata.UpdatePropertiesAndKeywords( properties, keywords );
 
       view.SetStorablePermanentProperties( properties );
-      view.Window().SetKeywords( keywords );
+      window.SetKeywords( keywords );
+
+      if ( p_inheritAstrometricSolution )
+      {
+         ImageWindow asSourceWindow = sourceWindow[asChannel];
+         bool asFound = !asSourceWindow.IsNull() && asSourceWindow.HasAstrometricSolution();
+         if ( !asFound )
+            for ( int i = 0; i < 3; ++i )
+               if ( !sourceWindow[i].IsNull() && sourceWindow[i].HasAstrometricSolution() )
+               {
+                  asSourceWindow = sourceWindow[i];
+                  asFound = true;
+                  break;
+               }
+
+         if ( asFound )
+         {
+            AstrometricMetadata A( asSourceWindow );
+            if ( A.IsValid() )
+            {
+               A.Write( window );
+               if ( window.RegenerateAstrometricSolution() )
+               {
+                  window.MainView().SetStorablePermanentPropertyValue( "PCL:AstrometricSolution:Information",
+                                                                       "source=inherited,process=ChannelCombination" );
+                  Console().NoteLn( "<end><cbr>* Astrometric solution inherited: "
+                                    + asSourceWindow.MainView().Id() + " => " + window.MainView().Id() );
+               }
+            }
+            else
+            {
+               Console().WarningLn( "<end><cbr>** Invalid astrometric solution ignored: "
+                                    + asSourceWindow.MainView().Id() );
+            }
+         }
+      }
    }
 
    return true;
@@ -563,7 +615,6 @@ bool ChannelCombinationInstance::ExecuteGlobal()
    Array<IntegrationMetadata> sourceMetadata;
 
    int numberOfSources = 0;
-
    int width = 0, height = 0;
    bool floatSample = false;
    int bitsPerSample = 0;
@@ -617,31 +668,40 @@ bool ChannelCombinationInstance::ExecuteGlobal()
    {
       ImageVariant outputImage = outputView.Image();
 
-      Console().EnableAbort();
+      Console console;
+      console.EnableAbort();
 
       StandardStatus status;
       outputImage->SetStatusCallback( &status );
 
       const char* what = "";
+      int asChannel = 0;
       switch ( p_colorSpace )
       {
+      default: // ?!
       case ColorSpaceId::RGB:
          what = "RGB channels";
+         asChannel = 1; // green
          break;
       case ColorSpaceId::CIEXYZ:
          what = "normalized CIE XYZ components";
+         asChannel = 1; // Y
          break;
       case ColorSpaceId::CIELab:
          what = "normalized CIE L*a*b* components";
+         asChannel = 0; // L*
          break;
       case ColorSpaceId::CIELch:
          what = "normalized CIE L*c*h* components";
+         asChannel = 0; // L*
          break;
       case ColorSpaceId::HSV:
          what = "normalized HSV components";
+         asChannel = 2; // V
          break;
       case ColorSpaceId::HSI:
          what = "normalized HSI components";
+         asChannel = 2; // I
          break;
       }
       outputImage->Status().Initialize( String( "Combining " ) + what, outputImage->NumberOfPixels() );
@@ -687,13 +747,48 @@ bool ChannelCombinationInstance::ExecuteGlobal()
       outputView.SetStorablePermanentProperties( properties );
       outputWindow.SetKeywords( keywords );
 
+      if ( p_inheritAstrometricSolution )
+      {
+         ImageWindow asSourceWindow = sourceWindow[asChannel];
+         bool asFound = !asSourceWindow.IsNull() && asSourceWindow.HasAstrometricSolution();
+         if ( !asFound )
+            for ( int i = 0; i < 3; ++i )
+               if ( !sourceWindow[i].IsNull() && sourceWindow[i].HasAstrometricSolution() )
+               {
+                  asSourceWindow = sourceWindow[i];
+                  asFound = true;
+                  break;
+               }
+
+         if ( asFound )
+         {
+            AstrometricMetadata A( asSourceWindow );
+            if ( A.IsValid() )
+            {
+               A.Write( outputWindow );
+               if ( outputWindow.RegenerateAstrometricSolution() )
+               {
+                  outputView.SetStorablePermanentPropertyValue( "PCL:AstrometricSolution:Information",
+                                                                "source=inherited,process=ChannelCombination" );
+                  console.NoteLn( "<end><cbr>* Astrometric solution inherited: "
+                                 + asSourceWindow.MainView().Id() + " => " + baseId );
+               }
+            }
+            else
+            {
+               console.WarningLn( "<end><cbr>** Invalid astrometric solution ignored: "
+                                 + asSourceWindow.MainView().Id() );
+            }
+         }
+      }
+
       outputWindow.Show();
 
       return true;
    }
    catch ( ... )
    {
-      outputWindow.Close();
+      outputWindow.ForceClose();
       throw;
    }
 }
@@ -708,6 +803,8 @@ void* ChannelCombinationInstance::LockParameter( const MetaParameter* p, size_ty
       return p_channelEnabled+tableRow;
    if ( p == TheChannelIdCombinationParameter )
       return p_channelId[tableRow].Begin();
+   if ( p == TheCCInheritAstrometricSolutionParameter )
+      return &p_inheritAstrometricSolution;
 
    return nullptr;
 }
@@ -747,4 +844,4 @@ size_type ChannelCombinationInstance::ParameterLength( const MetaParameter* p, s
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ChannelCombinationInstance.cpp - Released 2022-05-17T17:15:11Z
+// EOF ChannelCombinationInstance.cpp - Released 2022-11-21T14:47:17Z

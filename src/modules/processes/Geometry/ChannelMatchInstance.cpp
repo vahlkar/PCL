@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 1.2.4
+// Standard Geometry Process Module Version 1.3.1
 // ----------------------------------------------------------------------------
-// ChannelMatchInstance.cpp - Released 2022-05-17T17:15:11Z
+// ChannelMatchInstance.cpp - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -134,25 +134,25 @@ class ChannelMatchEngine
 public:
 
    template <class P>
-   static void Apply( GenericImage<P>& img, const ChannelMatchInstance& C )
+   static void Apply( GenericImage<P>& image, const ChannelMatchInstance& C )
    {
       typename P::sample* f = nullptr;
       typename P::sample** f0 = nullptr;
 
-      int w = img.Width();
-      int h = img.Height();
+      int w = image.Width();
+      int h = image.Height();
 
-      int n = img.NumberOfChannels();
+      int n = image.NumberOfChannels();
 
-      typename GenericImage<P>::color_space cs0 = img.ColorSpace();
+      typename GenericImage<P>::color_space cs0 = image.ColorSpace();
 
-      size_type N = img.NumberOfPixels();
+      size_type N = image.NumberOfPixels();
 
-      StatusMonitor status = img.Status();
+      StatusMonitor status = image.Status();
 
       try
       {
-         f0 = img.ReleaseData();
+         f0 = image.ReleaseData();
 
          for ( int c = 0; c < 3; ++c )
             if ( C.p_channelEnabled[c] )
@@ -164,7 +164,7 @@ public:
                {
                   status.Initialize( String().Format( "Applying translation, channel #%d, dx=%+.2f, dy=%+.2f", c, d.x, d.y ), N );
 
-                  f = img.Allocator().AllocatePixels( N );
+                  f = image.Allocator().AllocatePixels( N );
                   typename P::sample* fij = f;
 
                   const typename P::sample* f0c = f0[c];
@@ -186,7 +186,7 @@ public:
                            *fij = P::MinSampleValue();
                      }
 
-                  img.Allocator().Deallocate( f0[c] );
+                  image.Allocator().Deallocate( f0[c] );
                   f0[c] = f;
                   f = 0;
                }
@@ -203,22 +203,22 @@ public:
                }
             }
 
-         img.ImportData( f0, w, h, n, cs0 );
-         img.Status() = status;
+         image.ImportData( f0, w, h, n, cs0 );
+         image.Status() = status;
       }
       catch ( ... )
       {
          if ( f != nullptr )
-            img.Allocator().Deallocate( f );
+            image.Allocator().Deallocate( f );
          if ( f0 != nullptr )
          {
             for ( int c = 0; c < n; ++c )
                if ( f0[c] != nullptr )
-                  img.Allocator().Deallocate( f0[c] );
-            img.Allocator().Deallocate( f0 );
+                  image.Allocator().Deallocate( f0[c] );
+            image.Allocator().Deallocate( f0 );
          }
 
-         img.FreeData();
+         image.FreeData();
          throw;
       }
    }
@@ -298,4 +298,4 @@ size_type ChannelMatchInstance::ParameterLength( const MetaParameter* p, size_ty
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ChannelMatchInstance.cpp - Released 2022-05-17T17:15:11Z
+// EOF ChannelMatchInstance.cpp - Released 2022-11-21T14:47:17Z

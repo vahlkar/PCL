@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 1.2.4
+// Standard Geometry Process Module Version 1.3.1
 // ----------------------------------------------------------------------------
-// DynamicCropParameters.h - Released 2022-05-17T17:15:11Z
+// DynamicCropParameters.h - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -161,6 +161,7 @@ extern OptimizeFastRotations* TheDCOptimizeFastRotationsParameter;
 extern InterpolationAlgorithm* TheDCInterpolationAlgorithmParameter;
 extern ClampingThreshold* TheDCClampingThresholdParameter;
 extern Smoothness* TheDCSmoothnessParameter;
+extern GammaCorrection* TheDCGammaCorrectionParameter;
 
 extern XResolution* TheDCXResolutionParameter;
 extern YResolution* TheDCYResolutionParameter;
@@ -183,4 +184,4 @@ PCL_END_LOCAL
 #endif   // __DynamicCropParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF DynamicCropParameters.h - Released 2022-05-17T17:15:11Z
+// EOF DynamicCropParameters.h - Released 2022-11-21T14:47:17Z

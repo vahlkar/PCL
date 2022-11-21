@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.5.2
+// Standard ColorCalibration Process Module Version 1.9.0
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationParameters.h - Released 2022-05-20T16:28:45Z
+// PhotometricColorCalibrationParameters.h - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -54,33 +54,12 @@
 #define __PhotometricColorCalibrationParameters_h
 
 #include <pcl/MetaParameter.h>
+#include <pcl/PSFEstimator.h>
 
 namespace pcl
 {
 
 PCL_BEGIN_LOCAL
-
-// ----------------------------------------------------------------------------
-
-class PCCWorkingMode : public MetaEnumeration
-{
-public:
-
-   enum { Broadband,
-          Narrowband,
-          NumberOfItems,
-          Default = Broadband };
-
-   PCCWorkingMode( MetaProcess* );
-
-   IsoString Id() const override;
-   size_type NumberOfElements() const override;
-   IsoString ElementId( size_type ) const override;
-   int ElementValue( size_type ) const override;
-   size_type DefaultValueIndex() const override;
-};
-
-extern PCCWorkingMode* ThePCCWorkingModeParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -95,96 +74,6 @@ public:
 };
 
 extern PCCApplyCalibration* ThePCCApplyCalibrationParameter;
-
-// ----------------------------------------------------------------------------
-
-class PCCRedFilterWavelength : public MetaFloat
-{
-public:
-
-   PCCRedFilterWavelength( MetaProcess* );
-
-   IsoString Id() const override;
-   int Precision() const override;
-   double DefaultValue() const override;
-};
-
-extern PCCRedFilterWavelength* ThePCCRedFilterWavelengthParameter;
-
-// ----------------------------------------------------------------------------
-
-class PCCRedFilterBandwidth : public MetaFloat
-{
-public:
-
-   PCCRedFilterBandwidth( MetaProcess* );
-
-   IsoString Id() const override;
-   int Precision() const override;
-   double DefaultValue() const override;
-};
-
-extern PCCRedFilterBandwidth* ThePCCRedFilterBandwidthParameter;
-
-// ----------------------------------------------------------------------------
-
-class PCCGreenFilterWavelength : public MetaFloat
-{
-public:
-
-   PCCGreenFilterWavelength( MetaProcess* );
-
-   IsoString Id() const override;
-   int Precision() const override;
-   double DefaultValue() const override;
-};
-
-extern PCCGreenFilterWavelength* ThePCCGreenFilterWavelengthParameter;
-
-// ----------------------------------------------------------------------------
-
-class PCCGreenFilterBandwidth : public MetaFloat
-{
-public:
-
-   PCCGreenFilterBandwidth( MetaProcess* );
-
-   IsoString Id() const override;
-   int Precision() const override;
-   double DefaultValue() const override;
-};
-
-extern PCCGreenFilterBandwidth* ThePCCGreenFilterBandwidthParameter;
-
-// ----------------------------------------------------------------------------
-
-class PCCBlueFilterWavelength : public MetaFloat
-{
-public:
-
-   PCCBlueFilterWavelength( MetaProcess* );
-
-   IsoString Id() const override;
-   int Precision() const override;
-   double DefaultValue() const override;
-};
-
-extern PCCBlueFilterWavelength* ThePCCBlueFilterWavelengthParameter;
-
-// ----------------------------------------------------------------------------
-
-class PCCBlueFilterBandwidth : public MetaFloat
-{
-public:
-
-   PCCBlueFilterBandwidth( MetaProcess* );
-
-   IsoString Id() const override;
-   int Precision() const override;
-   double DefaultValue() const override;
-};
-
-extern PCCBlueFilterBandwidth* ThePCCBlueFilterBandwidthParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -276,115 +165,78 @@ extern PCCZeroPointJB_JV* ThePCCZeroPointJB_JVParameter;
 
 // ----------------------------------------------------------------------------
 
-class PCCFocalLength : public MetaFloat
+class PCCAutoCatalog : public MetaBoolean
 {
 public:
 
-   PCCFocalLength( MetaProcess* );
-   IsoString Id() const override;
-   int Precision() const override;
-   double MinimumValue() const override;
-   double MaximumValue() const override;
-   double DefaultValue() const override;
-};
-
-extern PCCFocalLength* ThePCCFocalLengthParameter;
-
-// ----------------------------------------------------------------------------
-
-class PCCPixelSize : public MetaFloat
-{
-public:
-
-   PCCPixelSize( MetaProcess* );
-
-   IsoString Id() const override;
-   int Precision() const override;
-   double MinimumValue() const override;
-   double MaximumValue() const override;
-   double DefaultValue() const override;
-};
-
-extern PCCPixelSize* ThePCCPixelSizeParameter;
-
-// ----------------------------------------------------------------------------
-
-class PCCCenterRA : public MetaDouble
-{
-public:
-
-   PCCCenterRA( MetaProcess* );
-
-   IsoString Id() const override;
-   int Precision() const override;
-   double MinimumValue() const override;
-   double MaximumValue() const override;
-   double DefaultValue() const override;
-};
-
-extern PCCCenterRA* ThePCCCenterRAParameter;
-
-// ----------------------------------------------------------------------------
-
-class PCCCenterDec : public MetaDouble
-{
-public:
-
-   PCCCenterDec( MetaProcess* );
-
-   IsoString Id() const override;
-   int Precision() const override;
-   double MinimumValue() const override;
-   double MaximumValue() const override;
-   double DefaultValue() const override;
-};
-
-extern PCCCenterDec* ThePCCCenterDecParameter;
-
-// ----------------------------------------------------------------------------
-
-class PCCEpochJD : public MetaDouble
-{
-public:
-
-   PCCEpochJD( MetaProcess* );
-
-   IsoString Id() const override;
-   int Precision() const override;
-   double MinimumValue() const override;
-   double MaximumValue() const override;
-   double DefaultValue() const override;
-};
-
-extern PCCEpochJD* ThePCCEpochJDParameter;
-
-// ----------------------------------------------------------------------------
-
-class PCCForcePlateSolve : public MetaBoolean
-{
-public:
-
-   PCCForcePlateSolve( MetaProcess* );
+   PCCAutoCatalog( MetaProcess* );
 
    IsoString Id() const override;
    bool DefaultValue() const override;
 };
 
-extern PCCForcePlateSolve* ThePCCForcePlateSolveParameter;
+extern PCCAutoCatalog* ThePCCAutoCatalogParameter;
 
 // ----------------------------------------------------------------------------
 
-class PCCIgnoreImagePositionAndScale : public MetaBoolean
+class PCCCatalogId : public MetaString
 {
 public:
 
-   PCCIgnoreImagePositionAndScale( MetaProcess* );
+   PCCCatalogId( MetaProcess* );
+
+   IsoString Id() const override;
+   String DefaultValue() const override;
+};
+
+extern PCCCatalogId* ThePCCCatalogIdParameter;
+
+// ----------------------------------------------------------------------------
+
+class PCCLimitMagnitude : public MetaFloat
+{
+public:
+
+   PCCLimitMagnitude( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern PCCLimitMagnitude* ThePCCLimitMagnitudeParameter;
+
+// ----------------------------------------------------------------------------
+
+class PCCAutoLimitMagnitude : public MetaBoolean
+{
+public:
+
+   PCCAutoLimitMagnitude( MetaProcess* );
 
    IsoString Id() const override;
    bool DefaultValue() const override;
 };
 
-extern PCCIgnoreImagePositionAndScale* ThePCCIgnoreImagePositionAndScaleParameter;
+extern PCCAutoLimitMagnitude* ThePCCAutoLimitMagnitudeParameter;
+
+// ----------------------------------------------------------------------------
+
+class PCCTargetSourceCount : public MetaInt32
+{
+public:
+
+   PCCTargetSourceCount( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern PCCTargetSourceCount* ThePCCTargetSourceCountParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -402,69 +254,11 @@ extern PCCServerURL* ThePCCServerURLParameter;
 
 // ----------------------------------------------------------------------------
 
-class PCCSolverCatalogName : public MetaString
+class PCCStructureLayers : public MetaInt32
 {
 public:
 
-   PCCSolverCatalogName( MetaProcess* );
-
-   IsoString Id() const override;
-   String DefaultValue() const override;
-};
-
-extern PCCSolverCatalogName* ThePCCSolverCatalogNameParameter;
-
-// ----------------------------------------------------------------------------
-
-class PCCSolverAutoCatalog : public MetaBoolean
-{
-public:
-
-   PCCSolverAutoCatalog( MetaProcess* );
-
-   IsoString Id() const override;
-   bool DefaultValue() const override;
-};
-
-extern PCCSolverAutoCatalog* ThePCCSolverAutoCatalogParameter;
-
-// ----------------------------------------------------------------------------
-
-class PCCSolverLimitMagnitude : public MetaInt32
-{
-public:
-
-   PCCSolverLimitMagnitude( MetaProcess* );
-
-   IsoString Id() const override;
-   double MinimumValue() const override;
-   double MaximumValue() const override;
-   double DefaultValue() const override;
-};
-
-extern PCCSolverLimitMagnitude* ThePCCSolverLimitMagnitudeParameter;
-
-// ----------------------------------------------------------------------------
-
-class PCCSolverAutoLimitMagnitude : public MetaBoolean
-{
-public:
-
-   PCCSolverAutoLimitMagnitude( MetaProcess* );
-
-   IsoString Id() const override;
-   bool DefaultValue() const override;
-};
-
-extern PCCSolverAutoLimitMagnitude* ThePCCSolverAutoLimitMagnitudeParameter;
-
-// ----------------------------------------------------------------------------
-
-class PCCSolverStructureLayers : public MetaInt32
-{
-public:
-
-   PCCSolverStructureLayers( MetaProcess* );
+   PCCStructureLayers( MetaProcess* );
 
    IsoString Id() const override;
    double DefaultValue() const override;
@@ -472,316 +266,244 @@ public:
    double MaximumValue() const override;
 };
 
-extern PCCSolverStructureLayers* ThePCCSolverStructureLayersParameter;
+extern PCCStructureLayers* ThePCCStructureLayersParameter;
 
 // ----------------------------------------------------------------------------
 
-class PCCSolverMinStructureSize : public MetaInt32
+class PCCSaturationThreshold : public MetaFloat
 {
 public:
 
-   PCCSolverMinStructureSize( MetaProcess* );
-
-   IsoString Id() const override;
-   double DefaultValue() const override;
-   double MinimumValue() const override;
-   double MaximumValue() const override;
-};
-
-extern PCCSolverMinStructureSize* ThePCCSolverMinStructureSizeParameter;
-
-// ----------------------------------------------------------------------------
-
-class PCCSolverNoiseReductionFilterRadius : public MetaInt32
-{
-public:
-
-   PCCSolverNoiseReductionFilterRadius( MetaProcess* );
-
-   IsoString Id() const override;
-   double DefaultValue() const override;
-   double MinimumValue() const override;
-   double MaximumValue() const override;
-};
-
-extern PCCSolverNoiseReductionFilterRadius* ThePCCSolverNoiseReductionFilterRadiusParameter;
-
-// ----------------------------------------------------------------------------
-
-class PCCSolverSensitivity : public MetaFloat
-{
-public:
-
-   PCCSolverSensitivity( MetaProcess* );
+   PCCSaturationThreshold( MetaProcess* );
 
    IsoString Id() const override;
    int Precision() const override;
+   double DefaultValue() const override;
    double MinimumValue() const override;
    double MaximumValue() const override;
-   double DefaultValue() const override;
 };
 
-extern PCCSolverSensitivity* ThePCCSolverSensitivityParameter;
+extern PCCSaturationThreshold* ThePCCSaturationThresholdParameter;
 
 // ----------------------------------------------------------------------------
 
-class PCCSolverAlignmentDevice : public MetaEnumeration
+class PCCSaturationRelative : public MetaBoolean
 {
 public:
 
-   // N.B.: Enumerated items must be coherent with the ImageSolver script.
-   enum { TriangleSimilarity,
-          PolygonMatching,
-          NumberOfItems,
-          Default = TriangleSimilarity };
+   PCCSaturationRelative( MetaProcess* );
 
-   PCCSolverAlignmentDevice( MetaProcess* );
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern PCCSaturationRelative* ThePCCSaturationRelativeParameter;
+
+// ----------------------------------------------------------------------------
+
+class PCCPSFNoiseLayers : public MetaInt32
+{
+public:
+
+   PCCPSFNoiseLayers( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern PCCPSFNoiseLayers* ThePCCPSFNoiseLayersParameter;
+
+// ----------------------------------------------------------------------------
+
+class PCCPSFHotPixelFilterRadius : public MetaInt32
+{
+public:
+
+   PCCPSFHotPixelFilterRadius( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern PCCPSFHotPixelFilterRadius* ThePCCPSFHotPixelFilterRadiusParameter;
+
+// ----------------------------------------------------------------------------
+
+class PCCPSFNoiseReductionFilterRadius : public MetaInt32
+{
+public:
+
+   PCCPSFNoiseReductionFilterRadius( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern PCCPSFNoiseReductionFilterRadius* ThePCCPSFNoiseReductionFilterRadiusParameter;
+
+// ----------------------------------------------------------------------------
+
+class PCCPSFMinStructureSize : public MetaInt32
+{
+public:
+
+   PCCPSFMinStructureSize( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern PCCPSFMinStructureSize* ThePCCPSFMinStructureSizeParameter;
+
+// ----------------------------------------------------------------------------
+
+class PCCPSFMinSNR : public MetaFloat
+{
+public:
+
+   PCCPSFMinSNR( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern PCCPSFMinSNR* ThePCCPSFMinSNRParameter;
+
+// ----------------------------------------------------------------------------
+
+class PCCPSFAllowClusteredSources : public MetaBoolean
+{
+public:
+
+   PCCPSFAllowClusteredSources( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern PCCPSFAllowClusteredSources* ThePCCPSFAllowClusteredSourcesParameter;
+
+// ----------------------------------------------------------------------------
+
+class PCCPSFType : public MetaEnumeration
+{
+public:
+
+   enum { Gaussian,
+          Moffat15,
+          Moffat4,
+          Moffat6,
+          Moffat8,
+          MoffatA,
+          Auto,
+          NumberOfItems,
+          Default = Auto };
+
+   PCCPSFType( MetaProcess* );
 
    IsoString Id() const override;
    size_type NumberOfElements() const override;
    IsoString ElementId( size_type ) const override;
    int ElementValue( size_type ) const override;
    size_type DefaultValueIndex() const override;
+
+   static PSFEstimator::psf_function ToPSFFunction( pcl_enum x )
+   {
+      switch ( x )
+      {
+      case Gaussian: return PSFunction::Gaussian;
+      case Moffat15: return PSFunction::Moffat15;
+      case Moffat4:  return PSFunction::Moffat4;
+      case Moffat6:  return PSFunction::Moffat6;
+      case Moffat8:  return PSFunction::Moffat8;
+      case MoffatA:  return PSFunction::MoffatA;
+      default:
+      case Auto:       return PSFunction::Auto;
+      }
+   }
+
+   static IsoString FunctionName( pcl_enum );
 };
 
-extern PCCSolverAlignmentDevice* ThePCCSolverAlignmentDeviceParameter;
+extern PCCPSFType* ThePCCPSFTypeParameter;
 
 // ----------------------------------------------------------------------------
 
-class PCCSolverDistortionCorrection : public MetaBoolean
+class PCCPSFGrowth : public MetaFloat
 {
 public:
 
-   PCCSolverDistortionCorrection( MetaProcess* );
-
-   IsoString Id() const override;
-   bool DefaultValue() const override;
-};
-
-extern PCCSolverDistortionCorrection* ThePCCSolverDistortionCorrectionParameter;
-
-// ----------------------------------------------------------------------------
-
-class PCCSolverSplineSmoothing : public MetaFloat
-{
-public:
-
-   PCCSolverSplineSmoothing( MetaProcess* );
-
-   IsoString Id() const override;
-   int Precision() const override;
-   double MinimumValue() const override;
-   double MaximumValue() const override;
-   double DefaultValue() const override;
-};
-
-extern PCCSolverSplineSmoothing* ThePCCSolverSplineSmoothingParameter;
-
-// ----------------------------------------------------------------------------
-
-class PCCSolverProjection : public MetaEnumeration
-{
-public:
-
-   // N.B.: Enumerated items must be coherent with the ImageSolver script.
-   enum { Gnomonic,
-          Stereographic,
-          PlateCarree,
-          Mercator,
-          HammerAitoff,
-          ZenithalEqualArea,
-          Orthographic,
-          NumberOfItems,
-          Default = Gnomonic };
-
-   PCCSolverProjection( MetaProcess* );
-
-   IsoString Id() const override;
-   size_type NumberOfElements() const override;
-   IsoString ElementId( size_type ) const override;
-   int ElementValue( size_type ) const override;
-   size_type DefaultValueIndex() const override;
-};
-
-extern PCCSolverProjection* ThePCCSolverProjectionParameter;
-
-// ----------------------------------------------------------------------------
-
-class PCCPhotCatalogName : public MetaString
-{
-public:
-
-   PCCPhotCatalogName( MetaProcess* );
-
-   IsoString Id() const override;
-   String DefaultValue() const override;
-};
-
-extern PCCPhotCatalogName* ThePCCPhotCatalogNameParameter;
-
-// ----------------------------------------------------------------------------
-
-class PCCPhotAutoCatalog : public MetaBoolean
-{
-public:
-
-   PCCPhotAutoCatalog( MetaProcess* );
-
-   IsoString Id() const override;
-   bool DefaultValue() const override;
-};
-
-extern PCCPhotAutoCatalog* ThePCCPhotAutoCatalogParameter;
-
-// ----------------------------------------------------------------------------
-
-class PCCPhotLimitMagnitude : public MetaInt32
-{
-public:
-
-   PCCPhotLimitMagnitude( MetaProcess* );
-
-   IsoString Id() const override;
-   double MinimumValue() const override;
-   double MaximumValue() const override;
-   double DefaultValue() const override;
-};
-
-extern PCCPhotLimitMagnitude* ThePCCPhotLimitMagnitudeParameter;
-
-// ----------------------------------------------------------------------------
-
-class PCCPhotAutoLimitMagnitude : public MetaBoolean
-{
-public:
-
-   PCCPhotAutoLimitMagnitude( MetaProcess* );
-
-   IsoString Id() const override;
-   bool DefaultValue() const override;
-};
-
-extern PCCPhotAutoLimitMagnitude* ThePCCPhotAutoLimitMagnitudeParameter;
-
-// ----------------------------------------------------------------------------
-
-class PCCPhotAutoLimitMagnitudeFactor : public MetaFloat
-{
-public:
-
-   PCCPhotAutoLimitMagnitudeFactor( MetaProcess* );
+   PCCPSFGrowth( MetaProcess* );
 
    IsoString Id() const override;
    int Precision() const override;
+   double DefaultValue() const override;
    double MinimumValue() const override;
    double MaximumValue() const override;
+};
+
+extern PCCPSFGrowth* ThePCCPSFGrowthParameter;
+
+// ----------------------------------------------------------------------------
+
+class PCCPSFMaxStars : public MetaInt32
+{
+public:
+
+   PCCPSFMaxStars( MetaProcess* );
+
+   IsoString Id() const override;
    double DefaultValue() const override;
-};
-
-extern PCCPhotAutoLimitMagnitudeFactor* ThePCCPhotAutoLimitMagnitudeFactorParameter;
-
-// ----------------------------------------------------------------------------
-
-class PCCPhotAutoAperture : public MetaBoolean
-{
-public:
-
-   PCCPhotAutoAperture( MetaProcess* );
-
-   IsoString Id() const override;
-   bool DefaultValue() const override;
-};
-
-extern PCCPhotAutoAperture* ThePCCPhotAutoApertureParameter;
-
-// ----------------------------------------------------------------------------
-
-class PCCPhotAperture : public MetaInt32
-{
-public:
-
-   PCCPhotAperture( MetaProcess* );
-
-   IsoString Id() const override;
    double MinimumValue() const override;
    double MaximumValue() const override;
-   double DefaultValue() const override;
 };
 
-extern PCCPhotAperture* ThePCCPhotApertureParameter;
+extern PCCPSFMaxStars* ThePCCPSFMaxStarsParameter;
 
 // ----------------------------------------------------------------------------
 
-class PCCPhotUsePSF : public MetaBoolean
+class PCCPSFSearchTolerance : public MetaFloat
 {
 public:
 
-   PCCPhotUsePSF( MetaProcess* );
-
-   IsoString Id() const override;
-   bool DefaultValue() const override;
-};
-
-extern PCCPhotUsePSF* ThePCCPhotUsePSFParameter;
-
-// ----------------------------------------------------------------------------
-
-class PCCPhotSaturationThreshold : public MetaFloat
-{
-public:
-
-   PCCPhotSaturationThreshold( MetaProcess* );
+   PCCPSFSearchTolerance( MetaProcess* );
 
    IsoString Id() const override;
    int Precision() const override;
+   double DefaultValue() const override;
    double MinimumValue() const override;
    double MaximumValue() const override;
+};
+
+extern PCCPSFSearchTolerance* ThePCCPSFSearchToleranceParameter;
+
+// ----------------------------------------------------------------------------
+
+class PCCPSFChannelSearchTolerance : public MetaFloat
+{
+public:
+
+   PCCPSFChannelSearchTolerance( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
    double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
-extern PCCPhotSaturationThreshold* ThePCCPhotSaturationThresholdParameter;
-
-// ----------------------------------------------------------------------------
-
-class PCCPhotShowDetectedStars : public MetaBoolean
-{
-public:
-
-   PCCPhotShowDetectedStars( MetaProcess* );
-
-   IsoString Id() const override;
-   bool DefaultValue() const override;
-};
-
-extern PCCPhotShowDetectedStars* ThePCCPhotShowDetectedStarsParameter;
-
-// ----------------------------------------------------------------------------
-
-class PCCPhotShowBackgroundModels : public MetaBoolean
-{
-public:
-
-   PCCPhotShowBackgroundModels( MetaProcess* );
-
-   IsoString Id() const override;
-   bool DefaultValue() const override;
-};
-
-extern PCCPhotShowBackgroundModels* ThePCCPhotShowBackgroundModelsParameter;
-
-// ----------------------------------------------------------------------------
-
-class PCCPhotGenerateGraphs : public MetaBoolean
-{
-public:
-
-   PCCPhotGenerateGraphs( MetaProcess* );
-
-   IsoString Id() const override;
-   bool DefaultValue() const override;
-};
-
-extern PCCPhotGenerateGraphs* ThePCCPhotGenerateGraphsParameter;
+extern PCCPSFChannelSearchTolerance* ThePCCPSFChannelSearchToleranceParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -924,6 +646,62 @@ extern PCCBackgroundROIY1* ThePCCBackgroundROIY1Parameter;
 
 // ----------------------------------------------------------------------------
 
+class PCCGenerateGraphs : public MetaBoolean
+{
+public:
+
+   PCCGenerateGraphs( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern PCCGenerateGraphs* ThePCCGenerateGraphsParameter;
+
+// ----------------------------------------------------------------------------
+
+class PCCGenerateStarMaps : public MetaBoolean
+{
+public:
+
+   PCCGenerateStarMaps( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern PCCGenerateStarMaps* ThePCCGenerateStarMapsParameter;
+
+// ----------------------------------------------------------------------------
+
+class PCCGenerateTextFiles : public MetaBoolean
+{
+public:
+
+   PCCGenerateTextFiles( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern PCCGenerateTextFiles* ThePCCGenerateTextFilesParameter;
+
+// ----------------------------------------------------------------------------
+
+class PCCOutputDirectory : public MetaString
+{
+public:
+
+   PCCOutputDirectory( MetaProcess* );
+
+   IsoString Id() const override;
+   String DefaultValue() const override;
+};
+
+extern PCCOutputDirectory* ThePCCOutputDirectoryParameter;
+
+// ----------------------------------------------------------------------------
+
 PCL_END_LOCAL
 
 } // pcl
@@ -931,4 +709,4 @@ PCL_END_LOCAL
 #endif   // __PhotometricColorCalibrationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationParameters.h - Released 2022-05-20T16:28:45Z
+// EOF PhotometricColorCalibrationParameters.h - Released 2022-11-21T14:47:17Z

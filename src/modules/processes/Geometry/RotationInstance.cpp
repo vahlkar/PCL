@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 1.2.4
+// Standard Geometry Process Module Version 1.3.1
 // ----------------------------------------------------------------------------
-// RotationInstance.cpp - Released 2022-05-17T17:15:11Z
+// RotationInstance.cpp - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -74,6 +74,7 @@ RotationInstance::RotationInstance( const MetaProcess* P )
    , p_interpolation( TheRTInterpolationAlgorithmParameter->Default )
    , p_clampingThreshold( TheRTClampingThresholdParameter->DefaultValue() )
    , p_smoothness( TheRTSmoothnessParameter->DefaultValue() )
+   , p_gammaCorrection( TheRTGammaCorrectionParameter->DefaultValue() )
    , p_fillColor( TheRTFillRedParameter->DefaultValue(),
                   TheRTFillGreenParameter->DefaultValue(),
                   TheRTFillBlueParameter->DefaultValue(),
@@ -102,6 +103,7 @@ void RotationInstance::Assign( const ProcessImplementation& p )
       p_interpolation = x->p_interpolation;
       p_clampingThreshold = x->p_clampingThreshold;
       p_smoothness = x->p_smoothness;
+      p_gammaCorrection = x->p_gammaCorrection;
       p_fillColor = x->p_fillColor;
       p_noGUIMessages = x->p_noGUIMessages;
    }
@@ -220,6 +222,15 @@ bool RotationInstance::ExecuteOn( View& view )
    }
 
    R.SetFillValues( p_fillColor );
+
+   if ( p_gammaCorrection )
+   {
+      RGBColorSystem rgbws;
+      window.GetRGBWS( rgbws );
+      R.EnableGammaCorrection();
+      R.SetRGBWorkingSpace( rgbws );
+   }
+
    R >> image;
 
    return true;
@@ -239,6 +250,8 @@ void* RotationInstance::LockParameter( const MetaParameter* p, size_type /*table
       return &p_clampingThreshold;
    if ( p == TheRTSmoothnessParameter )
       return &p_smoothness;
+   if ( p == TheRTGammaCorrectionParameter )
+      return &p_gammaCorrection;
    if ( p == TheRTFillRedParameter )
       return p_fillColor.At( 0 );
    if ( p == TheRTFillGreenParameter )
@@ -257,4 +270,4 @@ void* RotationInstance::LockParameter( const MetaParameter* p, size_type /*table
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RotationInstance.cpp - Released 2022-05-17T17:15:11Z
+// EOF RotationInstance.cpp - Released 2022-11-21T14:47:17Z

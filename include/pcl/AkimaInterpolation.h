@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.30
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// pcl/AkimaInterpolation.h - Released 2022-08-10T16:36:28Z
+// pcl/AkimaInterpolation.h - Released 2022-11-21T14:46:30Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -123,6 +123,16 @@ public:
    AkimaInterpolation( AkimaInterpolation&& ) = default;
 
    /*!
+    * Copy assignment operator. Returns a reference to this object.
+    */
+   AkimaInterpolation& operator =( const AkimaInterpolation& ) = default;
+
+   /*!
+    * Move assignment operator. Returns a reference to this object.
+    */
+   AkimaInterpolation& operator =( AkimaInterpolation&& ) = default;
+
+   /*!
     * Destroys an %AkimaInterpolation object.
     */
    virtual ~AkimaInterpolation()
@@ -142,8 +152,8 @@ public:
     * \param y          %Vector of function values for i = {0,1,...,n-1}.
     *
     * The length of the \a y vector (and also the length of a nonempty \a x
-    * vector) must be \e n >= 5. This is because Akima interpolation requires
-    * at least 4 subintervals.
+    * vector) must be \e n >= 5. This is because Akima subspline interpolation
+    * requires at least 4 subintervals.
     */
    void Initialize( const vector_type& x, const vector_type& y ) override
    {
@@ -236,6 +246,10 @@ public:
 
    /*!
     * Returns an interpolated function value at \a x location.
+    *
+    * \note Akima subsplines cannot be used for extrapolation. If the specified
+    * interpolation point \a x lies outside the range of interpolation defined
+    * upon initialization, this function returns zero conventionally.
     */
    PCL_HOT_FUNCTION
    double operator()( double x ) const override
@@ -252,6 +266,9 @@ public:
       {
          i0 = 0;
          int i1 = m_x.Length() - 1;
+         // if trying to extrapolate, return zero.
+         if ( unlikely( x < m_x[0] || x > m_x[i1] ) )
+            return 0;
          while ( i1-i0 > 1 )
          {
             int im = (i0 + i1) >> 1;
@@ -319,4 +336,4 @@ protected:
 #endif  // __PCL_AkimaInterpolation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AkimaInterpolation.h - Released 2022-08-10T16:36:28Z
+// EOF pcl/AkimaInterpolation.h - Released 2022-11-21T14:46:30Z

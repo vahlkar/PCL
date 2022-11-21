@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.30
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// pcl/ProcessInterface.h - Released 2022-08-10T16:36:28Z
+// pcl/ProcessInterface.h - Released 2022-11-21T14:46:30Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -2364,7 +2364,7 @@ public:
     * data associated to this interface.
     *
     * The returned settings key string will be equal to "Interfaces/&lt;id&gt;/",
-    * where &lt;id&gt; is the identifier of this interface, as returned by the
+    * where &lt;id&gt; is the identifier of this interface as returned by the
     * Id() member function.
     *
     * \note Interfaces must only use the keys returned by this function for
@@ -2450,12 +2450,12 @@ public:
     * Interfaces/&lt;id&gt;/Geometry/Width \n
     * Interfaces/&lt;id&gt;/Geometry/Height
     *
-    * where &lt;id&gt; is the identifier of this interface, as returned by the
+    * where &lt;id&gt; is the identifier of this interface as returned by the
     * Id() member function.
     *
-    * \note Normally, you should not need to call this function, unless you
-    * have explicitly disabled the <em>auto save geometry</em> feature by
-    * calling the DisableAutoSaveGeometry() member function.
+    * \note Normally you should not need to call this function, unless you have
+    * explicitly disabled the <em>auto save geometry</em> feature by calling
+    * the DisableAutoSaveGeometry() member function.
     *
     * \sa RestoreGeometry(), SetDefaultPosition(), IsAutoSaveGeometryEnabled()
     */
@@ -2471,9 +2471,9 @@ public:
     * \e remember its size and position on the core application's work space
     * across sessions.
     *
-    * \note Normally, you should not need to call this function, unless you
-    * have explicitly disabled the <em>auto save geometry</em> feature by
-    * calling the DisableAutoSaveGeometry() member function.
+    * \note Normally you should not need to call this function, unless you have
+    * explicitly disabled the <em>auto save geometry</em> feature by calling
+    * the DisableAutoSaveGeometry() member function.
     *
     * \sa SaveGeometry()
     */
@@ -2513,9 +2513,9 @@ public:
    }
 
    /*!
-    * Enables (or disables) the <em>auto save geometry</em> feature. For more
-    * information on this feature, see the documentation for the
-    * IsAutoSaveGeometryEnabled() member function.
+    * Enables the <em>auto save geometry</em> feature. For more information on
+    * this feature, see the documentation for the IsAutoSaveGeometryEnabled()
+    * member function.
     *
     * \sa DisableAutoSaveGeometry(), IsAutoSaveGeometryEnabled()
     */
@@ -2525,9 +2525,9 @@ public:
    }
 
    /*!
-    * Disables (or enables) the <em>auto save geometry</em> feature. For more
-    * information on this feature, see the documentation for the
-    * IsAutoSaveGeometryEnabled() member function.
+    * Disables the <em>auto save geometry</em> feature. For more information on
+    * this feature, see the documentation for the IsAutoSaveGeometryEnabled()
+    * member function.
     *
     * \sa EnableAutoSaveGeometry(), IsAutoSaveGeometryEnabled()
     */
@@ -2558,7 +2558,7 @@ public:
     * \note This member function must \e not be used on a regular basis without
     * having a \e really good reason to do so. An abusive use of this function,
     * such as too frequent calls performed during intensive real-time
-    * operations, may degrade the performance of the whole platform due to
+    * operations, may degrade the performance of the whole platform because of
     * excessive overhead.
     */
    static void BroadcastImageUpdated( const View& view );
@@ -2583,7 +2583,7 @@ public:
     * \note Do not call this function too frequently, as doing so may degrade
     * the performance of the whole PixInsight graphical interface. For example,
     * calling this function at 250 ms intervals is reasonable and more than
-    * sufficient in most cases. Normally, you should only need to call this
+    * sufficient in most cases. Normally you should only need to call this
     * function during real-time image and graphics generation procedures, or
     * from time-consuming processes.
     */
@@ -2615,4 +2615,4 @@ private:
 #endif   // __PCL_ProcessInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ProcessInterface.h - Released 2022-08-10T16:36:28Z
+// EOF pcl/ProcessInterface.h - Released 2022-11-21T14:46:30Z

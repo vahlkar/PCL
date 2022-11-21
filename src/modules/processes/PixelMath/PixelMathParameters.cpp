@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.9.2
 // ----------------------------------------------------------------------------
-// PixelMathParameters.cpp - Released 2022-05-17T17:15:11Z
+// PixelMathParameters.cpp - Released 2022-11-21T14:47:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -715,4 +715,4 @@ int PMOutputGlobalVariableB::Precision() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PixelMathParameters.cpp - Released 2022-05-17T17:15:11Z
+// EOF PixelMathParameters.cpp - Released 2022-11-21T14:47:18Z

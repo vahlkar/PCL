@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.30
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// pcl/String.cpp - Released 2022-08-10T16:36:36Z
+// pcl/String.cpp - Released 2022-11-21T14:46:37Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -54,6 +54,9 @@
 #include <pcl/Exception.h>
 #include <pcl/Random.h>
 #include <pcl/String.h>
+#ifndef __PCL_NO_STRING_VECTOR
+#  include <pcl/Vector.h>
+#endif
 
 #include <stdlib.h>
 #include <stdarg.h>
@@ -875,6 +878,40 @@ Array<float> IsoString::ParseListOfFloat( char separator, size_type maxCount ) c
    return v;
 }
 
+GenericVector<float> IsoString::ParseListOfFloatAsVector( char separator, int maxCount ) const
+{
+   if (  IsoCharTraits::IsDigit( separator )
+      || IsoCharTraits::IsSign( separator )
+      || IsoCharTraits::IsDecimalSeparator( separator )
+      || IsoCharTraits::IsExponentDelimiter( separator ) )
+      throw ParseError( "Parsing real numeric list: invalid separator specified" );
+   GenericVector<float> v;
+   const_iterator p1 = char_traits::SearchTrimLeft( Begin(), End() );
+   const_iterator p2 = char_traits::SearchTrimRight( p1, End() );
+   if ( p1 < p2 )
+   {
+      int count = 1;
+      for ( const_iterator s = p1; s < p2; ++s )
+         if ( *s == separator )
+         {
+            if ( count == maxCount )
+               throw ParseError( "Parsing real numeric list: too many items: expected a maximum of " + String( maxCount ) + '.', IsoString( p1, s ) );
+            ++count;
+         }
+      v = GenericVector<float>( count );
+      for ( int i = 0; p1 < p2; ++p1 )
+      {
+         const_iterator s;
+         for ( s = p1; s < p2; ++s )
+            if ( *s == separator )
+               break;
+         v[i++] = ParseFloat( p1, s );
+         p1 = s;
+      }
+   }
+   return v;
+}
+
 // ----------------------------------------------------------------------------
 
 static double ParseDouble( IsoString::const_iterator p1, IsoString::const_iterator p2 )
@@ -913,6 +950,40 @@ Array<double> IsoString::ParseListOfDouble( char separator, size_type maxCount )
          throw ParseError( "Parsing real numeric list: too many items: expected a maximum of " + String( maxCount ) + '.', IsoString( p1, s ) );
       v << x;
       p1 = s;
+   }
+   return v;
+}
+
+GenericVector<double> IsoString::ParseListOfDoubleAsVector( char separator, int maxCount ) const
+{
+   if (  IsoCharTraits::IsDigit( separator )
+      || IsoCharTraits::IsSign( separator )
+      || IsoCharTraits::IsDecimalSeparator( separator )
+      || IsoCharTraits::IsExponentDelimiter( separator ) )
+      throw ParseError( "Parsing real numeric list: invalid separator specified" );
+   GenericVector<double> v;
+   const_iterator p1 = char_traits::SearchTrimLeft( Begin(), End() );
+   const_iterator p2 = char_traits::SearchTrimRight( p1, End() );
+   if ( p1 < p2 )
+   {
+      int count = 1;
+      for ( const_iterator s = p1; s < p2; ++s )
+         if ( *s == separator )
+         {
+            if ( count == maxCount )
+               throw ParseError( "Parsing real numeric list: too many items: expected a maximum of " + String( maxCount ) + '.', IsoString( p1, s ) );
+            ++count;
+         }
+      v = GenericVector<double>( count );
+      for ( int i = 0; p1 < p2; ++p1 )
+      {
+         const_iterator s;
+         for ( s = p1; s < p2; ++s )
+            if ( *s == separator )
+               break;
+         v[i++] = ParseDouble( p1, s );
+         p1 = s;
+      }
    }
    return v;
 }
@@ -1630,6 +1701,40 @@ Array<float> String::ParseListOfFloat( char separator, size_type maxCount ) cons
    return v;
 }
 
+GenericVector<float> String::ParseListOfFloatAsVector( char separator, int maxCount ) const
+{
+   if (  IsoCharTraits::IsDigit( separator )
+      || IsoCharTraits::IsSign( separator )
+      || IsoCharTraits::IsDecimalSeparator( separator )
+      || IsoCharTraits::IsExponentDelimiter( separator ) )
+      throw ParseError( "Parsing real numeric list: invalid separator specified" );
+   GenericVector<float> v;
+   const_iterator p1 = char_traits::SearchTrimLeft( Begin(), End() );
+   const_iterator p2 = char_traits::SearchTrimRight( p1, End() );
+   if ( p1 < p2 )
+   {
+      int count = 1;
+      for ( const_iterator s = p1; s < p2; ++s )
+         if ( *s == separator )
+         {
+            if ( count == maxCount )
+               throw ParseError( "Parsing real numeric list: too many items: expected a maximum of " + String( maxCount ) + '.', String( p1, s ) );
+            ++count;
+         }
+      v = GenericVector<float>( count );
+      for ( int i = 0; p1 < p2; ++p1 )
+      {
+         const_iterator s;
+         for ( s = p1; s < p2; ++s )
+            if ( *s == separator )
+               break;
+         v[i++] = ParseFloat( p1, s );
+         p1 = s;
+      }
+   }
+   return v;
+}
+
 // ----------------------------------------------------------------------------
 
 static double ParseDouble( String::const_iterator p1, String::const_iterator p2 )
@@ -1681,6 +1786,40 @@ Array<double> String::ParseListOfDouble( char separator, size_type maxCount ) co
          throw ParseError( "Parsing real numeric list: too many items: expected a maximum of " + String( maxCount ) + '.', String( p1, s ) );
       v << x;
       p1 = s;
+   }
+   return v;
+}
+
+GenericVector<double> String::ParseListOfDoubleAsVector( char separator, int maxCount ) const
+{
+   if (  IsoCharTraits::IsDigit( separator )
+      || IsoCharTraits::IsSign( separator )
+      || IsoCharTraits::IsDecimalSeparator( separator )
+      || IsoCharTraits::IsExponentDelimiter( separator ) )
+      throw ParseError( "Parsing real numeric list: invalid separator specified" );
+   GenericVector<double> v;
+   const_iterator p1 = char_traits::SearchTrimLeft( Begin(), End() );
+   const_iterator p2 = char_traits::SearchTrimRight( p1, End() );
+   if ( p1 < p2 )
+   {
+      int count = 1;
+      for ( const_iterator s = p1; s < p2; ++s )
+         if ( *s == separator )
+         {
+            if ( count == maxCount )
+               throw ParseError( "Parsing real numeric list: too many items: expected a maximum of " + String( maxCount ) + '.', String( p1, s ) );
+            ++count;
+         }
+      v = GenericVector<double>( count );
+      for ( int i = 0; p1 < p2; ++p1 )
+      {
+         const_iterator s;
+         for ( s = p1; s < p2; ++s )
+            if ( *s == separator )
+               break;
+         v[i++] = ParseDouble( p1, s );
+         p1 = s;
+      }
    }
    return v;
 }
@@ -2792,4 +2931,4 @@ IsoString IsoString::CurrentLocalISO8601DateTime( const ISO8601ConversionOptions
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/String.cpp - Released 2022-08-10T16:36:36Z
+// EOF pcl/String.cpp - Released 2022-11-21T14:46:37Z

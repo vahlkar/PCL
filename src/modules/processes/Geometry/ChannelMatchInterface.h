@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 1.2.4
+// Standard Geometry Process Module Version 1.3.1
 // ----------------------------------------------------------------------------
-// ChannelMatchInterface.h - Released 2022-05-17T17:15:11Z
+// ChannelMatchInterface.h - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -143,10 +143,9 @@ private:
 
    void UpdateControls();
 
-   void __Channel_Click( Button& sender, bool checked );
-   void __Channel_Offset_Click( Button& sender, bool checked );
-   void __Channel_Offset_ValueUpdated( NumericEdit& sender, double value );
-   void __Channel_Factor_ValueUpdated( NumericEdit& sender, double value );
+   void e_Channel_ButtonClick( Button& sender, bool checked );
+   void e_ChannelOffset_ButtonClick( Button& sender, bool checked );
+   void e_ValueUpdated( NumericEdit& sender, double value );
 
    friend struct GUIData;
 };
@@ -164,4 +163,4 @@ PCL_END_LOCAL
 #endif   // __ChannelMatchInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF ChannelMatchInterface.h - Released 2022-05-17T17:15:11Z
+// EOF ChannelMatchInterface.h - Released 2022-11-21T14:47:17Z

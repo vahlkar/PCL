@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard ColorSpaces Process Module Version 1.1.2
+// Standard ColorSpaces Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// LRGBCombinationProcess.cpp - Released 2022-05-17T17:15:11Z
+// LRGBCombinationProcess.cpp - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -78,6 +78,7 @@ LRGBCombinationProcess::LRGBCombinationProcess()
    new LRGBNoiseReduction( this );
    new LRGBLayersRemoved( this );
    new LRGBLayersProtected( this );
+   TheLRGBCInheritAstrometricSolutionParameter = new CSInheritAstrometricSolution( this );
 }
 
 // ----------------------------------------------------------------------------
@@ -142,4 +143,4 @@ bool LRGBCombinationProcess::NeedsValidation() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LRGBCombinationProcess.cpp - Released 2022-05-17T17:15:11Z
+// EOF LRGBCombinationProcess.cpp - Released 2022-11-21T14:47:17Z

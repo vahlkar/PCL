@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard APASS Process Module Version 1.1.0
+// Standard APASS Process Module Version 1.1.4
 // ----------------------------------------------------------------------------
-// APASSProcess.cpp - Released 2022-05-17T17:15:11Z
+// APASSProcess.cpp - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard APASS PixInsight module.
 //
@@ -125,6 +125,7 @@ APASSProcess::APASSProcess()
    new ADataRelease( this );
    new ASortBy( this );
    new AGenerateTextOutput( this );
+   new AGenerateBinaryOutput( this );
    new ATextFormat( this );
    new ATextHeaders( this );
    new AOutputFilePath( this );
@@ -701,4 +702,4 @@ void APASSProcess::SavePreferences( int dr )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF APASSProcess.cpp - Released 2022-05-17T17:15:11Z
+// EOF APASSProcess.cpp - Released 2022-11-21T14:47:17Z

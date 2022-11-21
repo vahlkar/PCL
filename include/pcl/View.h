@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.30
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// pcl/View.h - Released 2022-08-10T16:36:28Z
+// pcl/View.h - Released 2022-11-21T14:46:30Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -268,6 +268,18 @@ public:
     * a volatile subimage defined in an image window.
     */
    bool IsPreview() const;
+
+   /*!
+    * Returns true iff this view is a preview and it does not cover its parent
+    * main view completely.
+    */
+   bool IsPartialPreview() const;
+
+   /*!
+    * Returns true iff this view is a preview and it covers its parent main
+    * view completely.
+    */
+   bool IsCompletePreview() const;
 
    /*!
     * Returns true iff this view is a preview and is in volatile state. A
@@ -1119,4 +1131,4 @@ protected:
 #endif   // __PCL_View_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/View.h - Released 2022-08-10T16:36:28Z
+// EOF pcl/View.h - Released 2022-11-21T14:46:30Z

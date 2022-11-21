@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 1.2.4
+// Standard Geometry Process Module Version 1.3.1
 // ----------------------------------------------------------------------------
-// CommonParameters.h - Released 2022-05-17T17:15:11Z
+// CommonParameters.h - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -299,6 +299,18 @@ public:
 
 // ----------------------------------------------------------------------------
 
+class GammaCorrection : public MetaBoolean
+{
+public:
+
+   GammaCorrection( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+// ----------------------------------------------------------------------------
+
 class XResolution : public MetaDouble
 {
 public:
@@ -430,4 +442,4 @@ public:
 #endif   // __CommonParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF CommonParameters.h - Released 2022-05-17T17:15:11Z
+// EOF CommonParameters.h - Released 2022-11-21T14:47:17Z

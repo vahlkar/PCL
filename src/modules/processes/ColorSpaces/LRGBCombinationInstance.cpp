@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard ColorSpaces Process Module Version 1.1.2
+// Standard ColorSpaces Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// LRGBCombinationInstance.cpp - Released 2022-05-17T17:15:11Z
+// LRGBCombinationInstance.cpp - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -54,6 +54,7 @@
 #include "LRGBCombinationParameters.h"
 #include "LRGBCombinationProcess.h"
 
+#include <pcl/AstrometricMetadata.h>
 #include <pcl/ATrousWaveletTransform.h>
 #include <pcl/AutoViewLock.h>
 #include <pcl/HistogramTransformation.h>
@@ -69,6 +70,13 @@ namespace pcl
 
 LRGBCombinationInstance::LRGBCombinationInstance( const MetaProcess* P )
    : ProcessImplementation( P )
+   , luminanceMTF( TheLRGBLuminanceMTFParameter->DefaultValue() )
+   , saturationMTF( TheLRGBSaturationMTFParameter->DefaultValue() )
+   , clipHighlights( TheLRGBClipHighlightsParameter->DefaultValue() )
+   , noiseReduction( TheLRGBNoiseReductionParameter->DefaultValue() )
+   , numberOfRemovedWaveletLayers( (uint32)TheLRGBLayersRemovedParameter->DefaultValue() )
+   , numberOfProtectedWaveletLayers( (uint32)TheLRGBLayersProtectedParameter->DefaultValue() )
+   , p_inheritAstrometricSolution( TheLRGBCInheritAstrometricSolutionParameter )
 {
    for ( int i = 0; i < 4; ++i )
    {
@@ -77,18 +85,19 @@ LRGBCombinationInstance::LRGBCombinationInstance( const MetaProcess* P )
       channelWeight[i] = 1;
    }
 
-   luminanceMTF = TheLRGBLuminanceMTFParameter->DefaultValue();
-   saturationMTF = TheLRGBSaturationMTFParameter->DefaultValue();
-   clipHighlights = TheLRGBClipHighlightsParameter->DefaultValue();
-   noiseReduction = TheLRGBNoiseReductionParameter->DefaultValue();
-   numberOfRemovedWaveletLayers = (uint32)TheLRGBLayersRemovedParameter->DefaultValue();
-   numberOfProtectedWaveletLayers = (uint32)TheLRGBLayersProtectedParameter->DefaultValue();
 }
 
 // ----------------------------------------------------------------------------
 
 LRGBCombinationInstance::LRGBCombinationInstance( const LRGBCombinationInstance& x )
    : ProcessImplementation( x )
+   , luminanceMTF( x.luminanceMTF )
+   , saturationMTF( x.saturationMTF )
+   , clipHighlights( x.clipHighlights )
+   , noiseReduction( x.noiseReduction )
+   , numberOfRemovedWaveletLayers( x.numberOfRemovedWaveletLayers )
+   , numberOfProtectedWaveletLayers( x.numberOfProtectedWaveletLayers )
+   , p_inheritAstrometricSolution( x.p_inheritAstrometricSolution )
 {
    for ( int i = 0; i < 4; ++i )
    {
@@ -97,12 +106,6 @@ LRGBCombinationInstance::LRGBCombinationInstance( const LRGBCombinationInstance&
       channelWeight[i] = x.channelWeight[i];
    }
 
-   luminanceMTF = x.luminanceMTF;
-   saturationMTF = x.saturationMTF;
-   clipHighlights = x.clipHighlights;
-   noiseReduction = x.noiseReduction;
-   numberOfRemovedWaveletLayers = x.numberOfRemovedWaveletLayers;
-   numberOfProtectedWaveletLayers = x.numberOfProtectedWaveletLayers;
 }
 
 // ----------------------------------------------------------------------------
@@ -151,14 +154,22 @@ void LRGBCombinationInstance::Assign( const ProcessImplementation& p )
       noiseReduction = x->noiseReduction;
       numberOfRemovedWaveletLayers = x->numberOfRemovedWaveletLayers;
       numberOfProtectedWaveletLayers = x->numberOfProtectedWaveletLayers;
+      p_inheritAstrometricSolution = x->p_inheritAstrometricSolution;
    }
 }
 
 // ----------------------------------------------------------------------------
 
-UndoFlags LRGBCombinationInstance::UndoMode( const View& ) const
+UndoFlags LRGBCombinationInstance::UndoMode( const View& view ) const
 {
-   return UndoFlag::PixelData;
+   UndoFlags flags = UndoFlag::PixelData;
+   if ( !view.IsPreview() )
+   {
+      flags |= UndoFlag::Keywords;
+      if ( p_inheritAstrometricSolution )
+         flags |= UndoFlag::AstrometricSolution;
+   }
+   return flags;
 }
 
 // ----------------------------------------------------------------------------
@@ -466,9 +477,8 @@ __attribute__((noinline))
 #endif
 static void CombineLRGB( GenericImage<P>& img, const Rect& r,
                          const double k[], double mL, double mc, bool clip,
-                         const GenericImage<P0>* srcR,
-                         const GenericImage<P1>* srcG,
-                         const GenericImage<P2>* srcB, ImageVariant& srcL )
+                         const GenericImage<P0>* srcR, const GenericImage<P1>* srcG, const GenericImage<P2>* srcB,
+                         ImageVariant& srcL )
 {
    AbstractImage* srcImgL = srcL.ImagePtr();
 
@@ -683,8 +693,8 @@ template <class P, class P0, class P1>
 __attribute__((noinline))
 #endif
 static void CombineLRGB( GenericImage<P>& img, const Rect& r, const double k[], double mL, double mc, bool clip,
-                     const GenericImage<P0>* srcR,
-                     const GenericImage<P1>* srcG, ImageVariant& srcB, ImageVariant& srcL )
+                         const GenericImage<P0>* srcR, const GenericImage<P1>* srcG,
+                         ImageVariant& srcB, ImageVariant& srcL )
 {
    if ( srcB )
    {
@@ -721,7 +731,8 @@ template <class P, class P0>
 __attribute__((noinline))
 #endif
 static void CombineLRGB( GenericImage<P>& img, const Rect& r, const double k[], double mL, double mc, bool clip,
-                     const GenericImage<P0>* srcR, ImageVariant& srcG, ImageVariant& srcB, ImageVariant& srcL )
+                         const GenericImage<P0>* srcR,
+                         ImageVariant& srcG, ImageVariant& srcB, ImageVariant& srcL )
 {
    if ( srcG )
    {
@@ -758,7 +769,7 @@ template <class P>
 __attribute__((noinline))
 #endif
 static void CombineLRGB( GenericImage<P>& img, const Rect& r, const double k[], double mL, double mc, bool clip,
-                     ImageVariant& srcR, ImageVariant& srcG, ImageVariant& srcB, ImageVariant& srcL )
+                         ImageVariant& srcR, ImageVariant& srcG, ImageVariant& srcB, ImageVariant& srcL )
 {
    if ( srcR )
    {
@@ -813,24 +824,25 @@ bool LRGBCombinationInstance::ExecuteOn( View& view )
    StandardStatus status;
    image->SetStatusCallback( &status );
 
+   ImageWindow window = view.Window();
+
    // Base id, preview rectangle or entire image boundaries
    String baseId;
-   Rect r;
+   Rect rect;
    int w0, h0;
    if ( view.IsPreview() )
    {
-      ImageWindow w = view.Window();
-      View mainView = w.MainView();
+      View mainView = window.MainView();
       baseId = mainView.Id();
-      r = w.PreviewRect( view.Id() );
+      rect = window.PreviewRect( view.Id() );
       mainView.GetSize( w0, h0 );
    }
    else
    {
       baseId = view.Id();
-      r = image->Bounds();
-      w0 = r.Width();
-      h0 = r.Height();
+      rect = image->Bounds();
+      w0 = rect.Width();
+      h0 = rect.Height();
    }
 
    int numberOfSources = 0;
@@ -873,12 +885,12 @@ bool LRGBCombinationInstance::ExecuteOn( View& view )
       switch ( image.BitsPerSample() )
       {
       case 32:
-         CombineLRGB( static_cast<Image&>( *image ), r,
+         CombineLRGB( static_cast<Image&>( *image ), rect,
                       channelWeight, luminanceMTF, saturationMTF, clipHighlights,
                       sourceImage[0], sourceImage[1], sourceImage[2], sourceImage[3] );
          break;
       case 64:
-         CombineLRGB( static_cast<DImage&>( *image ), r,
+         CombineLRGB( static_cast<DImage&>( *image ), rect,
                       channelWeight, luminanceMTF, saturationMTF, clipHighlights,
                       sourceImage[0], sourceImage[1], sourceImage[2], sourceImage[3] );
          break;
@@ -887,17 +899,17 @@ bool LRGBCombinationInstance::ExecuteOn( View& view )
       switch ( image.BitsPerSample() )
       {
       case  8:
-         CombineLRGB( static_cast<UInt8Image&>( *image ), r,
+         CombineLRGB( static_cast<UInt8Image&>( *image ), rect,
                       channelWeight, luminanceMTF, saturationMTF, clipHighlights,
                       sourceImage[0], sourceImage[1], sourceImage[2], sourceImage[3] );
          break;
       case 16:
-         CombineLRGB( static_cast<UInt16Image&>( *image ), r,
+         CombineLRGB( static_cast<UInt16Image&>( *image ), rect,
                       channelWeight, luminanceMTF, saturationMTF, clipHighlights,
                       sourceImage[0], sourceImage[1], sourceImage[2], sourceImage[3] );
          break;
       case 32:
-         CombineLRGB( static_cast<UInt32Image&>( *image ), r,
+         CombineLRGB( static_cast<UInt32Image&>( *image ), rect,
                       channelWeight, luminanceMTF, saturationMTF, clipHighlights,
                       sourceImage[0], sourceImage[1], sourceImage[2], sourceImage[3] );
          break;
@@ -947,13 +959,53 @@ bool LRGBCombinationInstance::ExecuteOn( View& view )
    if ( !view.IsPreview() )
    {
       PropertyArray properties;
-      FITSKeywordArray keywords = view.Window().Keywords();
+      FITSKeywordArray keywords = window.Keywords();
 
       IntegrationMetadata metadata = IntegrationMetadata::Summary( sourceMetadata );
       metadata.UpdatePropertiesAndKeywords( properties, keywords );
 
       view.SetStorablePermanentProperties( properties );
-      view.Window().SetKeywords( keywords );
+      window.SetKeywords( keywords );
+
+      if ( p_inheritAstrometricSolution )
+      {
+         ImageWindow asSourceWindow = sourceWindow[3]; // L
+         bool asFound = !asSourceWindow.IsNull() && asSourceWindow.HasAstrometricSolution();
+         if ( !asFound )
+         {
+            asSourceWindow = sourceWindow[1]; // G
+            asFound = !asSourceWindow.IsNull() && asSourceWindow.HasAstrometricSolution();
+            if ( !asFound )
+               for ( int i = 0; i < 3; ++i )
+                  if ( !sourceWindow[i].IsNull() && sourceWindow[i].HasAstrometricSolution() )
+                  {
+                     asSourceWindow = sourceWindow[i];
+                     asFound = true;
+                     break;
+                  }
+         }
+
+         if ( asFound )
+         {
+            AstrometricMetadata A( asSourceWindow );
+            if ( A.IsValid() )
+            {
+               A.Write( window );
+               if ( window.RegenerateAstrometricSolution() )
+               {
+                  window.MainView().SetStorablePermanentPropertyValue( "PCL:AstrometricSolution:Information",
+                                                                       "source=inherited,process=LRGBCombination" );
+                  Console().NoteLn( "<end><cbr>* Astrometric solution inherited: "
+                                    + asSourceWindow.MainView().Id() + " => " + window.MainView().Id() );
+               }
+            }
+            else
+            {
+               Console().WarningLn( "<end><cbr>** Invalid astrometric solution ignored: "
+                                    + asSourceWindow.MainView().Id() );
+            }
+         }
+      }
    }
 
    return true;
@@ -1131,13 +1183,53 @@ bool LRGBCombinationInstance::ExecuteGlobal()
       outputView.SetStorablePermanentProperties( properties );
       outputWindow.SetKeywords( keywords );
 
+      if ( p_inheritAstrometricSolution )
+      {
+         ImageWindow asSourceWindow = sourceWindow[3]; // L
+         bool asFound = !asSourceWindow.IsNull() && asSourceWindow.HasAstrometricSolution();
+         if ( !asFound )
+         {
+            asSourceWindow = sourceWindow[1]; // G
+            asFound = !asSourceWindow.IsNull() && asSourceWindow.HasAstrometricSolution();
+            if ( !asFound )
+               for ( int i = 0; i < 3; ++i )
+                  if ( !sourceWindow[i].IsNull() && sourceWindow[i].HasAstrometricSolution() )
+                  {
+                     asSourceWindow = sourceWindow[i];
+                     asFound = true;
+                     break;
+                  }
+         }
+
+         if ( asFound )
+         {
+            AstrometricMetadata A( asSourceWindow );
+            if ( A.IsValid() )
+            {
+               A.Write( outputWindow );
+               if ( outputWindow.RegenerateAstrometricSolution() )
+               {
+                  outputView.SetStorablePermanentPropertyValue( "PCL:AstrometricSolution:Information",
+                                                                "source=inherited,process=LRGBCombination" );
+                  Console().NoteLn( "<end><cbr>* Astrometric solution inherited: "
+                                    + asSourceWindow.MainView().Id() + " => " + outputView.Id() );
+               }
+            }
+            else
+            {
+               Console().WarningLn( "<end><cbr>** Invalid astrometric solution ignored: "
+                                    + asSourceWindow.MainView().Id() );
+            }
+         }
+      }
+
       outputWindow.Show();
 
       return true;
    }
    catch ( ... )
    {
-      outputWindow.Close();
+      outputWindow.ForceClose();
       throw;
    }
 }
@@ -1164,7 +1256,10 @@ void* LRGBCombinationInstance::LockParameter( const MetaParameter* p, size_type 
       return &numberOfRemovedWaveletLayers;
    if ( p == TheLRGBLayersProtectedParameter )
       return &numberOfProtectedWaveletLayers;
-   return 0;
+   if ( p == TheLRGBCInheritAstrometricSolutionParameter )
+      return &p_inheritAstrometricSolution;
+
+   return nullptr;
 }
 
 bool LRGBCombinationInstance::AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow )
@@ -1197,4 +1292,4 @@ size_type LRGBCombinationInstance::ParameterLength( const MetaParameter* p, size
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LRGBCombinationInstance.cpp - Released 2022-05-17T17:15:11Z
+// EOF LRGBCombinationInstance.cpp - Released 2022-11-21T14:47:17Z

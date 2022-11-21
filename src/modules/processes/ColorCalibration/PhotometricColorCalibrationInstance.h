@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.5.2
+// Standard ColorCalibration Process Module Version 1.9.0
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationInstance.h - Released 2022-05-20T16:28:45Z
+// PhotometricColorCalibrationInstance.h - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -78,75 +78,45 @@ public:
 
 private:
 
-   /*
-    * Working modes.
-    */
-   pcl_enum p_workingMode; // RGB / narrowband
    pcl_bool p_applyCalibration;
 
    /*
-    * Filter parameters (narrowband mode).
-    */
-   float    p_redFilterWavelength;
-   float    p_redFilterBandwidth;
-   float    p_greenFilterWavelength;
-   float    p_greenFilterBandwidth;
-   float    p_blueFilterWavelength;
-   float    p_blueFilterBandwidth;
-
-   /*
-    * White reference parameters (broadband mode).
+    * White reference parameters
     */
    String   p_whiteReferenceId;
-   String   p_whiteReferenceName; // informative
+   String   p_whiteReferenceName; // informative only
    float    p_whiteReferenceSr_JV;
    float    p_whiteReferenceJB_JV;
    float    p_zeroPointSr_JV;
    float    p_zeroPointJB_JV;
 
    /*
-    * Plate solving parameters.
+    * Catalog search parameters
     */
-   float    p_focalLength; // mm
-   float    p_pixelSize;   // um
-   double   p_centerRA;    // deg
-   double   p_centerDec;   // deg
-   double   p_epochJD;
-   pcl_bool p_forcePlateSolve;
-   pcl_bool p_ignorePositionAndScale;
-   String   p_serverURL;
-   String   p_solverCatalogName;
-   pcl_bool p_solverAutoCatalog;
-   int32    p_solverLimitMagnitude;
-   pcl_bool p_solverAutoLimitMagnitude;
+   pcl_bool p_autoCatalog;
+   String   p_catalogId;
+   float    p_limitMagnitude;
+   pcl_bool p_autoLimitMagnitude;
+   int32    p_targetSourceCount;
+   String   p_serverURL; // VizieR server for online APASS catalog access.
 
    /*
-    * Advanced plate solving parameters.
+    * Signal evaluation parameters
     */
-   int32    p_solverStructureLayers;
-   int32    p_solverMinStructureSize;
-   int32    p_solverNoiseReductionFilterRadius;
-   float    p_solverSensitivity;
-   pcl_enum p_solverAlignmentDevice;
-   pcl_bool p_solverDistortionCorrection;
-   float    p_solverSplineSmoothing;
-   pcl_enum p_solverProjection;
-
-   /*
-    * Photometry parameters.
-    */
-   String   p_photCatalogName;
-   pcl_bool p_photAutoCatalog;
-   int32    p_photLimitMagnitude;
-   pcl_bool p_photAutoLimitMagnitude;
-   float    p_photAutoLimitMagnitudeFactor;
-   pcl_bool p_photAutoAperture;
-   int32    p_photAperture;
-   pcl_bool p_photUsePSF;
-   float    p_photSaturationThreshold;
-   pcl_bool p_photShowDetectedStars;
-   pcl_bool p_photShowBackgroundModels;
-   pcl_bool p_photGenerateGraphs;
+   int32    p_structureLayers;
+   float    p_saturationThreshold;
+   pcl_bool p_saturationRelative;
+   int32    p_psfNoiseLayers;
+   int32    p_psfHotPixelFilterRadius;
+   int32    p_psfNoiseReductionFilterRadius;
+   int32    p_psfMinStructureSize;
+   float    p_psfMinSNR;
+   pcl_bool p_psfAllowClusteredSources;
+   pcl_enum p_psfType;
+   float    p_psfGrowth;
+   int32    p_psfMaxStars;
+   float    p_psfSearchTolerance;
+   float    p_psfChannelSearchTolerance;
 
    /*
     * Background neutralization parameters.
@@ -157,6 +127,14 @@ private:
    float    p_backgroundHigh;
    pcl_bool p_backgroundUseROI; // use a region of interest; entire image otherwise
    Rect     p_backgroundROI = 0;
+
+   /*
+    * Generation of control data
+    */
+   pcl_bool p_generateGraphs;
+   pcl_bool p_generateStarMaps;
+   pcl_bool p_generateTextFiles;
+   String   p_outputDirectory;
 
    friend class PhotometricColorCalibrationInterface;
    friend class PhotometricColorCalibrationProcess;
@@ -169,4 +147,4 @@ private:
 #endif   // __PhotometricColorCalibrationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationInstance.h - Released 2022-05-20T16:28:45Z
+// EOF PhotometricColorCalibrationInstance.h - Released 2022-11-21T14:47:17Z

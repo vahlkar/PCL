@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 1.2.4
+// Standard Geometry Process Module Version 1.3.1
 // ----------------------------------------------------------------------------
-// DynamicCropInterface.h - Released 2022-05-17T17:15:11Z
+// DynamicCropInterface.h - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -248,6 +248,8 @@ private:
             ComboBox          Algorithm_ComboBox;
          NumericEdit       ClampingThreshold_NumericEdit;
          NumericEdit       Smoothness_NumericEdit;
+         HorizontalSizer   GammaCorrection_Sizer;
+            CheckBox          GammaCorrection_CheckBox;
 
       SectionBar        Resolution_SectionBar;
       Control           Resolution_Control;
@@ -282,39 +284,14 @@ private:
    void UpdateFillColorControls();
    void UpdateView();
 
-   void __Size_ValueUpdated( NumericEdit& sender, double value );
-   void __Pos_ValueUpdated( NumericEdit& sender, double value );
-
-   void __AnchorSelector_Paint( Control& sender, const Rect& updateRect );
-   void __AnchorSelector_MousePress( Control& sender, const Point& pos, int button, unsigned buttons, unsigned modifiers );
-   void __AnchorSelector_MouseRelease( Control& sender, const Point& pos, int button, unsigned buttons, unsigned modifiers );
-   void __AnchorSelector_MouseDoubleClick( Control& sender, const Point& pos, unsigned buttons, unsigned modifiers );
-
-   void __Angle_ValueUpdated( NumericEdit& sender, double value );
-   void __Clockwise_Click( Button& sender, bool checked );
-   void __Center_ValueUpdated( NumericEdit& sender, double value );
-   void __OptimizeFast_Click( Button& sender, bool checked );
-
-   void __AngleDial_Paint( Control& sender, const Rect& updateRect );
-   void __AngleDial_MouseMove( Control& sender, const Point& pos, unsigned buttons, unsigned modifiers );
-   void __AngleDial_MousePress( Control& sender, const Point& pos, int button, unsigned buttons, unsigned modifiers );
-   void __AngleDial_MouseRelease( Control& sender, const Point& pos, int button, unsigned buttons, unsigned modifiers );
-
-   void __Scale_ValueUpdated( NumericEdit& sender, double value );
-   void __ScaledSize_ValueUpdated( NumericEdit& sender, double value );
-
-   void __Algorithm_ItemSelected( ComboBox& sender, int itemIndex );
-   void __Algorithm_ValueUpdated( NumericEdit& sender, double value );
-
-   void __Resolution_ValueUpdated( NumericEdit& sender, double value );
-   void __Units_ButtonClick( Button& sender, bool checked );
-   void __ForceResolution_ButtonClick( Button& sender, bool checked );
-
-   void __FilColor_ValueUpdated( NumericEdit& sender, double value );
-
-   void __ColorSample_Paint( Control& sender, const Rect& updateRect );
-
-   //
+   void e_ValueUpdated( NumericEdit& sender, double value );
+   void e_ButtonClick( Button& sender, bool checked );
+   void e_ItemSelected( ComboBox& sender, int itemIndex );
+   void e_Paint( Control& sender, const Rect& updateRect );
+   void e_MousePress( Control& sender, const Point& pos, int button, unsigned buttons, unsigned modifiers );
+   void e_MouseMove( Control& sender, const Point& pos, unsigned buttons, unsigned modifiers );
+   void e_MouseRelease( Control& sender, const Point& pos, int button, unsigned buttons, unsigned modifiers );
+   void e_MouseDoubleClick( Control& sender, const Point& pos, unsigned buttons, unsigned modifiers );
 
    friend struct GUIData;
    friend class DynamicCropPreferencesDialog;
@@ -333,4 +310,4 @@ PCL_END_LOCAL
 #endif   // __DynamicCropInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF DynamicCropInterface.h - Released 2022-05-17T17:15:11Z
+// EOF DynamicCropInterface.h - Released 2022-11-21T14:47:17Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.5.2
+// Standard ColorCalibration Process Module Version 1.9.0
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationInterface.h - Released 2022-05-20T16:28:45Z
+// PhotometricColorCalibrationInterface.h - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -71,8 +71,6 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-class OnlineObjectSearchDialog;
-
 class PhotometricColorCalibrationInterface : public ProcessInterface
 {
 public:
@@ -95,9 +93,6 @@ public:
 private:
 
    PhotometricColorCalibrationInstance m_instance;
-   OnlineObjectSearchDialog*           m_searchDialog = nullptr;
-   bool                                m_showCompoundAngles = true;
-   bool                                m_raInTimeUnits = true;
 
    struct GUIData
    {
@@ -105,157 +100,99 @@ private:
 
       VerticalSizer     Global_Sizer;
 
-         HorizontalSizer   WorkingMode_Sizer;
-            Label             WorkingMode_Label;
-            ComboBox          WorkingMode_ComboBox;
-
+      SectionBar        Calibration_SectionBar;
+      Control           Calibration_Control;
+      VerticalSizer     Calibration_Sizer;
          HorizontalSizer   WhiteReference_Sizer;
             Label             WhiteReference_Label;
             ComboBox          WhiteReference_ComboBox;
-
-         HorizontalSizer   FiltersTitle_Sizer;
-            Label             FilterWavelengthTitle_Label;
-            Label             FilterBandwidthTitle_Label;
-
-         HorizontalSizer   RedFilter_Sizer;
-            NumericEdit       RedFilterWavelength_NumericEdit;
-            NumericEdit       RedFilterBandwidth_NumericEdit;
-         HorizontalSizer   GreenFilter_Sizer;
-            NumericEdit       GreenFilterWavelength_NumericEdit;
-            NumericEdit       GreenFilterBandwidth_NumericEdit;
-         HorizontalSizer   BlueFilter_Sizer;
-            NumericEdit       BlueFilterWavelength_NumericEdit;
-            NumericEdit       BlueFilterBandwidth_NumericEdit;
-
-         HorizontalSizer   Server_Sizer;
-            Label             Server_Label;
-            ComboBox          Server_ComboBox;
-
+         HorizontalSizer   GenerateGraphs_Sizer;
+            CheckBox          GenerateGraphs_CheckBox;
+         HorizontalSizer   GenerateStarMaps_Sizer;
+            CheckBox          GenerateStarMaps_CheckBox;
+         HorizontalSizer   GenerateTextFiles_Sizer;
+            CheckBox          GenerateTextFiles_CheckBox;
+         HorizontalSizer   OutputDirectory_Sizer;
+            Label             OutputDirectory_Label;
+            Edit              OutputDirectory_Edit;
+            ToolButton        OutputDirectory_ToolButton;
          HorizontalSizer   ApplyColorCalibration_Sizer;
             CheckBox          ApplyColorCalibration_CheckBox;
 
-         SectionBar        ImageParameters_SectionBar;
-         Control           ImageParameters_Control;
-         HorizontalSizer   ImageParameters_Sizer;
-            VerticalSizer     ImageParametersLeft_Sizer;
-               HorizontalSizer   RA_Sizer;
-                  Label             RA_Label;
-                  Edit              RA_Edit;
-               HorizontalSizer   Dec_Sizer;
-                  Label             Dec_Label;
-                  Edit              Dec_Edit;
-               HorizontalSizer   ShowCompoundAngles_Sizer;
-                  CheckBox          ShowCompoundAngles_CheckBox;
-               HorizontalSizer   RAInTimeUnits_Sizer;
-                  CheckBox          RAInTimeUnits_CheckBox;
-               HorizontalSizer   Epoch_Sizer;
-                  Label             Epoch_Label;
-                  Edit              Epoch_Edit;
-               NumericEdit       FocalLength_NumericEdit;
-               NumericEdit       PixelSize_NumericEdit;
-            VerticalSizer     ImageParametersRight_Sizer;
-               PushButton        SearchCoordinates_Button;
-               PushButton        AcquireFromImage_Button;
+      SectionBar        CatalogSearch_SectionBar;
+      Control           CatalogSearch_Control;
+      VerticalSizer     CatalogSearch_Sizer;
+         HorizontalSizer   AutoCatalog_Sizer;
+            CheckBox          AutoCatalog_CheckBox;
+         HorizontalSizer   Catalog_Sizer;
+            Label             Catalog_Label;
+            ComboBox          Catalog_ComboBox;
+         HorizontalSizer   Server_Sizer;
+            Label             Server_Label;
+            ComboBox          Server_ComboBox;
+         HorizontalSizer   AutoLimitMagnitude_Sizer;
+            CheckBox          AutoLimitMagnitude_CheckBox;
+         NumericEdit       LimitMagnitude_NumericEdit;
 
-         SectionBar        PlateSolverParameters_SectionBar;
-         Control           PlateSolverParameters_Control;
-         VerticalSizer     PlateSolverParameters_Sizer;
-            HorizontalSizer   SolverAutoCatalog_Sizer;
-               CheckBox          SolverAutoCatalog_CheckBox;
-            HorizontalSizer   SolverCatalog_Sizer;
-               Label             SolverCatalog_Label;
-               ComboBox          SolverCatalog_ComboBox;
-            HorizontalSizer   SolverAutoLimitMagnitude_Sizer;
-               CheckBox          SolverAutoLimitMagnitude_CheckBox;
-            HorizontalSizer   SolverLimitMagnitude_Sizer;
-               Label             SolverLimitMagnitude_Label;
-               SpinBox           SolverLimitMagnitude_SpinBox;
-            HorizontalSizer   DistortionCorrection_Sizer;
-               CheckBox          DistortionCorrection_CheckBox;
-            HorizontalSizer   ForcePlateSolve_Sizer;
-               CheckBox          ForcePlateSolve_CheckBox;
-            HorizontalSizer   IgnorePositionAndScale_Sizer;
-               CheckBox          IgnorePositionAndScale_CheckBox;
-               ToolButton        ResetSolverConfiguration_ToolButton;
+      SectionBar        SignalEvaluation_SectionBar;
+      Control           SignalEvaluation_Control;
+      VerticalSizer     SignalEvaluation_Sizer;
+         HorizontalSizer   StructureLayers_Sizer;
+            Label             StructureLayers_Label;
+            SpinBox           StructureLayers_SpinBox;
+         NumericControl    SaturationThreshold_NumericControl;
+         HorizontalSizer   SaturationRelative_Sizer;
+            CheckBox          SaturationRelative_CheckBox;
+         HorizontalSizer   PSFNoiseLayers_Sizer;
+            Label             PSFNoiseLayers_Label;
+            SpinBox           PSFNoiseLayers_SpinBox;
+         HorizontalSizer   PSFMinStructureSize_Sizer;
+            Label             PSFMinStructureSize_Label;
+            SpinBox           PSFMinStructureSize_SpinBox;
+         HorizontalSizer   PSFHotPixelFilterRadius_Sizer;
+            Label             PSFHotPixelFilterRadius_Label;
+            SpinBox           PSFHotPixelFilterRadius_SpinBox;
+         HorizontalSizer   PSFNoiseReductionFilterRadius_Sizer;
+            Label             PSFNoiseReductionFilterRadius_Label;
+            SpinBox           PSFNoiseReductionFilterRadius_SpinBox;
+         NumericEdit       PSFMinSNR_NumericEdit;
+         HorizontalSizer   PSFType_Sizer;
+            Label             PSFType_Label;
+            ComboBox          PSFType_ComboBox;
+         NumericControl    PSFGrowth_NumericControl;
+         HorizontalSizer   PSFMaxStars_Sizer;
+            Label             PSFMaxStars_Label;
+            SpinBox           PSFMaxStars_SpinBox;
+         HorizontalSizer   PSFAllowClusteredSources_Sizer;
+            CheckBox          PSFAllowClusteredSources_CheckBox;
 
-         SectionBar        AdvancedPlateSolverParameters_SectionBar;
-         Control           AdvancedPlateSolverParameters_Control;
-         VerticalSizer     AdvancedPlateSolverParameters_Sizer;
-            HorizontalSizer   ProjectionSystem_Sizer;
-               Label             ProjectionSystem_Label;
-               ComboBox          ProjectionSystem_ComboBox;
-            HorizontalSizer   StructureLayers_Sizer;
-               Label             StructureLayers_Label;
-               SpinBox           StructureLayers_SpinBox;
-            HorizontalSizer   MinStructureSize_Sizer;
-               Label             MinStructureSize_Label;
-               SpinBox           MinStructureSize_SpinBox;
-            HorizontalSizer   NoiseReductionFilterRadius_Sizer;
-               Label             NoiseReductionFilterRadius_Label;
-               SpinBox           NoiseReductionFilterRadius_SpinBox;
-            NumericControl    Sensitivity_NumericControl;
-            HorizontalSizer   AlignmentDevice_Sizer;
-               Label             AlignmentDevice_Label;
-               ComboBox          AlignmentDevice_ComboBox;
-            NumericControl    SplineSmoothing_NumericControl;
-
-         SectionBar        PhotometryParameters_SectionBar;
-         Control           PhotometryParameters_Control;
-         VerticalSizer     PhotometryParameters_Sizer;
-            HorizontalSizer   PhotometryAutoCatalog_Sizer;
-               CheckBox          PhotometryAutoCatalog_CheckBox;
-            HorizontalSizer   PhotometryCatalog_Sizer;
-               Label             PhotometryCatalog_Label;
-               ComboBox          PhotometryCatalog_ComboBox;
-            HorizontalSizer   PhotometryAutoLimitMagnitude_Sizer;
-               CheckBox          PhotometryAutoLimitMagnitude_CheckBox;
-            HorizontalSizer   PhotometryLimitMagnitude_Sizer;
-               Label             PhotometryLimitMagnitude_Label;
-               SpinBox           PhotometryLimitMagnitude_SpinBox;
-            HorizontalSizer   AutoAperture_Sizer;
-               CheckBox          AutoAperture_CheckBox;
-            HorizontalSizer   Aperture_Sizer;
-               Label             Aperture_Label;
-               SpinBox           Aperture_SpinBox;
-            NumericControl    SaturationThreshold_NumericControl;
-            HorizontalSizer   UsePSFPhotometry_Sizer;
-               CheckBox          UsePSFPhotometry_CheckBox;
-            HorizontalSizer   ShowDetectedStars_Sizer;
-               CheckBox          ShowDetectedStars_CheckBox;
-            HorizontalSizer   ShowBackgroundModels_Sizer;
-               CheckBox          ShowBackgroundModels_CheckBox;
-            HorizontalSizer   GenerateGraphs_Sizer;
-               CheckBox          GenerateGraphs_CheckBox;
-               ToolButton        ResetPhotometryConfiguration_ToolButton;
-
-         SectionBar        BackgroundReference_SectionBar;
-         Control           BackgroundReference_Control;
-         VerticalSizer     BackgroundReference_Sizer;
-            HorizontalSizer   BackgroundReferenceView_Sizer;
-               Label             BackgroundReferenceView_Label;
-               Edit              BackgroundReferenceView_Edit;
-               ToolButton        BackgroundReferenceView_ToolButton;
-            NumericControl    BackgroundLow_NumericControl;
-            NumericControl    BackgroundHigh_NumericControl;
-            GroupBox          BackgroundROI_GroupBox;
-            VerticalSizer     BackgroundROI_Sizer;
-               HorizontalSizer   BackgroundROIRow1_Sizer;
-                  Label             BackgroundROIX0_Label;
-                  SpinBox           BackgroundROIX0_SpinBox;
-                  Label             BackgroundROIY0_Label;
-                  SpinBox           BackgroundROIY0_SpinBox;
-               HorizontalSizer   BackgroundROIRow2_Sizer;
-                  Label             BackgroundROIWidth_Label;
-                  SpinBox           BackgroundROIWidth_SpinBox;
-                  Label             BackgroundROIHeight_Label;
-                  SpinBox           BackgroundROIHeight_SpinBox;
-                  PushButton        BackgroundROISelectPreview_Button;
+      SectionBar        BackgroundReference_SectionBar;
+      Control           BackgroundReference_Control;
+      VerticalSizer     BackgroundReference_Sizer;
+         HorizontalSizer   BackgroundReferenceViewId_Sizer;
+            Label             BackgroundReferenceViewId_Label;
+            Edit              BackgroundReferenceViewId_Edit;
+            ToolButton        BackgroundReferenceViewId_ToolButton;
+         NumericControl    BackgroundLow_NumericControl;
+         NumericControl    BackgroundHigh_NumericControl;
+         GroupBox          BackgroundROI_GroupBox;
+         VerticalSizer     BackgroundROI_Sizer;
+            HorizontalSizer   BackgroundROIRow1_Sizer;
+               Label             BackgroundROIX0_Label;
+               SpinBox           BackgroundROIX0_SpinBox;
+               Label             BackgroundROIY0_Label;
+               SpinBox           BackgroundROIY0_SpinBox;
+            HorizontalSizer   BackgroundROIRow2_Sizer;
+               Label             BackgroundROIWidth_Label;
+               SpinBox           BackgroundROIWidth_SpinBox;
+               Label             BackgroundROIHeight_Label;
+               SpinBox           BackgroundROIHeight_SpinBox;
+               PushButton        BackgroundROISelectPreview_Button;
    };
 
    GUIData* GUI = nullptr;
 
    void UpdateControls();
-   void AcquireMetadata( const ImageWindow& );
 
    void e_GetFocus( Control& sender );
    void e_EditCompleted( Edit& sender );
@@ -263,14 +200,12 @@ private:
    void e_Click( Button& sender, bool checked );
    void e_SectionCheck( SectionBar& sender, bool checked );
    void e_GroupCheck( GroupBox& sender, bool checked );
-   void e_EditValueUpdated( NumericEdit& sender, double value );
+   void e_ValueUpdated( NumericEdit& sender, double value );
    void e_SpinValueUpdated( SpinBox& sender, int value );
    void e_ViewDrag( Control& sender, const Point& pos, const View& view, unsigned modifiers, bool& wantsView );
    void e_ViewDrop( Control& sender, const Point& pos, const View& view, unsigned modifiers );
-
-   String RAToString( double ) const;
-   String DecToString( double ) const;
-   String EpochToString( double ) const;
+   void e_FileDrag( Control& sender, const Point& pos, const StringList& files, unsigned modifiers, bool& wantsFiles );
+   void e_FileDrop( Control& sender, const Point& pos, const StringList& files, unsigned modifiers );
 
    friend struct GUIData;
 };
@@ -288,4 +223,4 @@ PCL_END_LOCAL
 #endif   // __PhotometricColorCalibrationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationInterface.h - Released 2022-05-20T16:28:45Z
+// EOF PhotometricColorCalibrationInterface.h - Released 2022-11-21T14:47:17Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard APASS Process Module Version 1.1.0
+// Standard APASS Process Module Version 1.1.4
 // ----------------------------------------------------------------------------
-// APASSInterface.h - Released 2022-05-17T17:15:11Z
+// APASSInterface.h - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard APASS PixInsight module.
 //
@@ -156,6 +156,8 @@ private:
             ComboBox          SortBy_ComboBox;
          HorizontalSizer   GenerateTextOutput_Sizer;
             CheckBox          GenerateTextOutput_CheckBox;
+         HorizontalSizer   GenerateBinaryOutput_Sizer;
+            CheckBox          GenerateBinaryOutput_CheckBox;
          HorizontalSizer   TextFormat_Sizer;
             Label             TextFormat_Label;
             ComboBox          TextFormat_ComboBox;
@@ -200,4 +202,4 @@ PCL_END_LOCAL
 #endif   // __APASSInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF APASSInterface.h - Released 2022-05-17T17:15:11Z
+// EOF APASSInterface.h - Released 2022-11-21T14:47:17Z

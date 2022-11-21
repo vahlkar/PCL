@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.3.3
 // ----------------------------------------------------------------------------
-// PreferencesInstance.cpp - Released 2022-05-17T17:15:11Z
+// PreferencesInstance.cpp - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -1149,4 +1149,4 @@ String* PreferencesInstance::StringParameterFromMetaParameter( const MetaParamet
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInstance.cpp - Released 2022-05-17T17:15:11Z
+// EOF PreferencesInstance.cpp - Released 2022-11-21T14:47:17Z

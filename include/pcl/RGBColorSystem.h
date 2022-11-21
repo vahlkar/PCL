@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.30
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// pcl/RGBColorSystem.h - Released 2022-08-10T16:36:28Z
+// pcl/RGBColorSystem.h - Released 2022-11-21T14:46:30Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -67,10 +67,6 @@
 #define CIEEpsilon      8.856451679035631e-03 // 216/24389
 #define CIEKappa        9.032962962962963e+02 // 24389/27
 #define CIEKappa116     7.787037037037037e+00 // CIEKappa/116
-#define sRGBEpsilon     0.04045
-#define sRGBEpsilonInv  0.0031308
-#define sRGBGamma       2.4
-#define sRGBGammaInv    4.166666666666667e-01 //1/sRGBGamma
 
 namespace pcl
 {
@@ -248,7 +244,7 @@ public:
     *
     * \note If this space uses a sRGB gamma function, the returned value is
     * 2.2, but the space doesn't use that value as the exponent of a standard
-    * raise gamma function.
+    * power-law gamma function.
     */
    float Gamma() const
    {
@@ -1222,6 +1218,28 @@ public:
       b = (c*b + m_data->abOffset)/m_data->abDelta;
    }
 
+   /*!
+    * The sRGB gamma function. Returns a linear color sample value for the
+    * specified sample value \a x in the sRGB color space. \a x must be in the
+    * normalized [0,1] range.
+    */
+   static double SRGBToLinear( double x )
+   {
+      PCL_PRECONDITION( x >= 0 && x <= 1 )
+      return (x > 0.04045) ? Pow( (x + 0.055)/1.055, 2.4 ) : x/12.92;
+   }
+
+   /*!
+    * The inverse sRGB gamma function. Returns a color sample value in the sRGB
+    * color space for the specified linear sample value \a x. \a x must be in
+    * the normalized [0,1] range.
+    */
+   static double LinearToSRGB( double x )
+   {
+      PCL_PRECONDITION( x >= 0 && x <= 1 )
+      return (x > 0.0031308) ? 1.055*Pow( x, sample( 1/2.4 ) ) - 0.055 : 12.92*x;
+   }
+
 protected:
 
    struct Data : public ReferenceCounter
@@ -1278,18 +1296,12 @@ protected:
 
       void LinearRGB( sample& x ) const
       {
-         x = issRGB ?
-               ((x > sRGBEpsilon) ?
-                  Pow( sample( (x + 0.055)/1.055 ), sample( sRGBGamma ) ) : sample( x/12.92 )) :
-               Pow( x, sample( gamma ) );
+         x = sample( issRGB ? SRGBToLinear( double( x ) ) : Pow( double( x ), double( gamma ) ) );
       }
 
       void GammaRGB( sample& x ) const
       {
-         x = issRGB ?
-               ((x > sRGBEpsilonInv) ?
-                  sample( 1.055*Pow( x, sample( sRGBGammaInv ) ) - 0.055 ) : sample( 12.92*x )) :
-               Pow( x, sample( gammaInv ) );
+         x = sample( issRGB ? LinearToSRGB( double( x ) ) : Pow( double( x ), double( gammaInv ) ) );
       }
 
       /*
@@ -1576,12 +1588,8 @@ public:
 #undef CIEEpsilon
 #undef CIEKappa
 #undef CIEKappa116
-#undef sRGBEpsilon
-#undef sRGBEpsilonInv
-#undef sRGBGamma
-#undef sRGBGammaInv
 
 #endif   // __PCL_RGBColorSystem_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/RGBColorSystem.h - Released 2022-08-10T16:36:28Z
+// EOF pcl/RGBColorSystem.h - Released 2022-11-21T14:46:30Z

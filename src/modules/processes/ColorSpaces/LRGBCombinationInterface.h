@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard ColorSpaces Process Module Version 1.1.2
+// Standard ColorSpaces Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// LRGBCombinationInterface.h - Released 2022-05-17T17:15:11Z
+// LRGBCombinationInterface.h - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -121,6 +121,8 @@ private:
             Label             B_Label;
             Edit              B_Edit;
             ToolButton        B_ToolButton;
+         HorizontalSizer   InheritAstrometricSolution_Sizer;
+            CheckBox          InheritAstrometricSolution_CheckBox;
 
       SectionBar        Weights_SectionBar;
       Control           Weights_Control;
@@ -182,4 +184,4 @@ PCL_END_LOCAL
 #endif   // __LRGBCombinationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF LRGBCombinationInterface.h - Released 2022-05-17T17:15:11Z
+// EOF LRGBCombinationInterface.h - Released 2022-11-21T14:47:17Z

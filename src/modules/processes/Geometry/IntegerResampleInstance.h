@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 1.2.4
+// Standard Geometry Process Module Version 1.3.1
 // ----------------------------------------------------------------------------
-// IntegerResampleInstance.h - Released 2022-05-17T17:15:11Z
+// IntegerResampleInstance.h - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -87,7 +87,8 @@ private:
    DPoint   p_resolution;      // Horizontal and vertical resolution in pixels
    pcl_bool p_metric;          // Metric resolution?
    pcl_bool p_forceResolution; // Set resolution of target image window
-   pcl_bool p_noGUIMessages;    // only show warning messages on the console
+   pcl_bool p_gammaCorrection; // interpolate with gamma correction
+   pcl_bool p_noGUIMessages;   // only show warning messages on the console
 
    friend class IntegerResampleEngine;
    friend class IntegerResampleInterface;
@@ -100,4 +101,4 @@ private:
 #endif   // __IntegerResampleInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF IntegerResampleInstance.h - Released 2022-05-17T17:15:11Z
+// EOF IntegerResampleInstance.h - Released 2022-11-21T14:47:17Z

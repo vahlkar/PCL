@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 1.2.4
+// Standard Geometry Process Module Version 1.3.1
 // ----------------------------------------------------------------------------
-// ResampleInterface.cpp - Released 2022-05-17T17:15:11Z
+// ResampleInterface.cpp - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -319,6 +319,8 @@ void ResampleInterface::UpdateControls()
    GUI->Smoothness_NumericControl.SetValue( m_instance.p_smoothness );
    GUI->Smoothness_NumericControl.Enable( InterpolationAlgorithm::IsCubicFilterInterpolation( m_instance.p_interpolation ) );
 
+   GUI->GammaCorrection_CheckBox.SetChecked( m_instance.p_gammaCorrection );
+
    GUI->ResampleMode_ComboBox.SetCurrentItem( m_instance.p_mode );
 
    GUI->AbsMode_ComboBox.SetCurrentItem( m_instance.p_absMode );
@@ -328,7 +330,7 @@ void ResampleInterface::UpdateControls()
 
 // ----------------------------------------------------------------------------
 
-void ResampleInterface::__ViewList_ViewSelected( ViewList&, View& )
+void ResampleInterface::e_ViewSelected( ViewList&, View& )
 {
    DeactivateTrackView();
 
@@ -352,7 +354,7 @@ void ResampleInterface::__ViewList_ViewSelected( ViewList&, View& )
 
 // ----------------------------------------------------------------------------
 
-void ResampleInterface::__Width_ValueUpdated( NumericEdit& sender, double value )
+void ResampleInterface::e_Width_ValueUpdated( NumericEdit& sender, double value )
 {
    if ( sender == GUI->SourceWidthPixels_NumericEdit )
       sourceWidth = int( value );
@@ -431,7 +433,7 @@ void ResampleInterface::__Width_ValueUpdated( NumericEdit& sender, double value 
 
 // ----------------------------------------------------------------------------
 
-void ResampleInterface::__Height_ValueUpdated( NumericEdit& sender, double value )
+void ResampleInterface::e_Height_ValueUpdated( NumericEdit& sender, double value )
 {
    if ( sender == GUI->SourceHeightPixels_NumericEdit )
       sourceHeight = int( value );
@@ -510,37 +512,39 @@ void ResampleInterface::__Height_ValueUpdated( NumericEdit& sender, double value
 
 // ----------------------------------------------------------------------------
 
-void ResampleInterface::__Resolution_ValueUpdated( NumericEdit& sender, double value )
+void ResampleInterface::e_ValueUpdated( NumericEdit& sender, double value )
 {
-   if ( sender == GUI->HorizontalResolution_NumericEdit )
+   if ( sender == GUI->ClampingThreshold_NumericControl )
+      m_instance.p_clampingThreshold = value;
+   else if ( sender == GUI->Smoothness_NumericControl )
+      m_instance.p_smoothness = value;
+   else if ( sender == GUI->HorizontalResolution_NumericEdit )
       m_instance.p_resolution.x = value;
    else if ( sender == GUI->VerticalResolution_NumericEdit )
       m_instance.p_resolution.y = value;
+
    UpdateControls();
 }
 
 // ----------------------------------------------------------------------------
 
-void ResampleInterface::__Units_ButtonClick( Button& sender, bool /*checked*/ )
+void ResampleInterface::e_ButtonClick( Button& sender, bool checked )
 {
    if ( sender == GUI->CentimeterUnits_RadioButton )
       m_instance.p_metric = true;
    else if ( sender == GUI->InchUnits_RadioButton )
       m_instance.p_metric = false;
+   else if ( sender == GUI->GammaCorrection_CheckBox )
+      m_instance.p_gammaCorrection = checked;
+   else if ( sender == GUI->ForceResolution_CheckBox  )
+      m_instance.p_forceResolution = checked;
+
    UpdateControls();
 }
 
 // ----------------------------------------------------------------------------
 
-void ResampleInterface::__ForceResolution_ButtonClick( Button& sender, bool checked )
-{
-   if ( sender == GUI->ForceResolution_CheckBox  )
-      m_instance.p_forceResolution = checked;
-}
-
-// ----------------------------------------------------------------------------
-
-void ResampleInterface::__Algorithm_ItemSelected( ComboBox& sender, int itemIndex )
+void ResampleInterface::e_ItemSelected( ComboBox& sender, int itemIndex )
 {
    if ( sender == GUI->Algorithm_ComboBox  )
    {
@@ -552,17 +556,7 @@ void ResampleInterface::__Algorithm_ItemSelected( ComboBox& sender, int itemInde
 
 // ----------------------------------------------------------------------------
 
-void ResampleInterface::__Algorithm_ValueUpdated( NumericEdit& sender, double value )
-{
-   if ( sender == GUI->ClampingThreshold_NumericControl )
-      m_instance.p_clampingThreshold = value;
-   else if ( sender == GUI->Smoothness_NumericControl )
-      m_instance.p_smoothness = value;
-}
-
-// ----------------------------------------------------------------------------
-
-void ResampleInterface::__Mode_ItemSelected( ComboBox& sender, int itemIndex )
+void ResampleInterface::e_Mode_ItemSelected( ComboBox& sender, int itemIndex )
 {
    int w = sourceWidth, h = sourceHeight;
 
@@ -621,7 +615,7 @@ void ResampleInterface::__Mode_ItemSelected( ComboBox& sender, int itemIndex )
 
 // ----------------------------------------------------------------------------
 
-void ResampleInterface::__ViewDrag( Control& sender, const Point& pos, const View& view, unsigned modifiers, bool& wantsView )
+void ResampleInterface::e_ViewDrag( Control& sender, const Point& pos, const View& view, unsigned modifiers, bool& wantsView )
 {
    if ( sender == GUI->AllImages_ViewList )
       wantsView = view.IsMainView();
@@ -629,14 +623,14 @@ void ResampleInterface::__ViewDrag( Control& sender, const Point& pos, const Vie
 
 // ----------------------------------------------------------------------------
 
-void ResampleInterface::__ViewDrop( Control& sender, const Point& pos, const View& view, unsigned modifiers )
+void ResampleInterface::e_ViewDrop( Control& sender, const Point& pos, const View& view, unsigned modifiers )
 {
    if ( sender == GUI->AllImages_ViewList )
       if ( view.IsMainView() )
       {
          GUI->AllImages_ViewList.SelectView( view );
          View theView = view;
-         __ViewList_ViewSelected( GUI->AllImages_ViewList, theView );
+         e_ViewSelected( GUI->AllImages_ViewList, theView );
       }
 }
 
@@ -655,9 +649,9 @@ ResampleInterface::GUIData::GUIData( ResampleInterface& w )
 
    //
 
-   AllImages_ViewList.OnViewSelected( (ViewList::view_event_handler)&ResampleInterface::__ViewList_ViewSelected, w );
-   AllImages_ViewList.OnViewDrag( (Control::view_drag_event_handler)&ResampleInterface::__ViewDrag, w );
-   AllImages_ViewList.OnViewDrop( (Control::view_drop_event_handler)&ResampleInterface::__ViewDrop, w );
+   AllImages_ViewList.OnViewSelected( (ViewList::view_event_handler)&ResampleInterface::e_ViewSelected, w );
+   AllImages_ViewList.OnViewDrag( (Control::view_drag_event_handler)&ResampleInterface::e_ViewDrag, w );
+   AllImages_ViewList.OnViewDrop( (Control::view_drop_event_handler)&ResampleInterface::e_ViewDrop, w );
 
    //
 
@@ -696,14 +690,14 @@ ResampleInterface::GUIData::GUIData( ResampleInterface& w )
    SourceWidthPixels_NumericEdit.SetRange( 1, int_max );
    SourceWidthPixels_NumericEdit.edit.SetFixedWidth( editWidth1 );
    SourceWidthPixels_NumericEdit.SetFixedWidth( editWidth1 );
-   SourceWidthPixels_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ResampleInterface::__Width_ValueUpdated, w );
+   SourceWidthPixels_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ResampleInterface::e_Width_ValueUpdated, w );
 
    TargetWidthPixels_NumericEdit.label.Hide();
    TargetWidthPixels_NumericEdit.SetInteger();
    TargetWidthPixels_NumericEdit.SetRange( 1, int_max );
    TargetWidthPixels_NumericEdit.edit.SetFixedWidth( editWidth1 );
    TargetWidthPixels_NumericEdit.SetFixedWidth( editWidth1 );
-   TargetWidthPixels_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ResampleInterface::__Width_ValueUpdated, w );
+   TargetWidthPixels_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ResampleInterface::e_Width_ValueUpdated, w );
 
    TargetWidthPercent_NumericEdit.label.Hide();
    TargetWidthPercent_NumericEdit.SetReal();
@@ -711,7 +705,7 @@ ResampleInterface::GUIData::GUIData( ResampleInterface& w )
    TargetWidthPercent_NumericEdit.SetPrecision( 4 );
    TargetWidthPercent_NumericEdit.edit.SetFixedWidth( editWidth1 );
    TargetWidthPercent_NumericEdit.SetFixedWidth( editWidth1 );
-   TargetWidthPercent_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ResampleInterface::__Width_ValueUpdated, w );
+   TargetWidthPercent_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ResampleInterface::e_Width_ValueUpdated, w );
 
    TargetWidthCentimeters_NumericEdit.label.Hide();
    TargetWidthCentimeters_NumericEdit.SetReal();
@@ -719,7 +713,7 @@ ResampleInterface::GUIData::GUIData( ResampleInterface& w )
    TargetWidthCentimeters_NumericEdit.SetPrecision( 3 );
    TargetWidthCentimeters_NumericEdit.edit.SetFixedWidth( editWidth1 );
    TargetWidthCentimeters_NumericEdit.SetFixedWidth( editWidth1 );
-   TargetWidthCentimeters_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ResampleInterface::__Width_ValueUpdated, w );
+   TargetWidthCentimeters_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ResampleInterface::e_Width_ValueUpdated, w );
 
    TargetWidthInches_NumericEdit.label.Hide();
    TargetWidthInches_NumericEdit.SetReal();
@@ -727,7 +721,7 @@ ResampleInterface::GUIData::GUIData( ResampleInterface& w )
    TargetWidthInches_NumericEdit.SetPrecision( 3 );
    TargetWidthInches_NumericEdit.edit.SetFixedWidth( editWidth1 );
    TargetWidthInches_NumericEdit.SetFixedWidth( editWidth1 );
-   TargetWidthInches_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ResampleInterface::__Width_ValueUpdated, w );
+   TargetWidthInches_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ResampleInterface::e_Width_ValueUpdated, w );
 
    DimensionsRow2_Sizer.SetSpacing( 6 );
    DimensionsRow2_Sizer.Add( Width_Label );
@@ -746,14 +740,14 @@ ResampleInterface::GUIData::GUIData( ResampleInterface& w )
    SourceHeightPixels_NumericEdit.SetRange( 1, int_max );
    SourceHeightPixels_NumericEdit.edit.SetFixedWidth( editWidth1 );
    SourceHeightPixels_NumericEdit.SetFixedWidth( editWidth1 );
-   SourceHeightPixels_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ResampleInterface::__Height_ValueUpdated, w );
+   SourceHeightPixels_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ResampleInterface::e_Height_ValueUpdated, w );
 
    TargetHeightPixels_NumericEdit.label.Hide();
    TargetHeightPixels_NumericEdit.SetInteger();
    TargetHeightPixels_NumericEdit.SetRange( 1, int_max );
    TargetHeightPixels_NumericEdit.edit.SetFixedWidth( editWidth1 );
    TargetHeightPixels_NumericEdit.SetFixedWidth( editWidth1 );
-   TargetHeightPixels_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ResampleInterface::__Height_ValueUpdated, w );
+   TargetHeightPixels_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ResampleInterface::e_Height_ValueUpdated, w );
 
    TargetHeightPercent_NumericEdit.label.Hide();
    TargetHeightPercent_NumericEdit.SetReal();
@@ -761,7 +755,7 @@ ResampleInterface::GUIData::GUIData( ResampleInterface& w )
    TargetHeightPercent_NumericEdit.SetPrecision( 4 );
    TargetHeightPercent_NumericEdit.edit.SetFixedWidth( editWidth1 );
    TargetHeightPercent_NumericEdit.SetFixedWidth( editWidth1 );
-   TargetHeightPercent_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ResampleInterface::__Height_ValueUpdated, w );
+   TargetHeightPercent_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ResampleInterface::e_Height_ValueUpdated, w );
 
    TargetHeightCentimeters_NumericEdit.label.Hide();
    TargetHeightCentimeters_NumericEdit.SetReal();
@@ -769,7 +763,7 @@ ResampleInterface::GUIData::GUIData( ResampleInterface& w )
    TargetHeightCentimeters_NumericEdit.SetPrecision( 3 );
    TargetHeightCentimeters_NumericEdit.edit.SetFixedWidth( editWidth1 );
    TargetHeightCentimeters_NumericEdit.SetFixedWidth( editWidth1 );
-   TargetHeightCentimeters_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ResampleInterface::__Height_ValueUpdated, w );
+   TargetHeightCentimeters_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ResampleInterface::e_Height_ValueUpdated, w );
 
    TargetHeightInches_NumericEdit.label.Hide();
    TargetHeightInches_NumericEdit.SetReal();
@@ -777,7 +771,7 @@ ResampleInterface::GUIData::GUIData( ResampleInterface& w )
    TargetHeightInches_NumericEdit.SetPrecision( 3 );
    TargetHeightInches_NumericEdit.edit.SetFixedWidth( editWidth1 );
    TargetHeightInches_NumericEdit.SetFixedWidth( editWidth1 );
-   TargetHeightInches_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ResampleInterface::__Height_ValueUpdated, w );
+   TargetHeightInches_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ResampleInterface::e_Height_ValueUpdated, w );
 
    DimensionsRow3_Sizer.SetSpacing( 6 );
    DimensionsRow3_Sizer.Add( Height_Label );
@@ -829,7 +823,7 @@ ResampleInterface::GUIData::GUIData( ResampleInterface& w )
    Algorithm_ComboBox.AddItem( "Auto" );
    Algorithm_ComboBox.SetMaxVisibleItemCount( 16 );
    Algorithm_ComboBox.SetMinWidth( comboBoxWidth1 );
-   Algorithm_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ResampleInterface::__Algorithm_ItemSelected, w );
+   Algorithm_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ResampleInterface::e_ItemSelected, w );
 
    Algorithm_Sizer.SetSpacing( 4 );
    Algorithm_Sizer.Add( Algorithm_Label );
@@ -845,7 +839,7 @@ ResampleInterface::GUIData::GUIData( ResampleInterface& w )
                                               TheRSClampingThresholdParameter->MaximumValue() );
    ClampingThreshold_NumericControl.SetPrecision( TheRSClampingThresholdParameter->Precision() );
    ClampingThreshold_NumericControl.SetToolTip( "<p>Deringing clamping threshold for bicubic spline and Lanczos interpolation algorithms.</p>" );
-   ClampingThreshold_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ResampleInterface::__Algorithm_ValueUpdated, w );
+   ClampingThreshold_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ResampleInterface::e_ValueUpdated, w );
 
    Smoothness_NumericControl.label.SetText( "Smoothness:" );
    Smoothness_NumericControl.label.SetFixedWidth( labelWidth2 );
@@ -856,12 +850,23 @@ ResampleInterface::GUIData::GUIData( ResampleInterface& w )
                                        TheRSSmoothnessParameter->MaximumValue() );
    Smoothness_NumericControl.SetPrecision( TheRSSmoothnessParameter->Precision() );
    Smoothness_NumericControl.SetToolTip( "<p>Smoothness level for cubic filter interpolation algorithms.</p>" );
-   Smoothness_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ResampleInterface::__Algorithm_ValueUpdated, w );
+   Smoothness_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ResampleInterface::e_ValueUpdated, w );
+
+   GammaCorrection_CheckBox.SetText( "Gamma correction" );
+   GammaCorrection_CheckBox.SetToolTip( "<p>Interpolate pixel sample values with gamma correction. In general, this option should be enabled to "
+      "scale nonlinear images, i.e. images whose pixel values have been stretched nonlinearly. The applied transformations (gamma exponent or "
+      "sRGB gamma function) depend on the RGB working space of the target image.</p>" );
+   GammaCorrection_CheckBox.OnClick( (Button::click_event_handler)&ResampleInterface::e_ButtonClick, w );
+
+   GammaCorrection_Sizer.AddUnscaledSpacing( labelWidth2 + ui4 );
+   GammaCorrection_Sizer.Add( GammaCorrection_CheckBox );
+   GammaCorrection_Sizer.AddStretch();
 
    Interpolation_Sizer.SetSpacing( 4 );
    Interpolation_Sizer.Add( Algorithm_Sizer );
    Interpolation_Sizer.Add( ClampingThreshold_NumericControl );
    Interpolation_Sizer.Add( Smoothness_NumericControl );
+   Interpolation_Sizer.Add( GammaCorrection_Sizer );
 
    Interpolation_Control.SetSizer( Interpolation_Sizer );
 
@@ -875,13 +880,13 @@ ResampleInterface::GUIData::GUIData( ResampleInterface& w )
    HorizontalResolution_NumericEdit.SetReal();
    HorizontalResolution_NumericEdit.SetRange( 1, 10000 );
    HorizontalResolution_NumericEdit.SetPrecision( 3 );
-   HorizontalResolution_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ResampleInterface::__Resolution_ValueUpdated, w );
+   HorizontalResolution_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ResampleInterface::e_ValueUpdated, w );
 
    VerticalResolution_NumericEdit.label.SetText( "Vertical:" );
    VerticalResolution_NumericEdit.SetReal();
    VerticalResolution_NumericEdit.SetRange( 1, 10000 );
    VerticalResolution_NumericEdit.SetPrecision( 3 );
-   VerticalResolution_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ResampleInterface::__Resolution_ValueUpdated, w );
+   VerticalResolution_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ResampleInterface::e_ValueUpdated, w );
 
    ResolutionRow1_Sizer.SetSpacing( 16 );
    ResolutionRow1_Sizer.Add( HorizontalResolution_NumericEdit );
@@ -889,14 +894,14 @@ ResampleInterface::GUIData::GUIData( ResampleInterface& w )
    ResolutionRow1_Sizer.AddStretch();
 
    CentimeterUnits_RadioButton.SetText( "Centimeters" );
-   CentimeterUnits_RadioButton.OnClick( (Button::click_event_handler)&ResampleInterface::__Units_ButtonClick, w );
+   CentimeterUnits_RadioButton.OnClick( (Button::click_event_handler)&ResampleInterface::e_ButtonClick, w );
 
    InchUnits_RadioButton.SetText( "Inches" );
-   InchUnits_RadioButton.OnClick( (Button::click_event_handler)&ResampleInterface::__Units_ButtonClick, w );
+   InchUnits_RadioButton.OnClick( (Button::click_event_handler)&ResampleInterface::e_ButtonClick, w );
 
    ForceResolution_CheckBox.SetText( "Force resolution" );
    ForceResolution_CheckBox.SetToolTip( "Modify resolution metadata of target image(s)" );
-   ForceResolution_CheckBox.OnClick( (Button::click_event_handler)&ResampleInterface::__ForceResolution_ButtonClick, w );
+   ForceResolution_CheckBox.OnClick( (Button::click_event_handler)&ResampleInterface::e_ButtonClick, w );
 
    ResolutionRow2_Sizer.SetSpacing( 8 );
    ResolutionRow2_Sizer.AddUnscaledSpacing( labelWidth2 + ui4 );
@@ -926,7 +931,7 @@ ResampleInterface::GUIData::GUIData( ResampleInterface& w )
    ResampleMode_ComboBox.AddItem( "Absolute dimensions in inches" );
    ResampleMode_ComboBox.AddItem( "Force area in pixels, keep aspect ratio" );
    ResampleMode_ComboBox.SetMinWidth( comboBoxWidth1 );
-   ResampleMode_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ResampleInterface::__Mode_ItemSelected, w );
+   ResampleMode_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ResampleInterface::e_Mode_ItemSelected, w );
 
    ModeRow1_Sizer.SetSpacing( 4 );
    ModeRow1_Sizer.Add( ResampleMode_Label );
@@ -941,7 +946,7 @@ ResampleInterface::GUIData::GUIData( ResampleInterface& w )
    AbsMode_ComboBox.AddItem( "Force width, keep aspect ratio" );
    AbsMode_ComboBox.AddItem( "Force height, keep aspect ratio" );
    AbsMode_ComboBox.SetMinWidth( comboBoxWidth1 );
-   AbsMode_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ResampleInterface::__Mode_ItemSelected, w );
+   AbsMode_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ResampleInterface::e_Mode_ItemSelected, w );
 
    ModeRow2_Sizer.SetSpacing( 4 );
    ModeRow2_Sizer.Add( AbsMode_Label );
@@ -968,7 +973,6 @@ ResampleInterface::GUIData::GUIData( ResampleInterface& w )
    Global_Sizer.Add( Mode_SectionBar );
    Global_Sizer.Add( Mode_Control );
 
-   Interpolation_Control.Hide();
    Resolution_Control.Hide();
    Mode_Control.Hide();
 
@@ -984,4 +988,4 @@ ResampleInterface::GUIData::GUIData( ResampleInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ResampleInterface.cpp - Released 2022-05-17T17:15:11Z
+// EOF ResampleInterface.cpp - Released 2022-11-21T14:47:17Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard Gaia Process Module Version 1.1.0
+// Standard Gaia Process Module Version 1.2.5
 // ----------------------------------------------------------------------------
-// GaiaInterface.h - Released 2022-05-17T17:15:11Z
+// GaiaInterface.h - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Gaia PixInsight module.
 //
@@ -156,6 +156,8 @@ private:
             ComboBox          SortBy_ComboBox;
          HorizontalSizer   GenerateTextOutput_Sizer;
             CheckBox          GenerateTextOutput_CheckBox;
+         HorizontalSizer   GenerateBinaryOutput_Sizer;
+            CheckBox          GenerateBinaryOutput_CheckBox;
          HorizontalSizer   TextFormat_Sizer;
             Label             TextFormat_Label;
             ComboBox          TextFormat_ComboBox;
@@ -200,4 +202,4 @@ PCL_END_LOCAL
 #endif   // __GaiaInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF GaiaInterface.h - Released 2022-05-17T17:15:11Z
+// EOF GaiaInterface.h - Released 2022-11-21T14:47:17Z

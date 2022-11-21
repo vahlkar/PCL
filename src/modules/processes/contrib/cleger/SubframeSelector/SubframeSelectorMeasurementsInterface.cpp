@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.8.5
 // ----------------------------------------------------------------------------
-// SubframeSelectorMeasurementsInterface.cpp - Released 2022-05-17T17:15:11Z
+// SubframeSelectorMeasurementsInterface.cpp - Released 2022-11-21T14:47:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -786,7 +786,7 @@ void SubframeSelectorMeasurementsInterface::ExportPDF() const
 {
    SaveFileDialog d;
    d.SetCaption( "SubframeSelector: Export PDF File" );
-   d.SetFilter( FileFilter( "PDF", ".PDF" ) );
+   d.SetFilter( FileFilter( "PDF", ".pdf" ) );
    d.EnableOverwritePrompt();
    if ( d.Execute() )
    {
@@ -1251,4 +1251,4 @@ SubframeSelectorMeasurementsInterface::GUIData::GUIData( SubframeSelectorMeasure
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorMeasurementsInterface.cpp - Released 2022-05-17T17:15:11Z
+// EOF SubframeSelectorMeasurementsInterface.cpp - Released 2022-11-21T14:47:18Z

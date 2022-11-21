@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.30
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// pcl/HistogramTransformation.cpp - Released 2022-08-10T16:36:36Z
+// pcl/HistogramTransformation.cpp - Released 2022-11-21T14:46:37Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -503,4 +503,4 @@ void HistogramTransformation::Apply( pcl::UInt32Image& image ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/HistogramTransformation.cpp - Released 2022-08-10T16:36:36Z
+// EOF pcl/HistogramTransformation.cpp - Released 2022-11-21T14:46:37Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard Gaia Process Module Version 1.1.0
+// Standard Gaia Process Module Version 1.2.5
 // ----------------------------------------------------------------------------
-// GaiaInstance.h - Released 2022-05-17T17:15:11Z
+// GaiaInstance.h - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Gaia PixInsight module.
 //
@@ -86,6 +86,7 @@ private:
    pcl_enum       p_dataRelease; // BestAvailable, DR2, EDR3, DR3, DR3SP
    pcl_enum       p_sortBy;
    pcl_bool       p_generateTextOutput;
+   pcl_bool       p_generateBinaryOutput;
    pcl_enum       p_textFormat;
    pcl_enum       p_textHeaders;
    String         p_outputFilePath;
@@ -103,6 +104,7 @@ private:
 
    void Search();
    void GenerateTextOutput() const;
+   void GenerateBinaryOutput() const;
    void GetInfo();
    void Configure();
 
@@ -112,9 +114,23 @@ private:
 
 // ----------------------------------------------------------------------------
 
+struct GaiaBinaryHeader
+{
+   uint32 version = 0;
+   uint32 reserved1 = 0;
+   uint32 reserved2 = 0;
+   uint32 reserved3 = 0;
+   uint32 dataRelease = 0;
+   uint32 sourceCount = 0;
+   uint32 reserved4 = 0;
+   uint32 reserved5 = 0;
+};
+
+// ----------------------------------------------------------------------------
+
 } // pcl
 
 #endif   // __GaiaInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF GaiaInstance.h - Released 2022-05-17T17:15:11Z
+// EOF GaiaInstance.h - Released 2022-11-21T14:47:17Z

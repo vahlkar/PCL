@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard ColorSpaces Process Module Version 1.1.2
+// Standard ColorSpaces Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// ChannelExtractionInstance.h - Released 2022-05-17T17:15:11Z
+// ChannelExtractionInstance.h - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -98,12 +98,18 @@ public:
       return p_sampleFormat;
    }
 
+   bool InheritAstrometricSolution() const
+   {
+      return p_inheritAstrometricSolution;
+   }
+
 private:
 
    pcl_enum p_colorSpace;
    pcl_bool p_channelEnabled[ 3 ];
    String   p_channelId[ 3 ];
    pcl_enum p_sampleFormat;
+   pcl_bool p_inheritAstrometricSolution;
 
    friend class ChannelExtractionInterface;
    friend class ExtractCIELAction;
@@ -120,4 +126,4 @@ private:
 #endif   // __ChannelExtractionInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ChannelExtractionInstance.h - Released 2022-05-17T17:15:11Z
+// EOF ChannelExtractionInstance.h - Released 2022-11-21T14:47:17Z

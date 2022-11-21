@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 1.2.4
+// Standard Geometry Process Module Version 1.3.1
 // ----------------------------------------------------------------------------
-// RotationInterface.cpp - Released 2022-05-17T17:15:11Z
+// RotationInterface.cpp - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -210,6 +210,8 @@ void RotationInterface::UpdateNumericControls()
 
    GUI->Smoothness_NumericEdit.SetValue( m_instance.p_smoothness );
    GUI->Smoothness_NumericEdit.Enable( InterpolationAlgorithm::IsCubicFilterInterpolation( m_instance.p_interpolation ) );
+
+   GUI->GammaCorrection_CheckBox.SetChecked( m_instance.p_gammaCorrection );
 }
 
 // ----------------------------------------------------------------------------
@@ -225,108 +227,69 @@ void RotationInterface::UpdateFillColorControls()
 
 // ----------------------------------------------------------------------------
 
-void RotationInterface::__Angle_ValueUpdated( NumericEdit& sender, double value )
+void RotationInterface::e_ValueUpdated( NumericEdit& sender, double value )
 {
-   double a = Rad( value );
-   if ( GUI->Clockwise_CheckBox.IsChecked() )
-      a = -a;
-   m_instance.p_angle = ArcTan( Sin( a ), Cos( a ) );
-
-   UpdateNumericControls();
-}
-
-// ----------------------------------------------------------------------------
-
-void RotationInterface::__Clockwise_Click( Button& sender, bool checked )
-{
-   if ( Round( Abs( Deg( m_instance.p_angle ) ), 3 ) < 180 )
+   if ( sender == GUI->Angle_NumericEdit )
    {
-      m_instance.p_angle = -m_instance.p_angle;
+      double a = Rad( value );
+      if ( GUI->Clockwise_CheckBox.IsChecked() )
+         a = -a;
+      m_instance.p_angle = ArcTan( Sin( a ), Cos( a ) );
       UpdateNumericControls();
    }
-   else
-      GUI->Clockwise_CheckBox.Uncheck();
-}
-
-// ----------------------------------------------------------------------------
-
-void RotationInterface::__OptimizeFast_Click( Button& sender, bool checked )
-{
-   m_instance.p_optimizeFast = checked;
-}
-
-// ----------------------------------------------------------------------------
-
-void RotationInterface::__AngleDial_Paint( Control& sender, const Rect& updateRect )
-{
-   Rect r( sender.BoundsRect() );
-
-   int w = r.Width();
-   int h = r.Height();
-   double x0 = w/2.0;
-   double y0 = h/2.0;
-   double f = sender.DisplayPixelRatio();
-
-   VectorGraphics g( sender );
-   if ( f > 1 )
-      g.EnableAntialiasing();
-
-   g.FillRect( r, 0xff000000 );
-
-   g.SetBrush( Brush::Null() );
-   g.SetPen( 0xff7f7f7f, f );
-   g.DrawLine( x0, 0, x0, h );
-   g.DrawLine( 0, y0, w, y0 );
-
-   g.EnableAntialiasing();
-   g.DrawEllipse( r );
-
-   double sa, ca;
-   SinCos( m_instance.p_angle, sa, ca );
-   double x1 = x0 + 0.5*w*ca;
-   double y1 = y0 - 0.5*h*sa;
-
-   g.SetPen( 0xffffffff, f );
-   g.SetBrush( 0xffffffff );
-   g.DrawLine( x0, y0, x1, y1 );
-   double d3 = f*3;
-   g.DrawRect( x1-d3, y1-d3, x1+d3, y1+d3 );
-}
-
-// ----------------------------------------------------------------------------
-
-void RotationInterface::__AngleDial_MouseMove( Control& sender, const pcl::Point& pos, unsigned buttons, unsigned modifiers )
-{
-   if ( dragging )
+   else if ( sender == GUI->ClampingThreshold_NumericEdit )
    {
-      double a = Round( Deg( ArcTan( sender.ClientHeight()/2.0 - pos.y,
-                                     pos.x - sender.ClientWidth()/2.0 ) ), 3 );
-      m_instance.p_angle = Rad( a );
-      UpdateNumericControls();
+      m_instance.p_clampingThreshold = value;
+   }
+   else if ( sender == GUI->Smoothness_NumericEdit )
+   {
+      m_instance.p_smoothness = value;
+   }
+   else if ( sender == GUI->Red_NumericControl )
+   {
+      m_instance.p_fillColor[0] = value;
+      GUI->ColorSample_Control.Update();
+   }
+   else if ( sender == GUI->Green_NumericControl )
+   {
+      m_instance.p_fillColor[1] = value;
+      GUI->ColorSample_Control.Update();
+   }
+   else if ( sender == GUI->Blue_NumericControl )
+   {
+      m_instance.p_fillColor[2] = value;
+      GUI->ColorSample_Control.Update();
+   }
+   else if ( sender == GUI->Alpha_NumericControl )
+   {
+      m_instance.p_fillColor[3] = value;
+      GUI->ColorSample_Control.Update();
    }
 }
 
 // ----------------------------------------------------------------------------
 
-void RotationInterface::__AngleDial_MousePress( Control& sender, const pcl::Point& pos, int button, unsigned buttons, unsigned modifiers )
+void RotationInterface::e_ButtonClick( Button& sender, bool checked )
 {
-   if ( button != MouseButton::Left )
-      return;
-
-   dragging = true;
-   __AngleDial_MouseMove( sender, pos, buttons, modifiers );
+   if ( sender == GUI->Clockwise_CheckBox )
+   {
+      if ( Round( Abs( Deg( m_instance.p_angle ) ), 3 ) < 180 )
+      {
+         m_instance.p_angle = -m_instance.p_angle;
+         UpdateNumericControls();
+      }
+      else
+         GUI->Clockwise_CheckBox.Uncheck();
+   }
+   else if ( sender == GUI->OptimizeFast_CheckBox )
+      m_instance.p_optimizeFast = checked;
+   else if ( sender == GUI->GammaCorrection_CheckBox )
+      m_instance.p_gammaCorrection = checked;
 }
 
 // ----------------------------------------------------------------------------
 
-void RotationInterface::__AngleDial_MouseRelease( Control& sender, const pcl::Point& pos, int button, unsigned buttons, unsigned modifiers )
-{
-   dragging = false;
-}
-
-// ----------------------------------------------------------------------------
-
-void RotationInterface::__Algorithm_ItemSelected( ComboBox& sender, int itemIndex )
+void RotationInterface::e_ItemSelected( ComboBox& sender, int itemIndex )
 {
    if ( sender == GUI->Algorithm_ComboBox )
    {
@@ -338,51 +301,93 @@ void RotationInterface::__Algorithm_ItemSelected( ComboBox& sender, int itemInde
 
 // ----------------------------------------------------------------------------
 
-void RotationInterface::__Algorithm_ValueUpdated( NumericEdit& sender, double value )
+void RotationInterface::e_Paint( Control& sender, const Rect& updateRect )
 {
-   if ( sender == GUI->ClampingThreshold_NumericEdit )
-      m_instance.p_clampingThreshold = value;
-   else if ( sender == GUI->Smoothness_NumericEdit )
-      m_instance.p_smoothness = value;
-}
-
-// ----------------------------------------------------------------------------
-
-void RotationInterface::__FilColor_ValueUpdated( NumericEdit& sender, double value )
-{
-   if ( sender == GUI->Red_NumericControl )
-      m_instance.p_fillColor[0] = value;
-   else if ( sender == GUI->Green_NumericControl )
-      m_instance.p_fillColor[1] = value;
-   else if ( sender == GUI->Blue_NumericControl )
-      m_instance.p_fillColor[2] = value;
-   else if ( sender == GUI->Alpha_NumericControl )
-      m_instance.p_fillColor[3] = value;
-
-   GUI->ColorSample_Control.Update();
-}
-
-// ----------------------------------------------------------------------------
-
-void RotationInterface::__ColorSample_Paint( Control& sender, const Rect& updateRect )
-{
-   Graphics g( sender );
-
-   RGBA color = RGBAColor( float( m_instance.p_fillColor[0] ),
-                           float( m_instance.p_fillColor[1] ),
-                           float( m_instance.p_fillColor[2] ),
-                           float( m_instance.p_fillColor[3] ) );
-
-   if ( Alpha( color ) != 0 )
+   if ( sender == GUI->Dial_Control )
    {
-      g.SetBrush( Bitmap( sender.ScaledResource( ":/image-window/transparent-small.png" ) ) );
-      g.SetPen( Pen::Null() );
+      Rect r( sender.BoundsRect() );
+
+      int w = r.Width();
+      int h = r.Height();
+      double x0 = w/2.0;
+      double y0 = h/2.0;
+      double f = sender.DisplayPixelRatio();
+
+      VectorGraphics g( sender );
+      if ( f > 1 )
+         g.EnableAntialiasing();
+
+      g.FillRect( r, 0xff000000 );
+
+      g.SetBrush( Brush::Null() );
+      g.SetPen( 0xff7f7f7f, f );
+      g.DrawLine( x0, 0, x0, h );
+      g.DrawLine( 0, y0, w, y0 );
+
+      g.EnableAntialiasing();
+      g.DrawEllipse( r );
+
+      double sa, ca;
+      SinCos( m_instance.p_angle, sa, ca );
+      double x1 = x0 + 0.5*w*ca;
+      double y1 = y0 - 0.5*h*sa;
+
+      g.SetPen( 0xffffffff, f );
+      g.SetBrush( 0xffffffff );
+      g.DrawLine( x0, y0, x1, y1 );
+      double d3 = f*3;
+      g.DrawRect( x1-d3, y1-d3, x1+d3, y1+d3 );
+   }
+   else if ( sender == GUI->ColorSample_Control )
+   {
+      Graphics g( sender );
+
+      RGBA color = RGBAColor( float( m_instance.p_fillColor[0] ),
+                              float( m_instance.p_fillColor[1] ),
+                              float( m_instance.p_fillColor[2] ),
+                              float( m_instance.p_fillColor[3] ) );
+
+      if ( Alpha( color ) != 0 )
+      {
+         g.SetBrush( Bitmap( sender.ScaledResource( ":/image-window/transparent-small.png" ) ) );
+         g.SetPen( Pen::Null() );
+         g.DrawRect( sender.BoundsRect() );
+      }
+
+      g.SetBrush( color );
+      g.SetPen( 0xff000000, sender.DisplayPixelRatio() );
       g.DrawRect( sender.BoundsRect() );
    }
+}
 
-   g.SetBrush( color );
-   g.SetPen( 0xff000000, sender.DisplayPixelRatio() );
-   g.DrawRect( sender.BoundsRect() );
+// ----------------------------------------------------------------------------
+
+void RotationInterface::e_MouseMove( Control& sender, const pcl::Point& pos, unsigned buttons, unsigned modifiers )
+{
+   if ( m_dragging )
+   {
+      double a = Round( Deg( ArcTan( sender.ClientHeight()/2.0 - pos.y,
+                                     pos.x - sender.ClientWidth()/2.0 ) ), 3 );
+      m_instance.p_angle = Rad( a );
+      UpdateNumericControls();
+   }
+}
+
+// ----------------------------------------------------------------------------
+
+void RotationInterface::e_MousePress( Control& sender, const pcl::Point& pos, int button, unsigned buttons, unsigned modifiers )
+{
+   if ( button != MouseButton::Left )
+      return;
+   m_dragging = true;
+   e_MouseMove( sender, pos, buttons, modifiers );
+}
+
+// ----------------------------------------------------------------------------
+
+void RotationInterface::e_MouseRelease( Control& sender, const pcl::Point& pos, int button, unsigned buttons, unsigned modifiers )
+{
+   m_dragging = false;
 }
 
 // ----------------------------------------------------------------------------
@@ -393,6 +398,7 @@ RotationInterface::GUIData::GUIData( RotationInterface& w )
    pcl::Font fnt = w.Font();
    int labelWidth1 = fnt.Width( String( "Clamping threshold:" ) + 'M' );
    int labelWidth2 = fnt.Width( String( 'M',  2 ) );
+   int ui4 = w.LogicalPixelsToPhysical( 4 );
 
    //
 
@@ -405,13 +411,13 @@ RotationInterface::GUIData::GUIData( RotationInterface& w )
    Angle_NumericEdit.label.SetText( "Angle (\xb0):" );
    Angle_NumericEdit.label.SetFixedWidth( labelWidth1 );
    Angle_NumericEdit.sizer.AddStretch();
-   Angle_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&RotationInterface::__Angle_ValueUpdated, w );
+   Angle_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&RotationInterface::e_ValueUpdated, w );
 
    Clockwise_Label.SetText( "Clockwise:" );
    Clockwise_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
    Clockwise_Label.SetFixedWidth( labelWidth1 );
 
-   Clockwise_CheckBox.OnClick( (Button::click_event_handler)&RotationInterface::__Clockwise_Click, w );
+   Clockwise_CheckBox.OnClick( (Button::click_event_handler)&RotationInterface::e_ButtonClick, w );
 
    Clockwise_Sizer.SetSpacing( 4 );
    Clockwise_Sizer.Add( Clockwise_Label );
@@ -422,7 +428,7 @@ RotationInterface::GUIData::GUIData( RotationInterface& w )
    OptimizeFast_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
    OptimizeFast_Label.SetFixedWidth( labelWidth1 );
 
-   OptimizeFast_CheckBox.OnClick( (Button::click_event_handler)&RotationInterface::__OptimizeFast_Click, w );
+   OptimizeFast_CheckBox.OnClick( (Button::click_event_handler)&RotationInterface::e_ButtonClick, w );
 
    OptimizeFast_Sizer.SetSpacing( 4 );
    OptimizeFast_Sizer.Add( OptimizeFast_Label );
@@ -437,10 +443,10 @@ RotationInterface::GUIData::GUIData( RotationInterface& w )
 
    Dial_Control.SetBackgroundColor( StringToRGBAColor( "black" ) );
    Dial_Control.SetScaledFixedSize( 80, 80 );
-   Dial_Control.OnPaint( (Control::paint_event_handler)&RotationInterface::__AngleDial_Paint, w );
-   Dial_Control.OnMousePress( (Control::mouse_button_event_handler)&RotationInterface::__AngleDial_MousePress, w );
-   Dial_Control.OnMouseRelease( (Control::mouse_button_event_handler)&RotationInterface::__AngleDial_MouseRelease, w );
-   Dial_Control.OnMouseMove( (Control::mouse_event_handler)&RotationInterface::__AngleDial_MouseMove, w );
+   Dial_Control.OnPaint( (Control::paint_event_handler)&RotationInterface::e_Paint, w );
+   Dial_Control.OnMousePress( (Control::mouse_button_event_handler)&RotationInterface::e_MousePress, w );
+   Dial_Control.OnMouseRelease( (Control::mouse_button_event_handler)&RotationInterface::e_MouseRelease, w );
+   Dial_Control.OnMouseMove( (Control::mouse_event_handler)&RotationInterface::e_MouseMove, w );
 
    Rotation_Sizer.SetSpacing( 6 );
    Rotation_Sizer.Add( RotationLeft_Sizer );
@@ -468,7 +474,7 @@ RotationInterface::GUIData::GUIData( RotationInterface& w )
    Algorithm_ComboBox.AddItem( "Cubic B-Spline" );
    Algorithm_ComboBox.AddItem( "Auto" );
    Algorithm_ComboBox.SetMaxVisibleItemCount( 16 );
-   Algorithm_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&RotationInterface::__Algorithm_ItemSelected, w );
+   Algorithm_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&RotationInterface::e_ItemSelected, w );
 
    Algorithm_Sizer.SetSpacing( 4 );
    Algorithm_Sizer.Add( Algorithm_Label );
@@ -482,7 +488,7 @@ RotationInterface::GUIData::GUIData( RotationInterface& w )
    ClampingThreshold_NumericEdit.label.SetFixedWidth( labelWidth1 );
    ClampingThreshold_NumericEdit.SetToolTip( "<p>Deringing clamping threshold for bicubic spline and Lanczos interpolation algorithms.</p>" );
    ClampingThreshold_NumericEdit.sizer.AddStretch();
-   ClampingThreshold_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&RotationInterface::__Algorithm_ValueUpdated, w );
+   ClampingThreshold_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&RotationInterface::e_ValueUpdated, w );
 
    Smoothness_NumericEdit.SetReal();
    Smoothness_NumericEdit.SetPrecision( TheRTSmoothnessParameter->Precision() );
@@ -492,12 +498,23 @@ RotationInterface::GUIData::GUIData( RotationInterface& w )
    Smoothness_NumericEdit.label.SetFixedWidth( labelWidth1 );
    Smoothness_NumericEdit.SetToolTip( "<p>Smoothness level for cubic filter interpolation algorithms.</p>" );
    Smoothness_NumericEdit.sizer.AddStretch();
-   Smoothness_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&RotationInterface::__Algorithm_ValueUpdated, w );
+   Smoothness_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&RotationInterface::e_ValueUpdated, w );
+
+   GammaCorrection_CheckBox.SetText( "Gamma correction" );
+   GammaCorrection_CheckBox.SetToolTip( "<p>Interpolate pixel sample values with gamma correction. In general, this option should be enabled to "
+      "rotate nonlinear images, i.e. images whose pixel values have been stretched nonlinearly. The applied transformations (gamma exponent or "
+      "sRGB gamma function) depend on the RGB working space of the target image.</p>" );
+   GammaCorrection_CheckBox.OnClick( (Button::click_event_handler)&RotationInterface::e_ButtonClick, w );
+
+   GammaCorrection_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   GammaCorrection_Sizer.Add( GammaCorrection_CheckBox );
+   GammaCorrection_Sizer.AddStretch();
 
    Interpolation_Sizer.SetSpacing( 4 );
    Interpolation_Sizer.Add( Algorithm_Sizer );
    Interpolation_Sizer.Add( ClampingThreshold_NumericEdit );
    Interpolation_Sizer.Add( Smoothness_NumericEdit );
+   Interpolation_Sizer.Add( GammaCorrection_Sizer );
 
    Interpolation_Control.SetSizer( Interpolation_Sizer );
 
@@ -512,7 +529,7 @@ RotationInterface::GUIData::GUIData( RotationInterface& w )
    Red_NumericControl.SetReal();
    Red_NumericControl.SetRange( 0, 1 );
    Red_NumericControl.SetPrecision( 6 );
-   Red_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&RotationInterface::__FilColor_ValueUpdated, w );
+   Red_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&RotationInterface::e_ValueUpdated, w );
 
    Green_NumericControl.label.SetText( "G:" );
    Green_NumericControl.label.SetFixedWidth( labelWidth2 );
@@ -520,7 +537,7 @@ RotationInterface::GUIData::GUIData( RotationInterface& w )
    Green_NumericControl.SetReal();
    Green_NumericControl.SetRange( 0, 1 );
    Green_NumericControl.SetPrecision( 6 );
-   Green_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&RotationInterface::__FilColor_ValueUpdated, w );
+   Green_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&RotationInterface::e_ValueUpdated, w );
 
    Blue_NumericControl.label.SetText( "B:" );
    Blue_NumericControl.label.SetFixedWidth( labelWidth2 );
@@ -528,7 +545,7 @@ RotationInterface::GUIData::GUIData( RotationInterface& w )
    Blue_NumericControl.SetReal();
    Blue_NumericControl.SetRange( 0, 1 );
    Blue_NumericControl.SetPrecision( 6 );
-   Blue_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&RotationInterface::__FilColor_ValueUpdated, w );
+   Blue_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&RotationInterface::e_ValueUpdated, w );
 
    Alpha_NumericControl.label.SetText( "A:" );
    Alpha_NumericControl.label.SetFixedWidth( labelWidth2 );
@@ -536,10 +553,10 @@ RotationInterface::GUIData::GUIData( RotationInterface& w )
    Alpha_NumericControl.SetReal();
    Alpha_NumericControl.SetRange( 0, 1 );
    Alpha_NumericControl.SetPrecision( 6 );
-   Alpha_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&RotationInterface::__FilColor_ValueUpdated, w );
+   Alpha_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&RotationInterface::e_ValueUpdated, w );
 
    ColorSample_Control.SetScaledFixedHeight( 20 );
-   ColorSample_Control.OnPaint( (Control::paint_event_handler)&RotationInterface::__ColorSample_Paint, w );
+   ColorSample_Control.OnPaint( (Control::paint_event_handler)&RotationInterface::e_Paint, w );
 
    FillColor_Sizer.SetSpacing( 4 );
    FillColor_Sizer.Add( Red_NumericControl );
@@ -563,7 +580,6 @@ RotationInterface::GUIData::GUIData( RotationInterface& w )
 
    w.SetSizer( Global_Sizer );
 
-   Interpolation_Control.Hide();
    FillColor_Control.Hide();
 
    w.EnsureLayoutUpdated();
@@ -576,4 +592,4 @@ RotationInterface::GUIData::GUIData( RotationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RotationInterface.cpp - Released 2022-05-17T17:15:11Z
+// EOF RotationInterface.cpp - Released 2022-11-21T14:47:17Z

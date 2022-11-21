@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.30
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// pcl/BidimensionalInterpolation.h - Released 2022-08-10T16:36:28Z
+// pcl/BidimensionalInterpolation.h - Released 2022-11-21T14:46:30Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -68,8 +68,8 @@ namespace pcl
  * \class BidimensionalInterpolation
  * \brief A generic interface to two-dimensional interpolation algorithms.
  *
- * %BidimensionalInterpolation is a base class for all two-dimensional
- * interpolation algorithm implementations in PCL.
+ * %BidimensionalInterpolation is an abstract base class for all
+ * two-dimensional interpolation algorithm implementations in PCL.
  */
 template <typename T>
 class PCL_CLASS BidimensionalInterpolation
@@ -233,4 +233,4 @@ protected:
 #endif  // __PCL_BidimensionalInterpolation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/BidimensionalInterpolation.h - Released 2022-08-10T16:36:28Z
+// EOF pcl/BidimensionalInterpolation.h - Released 2022-11-21T14:46:30Z

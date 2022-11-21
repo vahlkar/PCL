@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.30
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// pcl/AstrometricMetadata.h - Released 2022-08-10T16:36:28Z
+// pcl/AstrometricMetadata.h - Released 2022-11-21T14:46:30Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -226,6 +226,7 @@ public:
       m_projection   = x.m_projection->Clone();
       m_transformWI  = x.m_transformWI->Clone();
       m_refSys       = x.m_refSys;
+      m_equinox      = x.m_equinox;
       m_width        = x.m_width;
       m_height       = x.m_height;
       m_pixelSize    = x.m_pixelSize;
@@ -236,11 +237,12 @@ public:
       m_geoHeight    = x.m_geoHeight;
       m_resolution   = x.m_resolution;
       m_focalLength  = x.m_focalLength;
+      m_description  = x.m_description;
       return *this;
    }
 
    /*!
-    * Move constructor. Returns a reference to this object.
+    * Move assignment operator. Returns a reference to this object.
     */
    AstrometricMetadata& operator =( AstrometricMetadata&& ) = default;
 
@@ -509,6 +511,33 @@ public:
    double Resolution() const
    {
       return m_resolution;
+   }
+
+   /*!
+    * Returns the radius in degrees of a circular region of the sky
+    * circumscribed to the bounding rectangle of this astrometric solution.
+    *
+    * The returned radius can be used to perform search operations with star
+    * catalogs and solar system ephemerides.
+    */
+   double SearchRadius() const
+   {
+      if ( !IsValid() )
+         throw Error( "Invalid call to AstrometricMetadata::SearchRadius(): No astrometric solution." );
+      DPoint cRD;
+      if ( !ImageToCelestial( cRD, DPoint( 0.5*m_width, 0.5*m_height ) ) )
+         throw Error( "Failed to perform ImageToCelestial() coordinate transformation for the image center" );
+      DPoint pRD1, pRD2, pRD3, pRD4;
+      if ( !ImageToCelestial( pRD1, DPoint( 0,       0 ) )
+        || !ImageToCelestial( pRD2, DPoint( m_width, 0 ) )
+        || !ImageToCelestial( pRD3, DPoint( 0,       m_height ) )
+        || !ImageToCelestial( pRD4, DPoint( m_width, m_height ) ) )
+      {
+         return 180;
+      }
+      return Max( Max( Max( m_projection->Distance( cRD, pRD1 ), m_projection->Distance( cRD, pRD2 ) ),
+                       m_projection->Distance( cRD, pRD3 ) ),
+                  m_projection->Distance( cRD, pRD4 ) );
    }
 
    /*!
@@ -940,6 +969,23 @@ public:
    void UpdateProperties( PropertyArray& properties ) const;
 
    /*!
+    * Undefines the optional metadata items for observation time (start and end
+    * times) and geodetic coordinates (longitude, latitude and height).
+    *
+    * This function is useful to propagate the astrometric solution to other
+    * images, for example during an image registration task, without altering
+    * image-specific observational properties.
+    */
+   void UndefineTimeAndLocationMetadata()
+   {
+      m_obsStartTime.Undefine();
+      m_obsEndTime.Undefine();
+      m_geoLongitude.Undefine();
+      m_geoLatitude.Undefine();
+      m_geoHeight.Undefine();
+   }
+
+   /*!
     * Removes astrometry-related FITS header keywords from the specified
     * \a keywords array. This includes some basic instrumental and
     * observational keywords, as well as the following keywords:
@@ -1133,4 +1179,4 @@ private:
 #endif // __AstrometricMetadata_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AstrometricMetadata.h - Released 2022-08-10T16:36:28Z
+// EOF pcl/AstrometricMetadata.h - Released 2022-11-21T14:46:30Z

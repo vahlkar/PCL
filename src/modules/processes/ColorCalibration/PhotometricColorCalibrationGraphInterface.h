@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.5.2
+// Standard ColorCalibration Process Module Version 1.9.0
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationGraphInterface.h - Released 2022-05-20T16:28:45Z
+// PhotometricColorCalibrationGraphInterface.h - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -53,58 +53,30 @@
 #ifndef __PhotometricColorCalibrationGraphInterface_h
 #define __PhotometricColorCalibrationGraphInterface_h
 
-#include <pcl/ProcessInterface.h>
-#include <pcl/Sizer.h>
-#include <pcl/WebView.h>
+#include "ColorCalibrationGraphInterface.h"
+#include "PhotometricColorCalibrationProcess.h"
 
 namespace pcl
 {
 
 // ----------------------------------------------------------------------------
 
-class LinearFit;
-
-class PhotometricColorCalibrationGraphInterface : public ProcessInterface
+class PhotometricColorCalibrationGraphInterface : public ColorCalibrationGraphInterface
 {
 public:
 
    PhotometricColorCalibrationGraphInterface();
-   virtual ~PhotometricColorCalibrationGraphInterface();
+   ~PhotometricColorCalibrationGraphInterface() override;
 
-   IsoString Id() const override;
-   MetaProcess* Process() const override;
-   String IconImageSVGFile() const override;
-   InterfaceFeatures Features() const override;
-   bool IsInstanceGenerator() const override;
-   bool CanImportInstances() const override;
-   bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned&/*flags*/ ) override;
-   void SaveSettings() const override;
-   void LoadSettings() override;
-
-   using ProcessInterface::Launch;
-
-   void UpdateGraphs( const String& viewId, const String& catalogName,
-                      const String& filterNameR, const String& filterNameG, const String& filterNameB,
-                      const Vector& catRG, const Vector& imgRG, const LinearFit& fitRG,
-                      const Vector& catBG, const Vector& imgBG, const LinearFit& fitBG );
-
-   void CleanUp();
-
-private:
-
-   StringList m_htmlFiles;
-
-   struct GUIData
+   MetaProcess* Process() const override
    {
-      GUIData( PhotometricColorCalibrationGraphInterface& );
+      return ThePhotometricColorCalibrationProcess;
+   }
 
-      VerticalSizer     Global_Sizer;
-         WebView           Graph_WebView;
-   };
-
-   GUIData* GUI = nullptr;
-
-   void e_LoadFinished( WebView& sender, bool state );
+   bool InMagnitudeUnits() const override
+   {
+      return true;
+   }
 };
 
 extern PhotometricColorCalibrationGraphInterface* ThePhotometricColorCalibrationGraphInterface;
@@ -116,4 +88,4 @@ extern PhotometricColorCalibrationGraphInterface* ThePhotometricColorCalibration
 #endif   // __PhotometricColorCalibrationGraphInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationGraphInterface.h - Released 2022-05-20T16:28:45Z
+// EOF PhotometricColorCalibrationGraphInterface.h - Released 2022-11-21T14:47:17Z

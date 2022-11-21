@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.5.2
+// Standard ColorCalibration Process Module Version 1.9.0
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationParameters.cpp - Released 2022-05-20T16:28:45Z
+// PhotometricColorCalibrationParameters.cpp - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -60,103 +60,51 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-PCCWorkingMode*                      ThePCCWorkingModeParameter = nullptr;
-PCCApplyCalibration*                 ThePCCApplyCalibrationParameter = nullptr;
+PCCApplyCalibration*              ThePCCApplyCalibrationParameter = nullptr;
 
-PCCRedFilterWavelength*              ThePCCRedFilterWavelengthParameter = nullptr;
-PCCRedFilterBandwidth*               ThePCCRedFilterBandwidthParameter = nullptr;
-PCCGreenFilterWavelength*            ThePCCGreenFilterWavelengthParameter = nullptr;
-PCCGreenFilterBandwidth*             ThePCCGreenFilterBandwidthParameter = nullptr;
-PCCBlueFilterWavelength*             ThePCCBlueFilterWavelengthParameter = nullptr;
-PCCBlueFilterBandwidth*              ThePCCBlueFilterBandwidthParameter = nullptr;
+PCCWhiteReferenceId*              ThePCCWhiteReferenceIdParameter = nullptr;
+PCCWhiteReferenceName*            ThePCCWhiteReferenceNameParameter = nullptr;
+PCCWhiteReferenceSr_JV*           ThePCCWhiteReferenceSr_JVParameter = nullptr;
+PCCWhiteReferenceJB_JV*           ThePCCWhiteReferenceJB_JVParameter = nullptr;
+PCCZeroPointSr_JV*                ThePCCZeroPointSr_JVParameter = nullptr;
+PCCZeroPointJB_JV*                ThePCCZeroPointJB_JVParameter = nullptr;
 
-PCCWhiteReferenceId*                 ThePCCWhiteReferenceIdParameter = nullptr;
-PCCWhiteReferenceName*               ThePCCWhiteReferenceNameParameter = nullptr;
-PCCWhiteReferenceSr_JV*              ThePCCWhiteReferenceSr_JVParameter = nullptr;
-PCCWhiteReferenceJB_JV*              ThePCCWhiteReferenceJB_JVParameter = nullptr;
-PCCZeroPointSr_JV*                   ThePCCZeroPointSr_JVParameter = nullptr;
-PCCZeroPointJB_JV*                   ThePCCZeroPointJB_JVParameter = nullptr;
+PCCAutoCatalog*                   ThePCCAutoCatalogParameter = nullptr;
+PCCCatalogId*                     ThePCCCatalogIdParameter = nullptr;
+PCCLimitMagnitude*                ThePCCLimitMagnitudeParameter = nullptr;
+PCCAutoLimitMagnitude*            ThePCCAutoLimitMagnitudeParameter = nullptr;
+PCCTargetSourceCount*             ThePCCTargetSourceCountParameter = nullptr;
+PCCServerURL*                     ThePCCServerURLParameter = nullptr;
 
-PCCFocalLength*                      ThePCCFocalLengthParameter = nullptr;
-PCCPixelSize*                        ThePCCPixelSizeParameter = nullptr;
-PCCCenterRA*                         ThePCCCenterRAParameter = nullptr;
-PCCCenterDec*                        ThePCCCenterDecParameter = nullptr;
-PCCEpochJD*                          ThePCCEpochJDParameter = nullptr;
-PCCForcePlateSolve*                  ThePCCForcePlateSolveParameter = nullptr;
-PCCIgnoreImagePositionAndScale*      ThePCCIgnoreImagePositionAndScaleParameter = nullptr;
-PCCServerURL*                        ThePCCServerURLParameter = nullptr;
-PCCSolverCatalogName*                ThePCCSolverCatalogNameParameter = nullptr;
-PCCSolverAutoCatalog*                ThePCCSolverAutoCatalogParameter = nullptr;
-PCCSolverLimitMagnitude*             ThePCCSolverLimitMagnitudeParameter = nullptr;
-PCCSolverAutoLimitMagnitude*         ThePCCSolverAutoLimitMagnitudeParameter = nullptr;
-PCCSolverStructureLayers*            ThePCCSolverStructureLayersParameter;
-PCCSolverMinStructureSize*           ThePCCSolverMinStructureSizeParameter;
-PCCSolverNoiseReductionFilterRadius* ThePCCSolverNoiseReductionFilterRadiusParameter;
-PCCSolverSensitivity*                ThePCCSolverSensitivityParameter = nullptr;
-PCCSolverAlignmentDevice*            ThePCCSolverAlignmentDeviceParameter = nullptr;
-PCCSolverDistortionCorrection*       ThePCCSolverDistortionCorrectionParameter = nullptr;
-PCCSolverSplineSmoothing*            ThePCCSolverSplineSmoothingParameter = nullptr;
-PCCSolverProjection*                 ThePCCSolverProjectionParameter = nullptr;
+PCCStructureLayers*               ThePCCStructureLayersParameter = nullptr;
+PCCSaturationThreshold*           ThePCCSaturationThresholdParameter = nullptr;
+PCCSaturationRelative*            ThePCCSaturationRelativeParameter = nullptr;
+PCCPSFNoiseLayers*                ThePCCPSFNoiseLayersParameter = nullptr;
+PCCPSFHotPixelFilterRadius*       ThePCCPSFHotPixelFilterRadiusParameter = nullptr;
+PCCPSFNoiseReductionFilterRadius* ThePCCPSFNoiseReductionFilterRadiusParameter = nullptr;
+PCCPSFMinStructureSize*           ThePCCPSFMinStructureSizeParameter = nullptr;
+PCCPSFMinSNR*                     ThePCCPSFMinSNRParameter = nullptr;
+PCCPSFAllowClusteredSources*      ThePCCPSFAllowClusteredSourcesParameter = nullptr;
+PCCPSFType*                       ThePCCPSFTypeParameter = nullptr;
+PCCPSFGrowth*                     ThePCCPSFGrowthParameter = nullptr;
+PCCPSFMaxStars*                   ThePCCPSFMaxStarsParameter = nullptr;
+PCCPSFSearchTolerance*            ThePCCPSFSearchToleranceParameter = nullptr;
+PCCPSFChannelSearchTolerance*     ThePCCPSFChannelSearchToleranceParameter = nullptr;
 
-PCCPhotCatalogName*                  ThePCCPhotCatalogNameParameter = nullptr;
-PCCPhotAutoCatalog*                  ThePCCPhotAutoCatalogParameter = nullptr;
-PCCPhotLimitMagnitude*               ThePCCPhotLimitMagnitudeParameter = nullptr;
-PCCPhotAutoLimitMagnitude*           ThePCCPhotAutoLimitMagnitudeParameter = nullptr;
-PCCPhotAutoLimitMagnitudeFactor*     ThePCCPhotAutoLimitMagnitudeFactorParameter= nullptr;
-PCCPhotAutoAperture*                 ThePCCPhotAutoApertureParameter = nullptr;
-PCCPhotAperture*                     ThePCCPhotApertureParameter = nullptr;
-PCCPhotUsePSF*                       ThePCCPhotUsePSFParameter = nullptr;
-PCCPhotSaturationThreshold*          ThePCCPhotSaturationThresholdParameter = nullptr;
-PCCPhotShowDetectedStars*            ThePCCPhotShowDetectedStarsParameter = nullptr;
-PCCPhotShowBackgroundModels*         ThePCCPhotShowBackgroundModelsParameter = nullptr;
-PCCPhotGenerateGraphs*               ThePCCPhotGenerateGraphsParameter = nullptr;
+PCCNeutralizeBackground*          ThePCCNeutralizeBackgroundParameter = nullptr;
+PCCBackgroundReferenceViewId*     ThePCCBackgroundReferenceViewIdParameter = nullptr;
+PCCBackgroundLow*                 ThePCCBackgroundLowParameter = nullptr;
+PCCBackgroundHigh*                ThePCCBackgroundHighParameter = nullptr;
+PCCBackgroundUseROI*              ThePCCBackgroundUseROIParameter = nullptr;
+PCCBackgroundROIX0*               ThePCCBackgroundROIX0Parameter = nullptr;
+PCCBackgroundROIY0*               ThePCCBackgroundROIY0Parameter = nullptr;
+PCCBackgroundROIX1*               ThePCCBackgroundROIX1Parameter = nullptr;
+PCCBackgroundROIY1*               ThePCCBackgroundROIY1Parameter = nullptr;
 
-PCCNeutralizeBackground*             ThePCCNeutralizeBackgroundParameter = nullptr;
-PCCBackgroundReferenceViewId*        ThePCCBackgroundReferenceViewIdParameter = nullptr;
-PCCBackgroundLow*                    ThePCCBackgroundLowParameter = nullptr;
-PCCBackgroundHigh*                   ThePCCBackgroundHighParameter = nullptr;
-PCCBackgroundUseROI*                 ThePCCBackgroundUseROIParameter = nullptr;
-PCCBackgroundROIX0*                  ThePCCBackgroundROIX0Parameter = nullptr;
-PCCBackgroundROIY0*                  ThePCCBackgroundROIY0Parameter = nullptr;
-PCCBackgroundROIX1*                  ThePCCBackgroundROIX1Parameter = nullptr;
-PCCBackgroundROIY1*                  ThePCCBackgroundROIY1Parameter = nullptr;
-
-// ----------------------------------------------------------------------------
-
-PCCWorkingMode::PCCWorkingMode( MetaProcess* P ) : MetaEnumeration( P )
-{
-   ThePCCWorkingModeParameter = this;
-}
-
-IsoString PCCWorkingMode::Id() const
-{
-   return "workingMode";
-}
-
-size_type PCCWorkingMode::NumberOfElements() const
-{
-   return NumberOfItems;
-}
-
-IsoString PCCWorkingMode::ElementId( size_type index ) const
-{
-   switch ( index )
-   {
-   default:
-   case Broadband:  return "WorkingMode_Broadband";
-   case Narrowband: return "WorkingMode_Narrowband";
-   }
-}
-
-int PCCWorkingMode::ElementValue( size_type index ) const
-{
-   return int( index );
-}
-
-size_type PCCWorkingMode::DefaultValueIndex() const
-{
-   return size_type( Default );
-}
+PCCGenerateGraphs*                ThePCCGenerateGraphsParameter = nullptr;
+PCCGenerateStarMaps*              ThePCCGenerateStarMapsParameter = nullptr;
+PCCGenerateTextFiles*             ThePCCGenerateTextFilesParameter = nullptr;
+PCCOutputDirectory*               ThePCCOutputDirectoryParameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -173,138 +121,6 @@ IsoString PCCApplyCalibration::Id() const
 bool PCCApplyCalibration::DefaultValue() const
 {
    return true;
-}
-
-// ----------------------------------------------------------------------------
-
-PCCRedFilterWavelength::PCCRedFilterWavelength( MetaProcess* P ) : MetaFloat( P )
-{
-   ThePCCRedFilterWavelengthParameter = this;
-}
-
-IsoString PCCRedFilterWavelength::Id() const
-{
-   return "redFilterWavelength";
-}
-
-int PCCRedFilterWavelength::Precision() const
-{
-   return 1;
-}
-
-double PCCRedFilterWavelength::DefaultValue() const
-{
-   return 656.3; // nm
-}
-
-// ----------------------------------------------------------------------------
-
-PCCRedFilterBandwidth::PCCRedFilterBandwidth( MetaProcess* P ) : MetaFloat( P )
-{
-   ThePCCRedFilterBandwidthParameter = this;
-}
-
-IsoString PCCRedFilterBandwidth::Id() const
-{
-   return "redFilterBandwidth";
-}
-
-int PCCRedFilterBandwidth::Precision() const
-{
-   return 1;
-}
-
-double PCCRedFilterBandwidth::DefaultValue() const
-{
-   return 3.0; // nm
-}
-
-// ----------------------------------------------------------------------------
-
-PCCGreenFilterWavelength::PCCGreenFilterWavelength( MetaProcess* P ) : MetaFloat( P )
-{
-   ThePCCGreenFilterWavelengthParameter = this;
-}
-
-IsoString PCCGreenFilterWavelength::Id() const
-{
-   return "greenFilterWavelength";
-}
-
-int PCCGreenFilterWavelength::Precision() const
-{
-   return 1;
-}
-
-double PCCGreenFilterWavelength::DefaultValue() const
-{
-   return 500.7; // nm
-}
-
-// ----------------------------------------------------------------------------
-
-PCCGreenFilterBandwidth::PCCGreenFilterBandwidth( MetaProcess* P ) : MetaFloat( P )
-{
-   ThePCCGreenFilterBandwidthParameter = this;
-}
-
-IsoString PCCGreenFilterBandwidth::Id() const
-{
-   return "greenFilterBandwidth";
-}
-
-int PCCGreenFilterBandwidth::Precision() const
-{
-   return 1;
-}
-
-double PCCGreenFilterBandwidth::DefaultValue() const
-{
-   return 3.0; // nm
-}
-
-// ----------------------------------------------------------------------------
-
-PCCBlueFilterWavelength::PCCBlueFilterWavelength( MetaProcess* P ) : MetaFloat( P )
-{
-   ThePCCBlueFilterWavelengthParameter = this;
-}
-
-IsoString PCCBlueFilterWavelength::Id() const
-{
-   return "blueFilterWavelength";
-}
-
-int PCCBlueFilterWavelength::Precision() const
-{
-   return 1;
-}
-
-double PCCBlueFilterWavelength::DefaultValue() const
-{
-   return 500.7; // nm
-}
-
-// ----------------------------------------------------------------------------
-
-PCCBlueFilterBandwidth::PCCBlueFilterBandwidth( MetaProcess* P ) : MetaFloat( P )
-{
-   ThePCCBlueFilterBandwidthParameter = this;
-}
-
-IsoString PCCBlueFilterBandwidth::Id() const
-{
-   return "blueFilterBandwidth";
-}
-
-int PCCBlueFilterBandwidth::Precision() const
-{
-   return 1;
-}
-
-double PCCBlueFilterBandwidth::DefaultValue() const
-{
-   return 3.0; // nm
 }
 
 // ----------------------------------------------------------------------------
@@ -467,196 +283,117 @@ double PCCZeroPointJB_JV::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-PCCFocalLength::PCCFocalLength( MetaProcess* P ) : MetaFloat( P )
+PCCAutoCatalog::PCCAutoCatalog( MetaProcess* P )
+   : MetaBoolean( P )
 {
-   ThePCCFocalLengthParameter = this;
+   ThePCCAutoCatalogParameter = this;
 }
 
-IsoString PCCFocalLength::Id() const
+IsoString PCCAutoCatalog::Id() const
 {
-   return "focalLength";
+   return "autoCatalog";
 }
 
-int PCCFocalLength::Precision() const
+bool PCCAutoCatalog::DefaultValue() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+PCCCatalogId::PCCCatalogId( MetaProcess* P )
+   : MetaString( P )
+{
+   ThePCCCatalogIdParameter = this;
+}
+
+IsoString PCCCatalogId::Id() const
+{
+   return "catalogId";
+}
+
+String PCCCatalogId::DefaultValue() const
+{
+   return "APASS"; // online VizieR catalog
+}
+
+// ----------------------------------------------------------------------------
+
+PCCLimitMagnitude::PCCLimitMagnitude( MetaProcess* P )
+   : MetaFloat( P )
+{
+   ThePCCLimitMagnitudeParameter = this;
+}
+
+IsoString PCCLimitMagnitude::Id() const
+{
+   return "limitMagnitude";
+}
+
+int PCCLimitMagnitude::Precision() const
 {
    return 2;
 }
 
-double PCCFocalLength::MinimumValue() const
+double PCCLimitMagnitude::DefaultValue() const
 {
-   return 0.10;
+   return 12;
 }
 
-double PCCFocalLength::MaximumValue() const
+double PCCLimitMagnitude::MinimumValue() const
 {
-   return int_max;
+   return 0;
 }
 
-double PCCFocalLength::DefaultValue() const
+double PCCLimitMagnitude::MaximumValue() const
+{
+   return 30;
+}
+
+// ----------------------------------------------------------------------------
+
+PCCAutoLimitMagnitude::PCCAutoLimitMagnitude( MetaProcess* P )
+   : MetaBoolean( P )
+{
+   ThePCCAutoLimitMagnitudeParameter = this;
+}
+
+IsoString PCCAutoLimitMagnitude::Id() const
+{
+   return "autoLimitMagnitude";
+}
+
+bool PCCAutoLimitMagnitude::DefaultValue() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+PCCTargetSourceCount::PCCTargetSourceCount( MetaProcess* p )
+   : MetaInt32( p )
+{
+   ThePCCTargetSourceCountParameter = this;
+}
+
+IsoString PCCTargetSourceCount::Id() const
+{
+   return "targetSourceCount";
+}
+
+double PCCTargetSourceCount::DefaultValue() const
+{
+   return 8000;
+}
+
+double PCCTargetSourceCount::MinimumValue() const
 {
    return 1000;
 }
 
-// ----------------------------------------------------------------------------
-
-PCCPixelSize::PCCPixelSize( MetaProcess* P ) : MetaFloat( P )
+double PCCTargetSourceCount::MaximumValue() const
 {
-   ThePCCPixelSizeParameter = this;
-}
-
-IsoString PCCPixelSize::Id() const
-{
-   return "pixelSize";
-}
-
-int PCCPixelSize::Precision() const
-{
-   return 2;
-}
-
-double PCCPixelSize::MinimumValue() const
-{
-   return 0.10;
-}
-
-double PCCPixelSize::MaximumValue() const
-{
-   return 1000;
-}
-
-double PCCPixelSize::DefaultValue() const
-{
-   return 9;
-}
-
-// ----------------------------------------------------------------------------
-
-PCCCenterRA::PCCCenterRA( MetaProcess* P ) : MetaDouble( P )
-{
-   ThePCCCenterRAParameter = this;
-}
-
-IsoString PCCCenterRA::Id() const
-{
-   return "centerRA";
-}
-
-int PCCCenterRA::Precision() const
-{
-   return 7; // 1 mas = 2.7...e-07 deg
-}
-
-double PCCCenterRA::MinimumValue() const
-{
-   return 0;
-}
-
-double PCCCenterRA::MaximumValue() const
-{
-   return 360;
-}
-
-double PCCCenterRA::DefaultValue() const
-{
-   return 0;
-}
-
-// ----------------------------------------------------------------------------
-
-PCCCenterDec::PCCCenterDec( MetaProcess* P ) : MetaDouble( P )
-{
-   ThePCCCenterDecParameter = this;
-}
-
-IsoString PCCCenterDec::Id() const
-{
-   return "centerDec";
-}
-
-int PCCCenterDec::Precision() const
-{
-   return 7; // 1 mas = 2.7...e-07 deg
-}
-
-double PCCCenterDec::MinimumValue() const
-{
-   return -90;
-}
-
-double PCCCenterDec::MaximumValue() const
-{
-   return +90;
-}
-
-double PCCCenterDec::DefaultValue() const
-{
-   return 0;
-}
-
-// ----------------------------------------------------------------------------
-
-PCCEpochJD::PCCEpochJD( MetaProcess* P ) : MetaDouble( P )
-{
-   ThePCCEpochJDParameter = this;
-}
-
-IsoString PCCEpochJD::Id() const
-{
-   return "epochJD";
-}
-
-int PCCEpochJD::Precision() const
-{
-   return 7; // 1 ms = 2.7...e-07 day
-}
-
-double PCCEpochJD::MinimumValue() const
-{
-   return 0;
-}
-
-double PCCEpochJD::MaximumValue() const
-{
-   return int_max;
-}
-
-double PCCEpochJD::DefaultValue() const
-{
-   return 2451545.0; // J2000.0
-}
-
-// ----------------------------------------------------------------------------
-
-PCCForcePlateSolve::PCCForcePlateSolve( MetaProcess* P ) : MetaBoolean( P )
-{
-   ThePCCForcePlateSolveParameter = this;
-}
-
-IsoString PCCForcePlateSolve::Id() const
-{
-   return "forcePlateSolve";
-}
-
-bool PCCForcePlateSolve::DefaultValue() const
-{
-   return false;
-}
-
-// ----------------------------------------------------------------------------
-
-PCCIgnoreImagePositionAndScale::PCCIgnoreImagePositionAndScale( MetaProcess* P ) : MetaBoolean( P )
-{
-   ThePCCIgnoreImagePositionAndScaleParameter = this;
-}
-
-IsoString PCCIgnoreImagePositionAndScale::Id() const
-{
-   return "ignoreImagePositionAndScale";
-}
-
-bool PCCIgnoreImagePositionAndScale::DefaultValue() const
-{
-   return false;
+   return 100000;
 }
 
 // ----------------------------------------------------------------------------
@@ -673,585 +410,440 @@ IsoString PCCServerURL::Id() const
 
 String PCCServerURL::DefaultValue() const
 {
-   return "http://cdsarc.u-strasbg.fr/";
+   return "https://vizier.cds.unistra.fr/";
 }
 
 // ----------------------------------------------------------------------------
 
-PCCSolverCatalogName::PCCSolverCatalogName( MetaProcess* P ) : MetaString( P )
+PCCStructureLayers::PCCStructureLayers( MetaProcess* p )
+   : MetaInt32( p )
 {
-   ThePCCSolverCatalogNameParameter = this;
+   ThePCCStructureLayersParameter = this;
 }
 
-IsoString PCCSolverCatalogName::Id() const
+IsoString PCCStructureLayers::Id() const
 {
-   return "solverCatalogName";
+   return "psfStructureLayers";
 }
 
-String PCCSolverCatalogName::DefaultValue() const
-{
-   return "GaiaDR2";
-}
-
-// ----------------------------------------------------------------------------
-
-PCCSolverAutoCatalog::PCCSolverAutoCatalog( MetaProcess* P ) : MetaBoolean( P )
-{
-   ThePCCSolverAutoCatalogParameter = this;
-}
-
-IsoString PCCSolverAutoCatalog::Id() const
-{
-   return "solverAutoCatalog";
-}
-
-bool PCCSolverAutoCatalog::DefaultValue() const
-{
-   return true;
-}
-
-// ----------------------------------------------------------------------------
-
-PCCSolverLimitMagnitude::PCCSolverLimitMagnitude( MetaProcess* P ) : MetaInt32( P )
-{
-   ThePCCSolverLimitMagnitudeParameter = this;
-}
-
-IsoString PCCSolverLimitMagnitude::Id() const
-{
-   return "solverLimitMagnitude";
-}
-
-double PCCSolverLimitMagnitude::MinimumValue() const
-{
-   return 0;
-}
-
-double PCCSolverLimitMagnitude::MaximumValue() const
-{
-   return 30;
-}
-
-double PCCSolverLimitMagnitude::DefaultValue() const
-{
-   return 12;
-}
-
-// ----------------------------------------------------------------------------
-
-PCCSolverAutoLimitMagnitude::PCCSolverAutoLimitMagnitude( MetaProcess* P ) : MetaBoolean( P )
-{
-   ThePCCSolverAutoLimitMagnitudeParameter = this;
-}
-
-IsoString PCCSolverAutoLimitMagnitude::Id() const
-{
-   return "solverAutoLimitMagnitude";
-}
-
-bool PCCSolverAutoLimitMagnitude::DefaultValue() const
-{
-   return true;
-}
-
-// ----------------------------------------------------------------------------
-
-PCCSolverStructureLayers::PCCSolverStructureLayers( MetaProcess* p ) : MetaInt32( p )
-{
-   ThePCCSolverStructureLayersParameter = this;
-}
-
-IsoString PCCSolverStructureLayers::Id() const
-{
-   return "solverStructureLayers";
-}
-
-double PCCSolverStructureLayers::DefaultValue() const
+double PCCStructureLayers::DefaultValue() const
 {
    return 5;
 }
 
-double PCCSolverStructureLayers::MinimumValue() const
+double PCCStructureLayers::MinimumValue() const
 {
    return 1;
 }
 
-double PCCSolverStructureLayers::MaximumValue() const
+double PCCStructureLayers::MaximumValue() const
 {
    return 8;
 }
 
 // ----------------------------------------------------------------------------
 
-PCCSolverMinStructureSize::PCCSolverMinStructureSize( MetaProcess* p ) : MetaInt32( p )
+PCCSaturationThreshold::PCCSaturationThreshold( MetaProcess* P )
+   : MetaFloat( P )
 {
-   ThePCCSolverMinStructureSizeParameter = this;
+   ThePCCSaturationThresholdParameter = this;
 }
 
-IsoString PCCSolverMinStructureSize::Id() const
+IsoString PCCSaturationThreshold::Id() const
 {
-   return "solverMinStructureSize";
+   return "saturationThreshold";
 }
 
-double PCCSolverMinStructureSize::DefaultValue() const
+int PCCSaturationThreshold::Precision() const
 {
-   return 0;
+   return 2;
 }
 
-double PCCSolverMinStructureSize::MinimumValue() const
+double PCCSaturationThreshold::DefaultValue() const
 {
-   return 0;
+   return 0.75;
 }
 
-double PCCSolverMinStructureSize::MaximumValue() const
+double PCCSaturationThreshold::MinimumValue() const
 {
-   return 999999;
+   return 0.10;
+}
+
+double PCCSaturationThreshold::MaximumValue() const
+{
+   return 1.00;
 }
 
 // ----------------------------------------------------------------------------
 
-PCCSolverNoiseReductionFilterRadius::PCCSolverNoiseReductionFilterRadius( MetaProcess* p ) : MetaInt32( p )
+PCCSaturationRelative::PCCSaturationRelative( MetaProcess* P )
+   : MetaBoolean( P )
 {
-   ThePCCSolverNoiseReductionFilterRadiusParameter = this;
+   ThePCCSaturationRelativeParameter = this;
 }
 
-IsoString PCCSolverNoiseReductionFilterRadius::Id() const
+IsoString PCCSaturationRelative::Id() const
 {
-   return "solverNoiseReductionFilterRadius";
+   return "saturationRelative";
 }
 
-double PCCSolverNoiseReductionFilterRadius::DefaultValue() const
+bool PCCSaturationRelative::DefaultValue() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+PCCPSFNoiseLayers::PCCPSFNoiseLayers( MetaProcess* p )
+   : MetaInt32( p )
+{
+   ThePCCPSFNoiseLayersParameter = this;
+}
+
+IsoString PCCPSFNoiseLayers::Id() const
+{
+   return "psfNoiseLayers";
+}
+
+double PCCPSFNoiseLayers::DefaultValue() const
+{
+   return 1;
+}
+
+double PCCPSFNoiseLayers::MinimumValue() const
 {
    return 0;
 }
 
-double PCCSolverNoiseReductionFilterRadius::MinimumValue() const
+double PCCPSFNoiseLayers::MaximumValue() const
+{
+   return 4;
+}
+
+// ----------------------------------------------------------------------------
+
+PCCPSFHotPixelFilterRadius::PCCPSFHotPixelFilterRadius( MetaProcess* p )
+   : MetaInt32( p )
+{
+   ThePCCPSFHotPixelFilterRadiusParameter = this;
+}
+
+IsoString PCCPSFHotPixelFilterRadius::Id() const
+{
+   return "psfHotPixelFilterRadius";
+}
+
+double PCCPSFHotPixelFilterRadius::DefaultValue() const
+{
+   return 1;
+}
+
+double PCCPSFHotPixelFilterRadius::MinimumValue() const
 {
    return 0;
 }
 
-double PCCSolverNoiseReductionFilterRadius::MaximumValue() const
+double PCCPSFHotPixelFilterRadius::MaximumValue() const
+{
+   return 2;
+}
+
+// ----------------------------------------------------------------------------
+
+PCCPSFNoiseReductionFilterRadius::PCCPSFNoiseReductionFilterRadius( MetaProcess* p )
+   : MetaInt32( p )
+{
+   ThePCCPSFNoiseReductionFilterRadiusParameter = this;
+}
+
+IsoString PCCPSFNoiseReductionFilterRadius::Id() const
+{
+   return "psfNoiseReductionFilterRadius";
+}
+
+double PCCPSFNoiseReductionFilterRadius::DefaultValue() const
+{
+   return 0;
+}
+
+double PCCPSFNoiseReductionFilterRadius::MinimumValue() const
+{
+   return 0;
+}
+
+double PCCPSFNoiseReductionFilterRadius::MaximumValue() const
 {
    return 50;
 }
 
 // ----------------------------------------------------------------------------
 
-PCCSolverSensitivity::PCCSolverSensitivity( MetaProcess* p ) : MetaFloat( p )
+PCCPSFMinStructureSize::PCCPSFMinStructureSize( MetaProcess* p )
+   : MetaInt32( p )
 {
-   ThePCCSolverSensitivityParameter = this;
+   ThePCCPSFMinStructureSizeParameter = this;
 }
 
-IsoString PCCSolverSensitivity::Id() const
+IsoString PCCPSFMinStructureSize::Id() const
 {
-   return "solverSensitivity";
+   return "psfMinStructureSize";
 }
 
-int PCCSolverSensitivity::Precision() const
-{
-   return 2;
-}
-
-double PCCSolverSensitivity::DefaultValue() const
-{
-   return 0.5;
-}
-
-double PCCSolverSensitivity::MinimumValue() const
+double PCCPSFMinStructureSize::DefaultValue() const
 {
    return 0;
 }
 
-double PCCSolverSensitivity::MaximumValue() const
+double PCCPSFMinStructureSize::MinimumValue() const
 {
-   return 1;
+   return 0;
+}
+
+double PCCPSFMinStructureSize::MaximumValue() const
+{
+   return 999999;
 }
 
 // ----------------------------------------------------------------------------
 
-PCCSolverAlignmentDevice::PCCSolverAlignmentDevice( MetaProcess* P ) : MetaEnumeration( P )
+PCCPSFMinSNR::PCCPSFMinSNR( MetaProcess* P )
+   : MetaFloat( P )
 {
-   ThePCCSolverAlignmentDeviceParameter = this;
+   ThePCCPSFMinSNRParameter = this;
 }
 
-IsoString PCCSolverAlignmentDevice::Id() const
+IsoString PCCPSFMinSNR::Id() const
 {
-   return "solverAlignmentDevice";
+   return "psfMinSNR";
 }
 
-size_type PCCSolverAlignmentDevice::NumberOfElements() const
+int PCCPSFMinSNR::Precision() const
+{
+   return 2;
+}
+
+double PCCPSFMinSNR::DefaultValue() const
+{
+   return 40.0;
+}
+
+double PCCPSFMinSNR::MinimumValue() const
+{
+   return 0;
+}
+
+double PCCPSFMinSNR::MaximumValue() const
+{
+   return 1000;
+}
+
+// ----------------------------------------------------------------------------
+
+PCCPSFAllowClusteredSources::PCCPSFAllowClusteredSources( MetaProcess* p )
+   : MetaBoolean( p )
+{
+   ThePCCPSFAllowClusteredSourcesParameter = this;
+}
+
+IsoString PCCPSFAllowClusteredSources::Id() const
+{
+   return "psfAllowClusteredSources";
+}
+
+bool PCCPSFAllowClusteredSources::DefaultValue() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+PCCPSFType::PCCPSFType( MetaProcess* P )
+   : MetaEnumeration( P )
+{
+   ThePCCPSFTypeParameter = this;
+}
+
+IsoString PCCPSFType::Id() const
+{
+   return "psfType";
+}
+
+size_type PCCPSFType::NumberOfElements() const
 {
    return NumberOfItems;
 }
 
-IsoString PCCSolverAlignmentDevice::ElementId( size_type index ) const
+IsoString PCCPSFType::ElementId( size_type i ) const
 {
-   switch ( index )
+   switch ( i )
    {
+   case Gaussian: return "PSFType_Gaussian";
+   case Moffat15: return "PSFType_Moffat15";
+   case Moffat4:  return "PSFType_Moffat4";
+   case Moffat6:  return "PSFType_Moffat6";
+   case Moffat8:  return "PSFType_Moffat8";
+   case MoffatA:  return "PSFType_MoffatA";
    default:
-   case TriangleSimilarity: return "AlignmentDevice_TriangleSimilarity";
-   case PolygonMatching:    return "AlignmentDevice_PolygonMatching";
+   case Auto:     return "PSFType_Auto";
    }
 }
 
-int PCCSolverAlignmentDevice::ElementValue( size_type index ) const
+IsoString PCCPSFType::FunctionName( pcl_enum i )
 {
-   return int( index );
+   switch ( i )
+   {
+   case Gaussian: return "Gaussian";
+   case Moffat15: return "Moffat15";
+   case Moffat4:  return "Moffat4";
+   case Moffat6:  return "Moffat6";
+   case Moffat8:  return "Moffat8";
+   case MoffatA:  return "MoffatA";
+   default:
+   case Auto:     return "Auto";
+   }
 }
 
-size_type PCCSolverAlignmentDevice::DefaultValueIndex() const
+int PCCPSFType::ElementValue( size_type i ) const
+{
+   return int( i );
+}
+
+size_type PCCPSFType::DefaultValueIndex() const
 {
    return size_type( Default );
 }
 
 // ----------------------------------------------------------------------------
 
-PCCSolverDistortionCorrection::PCCSolverDistortionCorrection( MetaProcess* P ) : MetaBoolean( P )
+PCCPSFGrowth::PCCPSFGrowth( MetaProcess* P )
+   : MetaFloat( P )
 {
-   ThePCCSolverDistortionCorrectionParameter = this;
+   ThePCCPSFGrowthParameter = this;
 }
 
-IsoString PCCSolverDistortionCorrection::Id() const
+IsoString PCCPSFGrowth::Id() const
 {
-   return "solverDistortionCorrection";
+   return "psfGrowth";
 }
 
-bool PCCSolverDistortionCorrection::DefaultValue() const
+int PCCPSFGrowth::Precision() const
 {
-   return false;
+   return 2;
 }
 
-// ----------------------------------------------------------------------------
-
-PCCSolverSplineSmoothing::PCCSolverSplineSmoothing( MetaProcess* P ) : MetaFloat( P )
+double PCCPSFGrowth::DefaultValue() const
 {
-   ThePCCSolverSplineSmoothingParameter = this;
+   return 1.25;
 }
 
-IsoString PCCSolverSplineSmoothing::Id() const
-{
-   return "solverSplineSmoothing";
-}
-
-int PCCSolverSplineSmoothing::Precision() const
-{
-   return 3;
-}
-
-double PCCSolverSplineSmoothing::MinimumValue() const
-{
-   return 0;
-}
-
-double PCCSolverSplineSmoothing::MaximumValue() const
+double PCCPSFGrowth::MinimumValue() const
 {
    return 0.5;
 }
 
-double PCCSolverSplineSmoothing::DefaultValue() const
+double PCCPSFGrowth::MaximumValue() const
 {
-   return 0.015;
+   return 4.0;
 }
 
 // ----------------------------------------------------------------------------
 
-PCCSolverProjection::PCCSolverProjection( MetaProcess* P ) : MetaEnumeration( P )
+PCCPSFMaxStars::PCCPSFMaxStars( MetaProcess* p )
+   : MetaInt32( p )
 {
-   ThePCCSolverProjectionParameter = this;
+   ThePCCPSFMaxStarsParameter = this;
 }
 
-IsoString PCCSolverProjection::Id() const
+IsoString PCCPSFMaxStars::Id() const
 {
-   return "solverProjection";
+   return "psfMaxStars";
 }
 
-size_type PCCSolverProjection::NumberOfElements() const
+double PCCPSFMaxStars::DefaultValue() const
 {
-   return NumberOfItems;
+   return 24*1024;
 }
 
-IsoString PCCSolverProjection::ElementId( size_type index ) const
+double PCCPSFMaxStars::MinimumValue() const
 {
-   switch ( index )
-   {
-   default:
-   case Gnomonic:          return "Projection_Gnomonic";
-   case Stereographic:     return "Projection_Stereographic";
-   case PlateCarree:       return "Projection_PlateCarree";
-   case Mercator:          return "Projection_Mercator";
-   case HammerAitoff:      return "Projection_HammerAitoff";
-   case ZenithalEqualArea: return "Projection_ZenithalEqualArea";
-   case Orthographic:      return "Projection_Orthographic";
-   }
+   return 256;
 }
 
-int PCCSolverProjection::ElementValue( size_type index ) const
+double PCCPSFMaxStars::MaximumValue() const
 {
-   return int( index );
-}
-
-size_type PCCSolverProjection::DefaultValueIndex() const
-{
-   return size_type( Default );
+   return 999999;
 }
 
 // ----------------------------------------------------------------------------
 
-PCCPhotCatalogName::PCCPhotCatalogName( MetaProcess* P ) : MetaString( P )
+PCCPSFSearchTolerance::PCCPSFSearchTolerance( MetaProcess* P )
+   : MetaFloat( P )
 {
-   ThePCCPhotCatalogNameParameter = this;
+   ThePCCPSFSearchToleranceParameter = this;
 }
 
-IsoString PCCPhotCatalogName::Id() const
+IsoString PCCPSFSearchTolerance::Id() const
 {
-   return "photCatalogName";
+   return "psfSearchTolerance";
 }
 
-String PCCPhotCatalogName::DefaultValue() const
-{
-   return "APASS";
-}
-
-// ----------------------------------------------------------------------------
-
-PCCPhotAutoCatalog::PCCPhotAutoCatalog( MetaProcess* P ) : MetaBoolean( P )
-{
-   ThePCCPhotAutoCatalogParameter = this;
-}
-
-IsoString PCCPhotAutoCatalog::Id() const
-{
-   return "photAutoCatalog";
-}
-
-bool PCCPhotAutoCatalog::DefaultValue() const
-{
-   return true;
-}
-
-// ----------------------------------------------------------------------------
-
-PCCPhotLimitMagnitude::PCCPhotLimitMagnitude( MetaProcess* P ) : MetaInt32( P )
-{
-   ThePCCPhotLimitMagnitudeParameter = this;
-}
-
-IsoString PCCPhotLimitMagnitude::Id() const
-{
-   return "photLimitMagnitude";
-}
-
-double PCCPhotLimitMagnitude::MinimumValue() const
-{
-   return 9;
-}
-
-double PCCPhotLimitMagnitude::MaximumValue() const
-{
-   return 30;
-}
-
-double PCCPhotLimitMagnitude::DefaultValue() const
-{
-   return 12;
-}
-
-// ----------------------------------------------------------------------------
-
-PCCPhotAutoLimitMagnitude::PCCPhotAutoLimitMagnitude( MetaProcess* P ) : MetaBoolean( P )
-{
-   ThePCCPhotAutoLimitMagnitudeParameter = this;
-}
-
-IsoString PCCPhotAutoLimitMagnitude::Id() const
-{
-   return "photAutoLimitMagnitude";
-}
-
-bool PCCPhotAutoLimitMagnitude::DefaultValue() const
-{
-   return true;
-}
-
-// ----------------------------------------------------------------------------
-
-PCCPhotAutoLimitMagnitudeFactor::PCCPhotAutoLimitMagnitudeFactor( MetaProcess* P ) : MetaFloat( P )
-{
-   ThePCCPhotAutoLimitMagnitudeFactorParameter = this;
-}
-
-IsoString PCCPhotAutoLimitMagnitudeFactor::Id() const
-{
-   return "photAutoLimitMagnitudeFactor";
-}
-
-int PCCPhotAutoLimitMagnitudeFactor::Precision() const
+int PCCPSFSearchTolerance::Precision() const
 {
    return 2;
 }
 
-double PCCPhotAutoLimitMagnitudeFactor::MinimumValue() const
+double PCCPSFSearchTolerance::DefaultValue() const
 {
-   return 10;
+   return 4;
 }
 
-double PCCPhotAutoLimitMagnitudeFactor::MaximumValue() const
+double PCCPSFSearchTolerance::MinimumValue() const
 {
-   return 25;
+   return 0.1;
 }
 
-double PCCPhotAutoLimitMagnitudeFactor::DefaultValue() const
+double PCCPSFSearchTolerance::MaximumValue() const
 {
-   return 15;
-}
-
-// ----------------------------------------------------------------------------
-
-PCCPhotAutoAperture::PCCPhotAutoAperture( MetaProcess* P ) : MetaBoolean( P )
-{
-   ThePCCPhotAutoApertureParameter = this;
-}
-
-IsoString PCCPhotAutoAperture::Id() const
-{
-   return "photAutoAperture";
-}
-
-bool PCCPhotAutoAperture::DefaultValue() const
-{
-   return true;
+   return 16;
 }
 
 // ----------------------------------------------------------------------------
 
-PCCPhotAperture::PCCPhotAperture( MetaProcess* P ) : MetaInt32( P )
+PCCPSFChannelSearchTolerance::PCCPSFChannelSearchTolerance( MetaProcess* P )
+   : MetaFloat( P )
 {
-   ThePCCPhotApertureParameter = this;
+   ThePCCPSFChannelSearchToleranceParameter = this;
 }
 
-IsoString PCCPhotAperture::Id() const
+IsoString PCCPSFChannelSearchTolerance::Id() const
 {
-   return "photAperture";
+   return "psfChannelSearchTolerance";
 }
 
-double PCCPhotAperture::MinimumValue() const
-{
-   return 5;
-}
-
-double PCCPhotAperture::MaximumValue() const
-{
-   return 30;
-}
-
-double PCCPhotAperture::DefaultValue() const
-{
-   return 8;
-}
-
-// ----------------------------------------------------------------------------
-
-PCCPhotUsePSF::PCCPhotUsePSF( MetaProcess* P ) : MetaBoolean( P )
-{
-   ThePCCPhotUsePSFParameter = this;
-}
-
-IsoString PCCPhotUsePSF::Id() const
-{
-   return "photUsePSF";
-}
-
-bool PCCPhotUsePSF::DefaultValue() const
-{
-   return false;
-}
-
-// ----------------------------------------------------------------------------
-
-PCCPhotSaturationThreshold::PCCPhotSaturationThreshold( MetaProcess* P ) : MetaFloat( P )
-{
-   ThePCCPhotSaturationThresholdParameter = this;
-}
-
-IsoString PCCPhotSaturationThreshold::Id() const
-{
-   return "photSaturationThreshold";
-}
-
-int PCCPhotSaturationThreshold::Precision() const
+int PCCPSFChannelSearchTolerance::Precision() const
 {
    return 2;
 }
 
-double PCCPhotSaturationThreshold::MinimumValue() const
+double PCCPSFChannelSearchTolerance::DefaultValue() const
 {
-   return 0.25;
+   return 2;
 }
 
-double PCCPhotSaturationThreshold::MaximumValue() const
+double PCCPSFChannelSearchTolerance::MinimumValue() const
 {
-   return 1.00;
+   return 0.1;
 }
 
-double PCCPhotSaturationThreshold::DefaultValue() const
+double PCCPSFChannelSearchTolerance::MaximumValue() const
 {
-   return 0.95;
-}
-
-// ----------------------------------------------------------------------------
-
-PCCPhotShowDetectedStars::PCCPhotShowDetectedStars( MetaProcess* P ) : MetaBoolean( P )
-{
-   ThePCCPhotShowDetectedStarsParameter = this;
-}
-
-IsoString PCCPhotShowDetectedStars::Id() const
-{
-   return "photShowDetectedStars";
-}
-
-bool PCCPhotShowDetectedStars::DefaultValue() const
-{
-   return false;
+   return 16;
 }
 
 // ----------------------------------------------------------------------------
 
-PCCPhotShowBackgroundModels::PCCPhotShowBackgroundModels( MetaProcess* P ) : MetaBoolean( P )
-{
-   ThePCCPhotShowBackgroundModelsParameter = this;
-}
-
-IsoString PCCPhotShowBackgroundModels::Id() const
-{
-   return "photShowBackgroundModels";
-}
-
-bool PCCPhotShowBackgroundModels::DefaultValue() const
-{
-   return false;
-}
-
-// ----------------------------------------------------------------------------
-
-PCCPhotGenerateGraphs::PCCPhotGenerateGraphs( MetaProcess* P ) : MetaBoolean( P )
-{
-   ThePCCPhotGenerateGraphsParameter = this;
-}
-
-IsoString PCCPhotGenerateGraphs::Id() const
-{
-   return "photGenerateGraphs";
-}
-
-bool PCCPhotGenerateGraphs::DefaultValue() const
-{
-   return true;
-}
-
-// ----------------------------------------------------------------------------
-
-PCCNeutralizeBackground::PCCNeutralizeBackground( MetaProcess* P ) : MetaBoolean( P )
+PCCNeutralizeBackground::PCCNeutralizeBackground( MetaProcess* P )
+   : MetaBoolean( P )
 {
    ThePCCNeutralizeBackgroundParameter = this;
 }
@@ -1268,7 +860,8 @@ bool PCCNeutralizeBackground::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-PCCBackgroundReferenceViewId::PCCBackgroundReferenceViewId( MetaProcess* P ) : MetaString( P )
+PCCBackgroundReferenceViewId::PCCBackgroundReferenceViewId( MetaProcess* P )
+   : MetaString( P )
 {
    ThePCCBackgroundReferenceViewIdParameter = this;
 }
@@ -1280,7 +873,8 @@ IsoString PCCBackgroundReferenceViewId::Id() const
 
 // ----------------------------------------------------------------------------
 
-PCCBackgroundLow::PCCBackgroundLow( MetaProcess* P ) : MetaFloat( P )
+PCCBackgroundLow::PCCBackgroundLow( MetaProcess* P )
+   : MetaFloat( P )
 {
    ThePCCBackgroundLowParameter = this;
 }
@@ -1292,27 +886,28 @@ IsoString PCCBackgroundLow::Id() const
 
 int PCCBackgroundLow::Precision() const
 {
-   return 7;
+   return 2;
 }
 
 double PCCBackgroundLow::MinimumValue() const
 {
-   return 0;
+   return -10;
 }
 
 double PCCBackgroundLow::MaximumValue() const
 {
-   return 1;
+   return +10;
 }
 
 double PCCBackgroundLow::DefaultValue() const
 {
-   return 0;
+   return -2.8;
 }
 
 // ----------------------------------------------------------------------------
 
-PCCBackgroundHigh::PCCBackgroundHigh( MetaProcess* P ) : MetaFloat( P )
+PCCBackgroundHigh::PCCBackgroundHigh( MetaProcess* P )
+   : MetaFloat( P )
 {
    ThePCCBackgroundHighParameter = this;
 }
@@ -1324,27 +919,28 @@ IsoString PCCBackgroundHigh::Id() const
 
 int PCCBackgroundHigh::Precision() const
 {
-   return 7;
+   return 2;
 }
 
 double PCCBackgroundHigh::MinimumValue() const
 {
-   return 0;
+   return -10;
 }
 
 double PCCBackgroundHigh::MaximumValue() const
 {
-   return 1;
+   return +10;
 }
 
 double PCCBackgroundHigh::DefaultValue() const
 {
-   return 0.1;
+   return +2.0;
 }
 
 // ----------------------------------------------------------------------------
 
-PCCBackgroundUseROI::PCCBackgroundUseROI( MetaProcess* P ) : MetaBoolean( P )
+PCCBackgroundUseROI::PCCBackgroundUseROI( MetaProcess* P )
+   : MetaBoolean( P )
 {
    ThePCCBackgroundUseROIParameter = this;
 }
@@ -1361,7 +957,8 @@ bool PCCBackgroundUseROI::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-PCCBackgroundROIX0::PCCBackgroundROIX0( MetaProcess* P ) : MetaInt32( P )
+PCCBackgroundROIX0::PCCBackgroundROIX0( MetaProcess* P )
+   : MetaInt32( P )
 {
    ThePCCBackgroundROIX0Parameter = this;
 }
@@ -1388,7 +985,8 @@ double PCCBackgroundROIX0::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-PCCBackgroundROIY0::PCCBackgroundROIY0( MetaProcess* P ) : MetaInt32( P )
+PCCBackgroundROIY0::PCCBackgroundROIY0( MetaProcess* P )
+   : MetaInt32( P )
 {
    ThePCCBackgroundROIY0Parameter = this;
 }
@@ -1415,7 +1013,8 @@ double PCCBackgroundROIY0::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-PCCBackgroundROIX1::PCCBackgroundROIX1( MetaProcess* P ) : MetaInt32( P )
+PCCBackgroundROIX1::PCCBackgroundROIX1( MetaProcess* P )
+   : MetaInt32( P )
 {
    ThePCCBackgroundROIX1Parameter = this;
 }
@@ -1442,7 +1041,8 @@ double PCCBackgroundROIX1::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-PCCBackgroundROIY1::PCCBackgroundROIY1( MetaProcess* P ) : MetaInt32( P )
+PCCBackgroundROIY1::PCCBackgroundROIY1( MetaProcess* P )
+   : MetaInt32( P )
 {
    ThePCCBackgroundROIY1Parameter = this;
 }
@@ -1469,7 +1069,79 @@ double PCCBackgroundROIY1::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
+PCCGenerateGraphs::PCCGenerateGraphs( MetaProcess* P )
+   : MetaBoolean( P )
+{
+   ThePCCGenerateGraphsParameter = this;
+}
+
+IsoString PCCGenerateGraphs::Id() const
+{
+   return "generateGraphs";
+}
+
+bool PCCGenerateGraphs::DefaultValue() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+PCCGenerateStarMaps::PCCGenerateStarMaps( MetaProcess* P )
+   : MetaBoolean( P )
+{
+   ThePCCGenerateStarMapsParameter = this;
+}
+
+IsoString PCCGenerateStarMaps::Id() const
+{
+   return "generateStarMaps";
+}
+
+bool PCCGenerateStarMaps::DefaultValue() const
+{
+   return false;
+}
+
+// ----------------------------------------------------------------------------
+
+PCCGenerateTextFiles::PCCGenerateTextFiles( MetaProcess* P )
+   : MetaBoolean( P )
+{
+   ThePCCGenerateTextFilesParameter = this;
+}
+
+IsoString PCCGenerateTextFiles::Id() const
+{
+   return "generateTextFiles";
+}
+
+bool PCCGenerateTextFiles::DefaultValue() const
+{
+   return false;
+}
+
+// ----------------------------------------------------------------------------
+
+PCCOutputDirectory::PCCOutputDirectory( MetaProcess* P )
+   : MetaString( P )
+{
+   ThePCCOutputDirectoryParameter = this;
+}
+
+IsoString PCCOutputDirectory::Id() const
+{
+   return "outputDirectory";
+}
+
+String PCCOutputDirectory::DefaultValue() const
+{
+   return String(); // = File::SystemTempDirectory()
+}
+
+// ----------------------------------------------------------------------------
+
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationParameters.cpp - Released 2022-05-20T16:28:45Z
+// EOF PhotometricColorCalibrationParameters.cpp - Released 2022-11-21T14:47:17Z

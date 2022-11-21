@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 1.2.4
+// Standard Geometry Process Module Version 1.3.1
 // ----------------------------------------------------------------------------
-// IntegerResampleInterface.h - Released 2022-05-17T17:15:11Z
+// IntegerResampleInterface.h - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -113,15 +113,17 @@ private:
       SectionBar        IntegerResample_SectionBar;
       Control           IntegerResample_Control;
       VerticalSizer     IntegerResample_Sizer;
-         HorizontalSizer   IntegerResampleRow1_Sizer;
+         HorizontalSizer   ResampleFactor_Sizer;
             Label             ResampleFactor_Label;
             SpinBox           ResampleFactor_SpinBox;
+         HorizontalSizer   Downsample_Sizer;
+            RadioButton       Downsample_RadioButton;
             Label             DownsampleMode_Label;
             ComboBox          DownsampleMode_ComboBox;
-         HorizontalSizer   IntegerResampleRow2_Sizer;
-            RadioButton       Downsample_RadioButton;
-         HorizontalSizer   IntegerResampleRow3_Sizer;
+         HorizontalSizer   Upsample_Sizer;
             RadioButton       Upsample_RadioButton;
+         HorizontalSizer   GammaCorrection_Sizer;
+            CheckBox          GammaCorrection_CheckBox;
 
       SectionBar        Dimensions_SectionBar;
       Control           Dimensions_Control;
@@ -162,17 +164,13 @@ private:
 
    void UpdateControls();
 
-   void __ViewList_ViewSelected( ViewList& sender, View& view );
-   void __ResampleFactor_ValueUpdated( SpinBox& sender, int value );
-   void __ResampleType_ButtonClick( Button& sender, bool checked );
-   void __DownsampleMode_ItemSelected( ComboBox& sender, int itemIndex );
-   void __Width_ValueUpdated( NumericEdit& sender, double value );
-   void __Height_ValueUpdated( NumericEdit& sender, double value );
-   void __Resolution_ValueUpdated( NumericEdit& sender, double value );
-   void __Units_ButtonClick( Button& sender, bool checked );
-   void __ForceResolution_ButtonClick( Button& sender, bool checked );
-   void __ViewDrag( Control& sender, const Point& pos, const View& view, unsigned modifiers, bool& wantsView );
-   void __ViewDrop( Control& sender, const Point& pos, const View& view, unsigned modifiers );
+   void e_ViewSelected( ViewList& sender, View& view );
+   void e_ButtonClick( Button& sender, bool checked );
+   void e_SpinBoxValueUpdated( SpinBox& sender, int value );
+   void e_ValueUpdated( NumericEdit& sender, double value );
+   void e_ItemSelected( ComboBox& sender, int itemIndex );
+   void e_ViewDrag( Control& sender, const Point& pos, const View& view, unsigned modifiers, bool& wantsView );
+   void e_ViewDrop( Control& sender, const Point& pos, const View& view, unsigned modifiers );
 
    friend struct GUIData;
 };
@@ -190,4 +188,4 @@ PCL_END_LOCAL
 #endif   // __IntegerResampleInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF IntegerResampleInterface.h - Released 2022-05-17T17:15:11Z
+// EOF IntegerResampleInterface.h - Released 2022-11-21T14:47:17Z

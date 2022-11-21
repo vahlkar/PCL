@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 1.2.4
+// Standard Geometry Process Module Version 1.3.1
 // ----------------------------------------------------------------------------
-// IntegerResampleInstance.cpp - Released 2022-05-17T17:15:11Z
+// IntegerResampleInstance.cpp - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -71,6 +71,7 @@ IntegerResampleInstance::IntegerResampleInstance( const MetaProcess* P )
    , p_resolution( TheIRXResolutionParameter->DefaultValue(), TheIRYResolutionParameter->DefaultValue() )
    , p_metric( TheIRMetricResolutionParameter->DefaultValue() )
    , p_forceResolution( TheIRForceResolutionParameter->DefaultValue() )
+   , p_gammaCorrection( TheIRGammaCorrectionParameter->DefaultValue() )
    , p_noGUIMessages( TheIRNoGUIMessagesParameter->DefaultValue() )
 {
 }
@@ -95,6 +96,7 @@ void IntegerResampleInstance::Assign( const ProcessImplementation& p )
       p_resolution      = x->p_resolution;
       p_metric          = x->p_metric;
       p_forceResolution = x->p_forceResolution;
+      p_gammaCorrection = x->p_gammaCorrection;
       p_noGUIMessages   = x->p_noGUIMessages;
    }
 }
@@ -162,7 +164,12 @@ bool IntegerResampleInstance::ExecuteOn( View& view )
    if ( !image.IsComplexSample() )
       if ( p_zoomFactor > 1 || p_zoomFactor < -1 )
       {
-         IntegerResample I( p_zoomFactor, static_cast<IntegerResample::downsample_mode>( p_downsampleMode ) );
+         console.EnableAbort();
+
+         StandardStatus status;
+         image.SetStatusCallback( &status );
+
+         IntegerResample Z( p_zoomFactor, static_cast<IntegerResample::downsample_mode>( p_downsampleMode ) );
 
          // On 32-bit systems, make sure the resulting image requires less than 4 GB.
          if ( sizeof( void* ) == sizeof( uint32 ) )
@@ -173,7 +180,7 @@ bool IntegerResampleInstance::ExecuteOn( View& view )
 
             // Dimensions of transformed image
             int width = w0, height = h0;
-            I.GetNewSizes( width, height );
+            Z.GetNewSizes( width, height );
             width = Max( 1, width );
             height = Max( 1, height );
 
@@ -185,13 +192,17 @@ bool IntegerResampleInstance::ExecuteOn( View& view )
          DeleteAstrometryMetadataAndPreviewsAndMask( window,
                                                      false,              /*deleteCenterMetadata*/
                                                      false,              /*deleteScaleMetadata*/
-                                                     1/I.ScalingFactor() /*pixelSizeScalingFactor*/ );
-         console.EnableAbort();
+                                                     1/Z.ScalingFactor() /*pixelSizeScalingFactor*/ );
 
-         StandardStatus status;
-         image.SetStatusCallback( &status );
+         if ( p_gammaCorrection )
+         {
+            RGBColorSystem rgbws;
+            window.GetRGBWS( rgbws );
+            Z.EnableGammaCorrection();
+            Z.SetRGBWorkingSpace( rgbws );
+         }
 
-         I >> image;
+         Z >> image;
       }
       else
       {
@@ -224,6 +235,8 @@ void* IntegerResampleInstance::LockParameter( const MetaParameter* p, size_type 
       return &p_metric;
    if ( p == TheIRForceResolutionParameter )
       return &p_forceResolution;
+   if ( p == TheIRGammaCorrectionParameter )
+      return &p_gammaCorrection;
    if ( p == TheIRNoGUIMessagesParameter )
       return &p_noGUIMessages;
    return nullptr;
@@ -234,4 +247,4 @@ void* IntegerResampleInstance::LockParameter( const MetaParameter* p, size_type 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF IntegerResampleInstance.cpp - Released 2022-05-17T17:15:11Z
+// EOF IntegerResampleInstance.cpp - Released 2022-11-21T14:47:17Z

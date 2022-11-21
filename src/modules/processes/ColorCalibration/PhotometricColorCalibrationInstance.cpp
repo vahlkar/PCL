@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.5.2
+// Standard ColorCalibration Process Module Version 1.9.0
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationInstance.cpp - Released 2022-05-20T16:28:45Z
+// PhotometricColorCalibrationInstance.cpp - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -50,37 +50,26 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
+#include "CalibrationUtility.h"
 #include "PhotometricColorCalibrationGraphInterface.h"
 #include "PhotometricColorCalibrationInstance.h"
 #include "PhotometricColorCalibrationParameters.h"
 
+#include "../APASS/APASSInstance.h" // APASSBinaryHeader
+
+#include <pcl/APASSDatabaseFile.h>
 #include <pcl/AstrometricMetadata.h>
+#include <pcl/AutoStatusCallbackRestorer.h>
 #include <pcl/AutoViewLock.h>
 #include <pcl/Console.h>
-#include <pcl/GlobalSettings.h>
 #include <pcl/ImageWindow.h>
 #include <pcl/LinearFit.h>
 #include <pcl/MetaModule.h>
+#include <pcl/NetworkTransfer.h>
+#include <pcl/PSFEstimator.h>
 #include <pcl/StandardStatus.h>
 #include <pcl/Version.h>
 #include <pcl/View.h>
-#include <pcl/XISF.h>
-
-/*
- * Working options for the Photometry script.
- */
-#define STARFLAG_MULTIPLE     0x01
-#define STARFLAG_OVERLAPPED   0x02
-#define STARFLAG_BADPOS       0x04
-#define STARFLAG_LOWSNR       0x08
-#define STARFLAG_SATURATED    0x10
-
-#define BKGWINDOW_RING        0
-#define BKGWINDOW_PHOTOMETRIC 1
-
-#define BKGMODEL_SOURCE       0
-#define BKGMODEL_MMT          1
-#define BKGMODEL_ABE          2
 
 namespace pcl
 {
@@ -89,57 +78,41 @@ namespace pcl
 
 PhotometricColorCalibrationInstance::PhotometricColorCalibrationInstance( const MetaProcess* m )
    : ProcessImplementation( m )
-   , p_workingMode( PCCWorkingMode::Default )
    , p_applyCalibration( ThePCCApplyCalibrationParameter->DefaultValue() )
-   , p_redFilterWavelength( ThePCCRedFilterWavelengthParameter->DefaultValue() )
-   , p_redFilterBandwidth( ThePCCRedFilterBandwidthParameter->DefaultValue() )
-   , p_greenFilterWavelength( ThePCCGreenFilterWavelengthParameter->DefaultValue() )
-   , p_greenFilterBandwidth( ThePCCGreenFilterBandwidthParameter->DefaultValue() )
-   , p_blueFilterWavelength( ThePCCBlueFilterWavelengthParameter->DefaultValue() )
-   , p_blueFilterBandwidth( ThePCCBlueFilterBandwidthParameter->DefaultValue() )
    , p_whiteReferenceId( ThePCCWhiteReferenceIdParameter->DefaultValue() )
    , p_whiteReferenceName( ThePCCWhiteReferenceNameParameter->DefaultValue() )
    , p_whiteReferenceSr_JV( ThePCCWhiteReferenceSr_JVParameter->DefaultValue() )
    , p_whiteReferenceJB_JV( ThePCCWhiteReferenceJB_JVParameter->DefaultValue() )
    , p_zeroPointSr_JV( ThePCCZeroPointSr_JVParameter->DefaultValue() )
    , p_zeroPointJB_JV( ThePCCZeroPointJB_JVParameter->DefaultValue() )
-   , p_focalLength( ThePCCFocalLengthParameter->DefaultValue() )
-   , p_pixelSize( ThePCCPixelSizeParameter->DefaultValue() )
-   , p_centerRA( ThePCCCenterRAParameter->DefaultValue() )
-   , p_centerDec( ThePCCCenterDecParameter->DefaultValue() )
-   , p_epochJD( ThePCCEpochJDParameter->DefaultValue() )
-   , p_forcePlateSolve( ThePCCForcePlateSolveParameter->DefaultValue() )
-   , p_ignorePositionAndScale( ThePCCIgnoreImagePositionAndScaleParameter->DefaultValue() )
+   , p_autoCatalog( ThePCCAutoCatalogParameter->DefaultValue() )
+   , p_catalogId( ThePCCCatalogIdParameter->DefaultValue() )
+   , p_limitMagnitude( ThePCCLimitMagnitudeParameter->DefaultValue() )
+   , p_autoLimitMagnitude( ThePCCAutoLimitMagnitudeParameter->DefaultValue() )
+   , p_targetSourceCount( ThePCCTargetSourceCountParameter->DefaultValue() )
    , p_serverURL( ThePCCServerURLParameter->DefaultValue() )
-   , p_solverCatalogName( ThePCCSolverCatalogNameParameter->DefaultValue() )
-   , p_solverAutoCatalog( ThePCCSolverAutoCatalogParameter->DefaultValue() )
-   , p_solverLimitMagnitude( ThePCCSolverLimitMagnitudeParameter->DefaultValue() )
-   , p_solverAutoLimitMagnitude( ThePCCSolverAutoLimitMagnitudeParameter->DefaultValue() )
-   , p_solverStructureLayers( ThePCCSolverStructureLayersParameter->DefaultValue()  )
-   , p_solverMinStructureSize( ThePCCSolverMinStructureSizeParameter->DefaultValue()  )
-   , p_solverNoiseReductionFilterRadius( ThePCCSolverNoiseReductionFilterRadiusParameter->DefaultValue()  )
-   , p_solverSensitivity( ThePCCSolverSensitivityParameter->DefaultValue() )
-   , p_solverAlignmentDevice( PCCSolverAlignmentDevice::Default )
-   , p_solverDistortionCorrection( ThePCCSolverDistortionCorrectionParameter->DefaultValue() )
-   , p_solverSplineSmoothing( ThePCCSolverSplineSmoothingParameter->DefaultValue() )
-   , p_solverProjection( PCCSolverProjection::Default )
-   , p_photCatalogName( ThePCCPhotCatalogNameParameter->DefaultValue() )
-   , p_photAutoCatalog( ThePCCPhotAutoCatalogParameter->DefaultValue() )
-   , p_photLimitMagnitude( ThePCCPhotLimitMagnitudeParameter->DefaultValue() )
-   , p_photAutoLimitMagnitude( ThePCCPhotAutoLimitMagnitudeParameter->DefaultValue() )
-   , p_photAutoLimitMagnitudeFactor( ThePCCPhotAutoLimitMagnitudeFactorParameter->DefaultValue() )
-   , p_photAutoAperture( ThePCCPhotAutoApertureParameter->DefaultValue() )
-   , p_photAperture( ThePCCPhotApertureParameter->DefaultValue() )
-   , p_photUsePSF( ThePCCPhotUsePSFParameter->DefaultValue() )
-   , p_photSaturationThreshold( ThePCCPhotSaturationThresholdParameter->DefaultValue() )
-   , p_photShowDetectedStars( ThePCCPhotShowDetectedStarsParameter->DefaultValue() )
-   , p_photShowBackgroundModels( ThePCCPhotShowBackgroundModelsParameter->DefaultValue() )
-   , p_photGenerateGraphs( ThePCCPhotGenerateGraphsParameter->DefaultValue() )
+   , p_structureLayers( ThePCCStructureLayersParameter->DefaultValue() )
+   , p_saturationThreshold( ThePCCSaturationThresholdParameter->DefaultValue() )
+   , p_saturationRelative( ThePCCSaturationRelativeParameter->DefaultValue() )
+   , p_psfNoiseLayers( ThePCCPSFNoiseLayersParameter->DefaultValue() )
+   , p_psfHotPixelFilterRadius( ThePCCPSFHotPixelFilterRadiusParameter->DefaultValue() )
+   , p_psfNoiseReductionFilterRadius( ThePCCPSFNoiseReductionFilterRadiusParameter->DefaultValue() )
+   , p_psfMinStructureSize( ThePCCPSFMinStructureSizeParameter->DefaultValue() )
+   , p_psfMinSNR( ThePCCPSFMinSNRParameter->DefaultValue() )
+   , p_psfAllowClusteredSources( ThePCCPSFAllowClusteredSourcesParameter->DefaultValue() )
+   , p_psfType( PCCPSFType::Default )
+   , p_psfGrowth( ThePCCPSFGrowthParameter->DefaultValue() )
+   , p_psfMaxStars( ThePCCPSFMaxStarsParameter->DefaultValue() )
+   , p_psfSearchTolerance( ThePCCPSFSearchToleranceParameter->DefaultValue() )
+   , p_psfChannelSearchTolerance( ThePCCPSFChannelSearchToleranceParameter->DefaultValue() )
    , p_neutralizeBackground( ThePCCNeutralizeBackgroundParameter->DefaultValue() )
-   , p_backgroundReferenceViewId( ThePCCBackgroundReferenceViewIdParameter->DefaultValue() )
    , p_backgroundLow( ThePCCBackgroundLowParameter->DefaultValue() )
    , p_backgroundHigh( ThePCCBackgroundHighParameter->DefaultValue() )
    , p_backgroundUseROI( ThePCCBackgroundUseROIParameter->DefaultValue() )
+   , p_generateGraphs( ThePCCGenerateGraphsParameter->DefaultValue() )
+   , p_generateStarMaps( ThePCCGenerateStarMapsParameter->DefaultValue() )
+   , p_generateTextFiles( ThePCCGenerateTextFilesParameter->DefaultValue() )
+   , p_outputDirectory( ThePCCOutputDirectoryParameter->DefaultValue() )
 {
 }
 
@@ -158,58 +131,58 @@ void PhotometricColorCalibrationInstance::Assign( const ProcessImplementation& p
    const PhotometricColorCalibrationInstance* x = dynamic_cast<const PhotometricColorCalibrationInstance*>( &p );
    if ( x != nullptr )
    {
-      p_workingMode                      = x->p_workingMode;
-      p_applyCalibration                 = x->p_applyCalibration;
-      p_redFilterWavelength              = x->p_redFilterWavelength;
-      p_redFilterBandwidth               = x->p_redFilterBandwidth;
-      p_greenFilterWavelength            = x->p_greenFilterWavelength;
-      p_greenFilterBandwidth             = x->p_greenFilterBandwidth;
-      p_blueFilterWavelength             = x->p_blueFilterWavelength;
-      p_blueFilterBandwidth              = x->p_blueFilterBandwidth;
-      p_whiteReferenceId                 = x->p_whiteReferenceId;
-      p_whiteReferenceName               = x->p_whiteReferenceName;
-      p_whiteReferenceSr_JV              = x->p_whiteReferenceSr_JV;
-      p_whiteReferenceJB_JV              = x->p_whiteReferenceJB_JV;
-      p_zeroPointSr_JV                   = x->p_zeroPointSr_JV;
-      p_zeroPointJB_JV                   = x->p_zeroPointJB_JV;
-      p_focalLength                      = x->p_focalLength;
-      p_pixelSize                        = x->p_pixelSize;
-      p_centerRA                         = x->p_centerRA;
-      p_centerDec                        = x->p_centerDec;
-      p_epochJD                          = x->p_epochJD;
-      p_forcePlateSolve                  = x->p_forcePlateSolve;
-      p_ignorePositionAndScale           = x->p_ignorePositionAndScale;
-      p_serverURL                        = x->p_serverURL;
-      p_solverCatalogName                = x->p_solverCatalogName;
-      p_solverAutoCatalog                = x->p_solverAutoCatalog;
-      p_solverLimitMagnitude             = x->p_solverLimitMagnitude;
-      p_solverAutoLimitMagnitude         = x->p_solverAutoLimitMagnitude;
-      p_solverStructureLayers            = x->p_solverStructureLayers;
-      p_solverMinStructureSize           = x->p_solverMinStructureSize;
-      p_solverNoiseReductionFilterRadius = x->p_solverNoiseReductionFilterRadius;
-      p_solverSensitivity                = x->p_solverSensitivity;
-      p_solverAlignmentDevice            = x->p_solverAlignmentDevice;
-      p_solverDistortionCorrection       = x->p_solverDistortionCorrection;
-      p_solverSplineSmoothing            = x->p_solverSplineSmoothing;
-      p_solverProjection                 = x->p_solverProjection;
-      p_photCatalogName                  = x->p_photCatalogName;
-      p_photAutoCatalog                  = x->p_photAutoCatalog;
-      p_photLimitMagnitude               = x->p_photLimitMagnitude;
-      p_photAutoLimitMagnitude           = x->p_photAutoLimitMagnitude;
-      p_photAutoLimitMagnitudeFactor     = x->p_photAutoLimitMagnitudeFactor;
-      p_photAutoAperture                 = x->p_photAutoAperture;
-      p_photAperture                     = x->p_photAperture;
-      p_photUsePSF                       = x->p_photUsePSF;
-      p_photSaturationThreshold          = x->p_photSaturationThreshold;
-      p_photShowDetectedStars            = x->p_photShowDetectedStars;
-      p_photShowBackgroundModels         = x->p_photShowBackgroundModels;
-      p_photGenerateGraphs               = x->p_photGenerateGraphs;
-      p_neutralizeBackground             = x->p_neutralizeBackground;
-      p_backgroundReferenceViewId        = x->p_backgroundReferenceViewId;
-      p_backgroundLow                    = x->p_backgroundLow;
-      p_backgroundHigh                   = x->p_backgroundHigh;
-      p_backgroundUseROI                 = x->p_backgroundUseROI;
-      p_backgroundROI                    = x->p_backgroundROI;
+      p_applyCalibration = x->p_applyCalibration;
+      p_whiteReferenceId = x->p_whiteReferenceId;
+      p_whiteReferenceName = x->p_whiteReferenceName;
+      p_whiteReferenceSr_JV = x->p_whiteReferenceSr_JV;
+      p_whiteReferenceJB_JV = x->p_whiteReferenceJB_JV;
+      p_zeroPointSr_JV = x->p_zeroPointSr_JV;
+      p_zeroPointJB_JV = x->p_zeroPointJB_JV;
+      p_autoCatalog = x->p_autoCatalog;
+      p_catalogId = x->p_catalogId;
+      p_limitMagnitude = x->p_limitMagnitude;
+      p_autoLimitMagnitude = x->p_autoLimitMagnitude;
+      p_targetSourceCount = x->p_targetSourceCount;
+      p_serverURL = x->p_serverURL;
+      p_structureLayers = x->p_structureLayers;
+      p_saturationThreshold = x->p_saturationThreshold;
+      p_saturationRelative = x->p_saturationRelative;
+      p_psfNoiseLayers = x->p_psfNoiseLayers;
+      p_psfHotPixelFilterRadius = x->p_psfHotPixelFilterRadius;
+      p_psfNoiseReductionFilterRadius = x->p_psfNoiseReductionFilterRadius;
+      p_psfMinStructureSize = x->p_psfMinStructureSize;
+      p_psfMinSNR = x->p_psfMinSNR;
+      p_psfAllowClusteredSources = x->p_psfAllowClusteredSources;
+      p_psfType = x->p_psfType;
+      p_psfGrowth = x->p_psfGrowth;
+      p_psfMaxStars = x->p_psfMaxStars;
+      p_psfSearchTolerance = x->p_psfSearchTolerance;
+      p_psfChannelSearchTolerance = x->p_psfChannelSearchTolerance;
+      p_neutralizeBackground = x->p_neutralizeBackground;
+      p_backgroundReferenceViewId = x->p_backgroundReferenceViewId;
+
+      /*
+       * Background sampling range parameters are different since version 3 of
+       * thre PCC process. Previously they were literal pixel sample values,
+       * since v3 they are expressed in sigma units from the median.
+       */
+      if ( p.Version() < 3 )
+      {
+         p_backgroundLow = ThePCCBackgroundLowParameter->DefaultValue();
+         p_backgroundHigh = ThePCCBackgroundHighParameter->DefaultValue();
+      }
+      else
+      {
+         p_backgroundLow = x->p_backgroundLow;
+         p_backgroundHigh = x->p_backgroundHigh;
+      }
+
+      p_backgroundUseROI = x->p_backgroundUseROI;
+      p_backgroundROI = x->p_backgroundROI;
+      p_generateGraphs = x->p_generateGraphs;
+      p_generateStarMaps = x->p_generateStarMaps;
+      p_generateTextFiles = x->p_generateTextFiles;
+      p_outputDirectory = x->p_outputDirectory;
    }
 }
 
@@ -217,8 +190,18 @@ void PhotometricColorCalibrationInstance::Assign( const ProcessImplementation& p
 
 UndoFlags PhotometricColorCalibrationInstance::UndoMode( const View& ) const
 {
+   /*
+    * ### BUG We have a core bug where thin plate spline based astrometric
+    * solutions are not restored correctly after several undo/redo operations
+    * because the Transformation_ImageToProjection property is lost.
+    *
+    * The workaround is including UndoFlag::AstrometricSolution here, even if
+    * we don't change astrometric solutions, to ensure that a fresh copy is
+    * stored in each processing history entry. ### Don't forget to remove this
+    * when no longer necessary.
+    */
    return p_applyCalibration ? UndoFlag::Keywords | UndoFlag::PixelData | UndoFlag::AstrometricSolution
-                             : UndoFlag::Keywords;
+                             : UndoFlag::Keywords | UndoFlag::AstrometricSolution;
 }
 
 // ----------------------------------------------------------------------------
@@ -254,276 +237,96 @@ bool PhotometricColorCalibrationInstance::CanExecuteOn( const View& view, pcl::S
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-/*
- * POD structures to hold catalog and image star magnitudes.
- */
-struct RG
+struct APASSSPDatabaseInfo
 {
-   double catR, catG, imgR, imgG;
-};
-struct BG
-{
-   double catB, catG, imgB, imgG;
+   StringList filePaths;
+   int        dataRelease = -1;
+   float      magnitudeLow = 0;
+   float      magnitudeHigh = 0;
 };
 
-/*
- *
- */
-struct MF
+int APASSDataReleaseParameterValueFromCatalogId( const String& catId )
 {
-   double catR, catG, catB;    // catalog magnitudes
-   double fluxR, fluxG, fluxB; // measured fluxes
-};
-
-/*
- * Writes a working image with the specified keywords and image properties. Can
- * write a single channel or the whole image is channel < 0.
- */
-static void SaveImage( const String& path, const ImageVariant& image,
-                       const FITSKeywordArray& keywords, const PropertyArray& properties, int channel = -1 )
-{
-   XISFWriter xisf;
-   xisf.Create( path, 1/*count*/ );
-   if ( !keywords.IsEmpty() )
-      xisf.WriteFITSKeywords( keywords );
-   if ( !properties.IsEmpty() )
-      xisf.WriteImageProperties( properties );
-   image.ResetSelections();
-   if ( channel >= 0 )
-      image.SelectChannel( channel );
-   xisf.WriteImage( image );
-   xisf.Close();
-   image.ResetSelections();
+   if ( catId.CompareIC( "APASSDR9_XPSD" ) == 0 )
+      return 1;
+   if ( catId.CompareIC( "APASSDR10_XPSD" ) == 0 )
+      return 2;
+   return 0; /*APASS.DataRelease_BestAvailable*/
 }
 
-/*
- * Fit two vectors to a straight line with robust outlier rejection.
- */
-static LinearFit FitVectors( const Vector& x, const Vector& y )
+const char* APASSDataReleaseNameFromParameterValue( int drParam )
 {
-   double mx = x.Median();
-   double my = y.Median();
-   double sx = 2.2219*x.Qn();
-   double sy = 2.2219*y.Qn();
-   Array<double> x1, y1;
-   for ( int i = 0; i < x.Length(); ++i )
-      if ( Abs( x[i] - mx ) < 3*sx )
-         if ( Abs( y[i] - my ) < 3*sy )
-         {
-            x1 << x[i];
-            y1 << y[i];
-         }
-   if ( x1.Length() < 5 )
-      throw Error( "Insufficient photometric data: Got " + String( x1.Length() ) + " sample(s); at least 5 are required." );
-   return LinearFit( x1, y1 );
-}
-
-// ----------------------------------------------------------------------------
-
-template <class P>
-static DVector BackgroundReference( const GenericImage<P>& image, double low, double high )
-{
-   StandardStatus status;
-   StatusMonitor monitor;
-   monitor.SetCallback( &status );
-   monitor.Initialize( "Evaluating background reference", image.NumberOfSelectedPixels() );
-
-   Array<double> B0R, B0G, B0B;
-   for ( typename GenericImage<P>::const_roi_pixel_iterator i( image ); i; ++i, ++monitor )
+   switch ( drParam )
    {
-      double R; P::FromSample( R, i[0] );
-      if ( R > low && R < high )
-      {
-         double G; P::FromSample( G, i[1] );
-         if ( G > low && G < high )
-         {
-            double B; P::FromSample( B, i[2] );
-            if ( B > low && B < high )
-            {
-               B0R << R;
-               B0G << G;
-               B0B << B;
-            }
-         }
-      }
-   }
-
-   DVector B0( 0.0, 3 );
-   if ( !B0R.IsEmpty() )
-   {
-      B0[0] = pcl::Median( B0R.Begin(), B0R.End() );
-      B0[1] = pcl::Median( B0G.Begin(), B0G.End() );
-      B0[2] = pcl::Median( B0B.Begin(), B0B.End() );
-   }
-   return B0;
-}
-
-static DVector BackgroundReference( const ImageVariant& image, double low, double high )
-{
-   if ( image.IsFloatSample() )
-      switch ( image.BitsPerSample() )
-      {
-      case 32: return BackgroundReference( static_cast<const Image&>( *image ), low, high );
-      case 64: return BackgroundReference( static_cast<const DImage&>( *image ), low, high );
-      }
-   else
-      switch ( image.BitsPerSample() )
-      {
-      case  8: return BackgroundReference( static_cast<const UInt8Image&>( *image ), low, high );
-      case 16: return BackgroundReference( static_cast<const UInt16Image&>( *image ), low, high );
-      case 32: return BackgroundReference( static_cast<const UInt32Image&>( *image ), low, high );
-      }
-
-   return 0;
-}
-
-// ----------------------------------------------------------------------------
-
-template <class P>
-static void NeutralizeBackground( GenericImage<P>& image, const DVector& B0 )
-{
-   StandardStatus status;
-   StatusMonitor monitor;
-   monitor.SetCallback( &status );
-   monitor.Initialize( "Applying background neutralization", image.NumberOfPixels() );
-
-   for ( typename GenericImage<P>::pixel_iterator i( image ); i; ++i, ++monitor )
-      for ( int c = 0; c < 3; ++c )
-      {
-         double v; P::FromSample( v, i[c] );
-         i[c] = P::ToSample( v - B0[c] );
-      }
-
-   image.Normalize();
-}
-
-static void NeutralizeBackground( ImageVariant& image, const DVector& B0 )
-{
-   if ( image.IsFloatSample() )
-      switch ( image.BitsPerSample() )
-      {
-      case 32: NeutralizeBackground( static_cast<Image&>( *image ), B0 ); break;
-      case 64: NeutralizeBackground( static_cast<DImage&>( *image ), B0 ); break;
-      }
-   else
-   {
-      ImageVariant tmp;
-      tmp.CreateFloatImage( (image.BitsPerSample() > 16) ? 64 : 32 );
-      tmp.CopyImage( image );
-      NeutralizeBackground( tmp, B0 );
-      image.CopyImage( tmp );
+   case 1:  return "APASS DR9";
+   case 2:  return "APASS DR10";
+   default: return "<unknown>";
    }
 }
 
-// ----------------------------------------------------------------------------
-
-template <class P>
-static void ApplyWhiteBalance( GenericImage<P>& image, const DVector& W )
-{
-   StandardStatus status;
-   StatusMonitor monitor;
-   monitor.SetCallback( &status );
-   monitor.Initialize( "Applying white balance", image.NumberOfPixels() );
-
-   for ( typename GenericImage<P>::pixel_iterator i( image ); i; ++i, ++monitor )
-      for ( int c = 0; c < 3; ++c )
-      {
-         double v; P::FromSample( v, i[c] );
-         i[c] = P::ToSample( v * W[c] );
-      }
-}
-
-static void ApplyWhiteBalance( ImageVariant& image, const DVector& W )
-{
-   if ( image.IsFloatSample() )
-      switch ( image.BitsPerSample() )
-      {
-      case 32: ApplyWhiteBalance( static_cast<Image&>( *image ), W ); break;
-      case 64: ApplyWhiteBalance( static_cast<DImage&>( *image ), W ); break;
-      }
-   else
-      switch ( image.BitsPerSample() )
-      {
-      case  8: ApplyWhiteBalance( static_cast<UInt8Image&>( *image ), W ); break;
-      case 16: ApplyWhiteBalance( static_cast<UInt16Image&>( *image ), W ); break;
-      case 32: ApplyWhiteBalance( static_cast<UInt32Image&>( *image ), W ); break;
-      }
-}
-
-// ----------------------------------------------------------------------------
-
-double RobustMean( Array<double>& v, float k = 2.0 )
-{
-   double m0 = Median( v.Begin(), v.End() );
-   Array<double> vl, vh;
-   for ( double x : v )
-      if ( x < m0 )
-         vl << x;
-      else
-         vh << x;
-   double ml = Median( vl.Begin(), vl.End() );
-   double sl = k*1.4826*MAD( vl.Begin(), vl.End(), ml );
-   double mh = Median( vh.Begin(), vh.End() );
-   double sh = k*1.4826*MAD( vh.Begin(), vh.End(), mh );
-   Array<double> L, H;
-   for ( double l : vl )
-      if ( Abs( l - ml ) < sl )
-         L << l;
-   for ( double h : vh )
-      if ( Abs( h - mh ) < sh )
-         H << h;
-   if ( L.Length() > 3 && H.Length() > 3 )
-      return (Mean( L.Begin(), L.End() ) + Mean( H.Begin(), H.End() ))/2;
-   return (ml + mh)/2;
-}
-
-// ----------------------------------------------------------------------------
-
-struct FromKeyword
-{
-   IsoString name;
-   double    value;
-
-   FromKeyword( double initialValue )
-      : value( initialValue )
-   {
-   }
-
-   FromKeyword& operator =( const FITSHeaderKeyword& keyword )
-   {
-      IsoString text = keyword.StripValueDelimiters();
-      if ( keyword.name == "DATE-OBS" )
-      {
-         int year, month, day;
-         double dayf, tz;
-         if ( !text.TryParseISO8601DateTime( year, month, day, dayf, tz ) )
-            return *this;
-         value = CalendarTimeToJD( year, month, day, dayf - tz/24 );
-      }
-      else
-      {
-         if ( !text.TryToDouble( value ) )
-            return *this;
-         if ( keyword.name == "OBJCTRA" )
-            value *= 15;
-      }
-
-      name = keyword.name;
-      return *this;
-   }
-
-   operator bool() const
-   {
-      return !name.IsEmpty();
-   }
-};
-
-// ----------------------------------------------------------------------------
-
-static String BestAvailableXPSDServerCatalog()
+static APASSSPDatabaseInfo DatabaseInfoFromAPASSXPSDServer( int drParam )
 {
    String scriptPath = File::UniqueFileName( File::SystemTempDirectory(), 12, "PCC_", ".js" );
-   String catalogName;
+   APASSSPDatabaseInfo info;
+   try
+   {
+      File::WriteTextFile( scriptPath, IsoString().Format(
+R"JS_SOURCE( var __PJSR_APASS_databaseFilePaths = "";
+var __PJSR_APASS_databaseFilePaths = "";
+var __PJSR_APASS_outputDataRelease = -1;
+var __PJSR_APASS_databaseMagnitudeLow = 0;
+var __PJSR_APASS_databaseMagnitudeHigh = 0;
+if ( (typeof APASS) != 'undefined' )
+{
+   let xpsd = new APASS;
+   xpsd.command = "get-info";
+   xpsd.dataRelease = %d;
+   xpsd.verbosity = 2;
+   xpsd.executeGlobal();
+   __PJSR_APASS_databaseFilePaths = xpsd.databaseFilePaths.join();
+   __PJSR_APASS_outputDataRelease = xpsd.outputDataRelease;
+   __PJSR_APASS_databaseMagnitudeLow = xpsd.databaseMagnitudeLow;
+   __PJSR_APASS_databaseMagnitudeHigh = xpsd.databaseMagnitudeHigh;
+} )JS_SOURCE", drParam ) );
+
+      Console().ExecuteScript( scriptPath );
+
+      Variant result = Module->EvaluateScript( "__PJSR_APASS_databaseFilePaths" );
+      if ( result.IsValid() )
+         result.ToString().Break( info.filePaths, ',' );
+      result = Module->EvaluateScript( "__PJSR_APASS_outputDataRelease" );
+      if ( result.IsValid() )
+         info.dataRelease = result.ToInt();
+      result = Module->EvaluateScript( "__PJSR_APASS_databaseMagnitudeLow" );
+      if ( result.IsValid() )
+         info.magnitudeLow = result.ToFloat();
+      result = Module->EvaluateScript( "__PJSR_APASS_databaseMagnitudeHigh" );
+      if ( result.IsValid() )
+         info.magnitudeHigh = result.ToFloat();
+   }
+   catch ( ... )
+   {
+   }
+
+   try
+   {
+      if ( File::Exists( scriptPath ) )
+         File::Remove( scriptPath );
+   }
+   catch ( ... )
+   {
+   }
+
+   return info;
+}
+
+// ----------------------------------------------------------------------------
+
+static String
+BestAvailableAPASSXPSDCatalog()
+{
+   String scriptPath = File::UniqueFileName( File::SystemTempDirectory(), 12, "PCC_", ".js" );
+   String catalogId;
    try
    {
       File::WriteTextFile( scriptPath,
@@ -533,7 +336,7 @@ if ( (typeof APASS) != 'undefined' )
    let xpsd = new APASS;
    xpsd.command = "get-info";
    xpsd.dataRelease = APASS.prototype.DataRelease_BestAvailable;
-   xpsd.verbosity = 0;
+   xpsd.verbosity = 2;
    xpsd.executeGlobal();
    if ( xpsd.databaseFilePaths.length > 0 )
       switch ( xpsd.outputDataRelease )
@@ -556,10 +359,10 @@ if ( (typeof APASS) != 'undefined' )
          switch ( result.ToInt() )
          {
          case 10:
-            catalogName = "APASSDR10_XPSD";
+            catalogId = "APASSDR10_XPSD";
             break;
          case 9:
-            catalogName = "APASSDR9_XPSD";
+            catalogId = "APASSDR9_XPSD";
             break;
          default:
             break;
@@ -578,7 +381,380 @@ if ( (typeof APASS) != 'undefined' )
    {
    }
 
-   return catalogName;
+   return catalogId;
+}
+
+// ----------------------------------------------------------------------------
+
+static float
+APASSAutoLimitMagnitude( const DPoint& centerRD, double radius, const AstrometricMetadata& A, const String& catalogId, int targetCount )
+{
+   // Empiric formula for 1000 stars at 20 deg of galactic latitude
+   float magnitudeHigh = RoundInt( 100*Min( 20.0, Max( 7.0, 14.5*Pow( A.Resolution() * Max( A.Width(), A.Height() ), -0.179 ) ) ) )/100.0;
+   if ( catalogId == "APASSDR9" )
+      return magnitudeHigh;
+
+   const char* catalogSelector;
+   if ( catalogId == "APASSDR10_XPSD" )
+      catalogSelector = "DataRelease_10";
+   else if ( catalogId == "APASSDR9_XPSD" )
+      catalogSelector = "DataRelease_9";
+   else
+      throw Error( "Internal error: Invalid catalog identifier in APASSAutoLimitMagnitude()" );
+
+   String scriptFilePath = File::UniqueFileName( File::SystemTempDirectory(), 12, "PCC_", ".js" );
+   try
+   {
+      File::WriteTextFile( scriptFilePath, IsoString().Format(
+R"JS_SOURCE(var __PJSR_APASS_limitMagnitude = -1;
+console.writeln( "<end><cbr><br>* Searching for optimal magnitude limit..." );
+let xpsd = ((typeof APASS) != 'undefined') ? (new APASS) : null;
+if ( xpsd )
+{
+   xpsd.command = "get-info";
+   xpsd.dataRelease = APASS.prototype.%s;
+   xpsd.executeGlobal();
+   if ( xpsd.isValid )
+   {
+      let magHigh = xpsd.databaseMagnitudeHigh;
+      let m = %.2f;
+
+      xpsd.command = "search";
+      xpsd.centerRA = %.8f;
+      xpsd.centerDec = %.8f;
+      xpsd.radius = %.8f;
+      xpsd.magnitudeLow = -1.5;
+      xpsd.sourceLimit = 0; // do not retrieve objects, just count them.
+      xpsd.exclusionFlags = 0x00000013; // APASSFlag_NoMag_V|APASSFlag_NoMag_B|APASSFlag_NoMag_r
+      xpsd.verbosity = 0; // work quietly
+      xpsd.generateTextOutput = false;
+
+      for ( let i = 0;; ++i )
+      {
+         xpsd.magnitudeHigh = m;
+         xpsd.executeGlobal();
+         let stop = true;
+         if ( xpsd.excessCount < %d )
+         {
+            stop = m > magHigh;
+            if ( !stop )
+               m *= 1.10;
+         }
+         else if ( xpsd.excessCount > %d )
+         {
+            stop = m < 7;
+            if ( !stop )
+               m *= 0.95;
+         }
+
+         if ( stop )
+            break;
+      }
+      __PJSR_APASS_limitMagnitude = m;
+   }
+} )JS_SOURCE", catalogSelector, magnitudeHigh, centerRD.x, centerRD.y, radius, TruncInt( 0.875*targetCount ), targetCount ) );
+
+      Console().ExecuteScript( scriptFilePath );
+
+      Variant result = Module->EvaluateScript( "__PJSR_APASS_limitMagnitude" );
+      if ( result.IsValid() )
+         magnitudeHigh = result.ToFloat();
+      if ( magnitudeHigh < 0 )
+         throw Error( "Invalid APASS XPSD server execution" );
+   }
+   catch ( ... )
+   {
+   }
+
+   try
+   {
+      if ( File::Exists( scriptFilePath ) )
+         File::Remove( scriptFilePath );
+   }
+   catch ( ... )
+   {
+   }
+
+   return magnitudeHigh;
+}
+
+// ----------------------------------------------------------------------------
+
+struct StarData
+{
+   DPoint pos;     // image coordinates
+   float  B, V, r; // magnitude in Johnson V,B and Sloan r'
+
+   using component = DPoint::component;
+
+   component operator []( int i ) const noexcept // QuadTree-compatible
+   {
+      return (i == 0) ? pos.x : pos.y;
+   }
+};
+
+class APASSStarExtractionThread : public Thread
+{
+public:
+
+   Array<StarData> stars;
+
+   APASSStarExtractionThread( const AbstractImage::ThreadData& data,
+                              const AstrometricMetadata& A,
+                              const ByteArray& fileData,
+                              size_type start, size_type end )
+      : m_data( data )
+      , m_A( A )
+      , m_fileData( fileData )
+      , m_start( start ), m_end( end )
+   {
+   }
+
+   PCL_HOT_FUNCTION void Run() override
+   {
+      INIT_THREAD_MONITOR()
+
+      ByteArray::const_iterator p = m_fileData.At( sizeof( APASSBinaryHeader ) + sizeof( APASSStarData )*m_start );
+      for ( size_type i = m_start; i < m_end; ++i, p += sizeof( APASSStarData ) )
+      {
+         StarData star;
+         const APASSStarData* starData = reinterpret_cast<const APASSStarData*>( p );
+         if ( m_A.CelestialToImage( star.pos, DPoint( starData->ra, starData->dec ) ) )
+            if ( m_A.Bounds().Includes( star.pos ) )
+            {
+               star.B = starData->mag_B;
+               star.V = starData->mag_V;
+               star.r = starData->mag_r;
+               stars << star;
+            }
+
+         UPDATE_THREAD_MONITOR( 1 )
+      }
+   }
+
+private:
+
+   const AbstractImage::ThreadData& m_data;
+   const AstrometricMetadata&       m_A;
+   const ByteArray&                 m_fileData;
+         size_type                  m_start, m_end;
+};
+
+static Array<StarData>
+APASSXPSDSearch( const DPoint& centerRD, double radius, const AstrometricMetadata& A, float magnitudeHigh, const String& catalogId )
+{
+   const char* catalogSelector;
+   if ( catalogId == "APASSDR10_XPSD" )
+      catalogSelector = "DataRelease_10";
+   else if ( catalogId == "APASSDR9_XPSD" )
+      catalogSelector = "DataRelease_9";
+   else
+      throw Error( "Internal error: Invalid catalog identifier in APASSXPSDSearch()" );
+
+   Array<StarData> stars;
+   String scriptFilePath = File::UniqueFileName( File::SystemTempDirectory(), 12, "PCC_", ".js" );
+   String binFilePath;
+   try
+   {
+      File::WriteTextFile( scriptFilePath, IsoString().Format(
+R"JS_SOURCE(var __PJSR_APASS_valid = false;
+var __PJSR_APASS_outputFilePath = File.uniqueFileName( File.systemTempDirectory, 12/*randomLength*/, "APASS_"/*prefix*/, ".bin"/*postfix*/ );
+var xpsd = new APASS;
+xpsd.command = "search";
+xpsd.centerRA = %.8f;
+xpsd.centerDec = %.8f;
+xpsd.radius = %.8f;
+xpsd.magnitudeLow = -1.5;
+xpsd.magnitudeHigh = %.2f;
+xpsd.exclusionFlags = 0x00000013; // APASSFlag_NoMag_V|APASSFlag_NoMag_B|APASSFlag_NoMag_r
+xpsd.verbosity = 2;
+xpsd.dataRelease = APASS.prototype.%s;
+xpsd.sortBy = APASS.prototype.SortBy_V;
+xpsd.generateTextOutput = false;
+xpsd.generateBinaryOutput = true;
+xpsd.outputFilePath = __PJSR_APASS_outputFilePath;
+if ( xpsd.executeGlobal() )
+   __PJSR_APASS_valid = xpsd.isValid;
+)JS_SOURCE", centerRD.x, centerRD.y, radius, magnitudeHigh, catalogSelector ) );
+
+      Console().ExecuteScript( scriptFilePath );
+
+      Variant result = Module->EvaluateScript( "__PJSR_APASS_valid" );
+      if ( !result.IsValid() || !result.ToBoolean() )
+         throw Error( "Invalid APASS XPSD server execution" );
+
+      result = Module->EvaluateScript( "__PJSR_APASS_outputFilePath" );
+      if ( !result.IsValid() )
+         throw Error( "Invalid APASS XPSD server execution" );
+      binFilePath = result.ToString();
+      if ( binFilePath.IsEmpty() || !File::Exists( binFilePath ) )
+         throw Error( "Invalid APASS XPSD server execution" );
+
+      ByteArray fileData = File::ReadFile( binFilePath );
+
+      const size_type totalStars = (fileData.Length() - sizeof( APASSBinaryHeader ))/sizeof( APASSStarData );
+
+      StandardStatus status;
+      StatusMonitor monitor;
+      monitor.SetCallback( &status );
+      monitor.Initialize( "Extracting catalog star magnitude data", totalStars );
+
+      Array<size_type> L = Thread::OptimalThreadLoads( totalStars, 16u/*overheadLimit*/ );
+      ReferenceArray<APASSStarExtractionThread> threads;
+      AbstractImage::ThreadData data( monitor, totalStars );
+      for ( size_type i = 0, n = 0; i < L.Length(); n += L[i++] )
+         threads.Add( new APASSStarExtractionThread( data, A, fileData, n, n + L[i] ) );
+      AbstractImage::RunThreads( threads, data );
+      for ( const APASSStarExtractionThread& thread : threads )
+         stars << thread.stars;
+
+      threads.Destroy();
+   }
+   catch ( ... )
+   {
+   }
+
+   try
+   {
+      if ( File::Exists( scriptFilePath ) )
+         File::Remove( scriptFilePath );
+      if ( !binFilePath.IsEmpty() )
+         if ( File::Exists( binFilePath ) )
+            File::Remove( binFilePath );
+   }
+   catch ( ... )
+   {
+   }
+
+   return stars;
+}
+
+// ----------------------------------------------------------------------------
+
+class DownloadControl : public Control
+{
+public:
+
+   bool Aborted() const
+   {
+      return m_aborted;
+   }
+
+   const IsoString& Text() const
+   {
+      return m_text;
+   }
+
+   IsoStringList TextLines() const
+   {
+      IsoStringList lines;
+      m_text.Break( lines, '\n', true/*trim*/ );
+      lines.Remove( IsoString() );
+      return lines;
+   }
+
+   bool e_Download( NetworkTransfer& sender, const void* buffer, fsize_type size )
+   {
+      Module->ProcessEvents();
+      if ( m_console.AbortRequested() )
+      {
+         m_console.Abort();
+         m_aborted = true;
+         return false;
+      }
+
+      m_text.Append( static_cast<const char*>( buffer ), size );
+      return true;
+   }
+
+   bool e_Progress( NetworkTransfer& sender,
+                    fsize_type downloadTotal, fsize_type downloadCurrent,
+                    fsize_type uploadTotal, fsize_type uploadCurrent )
+   {
+      Module->ProcessEvents();
+      if ( m_console.AbortRequested() )
+      {
+         m_console.Abort();
+         m_aborted = true;
+         return false;
+      }
+
+      if ( downloadTotal > 0 )
+         m_console.Write( String().Format( "<end><clrbol>%u of %u bytes transferred (%d%%)",
+                                           downloadCurrent, downloadTotal,
+                                           RoundInt( 100.0*downloadCurrent/downloadTotal ) ) );
+      else
+         m_console.Write( String().Format( "<end><clrbol>%u bytes transferred (unknown size)",
+                                           downloadCurrent ) );
+      Module->ProcessEvents();
+      return true;
+   }
+
+private:
+
+   Console   m_console;
+   IsoString m_text;
+   bool      m_aborted = false;
+};
+
+static Array<StarData>
+APASSOnlineSearch( const DPoint& centerRD, double radius, const AstrometricMetadata& A, float magnitudeHigh, const String& serverURL )
+{
+   const int maxRecords = 50000;
+   String url = serverURL;
+   if ( !url.EndsWith( '/' ) )
+      url << '/';
+   url.AppendFormat( "viz-bin/asu-tsv?-source=II/336/apass9"
+                     "&-c=%.6f %.6f&-c.r=%.6f&-c.u=deg&-out.form=|&-out.max=%d&-out.add=_RAJ,_DEJ&-out=Bmag&-out=Vmag&-out=r'mag&Vmag=<%.2f",
+                     centerRD.x, centerRD.y, radius, maxRecords, magnitudeHigh );
+   DownloadControl control;
+   NetworkTransfer transfer;
+   transfer.SetURL( url );
+   transfer.OnDownloadDataAvailable( (NetworkTransfer::download_event_handler)&DownloadControl::e_Download, control );
+   transfer.OnTransferProgress( (NetworkTransfer::progress_event_handler)&DownloadControl::e_Progress, control );
+
+   Console().WriteLn( "<end><cbr><br><wrap><raw>" + url + "</raw>" );
+   Module->ProcessEvents();
+
+   if ( !transfer.Download() )
+   {
+      if ( control.Aborted() )
+         throw ProcessAborted();
+      throw Error( "Download failed: " + transfer.ErrorInformation() );
+   }
+
+   IsoStringList lines = control.TextLines();
+
+   if ( lines.Length() < 20 ) // VizieR always returns at least 20 comment lines
+      throw Error( "Unknown catalog server error: too short response." );
+   if ( lines.Length() > maxRecords - 100 )
+      throw Error( "The catalog server has returned a possibly incomplete query result - please reduce the limit magnitude parameter." );
+
+// ------------|------------|------|------|------
+// 149.63261200|+09.07414000|16.383|15.608|15.383
+
+   Array<StarData> stars;
+   for ( const IsoString& line : lines )
+      if ( IsoCharTraits::IsDigit( line[0] ) )
+      {
+         IsoStringList tokens;
+         line.Break( tokens, '|', true/*trim*/ );
+         if ( tokens.Length() >= 5 )
+            if ( !tokens[2].IsEmpty() && !tokens[3].IsEmpty() && !tokens[4].IsEmpty() )
+            {
+               StarData star;
+               if ( A.CelestialToImage( star.pos, DPoint( tokens[0].ToDouble(), tokens[1].ToDouble() ) ) )
+                  if ( A.Bounds().Includes( star.pos ) )
+                  {
+                     star.B = tokens[2].ToFloat();
+                     star.V = tokens[3].ToFloat();
+                     star.r = tokens[4].ToFloat();
+                     stars << star;
+                  }
+            }
+      }
+
+   return stars;
 }
 
 // ----------------------------------------------------------------------------
@@ -594,741 +770,453 @@ bool PhotometricColorCalibrationInstance::ExecuteOn( View& view )
    Console console;
    console.EnableAbort();
 
-   String coreSrcDir = PixInsightSettings::GlobalString( "Application/SrcDirectory" );
-   String tmpDir = File::SystemTempDirectory();
+   AutoViewLock lock( view );
 
-   String TPath = File::UniqueFileName( tmpDir, 12, "PCC_T_", ".xisf" );
-   String RPath = File::UniqueFileName( tmpDir, 12, "PCC_R_", ".xisf" );
-   String GPath = File::UniqueFileName( tmpDir, 12, "PCC_G_", ".xisf" );
-   String BPath = File::UniqueFileName( tmpDir, 12, "PCC_B_", ".xisf" );
+   ImageWindow window = view.Window();
 
-   try
+   /*
+    * Astrometric solution
+    */
+   AstrometricMetadata A( window );
+   if ( !A.IsValid() )
+      throw Error( "The image has no valid astrometric solution: " + view.Id() );
+
+   /*
+    * Identify the photometric catalog
+    */
+   String catalogId, catalogName;
+   bool hasXPSDServer = false;
+   if ( p_autoCatalog )
    {
-      FITSKeywordArray keywords;
-      PropertyArray properties, pccProperties;
-      bool doPlateSolve;
-
-      /*
-       * Perform plate solve.
-       */
+      catalogId = BestAvailableAPASSXPSDCatalog();
+      hasXPSDServer = !catalogId.IsEmpty();
+      if ( !hasXPSDServer )
+         catalogId = "APASSDR9";
+   }
+   else
+   {
+      if ( p_catalogId.CompareIC( "APASS" ) == 0 || p_catalogId.CompareIC( "APASSDR9" ) == 0 || p_catalogId.CompareIC( "APASS_DR9" ) == 0 )
+         catalogId = "APASSDR9";
+      else if ( p_catalogId.CompareIC( "APASSDR10_XPSD" ) == 0 || p_catalogId.CompareIC( "APASS_DR10_XPSD" ) == 0 )
       {
-         FITSKeywordArray inputKeywords = view.Window().Keywords();
-         PropertyArray inputProperties = view.StorablePermanentProperties();
+         catalogId = "APASSDR10_XPSD";
+         hasXPSDServer = true;
+      }
+      else if ( p_catalogId.CompareIC( "APASSDR9_XPSD" ) == 0 || p_catalogId.CompareIC( "APASS_DR9_XPSD" ) == 0 )
+      {
+         catalogId = "APASSDR9_XPSD";
+         hasXPSDServer = true;
+      }
+   }
 
-         WCSKeywords wcs( inputProperties, inputKeywords );
+   if ( catalogId == "APASSDR9" )
+      catalogName = "APASS DR9 (VizieR)";
+   else if ( catalogId == "APASSDR10_XPSD" )
+      catalogName = "APASS DR10 (XPSD)";
+   else if ( catalogId == "APASSDR9_XPSD" )
+      catalogName = "APASS DR9 (XPSD)";
+   else
+      throw Error( "Unknown/unsupported photometric catalog '" + p_catalogId + "'" );
 
-         doPlateSolve = p_forcePlateSolve       ||
-                        wcs.ctype1.IsEmpty()    ||
-                        wcs.ctype2.IsEmpty()    ||
-                        !wcs.crpix1.IsDefined() ||
-                        !wcs.crpix2.IsDefined() ||
-                        !wcs.crval1.IsDefined() ||
-                        !wcs.crval2.IsDefined() ||
-                        !wcs.cd1_1.IsDefined()  ||
-                        !wcs.cd1_2.IsDefined()  ||
-                        !wcs.cd2_1.IsDefined()  ||
-                        !wcs.cd2_2.IsDefined()  ||
-                        !wcs.cdelt1.IsDefined() ||
-                        !wcs.cdelt2.IsDefined() ||
-                        !wcs.crota1.IsDefined() ||
-                        !wcs.crota2.IsDefined();
+   console.NoteLn( "<end><cbr><br>* Using the " + catalogName + " catalog" + String( p_autoCatalog ? " (automatically selected)" : "" ) + '.' );
 
-         if ( doPlateSolve )
-         {
-            bool doForcePlateSolve = p_forcePlateSolve || p_ignorePositionAndScale;
-            double centerRA, centerDec, epochJD, focalLength, pixelSize;
-
-            if ( p_ignorePositionAndScale )
-            {
-               centerRA = p_centerRA;
-               centerDec = p_centerDec;
-               epochJD = p_epochJD;
-               focalLength = p_focalLength;
-               pixelSize = p_pixelSize;
-            }
-            else
-            {
-               centerRA = wcs.objctra.OrElse( p_centerRA );
-               centerDec = wcs.objctdec.OrElse( p_centerDec );
-               epochJD = wcs.dateobs.OrElse( p_epochJD );
-               focalLength = wcs.focallen.OrElse( p_focalLength );
-               pixelSize = wcs.xpixsz.OrElse( p_pixelSize );
-            }
-
-            if ( doForcePlateSolve )
-            {
-               AstrometricMetadata::RemoveKeywords( inputKeywords );
-               AstrometricMetadata::RemoveProperties( inputProperties );
-            }
-
-            if ( doForcePlateSolve || !wcs.objctra.IsDefined() )
-               inputKeywords << FITSHeaderKeyword( "RA", IsoString( centerRA ) );
-            if ( doForcePlateSolve || !wcs.objctdec.IsDefined() )
-               inputKeywords << FITSHeaderKeyword( "DEC", IsoString( centerDec ) );
-            if ( doForcePlateSolve || !wcs.dateobs.IsDefined() )
-               inputKeywords << FITSHeaderKeyword( "DATE-OBS",
-                     '\'' +
-                     TimePoint( epochJD ).ToIsoString(
-                           ISO8601ConversionOptions( 3/*timeItems*/, 0/*precision*/, false/*timeZone*/ ) ) +
-                     '\'' );
-            if ( doForcePlateSolve || !wcs.focallen.IsDefined() )
-               inputKeywords << FITSHeaderKeyword( "FOCALLEN", IsoString( focalLength ) );
-            if ( doForcePlateSolve || !wcs.xpixsz.IsDefined() )
-               inputKeywords << FITSHeaderKeyword( "XPIXSZ", IsoString( pixelSize ) )
-                             << FITSHeaderKeyword( "YPIXSZ", IsoString( pixelSize ) );
-
-            SaveImage( TPath, view.Image(), inputKeywords, inputProperties );
-
-            String scriptPath = coreSrcDir + "/scripts/AdP/ImageSolver.js";
-            StringKeyValueList arguments = StringKeyValueList()
-                                             << StringKeyValue( "metadata_focal", String( focalLength ) )
-                                             << StringKeyValue( "metadata_useFocal", "true" )
-                                             << StringKeyValue( "metadata_xpixsz", String( pixelSize ) )
-                                             << StringKeyValue( "metadata_ra", String( centerRA ) )
-                                             << StringKeyValue( "metadata_dec", String( centerDec ) )
-                                             << StringKeyValue( "metadata_epoch", String( epochJD ) )
-                                             << StringKeyValue( "solver_vizierServer", p_serverURL )
-                                             << StringKeyValue( "solver_catalog", p_solverCatalogName )
-                                             << StringKeyValue( "solver_catalogMode", p_solverAutoCatalog ? "2" : "1" )
-                                             << StringKeyValue( "solver_magnitude", String( p_solverLimitMagnitude ) )
-                                             << StringKeyValue( "solver_autoMagnitude", String( bool( p_solverAutoLimitMagnitude ) ) )
-                                             << StringKeyValue( "solver_structureLayers", String( p_solverStructureLayers ) )
-                                             << StringKeyValue( "solver_minStructureSize", String( p_solverMinStructureSize ) )
-                                             << StringKeyValue( "solver_noiseReductionFilterRadius", String( p_solverNoiseReductionFilterRadius ) )
-                                             << StringKeyValue( "solver_sensitivity", String( p_solverSensitivity ) )
-                                             << StringKeyValue( "solver_alignAlgorithm", String( p_solverAlignmentDevice ) )
-                                             << StringKeyValue( "solver_distortionCorrection", String( bool( p_solverDistortionCorrection ) ) )
-                                             << StringKeyValue( "solver_distortedCorners", "false" )
-                                             << StringKeyValue( "solver_splineSmoothing", String( p_solverSplineSmoothing ) )
-                                             << StringKeyValue( "solver_enableSimplifier", "true" )
-                                             << StringKeyValue( "solver_simplifierTolerance", "0.25" )
-                                             << StringKeyValue( "solver_simplifierRejectFraction", "0.1" )
-                                             << StringKeyValue( "solver_projection", String( p_solverProjection ) )
-                                             << StringKeyValue( "solver_showStars", "false" )
-                                             << StringKeyValue( "solver_showSimplifiedSurfaces", "false" )
-                                             << StringKeyValue( "solver_showDistortion", "false" )
-                                             << StringKeyValue( "solver_generateErrorImg", "false" )
-                                             << StringKeyValue( "solver_generateDistortModel", "false" )
-                                             << StringKeyValue( "solver_useDistortionModel", "false" )
-                                             << StringKeyValue( "solver_onlyOptimize", "false" )
-                                             << StringKeyValue( "solver_outSuffix", String() )
-                                             << StringKeyValue( "solver_projectionOriginMode", "0" )
-                                             << StringKeyValue( "solver_useActive", "false" )
-                                             << StringKeyValue( "solver_files", TPath )
-                                             << StringKeyValue( "non_interactive", "true" );
-
-            console.ExecuteScriptGlobal( scriptPath, arguments );
-
-            Variant result = Module->EvaluateScript( "__PJSR_AdpImageSolver_SuccessCount" );
-            if ( !result.IsValid() )
-               throw Error( "Internal error: Invalid script execution: " + scriptPath );
-            int successCount = result.ToInt();
-            if ( successCount != 1 )
-               throw Error( "Failure to plate solve image: " + view.Id() );
-
-            XISFReader xisf;
-            xisf.Open( TPath );
-            keywords = xisf.ReadFITSKeywords();
-            properties = xisf.ReadImageProperties();
-            Image image;
-            xisf.ReadImage( image );
-            xisf.Close();
-            ImageVariant v( &image );
-            SaveImage( RPath, v, keywords, properties, 0 );
-            SaveImage( GPath, v, keywords, properties, 1 );
-            SaveImage( BPath, v, keywords, properties, 2 );
-
-            File::Remove( TPath );
-         }
-         else
-         {
-            keywords = inputKeywords;
-            properties = inputProperties;
-            ImageVariant v = view.Image();
-            SaveImage( RPath, v, keywords, properties, 0 );
-            SaveImage( GPath, v, keywords, properties, 1 );
-            SaveImage( BPath, v, keywords, properties, 2 );
-         }
-      } // plate solve
-
+   /*
+    * Get XPSD database information.
+    */
+   if ( hasXPSDServer )
+   {
+      console.WriteLn( "<end><cbr><br>* Retrieving " + catalogName + " database information" );
       Module->ProcessEvents();
 
-      String fluxFilePath;
+      APASSSPDatabaseInfo dbInfo = DatabaseInfoFromAPASSXPSDServer( APASSDataReleaseParameterValueFromCatalogId( catalogId ) );
 
-      String photCatalogName = p_photCatalogName;
-      bool hasXPSDServer = false;
-      if ( p_photAutoCatalog )
+      if ( dbInfo.filePaths.IsEmpty() )
+         throw Error( "Database files not available for the " + catalogName + " catalog, or the XPSD server is not properly configured." );
+
+      console.WriteLn( String().Format( "Data release ...... %s\n"
+                                        "Database files .... %u\n"
+                                        "Magnitude range ... [%.2f,%.2f]\n",
+                                        APASSDataReleaseNameFromParameterValue( dbInfo.dataRelease ),
+                                        unsigned( dbInfo.filePaths.Length() ),
+                                        dbInfo.magnitudeLow, dbInfo.magnitudeHigh ) );
+      Module->ProcessEvents();
+   }
+   else
+   {
+      console.WarningLn( "<end><cbr><br>** Warning: Not using a local XPSD database - online catalog access can lead to suboptimal calibration results." );
+   }
+
+   /*
+    * Search center and radius.
+    */
+   DRect bounds = view.Bounds();
+   DPoint centerRD;
+   if ( !A.ImageToCelestial( centerRD, bounds.Center() ) )
+      throw Error( "Invalid astrometric solution: unable to compute celestial coordinates for the center of the image" );
+   double radius = A.SearchRadius();
+
+   /*
+    * Limit magnitude
+    */
+   float magnitudeHigh = p_limitMagnitude;
+   if ( p_autoLimitMagnitude )
+      magnitudeHigh = APASSAutoLimitMagnitude( centerRD, radius, A, catalogId, p_targetSourceCount );
+
+   console.WriteLn( String().Format( "<end><cbr>Limit magnitude: %.2f", magnitudeHigh ) );
+
+   /*
+    * Perform database search
+    */
+   console.WriteLn( "<end><cbr><br>* Searching catalog sources" );
+   Module->ProcessEvents();
+
+   Array<StarData> catalogStars = hasXPSDServer ? APASSXPSDSearch( centerRD, radius, A, magnitudeHigh, catalogId )
+                                                : APASSOnlineSearch( centerRD, radius, A, magnitudeHigh, p_serverURL );
+   if ( catalogStars.IsEmpty() )
+      throw Error( "No catalog stars found" );
+
+   console.WriteLn( String().Format( "<end><cbr><br>%u catalog sources found.", catalogStars.Length() ) );
+   Module->ProcessEvents();
+
+   QuadTree<StarData> T( catalogStars );
+
+   /*
+    * Configure PSF signal evaluation
+    */
+   ImageVariant image = view.Image();
+   PSFEstimator E;
+   E.Detector().SetStructureLayers( p_structureLayers );
+   E.Detector().SetNoiseLayers( p_psfNoiseLayers );
+   E.Detector().SetHotPixelFilterRadius( p_psfHotPixelFilterRadius );
+   E.Detector().SetNoiseReductionFilterRadius( p_psfNoiseReductionFilterRadius );
+   E.Detector().SetMinStructureSize( p_psfMinStructureSize );
+   E.Detector().SetMinSNR( p_psfMinSNR );
+   E.Detector().EnableClusteredSources( p_psfAllowClusteredSources );
+   E.SetPSFType( PCCPSFType::ToPSFFunction( p_psfType ) );
+   E.SetSaturationThreshold( p_saturationThreshold );
+   E.EnableRelativeSaturation( p_saturationRelative );
+   E.SetGrowthFactorForFluxMeasurement( p_psfGrowth );
+   E.SetMaxStars( p_psfMaxStars );
+
+   /*
+    * Get PSF signal samples
+    */
+   console.WriteLn( "<end><cbr><br>* Extracting PSF signal samples" );
+   Module->ProcessEvents();
+
+   Array<StarPSFSample> psfSamples;
+   {
+      volatile AutoStatusCallbackRestorer saveStatus( image.Status() );
+      StandardStatus status;
+      image.SetStatusCallback( &status );
+
+      Array<PSFData> psfData[ 3 ];
+      for ( int c = 0; c < 3; ++c )
       {
-         String xpsdCatalog = BestAvailableXPSDServerCatalog();
-         hasXPSDServer = !xpsdCatalog.IsEmpty();
-         photCatalogName = hasXPSDServer ? xpsdCatalog : "APASS";
-         console.NoteLn( "<end><cbr><br>* Using the automatically selected " + photCatalogName + " catalog." );
+         image.SelectChannel( c );
+         psfData[c] = E.FitStars( image );
+         if ( psfData[c].IsEmpty() )
+            throw Error( "No stars found (channel " + String( c ) + ")" );
       }
+      image.ResetSelections();
 
-      /*
-       * Perform photometry.
-       */
+      // Match channel PSF samples
+      QuadTree<PSFData> T0( psfData[0] );    // red
+      QuadTree<PSFData> T2( psfData[2] );    // blue
+      for ( const PSFData& p1 : psfData[1] ) // green is reference
       {
-         int minAperture = p_photAperture;
-         int limitMagnitude = p_photLimitMagnitude;
-         if ( p_photAutoAperture || p_photAutoLimitMagnitude && !hasXPSDServer )
+         QuadTree<PSFData>::rectangle r( p1.c0.x - p_psfChannelSearchTolerance, p1.c0.y - p_psfChannelSearchTolerance,
+                                         p1.c0.x + p_psfChannelSearchTolerance, p1.c0.y + p_psfChannelSearchTolerance );
+         QuadTree<PSFData>::point_list P0 = T0.Search( r );
+         if ( !P0.IsEmpty() )
          {
-            WCSKeywords wcs( properties, keywords );
-            if ( !wcs.focallen.IsDefined() || !wcs.xpixsz.IsDefined() )
-               throw Error( "Unable to acquire image scale metadata, which is required to calculate "
-                            "an automatic photometric aperture and/or limit magnitude." );
-
-            if ( p_photAutoAperture )
+            QuadTree<PSFData>::point_list P2 = T2.Search( r );
+            if ( !P2.IsEmpty() )
             {
-               // Be coherent with APASS' 15" aperture.
-               minAperture = RoundInt( 15/(3.6 * Deg( 2*ArcTan( wcs.xpixsz(), 2*wcs.focallen() ) )) );
-               if ( minAperture < 5 )
+               StarPSFSample s;
+               s.pos = p1.c0;
+               s.bounds = p1.FWTMBounds();
+               s.signal[0] = P0[0].signal;
+               s.signal[1] = p1.signal;
+               s.signal[2] = P2[0].signal;
+               psfSamples << s;
+            }
+         }
+      }
+   }
+
+   /*
+    * Color samples
+    */
+   console.WriteLn( "<end><cbr><br>* Computing color calibration functions" );
+   Module->ProcessEvents();
+
+   FITSKeywordArray keywords = window.Keywords();
+
+   Array<ColorSample> colorSamples;
+   IsoString text;
+   Array<StarPSFSample> validPSFSamples;
+   for ( const StarPSFSample& psf : psfSamples )
+   {
+      // Match coordinates by proximity search
+      QuadTree<StarData>::point_list P =
+         T.Search( QuadTree<StarData>::rectangle( psf.pos.x - p_psfSearchTolerance, psf.pos.y - p_psfSearchTolerance,
+                                                  psf.pos.x + p_psfSearchTolerance, psf.pos.y + p_psfSearchTolerance ) );
+      if ( !P.IsEmpty() )
+      {
+         size_type j = 0;
+         if ( P.Length() > 1 )
+         {
+            double d2 = P[0].pos.SquaredDistanceTo( psf.pos );
+            for ( size_type i = 1; i < P.Length(); ++i )
+            {
+               double d2i = P[i].pos.SquaredDistanceTo( psf.pos );
+               if ( d2i < d2 )
                {
-                  console.WarningLn( "<end><cbr><br>** Warning: Forcing a photometric aperture of 5 pixels." );
-                  minAperture = 5;
+                  j = i;
+                  d2 = d2i;
                }
-               else
-                  console.NoteLn( "<end><cbr><br>* Using an automatically calculated photometric aperture of " +
-                                  String( minAperture ) + " pixels." );
             }
+         }
 
-            if ( p_photAutoLimitMagnitude && !hasXPSDServer )
+         ColorSample sample;
+         sample.pos = psf.pos;
+         sample.catalog[0] = P[j].r;
+         sample.catalog[1] = P[j].V;
+         sample.catalog[2] = P[j].B;
+         sample.measured[0] = psf.signal[0];
+         sample.measured[1] = psf.signal[1];
+         sample.measured[2] = psf.signal[2];
+
+         bool validSample = true;
+         for ( int c = 0; c < 3; ++c )
+            if ( 1 + sample.measured[c] == 1 || !IsFinite( sample.catalog[c] ) )
             {
-               Rect r = view.Image().Bounds();
-               double h = Min( r.Width(), r.Height() )*wcs.xpixsz()/1000;
-               double fov = Deg( 2*ArcTan( h, wcs.focallen() ) );
-               // Empiric formula for 250 stars with APASS at 20 deg of galactic latitude
-               limitMagnitude = Range( RoundInt( p_photAutoLimitMagnitudeFactor*Pow( fov, -0.177 ) ), 9, 17 );
-               console.NoteLn( "<end><cbr><br>* Using an automatically calculated limit magnitude of " + String( limitMagnitude ) + '.' );
+               validSample = false;
+               break;
             }
-         }
-
-         fluxFilePath = tmpDir +
-            (p_photUsePSF ? "/PCC_PSF_Flux.csv" : "/PCC_Flux_Ap" + String( minAperture ) + ".csv");
-         if ( File::Exists( fluxFilePath ) )
-            File::Remove( fluxFilePath );
-
-         String scriptPath = coreSrcDir + "/scripts/AdP/AperturePhotometry.js";
-         StringKeyValueList arguments = StringKeyValueList()
-                                          << StringKeyValue( "phot_apertureShape", "1" ) // circular aperture
-                                          << StringKeyValue( "phot_minimumAperture", String( minAperture ) )
-                                          << StringKeyValue( "phot_apertureSteps", "1" )
-                                          << StringKeyValue( "phot_apertureStepSize", "1" )
-                                          << StringKeyValue( "phot_bkgWindowMode", String( BKGWINDOW_PHOTOMETRIC ) )
-                                          << StringKeyValue( "phot_bkgModel", String( BKGMODEL_MMT ) )
-                                          << StringKeyValue( "phot_backgroundSigmaLow", "5" )
-                                          << StringKeyValue( "phot_backgroundSigmaHigh", "2.7" )
-                                          << StringKeyValue( "phot_bkgAperture1", "45" )
-                                          << StringKeyValue( "phot_bkgAperture2", "60" )
-                                          << StringKeyValue( "phot_bkgMMTlayers", "8" )
-                                          << StringKeyValue( "phot_minSNR", "4" )
-                                          << StringKeyValue( "phot_showFoundStars", String( bool( p_photShowDetectedStars ) ) )
-                                          << StringKeyValue( "phot_maxMagnitude", String( limitMagnitude ) )
-                                          << StringKeyValue( "phot_defaultFocal", String( p_focalLength ) )
-                                          << StringKeyValue( "phot_gain", "1" )
-                                          << StringKeyValue( "phot_saturationThreshold", String( p_photSaturationThreshold ) )
-                                          << StringKeyValue( "phot_manualFilter", "true" )
-                                          << StringKeyValue( "phot_filter", "Johnson V" )
-                                          << StringKeyValue( "phot_filterKeyword", "FILTER" )
-                                          << StringKeyValue( "phot_margin", "15" )
-                                          << StringKeyValue( "phot_catalogName", photCatalogName )
-                                          << StringKeyValue( "phot_catalogFilter", "Vmag" )
-                                          << StringKeyValue( "phot_vizierServer", p_serverURL )
-                                          << StringKeyValue( "phot_autoMagnitude", String( bool( p_photAutoLimitMagnitude ) ) )
-                                          << StringKeyValue( "phot_useActive", "false" )
-                                          << StringKeyValue( "phot_extractMode", "0" )
-                                          << StringKeyValue( "phot_manualObjects", "[]" )
-                                          << StringKeyValue( "phot_outputDir", tmpDir )
-                                          << StringKeyValue( "phot_outputPrefix", "PCC_" )
-                                          << StringKeyValue( "phot_generateFileTable", "true" )
-                                          << StringKeyValue( "phot_generateFluxTable", "true" )
-                                          << StringKeyValue( "phot_generatePSFFluxTable", "true" )
-                                          << StringKeyValue( "phot_generateBackgTable", "false" )
-                                          << StringKeyValue( "phot_generateSNRTable", "false" )
-                                          << StringKeyValue( "phot_generateFlagTable", "false" )
-                                          << StringKeyValue( "phot_saveDiagnostic", "false" )
-                                          << StringKeyValue( "phot_autoSolve", "false" )
-                                          << StringKeyValue( "phot_forceSolve", "false" )
-                                          << StringKeyValue( "phot_solverUseImageMetadata", "true" )
-                                          << StringKeyValue( "phot_saveSolve", "false" )
-                                          << StringKeyValue( "phot_solveSuffix", "_WCS" )
-                                          << StringKeyValue( "phot_generateErrorLog", "false" )
-                                          << StringKeyValue( "phot_showBackgroundModel", String( bool( p_photShowBackgroundModels ) ) )
-                                          << StringKeyValue( "phot_files", RPath + '|' + GPath + '|' + BPath )
-                                          << StringKeyValue( "non_interactive", "true" );
-
-         console.ExecuteScriptGlobal( scriptPath, arguments );
-
-         File::Remove( RPath );
-         File::Remove( GPath );
-         File::Remove( BPath );
-
-         Variant result = Module->EvaluateScript( "__PJSR_AdpPhotometry_SuccessCount" );
-         if ( !result.IsValid() )
-            throw Error( "Internal error: Invalid script execution: " + scriptPath );
-         int successCount = result.ToInt();
-         if ( successCount != 3 )
-            throw Error( "Failure to calculate photometry: " + view.Id() );
-      } // photometry
-
-      Module->ProcessEvents();
-
-      /*
-       * Collect flux measurements.
-       */
-      if ( !File::Exists( fluxFilePath ) )
-         throw Error( "Internal error: Cannot access photometry data file: " + fluxFilePath );
-
-      IsoStringList lines = File::ReadLines( fluxFilePath );
-
-      int indexOfCatalogRmag = -1;
-      int indexOfCatalogGmag = -1;
-      int indexOfCatalogBmag = -1;
-      int indexOfImageRFlux  = -1;
-      int indexOfImageGFlux  = -1;
-      int indexOfImageBFlux  = -1;
-      for ( const IsoString& line : lines )
-         if ( line.StartsWithIC( "StarId" ) )
+         if ( validSample )
          {
-            IsoStringList tokens;
-            line.Break( tokens, ';' );
-            int index = 0;
-            for ( const IsoString& token : tokens )
+            colorSamples << sample;
+
+            if ( p_generateTextFiles )
             {
-               if ( token.CompareIC( "Catalog_Vmag" ) == 0 )
-                  indexOfCatalogGmag = index;
-               else if ( token.CompareIC( "Catalog_Bmag" ) == 0 )
-                  indexOfCatalogBmag = index;
-               else if ( token.CompareIC( "Catalog_r'mag" ) == 0 )
-                  indexOfCatalogRmag = index;
-               else if ( token.StartsWithIC( "Flux" ) || token.StartsWithIC( "PSF_Flux" ) )
-                  if ( token.EndsWith( "_1" ) )
-                     indexOfImageRFlux = index;
-                  else if ( token.EndsWith( "_2" ) )
-                     indexOfImageGFlux = index;
-                  else if ( token.EndsWith( "_3" ) )
-                     indexOfImageBFlux = index;
-               ++index;
+               DPoint posRD = 0;
+               A.ImageToCelestial( posRD, sample.pos );
+               text << IsoString().Format( "%.2f,%.2f,%.7f,%.7f,%.6e,%.6e,%.6e,%.6f,%.6f,%.6f,%+.6f,%+.6f,%+.6f,%+.6f\n",
+                                           sample.pos.x, sample.pos.y, posRD.x, posRD.y,
+                                           sample.catalog[0], sample.catalog[1], sample.catalog[2],
+                                           sample.measured[0], sample.measured[1], sample.measured[2],
+                                           sample.catalog[0] - sample.catalog[1],
+                                           sample.catalog[2] - sample.catalog[1],
+                                           -2.5118 * Log( sample.measured[0]/sample.measured[1] ),
+                                           -2.5118 * Log( sample.measured[2]/sample.measured[1] ) );
             }
-         }
 
-      if (  indexOfCatalogRmag < 0
-         || indexOfCatalogGmag < 0
-         || indexOfCatalogBmag < 0
-         || indexOfImageRFlux  < 0
-         || indexOfImageGFlux  < 0
-         || indexOfImageBFlux  < 0 )
-         throw Error( "Wrong or corrupted photometry data: <raw>" + fluxFilePath + "</raw>" );
-
-      size_type numberOfRequiredTokens = Max( Max( Max( Max( Max( indexOfCatalogRmag, indexOfCatalogGmag ),
-                                                             indexOfCatalogBmag ),
-                                                        indexOfImageRFlux ),
-                                                   indexOfImageGFlux ),
-                                              indexOfImageBFlux ) + 1;
-      DVector W;
-
-      if ( p_workingMode == PCCWorkingMode::Broadband )
-      {
-         Array<RG> rg;
-         Array<BG> bg;
-         for ( const IsoString& line : lines )
-         {
-            IsoStringList tokens;
-            line.Break( tokens, ';' );
-
-            if ( tokens.Length() >= numberOfRequiredTokens )
-               if ( !tokens[1].IsEmpty() )
-                  if ( IsoCharTraits::IsDigit( tokens[1][0]/*R.A.*/ ) ) // if this is a data line
-                  {
-                     double imgMagG;
-                     if ( !tokens[indexOfImageGFlux].TryToDouble( imgMagG ) )
-                        continue;
-                     imgMagG = -2.5118 * Log( imgMagG );
-                     if ( !IsFinite( imgMagG ) )
-                        continue;
-
-                     double catMagG;
-                     if ( !tokens[indexOfCatalogGmag].TryToDouble( catMagG ) )
-                        continue;
-
-                     double imgMagR;
-                     bool haveImgMagR = tokens[indexOfImageRFlux].TryToDouble( imgMagR );
-                     if ( haveImgMagR )
-                        imgMagR = -2.5118 * Log( imgMagR );
-                     if ( !IsFinite( imgMagR ) )
-                        haveImgMagR = false;
-
-                     double imgMagB;
-                     bool haveImgMagB = tokens[indexOfImageBFlux].TryToDouble( imgMagB );
-                     if ( haveImgMagB )
-                        imgMagB = -2.5118 * Log( imgMagB );
-                     if ( !IsFinite( imgMagB ) )
-                        haveImgMagB = false;
-
-                     if ( haveImgMagR )
-                     {
-                        double catMagR;
-                        if ( tokens[indexOfCatalogRmag].TryToDouble( catMagR ) )
-                           rg << RG{ catMagR, catMagG, imgMagR, imgMagG };
-                     }
-
-                     if ( haveImgMagB )
-                     {
-                        double catMagB;
-                        if ( tokens[indexOfCatalogBmag].TryToDouble( catMagB ) )
-                           bg << BG{ catMagB, catMagG, imgMagB, imgMagG };
-                     }
-                  }
-         }
-
-         /*
-          * Fit color transformation functions.
-          */
-         Vector catIndexRG( rg.Length() );
-         Vector imgIndexRG( rg.Length() );
-         for ( size_type i = 0; i < rg.Length(); ++i )
-         {
-            catIndexRG[i] = rg[i].catR - rg[i].catG;
-            imgIndexRG[i] = rg[i].imgR - rg[i].imgG;
-         }
-
-         Vector catIndexBG( bg.Length() );
-         Vector imgIndexBG( bg.Length() );
-         for ( size_type i = 0; i < bg.Length(); ++i )
-         {
-            catIndexBG[i] = bg[i].catB - bg[i].catG;
-            imgIndexBG[i] = bg[i].imgB - bg[i].imgG;
-         }
-
-         LinearFit LRG = FitVectors( catIndexRG, imgIndexRG );
-         LinearFit LBG = FitVectors( catIndexBG, imgIndexBG );
-
-         console.NoteLn( String().Format( "<end><cbr>* Color transformation functions:\n"
-                                          "R-G = %+.6e %c %.6e*(Sr-JV) &plusmn; %.6e\n"
-                                          "B-G = %+.6e %c %.6e*(JB-JV) &plusmn; %.6e",
-                                          LRG.a, (LRG.b < 0) ? '-' : '+', Abs( LRG.b ), LRG.adev,
-                                          LBG.a, (LBG.b < 0) ? '-' : '+', Abs( LBG.b ), LBG.adev ) );
-
-         W = DVector( Pow( 2.5118, LRG( p_whiteReferenceSr_JV - p_zeroPointSr_JV ) ),
-                      1.0,
-                      Pow( 2.5118, LBG( p_whiteReferenceJB_JV - p_zeroPointJB_JV ) ) );
-
-         W /= W.MaxComponent();
-
-         console.NoteLn( String().Format( "<end><cbr>* White balance factors:\n"
-                                          "W_R : %.4e\n"
-                                          "W_G : %.4e\n"
-                                          "W_B : %.4e", W[0], W[1], W[2] ) );
-
-         if ( p_photGenerateGraphs )
-         {
-            if ( !ThePhotometricColorCalibrationGraphInterface->IsVisible() )
-               ThePhotometricColorCalibrationGraphInterface->Launch();
-            ThePhotometricColorCalibrationGraphInterface->UpdateGraphs( view.FullId(), photCatalogName, "r'", "V", "B",
-                                                                        catIndexRG, imgIndexRG, LRG,
-                                                                        catIndexBG, imgIndexBG, LBG );
-         }
-
-         /*
-          * Generate metadata.
-          */
-         {
-            DVector W0( 2 );
-            W0[0] = p_whiteReferenceSr_JV;
-            W0[1] = p_whiteReferenceJB_JV;
-            DVector Z0( 2 );
-            Z0[0] = p_zeroPointSr_JV;
-            Z0[1] = p_zeroPointJB_JV;
-
-            pccProperties << Property( "PCL:PCC:Fit_Sr_JV_R_G", DVector( LRG.a, LRG.b, LRG.adev ) )
-                          << Property( "PCL:PCC:Fit_JB_JV_B_G", DVector( LBG.a, LBG.b, LBG.adev ) )
-                          << Property( "PCL:PCC:White_Sr_JV", W0[0] )
-                          << Property( "PCL:PCC:White_JB_JV", W0[1] )
-                          << Property( "PCL:PCC:Zero_Sr_JV", Z0[0] )
-                          << Property( "PCL:PCC:Zero_JB_JV", Z0[1] )
-                          << Property( "PCL:PCC:Scale_Sr_JV_JB_JV", W );
-
-            keywords << FITSHeaderKeyword( "COMMENT", IsoString(), "Color calibration with "  + PixInsightVersion::AsString() )
-                     << FITSHeaderKeyword( "HISTORY", IsoString(), "Color calibration with "  + Module->ReadableVersion() )
-                     << FITSHeaderKeyword( "HISTORY", IsoString(), "Color calibration with PhotometricColorCalibration process" )
-                     << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                          IsoString().Format( "PhotometricColorCalibration.fit_Sr_JV_R_G: %.6e %.6e %.6e", LRG.a, LRG.b, LRG.adev ) )
-                     << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                          IsoString().Format( "PhotometricColorCalibration.fit_JB_JV_B_G: %.6e %.6e %.6e", LBG.a, LBG.b, LBG.adev ) )
-                     << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                          IsoString().Format( "PhotometricColorCalibration.white_Sr_JV: %.5e", W0[0] ) )
-                     << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                          IsoString().Format( "PhotometricColorCalibration.white_JB_JV: %.5e", W0[1] ) )
-                     << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                          IsoString().Format( "PhotometricColorCalibration.zero_Sr_JV: %.5e", Z0[0] ) )
-                     << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                          IsoString().Format( "PhotometricColorCalibration.zero_JB_JV: %.5e", Z0[1] ) )
-                     << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                          IsoString().Format( "PhotometricColorCalibration.scale_Sr_JV_JB_JV: %.4e %.4e %.4e", W[0], W[1], W[2] ) );
+            if ( p_generateStarMaps )
+               validPSFSamples << psf;
          }
       }
-      else
+   }
+
+   if ( p_generateTextFiles )
+   {
+      text.Prepend( "x,y,alpha,delta,cat_0,cat_1,cat_2,img_0,img_1,img_2,cat_01,cat_21,img_01,img_21\n" );
+      String outputDir = File::WindowsPathToUnix( p_outputDirectory.Trimmed() );
+      if ( outputDir.IsEmpty() )
+         outputDir = File::SystemTempDirectory();
+      if ( !outputDir.EndsWith( '/' ) )
+         outputDir << '/';
+      File::WriteTextFile( outputDir + "PCC-data.csv", text );
+   }
+
+   if ( p_generateStarMaps )
+      CreateStarMapWindow( image.Width(), image.Height(), "PCC_stars", validPSFSamples );
+
+   /*
+    * Fit color transformation functions.
+    */
+   Vector catIndexRG( colorSamples.Length() );
+   Vector imgIndexRG( colorSamples.Length() );
+   Vector catIndexBG( colorSamples.Length() );
+   Vector imgIndexBG( colorSamples.Length() );
+   for ( size_type i = 0; i < colorSamples.Length(); ++i )
+   {
+      catIndexRG[i] = colorSamples[i].catalog[0] - colorSamples[i].catalog[1];
+      imgIndexRG[i] = -2.5118 * Log( colorSamples[i].measured[0]/colorSamples[i].measured[1] );
+      catIndexBG[i] = colorSamples[i].catalog[2] - colorSamples[i].catalog[1];
+      imgIndexBG[i] = -2.5118 * Log( colorSamples[i].measured[2]/colorSamples[i].measured[1] );
+   }
+
+   console.WriteLn();
+
+   LinearFit LRG = RobustLinearRegression( catIndexRG, imgIndexRG, "R-G" );
+   LinearFit LBG = RobustLinearRegression( catIndexBG, imgIndexBG, "B-G" );
+
+   console.WriteLn( String().Format( "<end><cbr><br>* Color calibration functions:\n"
+                                    "f_R : R-G = %+.7f*(r'- V) %c %.7f, sigma = %.7f\n"
+                                    "f_B : B-G = %+.7f*(B - V) %c %.7f, sigma = %.7f",
+                                    LRG.b, (LRG.a < 0) ? '-' : '+', Abs( LRG.a ), LRG.adev,
+                                    LBG.b, (LBG.a < 0) ? '-' : '+', Abs( LBG.a ), LBG.adev ) );
+
+   double WRG = p_whiteReferenceSr_JV - p_zeroPointSr_JV;
+   double WBG = p_whiteReferenceJB_JV - p_zeroPointJB_JV;
+
+   DVector W = DVector( Pow( 2.5118, LRG( WRG ) ),
+                        1.0,
+                        Pow( 2.5118, LBG( WBG ) ) );
+   W /= W.MaxComponent();
+
+   console.NoteLn( String().Format( "<end><cbr><br>* White balance factors:\n"
+                                    "W_R : %.4f\n"
+                                    "W_G : %.4f\n"
+                                    "W_B : %.4f", W[0], W[1], W[2] ) );
+
+   if ( p_generateGraphs )
+   {
+      if ( !ThePhotometricColorCalibrationGraphInterface->IsVisible() )
+         ThePhotometricColorCalibrationGraphInterface->Launch();
+      ThePhotometricColorCalibrationGraphInterface->UpdateGraphs( view.FullId(), catalogName,
+                                                                  "Sloan r'", "Johnson V", "Johnson B",
+                                                                  "n/a", p_whiteReferenceName,
+                                                                  catIndexRG, imgIndexRG, LRG,
+                                                                  catIndexBG, imgIndexBG, LBG,
+                                                                  W, WRG, WBG );
+   }
+
+   /*
+    * Metadata generation
+    */
+   {
+      DVector W0( 2 );
+      W0[0] = p_whiteReferenceSr_JV;
+      W0[1] = p_whiteReferenceJB_JV;
+      DVector Z0( 2 );
+      Z0[0] = p_zeroPointSr_JV;
+      Z0[1] = p_zeroPointJB_JV;
+
+      window.MainView().SetStorablePermanentProperties( PropertyArray()
+                                    << Property( "PCL:PCC:Fit_Sr_JV_R_G", DVector( LRG.a, LRG.b, LRG.adev ) )
+                                    << Property( "PCL:PCC:Fit_JB_JV_B_G", DVector( LBG.a, LBG.b, LBG.adev ) )
+                                    << Property( "PCL:PCC:White_Sr_JV", W0[0] )
+                                    << Property( "PCL:PCC:White_JB_JV", W0[1] )
+                                    << Property( "PCL:PCC:Zero_Sr_JV", Z0[0] )
+                                    << Property( "PCL:PCC:Zero_JB_JV", Z0[1] )
+                                    << Property( "PCL:PCC:Scale_Sr_JV_JB_JV", W ) );
+
+      keywords << FITSHeaderKeyword( "COMMENT", IsoString(), "Color calibration with "  + PixInsightVersion::AsString() )
+               << FITSHeaderKeyword( "HISTORY", IsoString(), "Color calibration with "  + Module->ReadableVersion() )
+               << FITSHeaderKeyword( "HISTORY", IsoString(), "Color calibration with PhotometricColorCalibration process" )
+               << FITSHeaderKeyword( "HISTORY", IsoString(),
+                                    IsoString().Format( "PCC.fit_Sr_JV_R_G: %.6e %.6e %.6e", LRG.a, LRG.b, LRG.adev ) )
+               << FITSHeaderKeyword( "HISTORY", IsoString(),
+                                    IsoString().Format( "PCC.fit_JB_JV_B_G: %.6e %.6e %.6e", LBG.a, LBG.b, LBG.adev ) )
+               << FITSHeaderKeyword( "HISTORY", IsoString(),
+                                    IsoString().Format( "PCC.white_Sr_JV: %.5e", W0[0] ) )
+               << FITSHeaderKeyword( "HISTORY", IsoString(),
+                                    IsoString().Format( "PCC.white_JB_JV: %.5e", W0[1] ) )
+               << FITSHeaderKeyword( "HISTORY", IsoString(),
+                                    IsoString().Format( "PCC.zero_Sr_JV: %.5e", Z0[0] ) )
+               << FITSHeaderKeyword( "HISTORY", IsoString(),
+                                    IsoString().Format( "PCC.zero_JB_JV: %.5e", Z0[1] ) )
+               << FITSHeaderKeyword( "HISTORY", IsoString(),
+                                    IsoString().Format( "PCC.scale_Sr_JV_JB_JV: %.4f %.4f %.4f", W[0], W[1], W[2] ) );
+   }
+
+   /*
+    * Apply white balance and background neutralization.
+    */
+   if ( p_applyCalibration )
+   {
+      ImageVariant image = view.Image();
+
+      console.WriteLn();
+      ApplyWhiteBalance( image, W );
+
+      if ( p_neutralizeBackground )
       {
-#define B   440
-#define G   550
-#define R   670
-#define XB  p_blueFilterWavelength
-#define XG  p_greenFilterWavelength
-#define XR  p_redFilterWavelength
-#define WB  p_blueFilterBandwidth
-#define WG  p_greenFilterBandwidth
-#define WR  p_redFilterBandwidth
-
-         Array<double> ZR, ZG, ZB;
-         for ( const IsoString& line : lines )
+         if ( p_backgroundUseROI )
          {
-            IsoStringList tokens;
-            line.Break( tokens, ';' );
-
-            if ( tokens.Length() >= numberOfRequiredTokens )
-               if ( !tokens[1].IsEmpty() )
-                  if ( IsoCharTraits::IsDigit( tokens[1][0]/*R.A.*/ ) ) // if this is a data line
-                  {
-                     IsoStringList tokens;
-                     line.Break( tokens, ';' );
-
-                     /*
-                      * Catalog magnitudes.
-                      */
-                     double r, g, b;
-                     if ( !tokens[indexOfCatalogRmag].TryToDouble( r ) ||
-                        !tokens[indexOfCatalogGmag].TryToDouble( g ) ||
-                        !tokens[indexOfCatalogBmag].TryToDouble( b ) )
-                        continue;
-                     /*
-                      * Star fluxes measured on the image.
-                      */
-                     double ir, ig, ib;
-                     if ( !tokens[indexOfImageRFlux].TryToDouble( ir ) ||
-                        !tokens[indexOfImageGFlux].TryToDouble( ig ) ||
-                        !tokens[indexOfImageBFlux].TryToDouble( ib ) )
-                        continue;
-
-                     /*
-                      * Catalog fluxes at catalog filter effective wavelengths.
-                      * (APASS photometric system)
-                      */
-                     double yr = 0.14 * 4490 / Pow( 2.5118, r );
-                     double yg = 0.16 * 3640 / Pow( 2.5118, g );
-                     double yb = 0.22 * 4260 / Pow( 2.5118, b );
-
-                     /*
-                      * Catalog fluxes at user filter effective wavelengths.
-                      */
-                     double fr = (XR - G)*(XR - R)/(B - G)/(B - R) * yb
-                               + (XR - R)*(XR - B)/(G - R)/(G - B) * yg
-                               + (XR - B)*(XR - G)/(R - B)/(R - G) * yr;
-
-                     double fg = (XG - G)*(XG - R)/(B - G)/(B - R) * yb
-                               + (XG - R)*(XG - B)/(G - R)/(G - B) * yg
-                               + (XG - B)*(XG - G)/(R - B)/(R - G) * yr;
-
-                     double fb = (XB - G)*(XB - R)/(B - G)/(B - R) * yb
-                               + (XB - R)*(XB - B)/(G - R)/(G - B) * yg
-                               + (XB - B)*(XB - G)/(R - B)/(R - G) * yr;
-
-                     ZR << ir / fr;
-                     ZG << ig / fg;
-                     ZB << ib / fb;
-                  }
-         }
-
-         double zr = RobustMean( ZR );
-         double zg = RobustMean( ZG );
-         double zb = RobustMean( ZB );
-
-         /*
-          * zr/zg, zb/zg are the ratios of calibrated photon fluxes with
-          * respect to green.
-          *
-          * WR/WG, WB/WG are the ratios of filter bandwidths, used to calibrate
-          * the filter's emission line independently of star fluxes.
-          */
-         W = DVector( zg/zr * WR/WG, 1.0, zg/zb * WB/WG );
-         W /= W.MaxComponent();
-
-         console.NoteLn( String().Format( "<end><cbr>* Photon calibration factors:\n"
-                                          "W_R : %.4e\n"
-                                          "W_G : %.4e\n"
-                                          "W_B : %.4e", W[0], W[1], W[2] ) );
-
-         pccProperties << Property( "PCL:PCC:BlueFilterWavelength", XB )
-                       << Property( "PCL:PCC:GreenFilterWavelength", XG )
-                       << Property( "PCL:PCC:RedFilterWavelength", XR )
-                       << Property( "PCL:PCC:BlueFilterBandwidth", WB )
-                       << Property( "PCL:PCC:GreenFilterBandwidth", WG )
-                       << Property( "PCL:PCC:RedFilterBandwidth", WR )
-                       << Property( "PCL:PCC:Scale_R_G_B", W );
-
-         keywords << FITSHeaderKeyword( "COMMENT", IsoString(), "Photon calibration with "  + PixInsightVersion::AsString() )
-                  << FITSHeaderKeyword( "HISTORY", IsoString(), "Photon calibration with "  + Module->ReadableVersion() )
-                  << FITSHeaderKeyword( "HISTORY", IsoString(), "Photon calibration with PhotometricColorCalibration process" )
-                  << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                       IsoString().Format( "PhotometricColorCalibration.blueFilterWavelength: %.1f", XB ) )
-                  << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                       IsoString().Format( "PhotometricColorCalibration.greenFilterWavelength: %.1f", XG ) )
-                  << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                       IsoString().Format( "PhotometricColorCalibration.redFilterWavelength: %.1f", XR ) )
-                  << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                       IsoString().Format( "PhotometricColorCalibration.blueFilterBandwidth: %.1f", WB ) )
-                  << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                       IsoString().Format( "PhotometricColorCalibration.greenFilterBandwidth: %.1f", WG ) )
-                  << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                       IsoString().Format( "PhotometricColorCalibration.redFilterBandwidth: %.1f", WR ) )
-                  << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                       IsoString().Format( "PhotometricColorCalibration.scale_R_G_B: %.4e %.4e %.4e", W[0], W[1], W[2] ) );
-#undef B
-#undef G
-#undef R
-#undef XB
-#undef XG
-#undef XR
-#undef WB
-#undef WG
-#undef WR
-      }
-
-      /*
-       * Apply white balance and background neutralization.
-       */
-      {
-         AutoViewLock lock( view );
-
-         if ( p_applyCalibration )
-         {
-            ImageVariant image = view.Image();
-
-            ApplyWhiteBalance( image, W );
-
-            if ( p_neutralizeBackground )
-            {
-               if ( p_backgroundUseROI )
-               {
-                  p_backgroundROI.Order();
-                  // ROI validity already checked by CanExecuteOn(), which we
-                  // have called above.
+            p_backgroundROI.Order();
+            // ROI validity already checked by CanExecuteOn(), which we
+            // have called above.
 //                   if ( !p_backgroundROI.IsRect() )
 //                      throw Error( "Empty background reference ROI defined" );
-               }
-
-               if ( p_backgroundHigh < p_backgroundLow )
-                  Swap( p_backgroundLow, p_backgroundHigh );
-
-               DVector B0;
-               {
-                  View bkgView;
-                  if ( p_backgroundReferenceViewId.IsEmpty() )
-                     bkgView = view;
-                  else
-                  {
-                     bkgView = View::ViewById( p_backgroundReferenceViewId );
-                     if ( bkgView.IsNull() )
-                        throw Error( "No such view (background reference): " + p_backgroundReferenceViewId );
-                     if ( !bkgView.IsColor() )
-                        throw Error( "The background reference view must be a color image: " + p_backgroundReferenceViewId );
-                  }
-
-                  AutoViewLock lock( bkgView, false/*lock*/ );
-                  if ( bkgView.CanWrite() )
-                     lock.LockForWrite();
-
-                  if ( bkgView != view )
-                  {
-                     String message = "<end><cbr>** Warning: Using a ";
-                     if ( bkgView.IsPreview() && bkgView.Window() == view.Window() )
-                        message << "preview of the target image as background reference";
-                     else
-                        message << "background reference view different from the target image";
-                     message << ". This usually does not work.";
-                     console.WarningLn( message );
-                  }
-
-                  ImageVariant bkgImage = bkgView.Image();
-
-                  if ( p_backgroundUseROI )
-                  {
-                     bkgImage.SelectRectangle( p_backgroundROI );
-                     Rect r = bkgImage.SelectedRectangle();
-                     if ( !r.IsRect() )
-                        bkgImage.ResetSelection();
-                     console.WriteLn( String().Format( "<end><cbr>Region of interest : left=%d, top=%d, width=%d, height=%d",
-                                                       r.x0, r.y0, r.Width(), r.Height() ) );
-                  }
-
-                  B0 = BackgroundReference( bkgImage, p_backgroundLow, p_backgroundHigh );
-               }
-
-               console.NoteLn( String().Format( "<end><cbr>* Background reference:\n"
-                                                "B_R : %.5e\n"
-                                                "B_G : %.5e\n"
-                                                "B_B : %.5e", B0[0], B0[1], B0[2] ) );
-
-               pccProperties << Property( "PCL:PCC:BackgroundReference", B0 );
-
-               keywords << FITSHeaderKeyword( "HISTORY", IsoString(),
-                              IsoString().Format( "PhotometricColorCalibration.backgroundReference: %.5e %.5e %.5e", B0[0], B0[1], B0[2] ) );
-
-               NeutralizeBackground( image, B0 );
-            }
          }
 
-         view.Window().SetKeywords( keywords );
-         view.Window().MainView().SetStorableProperties( properties );
-         view.Window().MainView().SetStorablePermanentProperties( pccProperties );
+         if ( p_backgroundHigh < p_backgroundLow )
+            Swap( p_backgroundLow, p_backgroundHigh );
 
-         if ( doPlateSolve )
-            view.Window().RegenerateAstrometricSolution( false/*allowGUIMessages*/ );
+         DVector backgroundReference;
+         {
+            View bkgView;
+            if ( p_backgroundReferenceViewId.IsEmpty() )
+               bkgView = view;
+            else
+            {
+               bkgView = View::ViewById( p_backgroundReferenceViewId );
+               if ( bkgView.IsNull() )
+                  throw Error( "No such view (background reference): " + p_backgroundReferenceViewId );
+               if ( !bkgView.IsColor() )
+                  throw Error( "The background reference view must be a color image: " + p_backgroundReferenceViewId );
+            }
+
+            AutoViewLock lock( bkgView, false/*lock*/ );
+            if ( bkgView.CanWrite() )
+               lock.LockForWrite();
+
+            if ( bkgView != view )
+            {
+               String message = "<end><cbr><br>** Warning: Using a ";
+               if ( bkgView.IsPreview() && bkgView.Window() == window )
+                  message << "preview of the target image as background reference";
+               else
+                  message << "background reference view different from the target image";
+               message << ". This usually does not work.";
+               console.WarningLn( message );
+            }
+
+            ImageVariant bkgImage = bkgView.Image();
+
+            if ( p_backgroundUseROI )
+            {
+               bkgImage.SelectRectangle( p_backgroundROI );
+               if ( !bkgImage.SelectedRectangle().IsRect() )
+                  bkgImage.ResetSelection();
+            }
+
+            console.WriteLn();
+            backgroundReference = ComputeBackgroundReference( bkgImage, p_backgroundLow, p_backgroundHigh );
+         }
+
+         console.NoteLn( String().Format( "<end><cbr><br>* Background reference:\n"
+                                          "B_R : %.8f\n"
+                                          "B_G : %.8f\n"
+                                          "B_B : %.8f",
+                                          backgroundReference[0], backgroundReference[1], backgroundReference[2] ) );
+
+         window.MainView().SetStorablePermanentPropertyValue( "PCL:PCC:BackgroundReference", backgroundReference );
+
+         keywords << FITSHeaderKeyword( "HISTORY", IsoString(),
+                        IsoString().Format( "PCC.backgroundReference: %.8f %.8f %.8f",
+                                            backgroundReference[0], backgroundReference[1], backgroundReference[2] ) );
+
+         console.WriteLn();
+         ApplyBackgroundNeutralization( image, backgroundReference );
       }
-
-      return true;
    }
-   catch ( ... )
-   {
-      try
-      {
-         if ( File::Exists( TPath ) )
-            File::Remove( TPath );
-         if ( File::Exists( RPath ) )
-            File::Remove( RPath );
-         if ( File::Exists( GPath ) )
-            File::Remove( GPath );
-         if ( File::Exists( BPath ) )
-            File::Remove( BPath );
-      }
-      catch ( ... )
-      {
-         // Mute additional file access errors.
-      }
 
-      throw;
-   }
+   window.SetKeywords( keywords );
+
+   return true;
 }
 
 // ----------------------------------------------------------------------------
 
 void* PhotometricColorCalibrationInstance::LockParameter( const MetaParameter* p, size_type /*tableRow*/ )
 {
-   if ( p == ThePCCWorkingModeParameter )
-      return &p_workingMode;
    if ( p == ThePCCApplyCalibrationParameter )
       return &p_applyCalibration;
-   if ( p == ThePCCRedFilterWavelengthParameter )
-      return &p_redFilterWavelength;
-   if ( p == ThePCCRedFilterBandwidthParameter )
-      return &p_redFilterBandwidth;
-   if ( p == ThePCCGreenFilterWavelengthParameter )
-      return &p_greenFilterWavelength;
-   if ( p == ThePCCGreenFilterBandwidthParameter )
-      return &p_greenFilterBandwidth;
-   if ( p == ThePCCBlueFilterWavelengthParameter )
-      return &p_blueFilterWavelength;
-   if ( p == ThePCCBlueFilterBandwidthParameter )
-      return &p_blueFilterBandwidth;
    if ( p == ThePCCWhiteReferenceIdParameter )
       return p_whiteReferenceId.Begin();
    if ( p == ThePCCWhiteReferenceNameParameter )
@@ -1341,70 +1229,46 @@ void* PhotometricColorCalibrationInstance::LockParameter( const MetaParameter* p
       return &p_zeroPointSr_JV;
    if ( p == ThePCCZeroPointJB_JVParameter )
       return &p_zeroPointJB_JV;
-   if ( p == ThePCCFocalLengthParameter )
-      return &p_focalLength;
-   if ( p == ThePCCPixelSizeParameter )
-      return &p_pixelSize;
-   if ( p == ThePCCCenterRAParameter )
-      return &p_centerRA;
-   if ( p == ThePCCCenterDecParameter )
-      return &p_centerDec;
-   if ( p == ThePCCEpochJDParameter )
-      return &p_epochJD;
-   if ( p == ThePCCForcePlateSolveParameter )
-      return &p_forcePlateSolve;
-   if ( p == ThePCCIgnoreImagePositionAndScaleParameter )
-      return &p_ignorePositionAndScale;
+   if ( p == ThePCCAutoCatalogParameter )
+      return &p_autoCatalog;
+   if ( p == ThePCCCatalogIdParameter )
+      return p_catalogId.Begin();
+   if ( p == ThePCCLimitMagnitudeParameter )
+      return &p_limitMagnitude;
+   if ( p == ThePCCAutoLimitMagnitudeParameter )
+      return &p_autoLimitMagnitude;
+   if ( p == ThePCCTargetSourceCountParameter )
+      return &p_targetSourceCount;
    if ( p == ThePCCServerURLParameter )
       return p_serverURL.Begin();
-   if ( p == ThePCCSolverCatalogNameParameter )
-      return p_solverCatalogName.Begin();
-   if ( p == ThePCCSolverAutoCatalogParameter )
-      return &p_solverAutoCatalog;
-   if ( p == ThePCCSolverLimitMagnitudeParameter )
-      return &p_solverLimitMagnitude;
-   if ( p == ThePCCSolverAutoLimitMagnitudeParameter )
-      return &p_solverAutoLimitMagnitude;
-   if ( p == ThePCCSolverStructureLayersParameter )
-      return &p_solverStructureLayers;
-   if ( p == ThePCCSolverMinStructureSizeParameter )
-      return &p_solverMinStructureSize;
-   if ( p == ThePCCSolverNoiseReductionFilterRadiusParameter )
-      return &p_solverNoiseReductionFilterRadius;
-   if ( p == ThePCCSolverSensitivityParameter )
-      return &p_solverSensitivity;
-   if ( p == ThePCCSolverAlignmentDeviceParameter )
-      return &p_solverAlignmentDevice;
-   if ( p == ThePCCSolverDistortionCorrectionParameter )
-      return &p_solverDistortionCorrection;
-   if ( p == ThePCCSolverSplineSmoothingParameter )
-      return &p_solverSplineSmoothing;
-   if ( p == ThePCCSolverProjectionParameter )
-      return &p_solverProjection;
-   if ( p == ThePCCPhotCatalogNameParameter )
-      return p_photCatalogName.Begin();
-   if ( p == ThePCCPhotAutoCatalogParameter )
-      return &p_photAutoCatalog;
-   if ( p == ThePCCPhotLimitMagnitudeParameter )
-      return &p_photLimitMagnitude;
-   if ( p == ThePCCPhotAutoLimitMagnitudeParameter )
-      return &p_photAutoLimitMagnitude;
-   if ( p == ThePCCPhotAutoLimitMagnitudeFactorParameter )
-      return &p_photAutoLimitMagnitudeFactor;
-   if ( p == ThePCCPhotAutoApertureParameter )
-      return &p_photAutoAperture;
-   if ( p == ThePCCPhotApertureParameter )
-      return &p_photAperture;
-   if ( p == ThePCCPhotUsePSFParameter )
-      return &p_photUsePSF;
-   if ( p == ThePCCPhotSaturationThresholdParameter )
-      return &p_photSaturationThreshold;
-   if ( p == ThePCCPhotShowDetectedStarsParameter )
-      return &p_photShowDetectedStars;
-   if ( p == ThePCCPhotShowBackgroundModelsParameter )
-      return &p_photShowBackgroundModels;
-   if ( p == ThePCCPhotGenerateGraphsParameter )
-      return &p_photGenerateGraphs;
+   if ( p == ThePCCStructureLayersParameter )
+      return &p_structureLayers;
+   if ( p == ThePCCSaturationThresholdParameter )
+      return &p_saturationThreshold;
+   if ( p == ThePCCSaturationRelativeParameter )
+      return &p_saturationRelative;
+   if ( p == ThePCCPSFNoiseLayersParameter )
+      return &p_psfNoiseLayers;
+   if ( p == ThePCCPSFHotPixelFilterRadiusParameter )
+      return &p_psfHotPixelFilterRadius;
+   if ( p == ThePCCPSFNoiseReductionFilterRadiusParameter )
+      return &p_psfNoiseReductionFilterRadius;
+   if ( p == ThePCCPSFMinStructureSizeParameter )
+      return &p_psfMinStructureSize;
+   if ( p == ThePCCPSFMinSNRParameter )
+      return &p_psfMinSNR;
+   if ( p == ThePCCPSFAllowClusteredSourcesParameter )
+      return &p_psfAllowClusteredSources;
+   if ( p == ThePCCPSFTypeParameter )
+      return &p_psfType;
+   if ( p == ThePCCPSFGrowthParameter )
+      return &p_psfGrowth;
+   if ( p == ThePCCPSFMaxStarsParameter )
+      return &p_psfMaxStars;
+   if ( p == ThePCCPSFSearchToleranceParameter )
+      return &p_psfSearchTolerance;
+   if ( p == ThePCCPSFChannelSearchToleranceParameter )
+      return &p_psfChannelSearchTolerance;
    if ( p == ThePCCNeutralizeBackgroundParameter )
       return &p_neutralizeBackground;
    if ( p == ThePCCBackgroundReferenceViewIdParameter )
@@ -1423,6 +1287,14 @@ void* PhotometricColorCalibrationInstance::LockParameter( const MetaParameter* p
       return &p_backgroundROI.x1;
    if ( p == ThePCCBackgroundROIY1Parameter )
       return &p_backgroundROI.y1;
+   if ( p == ThePCCGenerateGraphsParameter )
+      return &p_generateGraphs;
+   if ( p == ThePCCGenerateStarMapsParameter )
+      return &p_generateStarMaps;
+   if ( p == ThePCCGenerateTextFilesParameter )
+      return &p_generateTextFiles;
+   if ( p == ThePCCOutputDirectoryParameter )
+      return p_outputDirectory.Begin();
 
    return nullptr;
 }
@@ -1443,29 +1315,29 @@ bool PhotometricColorCalibrationInstance::AllocateParameter( size_type sizeOrLen
       if ( sizeOrLength > 0 )
          p_whiteReferenceName.SetLength( sizeOrLength );
    }
+   else if ( p == ThePCCCatalogIdParameter )
+   {
+      p_catalogId.Clear();
+      if ( sizeOrLength > 0 )
+         p_catalogId.SetLength( sizeOrLength );
+   }
    else if ( p == ThePCCServerURLParameter )
    {
       p_serverURL.Clear();
       if ( sizeOrLength > 0 )
          p_serverURL.SetLength( sizeOrLength );
    }
-   else if ( p == ThePCCSolverCatalogNameParameter )
-   {
-      p_solverCatalogName.Clear();
-      if ( sizeOrLength > 0 )
-         p_solverCatalogName.SetLength( sizeOrLength );
-   }
-   else if ( p == ThePCCPhotCatalogNameParameter )
-   {
-      p_photCatalogName.Clear();
-      if ( sizeOrLength > 0 )
-         p_photCatalogName.SetLength( sizeOrLength );
-   }
    else if ( p == ThePCCBackgroundReferenceViewIdParameter )
    {
       p_backgroundReferenceViewId.Clear();
       if ( sizeOrLength > 0 )
          p_backgroundReferenceViewId.SetLength( sizeOrLength );
+   }
+   else if ( p == ThePCCOutputDirectoryParameter )
+   {
+      p_outputDirectory.Clear();
+      if ( sizeOrLength > 0 )
+         p_outputDirectory.SetLength( sizeOrLength );
    }
    else
       return false;
@@ -1481,14 +1353,14 @@ size_type PhotometricColorCalibrationInstance::ParameterLength( const MetaParame
       return p_whiteReferenceId.Length();
    if ( p == ThePCCWhiteReferenceNameParameter )
       return p_whiteReferenceName.Length();
+   if ( p == ThePCCCatalogIdParameter )
+      return p_catalogId.Length();
    if ( p == ThePCCServerURLParameter )
       return p_serverURL.Length();
-   if ( p == ThePCCSolverCatalogNameParameter )
-      return p_solverCatalogName.Length();
-   if ( p == ThePCCPhotCatalogNameParameter )
-      return p_photCatalogName.Length();
    if ( p == ThePCCBackgroundReferenceViewIdParameter )
       return p_backgroundReferenceViewId.Length();
+   if ( p == ThePCCOutputDirectoryParameter )
+      return p_outputDirectory.Length();
 
    return 0;
 }
@@ -1498,4 +1370,4 @@ size_type PhotometricColorCalibrationInstance::ParameterLength( const MetaParame
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationInstance.cpp - Released 2022-05-20T16:28:45Z
+// EOF PhotometricColorCalibrationInstance.cpp - Released 2022-11-21T14:47:17Z

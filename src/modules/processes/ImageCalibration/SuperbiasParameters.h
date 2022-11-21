@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.9.6
+// Standard ImageCalibration Process Module Version 1.9.7
 // ----------------------------------------------------------------------------
-// SuperbiasParameters.h - Released 2022-05-25T08:24:23Z
+// SuperbiasParameters.h - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -183,4 +183,4 @@ extern SBSuperbiasViewId1* TheSBSuperbiasViewId1Parameter;
 #endif   // __SuperbiasParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF SuperbiasParameters.h - Released 2022-05-25T08:24:23Z
+// EOF SuperbiasParameters.h - Released 2022-11-21T14:47:17Z

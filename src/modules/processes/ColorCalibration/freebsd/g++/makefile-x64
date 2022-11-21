@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.126
+# PixInsight Makefile Generator Script v1.127
 # Copyright (C) 2009-2022 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2022-08-10T19:00:41.199Z
+# Generated on .... 2022-11-21T14:48:20.739Z
 # Project id ...... ColorCalibration
 # Project type .... Module
 # Platform ........ FreeBSD/g++
@@ -23,11 +23,15 @@ SRC_FILES= \
 ../../BackgroundNeutralizationInterface.cpp \
 ../../BackgroundNeutralizationParameters.cpp \
 ../../BackgroundNeutralizationProcess.cpp \
+../../CalibrationUtility.cpp \
+../../ColorCalibrationGraphInterface.cpp \
 ../../ColorCalibrationInstance.cpp \
 ../../ColorCalibrationInterface.cpp \
 ../../ColorCalibrationModule.cpp \
 ../../ColorCalibrationParameters.cpp \
 ../../ColorCalibrationProcess.cpp \
+../../CurveExplorerDialog.cpp \
+../../FilterManagementDialog.cpp \
 ../../LinearFitInstance.cpp \
 ../../LinearFitInterface.cpp \
 ../../LinearFitParameters.cpp \
@@ -36,7 +40,13 @@ SRC_FILES= \
 ../../PhotometricColorCalibrationInstance.cpp \
 ../../PhotometricColorCalibrationInterface.cpp \
 ../../PhotometricColorCalibrationParameters.cpp \
-../../PhotometricColorCalibrationProcess.cpp
+../../PhotometricColorCalibrationProcess.cpp \
+../../SpectrophotometricColorCalibrationGraphInterface.cpp \
+../../SpectrophotometricColorCalibrationInstance.cpp \
+../../SpectrophotometricColorCalibrationInterface.cpp \
+../../SpectrophotometricColorCalibrationParameters.cpp \
+../../SpectrophotometricColorCalibrationPreferencesDialog.cpp \
+../../SpectrophotometricColorCalibrationProcess.cpp
 
 #
 # Object files
@@ -47,11 +57,15 @@ OBJ_FILES= \
 ./x64/Release/BackgroundNeutralizationInterface.o \
 ./x64/Release/BackgroundNeutralizationParameters.o \
 ./x64/Release/BackgroundNeutralizationProcess.o \
+./x64/Release/CalibrationUtility.o \
+./x64/Release/ColorCalibrationGraphInterface.o \
 ./x64/Release/ColorCalibrationInstance.o \
 ./x64/Release/ColorCalibrationInterface.o \
 ./x64/Release/ColorCalibrationModule.o \
 ./x64/Release/ColorCalibrationParameters.o \
 ./x64/Release/ColorCalibrationProcess.o \
+./x64/Release/CurveExplorerDialog.o \
+./x64/Release/FilterManagementDialog.o \
 ./x64/Release/LinearFitInstance.o \
 ./x64/Release/LinearFitInterface.o \
 ./x64/Release/LinearFitParameters.o \
@@ -60,7 +74,13 @@ OBJ_FILES= \
 ./x64/Release/PhotometricColorCalibrationInstance.o \
 ./x64/Release/PhotometricColorCalibrationInterface.o \
 ./x64/Release/PhotometricColorCalibrationParameters.o \
-./x64/Release/PhotometricColorCalibrationProcess.o
+./x64/Release/PhotometricColorCalibrationProcess.o \
+./x64/Release/SpectrophotometricColorCalibrationGraphInterface.o \
+./x64/Release/SpectrophotometricColorCalibrationInstance.o \
+./x64/Release/SpectrophotometricColorCalibrationInterface.o \
+./x64/Release/SpectrophotometricColorCalibrationParameters.o \
+./x64/Release/SpectrophotometricColorCalibrationPreferencesDialog.o \
+./x64/Release/SpectrophotometricColorCalibrationProcess.o
 
 #
 # Dependency files
@@ -71,11 +91,15 @@ DEP_FILES= \
 ./x64/Release/BackgroundNeutralizationInterface.d \
 ./x64/Release/BackgroundNeutralizationParameters.d \
 ./x64/Release/BackgroundNeutralizationProcess.d \
+./x64/Release/CalibrationUtility.d \
+./x64/Release/ColorCalibrationGraphInterface.d \
 ./x64/Release/ColorCalibrationInstance.d \
 ./x64/Release/ColorCalibrationInterface.d \
 ./x64/Release/ColorCalibrationModule.d \
 ./x64/Release/ColorCalibrationParameters.d \
 ./x64/Release/ColorCalibrationProcess.d \
+./x64/Release/CurveExplorerDialog.d \
+./x64/Release/FilterManagementDialog.d \
 ./x64/Release/LinearFitInstance.d \
 ./x64/Release/LinearFitInterface.d \
 ./x64/Release/LinearFitParameters.d \
@@ -84,7 +108,13 @@ DEP_FILES= \
 ./x64/Release/PhotometricColorCalibrationInstance.d \
 ./x64/Release/PhotometricColorCalibrationInterface.d \
 ./x64/Release/PhotometricColorCalibrationParameters.d \
-./x64/Release/PhotometricColorCalibrationProcess.d
+./x64/Release/PhotometricColorCalibrationProcess.d \
+./x64/Release/SpectrophotometricColorCalibrationGraphInterface.d \
+./x64/Release/SpectrophotometricColorCalibrationInstance.d \
+./x64/Release/SpectrophotometricColorCalibrationInterface.d \
+./x64/Release/SpectrophotometricColorCalibrationParameters.d \
+./x64/Release/SpectrophotometricColorCalibrationPreferencesDialog.d \
+./x64/Release/SpectrophotometricColorCalibrationProcess.d
 
 #
 # Rules

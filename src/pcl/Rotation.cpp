@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.30
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// pcl/Rotation.cpp - Released 2022-08-10T16:36:36Z
+// pcl/Rotation.cpp - Released 2022-11-21T14:46:37Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -118,7 +118,7 @@ public:
       typename P::sample* f = nullptr;
       typename P::sample** f0 = nullptr;
 
-      int n = image.NumberOfChannels();
+      int numberOfChannels = image.NumberOfChannels();
       typename GenericImage<P>::color_space cs0 = image.ColorSpace();
 
       double sa, ca;
@@ -132,29 +132,39 @@ public:
 
       StatusMonitor status = image.Status();
 
-      Array<size_type> L = pcl::Thread::OptimalThreadLoads( height,
-                                                            1/*overheadLimit*/,
-                                                            R.IsParallelProcessingEnabled() ? R.MaxProcessors() : 1 );
+      Array<size_type> L = Thread::OptimalThreadLoads( height,
+                                                       1/*overheadLimit*/,
+                                                       R.IsParallelProcessingEnabled() ? R.MaxProcessors() : 1 );
       try
       {
          size_type N = size_type( width ) * size_type( height );
-         if ( status.IsInitializationEnabled() )
-            status.Initialize( String().Format( "Rotate %.3f deg, ",
-                                                pcl::Deg( R.Angle() ) ) + R.Interpolation().Description(),
-                               size_type( n )*N );
-
          f0 = image.ReleaseData();
 
-         for ( int c = 0; c < n; ++c )
+         if ( R.IsGammaCorrectionEnabled() )
          {
-            ThreadData<P> data( sa, ca, center, origin, srcWidth, srcHeight, width, status, N );
+            size_type Nsrc = size_type( srcWidth ) * size_type( srcHeight );
+            if ( status.IsInitializationEnabled() )
+               status.Initialize( "Gamma correction ("
+                           + (R.RGBWorkingSpace().IsSRGB() ? String( "sRGB" ) :
+                              String().Format( "gamma=%.2f", R.RGBWorkingSpace().Gamma() )) + ')', size_type( numberOfChannels )*Nsrc );
+            AbstractImage::ThreadData data( status, Nsrc );
+            for ( int c = 0; c < numberOfChannels; ++c )
+               R.ApplyGammaCorrection<P>( f0[c], Nsrc, data, R.MaxProcessors() );
+         }
+
+         if ( status.IsInitializationEnabled() )
+            status.Initialize( String().Format( "Rotate %.3f deg, ",
+                                                pcl::Deg( R.Angle() ) ) + R.Interpolation().Description(), size_type( numberOfChannels )*N );
+         for ( int c = 0; c < numberOfChannels; ++c )
+         {
+            RotationThreadData<P> data( sa, ca, center, origin, srcWidth, srcHeight, width, status, N );
 
             data.f = f = image.Allocator().AllocatePixels( N );
             data.fillValue = (c < R.FillValues().Length()) ? P::ToSample( R.FillValues()[c] ) : P::MinSampleValue();
 
-            ReferenceArray<Thread<P> > threads;
+            ReferenceArray<RotationThread<P>> threads;
             for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
-               threads.Add( new Thread<P>( data,
+               threads.Add( new RotationThread<P>( data,
                                            R.Interpolation().NewInterpolator<P>( f0[c], srcWidth, srcHeight, R.UsingUnclippedInterpolation() ),
                                            n,
                                            n + int( L[i] ) ) );
@@ -169,7 +179,16 @@ public:
             status = data.status;
          }
 
-         image.ImportData( f0, width, height, n, cs0 ).Status() = status;
+         if ( R.IsGammaCorrectionEnabled() )
+         {
+            if ( status.IsInitializationEnabled() )
+               status.Initialize( "Inverse gamma correction", size_type( numberOfChannels )*N );
+            AbstractImage::ThreadData data( status, N );
+            for ( int c = 0; c < numberOfChannels; ++c )
+               R.ApplyInverseGammaCorrection<P>( f0[c], N, data, R.MaxProcessors() );
+         }
+
+         image.ImportData( f0, width, height, numberOfChannels, cs0 ).Status() = status;
       }
       catch ( ... )
       {
@@ -177,7 +196,7 @@ public:
             image.Allocator().Deallocate( f );
          if ( f0 != nullptr )
          {
-            for ( int c = 0; c < n; ++c )
+            for ( int c = 0; c < numberOfChannels; ++c )
                if ( f0[c] != nullptr )
                   image.Allocator().Deallocate( f0[c] );
             image.Allocator().Deallocate( f0 );
@@ -190,10 +209,10 @@ public:
 private:
 
    template <class P>
-   struct ThreadData : public AbstractImage::ThreadData
+   struct RotationThreadData : public AbstractImage::ThreadData
    {
-      ThreadData( double a_sa, double a_ca, const DPoint& a_center, const DPoint& a_origin,
-                  int a_srcWidth, int a_srcHeight, int a_width, const StatusMonitor& a_status, size_type a_count )
+      RotationThreadData( double a_sa, double a_ca, const DPoint& a_center, const DPoint& a_origin,
+                          int a_srcWidth, int a_srcHeight, int a_width, const StatusMonitor& a_status, size_type a_count )
          : AbstractImage::ThreadData( a_status, a_count )
          , sa( a_sa )
          , ca( a_ca )
@@ -216,13 +235,13 @@ private:
    };
 
    template <class P>
-   class Thread : public pcl::Thread
+   class RotationThread : public Thread
    {
    public:
 
       using interpolator_type = PixelInterpolation::Interpolator<P>;
 
-      Thread( ThreadData<P>& data, interpolator_type* interpolator, int firstRow, int endRow )
+      RotationThread( RotationThreadData<P>& data, interpolator_type* interpolator, int firstRow, int endRow )
          : m_data( data )
          , m_firstRow( firstRow )
          , m_endRow( endRow )
@@ -256,7 +275,7 @@ private:
 
    private:
 
-      ThreadData<P>&                 m_data;
+      RotationThreadData<P>&         m_data;
       int                            m_firstRow;
       int                            m_endRow;
       AutoPointer<interpolator_type> m_interpolator;
@@ -295,4 +314,4 @@ void Rotation::Apply( pcl::UInt32Image& image ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Rotation.cpp - Released 2022-08-10T16:36:36Z
+// EOF pcl/Rotation.cpp - Released 2022-11-21T14:46:37Z

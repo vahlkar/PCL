@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard ColorSpaces Process Module Version 1.1.2
+// Standard ColorSpaces Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// ChannelCombinationInterface.h - Released 2022-05-17T17:15:11Z
+// ChannelCombinationInterface.h - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -124,19 +124,21 @@ private:
                Label             C2_Label;
                Edit              C2_Edit;
                ToolButton        C2_ToolButton;
+            HorizontalSizer   InheritAstrometricSolution_Sizer;
+               CheckBox          InheritAstrometricSolution_CheckBox;
    };
 
    GUIData* GUI = nullptr;
 
    void UpdateControls();
 
-   void __ColorSpace_Click( Button& sender, bool checked );
-   void __Channel_Click( Button& sender, bool checked );
-   void __ChannelId_GetFocus( Control& sender );
-   void __ChannelId_EditCompleted( Edit& sender );
-   void __Channel_SelectSource_Click( Button& sender, bool checked );
-   void __ViewDrag( Control& sender, const Point& pos, const View& view, unsigned modifiers, bool& wantsView );
-   void __ViewDrop( Control& sender, const Point& pos, const View& view, unsigned modifiers );
+   void e_ColorSpace_Click( Button& sender, bool checked );
+   void e_Channel_Click( Button& sender, bool checked );
+   void e_ChannelId_GetFocus( Control& sender );
+   void e_ChannelId_EditCompleted( Edit& sender );
+   void e_Channel_SelectSource_Click( Button& sender, bool checked );
+   void e_ViewDrag( Control& sender, const Point& pos, const View& view, unsigned modifiers, bool& wantsView );
+   void e_ViewDrop( Control& sender, const Point& pos, const View& view, unsigned modifiers );
 
    friend struct GUIData;
    friend class  ChannelSourceSelectionDialog;
@@ -155,4 +157,4 @@ PCL_END_LOCAL
 #endif   // __ChannelCombinationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF ChannelCombinationInterface.h - Released 2022-05-17T17:15:11Z
+// EOF ChannelCombinationInterface.h - Released 2022-11-21T14:47:17Z

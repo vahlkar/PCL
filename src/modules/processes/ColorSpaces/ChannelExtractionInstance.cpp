@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard ColorSpaces Process Module Version 1.1.2
+// Standard ColorSpaces Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// ChannelExtractionInstance.cpp - Released 2022-05-17T17:15:11Z
+// ChannelExtractionInstance.cpp - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -54,6 +54,7 @@
 #include "ChannelExtractionParameters.h"
 #include "ChannelExtractionProcess.h"
 
+#include <pcl/AstrometricMetadata.h>
 #include <pcl/AutoViewLock.h>
 #include <pcl/ImageWindow.h>
 #include <pcl/StandardStatus.h>
@@ -68,6 +69,7 @@ ChannelExtractionInstance::ChannelExtractionInstance( const MetaProcess* P )
    : ProcessImplementation( P )
    , p_colorSpace( ColorSpaceId::Default )
    , p_sampleFormat( ChannelSampleFormat::Default )
+   , p_inheritAstrometricSolution( TheCEInheritAstrometricSolutionParameter )
 {
    for ( int i = 0; i < 3; ++i )
    {
@@ -82,6 +84,7 @@ ChannelExtractionInstance::ChannelExtractionInstance( const ChannelExtractionIns
    : ProcessImplementation( x )
    , p_colorSpace( x.p_colorSpace )
    , p_sampleFormat( x.p_sampleFormat )
+   , p_inheritAstrometricSolution( x.p_inheritAstrometricSolution )
 {
    for ( int i = 0; i < 3; ++i )
    {
@@ -125,6 +128,7 @@ void ChannelExtractionInstance::Assign( const ProcessImplementation& p )
    {
       p_colorSpace = x->p_colorSpace;
       p_sampleFormat = x->p_sampleFormat;
+      p_inheritAstrometricSolution = x->p_inheritAstrometricSolution;
 
       for ( int i = 0; i < 3; ++i )
       {
@@ -174,7 +178,7 @@ template <class P, class P1>
 __attribute__((noinline))
 #endif
 static void ExtractChannels( const GenericImage<P>& img, const View& view,
-                       const ChannelExtractionInstance& E, const String& baseId, GenericImage<P1>* )
+                             const ChannelExtractionInstance& E, const String& baseId, GenericImage<P1>* )
 {
    ImageWindow targetWindow[ 3 ];
    ImageVariant targetImage[ 3 ];
@@ -184,16 +188,29 @@ static void ExtractChannels( const GenericImage<P>& img, const View& view,
       typename P1::sample* data[ 3 ];
       int numberOfTargets = 0;
 
+      ImageWindow window = view.Window();
+
       RGBColorSystem rgbws;
-      view.Window().GetRGBWS( rgbws );
+      window.GetRGBWS( rgbws );
 
       double xRes, yRes;
       bool metric;
-      view.Window().GetResolution( xRes, yRes, metric );
+      window.GetResolution( xRes, yRes, metric );
 
-      FITSKeywordArray keywords = view.Window().Keywords();
-
+      FITSKeywordArray keywords = window.Keywords();
       PropertyArray properties = view.StorablePermanentProperties();
+
+      AstrometricMetadata A;
+      bool inheritAstrometricSolution = E.InheritAstrometricSolution() && (view.IsMainView() || view.IsCompletePreview());
+      if ( inheritAstrometricSolution )
+      {
+         A = AstrometricMetadata( window );
+         if ( !A.IsValid() )
+         {
+            inheritAstrometricSolution = false;
+            Console().WarningLn( "<end><cbr>** Invalid astrometric solution ignored: " + window.MainView().Id() );
+         }
+      }
 
       for ( int i = 0; i < 3; ++i )
          if ( E.IsChannelEnabled( i ) )
@@ -334,7 +351,21 @@ static void ExtractChannels( const GenericImage<P>& img, const View& view,
 
       for ( int i = 0; i < 3; ++i )
          if ( E.IsChannelEnabled( i ) )
+         {
+            if ( inheritAstrometricSolution )
+            {
+               A.Write( targetWindow[i] );
+               if ( targetWindow[i].RegenerateAstrometricSolution() )
+               {
+                  targetWindow[i].MainView().SetStorablePermanentPropertyValue( "PCL:AstrometricSolution:Information",
+                                                                                "source=inherited,process=ChannelExtraction" );
+                  Console().NoteLn( "<end><cbr>* Astrometric solution inherited: "
+                                    + window.MainView().Id() + " => " + targetWindow[i].MainView().Id() );
+               }
+            }
+
             targetWindow[i].Show();
+         }
    }
    catch ( ... )
    {
@@ -385,7 +416,7 @@ bool ChannelExtractionInstance::ExecuteOn( View& view )
       throw Error( "ChannelExtraction cannot be executed on complex images." );
 
    if ( image->ColorSpace() != ColorSpace::RGB )
-      throw Error( "ChannelExtraction requires a RGB color image." );
+      throw Error( "ChannelExtraction requires an RGB color image." );
 
    Console().EnableAbort();
 
@@ -464,6 +495,8 @@ void* ChannelExtractionInstance::LockParameter( const MetaParameter* p, size_typ
       return p_channelId[tableRow].Begin();
    if ( p == TheChannelSampleFormatExtractionParameter )
       return &p_sampleFormat;
+   if ( p == TheCEInheritAstrometricSolutionParameter )
+      return &p_inheritAstrometricSolution;
 
    return nullptr;
 }
@@ -503,4 +536,4 @@ size_type ChannelExtractionInstance::ParameterLength( const MetaParameter* p, si
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ChannelExtractionInstance.cpp - Released 2022-05-17T17:15:11Z
+// EOF ChannelExtractionInstance.cpp - Released 2022-11-21T14:47:17Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.30
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// pcl/Resample.cpp - Released 2022-08-10T16:36:36Z
+// pcl/Resample.cpp - Released 2022-11-21T14:46:37Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -170,36 +170,49 @@ public:
       typename P::sample* f = nullptr;
       typename P::sample** f0 = nullptr;
 
-      int n = image.NumberOfChannels();
-      typename GenericImage<P>::color_space cs0 = image.ColorSpace();
+      int numberOfChannels = image.NumberOfChannels();
+      typename GenericImage<P>::color_space colorSpace = image.ColorSpace();
 
       double rx = double( srcWidth )/width;
       double ry = double( srcHeight )/height;
 
       StatusMonitor status = image.Status();
 
-      Array<size_type> L = pcl::Thread::OptimalThreadLoads( height,
-                                                            1/*overheadLimit*/,
-                                                            R.IsParallelProcessingEnabled() ? R.MaxProcessors() : 1 );
+      Array<size_type> L = Thread::OptimalThreadLoads( height,
+                                                       1/*overheadLimit*/,
+                                                       R.IsParallelProcessingEnabled() ? R.MaxProcessors() : 1 );
       try
       {
          size_type N = size_type( width ) * size_type( height );
-         if ( status.IsInitializationEnabled() )
-            status.Initialize( String().Format( "Resampling to %dx%d px, ", width, height )
-                                                + R.Interpolation().Description(), size_type( n )*N );
          f0 = image.ReleaseData();
 
-         for ( int c = 0; c < n; ++c )
+         if ( R.IsGammaCorrectionEnabled() )
          {
-            ThreadData<P> data( rx, ry, width, status, N );
+            size_type Nsrc = size_type( srcWidth ) * size_type( srcHeight );
+            if ( status.IsInitializationEnabled() )
+               status.Initialize( "Gamma correction ("
+                           + (R.RGBWorkingSpace().IsSRGB() ? String( "sRGB" ) :
+                              String().Format( "gamma=%.2f", R.RGBWorkingSpace().Gamma() )) + ')', size_type( numberOfChannels )*Nsrc );
+            AbstractImage::ThreadData data( status, Nsrc );
+            for ( int c = 0; c < numberOfChannels; ++c )
+               R.ApplyGammaCorrection<P>( f0[c], Nsrc, data, R.MaxProcessors() );
+         }
+
+         if ( status.IsInitializationEnabled() )
+            status.Initialize( String().Format( "Resampling to %dx%d px, ", width, height )
+                                                + R.Interpolation().Description(), size_type( numberOfChannels )*N );
+
+         for ( int c = 0; c < numberOfChannels; ++c )
+         {
+            ResampleThreadData<P> data( rx, ry, width, status, N );
             data.f = f = image.Allocator().AllocatePixels( width, height );
 
-            ReferenceArray<Thread<P> > threads;
+            ReferenceArray<ResampleThread<P>> threads;
             for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
-               threads.Add( new Thread<P>( data,
-                                           R.Interpolation().NewInterpolator<P>( f0[c], srcWidth, srcHeight, R.UsingUnclippedInterpolation() ),
-                                           n,
-                                           n + int( L[i] ) ) );
+               threads.Add( new ResampleThread<P>( data,
+                                    R.Interpolation().NewInterpolator<P>( f0[c], srcWidth, srcHeight, R.UsingUnclippedInterpolation() ),
+                                    n,
+                                    n + int( L[i] ) ) );
 
             AbstractImage::RunThreads( threads, data );
             threads.Destroy();
@@ -211,7 +224,16 @@ public:
             status = data.status;
          }
 
-         image.ImportData( f0, width, height, n, cs0 ).Status() = status;
+         if ( R.IsGammaCorrectionEnabled() )
+         {
+            if ( status.IsInitializationEnabled() )
+               status.Initialize( "Inverse gamma correction", size_type( numberOfChannels )*N );
+            AbstractImage::ThreadData data( status, N );
+            for ( int c = 0; c < numberOfChannels; ++c )
+               R.ApplyInverseGammaCorrection<P>( f0[c], N, data, R.MaxProcessors() );
+         }
+
+         image.ImportData( f0, width, height, numberOfChannels, colorSpace ).Status() = status;
       }
       catch ( ... )
       {
@@ -219,7 +241,7 @@ public:
             image.Allocator().Deallocate( f );
          if ( f0 != nullptr )
          {
-            for ( int c = 0; c < n; ++c )
+            for ( int c = 0; c < numberOfChannels; ++c )
                if ( f0[c] != nullptr )
                   image.Allocator().Deallocate( f0[c] );
             image.Allocator().Deallocate( f0 );
@@ -232,9 +254,9 @@ public:
 private:
 
    template <class P>
-   struct ThreadData : public AbstractImage::ThreadData
+   struct ResampleThreadData : public AbstractImage::ThreadData
    {
-      ThreadData( double a_xRatio, double a_yRatio, int a_width, const StatusMonitor& a_status, size_type a_count )
+      ResampleThreadData( double a_xRatio, double a_yRatio, int a_width, const StatusMonitor& a_status, size_type a_count )
          : AbstractImage::ThreadData( a_status, a_count )
          , xRatio( a_xRatio )
          , yRatio( a_yRatio )
@@ -249,13 +271,13 @@ private:
    };
 
    template <class P>
-   class Thread : public pcl::Thread
+   class ResampleThread : public Thread
    {
    public:
 
       using interpolator_type = PixelInterpolation::Interpolator<P>;
 
-      Thread( ThreadData<P>& data, interpolator_type* interpolator, int firstRow, int endRow )
+      ResampleThread( ResampleThreadData<P>& data, interpolator_type* interpolator, int firstRow, int endRow )
          : m_data( data )
          , m_firstRow( firstRow )
          , m_endRow( endRow )
@@ -280,7 +302,7 @@ private:
 
    private:
 
-      ThreadData<P>&                 m_data;
+      ResampleThreadData<P>&         m_data;
       int                            m_firstRow;
       int                            m_endRow;
       AutoPointer<interpolator_type> m_interpolator;
@@ -319,4 +341,4 @@ void Resample::Apply( pcl::UInt32Image& image ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Resample.cpp - Released 2022-08-10T16:36:36Z
+// EOF pcl/Resample.cpp - Released 2022-11-21T14:46:37Z

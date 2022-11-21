@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.5.2
+// Standard ColorCalibration Process Module Version 1.9.0
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationProcess.cpp - Released 2022-05-20T16:28:45Z
+// PhotometricColorCalibrationProcess.cpp - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -73,52 +73,33 @@ PhotometricColorCalibrationProcess::PhotometricColorCalibrationProcess()
 {
    ThePhotometricColorCalibrationProcess = this;
 
-   new PCCWorkingMode( this );
    new PCCApplyCalibration( this );
-   new PCCRedFilterWavelength( this );
-   new PCCRedFilterBandwidth( this );
-   new PCCGreenFilterWavelength( this );
-   new PCCGreenFilterBandwidth( this );
-   new PCCBlueFilterWavelength( this );
-   new PCCBlueFilterBandwidth( this );
    new PCCWhiteReferenceId( this );
    new PCCWhiteReferenceName( this );
    new PCCWhiteReferenceSr_JV( this );
    new PCCWhiteReferenceJB_JV( this );
    new PCCZeroPointSr_JV( this );
    new PCCZeroPointJB_JV( this );
-   new PCCFocalLength( this );
-   new PCCPixelSize( this );
-   new PCCCenterRA( this );
-   new PCCCenterDec( this );
-   new PCCEpochJD( this );
-   new PCCForcePlateSolve( this );
-   new PCCIgnoreImagePositionAndScale( this );
+   new PCCAutoCatalog( this );
+   new PCCCatalogId( this );
+   new PCCLimitMagnitude( this );
+   new PCCAutoLimitMagnitude( this );
+   new PCCTargetSourceCount( this );
    new PCCServerURL( this );
-   new PCCSolverCatalogName( this );
-   new PCCSolverAutoCatalog( this );
-   new PCCSolverLimitMagnitude( this );
-   new PCCSolverAutoLimitMagnitude( this );
-   new PCCSolverStructureLayers( this );
-   new PCCSolverMinStructureSize( this );
-   new PCCSolverNoiseReductionFilterRadius( this );
-   new PCCSolverSensitivity( this );
-   new PCCSolverAlignmentDevice( this );
-   new PCCSolverDistortionCorrection( this );
-   new PCCSolverSplineSmoothing( this );
-   new PCCSolverProjection( this );
-   new PCCPhotCatalogName( this );
-   new PCCPhotAutoCatalog( this );
-   new PCCPhotLimitMagnitude( this );
-   new PCCPhotAutoLimitMagnitude( this );
-   new PCCPhotAutoLimitMagnitudeFactor( this );
-   new PCCPhotAutoAperture( this );
-   new PCCPhotAperture( this );
-   new PCCPhotUsePSF( this );
-   new PCCPhotSaturationThreshold( this );
-   new PCCPhotShowDetectedStars( this );
-   new PCCPhotShowBackgroundModels( this );
-   new PCCPhotGenerateGraphs( this );
+   new PCCStructureLayers( this );
+   new PCCSaturationThreshold( this );
+   new PCCSaturationRelative( this );
+   new PCCPSFNoiseLayers( this );
+   new PCCPSFHotPixelFilterRadius( this );
+   new PCCPSFNoiseReductionFilterRadius( this );
+   new PCCPSFMinStructureSize( this );
+   new PCCPSFMinSNR( this );
+   new PCCPSFAllowClusteredSources( this );
+   new PCCPSFType( this );
+   new PCCPSFGrowth( this );
+   new PCCPSFMaxStars( this );
+   new PCCPSFSearchTolerance( this );
+   new PCCPSFChannelSearchTolerance( this );
    new PCCNeutralizeBackground( this );
    new PCCBackgroundReferenceViewId( this );
    new PCCBackgroundLow( this );
@@ -128,6 +109,10 @@ PhotometricColorCalibrationProcess::PhotometricColorCalibrationProcess()
    new PCCBackgroundROIY0( this );
    new PCCBackgroundROIX1( this );
    new PCCBackgroundROIY1( this );
+   new PCCGenerateGraphs( this );
+   new PCCGenerateStarMaps( this );
+   new PCCGenerateTextFiles( this );
+   new PCCOutputDirectory( this );
 }
 
 // ----------------------------------------------------------------------------
@@ -148,7 +133,7 @@ IsoString PhotometricColorCalibrationProcess::Category() const
 
 uint32 PhotometricColorCalibrationProcess::Version() const
 {
-   return 2;
+   return 3; // November 2022
 }
 
 // ----------------------------------------------------------------------------
@@ -213,9 +198,9 @@ void PhotometricColorCalibrationProcess::InitializeWhiteReferences()
          xml.Parse( File::ReadTextFile( wrfFilePath ).UTF8ToUTF16() );
 
          if ( xml.RootElement() == nullptr )
-            throw String( "The XML document has no root element." );
+            throw String( "The XML document has no root element" );
          if ( xml.RootElement()->Name() != "xwrf" || xml.RootElement()->AttributeValue( "version" ) != "1.0" )
-            throw String( "Not an XWRF version 1.0 document." );
+            throw String( "Not an XWRF version 1.0 document" );
 
          bool zeroPointDefined = false;
          int errorCount = 0;
@@ -358,4 +343,4 @@ int PhotometricColorCalibrationProcess::FindWhiteReferenceById( const String& id
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationProcess.cpp - Released 2022-05-20T16:28:45Z
+// EOF PhotometricColorCalibrationProcess.cpp - Released 2022-11-21T14:47:17Z

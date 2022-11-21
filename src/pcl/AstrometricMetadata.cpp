@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.30
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// pcl/AstrometricMetadata.cpp - Released 2022-08-10T16:36:36Z
+// pcl/AstrometricMetadata.cpp - Released 2022-11-21T14:46:37Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -235,8 +235,8 @@ void AstrometricMetadata::Write( ImageWindow& window, bool notify ) const
       view.SetStorablePropertyValue( "Observation:CelestialReferenceSystem", ReferenceSystem(), notify );
       view.SetStorablePropertyValue( "Observation:Equinox", 2000.0, notify );
       // The default reference point is the geometric center of the image.
-      view.DeleteProperty( "Observation:Center:X", notify );
-      view.DeleteProperty( "Observation:Center:Y", notify );
+      view.DeletePropertyIfExists( "Observation:Center:X", notify );
+      view.DeletePropertyIfExists( "Observation:Center:Y", notify );
    }
 
    const SplineWorldTransformation* splineTransform = dynamic_cast<const SplineWorldTransformation*>( m_transformWI.Pointer() );
@@ -247,7 +247,7 @@ void AstrometricMetadata::Write( ImageWindow& window, bool notify ) const
       view.SetStorablePropertyValue( "Transformation_ImageToProjection", data, notify );
    }
    else
-      view.DeleteProperty( "Transformation_ImageToProjection", notify );
+      view.DeletePropertyIfExists( "Transformation_ImageToProjection", notify );
 }
 
 // ----------------------------------------------------------------------------
@@ -1032,4 +1032,4 @@ void AstrometricMetadata::UpdateDescription() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AstrometricMetadata.cpp - Released 2022-08-10T16:36:36Z
+// EOF pcl/AstrometricMetadata.cpp - Released 2022-11-21T14:46:37Z

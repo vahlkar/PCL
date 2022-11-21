@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
 // Standard StarNet Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// StarNetInstance.h - Released 2022-05-17T17:15:11Z
+// StarNetInstance.h - Released 2022-11-21T14:47:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarNet PixInsight module.
 //
@@ -70,4 +70,4 @@ private:
 #endif   // __StarNetInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF StarNetInstance.h - Released 2022-05-17T17:15:11Z
+// EOF StarNetInstance.h - Released 2022-11-21T14:47:18Z

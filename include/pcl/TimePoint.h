@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.30
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// pcl/TimePoint.h - Released 2022-08-10T16:36:27Z
+// pcl/TimePoint.h - Released 2022-11-21T14:46:30Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -693,6 +693,44 @@ public:
    }
 
    /*!
+    * Returns the time interval in days elapsed since the reference epoch.
+    * Currently this function is equivalent to DaysSinceJ2000().
+    */
+   constexpr double DaysSinceReferenceEpoch() const
+   {
+      return DaysSinceJ2000();
+   }
+
+   /*!
+    * Returns the time interval in Julian years (365.25 days) elapsed since the
+    * reference epoch. Currently this function is equivalent to
+    * YearsSinceJ2000().
+    */
+   constexpr double YearsSinceReferenceEpoch() const
+   {
+      return YearsSinceJ2000();
+   }
+
+   /*!
+    * Returns the time interval in Julian centuries (36525 days) elapsed since
+    * the reference epoch. Currently this function is equivalent to
+    * CenturiesSinceJ2000().
+    */
+   constexpr double CenturiesSinceReferenceEpoch() const
+   {
+      return CenturiesSinceJ2000();
+   }
+
+   /*!
+    * Returns the time interval in seconds elapsed since the reference epoch.
+    * Currently this function is equivalent to SecondsSinceJ2000().
+    */
+   constexpr double SecondsSinceReferenceEpoch() const
+   {
+      return SecondsSinceJ2000();
+   }
+
+   /*!
     * Returns the time interval in days elapsed since the standard J2000 epoch
     * (JD 2451545.0 = 2000 January 1.5).
     */
@@ -804,6 +842,16 @@ public:
     * the UTC timescale.
     */
    static TimePoint Now();
+
+   /*!
+    * Returns a %TimePoint object corresponding to the reference epoch.
+    * Currently this function returns J2000(), that is JD 2451545.0,
+    * corresponding to the midday of 2000 January 1.
+    */
+   static TimePoint ReferenceEpoch()
+   {
+      return J2000();
+   }
 
    /*!
     * Returns a %TimePoint object corresponding to the standard J2000 epoch,
@@ -1207,4 +1255,4 @@ inline TimePoint operator -( const TimePoint& t, double d )
 #endif   // __PCL_TimePoint_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/TimePoint.h - Released 2022-08-10T16:36:27Z
+// EOF pcl/TimePoint.h - Released 2022-11-21T14:46:30Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard ColorSpaces Process Module Version 1.1.2
+// Standard ColorSpaces Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// LRGBCombinationInterface.cpp - Released 2022-05-17T17:15:11Z
+// LRGBCombinationInterface.cpp - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -212,6 +212,8 @@ void LRGBCombinationInterface::UpdateControls()
 
    GUI->B_ToolButton.Enable( isB );
 
+   GUI->InheritAstrometricSolution_CheckBox.SetChecked( m_instance.p_inheritAstrometricSolution );
+
    GUI->L_Weight_NumericControl.SetValue( m_instance.channelWeight[3] );
 
    GUI->R_Weight_NumericControl.SetValue( m_instance.channelWeight[0] );
@@ -246,6 +248,11 @@ void LRGBCombinationInterface::__Channel_Click( Button& sender, bool checked )
       i = 1;
    else if ( sender == GUI->B_CheckBox )
       i = 2;
+   else if ( sender == GUI->InheritAstrometricSolution_CheckBox )
+   {
+      m_instance.p_inheritAstrometricSolution = checked;
+      return;
+   }
    else
       return;
 
@@ -564,12 +571,29 @@ LRGBCombinationInterface::GUIData::GUIData( LRGBCombinationInterface& w )
 
    //
 
+   InheritAstrometricSolution_CheckBox.SetText( "Inherit astrometric solution" );
+   InheritAstrometricSolution_CheckBox.SetToolTip( "<p>Copy an existing astrometric solution to the combined image.</p>"
+      "<p>This option is only applicable to global execution, that is, when LRGBCombination creates a new combined image, "
+      "or to execution on main views. This option is always ignored when LRGBCombination is executed on previews.</p>"
+      "<p>When this option is enabled, a valid astrometric solution is inherited if it exists in the L (lightness) "
+      "source image. If a valid solution does not exist in the L image, or if the L image is disabled, the process "
+      "looks for a valid astrometric solution in one of the other enabled source images. If no valid astrometric "
+      "solution can be found, this option is silently ignored.</p>" );
+   InheritAstrometricSolution_CheckBox.OnClick( (pcl::Button::click_event_handler)&LRGBCombinationInterface::__Channel_SelectSource_Click, w );
+
+   InheritAstrometricSolution_Sizer.Add( InheritAstrometricSolution_CheckBox );
+   InheritAstrometricSolution_Sizer.AddStretch();
+
+   //
+
    Channels_Sizer.SetMargin( 6 );
    Channels_Sizer.SetSpacing( 4 );
    Channels_Sizer.Add( L_Sizer );
    Channels_Sizer.Add( R_Sizer );
    Channels_Sizer.Add( G_Sizer );
    Channels_Sizer.Add( B_Sizer );
+   Channels_Sizer.AddSpacing( 4 );
+   Channels_Sizer.Add( InheritAstrometricSolution_Sizer );
 
    Channels_Control.SetSizer( Channels_Sizer );
    Channels_Control.AdjustToContents();
@@ -742,4 +766,4 @@ LRGBCombinationInterface::GUIData::GUIData( LRGBCombinationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LRGBCombinationInterface.cpp - Released 2022-05-17T17:15:11Z
+// EOF LRGBCombinationInterface.cpp - Released 2022-11-21T14:47:17Z

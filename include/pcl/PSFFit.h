@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.30
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// pcl/PSFFit.h - Released 2022-08-10T16:36:28Z
+// pcl/PSFFit.h - Released 2022-11-21T14:46:30Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -328,6 +328,27 @@ struct PSFData
    }
 
    /*!
+    * Returns the PSF bounding rectangle corresponding to the full width at
+    * tenth maximum (FWTM). The coordinates of the bounding rectangle \a r are
+    * calculated as follows:
+    *
+    * r.x0 = c0.x - d \n
+    * r.y0 = c0.y - d \n
+    * r.x1 = c0.x + d \n
+    * r.y1 = c0.y + d \n
+    *
+    * where d is equal to:
+    *
+    * FWTMx()/2 for a circular PSF, \n
+    * Max( FWTMx(), FWTMy() )/2 for an elliptic PSF.
+    */
+   DRect FWTMBounds() const
+   {
+      double d = (circular ? FWHMx() : Max( FWHMx(), FWHMy() ))/2;
+      return DRect( c0.x-d, c0.y-d, c0.x+d, c0.y+d );
+   }
+
+   /*!
     * Returns true iff this object contains valid equatorial coordinates
     * computed by an astrometric solution of the image for the centroid
     * coordinates.
@@ -609,4 +630,4 @@ private:
 #endif   // __PCL_PSFFit_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFFit.h - Released 2022-08-10T16:36:28Z
+// EOF pcl/PSFFit.h - Released 2022-11-21T14:46:30Z

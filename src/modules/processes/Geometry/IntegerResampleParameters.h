@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 1.2.4
+// Standard Geometry Process Module Version 1.3.1
 // ----------------------------------------------------------------------------
-// IntegerResampleParameters.h - Released 2022-05-17T17:15:11Z
+// IntegerResampleParameters.h - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -107,6 +107,7 @@ extern XResolution* TheIRXResolutionParameter;
 extern YResolution* TheIRYResolutionParameter;
 extern MetricResolution* TheIRMetricResolutionParameter;
 extern ForceResolution* TheIRForceResolutionParameter;
+extern GammaCorrection* TheIRGammaCorrectionParameter;
 
 extern NoGUIMessages* TheIRNoGUIMessagesParameter;
 
@@ -119,4 +120,4 @@ PCL_END_LOCAL
 #endif   // __IntegerResampleParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF IntegerResampleParameters.h - Released 2022-05-17T17:15:11Z
+// EOF IntegerResampleParameters.h - Released 2022-11-21T14:47:17Z

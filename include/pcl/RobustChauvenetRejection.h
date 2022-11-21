@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.30
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// pcl/RobustChauvenetRejection.h - Released 2022-08-10T16:36:28Z
+// pcl/RobustChauvenetRejection.h - Released 2022-11-21T14:46:30Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -106,7 +106,7 @@ public:
    /*!
     * Returns the limit for the altered Chauvenet rejection criterion.
     *
-    * The larger the value of this parameter, the more pixels will be rejected
+    * The larger the value of this parameter, the more items will be rejected
     * by the Robust Chauvenet Rejection algorithm. The original Chauvenet
     * rejection criterion is N*P(x > |z|) &lt; 0.5, where N is the number of
     * measurements and P() represents the probability of x being more than z
@@ -247,7 +247,7 @@ public:
             if ( n <= I( m_largeSampleSize ) + I( m_largeSampleSize >> 1 ) )
             {
                /*
-                * Optimal single-pixel rejection iteration for 'small' samples.
+                * Optimal single-item rejection iteration for 'small' samples.
                 */
                double d0 = n*QF( (mean - data[i])/sigma );
                double d1 = n*QF( (data[j-1] - mean)/sigma );
@@ -319,6 +319,8 @@ private:
    static double SampleDeviation( const C& R, I i, I j, double m )
    {
       int N = int( j - i );
+      if ( N < 2 )
+         return 0;
       Vector D( N );
       for ( int k = 0; i < j; ++i, ++k )
          D[k] = Abs( double( R[i] ) - m );
@@ -366,4 +368,4 @@ private:
 #endif   // __PCL_RobustChauvenetRejection_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/RobustChauvenetRejection.h - Released 2022-08-10T16:36:28Z
+// EOF pcl/RobustChauvenetRejection.h - Released 2022-11-21T14:46:30Z

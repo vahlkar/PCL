@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 1.2.4
+// Standard Geometry Process Module Version 1.3.1
 // ----------------------------------------------------------------------------
-// RotationInterface.h - Released 2022-05-17T17:15:11Z
+// RotationInterface.h - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -120,6 +120,8 @@ private:
             ComboBox          Algorithm_ComboBox;
          NumericEdit       ClampingThreshold_NumericEdit;
          NumericEdit       Smoothness_NumericEdit;
+         HorizontalSizer   GammaCorrection_Sizer;
+            CheckBox          GammaCorrection_CheckBox;
 
       SectionBar        FillColor_SectionBar;
       Control           FillColor_Control;
@@ -133,23 +135,19 @@ private:
 
    GUIData* GUI = nullptr;
 
-   bool dragging = false; // dragging the mouse cursor on the angle dial
+   bool m_dragging = false; // dragging the mouse cursor on the angle dial
 
    void UpdateControls();
    void UpdateNumericControls();
    void UpdateFillColorControls();
 
-   void __Angle_ValueUpdated( NumericEdit& sender, double value );
-   void __Clockwise_Click( Button& sender, bool checked );
-   void __OptimizeFast_Click( Button& sender, bool checked );
-   void __AngleDial_Paint( Control& sender, const Rect& updateRect );
-   void __AngleDial_MouseMove( Control& sender, const Point& pos, unsigned buttons, unsigned modifiers );
-   void __AngleDial_MousePress( Control& sender, const Point& pos, int button, unsigned buttons, unsigned modifiers );
-   void __AngleDial_MouseRelease( Control& sender, const Point& pos, int button, unsigned buttons, unsigned modifiers );
-   void __Algorithm_ItemSelected( ComboBox& sender, int itemIndex );
-   void __Algorithm_ValueUpdated( NumericEdit& sender, double value );
-   void __FilColor_ValueUpdated( NumericEdit& sender, double value );
-   void __ColorSample_Paint( Control& sender, const Rect& updateRect );
+   void e_ValueUpdated( NumericEdit& sender, double value );
+   void e_ButtonClick( Button& sender, bool checked );
+   void e_ItemSelected( ComboBox& sender, int itemIndex );
+   void e_Paint( Control& sender, const Rect& updateRect );
+   void e_MouseMove( Control& sender, const Point& pos, unsigned buttons, unsigned modifiers );
+   void e_MousePress( Control& sender, const Point& pos, int button, unsigned buttons, unsigned modifiers );
+   void e_MouseRelease( Control& sender, const Point& pos, int button, unsigned buttons, unsigned modifiers );
 
    friend struct GUIData;
 };
@@ -167,4 +165,4 @@ PCL_END_LOCAL
 #endif   // __RotationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF RotationInterface.h - Released 2022-05-17T17:15:11Z
+// EOF RotationInterface.h - Released 2022-11-21T14:47:17Z

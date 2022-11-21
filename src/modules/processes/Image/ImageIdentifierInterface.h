@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// ImageIdentifierInterface.h - Released 2022-05-17T17:15:11Z
+// ImageIdentifierInterface.h - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -123,4 +123,4 @@ PCL_END_LOCAL
 #endif   // __ImageIdentifierInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageIdentifierInterface.h - Released 2022-05-17T17:15:11Z
+// EOF ImageIdentifierInterface.h - Released 2022-11-21T14:47:17Z

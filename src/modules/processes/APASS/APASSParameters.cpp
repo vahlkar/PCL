@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard APASS Process Module Version 1.1.0
+// Standard APASS Process Module Version 1.1.4
 // ----------------------------------------------------------------------------
-// APASSParameters.cpp - Released 2022-05-17T17:15:11Z
+// APASSParameters.cpp - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard APASS PixInsight module.
 //
@@ -71,6 +71,7 @@ AVerbosity*             TheAVerbosityParameter = nullptr;
 ADataRelease*           TheADataReleaseParameter = nullptr;
 ASortBy*                TheASortByParameter = nullptr;
 AGenerateTextOutput*    TheAGenerateTextOutputParameter = nullptr;
+AGenerateBinaryOutput*  TheAGenerateBinaryOutputParameter = nullptr;
 ATextFormat*            TheATextFormatParameter = nullptr;
 ATextHeaders*           TheATextHeadersParameter = nullptr;
 AOutputFilePath*        TheAOutputFilePathParameter = nullptr;
@@ -428,6 +429,24 @@ IsoString AGenerateTextOutput::Id() const
 bool AGenerateTextOutput::DefaultValue() const
 {
    return true;
+}
+
+// ----------------------------------------------------------------------------
+
+AGenerateBinaryOutput::AGenerateBinaryOutput( MetaProcess* P )
+   : MetaBoolean( P )
+{
+   TheAGenerateBinaryOutputParameter = this;
+}
+
+IsoString AGenerateBinaryOutput::Id() const
+{
+   return "generateBinaryOutput";
+}
+
+bool AGenerateBinaryOutput::DefaultValue() const
+{
+   return false;
 }
 
 // ----------------------------------------------------------------------------
@@ -1140,4 +1159,4 @@ bool ADatabaseMagnitudeHigh::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF APASSParameters.cpp - Released 2022-05-17T17:15:11Z
+// EOF APASSParameters.cpp - Released 2022-11-21T14:47:17Z

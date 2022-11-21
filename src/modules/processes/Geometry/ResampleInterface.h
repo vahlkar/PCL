@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 1.2.4
+// Standard Geometry Process Module Version 1.3.1
 // ----------------------------------------------------------------------------
-// ResampleInterface.h - Released 2022-05-17T17:15:11Z
+// ResampleInterface.h - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -146,6 +146,8 @@ private:
          ComboBox             Algorithm_ComboBox;
          NumericControl ClampingThreshold_NumericControl;
          NumericControl Smoothness_NumericControl;
+         HorizontalSizer   GammaCorrection_Sizer;
+            CheckBox          GammaCorrection_CheckBox;
 
       SectionBar        Resolution_SectionBar;
       Control           Resolution_Control;
@@ -173,17 +175,15 @@ private:
 
    void UpdateControls();
 
-   void __ViewList_ViewSelected( ViewList& sender, View& view );
-   void __Width_ValueUpdated( NumericEdit& sender, double value );
-   void __Height_ValueUpdated( NumericEdit& sender, double value );
-   void __Resolution_ValueUpdated( NumericEdit& sender, double value );
-   void __Units_ButtonClick( Button& sender, bool checked );
-   void __ForceResolution_ButtonClick( Button& sender, bool checked );
-   void __Algorithm_ItemSelected( ComboBox& sender, int itemIndex );
-   void __Algorithm_ValueUpdated( NumericEdit& sender, double value );
-   void __Mode_ItemSelected( ComboBox& sender, int itemIndex );
-   void __ViewDrag( Control& sender, const Point& pos, const View& view, unsigned modifiers, bool& wantsView );
-   void __ViewDrop( Control& sender, const Point& pos, const View& view, unsigned modifiers );
+   void e_ViewSelected( ViewList& sender, View& view );
+   void e_ValueUpdated( NumericEdit& sender, double value );
+   void e_Width_ValueUpdated( NumericEdit& sender, double value );
+   void e_Height_ValueUpdated( NumericEdit& sender, double value );
+   void e_ButtonClick( Button& sender, bool checked );
+   void e_ItemSelected( ComboBox& sender, int itemIndex );
+   void e_Mode_ItemSelected( ComboBox& sender, int itemIndex );
+   void e_ViewDrag( Control& sender, const Point& pos, const View& view, unsigned modifiers, bool& wantsView );
+   void e_ViewDrop( Control& sender, const Point& pos, const View& view, unsigned modifiers );
 
    friend struct GUIData;
 };
@@ -201,4 +201,4 @@ PCL_END_LOCAL
 #endif   // __ResampleInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF ResampleInterface.h - Released 2022-05-17T17:15:11Z
+// EOF ResampleInterface.h - Released 2022-11-21T14:47:17Z

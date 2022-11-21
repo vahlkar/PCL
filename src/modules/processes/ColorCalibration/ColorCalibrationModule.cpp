@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.5.2
+// Standard ColorCalibration Process Module Version 1.9.0
 // ----------------------------------------------------------------------------
-// ColorCalibrationModule.cpp - Released 2022-05-20T16:28:45Z
+// ColorCalibrationModule.cpp - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -51,14 +51,14 @@
 // ----------------------------------------------------------------------------
 
 #define MODULE_VERSION_MAJOR     1
-#define MODULE_VERSION_MINOR     5
-#define MODULE_VERSION_REVISION  2
+#define MODULE_VERSION_MINOR     9
+#define MODULE_VERSION_REVISION  0
 #define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2022
-#define MODULE_RELEASE_MONTH     5
-#define MODULE_RELEASE_DAY       20
+#define MODULE_RELEASE_MONTH     11
+#define MODULE_RELEASE_DAY       21
 
 #include "ColorCalibrationModule.h"
 #include "BackgroundNeutralizationProcess.h"
@@ -70,6 +70,9 @@
 #include "PhotometricColorCalibrationProcess.h"
 #include "PhotometricColorCalibrationInterface.h"
 #include "PhotometricColorCalibrationGraphInterface.h"
+#include "SpectrophotometricColorCalibrationProcess.h"
+#include "SpectrophotometricColorCalibrationInterface.h"
+#include "SpectrophotometricColorCalibrationGraphInterface.h"
 
 namespace pcl
 {
@@ -164,6 +167,8 @@ void ColorCalibrationModule::GetReleaseDate( int& year, int& month, int& day ) c
 
 void ColorCalibrationModule::OnUnload()
 {
+   SpectrophotometricColorCalibrationProcess::SavePreferences();
+   TheSpectrophotometricColorCalibrationGraphInterface->CleanUp();
    ThePhotometricColorCalibrationGraphInterface->CleanUp();
 }
 
@@ -188,10 +193,13 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
       new pcl::PhotometricColorCalibrationProcess;
       new pcl::PhotometricColorCalibrationInterface;
       new pcl::PhotometricColorCalibrationGraphInterface;
+      new pcl::SpectrophotometricColorCalibrationProcess;
+      new pcl::SpectrophotometricColorCalibrationInterface;
+      new pcl::SpectrophotometricColorCalibrationGraphInterface;
    }
 
    return 0;
 }
 
 // ----------------------------------------------------------------------------
-// EOF ColorCalibrationModule.cpp - Released 2022-05-20T16:28:45Z
+// EOF ColorCalibrationModule.cpp - Released 2022-11-21T14:47:17Z

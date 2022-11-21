@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.30
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// pcl/Translation.cpp - Released 2022-08-10T16:36:36Z
+// pcl/Translation.cpp - Released 2022-11-21T14:46:37Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -77,34 +77,45 @@ public:
       typename P::sample* f = nullptr;
       typename P::sample** f0 = nullptr;
 
-      int n = image.NumberOfChannels();
-      typename GenericImage<P>::color_space cs0 = image.ColorSpace();
+      int numberOfChannels = image.NumberOfChannels();
+      typename GenericImage<P>::color_space colorSpace = image.ColorSpace();
 
       StatusMonitor status = image.Status();
 
-      Array<size_type> L = pcl::Thread::OptimalThreadLoads( height,
-                                                            1/*overheadLimit*/,
-                                                            T.IsParallelProcessingEnabled() ? T.MaxProcessors() : 1 );
+      Array<size_type> L = Thread::OptimalThreadLoads( height,
+                                                       1/*overheadLimit*/,
+                                                       T.IsParallelProcessingEnabled() ? T.MaxProcessors() : 1 );
       try
       {
          size_type N = size_type( width ) * size_type( height );
+         f0 = image.ReleaseData();
+
+         if ( T.IsGammaCorrectionEnabled() )
+         {
+            if ( status.IsInitializationEnabled() )
+               status.Initialize( "Gamma correction ("
+                           + (T.RGBWorkingSpace().IsSRGB() ? String( "sRGB" ) :
+                              String().Format( "gamma=%.2f", T.RGBWorkingSpace().Gamma() )) + ')', size_type( numberOfChannels )*N );
+            AbstractImage::ThreadData data( status, N );
+            for ( int c = 0; c < numberOfChannels; ++c )
+               T.ApplyGammaCorrection<P>( f0[c], N, data, T.MaxProcessors() );
+         }
+
          if ( status.IsInitializationEnabled() )
             status.Initialize( String().Format( "Translate dx=%.3f, dy=%.3f, ",
                         T.Delta().x, T.Delta().y ) + T.Interpolation().Description(),
-                        size_type( n )*N );
+                        size_type( numberOfChannels )*N );
 
-         f0 = image.ReleaseData();
-
-         for ( int c = 0; c < n; ++c )
+         for ( int c = 0; c < numberOfChannels; ++c )
          {
-            ThreadData<P> data( T.Delta(), width, height, status, N );
+            TranslationThreadData<P> data( T.Delta(), width, height, status, N );
 
             data.f = f = image.Allocator().AllocatePixels( size_type( width )*size_type( height ) );
             data.fillValue = (c < T.FillValues().Length()) ? P::ToSample( T.FillValues()[c] ) : P::MinSampleValue();
 
-            ReferenceArray<Thread<P> > threads;
+            ReferenceArray<TranslationThread<P>> threads;
             for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
-               threads.Add( new Thread<P>( data,
+               threads.Add( new TranslationThread<P>( data,
                                            T.Interpolation().NewInterpolator<P>( f0[c], width, height, T.UsingUnclippedInterpolation() ),
                                            n,
                                            n + int( L[i] ) ) );
@@ -119,7 +130,16 @@ public:
             status = data.status;
          }
 
-         image.ImportData( f0, width, height, n, cs0 ).Status() = status;
+         if ( T.IsGammaCorrectionEnabled() )
+         {
+            if ( status.IsInitializationEnabled() )
+               status.Initialize( "Inverse gamma correction", size_type( numberOfChannels )*N );
+            AbstractImage::ThreadData data( status, N );
+            for ( int c = 0; c < numberOfChannels; ++c )
+               T.ApplyInverseGammaCorrection<P>( f0[c], N, data, T.MaxProcessors() );
+         }
+
+         image.ImportData( f0, width, height, numberOfChannels, colorSpace ).Status() = status;
       }
       catch ( ... )
       {
@@ -127,7 +147,7 @@ public:
             image.Allocator().Deallocate( f );
          if ( f0 != nullptr )
          {
-            for ( int c = 0; c < n; ++c )
+            for ( int c = 0; c < numberOfChannels; ++c )
                if ( f0[c] != nullptr )
                   image.Allocator().Deallocate( f0[c] );
             image.Allocator().Deallocate( f0 );
@@ -140,9 +160,9 @@ public:
 private:
 
    template <class P>
-   struct ThreadData : public AbstractImage::ThreadData
+   struct TranslationThreadData : public AbstractImage::ThreadData
    {
-      ThreadData( const DPoint& a_delta, int a_width, int a_height, const StatusMonitor& a_status, size_type a_count )
+      TranslationThreadData( const DPoint& a_delta, int a_width, int a_height, const StatusMonitor& a_status, size_type a_count )
          : AbstractImage::ThreadData( a_status, a_count )
          , delta( a_delta )
          , width( a_width )
@@ -158,13 +178,13 @@ private:
    };
 
    template <class P>
-   class Thread : public pcl::Thread
+   class TranslationThread : public Thread
    {
    public:
 
       using interpolator_type = PixelInterpolation::Interpolator<P>;
 
-      Thread( ThreadData<P>& data, interpolator_type* interpolator, int firstRow, int endRow )
+      TranslationThread( TranslationThreadData<P>& data, interpolator_type* interpolator, int firstRow, int endRow )
          : m_data( data )
          , m_firstRow( firstRow )
          , m_endRow( endRow )
@@ -197,7 +217,7 @@ private:
 
    private:
 
-      ThreadData<P>&                 m_data;
+      TranslationThreadData<P>&      m_data;
       int                            m_firstRow;
       int                            m_endRow;
       AutoPointer<interpolator_type> m_interpolator;
@@ -236,4 +256,4 @@ void Translation::Apply( UInt32Image& img ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Translation.cpp - Released 2022-08-10T16:36:36Z
+// EOF pcl/Translation.cpp - Released 2022-11-21T14:46:37Z

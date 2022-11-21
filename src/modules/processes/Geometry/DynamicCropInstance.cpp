@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 1.2.4
+// Standard Geometry Process Module Version 1.3.1
 // ----------------------------------------------------------------------------
-// DynamicCropInstance.cpp - Released 2022-05-17T17:15:11Z
+// DynamicCropInstance.cpp - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -55,6 +55,7 @@
 
 #include <pcl/AutoPointer.h>
 #include <pcl/AutoViewLock.h>
+#include <pcl/GeometricTransformation.h>
 #include <pcl/ImageWindow.h>
 #include <pcl/Mutex.h>
 #include <pcl/PixelInterpolation.h>
@@ -79,6 +80,7 @@ DynamicCropInstance::DynamicCropInstance( const MetaProcess* P )
    , p_interpolation( TheDCInterpolationAlgorithmParameter->Default )
    , p_clampingThreshold( TheDCClampingThresholdParameter->DefaultValue() )
    , p_smoothness( TheDCSmoothnessParameter->DefaultValue() )
+   , p_gammaCorrection( TheDCGammaCorrectionParameter->DefaultValue() )
    , p_resolution( TheDCXResolutionParameter->DefaultValue(), TheDCYResolutionParameter->DefaultValue() )
    , p_metric( TheDCMetricResolutionParameter->DefaultValue() )
    , p_forceResolution( TheDCForceResolutionParameter->DefaultValue() )
@@ -115,6 +117,7 @@ void DynamicCropInstance::Assign( const ProcessImplementation& p )
       p_interpolation     = x->p_interpolation;
       p_clampingThreshold = x->p_clampingThreshold;
       p_smoothness        = x->p_smoothness;
+      p_gammaCorrection   = x->p_gammaCorrection;
       p_resolution        = x->p_resolution;
       p_metric            = x->p_metric;
       p_forceResolution   = x->p_forceResolution;
@@ -252,9 +255,8 @@ public:
 
       try
       {
-         String info;
-
          AutoPointer<PixelInterpolation> interpolation;
+         String info;
 
          if ( interpolate )
          {
@@ -277,9 +279,24 @@ public:
          }
 
          size_type N = size_type( numberOfChannels ) * data.m_width * data.m_height;
-         status.Initialize( info, N );
-
          f0 = image.ReleaseData();
+
+         if ( C.p_gammaCorrection )
+            if ( rotate || data.m_scale )
+            {
+               size_type Nsrc = size_type( data.m_sourceWidth ) * size_type( data.m_sourceHeight );
+               status.Initialize( "Gamma correction ("
+                           + (C.m_rgbws.IsSRGB() ? String( "sRGB" ) :
+                              String().Format( "gamma=%.2f", C.m_rgbws.Gamma() )) + ')', size_type( numberOfChannels )*Nsrc );
+               AbstractImage::ThreadData threadData( status, Nsrc );
+               for ( int c = 0; c < numberOfChannels; ++c )
+                  if ( C.m_rgbws.IsSRGB() )
+                     GeometricTransformation::ApplySRGBGammaCorrection<P>( f0[c], Nsrc, threadData );
+                  else
+                     GeometricTransformation::ApplyGammaExponentCorrection<P>( f0[c], Nsrc, C.m_rgbws.Gamma(), threadData );
+            }
+
+         status.Initialize( info, N );
 
          for ( int c = 0; c < numberOfChannels; ++c )
          {
@@ -349,6 +366,19 @@ public:
             f0[c] = data.m_f;
             data.m_f = nullptr;
          }
+
+         if ( C.p_gammaCorrection )
+            if ( rotate || data.m_scale )
+            {
+               size_type N = size_type( data.m_width ) * size_type( data.m_height );
+               status.Initialize( "Inverse gamma correction", size_type( numberOfChannels )*N );
+               AbstractImage::ThreadData threadData( status, N );
+               for ( int c = 0; c < numberOfChannels; ++c )
+                  if ( C.m_rgbws.IsSRGB() )
+                     GeometricTransformation::ApplyInverseSRGBGammaCorrection<P>( f0[c], N, threadData );
+                  else
+                     GeometricTransformation::ApplyInverseGammaExponentCorrection<P>( f0[c], N, C.m_rgbws.Gamma(), threadData );
+            }
 
          image.ImportData( f0, data.m_width, data.m_height, numberOfChannels, colorSpace );
          image.Status() = status;
@@ -500,6 +530,9 @@ bool DynamicCropInstance::ExecuteOn( View& view )
    StandardStatus status;
    image.SetStatusCallback( &status );
 
+   if ( p_gammaCorrection )
+      window.GetRGBWS( m_rgbws );
+
    if ( image.IsFloatSample() )
       switch ( image.BitsPerSample() )
       {
@@ -550,6 +583,8 @@ void* DynamicCropInstance::LockParameter( const MetaParameter* p, size_type /*ta
       return &p_clampingThreshold;
    if ( p == TheDCSmoothnessParameter )
       return &p_smoothness;
+   if ( p == TheDCGammaCorrectionParameter )
+      return &p_gammaCorrection;
    if ( p == TheDCXResolutionParameter )
       return &p_resolution.x;
    if ( p == TheDCYResolutionParameter )
@@ -576,4 +611,4 @@ void* DynamicCropInstance::LockParameter( const MetaParameter* p, size_type /*ta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DynamicCropInstance.cpp - Released 2022-05-17T17:15:11Z
+// EOF DynamicCropInstance.cpp - Released 2022-11-21T14:47:17Z

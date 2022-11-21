@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// IntegrationFile.h - Released 2022-05-17T17:15:11Z
+// IntegrationFile.h - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -494,4 +494,4 @@ private:
 #endif   // __IntegrationFile_h
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationFile.h - Released 2022-05-17T17:15:11Z
+// EOF IntegrationFile.h - Released 2022-11-21T14:47:17Z

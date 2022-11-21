@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard ColorSpaces Process Module Version 1.1.2
+// Standard ColorSpaces Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// ChannelCombinationInstance.h - Released 2022-05-17T17:15:11Z
+// ChannelCombinationInstance.h - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -100,6 +100,7 @@ private:
    pcl_enum p_colorSpace;
    pcl_bool p_channelEnabled[ 3 ];
    String   p_channelId[ 3 ];
+   pcl_bool p_inheritAstrometricSolution;
 
    friend class ChannelCombinationInterface;
    friend class ChannelSourceSelectionDialog;
@@ -112,4 +113,4 @@ private:
 #endif   // __ChannelCombinationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ChannelCombinationInstance.h - Released 2022-05-17T17:15:11Z
+// EOF ChannelCombinationInstance.h - Released 2022-11-21T14:47:17Z

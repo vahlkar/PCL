@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard ColorSpaces Process Module Version 1.1.2
+// Standard ColorSpaces Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// LRGBCombinationParameters.cpp - Released 2022-05-17T17:15:11Z
+// LRGBCombinationParameters.cpp - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -57,16 +57,17 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-LRGBChannelTable*    TheLRGBChannelTableParameter = 0;
-LRGBChannelEnabled*  TheLRGBChannelEnabledParameter = 0;
-LRGBChannelId*       TheLRGBChannelIdParameter = 0;
-LRGBChannelWeight*   TheLRGBChannelWeightParameter = 0;
-LRGBLuminanceMTF*    TheLRGBLuminanceMTFParameter = 0;
-LRGBSaturationMTF*   TheLRGBSaturationMTFParameter = 0;
-LRGBClipHighlights*  TheLRGBClipHighlightsParameter = 0;
-LRGBNoiseReduction*  TheLRGBNoiseReductionParameter = 0;
-LRGBLayersRemoved*   TheLRGBLayersRemovedParameter = 0;
-LRGBLayersProtected* TheLRGBLayersProtectedParameter = 0;
+LRGBChannelTable*             TheLRGBChannelTableParameter = nullptr;
+LRGBChannelEnabled*           TheLRGBChannelEnabledParameter = nullptr;
+LRGBChannelId*                TheLRGBChannelIdParameter = nullptr;
+LRGBChannelWeight*            TheLRGBChannelWeightParameter = nullptr;
+LRGBLuminanceMTF*             TheLRGBLuminanceMTFParameter = nullptr;
+LRGBSaturationMTF*            TheLRGBSaturationMTFParameter = nullptr;
+LRGBClipHighlights*           TheLRGBClipHighlightsParameter = nullptr;
+LRGBNoiseReduction*           TheLRGBNoiseReductionParameter = nullptr;
+LRGBLayersRemoved*            TheLRGBLayersRemovedParameter = nullptr;
+LRGBLayersProtected*          TheLRGBLayersProtectedParameter = nullptr;
+CSInheritAstrometricSolution* TheLRGBCInheritAstrometricSolutionParameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -288,4 +289,4 @@ double LRGBLayersProtected::MaximumValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LRGBCombinationParameters.cpp - Released 2022-05-17T17:15:11Z
+// EOF LRGBCombinationParameters.cpp - Released 2022-11-21T14:47:17Z

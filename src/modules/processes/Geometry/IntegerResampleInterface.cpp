@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 1.2.4
+// Standard Geometry Process Module Version 1.3.1
 // ----------------------------------------------------------------------------
-// IntegerResampleInterface.cpp - Released 2022-05-17T17:15:11Z
+// IntegerResampleInterface.cpp - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -51,8 +51,8 @@
 // ----------------------------------------------------------------------------
 
 #include "IntegerResampleInterface.h"
-#include "IntegerResampleProcess.h"
 #include "IntegerResampleParameters.h"
+#include "IntegerResampleProcess.h"
 
 #include <pcl/ImageWindow.h>
 
@@ -250,7 +250,11 @@ void IntegerResampleInterface::UpdateControls()
    GUI->Downsample_RadioButton.SetChecked( m_instance.p_zoomFactor < 0 );
    GUI->Upsample_RadioButton.SetChecked( m_instance.p_zoomFactor > 0 );
 
+   GUI->DownsampleMode_Label.Enable( m_instance.p_zoomFactor < 0 );
+   GUI->DownsampleMode_ComboBox.Enable( m_instance.p_zoomFactor < 0 );
    GUI->DownsampleMode_ComboBox.SetCurrentItem( m_instance.p_downsampleMode );
+
+   GUI->GammaCorrection_CheckBox.SetChecked( m_instance.p_gammaCorrection );
 
    int w = sourceWidth, h = sourceHeight;
    m_instance.GetNewSizes( w, h );
@@ -312,100 +316,90 @@ void IntegerResampleInterface::UpdateControls()
 
 // ----------------------------------------------------------------------------
 
-void IntegerResampleInterface::__ViewList_ViewSelected( ViewList& sender, View& view )
+void IntegerResampleInterface::e_ViewSelected( ViewList& sender, View& view )
 {
-   DeactivateTrackView();
-
-   if ( !currentView.IsNull() )
+   if ( sender == GUI->AllImages_ViewList )
    {
-      ImageWindow w = currentView.Window();
+      DeactivateTrackView();
 
-      w.MainView().GetSize( sourceWidth, sourceHeight );
+      if ( !currentView.IsNull() )
+      {
+         ImageWindow w = currentView.Window();
 
-      double xRes, yRes;
-      bool metric;
-      w.GetResolution( xRes, yRes, metric );
+         w.MainView().GetSize( sourceWidth, sourceHeight );
 
-      m_instance.p_resolution.x = xRes;
-      m_instance.p_resolution.y = yRes;
-      m_instance.p_metric = metric;
+         double xRes, yRes;
+         bool metric;
+         w.GetResolution( xRes, yRes, metric );
+
+         m_instance.p_resolution.x = xRes;
+         m_instance.p_resolution.y = yRes;
+         m_instance.p_metric = metric;
+      }
+
+      UpdateControls();
    }
-
-   UpdateControls();
 }
 
 // ----------------------------------------------------------------------------
 
-void IntegerResampleInterface::__ResampleFactor_ValueUpdated( SpinBox& /*sender*/, int value )
+void IntegerResampleInterface::e_SpinBoxValueUpdated( SpinBox& sender, int value )
 {
-   m_instance.p_zoomFactor = downsample ? -value : +value;
-   UpdateControls();
+   if ( sender == GUI->ResampleFactor_SpinBox )
+   {
+      m_instance.p_zoomFactor = downsample ? -value : +value;
+      UpdateControls();
+   }
 }
 
 // ----------------------------------------------------------------------------
 
-void IntegerResampleInterface::__ResampleType_ButtonClick( Button& /*sender*/, bool checked )
+void IntegerResampleInterface::e_ButtonClick( Button& sender, bool checked )
 {
-   if ( checked )
-      m_instance.p_zoomFactor = -m_instance.p_zoomFactor;
-   UpdateControls();
-}
-
-// ----------------------------------------------------------------------------
-
-void IntegerResampleInterface::__DownsampleMode_ItemSelected( ComboBox& /*sender*/, int itemIndex )
-{
-   m_instance.p_downsampleMode = itemIndex;
-}
-
-// ----------------------------------------------------------------------------
-
-void IntegerResampleInterface::__Width_ValueUpdated( NumericEdit& /*sender*/, double value )
-{
-   sourceWidth = int( value );
-   UpdateControls();
-}
-
-// ----------------------------------------------------------------------------
-
-void IntegerResampleInterface::__Height_ValueUpdated( NumericEdit& /*sender*/, double value )
-{
-   sourceHeight = int( value );
-   UpdateControls();
-}
-
-// ----------------------------------------------------------------------------
-
-void IntegerResampleInterface::__Resolution_ValueUpdated( NumericEdit& sender, double value )
-{
-   if ( sender == GUI->HorizontalResolution_NumericEdit )
-      m_instance.p_resolution.x = value;
-   else if ( sender == GUI->VerticalResolution_NumericEdit )
-      m_instance.p_resolution.y = value;
-   UpdateControls();
-}
-
-// ----------------------------------------------------------------------------
-
-void IntegerResampleInterface::__Units_ButtonClick( Button& sender, bool checked )
-{
-   if ( sender == GUI->CentimeterUnits_RadioButton )
+   if ( sender == GUI->Downsample_RadioButton || sender == GUI->Upsample_RadioButton )
+   {
+      if ( checked )
+         m_instance.p_zoomFactor = -m_instance.p_zoomFactor;
+   }
+   else if ( sender == GUI->GammaCorrection_CheckBox )
+      m_instance.p_gammaCorrection = checked;
+   else if ( sender == GUI->CentimeterUnits_RadioButton )
       m_instance.p_metric = true;
    else if ( sender == GUI->InchUnits_RadioButton )
       m_instance.p_metric = false;
+   else if ( sender == GUI->ForceResolution_CheckBox )
+      m_instance.p_forceResolution = checked;
+
    UpdateControls();
 }
 
 // ----------------------------------------------------------------------------
 
-void IntegerResampleInterface::__ForceResolution_ButtonClick( Button& sender, bool checked )
+void IntegerResampleInterface::e_ValueUpdated( NumericEdit& sender, double value )
 {
-   m_instance.p_forceResolution = checked;
+   if ( sender == GUI->SourceWidthPixels_NumericEdit )
+      sourceWidth = int( value );
+   else if ( sender == GUI->SourceHeightPixels_NumericEdit )
+      sourceHeight = int( value );
+   else if ( sender == GUI->HorizontalResolution_NumericEdit )
+      m_instance.p_resolution.x = value;
+   else if ( sender == GUI->VerticalResolution_NumericEdit )
+      m_instance.p_resolution.y = value;
+
+   UpdateControls();
 }
 
 // ----------------------------------------------------------------------------
 
-void IntegerResampleInterface::__ViewDrag( Control& sender, const Point& pos, const View& view, unsigned modifiers, bool& wantsView )
+void IntegerResampleInterface::e_ItemSelected( ComboBox& sender, int itemIndex )
+{
+   if ( sender == GUI->DownsampleMode_ComboBox )
+      m_instance.p_downsampleMode = itemIndex;
+}
+
+// ----------------------------------------------------------------------------
+
+void IntegerResampleInterface::e_ViewDrag( Control& sender, const Point& pos, const View& view, unsigned modifiers, bool& wantsView )
 {
    if ( sender == GUI->AllImages_ViewList )
       wantsView = view.IsMainView();
@@ -413,14 +407,14 @@ void IntegerResampleInterface::__ViewDrag( Control& sender, const Point& pos, co
 
 // ----------------------------------------------------------------------------
 
-void IntegerResampleInterface::__ViewDrop( Control& sender, const Point& pos, const View& view, unsigned modifiers )
+void IntegerResampleInterface::e_ViewDrop( Control& sender, const Point& pos, const View& view, unsigned modifiers )
 {
    if ( sender == GUI->AllImages_ViewList )
       if ( view.IsMainView() )
       {
          GUI->AllImages_ViewList.SelectView( view );
          View theView = view;
-         __ViewList_ViewSelected( GUI->AllImages_ViewList, theView );
+         e_ViewSelected( GUI->AllImages_ViewList, theView );
       }
 }
 
@@ -439,9 +433,9 @@ IntegerResampleInterface::GUIData::GUIData( IntegerResampleInterface& w )
 
    //
 
-   AllImages_ViewList.OnViewSelected( (ViewList::view_event_handler)&IntegerResampleInterface::__ViewList_ViewSelected, w );
-   AllImages_ViewList.OnViewDrag( (Control::view_drag_event_handler)&IntegerResampleInterface::__ViewDrag, w );
-   AllImages_ViewList.OnViewDrop( (Control::view_drop_event_handler)&IntegerResampleInterface::__ViewDrop, w );
+   AllImages_ViewList.OnViewSelected( (ViewList::view_event_handler)&IntegerResampleInterface::e_ViewSelected, w );
+   AllImages_ViewList.OnViewDrag( (Control::view_drag_event_handler)&IntegerResampleInterface::e_ViewDrag, w );
+   AllImages_ViewList.OnViewDrop( (Control::view_drop_event_handler)&IntegerResampleInterface::e_ViewDrop, w );
 
    //
 
@@ -453,7 +447,12 @@ IntegerResampleInterface::GUIData::GUIData( IntegerResampleInterface& w )
    ResampleFactor_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
 
    ResampleFactor_SpinBox.SetRange( 1, int( TheIRZoomFactorParameter->MaximumValue() ) );
-   ResampleFactor_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&IntegerResampleInterface::__ResampleFactor_ValueUpdated, w );
+   ResampleFactor_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&IntegerResampleInterface::e_SpinBoxValueUpdated, w );
+
+   ResampleFactor_Sizer.SetSpacing( 4 );
+   ResampleFactor_Sizer.Add( ResampleFactor_Label );
+   ResampleFactor_Sizer.Add( ResampleFactor_SpinBox );
+   ResampleFactor_Sizer.AddStretch();
 
    DownsampleMode_Label.SetText( "Downsample mode:" );
    DownsampleMode_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
@@ -462,31 +461,40 @@ IntegerResampleInterface::GUIData::GUIData( IntegerResampleInterface& w )
    DownsampleMode_ComboBox.AddItem( "Median" );
    DownsampleMode_ComboBox.AddItem( "Maximum" );
    DownsampleMode_ComboBox.AddItem( "Minimum" );
-   DownsampleMode_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&IntegerResampleInterface::__DownsampleMode_ItemSelected, w );
-
-   IntegerResampleRow1_Sizer.SetSpacing( 4 );
-   IntegerResampleRow1_Sizer.Add( ResampleFactor_Label );
-   IntegerResampleRow1_Sizer.Add( ResampleFactor_SpinBox );
-   IntegerResampleRow1_Sizer.AddStretch();
-   IntegerResampleRow1_Sizer.Add( DownsampleMode_Label );
-   IntegerResampleRow1_Sizer.Add( DownsampleMode_ComboBox );
+   DownsampleMode_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&IntegerResampleInterface::e_ItemSelected, w );
 
    Downsample_RadioButton.SetText( "Downsample" );
-   Downsample_RadioButton.OnClick( (Button::click_event_handler)&IntegerResampleInterface::__ResampleType_ButtonClick, w );
+   Downsample_RadioButton.OnClick( (Button::click_event_handler)&IntegerResampleInterface::e_ButtonClick, w );
 
-   IntegerResampleRow2_Sizer.AddUnscaledSpacing( labelWidth3 + ui4 );
-   IntegerResampleRow2_Sizer.Add( Downsample_RadioButton );
+   Downsample_Sizer.SetSpacing( 4 );
+   Downsample_Sizer.AddUnscaledSpacing( labelWidth3 + ui4 );
+   Downsample_Sizer.Add( Downsample_RadioButton );
+   Downsample_Sizer.AddSpacing( 24 );
+   Downsample_Sizer.Add( DownsampleMode_Label );
+   Downsample_Sizer.Add( DownsampleMode_ComboBox );
 
    Upsample_RadioButton.SetText( "Upsample" );
-   Upsample_RadioButton.OnClick( (Button::click_event_handler)&IntegerResampleInterface::__ResampleType_ButtonClick, w );
+   Upsample_RadioButton.OnClick( (Button::click_event_handler)&IntegerResampleInterface::e_ButtonClick, w );
 
-   IntegerResampleRow3_Sizer.AddUnscaledSpacing( labelWidth3 + ui4 );
-   IntegerResampleRow3_Sizer.Add( Upsample_RadioButton );
+   Upsample_Sizer.AddUnscaledSpacing( labelWidth3 + ui4 );
+   Upsample_Sizer.Add( Upsample_RadioButton );
 
-   IntegerResample_Sizer.Add( IntegerResampleRow1_Sizer );
+   GammaCorrection_CheckBox.SetText( "Gamma correction" );
+   GammaCorrection_CheckBox.SetToolTip( "<p>Interpolate pixel sample values with gamma correction. In general, this option should be enabled to "
+      "scale nonlinear images, i.e. images whose pixel values have been stretched nonlinearly. The applied transformations (gamma exponent or "
+      "sRGB gamma function) depend on the RGB working space of the target image.</p>" );
+   GammaCorrection_CheckBox.OnClick( (Button::click_event_handler)&IntegerResampleInterface::e_ButtonClick, w );
+
+   GammaCorrection_Sizer.AddUnscaledSpacing( labelWidth3 + ui4 );
+   GammaCorrection_Sizer.Add( GammaCorrection_CheckBox );
+   GammaCorrection_Sizer.AddStretch();
+
+   IntegerResample_Sizer.Add( ResampleFactor_Sizer );
    IntegerResample_Sizer.AddSpacing( 4 );
-   IntegerResample_Sizer.Add( IntegerResampleRow2_Sizer );
-   IntegerResample_Sizer.Add( IntegerResampleRow3_Sizer );
+   IntegerResample_Sizer.Add( Downsample_Sizer );
+   IntegerResample_Sizer.Add( Upsample_Sizer );
+   IntegerResample_Sizer.AddSpacing( 6 );
+   IntegerResample_Sizer.Add( GammaCorrection_Sizer );
 
    IntegerResample_Control.SetSizer( IntegerResample_Sizer );
 
@@ -527,7 +535,7 @@ IntegerResampleInterface::GUIData::GUIData( IntegerResampleInterface& w )
    SourceWidthPixels_NumericEdit.SetRange( 1, int_max );
    SourceWidthPixels_NumericEdit.edit.SetFixedWidth( editWidth1 );
    SourceWidthPixels_NumericEdit.SetFixedWidth( editWidth1 );
-   SourceWidthPixels_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&IntegerResampleInterface::__Width_ValueUpdated, w );
+   SourceWidthPixels_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&IntegerResampleInterface::e_ValueUpdated, w );
 
    TargetWidthPixels_NumericEdit.label.Hide();
    TargetWidthPixels_NumericEdit.SetInteger();
@@ -568,7 +576,7 @@ IntegerResampleInterface::GUIData::GUIData( IntegerResampleInterface& w )
    SourceHeightPixels_NumericEdit.SetRange( 1, int_max );
    SourceHeightPixels_NumericEdit.edit.SetFixedWidth( editWidth1 );
    SourceHeightPixels_NumericEdit.SetFixedWidth( editWidth1 );
-   SourceHeightPixels_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&IntegerResampleInterface::__Height_ValueUpdated, w );
+   SourceHeightPixels_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&IntegerResampleInterface::e_ValueUpdated, w );
 
    TargetHeightPixels_NumericEdit.label.Hide();
    TargetHeightPixels_NumericEdit.SetInteger();
@@ -623,13 +631,13 @@ IntegerResampleInterface::GUIData::GUIData( IntegerResampleInterface& w )
    HorizontalResolution_NumericEdit.SetReal();
    HorizontalResolution_NumericEdit.SetRange( 1, 10000 );
    HorizontalResolution_NumericEdit.SetPrecision( 3 );
-   HorizontalResolution_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&IntegerResampleInterface::__Resolution_ValueUpdated, w );
+   HorizontalResolution_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&IntegerResampleInterface::e_ValueUpdated, w );
 
    VerticalResolution_NumericEdit.label.SetText( "Vertical:" );
    VerticalResolution_NumericEdit.SetReal();
    VerticalResolution_NumericEdit.SetRange( 1, 10000 );
    VerticalResolution_NumericEdit.SetPrecision( 3 );
-   VerticalResolution_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&IntegerResampleInterface::__Resolution_ValueUpdated, w );
+   VerticalResolution_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&IntegerResampleInterface::e_ValueUpdated, w );
 
    ResolutionRow1_Sizer.SetSpacing( 16 );
    ResolutionRow1_Sizer.Add( HorizontalResolution_NumericEdit );
@@ -637,14 +645,14 @@ IntegerResampleInterface::GUIData::GUIData( IntegerResampleInterface& w )
    ResolutionRow1_Sizer.AddStretch();
 
    CentimeterUnits_RadioButton.SetText( "Centimeters" );
-   CentimeterUnits_RadioButton.OnClick( (Button::click_event_handler)&IntegerResampleInterface::__Units_ButtonClick, w );
+   CentimeterUnits_RadioButton.OnClick( (Button::click_event_handler)&IntegerResampleInterface::e_ButtonClick, w );
 
    InchUnits_RadioButton.SetText( "Inches" );
-   InchUnits_RadioButton.OnClick( (Button::click_event_handler)&IntegerResampleInterface::__Units_ButtonClick, w );
+   InchUnits_RadioButton.OnClick( (Button::click_event_handler)&IntegerResampleInterface::e_ButtonClick, w );
 
    ForceResolution_CheckBox.SetText( "Force resolution" );
    ForceResolution_CheckBox.SetToolTip( "Modify resolution metadata of target image(s)" );
-   ForceResolution_CheckBox.OnClick( (Button::click_event_handler)&IntegerResampleInterface::__ForceResolution_ButtonClick, w );
+   ForceResolution_CheckBox.OnClick( (Button::click_event_handler)&IntegerResampleInterface::e_ButtonClick, w );
 
    ResolutionRow2_Sizer.SetSpacing( 8 );
    ResolutionRow2_Sizer.AddUnscaledSpacing( labelWidth2 + ui4 );
@@ -685,4 +693,4 @@ IntegerResampleInterface::GUIData::GUIData( IntegerResampleInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF IntegerResampleInterface.cpp - Released 2022-05-17T17:15:11Z
+// EOF IntegerResampleInterface.cpp - Released 2022-11-21T14:47:17Z

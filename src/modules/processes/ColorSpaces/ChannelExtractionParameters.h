@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard ColorSpaces Process Module Version 1.1.2
+// Standard ColorSpaces Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// ChannelExtractionParameters.h - Released 2022-05-17T17:15:11Z
+// ChannelExtractionParameters.h - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -62,11 +62,12 @@ PCL_BEGIN_LOCAL
 
 // ----------------------------------------------------------------------------
 
-extern ColorSpaceId*        TheColorSpaceIdExtractionParameter;
-extern ChannelTable*        TheChannelTableExtractionParameter;
-extern ChannelEnabled*      TheChannelEnabledExtractionParameter;
-extern ChannelId*           TheChannelIdExtractionParameter;
-extern ChannelSampleFormat* TheChannelSampleFormatExtractionParameter;
+extern ColorSpaceId*                 TheColorSpaceIdExtractionParameter;
+extern ChannelTable*                 TheChannelTableExtractionParameter;
+extern ChannelEnabled*               TheChannelEnabledExtractionParameter;
+extern ChannelId*                    TheChannelIdExtractionParameter;
+extern ChannelSampleFormat*          TheChannelSampleFormatExtractionParameter;
+extern CSInheritAstrometricSolution* TheCEInheritAstrometricSolutionParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -77,4 +78,4 @@ PCL_END_LOCAL
 #endif   // __ChannelExtractionParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF ChannelExtractionParameters.h - Released 2022-05-17T17:15:11Z
+// EOF ChannelExtractionParameters.h - Released 2022-11-21T14:47:17Z

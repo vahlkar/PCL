@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard APASS Process Module Version 1.1.0
+// Standard APASS Process Module Version 1.1.4
 // ----------------------------------------------------------------------------
-// APASSInstance.cpp - Released 2022-05-17T17:15:11Z
+// APASSInstance.cpp - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard APASS PixInsight module.
 //
@@ -71,6 +71,7 @@ APASSInstance::APASSInstance( const MetaProcess* P )
    , p_dataRelease( ADataRelease::Default )
    , p_sortBy( ASortBy::Default )
    , p_generateTextOutput( TheAGenerateTextOutputParameter->DefaultValue() )
+   , p_generateBinaryOutput( TheAGenerateBinaryOutputParameter->DefaultValue() )
    , p_textFormat( ATextFormat::Default )
    , p_textHeaders( ATextHeaders::Default )
 {
@@ -96,6 +97,7 @@ void APASSInstance::Assign( const ProcessImplementation& p )
       p_dataRelease = x->p_dataRelease;
       p_sortBy = x->p_sortBy;
       p_generateTextOutput = x->p_generateTextOutput;
+      p_generateBinaryOutput = x->p_generateBinaryOutput;
       p_textFormat = x->p_textFormat;
       p_textHeaders = x->p_textHeaders;
       p_outputFilePath = x->p_outputFilePath;
@@ -136,7 +138,9 @@ bool APASSInstance::ExecuteGlobal()
    {
       // thread-safe
       Search();
-      if ( p_generateTextOutput )
+      if ( p_generateBinaryOutput )
+         GenerateBinaryOutput();
+      else if ( p_generateTextOutput )
          GenerateTextOutput();
    }
    else if ( p_command == "get-info" )
@@ -656,6 +660,34 @@ void APASSInstance::GenerateTextOutput() const
 
 // ----------------------------------------------------------------------------
 
+void APASSInstance::GenerateBinaryOutput() const
+{
+   if ( p_outputFilePath.Trimmed().IsEmpty() )
+   {
+      if ( p_verbosity > 0 )
+         Console().WarningLn( "<end><cbr><br>** Warning: No output file path has been specified." );
+      return;
+   }
+
+   File f = File::CreateFileForWriting( p_outputFilePath.Trimmed() );
+
+   APASSBinaryHeader header;
+   header.version = TheAPASSProcess->Version();
+   header.dataRelease = o_dataRelease;
+   header.sourceCount = uint32( p_searchData.stars.Length() );
+   f.Write( header );
+
+   for ( const APASSStarData& star : p_searchData.stars )
+      f.Write( star );
+
+   f.Flush();
+
+   if ( p_verbosity > 0 )
+      Console().WriteLn( "<end><cbr><br>* Output binary file generated: " + p_outputFilePath );
+}
+
+// ----------------------------------------------------------------------------
+
 void APASSInstance::GetInfo()
 {
    /*
@@ -695,6 +727,8 @@ void* APASSInstance::LockParameter( const MetaParameter* p, size_type tableRow )
       return &p_sortBy;
    if ( p == TheAGenerateTextOutputParameter )
       return &p_generateTextOutput;
+   if ( p == TheAGenerateBinaryOutputParameter )
+      return &p_generateBinaryOutput;
    if ( p == TheATextFormatParameter )
       return &p_textFormat;
    if ( p == TheATextHeadersParameter )
@@ -860,4 +894,4 @@ int APASSInstance::OutputDataRelease() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF APASSInstance.cpp - Released 2022-05-17T17:15:11Z
+// EOF APASSInstance.cpp - Released 2022-11-21T14:47:17Z

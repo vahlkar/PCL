@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.30
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// pcl/GaiaDatabaseFile.h - Released 2022-08-10T16:36:27Z
+// pcl/GaiaDatabaseFile.h - Released 2022-11-21T14:46:30Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -177,12 +177,13 @@ namespace GaiaStarFlag
 // ----------------------------------------------------------------------------
 
 /*!
- * \struct GaiaStarData
- * \brief Star data structure for Gaia catalog search operations.
+ * \struct GaiaStarDataBase
+ * \brief Star data base structure for Gaia catalog search operations.
  *
+ * \sa GaiaStarData
  * \ingroup point_source_databases
  */
-struct PCL_CLASS GaiaStarData
+struct PCL_CLASS GaiaStarDataBase
 {
    double  ra = 0;     //!< Right ascension in degrees, in the range [0,360).
    double  dec = 0;    //!< Declination in degrees, in the range [-90,+90].
@@ -193,11 +194,22 @@ struct PCL_CLASS GaiaStarData
    float   magBP = 0;  //!< Mean G_BP magnitude.
    float   magRP = 0;  //!< Mean G_RP magnitude.
    uint32  flags = 0u; //!< Data availability and quality flags. See the GaiaStarFlag namespace.
-   FVector flux;       /*!< BP/RP sampled mean spectrum. Only available for special DR3 databases
-                           with mean spectrum data. The components of this vector can be normalized
-                           to [0,1] or expressed in original flux units (W.m**-2.nm**-1). See the
-                           GaiaDatabaseFile::IsSpectrumNormalizationEnabled() member function for
-                           more information. */
+};
+
+/*!
+ * \struct GaiaStarData
+ * \brief Star data structure for Gaia catalog search operations.
+ *
+ * \sa GaiaStarDataBase
+ * \ingroup point_source_databases
+ */
+struct PCL_CLASS GaiaStarData : public GaiaStarDataBase
+{
+   FVector flux; /*!< BP/RP sampled mean spectrum. Only available for special DR3 databases
+                     with mean spectrum data. The components of this vector can be normalized
+                     to [0,1] or expressed in original flux units (W.m**-2.nm**-1). See the
+                     GaiaDatabaseFile::IsSpectrumNormalizationEnabled() member function for
+                     more information. */
 };
 
 // ----------------------------------------------------------------------------
@@ -213,9 +225,17 @@ struct GaiaSearchData : public XPSD::SearchData<GaiaStarData>
    pcl_bool normalizeSpectrum = false; /*!< When enabled, search operations
                            provide sampled spectrum data normalized to the
                            [0,1] range for each star. When normalization is
-                           disabled, spectrum data is provided in the original
-                           flux units of W.m**-2.nm**-1. Spectrum normalization
-                           is disabled by default. */
+                           disabled, spectrum data is provided in either the
+                           original power units of spectral irradiance
+                           (W*m^-2*nm^-1), or in spectral photon flux units
+                           (ph*s^-1*m^-2*nm^-1) if photonFluxUnits=true.
+                           Spectrum normalization is disabled by default. */
+
+   pcl_bool photonFluxUnits = false; /*!< When true, sampled spectrum data will
+                           be transformed to spectral photon flux units
+                           (ph*s^-1*m^-2*nm^-1) and then optionally normalized
+                           to [0,1] if normalizeSpectrum=true. Photon flux
+                           units are disabled by default. */
 };
 
 // ----------------------------------------------------------------------------
@@ -527,7 +547,7 @@ private:
 
    /*
     * Encoded star record with mean spectrum data.
-    * Uncompressed size in bytes: 40 + (m_spectrumBits/8)*m_spectrumCount.
+    * Uncompressed size in bytes: 40 + (m_spectrumBits/8)*(m_spectrumCount + (m_spectrumCount & 1)).
     */
    struct EncodedStarSPData : public EncodedStarData
    {
@@ -538,7 +558,7 @@ private:
 
    constexpr size_type EncodedStarSPDataSize() const
    {
-      return sizeof( EncodedStarSPData ) + (m_spectrumBits >> 3)*m_spectrumCount;
+      return sizeof( EncodedStarSPData ) - 1 + (m_spectrumBits >> 3)*(m_spectrumCount + (m_spectrumCount & 1));
    }
 
 #pragma pack(pop)
@@ -592,12 +612,22 @@ private:
                               {
                                  const EncodedStarSPData* SS = static_cast<const EncodedStarSPData*>( S );
                                  star.flux = FVector( m_spectrumCount );
-                                 if ( search->normalizeSpectrum )
+                                 if ( search->photonFluxUnits )
+                                 {
                                     for ( int j = 0; j < m_spectrumCount; ++j )
-                                       star.flux[j] = SS->flux[j]/m_spectrumRange;
+                                       star.flux[j] = (SS->flux[j]*SS->fluxMul + SS->fluxMin) * (m_spectrumStart + j*m_spectrumStep)/1.602e-19/1.239979e-3;
+                                    if ( search->normalizeSpectrum )
+                                       star.flux /= star.flux.MaxComponent();
+                                 }
                                  else
-                                    for ( int j = 0; j < m_spectrumCount; ++j )
-                                       star.flux[j] = SS->flux[j]*SS->fluxMul + SS->fluxMin;
+                                 {
+                                    if ( search->normalizeSpectrum )
+                                       for ( int j = 0; j < m_spectrumCount; ++j )
+                                          star.flux[j] = SS->flux[j]/m_spectrumRange;
+                                    else
+                                       for ( int j = 0; j < m_spectrumCount; ++j )
+                                          star.flux[j] = SS->flux[j]*SS->fluxMul + SS->fluxMin;
+                                 }
                               }
 
                               search->stars << star;
@@ -626,4 +656,4 @@ private:
 #endif  // __PCL_GaiaDatabaseFile_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/GaiaDatabaseFile.h - Released 2022-08-10T16:36:27Z
+// EOF pcl/GaiaDatabaseFile.h - Released 2022-11-21T14:46:30Z

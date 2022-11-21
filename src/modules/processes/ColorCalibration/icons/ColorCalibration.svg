@@ -1,17 +1,3 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="512" height="512" version="1.1" viewBox="0 0 135.47 135.47" xmlns="http://www.w3.org/2000/svg">
-<defs>
-<radialGradient id="a" cx="1026.9" cy="533.74" r="185" gradientTransform="matrix(.31464 0 0 .31464 -237.84 62.251)" gradientUnits="userSpaceOnUse">
-<stop stop-color="#fff" offset="0"/>
-<stop stop-color="#bababa" offset="1"/>
-</radialGradient>
-</defs>
-<g transform="translate(0 -161.53)">
-<g transform="translate(-17.524 -.92191)">
-<rect x="27.049" y="171.98" width="116.42" height="116.42" fill="url(#a)" stroke="#000" stroke-width="6.35"/>
-<ellipse cx="85.258" cy="207.22" rx="25.327" ry="25.327" fill="#f00"/>
-<ellipse cx="58.863" cy="253.15" rx="25.327" ry="25.327" fill="#0f0"/>
-<ellipse cx="111.65" cy="253.15" rx="25.327" ry="25.327" fill="#00f"/>
-</g>
-</g>
-</svg>
+<svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+   <defs><radialGradient id="e" cx="439.79" cy="411.11" r="59.916" gradientTransform="matrix(1.666 -.030168 .030489 1.6837 -479.3 -572.94)" gradientUnits="userSpaceOnUse" xlink:href="#a"/><linearGradient id="a"><stop stop-color="#e6e6e6" offset="0"/><stop stop-color="#2d2d2d" offset="1"/></linearGradient><radialGradient id="f" cx="439.79" cy="411.11" r="59.916" gradientTransform="matrix(1.666 -.030168 .030489 1.6837 -479.58 -316.07)" gradientUnits="userSpaceOnUse" xlink:href="#a"/><linearGradient id="g" x1="176.81" x2="461.78" y1="235.82" y2="252.42" gradientTransform="translate(.0010244 .0010219)" gradientUnits="userSpaceOnUse"><stop offset="0"/><stop stop-color="#838383" offset="1"/></linearGradient></defs><rect x="36" y="36" width="440" height="440" fill="url(#g)" stroke="#000" stroke-width="24"/><g transform="matrix(1.0021 0 0 1.0023 -.54722 -.22847)" stroke-width="2.0125"><path d="m48.445 324.82 220.2-48.827h194.93v40.5h-195.1l-220.03 146.68z" fill="#f00"/><path d="m48.445 186.47 219.8 49.024h195.33v40.5h-195.85l-219.27 48.827z" fill="#0f0"/><path d="m48.445 48.118 220.41 146.87h194.72v40.5l-195.4 0.0242-219.72-49.048z" fill="#1f84ff"/></g><ellipse cx="287.36" cy="127.22" rx="69.93" ry="69.927" fill="url(#e)" stroke-width=".99993"/><ellipse cx="287.08" cy="384.09" rx="69.93" ry="69.927" fill="url(#f)" stroke-width=".99993"/><rect x="36" y="36" width="440" height="440" fill="none" stroke="#000" stroke-width="24"/></svg>

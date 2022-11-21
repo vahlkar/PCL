@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 1.2.4
+// Standard Geometry Process Module Version 1.3.1
 // ----------------------------------------------------------------------------
-// CropInterface.cpp - Released 2022-05-17T17:15:11Z
+// CropInterface.cpp - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -562,7 +562,7 @@ void CropInterface::UpdateFillColorControls()
 
 // ----------------------------------------------------------------------------
 
-void CropInterface::__ViewList_ViewSelected( ViewList& sender, View& )
+void CropInterface::e_ViewSelected( ViewList& sender, View& )
 {
    DeactivateTrackView();
 
@@ -584,24 +584,25 @@ void CropInterface::__ViewList_ViewSelected( ViewList& sender, View& )
 
 // ----------------------------------------------------------------------------
 
-void CropInterface::__Margin_ValueUpdated( NumericEdit& sender, double value )
+void CropInterface::e_ButtonClick( Button& sender, bool checked )
 {
-   if ( sender == GUI->LeftMargin_NumericEdit )
-      m_instance.p_margins.x0 = value;
-   else if ( sender == GUI->TopMargin_NumericEdit )
-      m_instance.p_margins.y0 = value;
-   else if ( sender == GUI->RightMargin_NumericEdit )
-      m_instance.p_margins.x1 = value;
-   else if ( sender == GUI->BottomMargin_NumericEdit )
-      m_instance.p_margins.y1 = value;
-
-   UpdateNumericControls();
-   UpdateAnchors();
+   if ( sender == GUI->CentimeterUnits_RadioButton )
+   {
+      m_instance.p_metric = true;
+      UpdateNumericControls();
+   }
+   else if ( sender == GUI->InchUnits_RadioButton )
+   {
+      m_instance.p_metric = false;
+      UpdateNumericControls();
+   }
+   else if ( sender == GUI->ForceResolution_CheckBox )
+      m_instance.p_forceResolution = checked;
 }
 
 // ----------------------------------------------------------------------------
 
-void CropInterface::__Anchor_ButtonClick( Button& sender, bool checked )
+void CropInterface::e_Anchor_ButtonClick( Button& sender, bool checked )
 {
    if ( sender == GUI->TL_ToolButton || sender == GUI->ML_ToolButton || sender == GUI->BL_ToolButton )
    {
@@ -657,7 +658,67 @@ void CropInterface::__Anchor_ButtonClick( Button& sender, bool checked )
 
 // ----------------------------------------------------------------------------
 
-void CropInterface::__Width_ValueUpdated( NumericEdit& sender, double value )
+void CropInterface::e_ValueUpdated( NumericEdit& sender, double value )
+{
+   if ( sender == GUI->LeftMargin_NumericEdit )
+   {
+      m_instance.p_margins.x0 = value;
+      UpdateAnchors();
+      UpdateNumericControls();
+   }
+   else if ( sender == GUI->TopMargin_NumericEdit )
+   {
+      m_instance.p_margins.y0 = value;
+      UpdateAnchors();
+      UpdateNumericControls();
+   }
+   else if ( sender == GUI->RightMargin_NumericEdit )
+   {
+      m_instance.p_margins.x1 = value;
+      UpdateAnchors();
+      UpdateNumericControls();
+   }
+   else if ( sender == GUI->BottomMargin_NumericEdit )
+   {
+      m_instance.p_margins.y1 = value;
+      UpdateAnchors();
+      UpdateNumericControls();
+   }
+   else if ( sender == GUI->HorizontalResolution_NumericEdit )
+   {
+      m_instance.p_resolution.x = value;
+      UpdateNumericControls();
+   }
+   else if ( sender == GUI->VerticalResolution_NumericEdit )
+   {
+      m_instance.p_resolution.y = value;
+      UpdateNumericControls();
+   }
+   else if ( sender == GUI->Red_NumericControl )
+   {
+      m_instance.p_fillColor[0] = value;
+      GUI->ColorSample_Control.Update();
+   }
+   else if ( sender == GUI->Green_NumericControl )
+   {
+      m_instance.p_fillColor[1] = value;
+      GUI->ColorSample_Control.Update();
+   }
+   else if ( sender == GUI->Blue_NumericControl )
+   {
+      m_instance.p_fillColor[2] = value;
+      GUI->ColorSample_Control.Update();
+   }
+   else if ( sender == GUI->Alpha_NumericControl )
+   {
+      m_instance.p_fillColor[3] = value;
+      GUI->ColorSample_Control.Update();
+   }
+}
+
+// ----------------------------------------------------------------------------
+
+void CropInterface::e_Width_ValueUpdated( NumericEdit& sender, double value )
 {
    if ( sender == GUI->SourceWidthPixels_NumericEdit )
       sourceWidth = int( value );
@@ -749,7 +810,7 @@ void CropInterface::__Width_ValueUpdated( NumericEdit& sender, double value )
 
 // ----------------------------------------------------------------------------
 
-void CropInterface::__Height_ValueUpdated( NumericEdit& sender, double value )
+void CropInterface::e_Height_ValueUpdated( NumericEdit& sender, double value )
 {
    if ( sender == GUI->SourceHeightPixels_NumericEdit )
       sourceHeight = int( value );
@@ -841,148 +902,109 @@ void CropInterface::__Height_ValueUpdated( NumericEdit& sender, double value )
 
 // ----------------------------------------------------------------------------
 
-void CropInterface::__Resolution_ValueUpdated( NumericEdit& sender, double value )
+void CropInterface::e_ItemSelected( ComboBox& sender, int itemIndex )
 {
-   if ( sender == GUI->HorizontalResolution_NumericEdit )
-      m_instance.p_resolution.x = value;
-   else if ( sender == GUI->VerticalResolution_NumericEdit )
-      m_instance.p_resolution.y = value;
-   UpdateNumericControls();
-}
-
-// ----------------------------------------------------------------------------
-
-void CropInterface::__Units_ButtonClick( Button& sender, bool /*checked*/ )
-{
-   if ( sender == GUI->CentimeterUnits_RadioButton )
-      m_instance.p_metric = true;
-   else if ( sender == GUI->InchUnits_RadioButton )
-      m_instance.p_metric = false;
-   UpdateNumericControls();
-}
-
-// ----------------------------------------------------------------------------
-
-void CropInterface::__ForceResolution_ButtonClick( Button& /*sender*/, bool checked )
-{
-   m_instance.p_forceResolution = checked;
-}
-
-// ----------------------------------------------------------------------------
-
-void CropInterface::__Mode_ItemSelected( ComboBox& /*sender*/, int itemIndex )
-{
-   DRect dpx = m_instance.p_margins;
-
-   switch ( m_instance.p_mode )
+   if ( sender == GUI->CropMode_ComboBox )
    {
-   default:
-   case CRMode::RelativeMargins:
-      dpx.x0 *= sourceWidth;
-      dpx.y0 *= sourceHeight;
-      dpx.x1 *= sourceWidth;
-      dpx.y1 *= sourceHeight;
-      break;
-   case CRMode::AbsolutePixels:
-      break;
-   case CRMode::AbsoluteCentimeters:
-      dpx.x0 *= m_instance.p_resolution.x;
-      dpx.y0 *= m_instance.p_resolution.y;
-      dpx.x1 *= m_instance.p_resolution.x;
-      dpx.y1 *= m_instance.p_resolution.y;
-      if ( !m_instance.p_metric )
-         dpx *= 2.54;
-      break;
-   case CRMode::AbsoluteInches:
-      dpx.x0 *= m_instance.p_resolution.x;
-      dpx.y0 *= m_instance.p_resolution.y;
-      dpx.x1 *= m_instance.p_resolution.x;
-      dpx.y1 *= m_instance.p_resolution.y;
-      if ( m_instance.p_metric )
-         dpx /= 2.54;
-      break;
+      DRect dpx = m_instance.p_margins;
+
+      switch ( m_instance.p_mode )
+      {
+      default:
+      case CRMode::RelativeMargins:
+         dpx.x0 *= sourceWidth;
+         dpx.y0 *= sourceHeight;
+         dpx.x1 *= sourceWidth;
+         dpx.y1 *= sourceHeight;
+         break;
+      case CRMode::AbsolutePixels:
+         break;
+      case CRMode::AbsoluteCentimeters:
+         dpx.x0 *= m_instance.p_resolution.x;
+         dpx.y0 *= m_instance.p_resolution.y;
+         dpx.x1 *= m_instance.p_resolution.x;
+         dpx.y1 *= m_instance.p_resolution.y;
+         if ( !m_instance.p_metric )
+            dpx *= 2.54;
+         break;
+      case CRMode::AbsoluteInches:
+         dpx.x0 *= m_instance.p_resolution.x;
+         dpx.y0 *= m_instance.p_resolution.y;
+         dpx.x1 *= m_instance.p_resolution.x;
+         dpx.y1 *= m_instance.p_resolution.y;
+         if ( m_instance.p_metric )
+            dpx /= 2.54;
+         break;
+      }
+
+      m_instance.p_mode = itemIndex;
+
+      switch ( m_instance.p_mode )
+      {
+      default:
+      case CRMode::RelativeMargins:
+         m_instance.p_margins.x0 = dpx.x0/sourceWidth;
+         m_instance.p_margins.y0 = dpx.y0/sourceHeight;
+         m_instance.p_margins.x1 = dpx.x1/sourceWidth;
+         m_instance.p_margins.y1 = dpx.y1/sourceHeight;
+         break;
+      case CRMode::AbsolutePixels:
+         m_instance.p_margins.x0 = RoundI( dpx.x0 );
+         m_instance.p_margins.y0 = RoundI( dpx.y0 );
+         m_instance.p_margins.x1 = RoundI( dpx.x1 );
+         m_instance.p_margins.y1 = RoundI( dpx.y1 );
+         break;
+      case CRMode::AbsoluteCentimeters:
+         m_instance.p_margins.x0 = dpx.x0/m_instance.p_resolution.x;
+         m_instance.p_margins.y0 = dpx.y0/m_instance.p_resolution.y;
+         m_instance.p_margins.x1 = dpx.x1/m_instance.p_resolution.x;
+         m_instance.p_margins.y1 = dpx.y1/m_instance.p_resolution.y;
+         if ( !m_instance.p_metric )
+            dpx *= 2.54;
+         break;
+      case CRMode::AbsoluteInches:
+         m_instance.p_margins.x0 = dpx.x0/m_instance.p_resolution.x;
+         m_instance.p_margins.y0 = dpx.y0/m_instance.p_resolution.y;
+         m_instance.p_margins.x1 = dpx.x1/m_instance.p_resolution.x;
+         m_instance.p_margins.y1 = dpx.y1/m_instance.p_resolution.y;
+         if ( m_instance.p_metric )
+            dpx /= 2.54;
+         break;
+      }
+
+      UpdateNumericControls();
    }
-
-   m_instance.p_mode = itemIndex;
-
-   switch ( m_instance.p_mode )
-   {
-   default:
-   case CRMode::RelativeMargins:
-      m_instance.p_margins.x0 = dpx.x0/sourceWidth;
-      m_instance.p_margins.y0 = dpx.y0/sourceHeight;
-      m_instance.p_margins.x1 = dpx.x1/sourceWidth;
-      m_instance.p_margins.y1 = dpx.y1/sourceHeight;
-      break;
-   case CRMode::AbsolutePixels:
-      m_instance.p_margins.x0 = RoundI( dpx.x0 );
-      m_instance.p_margins.y0 = RoundI( dpx.y0 );
-      m_instance.p_margins.x1 = RoundI( dpx.x1 );
-      m_instance.p_margins.y1 = RoundI( dpx.y1 );
-      break;
-   case CRMode::AbsoluteCentimeters:
-      m_instance.p_margins.x0 = dpx.x0/m_instance.p_resolution.x;
-      m_instance.p_margins.y0 = dpx.y0/m_instance.p_resolution.y;
-      m_instance.p_margins.x1 = dpx.x1/m_instance.p_resolution.x;
-      m_instance.p_margins.y1 = dpx.y1/m_instance.p_resolution.y;
-      if ( !m_instance.p_metric )
-         dpx *= 2.54;
-      break;
-   case CRMode::AbsoluteInches:
-      m_instance.p_margins.x0 = dpx.x0/m_instance.p_resolution.x;
-      m_instance.p_margins.y0 = dpx.y0/m_instance.p_resolution.y;
-      m_instance.p_margins.x1 = dpx.x1/m_instance.p_resolution.x;
-      m_instance.p_margins.y1 = dpx.y1/m_instance.p_resolution.y;
-      if ( m_instance.p_metric )
-         dpx /= 2.54;
-      break;
-   }
-
-   UpdateNumericControls();
 }
 
 // ----------------------------------------------------------------------------
 
-void CropInterface::__FilColor_ValueUpdated( NumericEdit& sender, double value )
+void CropInterface::e_Paint( Control& sender, const Rect& updateRect )
 {
-   if ( sender == GUI->Red_NumericControl )
-      m_instance.p_fillColor[0] = value;
-   else if ( sender == GUI->Green_NumericControl )
-      m_instance.p_fillColor[1] = value;
-   else if ( sender == GUI->Blue_NumericControl )
-      m_instance.p_fillColor[2] = value;
-   else if ( sender == GUI->Alpha_NumericControl )
-      m_instance.p_fillColor[3] = value;
-
-   GUI->ColorSample_Control.Update();
-}
-
-// ----------------------------------------------------------------------------
-
-void CropInterface::__ColorSample_Paint( Control& sender, const Rect& updateRect )
-{
-   Graphics g( sender );
-
-   RGBA color = RGBAColor( float( m_instance.p_fillColor[0] ),
-                           float( m_instance.p_fillColor[1] ),
-                           float( m_instance.p_fillColor[2] ),
-                           float( m_instance.p_fillColor[3] ) );
-
-   if ( Alpha( color ) != 0 )
+   if ( sender == GUI->ColorSample_Control )
    {
-      g.SetBrush( Bitmap( sender.ScaledResource( ":/image-window/transparent-small.png" ) ) );
-      g.SetPen( Pen::Null() );
+      Graphics g( sender );
+
+      RGBA color = RGBAColor( float( m_instance.p_fillColor[0] ),
+                              float( m_instance.p_fillColor[1] ),
+                              float( m_instance.p_fillColor[2] ),
+                              float( m_instance.p_fillColor[3] ) );
+
+      if ( Alpha( color ) != 0 )
+      {
+         g.SetBrush( Bitmap( sender.ScaledResource( ":/image-window/transparent-small.png" ) ) );
+         g.SetPen( Pen::Null() );
+         g.DrawRect( sender.BoundsRect() );
+      }
+
+      g.SetBrush( color );
+      g.SetPen( 0xff000000, sender.DisplayPixelRatio() );
       g.DrawRect( sender.BoundsRect() );
    }
-
-   g.SetBrush( color );
-   g.SetPen( 0xff000000, sender.DisplayPixelRatio() );
-   g.DrawRect( sender.BoundsRect() );
 }
 
 // ----------------------------------------------------------------------------
 
-void CropInterface::__ViewDrag( Control& sender, const Point& pos, const View& view, unsigned modifiers, bool& wantsView )
+void CropInterface::e_ViewDrag( Control& sender, const Point& pos, const View& view, unsigned modifiers, bool& wantsView )
 {
    if ( sender == GUI->AllImages_ViewList )
       wantsView = view.IsMainView();
@@ -990,14 +1012,14 @@ void CropInterface::__ViewDrag( Control& sender, const Point& pos, const View& v
 
 // ----------------------------------------------------------------------------
 
-void CropInterface::__ViewDrop( Control& sender, const Point& pos, const View& view, unsigned modifiers )
+void CropInterface::e_ViewDrop( Control& sender, const Point& pos, const View& view, unsigned modifiers )
 {
    if ( sender == GUI->AllImages_ViewList )
       if ( view.IsMainView() )
       {
          GUI->AllImages_ViewList.SelectView( view );
          View theView = view;
-         __ViewList_ViewSelected( GUI->AllImages_ViewList, theView );
+         e_ViewSelected( GUI->AllImages_ViewList, theView );
       }
 }
 
@@ -1021,9 +1043,9 @@ CropInterface::GUIData::GUIData( CropInterface& w )
    int ui4 = w.LogicalPixelsToPhysical( 4 );
    int ui6 = w.LogicalPixelsToPhysical( 6 );
 
-   AllImages_ViewList.OnViewSelected( (ViewList::view_event_handler)&CropInterface::__ViewList_ViewSelected, w );
-   AllImages_ViewList.OnViewDrag( (Control::view_drag_event_handler)&CropInterface::__ViewDrag, w );
-   AllImages_ViewList.OnViewDrop( (Control::view_drop_event_handler)&CropInterface::__ViewDrop, w );
+   AllImages_ViewList.OnViewSelected( (ViewList::view_event_handler)&CropInterface::e_ViewSelected, w );
+   AllImages_ViewList.OnViewDrag( (Control::view_drag_event_handler)&CropInterface::e_ViewDrag, w );
+   AllImages_ViewList.OnViewDrop( (Control::view_drop_event_handler)&CropInterface::e_ViewDrop, w );
 
    CropMargins_SectionBar.SetTitle( "Margins/Anchors" );
    CropMargins_SectionBar.SetSection( CropMargins_Control );
@@ -1033,7 +1055,7 @@ CropInterface::GUIData::GUIData( CropInterface& w )
    TopMargin_NumericEdit.SetRange( int_min, int_max );
    TopMargin_NumericEdit.SetPrecision( 6 );
    TopMargin_NumericEdit.edit.SetFixedWidth( editWidth1 );
-   TopMargin_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&CropInterface::__Margin_ValueUpdated, w );
+   TopMargin_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&CropInterface::e_ValueUpdated, w );
 
    CropMarginsTop_Sizer.AddStretch();
    CropMarginsTop_Sizer.Add( TopMargin_NumericEdit );
@@ -1044,16 +1066,16 @@ CropInterface::GUIData::GUIData( CropInterface& w )
    LeftMargin_NumericEdit.SetRange( int_min, int_max );
    LeftMargin_NumericEdit.SetPrecision( 6 );
    LeftMargin_NumericEdit.edit.SetFixedWidth( editWidth1 );
-   LeftMargin_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&CropInterface::__Margin_ValueUpdated, w );
+   LeftMargin_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&CropInterface::e_ValueUpdated, w );
 
    TL_ToolButton.SetScaledFixedSize( 20, 20 );
-   TL_ToolButton.OnClick( (Button::click_event_handler)&CropInterface::__Anchor_ButtonClick, w );
+   TL_ToolButton.OnClick( (Button::click_event_handler)&CropInterface::e_Anchor_ButtonClick, w );
 
    TM_ToolButton.SetScaledFixedSize( 20, 20 );
-   TM_ToolButton.OnClick( (Button::click_event_handler)&CropInterface::__Anchor_ButtonClick, w );
+   TM_ToolButton.OnClick( (Button::click_event_handler)&CropInterface::e_Anchor_ButtonClick, w );
 
    TR_ToolButton.SetScaledFixedSize( 20, 20 );
-   TR_ToolButton.OnClick( (Button::click_event_handler)&CropInterface::__Anchor_ButtonClick, w );
+   TR_ToolButton.OnClick( (Button::click_event_handler)&CropInterface::e_Anchor_ButtonClick, w );
 
    AnchorRow1_Sizer.SetSpacing( 2 );
    AnchorRow1_Sizer.Add( TL_ToolButton );
@@ -1061,13 +1083,13 @@ CropInterface::GUIData::GUIData( CropInterface& w )
    AnchorRow1_Sizer.Add( TR_ToolButton );
 
    ML_ToolButton.SetScaledFixedSize( 20, 20 );
-   ML_ToolButton.OnClick( (Button::click_event_handler)&CropInterface::__Anchor_ButtonClick, w );
+   ML_ToolButton.OnClick( (Button::click_event_handler)&CropInterface::e_Anchor_ButtonClick, w );
 
    MM_ToolButton.SetScaledFixedSize( 20, 20 );
-   MM_ToolButton.OnClick( (Button::click_event_handler)&CropInterface::__Anchor_ButtonClick, w );
+   MM_ToolButton.OnClick( (Button::click_event_handler)&CropInterface::e_Anchor_ButtonClick, w );
 
    MR_ToolButton.SetScaledFixedSize( 20, 20 );
-   MR_ToolButton.OnClick( (Button::click_event_handler)&CropInterface::__Anchor_ButtonClick, w );
+   MR_ToolButton.OnClick( (Button::click_event_handler)&CropInterface::e_Anchor_ButtonClick, w );
 
    AnchorRow2_Sizer.SetSpacing( 2 );
    AnchorRow2_Sizer.Add( ML_ToolButton );
@@ -1075,13 +1097,13 @@ CropInterface::GUIData::GUIData( CropInterface& w )
    AnchorRow2_Sizer.Add( MR_ToolButton );
 
    BL_ToolButton.SetScaledFixedSize( 20, 20 );
-   BL_ToolButton.OnClick( (Button::click_event_handler)&CropInterface::__Anchor_ButtonClick, w );
+   BL_ToolButton.OnClick( (Button::click_event_handler)&CropInterface::e_Anchor_ButtonClick, w );
 
    BM_ToolButton.SetScaledFixedSize( 20, 20 );
-   BM_ToolButton.OnClick( (Button::click_event_handler)&CropInterface::__Anchor_ButtonClick, w );
+   BM_ToolButton.OnClick( (Button::click_event_handler)&CropInterface::e_Anchor_ButtonClick, w );
 
    BR_ToolButton.SetScaledFixedSize( 20, 20 );
-   BR_ToolButton.OnClick( (Button::click_event_handler)&CropInterface::__Anchor_ButtonClick, w );
+   BR_ToolButton.OnClick( (Button::click_event_handler)&CropInterface::e_Anchor_ButtonClick, w );
 
    AnchorRow3_Sizer.SetSpacing( 2 );
    AnchorRow3_Sizer.Add( BL_ToolButton );
@@ -1098,7 +1120,7 @@ CropInterface::GUIData::GUIData( CropInterface& w )
    RightMargin_NumericEdit.SetRange( int_min, int_max );
    RightMargin_NumericEdit.SetPrecision( 6 );
    RightMargin_NumericEdit.edit.SetFixedWidth( editWidth1 );
-   RightMargin_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&CropInterface::__Margin_ValueUpdated, w );
+   RightMargin_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&CropInterface::e_ValueUpdated, w );
 
    CropMarginsMiddle_Sizer.SetSpacing( 8 );
    CropMarginsMiddle_Sizer.AddStretch();
@@ -1112,7 +1134,7 @@ CropInterface::GUIData::GUIData( CropInterface& w )
    BottomMargin_NumericEdit.SetRange( int_min, int_max );
    BottomMargin_NumericEdit.SetPrecision( 6 );
    BottomMargin_NumericEdit.edit.SetFixedWidth( editWidth1 );
-   BottomMargin_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&CropInterface::__Margin_ValueUpdated, w );
+   BottomMargin_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&CropInterface::e_ValueUpdated, w );
 
    CropMarginsBottom_Sizer.AddStretch();
    CropMarginsBottom_Sizer.Add( BottomMargin_NumericEdit );
@@ -1167,14 +1189,14 @@ CropInterface::GUIData::GUIData( CropInterface& w )
    SourceWidthPixels_NumericEdit.SetRange( 1, int_max );
    SourceWidthPixels_NumericEdit.edit.SetFixedWidth( editWidth1 );
    SourceWidthPixels_NumericEdit.SetFixedWidth( editWidth1 );
-   SourceWidthPixels_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&CropInterface::__Width_ValueUpdated, w );
+   SourceWidthPixels_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&CropInterface::e_Width_ValueUpdated, w );
 
    TargetWidthPixels_NumericEdit.label.Hide();
    TargetWidthPixels_NumericEdit.SetInteger();
    TargetWidthPixels_NumericEdit.SetRange( 1, int_max );
    TargetWidthPixels_NumericEdit.edit.SetFixedWidth( editWidth1 );
    TargetWidthPixels_NumericEdit.SetFixedWidth( editWidth1 );
-   TargetWidthPixels_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&CropInterface::__Width_ValueUpdated, w );
+   TargetWidthPixels_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&CropInterface::e_Width_ValueUpdated, w );
 
    TargetWidthPercent_NumericEdit.label.Hide();
    TargetWidthPercent_NumericEdit.SetReal();
@@ -1182,7 +1204,7 @@ CropInterface::GUIData::GUIData( CropInterface& w )
    TargetWidthPercent_NumericEdit.SetPrecision( 4 );
    TargetWidthPercent_NumericEdit.edit.SetFixedWidth( editWidth1 );
    TargetWidthPercent_NumericEdit.SetFixedWidth( editWidth1 );
-   TargetWidthPercent_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&CropInterface::__Width_ValueUpdated, w );
+   TargetWidthPercent_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&CropInterface::e_Width_ValueUpdated, w );
 
    TargetWidthCentimeters_NumericEdit.label.Hide();
    TargetWidthCentimeters_NumericEdit.SetReal();
@@ -1190,7 +1212,7 @@ CropInterface::GUIData::GUIData( CropInterface& w )
    TargetWidthCentimeters_NumericEdit.SetPrecision( 3 );
    TargetWidthCentimeters_NumericEdit.edit.SetFixedWidth( editWidth1 );
    TargetWidthCentimeters_NumericEdit.SetFixedWidth( editWidth1 );
-   TargetWidthCentimeters_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&CropInterface::__Width_ValueUpdated, w );
+   TargetWidthCentimeters_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&CropInterface::e_Width_ValueUpdated, w );
 
    TargetWidthInches_NumericEdit.label.Hide();
    TargetWidthInches_NumericEdit.SetReal();
@@ -1198,7 +1220,7 @@ CropInterface::GUIData::GUIData( CropInterface& w )
    TargetWidthInches_NumericEdit.SetPrecision( 3 );
    TargetWidthInches_NumericEdit.edit.SetFixedWidth( editWidth1 );
    TargetWidthInches_NumericEdit.SetFixedWidth( editWidth1 );
-   TargetWidthInches_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&CropInterface::__Width_ValueUpdated, w );
+   TargetWidthInches_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&CropInterface::e_Width_ValueUpdated, w );
 
    DimensionsRow2_Sizer.SetSpacing( 6 );
    DimensionsRow2_Sizer.Add( Width_Label );
@@ -1217,14 +1239,14 @@ CropInterface::GUIData::GUIData( CropInterface& w )
    SourceHeightPixels_NumericEdit.SetRange( 1, int_max );
    SourceHeightPixels_NumericEdit.edit.SetFixedWidth( editWidth1 );
    SourceHeightPixels_NumericEdit.SetFixedWidth( editWidth1 );
-   SourceHeightPixels_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&CropInterface::__Height_ValueUpdated, w );
+   SourceHeightPixels_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&CropInterface::e_Height_ValueUpdated, w );
 
    TargetHeightPixels_NumericEdit.label.Hide();
    TargetHeightPixels_NumericEdit.SetInteger();
    TargetHeightPixels_NumericEdit.SetRange( 1, int_max );
    TargetHeightPixels_NumericEdit.edit.SetFixedWidth( editWidth1 );
    TargetHeightPixels_NumericEdit.SetFixedWidth( editWidth1 );
-   TargetHeightPixels_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&CropInterface::__Height_ValueUpdated, w );
+   TargetHeightPixels_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&CropInterface::e_Height_ValueUpdated, w );
 
    TargetHeightPercent_NumericEdit.label.Hide();
    TargetHeightPercent_NumericEdit.SetReal();
@@ -1232,7 +1254,7 @@ CropInterface::GUIData::GUIData( CropInterface& w )
    TargetHeightPercent_NumericEdit.SetPrecision( 4 );
    TargetHeightPercent_NumericEdit.edit.SetFixedWidth( editWidth1 );
    TargetHeightPercent_NumericEdit.SetFixedWidth( editWidth1 );
-   TargetHeightPercent_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&CropInterface::__Height_ValueUpdated, w );
+   TargetHeightPercent_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&CropInterface::e_Height_ValueUpdated, w );
 
    TargetHeightCentimeters_NumericEdit.label.Hide();
    TargetHeightCentimeters_NumericEdit.SetReal();
@@ -1240,7 +1262,7 @@ CropInterface::GUIData::GUIData( CropInterface& w )
    TargetHeightCentimeters_NumericEdit.SetPrecision( 3 );
    TargetHeightCentimeters_NumericEdit.edit.SetFixedWidth( editWidth1 );
    TargetHeightCentimeters_NumericEdit.SetFixedWidth( editWidth1 );
-   TargetHeightCentimeters_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&CropInterface::__Height_ValueUpdated, w );
+   TargetHeightCentimeters_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&CropInterface::e_Height_ValueUpdated, w );
 
    TargetHeightInches_NumericEdit.label.Hide();
    TargetHeightInches_NumericEdit.SetReal();
@@ -1248,7 +1270,7 @@ CropInterface::GUIData::GUIData( CropInterface& w )
    TargetHeightInches_NumericEdit.SetPrecision( 3 );
    TargetHeightInches_NumericEdit.edit.SetFixedWidth( editWidth1 );
    TargetHeightInches_NumericEdit.SetFixedWidth( editWidth1 );
-   TargetHeightInches_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&CropInterface::__Height_ValueUpdated, w );
+   TargetHeightInches_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&CropInterface::e_Height_ValueUpdated, w );
 
    DimensionsRow3_Sizer.SetSpacing( 6 );
    DimensionsRow3_Sizer.Add( Height_Label );
@@ -1281,13 +1303,13 @@ CropInterface::GUIData::GUIData( CropInterface& w )
    HorizontalResolution_NumericEdit.SetReal();
    HorizontalResolution_NumericEdit.SetRange( 1, 10000 );
    HorizontalResolution_NumericEdit.SetPrecision( 3 );
-   HorizontalResolution_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&CropInterface::__Resolution_ValueUpdated, w );
+   HorizontalResolution_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&CropInterface::e_ValueUpdated, w );
 
    VerticalResolution_NumericEdit.label.SetText( "Vertical:" );
    VerticalResolution_NumericEdit.SetReal();
    VerticalResolution_NumericEdit.SetRange( 1, 10000 );
    VerticalResolution_NumericEdit.SetPrecision( 3 );
-   VerticalResolution_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&CropInterface::__Resolution_ValueUpdated, w );
+   VerticalResolution_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&CropInterface::e_ValueUpdated, w );
 
    ResolutionRow1_Sizer.SetSpacing( 16 );
    ResolutionRow1_Sizer.Add( HorizontalResolution_NumericEdit );
@@ -1295,14 +1317,14 @@ CropInterface::GUIData::GUIData( CropInterface& w )
    ResolutionRow1_Sizer.AddStretch();
 
    CentimeterUnits_RadioButton.SetText( "Centimeters" );
-   CentimeterUnits_RadioButton.OnClick( (Button::click_event_handler)&CropInterface::__Units_ButtonClick, w );
+   CentimeterUnits_RadioButton.OnClick( (Button::click_event_handler)&CropInterface::e_ButtonClick, w );
 
    InchUnits_RadioButton.SetText( "Inches" );
-   InchUnits_RadioButton.OnClick( (Button::click_event_handler)&CropInterface::__Units_ButtonClick, w );
+   InchUnits_RadioButton.OnClick( (Button::click_event_handler)&CropInterface::e_ButtonClick, w );
 
    ForceResolution_CheckBox.SetText( "Force resolution" );
    ForceResolution_CheckBox.SetToolTip( "Modify resolution metadata of target image(s)" );
-   ForceResolution_CheckBox.OnClick( (Button::click_event_handler)&CropInterface::__ForceResolution_ButtonClick, w );
+   ForceResolution_CheckBox.OnClick( (Button::click_event_handler)&CropInterface::e_ButtonClick, w );
 
    ResolutionRow2_Sizer.SetSpacing( 8 );
    ResolutionRow2_Sizer.AddUnscaledSpacing( labelWidth2 + ui4 );
@@ -1330,7 +1352,7 @@ CropInterface::GUIData::GUIData( CropInterface& w )
    CropMode_ComboBox.AddItem( "Absolute margins in pixels" );
    CropMode_ComboBox.AddItem( "Absolute margins in centimeters" );
    CropMode_ComboBox.AddItem( "Absolute margins in inches" );
-   CropMode_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&CropInterface::__Mode_ItemSelected, w );
+   CropMode_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&CropInterface::e_ItemSelected, w );
 
    Mode_Sizer.SetSpacing( 4 );
    Mode_Sizer.Add( CropMode_Label );
@@ -1350,7 +1372,7 @@ CropInterface::GUIData::GUIData( CropInterface& w )
    Red_NumericControl.SetReal();
    Red_NumericControl.SetRange( 0, 1 );
    Red_NumericControl.SetPrecision( 6 );
-   Red_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&CropInterface::__FilColor_ValueUpdated, w );
+   Red_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&CropInterface::e_ValueUpdated, w );
 
    Green_NumericControl.label.SetText( "G:" );
    Green_NumericControl.label.SetFixedWidth( labelWidth2 );
@@ -1358,7 +1380,7 @@ CropInterface::GUIData::GUIData( CropInterface& w )
    Green_NumericControl.SetReal();
    Green_NumericControl.SetRange( 0, 1 );
    Green_NumericControl.SetPrecision( 6 );
-   Green_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&CropInterface::__FilColor_ValueUpdated, w );
+   Green_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&CropInterface::e_ValueUpdated, w );
 
    Blue_NumericControl.label.SetText( "B:" );
    Blue_NumericControl.label.SetFixedWidth( labelWidth2 );
@@ -1366,7 +1388,7 @@ CropInterface::GUIData::GUIData( CropInterface& w )
    Blue_NumericControl.SetReal();
    Blue_NumericControl.SetRange( 0, 1 );
    Blue_NumericControl.SetPrecision( 6 );
-   Blue_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&CropInterface::__FilColor_ValueUpdated, w );
+   Blue_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&CropInterface::e_ValueUpdated, w );
 
    Alpha_NumericControl.label.SetText( "A:" );
    Alpha_NumericControl.label.SetFixedWidth( labelWidth2 );
@@ -1374,10 +1396,10 @@ CropInterface::GUIData::GUIData( CropInterface& w )
    Alpha_NumericControl.SetReal();
    Alpha_NumericControl.SetRange( 0, 1 );
    Alpha_NumericControl.SetPrecision( 6 );
-   Alpha_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&CropInterface::__FilColor_ValueUpdated, w );
+   Alpha_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&CropInterface::e_ValueUpdated, w );
 
    ColorSample_Control.SetScaledFixedHeight( 20 );
-   ColorSample_Control.OnPaint( (Control::paint_event_handler)&CropInterface::__ColorSample_Paint, w );
+   ColorSample_Control.OnPaint( (Control::paint_event_handler)&CropInterface::e_Paint, w );
 
    FillColor_Sizer.SetSpacing( 4 );
    FillColor_Sizer.Add( Red_NumericControl );
@@ -1421,4 +1443,4 @@ CropInterface::GUIData::GUIData( CropInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CropInterface.cpp - Released 2022-05-17T17:15:11Z
+// EOF CropInterface.cpp - Released 2022-11-21T14:47:17Z

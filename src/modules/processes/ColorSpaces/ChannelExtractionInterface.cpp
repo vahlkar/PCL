@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.29
+// /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard ColorSpaces Process Module Version 1.1.2
+// Standard ColorSpaces Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// ChannelExtractionInterface.cpp - Released 2022-05-17T17:15:11Z
+// ChannelExtractionInterface.cpp - Released 2022-11-21T14:47:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -176,15 +176,11 @@ void ChannelExtractionInterface::UpdateControls()
    GUI->CIELab_RadioButton.SetChecked( m_instance.ColorSpace() == ColorSpaceId::CIELab );
    GUI->CIELch_RadioButton.SetChecked( m_instance.ColorSpace() == ColorSpaceId::CIELch );
 
-   //
-
    GUI->C0_CheckBox.SetText( ColorSpaceId::ChannelId( m_instance.ColorSpace(), 0 ) );
    GUI->C0_CheckBox.SetChecked( m_instance.IsChannelEnabled( 0 ) );
 
    GUI->C0_Edit.SetText( m_instance.ChannelId( 0 ).IsEmpty() ? AUTO_ID : m_instance.ChannelId( 0 ) );
    GUI->C0_Edit.Enable( m_instance.IsChannelEnabled( 0 ) );
-
-   //
 
    GUI->C1_CheckBox.SetText( ColorSpaceId::ChannelId( m_instance.ColorSpace(), 1 ) );
    GUI->C1_CheckBox.SetChecked( m_instance.IsChannelEnabled( 1 ) );
@@ -192,23 +188,21 @@ void ChannelExtractionInterface::UpdateControls()
    GUI->C1_Edit.SetText( m_instance.ChannelId( 1 ).IsEmpty() ? AUTO_ID : m_instance.ChannelId( 1 ) );
    GUI->C1_Edit.Enable( m_instance.IsChannelEnabled( 1 ) );
 
-   //
-
    GUI->C2_CheckBox.SetText( ColorSpaceId::ChannelId( m_instance.ColorSpace(), 2 ) );
    GUI->C2_CheckBox.SetChecked( m_instance.IsChannelEnabled( 2 ) );
 
    GUI->C2_Edit.SetText( m_instance.ChannelId( 2 ).IsEmpty() ? AUTO_ID : m_instance.ChannelId( 2 ) );
    GUI->C2_Edit.Enable( m_instance.IsChannelEnabled( 2 ) );
 
-   //
-
    GUI->SampleFormat_ComboBox.SetCurrentItem( m_instance.SampleFormat() );
+
+   GUI->InheritAstrometricSolution_CheckBox.SetChecked( m_instance.p_inheritAstrometricSolution );
 }
 
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-void ChannelExtractionInterface::__ColorSpace_Click( Button& sender, bool /*checked*/ )
+void ChannelExtractionInterface::e_ColorSpace_Click( Button& sender, bool /*checked*/ )
 {
    if ( sender == GUI->RGB_RadioButton )
       m_instance.p_colorSpace = ColorSpaceId::RGB;
@@ -230,7 +224,7 @@ void ChannelExtractionInterface::__ColorSpace_Click( Button& sender, bool /*chec
 
 // ----------------------------------------------------------------------------
 
-void ChannelExtractionInterface::__Channel_Click( Button& sender, bool checked )
+void ChannelExtractionInterface::e_Channel_Click( Button& sender, bool checked )
 {
    int i;
    if ( sender == GUI->C0_CheckBox )
@@ -239,6 +233,11 @@ void ChannelExtractionInterface::__Channel_Click( Button& sender, bool checked )
       i = 1;
    else if ( sender == GUI->C2_CheckBox )
       i = 2;
+   else if ( sender == GUI->InheritAstrometricSolution_CheckBox )
+   {
+      m_instance.p_inheritAstrometricSolution = checked;
+      return;
+   }
    else
       return;
 
@@ -260,7 +259,7 @@ void ChannelExtractionInterface::__Channel_Click( Button& sender, bool checked )
 
 // ----------------------------------------------------------------------------
 
-void ChannelExtractionInterface::__ChannelId_GetFocus( Control& sender )
+void ChannelExtractionInterface::e_ChannelId_GetFocus( Control& sender )
 {
    Edit* e = dynamic_cast<Edit*>( &sender );
    if ( e != nullptr )
@@ -270,7 +269,7 @@ void ChannelExtractionInterface::__ChannelId_GetFocus( Control& sender )
 
 // ----------------------------------------------------------------------------
 
-void ChannelExtractionInterface::__ChannelId_EditCompleted( Edit& sender )
+void ChannelExtractionInterface::e_ChannelId_EditCompleted( Edit& sender )
 {
    int i;
    if ( sender == GUI->C0_Edit )
@@ -303,7 +302,7 @@ void ChannelExtractionInterface::__ChannelId_EditCompleted( Edit& sender )
 
 // ----------------------------------------------------------------------------
 
-void ChannelExtractionInterface::__SampleFormat_ItemSelected( ComboBox& /*sender*/, int itemIndex )
+void ChannelExtractionInterface::e_SampleFormat_ItemSelected( ComboBox& /*sender*/, int itemIndex )
 {
    m_instance.p_sampleFormat = itemIndex;
 }
@@ -319,13 +318,13 @@ ChannelExtractionInterface::GUIData::GUIData( ChannelExtractionInterface& w )
    //
 
    RGB_RadioButton.SetText( "RGB" );
-   RGB_RadioButton.OnClick( (pcl::Button::click_event_handler)&ChannelExtractionInterface::__ColorSpace_Click, w );
+   RGB_RadioButton.OnClick( (pcl::Button::click_event_handler)&ChannelExtractionInterface::e_ColorSpace_Click, w );
 
    HSV_RadioButton.SetText( "HSV" );
-   HSV_RadioButton.OnClick( (pcl::Button::click_event_handler)&ChannelExtractionInterface::__ColorSpace_Click, w );
+   HSV_RadioButton.OnClick( (pcl::Button::click_event_handler)&ChannelExtractionInterface::e_ColorSpace_Click, w );
 
    HSI_RadioButton.SetText( "HSI" );
-   HSI_RadioButton.OnClick( (pcl::Button::click_event_handler)&ChannelExtractionInterface::__ColorSpace_Click, w );
+   HSI_RadioButton.OnClick( (pcl::Button::click_event_handler)&ChannelExtractionInterface::e_ColorSpace_Click, w );
 
    ColorSpaceLeft_Sizer.Add( RGB_RadioButton );
    ColorSpaceLeft_Sizer.Add( HSV_RadioButton );
@@ -334,13 +333,13 @@ ChannelExtractionInterface::GUIData::GUIData( ChannelExtractionInterface& w )
    //
 
    CIEXYZ_RadioButton.SetText( "CIE XYZ" );
-   CIEXYZ_RadioButton.OnClick( (pcl::Button::click_event_handler)&ChannelExtractionInterface::__ColorSpace_Click, w );
+   CIEXYZ_RadioButton.OnClick( (pcl::Button::click_event_handler)&ChannelExtractionInterface::e_ColorSpace_Click, w );
 
    CIELab_RadioButton.SetText( "CIE L*a*b*" );
-   CIELab_RadioButton.OnClick( (pcl::Button::click_event_handler)&ChannelExtractionInterface::__ColorSpace_Click, w );
+   CIELab_RadioButton.OnClick( (pcl::Button::click_event_handler)&ChannelExtractionInterface::e_ColorSpace_Click, w );
 
    CIELch_RadioButton.SetText( "CIE L*c*h*" );
-   CIELch_RadioButton.OnClick( (pcl::Button::click_event_handler)&ChannelExtractionInterface::__ColorSpace_Click, w );
+   CIELch_RadioButton.OnClick( (pcl::Button::click_event_handler)&ChannelExtractionInterface::e_ColorSpace_Click, w );
 
    ColorSpaceRight_Sizer.Add( CIEXYZ_RadioButton );
    ColorSpaceRight_Sizer.Add( CIELab_RadioButton );
@@ -361,11 +360,11 @@ ChannelExtractionInterface::GUIData::GUIData( ChannelExtractionInterface& w )
    C0_CheckBox.SetText( "MM" );
    C0_CheckBox.AdjustToContents();
    C0_CheckBox.SetFixedWidth();
-   C0_CheckBox.OnClick( (pcl::Button::click_event_handler)&ChannelExtractionInterface::__Channel_Click, w );
+   C0_CheckBox.OnClick( (pcl::Button::click_event_handler)&ChannelExtractionInterface::e_Channel_Click, w );
 
    C0_Edit.SetMinWidth( chEditWidth );
-   C0_Edit.OnGetFocus( (Control::event_handler)&ChannelExtractionInterface::__ChannelId_GetFocus, w );
-   C0_Edit.OnEditCompleted( (Edit::edit_event_handler)&ChannelExtractionInterface::__ChannelId_EditCompleted, w );
+   C0_Edit.OnGetFocus( (Control::event_handler)&ChannelExtractionInterface::e_ChannelId_GetFocus, w );
+   C0_Edit.OnEditCompleted( (Edit::edit_event_handler)&ChannelExtractionInterface::e_ChannelId_EditCompleted, w );
 
    C0_Sizer.Add( C0_CheckBox );
    C0_Sizer.Add( C0_Edit, 100 );
@@ -375,11 +374,11 @@ ChannelExtractionInterface::GUIData::GUIData( ChannelExtractionInterface& w )
    C1_CheckBox.SetText( "MM" );
    C1_CheckBox.AdjustToContents();
    C1_CheckBox.SetFixedWidth();
-   C1_CheckBox.OnClick( (pcl::Button::click_event_handler)&ChannelExtractionInterface::__Channel_Click, w );
+   C1_CheckBox.OnClick( (pcl::Button::click_event_handler)&ChannelExtractionInterface::e_Channel_Click, w );
 
    C1_Edit.SetMinWidth( chEditWidth );
-   C1_Edit.OnGetFocus( (Control::event_handler)&ChannelExtractionInterface::__ChannelId_GetFocus, w );
-   C1_Edit.OnEditCompleted( (Edit::edit_event_handler)&ChannelExtractionInterface::__ChannelId_EditCompleted, w );
+   C1_Edit.OnGetFocus( (Control::event_handler)&ChannelExtractionInterface::e_ChannelId_GetFocus, w );
+   C1_Edit.OnEditCompleted( (Edit::edit_event_handler)&ChannelExtractionInterface::e_ChannelId_EditCompleted, w );
 
    C1_Sizer.Add( C1_CheckBox );
    C1_Sizer.Add( C1_Edit, 100 );
@@ -389,11 +388,11 @@ ChannelExtractionInterface::GUIData::GUIData( ChannelExtractionInterface& w )
    C2_CheckBox.SetText( "MM" );
    C2_CheckBox.AdjustToContents();
    C2_CheckBox.SetFixedWidth();
-   C2_CheckBox.OnClick( (pcl::Button::click_event_handler)&ChannelExtractionInterface::__Channel_Click, w );
+   C2_CheckBox.OnClick( (pcl::Button::click_event_handler)&ChannelExtractionInterface::e_Channel_Click, w );
 
    C2_Edit.SetMinWidth( chEditWidth );
-   C2_Edit.OnGetFocus( (Control::event_handler)&ChannelExtractionInterface::__ChannelId_GetFocus, w );
-   C2_Edit.OnEditCompleted( (Edit::edit_event_handler)&ChannelExtractionInterface::__ChannelId_EditCompleted, w );
+   C2_Edit.OnGetFocus( (Control::event_handler)&ChannelExtractionInterface::e_ChannelId_GetFocus, w );
+   C2_Edit.OnEditCompleted( (Edit::edit_event_handler)&ChannelExtractionInterface::e_ChannelId_EditCompleted, w );
 
    C2_Sizer.Add( C2_CheckBox );
    C2_Sizer.Add( C2_Edit, 100 );
@@ -409,11 +408,26 @@ ChannelExtractionInterface::GUIData::GUIData( ChannelExtractionInterface& w )
    SampleFormat_ComboBox.AddItem( "32-bit unsigned integer (double word, 0 -> 4G)" );
    SampleFormat_ComboBox.AddItem( "32-bit IEEE 754 floating point (single precision)" );
    SampleFormat_ComboBox.AddItem( "64-bit IEEE 754 floating point (double precision)" );
-   SampleFormat_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ChannelExtractionInterface::__SampleFormat_ItemSelected, w );
+   SampleFormat_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ChannelExtractionInterface::e_SampleFormat_ItemSelected, w );
 
    SampleFormat_Sizer.SetSpacing( 4 );
    SampleFormat_Sizer.Add( SampleFormat_Label );
    SampleFormat_Sizer.Add( SampleFormat_ComboBox, 100 );
+
+   //
+
+   InheritAstrometricSolution_CheckBox.SetText( "Inherit astrometric solution" );
+   InheritAstrometricSolution_CheckBox.SetToolTip( "<p>Copy an existing astrometric solution to the newly generated "
+      "channel images.</p>"
+      "<p>This option is only applicable when the target image is either a main view or a complete preview. It is "
+      "always ignored when the process is executed on a partial preview.</p>"
+      "<p>When this option is enabled, a valid astrometric solution is inherited if it exists in the target image, "
+      "that is, in the image where the ChannelExtraction process is executed. The astrometric solution is copied to "
+      "each extracted channel image and regenerated.</p>" );
+   InheritAstrometricSolution_CheckBox.OnClick( (pcl::Button::click_event_handler)&ChannelExtractionInterface::e_Channel_Click, w );
+
+   InheritAstrometricSolution_Sizer.Add( InheritAstrometricSolution_CheckBox );
+   InheritAstrometricSolution_Sizer.AddStretch();
 
    //
 
@@ -423,6 +437,8 @@ ChannelExtractionInterface::GUIData::GUIData( ChannelExtractionInterface& w )
    Channels_Sizer.Add( C1_Sizer );
    Channels_Sizer.Add( C2_Sizer );
    Channels_Sizer.Add( SampleFormat_Sizer );
+   Channels_Sizer.AddSpacing( 4 );
+   Channels_Sizer.Add( InheritAstrometricSolution_Sizer );
 
    Channels_GroupBox.SetTitle( "Channels / Target Images" );
    Channels_GroupBox.SetSizer( Channels_Sizer );
@@ -453,4 +469,4 @@ ChannelExtractionInterface::GUIData::GUIData( ChannelExtractionInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ChannelExtractionInterface.cpp - Released 2022-05-17T17:15:11Z
+// EOF ChannelExtractionInterface.cpp - Released 2022-11-21T14:47:17Z
