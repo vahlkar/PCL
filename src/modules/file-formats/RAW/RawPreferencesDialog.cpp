@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.35
 // ----------------------------------------------------------------------------
-// Standard RAW File Format Module Version 1.5.7
+// Standard RAW File Format Module Version 1.6.0
 // ----------------------------------------------------------------------------
-// RawPreferencesDialog.cpp - Released 2022-11-21T14:46:51Z
+// RawPreferencesDialog.cpp - Released 2023-01-03T13:43:21Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RAW PixInsight module.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -707,4 +707,4 @@ void RawPreferencesDialog::Dialog_Return( Dialog& sender, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RawPreferencesDialog.cpp - Released 2022-11-21T14:46:51Z
+// EOF RawPreferencesDialog.cpp - Released 2023-01-03T13:43:21Z
