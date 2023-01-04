@@ -7,7 +7,7 @@ To build LibRaw for PCL development, follow these steps:
 
 1. Download LibRaw's source code. We recommend cloning the [https://github.com/LibRaw/LibRaw](official LibRaw GitHub repository) to a directory on your local file system. Let's represent this directory as $LIBRAWDIR.
 
-2. Copy the required Makefile.pcl.xxx file for your platform (where xxx is one of linux, macosx or windows; unfortunately LibRaw cannot be compiled on FreeBSD) to $LIBRAWDIR. These files are available on [https://gitlab.com/pixinsight/PCL/tree/master/src/3rdparty/libraw]($PCLSRCDIR/3rdparty/libraw).
+2. Copy the required Makefile.pcl.xxx file for your platform (where xxx is one of linux, macosx or windows) to $LIBRAWDIR. These files are available on [https://gitlab.com/pixinsight/PCL/tree/master/src/3rdparty/libraw]($PCLSRCDIR/3rdparty/libraw).
 
 3. Use the appropriate Makefile.pcl.xxx file to build LibRaw. For example:
 
@@ -26,4 +26,4 @@ Copy this file to your $PCLLIBDIR directory.
 Now you can build the RAW module on your platform.
 
 ******
-###### Copyright (C) 2003-2020 Pleiades Astrophoto
+###### Copyright (C) 2003-2023 Pleiades Astrophoto
