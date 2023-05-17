@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// pcl/Variant.cpp - Released 2022-11-21T14:46:37Z
+// pcl/Variant.cpp - Released 2023-05-17T17:06:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -9309,6 +9309,7 @@ uint64 APIPropertyTypeFromVariantType( Variant::data_type type )
    case VariantType::F64Matrix:  return VTYPE_DMATRIX;
    case VariantType::C32Matrix:  return VTYPE_C32_MATRIX;
    case VariantType::C64Matrix:  return VTYPE_C64_MATRIX;
+   case VariantType::ByteArray:  return VTYPE_UINT8_VECTOR;
    case VariantType::IsoString:  return VTYPE_ISOSTRING;
    case VariantType::String:     return VTYPE_STRING;
    case VariantType::Complex32:  return VTYPE_COMPLEX32;
@@ -9322,4 +9323,4 @@ uint64 APIPropertyTypeFromVariantType( Variant::data_type type )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Variant.cpp - Released 2022-11-21T14:46:37Z
+// EOF pcl/Variant.cpp - Released 2023-05-17T17:06:11Z

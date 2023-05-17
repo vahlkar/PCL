@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard FITS File Format Module Version 1.1.10
+// Standard FITS File Format Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// FITSInstance.cpp - Released 2022-11-21T14:46:51Z
+// FITSInstance.cpp - Released 2023-05-17T17:06:31Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -73,7 +73,6 @@ public:
    bool                              bottomUp;
    bool                              useRowOrderKeywords;
    bool                              signedIntegersArePhysical;
-   bool                              noProperties;
    bool                              fixNonFinite;
    int                               verbosity;
 
@@ -88,7 +87,6 @@ public:
       bottomUp = fitsOptions.bottomUp;
       useRowOrderKeywords = fitsOptions.useRowOrderKeywords;
       signedIntegersArePhysical = fitsOptions.signedIntegersArePhysical;
-      noProperties = false;
       fixNonFinite = true;
       verbosity = 1;
 
@@ -127,10 +125,6 @@ public:
             signedIntegersArePhysical = true;
          else if ( *i == "signed-is-logical" )
             signedIntegersArePhysical = false;
-         else if ( *i == "properties" )
-            noProperties = false;
-         else if ( *i == "no-properties" )
-            noProperties = true;
          else if ( *i == "fix-non-finite" )
             fixNonFinite = true;
          else if ( *i == "ignore-non-finite" )
@@ -288,27 +282,6 @@ void* FITSInstance::FormatSpecificData() const
 
 // ----------------------------------------------------------------------------
 
-ICCProfile FITSInstance::ReadICCProfile()
-{
-   CheckOpenStream( m_reader, "ReadICCProfile" );
-   ICCProfile icc = m_reader->ReadICCProfile();
-   if ( icc.IsProfile() )
-      if ( m_reader->FITSOptions().verbosity > 0 )
-         Console().WriteLn( "<end><cbr>ICC profile extracted: \'" + icc.Description() + "\', " + String( icc.ProfileSize() ) + " bytes." );
-   return icc;
-}
-
-// ----------------------------------------------------------------------------
-
-UInt8Image FITSInstance::ReadThumbnail()
-{
-   CheckOpenStream( m_reader, "ReadThumbnail" );
-   UInt8Image thumbnail = m_reader->ReadThumbnail();
-   return thumbnail;
-}
-
-// ----------------------------------------------------------------------------
-
 FITSKeywordArray FITSInstance::ReadFITSKeywords()
 {
    /*!
@@ -346,46 +319,6 @@ FITSKeywordArray FITSInstance::ReadFITSKeywords()
             m_shownExtractedKeywordsInfo = true;
          }
    return keywords;
-}
-
-// ----------------------------------------------------------------------------
-
-PropertyDescriptionArray FITSInstance::ImagePropertyDescriptions()
-{
-   CheckOpenStream( m_reader, "ImagePropertyDescriptions" );
-   PropertyDescriptionArray properties;
-   if ( !m_readHints || !m_readHints->noProperties )
-   {
-      IsoStringList extNames = m_reader->DataExtensionNames();
-      for ( const IsoString& extName : extNames )
-         if ( extName.StartsWith( "XISF:" ) || extName.StartsWith( "PixInsight:" ) )
-         {
-            // Protect us: *Never* allow XISF and reserved properties embedded as BLOBs in FITS files.
-            if ( m_reader->FITSOptions().verbosity > 0 )
-               Console().WarningLn( "<end><cbr>Ignoring FITS extension with reserved property name: \'" + extName + "\'" );
-         }
-         else
-            properties.Append( PropertyDescription( extName, VariantType::ByteArray ) );
-   }
-   return properties;
-}
-
-// ----------------------------------------------------------------------------
-
-Variant FITSInstance::ReadImageProperty( const IsoString& property )
-{
-   CheckOpenStream( m_reader, "ReadImageProperty" );
-   if ( !m_readHints || !m_readHints->noProperties )
-   {
-      ByteArray data;
-      if ( m_reader->ReadBLOB( data, property ) )
-      {
-         if ( m_reader->FITSOptions().verbosity > 0 )
-            Console().WriteLn( "<end><cbr>BLOB property extracted: \'" + property + "\', " + String( data.Length() ) + " bytes." );
-         return data;
-      }
-   }
-   return Variant();
 }
 
 // ----------------------------------------------------------------------------
@@ -718,15 +651,6 @@ bool FITSInstance::QueryOptions( Array<ImageOptions>& imageOptions, Array<void*>
    if ( !reusedFormatOptions )
       fits = new FITSFormat::FormatOptions;
 
-   // Override embedding options, if requested.
-   FITSFormat::EmbeddingOverrides overrides = FITSFormat::DefaultEmbeddingOverrides();
-   if ( overrides.overrideICCProfileEmbedding )
-      options.embedICCProfile = overrides.embedICCProfiles;
-   if ( overrides.overrideThumbnailEmbedding )
-      options.embedThumbnail = overrides.embedThumbnails;
-   if ( overrides.overridePropertyEmbedding )
-      options.embedProperties = overrides.embedProperties;
-
    FITSOptionsDialog dlg( options, fits->options );
    if ( dlg.Execute() == StdDialogCode::Ok )
    {
@@ -784,18 +708,6 @@ void FITSInstance::Create( const String& filePath, int numberOfImages, const Iso
             fitsOptions.cleanupHeaders = true;
          else if ( *i == "no-cleanup-headers" )
             fitsOptions.cleanupHeaders = false;
-         else if ( *i == "properties" )
-            options.embedProperties = true;
-         else if ( *i == "no-properties" )
-            options.embedProperties = false;
-         else if ( *i == "icc-profile" )
-            options.embedICCProfile = true;
-         else if ( *i == "no-icc-profile" )
-            options.embedICCProfile = false;
-         else if ( *i == "thumbnail" )
-            options.embedThumbnail = true;
-         else if ( *i == "no-thumbnail" )
-            options.embedThumbnail = false;
          else if ( *i == "verbosity" )
          {
             if ( ++i == theHints.End() )
@@ -824,16 +736,7 @@ void FITSInstance::SetId( const IsoString& id )
 void FITSInstance::SetOptions( const ImageOptions& newOptions )
 {
    CheckOpenStream( m_writer, "SetOptions" );
-   ImageOptions options = newOptions;
-   if ( !m_queriedOptions )
-   {
-      FITSFormat::EmbeddingOverrides overrides = FITSFormat::DefaultEmbeddingOverrides();
-      if ( overrides.overrideICCProfileEmbedding )
-         options.embedICCProfile = overrides.embedICCProfiles;
-      if ( overrides.overrideThumbnailEmbedding )
-         options.embedThumbnail = overrides.embedThumbnails;
-   }
-   m_writer->SetOptions( options );
+   m_writer->SetOptions( newOptions );
 }
 
 // ----------------------------------------------------------------------------
@@ -848,73 +751,12 @@ void FITSInstance::SetFormatSpecificData( const void* data )
 
 // ----------------------------------------------------------------------------
 
-void FITSInstance::WriteICCProfile( const ICCProfile& icc )
-{
-   CheckOpenStream( m_writer, "WriteICCProfile" );
-   if ( icc.IsProfile() )
-   {
-      m_writer->WriteICCProfile( icc );
-      if ( m_writer->FITSOptions().verbosity > 0 )
-         Console().WriteLn( "<end><cbr>ICC profile embedded: \'" + icc.Description() + "\', " + String( icc.ProfileSize() ) + " bytes." );
-   }
-}
-
-// ----------------------------------------------------------------------------
-
-void FITSInstance::WriteThumbnail( const UInt8Image& thumbnail )
-{
-   CheckOpenStream( m_writer, "WriteThumbnail" );
-   if ( !thumbnail.IsEmpty() )
-      m_writer->WriteThumbnail( thumbnail );
-}
-
-// ----------------------------------------------------------------------------
-
 void FITSInstance::WriteFITSKeywords( const FITSKeywordArray& keywords )
 {
    CheckOpenStream( m_writer, "WriteFITSKeywords" );
    m_writer->WriteFITSKeywords( keywords );
    if ( m_writer->FITSOptions().verbosity > 0 )
       Console().WriteLn( "<end><cbr>" + String( keywords.Length() ) + " FITS keywords embedded" );
-}
-
-// ----------------------------------------------------------------------------
-
-void FITSInstance::WriteImageProperty( const IsoString& property, const Variant& value )
-{
-   CheckOpenStream( m_writer, "WriteImageProperty" );
-   if ( property.StartsWith( "XISF:" ) || property.StartsWith( "PixInsight:" ) )
-   {
-      // Protect us: *Never* allow XISF and reserved properties embedded as
-      // BLOBs in FITS files.
-      if ( m_writer->FITSOptions().verbosity > 0 )
-         Console().WarningLn( "<end><cbr>** Warning: Reserved property cannot be embedded as BLOB: \'" + property + "\'" );
-   }
-   else if ( property.StartsWith( "FITS:" ) )
-   {
-      // The 'FITS:' namespace has been reserved by the reference XISF
-      // implementation to generate image properties from FITS keywords.
-      if ( m_writer->FITSOptions().verbosity > 1 )
-         Console().WarningLn( "<end><cbr>** Warning: Ignoring property created from a FITS keyword: \'" + property + "\'" );
-   }
-   else
-   {
-      if ( value.Type() == VariantType::ByteArray ||
-           value.Type() == VariantType::ByteVector ||
-           value.Type() == VariantType::UI8Matrix )
-      {
-         ByteArray data = value.ToByteArray();
-         m_writer->WriteBLOB( data, property );
-         if ( m_writer->FITSOptions().verbosity > 0 )
-            Console().WriteLn( "<end><cbr>BLOB property embedded: \'" + property + "\', " + String( data.Length() ) + " bytes." );
-      }
-      else
-      {
-         if ( m_writer->FITSOptions().verbosity > 0 )
-            Console().WarningLn( "<end><cbr>** Warning: Cannot embed property \'" + property + "\' "
-                                 "of " + IsoString( Variant::TypeAsString( value.Type() ) ) + " type as a BLOB." );
-      }
-   }
 }
 
 // ----------------------------------------------------------------------------
@@ -1006,4 +848,4 @@ void FITSInstance::CloseImage()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITSInstance.cpp - Released 2022-11-21T14:46:51Z
+// EOF FITSInstance.cpp - Released 2023-05-17T17:06:31Z

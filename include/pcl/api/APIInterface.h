@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// pcl/APIInterface.h - Released 2022-11-21T14:46:30Z
+// pcl/APIInterface.h - Released 2023-05-17T17:06:03Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -56,7 +56,7 @@
 
 // Global namespace
 
-#define PCL_API_Version 0x0175
+#define PCL_API_Version 0x0176
 
 extern "C"
 {
@@ -122,9 +122,10 @@ struct api_context GlobalContext
    void        (api_func* SetCursorPosition)( int32 x, int32 y );
 
    /*
-    * Query key pressed state. N.B.: key1 and key2 are platform-dependent keyboard scan codes.
+    * Returns an OR combination of pcl::ModifierKey values corresponding to the
+    * current state of supported modifier keys.
     */
-   api_bool    (api_func* IsKeyPressed)( int32 key1, int32 key2 );
+   uint32      (api_func* GetKeyboardModifiers)();
 
    /*
     * Tool tip window
@@ -3082,4 +3083,4 @@ extern "C" void* api_func APIFunctionResolver( const char* );
 #endif   // __PCL_API_APIInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/APIInterface.h - Released 2022-11-21T14:46:30Z
+// EOF pcl/APIInterface.h - Released 2023-05-17T17:06:03Z

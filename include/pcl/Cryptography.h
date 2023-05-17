@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// pcl/Cryptography.h - Released 2022-11-21T14:46:30Z
+// pcl/Cryptography.h - Released 2023-05-17T17:06:03Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -154,7 +154,7 @@ public:
    ByteArray Finalize()
    {
       ByteArray hash( HashLength() );
-      Finalize( hash.Begin() );
+      DoFinalize( hash.Begin() );
       return hash;
    }
 
@@ -169,7 +169,7 @@ public:
    {
       Initialize();
       Update( data, length );
-      Finalize( hash );
+      DoFinalize( hash );
    }
 
    /*!
@@ -206,7 +206,7 @@ protected:
     * must provide room for at least HashLength() bytes, that is, the length in
     * bytes of the message digest produced by this hashing algorithm.
     */
-   virtual void Finalize( void* hash ) = 0;
+   virtual void DoFinalize( void* hash ) = 0;
 
    friend class CryptographicHashFactory;
 };
@@ -242,7 +242,7 @@ public:
    /*!
     * Destroys an %MD5 hash generator.
     */
-   virtual ~MD5();
+   ~MD5() override;
 
    /*!
     * Returns the name of this cryptographic hashing algorithm: "MD5".
@@ -278,7 +278,7 @@ private:
 
    /*!
     */
-   void Finalize( void* hash ) override;
+   void DoFinalize( void* hash ) override;
 };
 
 // ----------------------------------------------------------------------------
@@ -314,7 +314,7 @@ public:
    /*!
     * Destroys an SHA-1 hash generator.
     */
-   virtual ~SHA1();
+   ~SHA1() override;
 
    /*!
     * Returns the name of this cryptographic hashing algorithm: "SHA1".
@@ -350,7 +350,7 @@ private:
 
    /*!
     */
-   void Finalize( void* hash ) override;
+   void DoFinalize( void* hash ) override;
 };
 
 // ----------------------------------------------------------------------------
@@ -386,7 +386,7 @@ public:
    /*!
     * Destroys an SHA-224 hash generator.
     */
-   virtual ~SHA224();
+   ~SHA224() override;
 
    /*!
     * Returns the name of this cryptographic hashing algorithm: "SHA224".
@@ -422,7 +422,7 @@ private:
 
    /*!
     */
-   void Finalize( void* hash ) override;
+   void DoFinalize( void* hash ) override;
 };
 
 // ----------------------------------------------------------------------------
@@ -457,7 +457,7 @@ public:
    /*!
     * Destroys an SHA-256 hash generator.
     */
-   virtual ~SHA256();
+   ~SHA256() override;
 
    /*!
     * Returns the name of this cryptographic hashing algorithm: "SHA256".
@@ -493,7 +493,7 @@ private:
 
    /*!
     */
-   void Finalize( void* hash ) override;
+   void DoFinalize( void* hash ) override;
 };
 
 // ----------------------------------------------------------------------------
@@ -528,7 +528,7 @@ public:
    /*!
     * Destroys an SHA-384 hash generator.
     */
-   virtual ~SHA384();
+   ~SHA384() override;
 
    /*!
     * Returns the name of this cryptographic hashing algorithm: "SHA384".
@@ -564,7 +564,7 @@ private:
 
    /*!
     */
-   void Finalize( void* hash ) override;
+   void DoFinalize( void* hash ) override;
 };
 
 // ----------------------------------------------------------------------------
@@ -599,7 +599,7 @@ public:
    /*!
     * Destroys an SHA-512 hash generator.
     */
-   virtual ~SHA512();
+   ~SHA512() override;
 
    /*!
     * Returns the name of this cryptographic hashing algorithm: "SHA512".
@@ -635,7 +635,7 @@ private:
 
    /*!
     */
-   void Finalize( void* hash ) override;
+   void DoFinalize( void* hash ) override;
 };
 
 // ----------------------------------------------------------------------------
@@ -692,7 +692,7 @@ public:
    /*!
     * Destroys a %CryptographicHashFactory object.
     */
-   virtual ~CryptographicHashFactory()
+   ~CryptographicHashFactory() override
    {
    }
 
@@ -734,9 +734,9 @@ private:
 
    AutoPointer<CryptographicHash> m_hash;
 
-   void Finalize( void* hash ) override
+   void DoFinalize( void* hash ) override
    {
-      m_hash->Finalize( hash );
+      m_hash->DoFinalize( hash );
    }
 };
 
@@ -1007,7 +1007,7 @@ public:
    /*!
     * Destroys an AES-256 cipher object.
     */
-   virtual ~AES256()
+   ~AES256() override
    {
    }
 
@@ -1100,4 +1100,4 @@ private:
 #endif   // __PCL_Cryptography_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Cryptography.h - Released 2022-11-21T14:46:30Z
+// EOF pcl/Cryptography.h - Released 2023-05-17T17:06:03Z

@@ -2,16 +2,17 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard CometAlignment Process Module Version 1.2.6
+// Standard CometAlignment Process Module Version 1.3.7
 // ----------------------------------------------------------------------------
-// CometAlignmentParameters.h - Released 2022-11-21T14:47:18Z
+// CometAlignmentParameters.h - Released 2023-05-17T17:06:42Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CometAlignment PixInsight module.
 //
-// Copyright (c) 2012-2018 Nikolay Volkov
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2012-2023 Nikolay Volkov
+// Copyright (c) 2019-2023 Juan Conejero (PTeam)
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -115,6 +116,7 @@ public:
    CATargetFrameJDate( MetaTable* );
 
    IsoString Id() const override;
+   IsoString Aliases() const override;
    int Precision() const override;
 };
 
@@ -146,94 +148,48 @@ public:
    double MaximumValue() const override;
 };
 
+// ----------------------------------------------------------------------------
+
+class CATargetFrameFixed : public MetaBoolean
+{
+public:
+
+   CATargetFrameFixed( MetaTable* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
 //--------------------------------------------------------------------------
 
-class CADrizzlePath : public MetaString
+class CATargetFrameDrizzlePath : public MetaString
 {
 public:
 
-   CADrizzlePath( MetaTable* );
+   CATargetFrameDrizzlePath( MetaTable* );
 
    IsoString Id() const override;
 };
 
 // ----------------------------------------------------------------------------
 
-class CAInputHints : public MetaString
+class CAReferenceIndex : public MetaUInt32
 {
 public:
 
-   CAInputHints( MetaProcess* );
+   CAReferenceIndex( MetaProcess* );
 
    IsoString Id() const override;
+   IsoString Aliases() const override;
 };
 
 // ----------------------------------------------------------------------------
 
-class CAOutputHints : public MetaString
+class CAFitPSF : public MetaBoolean
 {
 public:
 
-   CAOutputHints( MetaProcess* );
-
-   IsoString Id() const override;
-};
-
-// ----------------------------------------------------------------------------
-
-class CAOutputDir : public MetaString
-{
-public:
-
-   CAOutputDir( MetaProcess* );
-
-   IsoString Id() const override;
-   String DefaultValue() const override;
-};
-
-// ----------------------------------------------------------------------------
-
-class CAOutputExtension : public MetaString
-{
-public:
-
-   CAOutputExtension( MetaProcess* );
-
-   IsoString Id() const override;
-   String DefaultValue() const override;
-};
-
-// ----------------------------------------------------------------------------
-
-class CAPrefix : public MetaString
-{
-public:
-
-   CAPrefix( MetaProcess* );
-
-   IsoString Id() const override;
-   String DefaultValue() const override;
-};
-
-// ----------------------------------------------------------------------------
-
-class CAPostfix : public MetaString
-{
-public:
-
-   CAPostfix( MetaProcess* );
-
-   IsoString Id() const override;
-   String DefaultValue() const override;
-};
-
-// ----------------------------------------------------------------------------
-
-class CAOverwrite : public MetaBoolean
-{
-public:
-
-   CAOverwrite( MetaProcess* );
+   CAFitPSF( MetaProcess* );
 
    IsoString Id() const override;
    bool DefaultValue() const override;
@@ -241,60 +197,52 @@ public:
 
 // ----------------------------------------------------------------------------
 
-class CAReference : public MetaUInt16
+class CAOperandImageFilePath : public MetaString
 {
 public:
 
-   CAReference( MetaProcess* );
+   CAOperandImageFilePath( MetaProcess* );
 
    IsoString Id() const override;
+   IsoString Aliases() const override;
 };
 
 // ----------------------------------------------------------------------------
 
-class CASubtractFile : public MetaString
+class CAOperandSubtractAligned : public MetaBoolean
 {
 public:
 
-   CASubtractFile( MetaProcess* );
+   CAOperandSubtractAligned( MetaProcess* );
 
    IsoString Id() const override;
-   String DefaultValue() const override;
-};
-
-// ----------------------------------------------------------------------------
-
-class CASubtractMode : public MetaBoolean
-{
-public:
-
-   CASubtractMode( MetaProcess* );
-
-   IsoString Id() const override;
+   IsoString Aliases() const override;
    bool DefaultValue() const override;
 };
 
 // ----------------------------------------------------------------------------
 
-class CAEnableLinearFit : public MetaBoolean
+class CAOperandLinearFit : public MetaBoolean
 {
 public:
 
-   CAEnableLinearFit( MetaProcess* );
+   CAOperandLinearFit( MetaProcess* );
 
    IsoString Id() const override;
+   IsoString Aliases() const override;
    bool DefaultValue() const override;
 };
 
 // ----------------------------------------------------------------------------
 
-class CARejectLow : public MetaFloat
+class CAOperandLinearFitLow : public MetaFloat
 {
 public:
 
-   CARejectLow( MetaProcess* );
+   CAOperandLinearFitLow( MetaProcess* );
 
    IsoString Id() const override;
+   IsoString Aliases() const override;
    int Precision() const override;
    double MinimumValue() const override;
    double MaximumValue() const override;
@@ -303,13 +251,14 @@ public:
 
 // ----------------------------------------------------------------------------
 
-class CARejectHigh : public MetaFloat
+class CAOperandLinearFitHigh : public MetaFloat
 {
 public:
 
-   CARejectHigh( MetaProcess* );
+   CAOperandLinearFitHigh( MetaProcess* );
 
    IsoString Id() const override;
+   IsoString Aliases() const override;
    int Precision() const override;
    double MinimumValue() const override;
    double MaximumValue() const override;
@@ -318,49 +267,40 @@ public:
 
 // ----------------------------------------------------------------------------
 
-class CANormalize : public MetaBoolean
+class CAOperandNormalize : public MetaBoolean
 {
 public:
 
-   CANormalize( MetaProcess* );
+   CAOperandNormalize( MetaProcess* );
 
    IsoString Id() const override;
+   IsoString Aliases() const override;
    bool DefaultValue() const override;
 };
 
 // ----------------------------------------------------------------------------
 
-class CADrzSaveSA : public MetaBoolean
+class CADrizzleWriteStarAlignedImage : public MetaBoolean
 {
 public:
 
-   CADrzSaveSA( MetaProcess* );
+   CADrizzleWriteStarAlignedImage( MetaProcess* );
 
    IsoString Id() const override;
+   IsoString Aliases() const override;
    bool DefaultValue() const override;
 };
 
 // ----------------------------------------------------------------------------
 
-class CADrzSaveCA : public MetaBoolean
+class CADrizzleWriteCometAlignedImage : public MetaBoolean
 {
 public:
 
-   CADrzSaveCA( MetaProcess* );
+   CADrizzleWriteCometAlignedImage( MetaProcess* );
 
    IsoString Id() const override;
-   bool DefaultValue() const override;
-};
-
-// ----------------------------------------------------------------------------
-
-class CAOperandIsDI : public MetaBoolean
-{
-public:
-
-   CAOperandIsDI( MetaProcess* );
-
-   IsoString Id() const override;
+   IsoString Aliases() const override;
    bool DefaultValue() const override;
 };
 
@@ -384,7 +324,7 @@ public:
       CubicBSplineFilter,
       Auto,
       NumberOfInterpolationAlgorithms,
-      Default = BicubicSpline
+      Default = Lanczos4
    };
 
    CAPixelInterpolation( MetaProcess* );
@@ -413,39 +353,219 @@ public:
 
 // ----------------------------------------------------------------------------
 
-extern CATargetFrames* TheTargetFrames;
-extern CATargetFrameEnabled* TheTargetFrameEnabled;
-extern CATargetFramePath* TheTargetFramePath;
+class CAInputHints : public MetaString
+{
+public:
 
-extern CATargetFrameDate* TheTargetFrameDate;
-extern CATargetFrameJDate* TheTargetFrameJDate;
-extern CATargetFrameX* TheTargetFrameX;
-extern CATargetFrameY* TheTargetFrameY;
+   CAInputHints( MetaProcess* );
 
-extern CADrizzlePath* TheDrizzlePath;
+   IsoString Id() const override;
+};
+
+// ----------------------------------------------------------------------------
+
+class CAOutputHints : public MetaString
+{
+public:
+
+   CAOutputHints( MetaProcess* );
+
+   IsoString Id() const override;
+};
+
+// ----------------------------------------------------------------------------
+
+class CAOutputDirectory : public MetaString
+{
+public:
+
+   CAOutputDirectory( MetaProcess* );
+
+   IsoString Id() const override;
+   IsoString Aliases() const override;
+   String DefaultValue() const override;
+};
+
+// ----------------------------------------------------------------------------
+
+class CAOutputExtension : public MetaString
+{
+public:
+
+   CAOutputExtension( MetaProcess* );
+
+   IsoString Id() const override;
+   String DefaultValue() const override;
+};
+
+// ----------------------------------------------------------------------------
+
+class CAOutputPrefix : public MetaString
+{
+public:
+
+   CAOutputPrefix( MetaProcess* );
+
+   IsoString Id() const override;
+   IsoString Aliases() const override;
+   String DefaultValue() const override;
+};
+
+// ----------------------------------------------------------------------------
+
+class CAOutputPostfix : public MetaString
+{
+public:
+
+   CAOutputPostfix( MetaProcess* );
+
+   IsoString Id() const override;
+   IsoString Aliases() const override;
+   String DefaultValue() const override;
+};
+
+// ----------------------------------------------------------------------------
+
+class CAOverwriteExistingFiles : public MetaBoolean
+{
+public:
+
+   CAOverwriteExistingFiles( MetaProcess* );
+
+   IsoString Id() const override;
+   IsoString Aliases() const override;
+   bool DefaultValue() const override;
+};
+
+// ----------------------------------------------------------------------------
+
+class CAGenerateCometPathMap : public MetaBoolean
+{
+public:
+
+   CAGenerateCometPathMap( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+// ----------------------------------------------------------------------------
+
+class CAOnError : public MetaEnumeration
+{
+public:
+
+   enum { Continue,
+          Abort,
+          AskUser,
+          NumberOfItems,
+          Default = Continue };
+
+   CAOnError( MetaProcess* );
+
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
+};
+
+// ----------------------------------------------------------------------------
+
+class CAUseFileThreads : public MetaBoolean
+{
+public:
+
+   CAUseFileThreads( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+// ----------------------------------------------------------------------------
+
+class CAFileThreadOverload : public MetaFloat
+{
+public:
+
+   CAFileThreadOverload( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+// ----------------------------------------------------------------------------
+
+class CAMaxFileReadThreads : public MetaInt32
+{
+public:
+
+   CAMaxFileReadThreads( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+
+// ----------------------------------------------------------------------------
+
+class CAMaxFileWriteThreads : public MetaInt32
+{
+public:
+
+   CAMaxFileWriteThreads( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+// ----------------------------------------------------------------------------
+
+extern CATargetFrames* TheCATargetFramesParameter;
+extern CATargetFramePath* TheCATargetFramePathParameter;
+extern CATargetFrameEnabled* TheCATargetFrameEnabledParameter;
+extern CATargetFrameDate* TheCATargetFrameDateParameter;
+extern CATargetFrameJDate* TheCATargetFrameJDateParameter;
+extern CATargetFrameX* TheCATargetFrameXParameter;
+extern CATargetFrameY* TheCATargetFrameYParameter;
+extern CATargetFrameFixed* TheCATargetFrameFixedParameter;
+extern CATargetFrameDrizzlePath* TheCATargetFrameDrizzlePathParameter;
+
+extern CAReferenceIndex* TheCAReferenceIndexParameter;
+extern CAFitPSF* TheCAFitPSFParameter;
+extern CAOperandImageFilePath* TheCAOperandImageFilePathParameter;
+extern CAOperandSubtractAligned* TheCAOperandSubtractAlignedParameter;
+extern CAOperandLinearFit* TheCAOperandLinearFitParameter;
+extern CAOperandLinearFitLow* TheCAOperandLinearFitLowParameter;
+extern CAOperandLinearFitHigh* TheCAOperandLinearFitHighParameter;
+extern CAOperandNormalize* TheCAOperandNormalizeParameter;
+extern CADrizzleWriteStarAlignedImage* TheCADrizzleWriteStarAlignedImageParameter;
+extern CADrizzleWriteCometAlignedImage* TheCADrizzleWriteCometAlignedImageParameter;
+extern CAPixelInterpolation* TheCAPixelInterpolationParameter;
+extern CALinearClampingThreshold* TheCALinearClampingThresholdParameter;
 
 extern CAInputHints* TheCAInputHintsParameter;
 extern CAOutputHints* TheCAOutputHintsParameter;
-extern CAOutputDir* TheOutputDir;
+
+extern CAOutputDirectory* TheCAOutputDirectoryParameter;
 extern CAOutputExtension* TheCAOutputExtensionParameter;
-extern CAPrefix* ThePrefix;
-extern CAPostfix* ThePostfix;
-extern CAOverwrite* TheOverwrite;
+extern CAOutputPrefix* TheCAOutputPrefixParameter;
+extern CAOutputPostfix* TheCAOutputPostfixParameter;
+extern CAOverwriteExistingFiles* TheCAOverwriteExistingFilesParameter;
+extern CAGenerateCometPathMap* TheCAGenerateCometPathMapParameter;
+extern CAOnError* TheCAOnErrorParameter;
 
-extern CAReference* TheReference;
-
-extern CASubtractFile* TheSubtractFile;
-extern CASubtractMode* TheSubtractMode;
-extern CAOperandIsDI* TheOperandIsDI;
-extern CAEnableLinearFit* TheEnableLinearFit;
-extern CARejectLow* TheRejectLow;
-extern CARejectHigh* TheRejectHigh;
-extern CANormalize* TheNormalize;
-extern CADrzSaveSA* TheDrzSaveSA;
-extern CADrzSaveCA* TheDrzSaveCA;
-
-extern CAPixelInterpolation* ThePixelInterpolationParameter;
-extern CALinearClampingThreshold* TheLinearClampingThresholdParameter;
+extern CAUseFileThreads* TheCAUseFileThreadsParameter;
+extern CAFileThreadOverload* TheCAFileThreadOverloadParameter;
+extern CAMaxFileReadThreads* TheCAMaxFileReadThreadsParameter;
+extern CAMaxFileWriteThreads* TheCAMaxFileWriteThreadsParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -456,4 +576,4 @@ PCL_END_LOCAL
 #endif // __CometAlignmentParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF CometAlignmentParameters.h - Released 2022-11-21T14:47:18Z
+// EOF CometAlignmentParameters.h - Released 2023-05-17T17:06:42Z

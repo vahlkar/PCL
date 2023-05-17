@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// pcl/Brush.h - Released 2022-11-21T14:46:30Z
+// pcl/Brush.h - Released 2023-05-17T17:06:03Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -178,14 +178,16 @@ public:
     * Copy constructor. This object will reference the same server-side brush
     * as the specified instance \a b.
     */
-   Brush( const Brush& b ) : UIObject( b )
+   Brush( const Brush& b )
+      : UIObject( b )
    {
    }
 
    /*!
     * Move constructor.
     */
-   Brush( Brush&& x ) : UIObject( std::move( x ) )
+   Brush( Brush&& x )
+      : UIObject( std::move( x ) )
    {
    }
 
@@ -194,7 +196,7 @@ public:
     * the PixInsight core application, its reference count is decremented. If
     * it becomes unreferenced, it will be garbage-collected.
     */
-   virtual ~Brush()
+   ~Brush() override
    {
    }
 
@@ -817,4 +819,4 @@ public:
 #endif   // __PCL_Brush_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Brush.h - Released 2022-11-21T14:46:30Z
+// EOF pcl/Brush.h - Released 2023-05-17T17:06:03Z

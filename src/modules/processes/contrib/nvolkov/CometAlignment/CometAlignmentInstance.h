@@ -2,16 +2,17 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard CometAlignment Process Module Version 1.2.6
+// Standard CometAlignment Process Module Version 1.3.7
 // ----------------------------------------------------------------------------
-// CometAlignmentInstance.h - Released 2022-11-21T14:47:18Z
+// CometAlignmentInstance.h - Released 2023-05-17T17:06:42Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CometAlignment PixInsight module.
 //
-// Copyright (c) 2012-2018 Nikolay Volkov
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2012-2023 Nikolay Volkov
+// Copyright (c) 2019-2023 Juan Conejero (PTeam)
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -57,6 +58,7 @@
 #include <pcl/FileFormatInstance.h>
 #include <pcl/PixelInterpolation.h>
 #include <pcl/ProcessImplementation.h>
+#include <pcl/TimePoint.h>
 
 #include "CometAlignmentParameters.h"
 
@@ -64,12 +66,6 @@ namespace pcl
 {
 
 // ----------------------------------------------------------------------------
-
-class CometAlignmentInterface;
-class CAThread;
-struct CAThreadData;
-
-typedef IndirectArray<CAThread> thread_list;
 
 class CometAlignmentInstance : public ProcessImplementation
 {
@@ -80,119 +76,95 @@ public:
 
    void Assign( const ProcessImplementation& ) override;
    bool CanExecuteOn( const View&, String& whyNot ) const override;
-   bool IsHistoryUpdater( const View& v ) const override;
+   bool IsHistoryUpdater( const View& ) const override;
    bool CanExecuteGlobal( String& whyNot ) const override;
    bool ExecuteGlobal() override;
    void* LockParameter( const MetaParameter*, size_type tableRow ) override;
    bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow ) override;
-   size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const override;
+   size_type ParameterLength( const MetaParameter*, size_type tableRow ) const override;
 
 private:
 
    struct ImageItem
    {
-      String path;      // absolute file path
+      String   path;           // absolute file path
       pcl_bool enabled = true; // if disabled, skip (ignore) this image
-      String date;      // DATE-OBS yyyy-mm-ddThh:mm:ss[.sss...]
-      double Jdate;     // Julian Date
-      double x = 0, y = 0;      // Comet coordinates
-      String drzPath;   // drizzle data file
+      String   date;           // ### DEPRECATED
+      double   jd = 0;         // observation time, Julian date
+      DPoint   position = 0;   // comet coordinates
+      pcl_bool fixed = false;  // true if position is user-defined, for dynamic GUI interaction
+      String   drzPath;        // drizzle data file
 
-      ImageItem( const String& p = String(), const String& d = String() )
+      ImageItem( const String& p, const String& d )
          : path( p )
-         , date( d )
-         , Jdate( GetJdate( d ) )
+         , jd( TimePoint( d ).JD() )
       {
       }
 
-      ImageItem( const ImageItem& i )
-         : path( i.path )
-         , enabled( i.enabled )
-         , date( i.date )
-         , Jdate( i.Jdate )
-         , x( i.x )
-         , y( i.y )
-         , drzPath( i.drzPath )
+      ImageItem() = default;
+      ImageItem( const ImageItem& ) = default;
+
+      bool operator <( const ImageItem& item ) const
       {
+         if ( jd != item.jd )
+            return jd < item.jd;
+         return path < item.path;
       }
 
-      double GetJdate( const String& d ) // Convert "yyyy-mm-ddThh:mm:ss[.sss...]" to Julian Date
+      bool operator ==( const ImageItem& item ) const
       {
-         if ( d.IsEmpty() )
-            return 0;
-         try
-         {
-            // 1234567890123456789
-            // yyyy-mm-ddThh:mm:ss[.sss...]
-
-            if ( d.Length() < 19 )
-               throw 0;
-
-            int year, month, day, h, m;
-            double s;
-
-            if ( !d.Substring( 0, 4 ).TryToInt( year, 10 ) )
-               throw 0;
-            if ( !d.Substring( 5, 2 ).TryToInt( month, 10 ) )
-               throw 0;
-            if ( !d.Substring( 8, 2 ).TryToInt( day, 10 ) )
-               throw 0;
-            if ( !d.Substring( 11, 2 ).TryToInt( h, 10 ) )
-               throw 0;
-            if ( !d.Substring( 14, 2 ).TryToInt( m, 10 ) )
-               throw 0;
-            if ( !d.Substring( 17 ).TryToDouble( s ) )
-               throw 0;
-
-            double dayf = ( 3600.0 * h + 60.0 * m + s ) / 86400;
-            return CalendarTimeToJD( year, month, day, dayf );
-         }
-         catch ( ... )
-         {
-            throw Error( "Can't convert DATE-OBS keyword value \'" + d + "\' to a Julian day number." );
-         }
+         return jd == item.jd && path == item.path;
       }
    };
 
    typedef Array<ImageItem> image_list;
 
-   ImageVariant* m_OperandImage;
-   Rect m_geometry;
+   // Working data and parameters
+   image_list p_targets;
+   uint32     p_referenceIndex;
+   pcl_bool   p_fitPSF;
+   String     p_operandImageFilePath;
+   pcl_bool   p_operandSubtractAligned; // true -> align operand and subtract from target, false -> subtract operand from target and align
+   pcl_bool   p_operandLinearFit;
+   float      p_operandLinearFitLow;
+   float      p_operandLinearFitHigh;
+   pcl_bool   p_operandNormalize;
+   pcl_bool   p_drizzleWriteStarAlignedImage;
+   pcl_bool   p_drizzleWriteCometAlignedImage;
+   pcl_enum   p_pixelInterpolation;
+   float      p_linearClampingThreshold;
 
-   image_list p_targetFrames;
-   String p_inputHints;
-   String p_outputHints;
-   String p_outputDir;
-   String p_outputExtension;
-   pcl_bool p_overwrite;
-   String p_prefix;
-   String p_postfix;
-   size_t p_reference;
-   String p_subtractFile;
-   pcl_bool p_subtractMode; // true == move operand and subtract from target, false = subtract operand from target and move
-   pcl_bool p_operandIsDI;  // true == Subtraction Operand have DrizzleIntegration origin
-   pcl_bool p_normalize;
-   pcl_bool p_enableLinearFit;
-   float p_rejectLow;
-   float p_rejectHigh;
-   pcl_bool p_drzSaveSA;
-   pcl_bool p_drzSaveCA;
-   pcl_enum p_pixelInterpolation;   // bicubic spline | bilinear | nearest neighbor
-   float p_linearClampingThreshold; // for bicubic spline
+   // Format hints
+   String     p_inputHints;
+   String     p_outputHints;
 
-   // -------------------------------------------------------------------------
+   // Output images
+   String     p_outputDirectory;
+   String     p_outputExtension;
+   String     p_outputPrefix;
+   String     p_outputPostfix;
+   pcl_bool   p_overwriteExistingFiles;
+   pcl_bool   p_generateCometPathMap;
+   pcl_enum   p_onError;
 
-   thread_list LoadTargetFrame( size_t fileIndex );
-   String OutputImgPath( const String&, const String& );
-   void Save( const ImageVariant&, CAThread*, const int8 );
-   void SaveImage( CAThread* );
-   void InitPixelInterpolation();
-   DImage GetCometImage( const String& );
-   ImageVariant* LoadOperandImage( const String& filePath );
+   // High-level parallelism
+   pcl_bool   p_useFileThreads;
+   float      p_fileThreadOverload;
+   int32      p_maxFileReadThreads;
+   int32      p_maxFileWriteThreads;
 
-   friend class CAThread;
+   mutable Rect        m_geometry = 0;
+   mutable AtomicInt   m_geometryAvailable;
+   PixelInterpolation* m_pixelInterpolation = nullptr;
+   int                 m_maxFileReadThreads = 1;
+   int                 m_maxFileWriteThreads = 1;
+
+   PixelInterpolation* NewPixelInterpolation();
+
+   void ApplyErrorPolicy();
+
+   friend class CometAlignmentThread;
    friend class CometAlignmentInterface;
-   friend class LinearFitEngine;
 };
 
 // ----------------------------------------------------------------------------
@@ -202,4 +174,4 @@ private:
 #endif // __CometAlignmentInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF CometAlignmentInstance.h - Released 2022-11-21T14:47:18Z
+// EOF CometAlignmentInstance.h - Released 2023-05-17T17:06:42Z

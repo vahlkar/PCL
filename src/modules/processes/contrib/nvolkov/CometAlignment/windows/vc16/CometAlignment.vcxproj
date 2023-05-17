@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.127
-# Copyright (C) 2009-2022 Pleiades Astrophoto
+# PixInsight Makefile Generator Script v1.129
+# Copyright (C) 2009-2023 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2022-11-21T14:48:54.346Z
+# Generated on .... 2023-05-17T18:34:59.254Z
 # Project id ...... CometAlignment
 # Project type .... Module
 # Platform ........ Windows/vc16
@@ -33,7 +33,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{088CFB8C-BB35-4312-A2C7-BB82E6A1F36A}</ProjectGuid>
+    <ProjectGuid>{4BDCB22F-7487-4FC1-A8C3-B558666AE354}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -232,20 +232,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\CentroidDetector.cpp"/>
     <ClCompile Include="..\..\CometAlignmentInstance.cpp"/>
     <ClCompile Include="..\..\CometAlignmentInterface.cpp"/>
     <ClCompile Include="..\..\CometAlignmentModule.cpp"/>
     <ClCompile Include="..\..\CometAlignmentParameters.cpp"/>
     <ClCompile Include="..\..\CometAlignmentProcess.cpp"/>
-    <ClCompile Include="..\..\StarDetector.cpp"/>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\CentroidDetector.h"/>
     <ClInclude Include="..\..\CometAlignmentInstance.h"/>
     <ClInclude Include="..\..\CometAlignmentInterface.h"/>
     <ClInclude Include="..\..\CometAlignmentModule.h"/>
     <ClInclude Include="..\..\CometAlignmentParameters.h"/>
     <ClInclude Include="..\..\CometAlignmentProcess.h"/>
-    <ClInclude Include="..\..\StarDetector.h"/>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\icons\CometAlignment.svg"/>

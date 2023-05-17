@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard EphemerisGeneration Process Module Version 1.0.0
+// Standard EphemerisGeneration Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// EphemerisGeneratorInterface.cpp - Released 2022-11-21T14:47:17Z
+// EphemerisGeneratorInterface.cpp - Released 2023-05-17T17:06:42Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -204,7 +204,7 @@ Array<TextDatabase::ObjectData> EphemerisGeneratorInterface::SearchDatabase( boo
 
 String EphemerisGeneratorInterface::TimeParameterValueToString( double jd )
 {
-   return TimePoint( jd ).ToString( 3/*timeItems*/, 3/*precision*/, 0/*tz*/, false/*timeZone*/ );
+   return TimePoint( jd ).ToString( ISO8601ConversionOptionsNoTimeZone() );
 }
 
 // ----------------------------------------------------------------------------
@@ -281,7 +281,9 @@ void EphemerisGeneratorInterface::UpdateControls()
    GUI->KBOEphemerides_Edit.Enable( m_instance.p_useKBOPerturbers );
    GUI->KBOEphemerides_ToolButton.Enable( m_instance.p_useKBOPerturbers );
 
-//    GUI->SeparateEarthMoon_CheckBox.SetChecked( m_instance.p_separateEarthMoonPerturbers );
+   GUI->SeparateEarthMoon_CheckBox.SetChecked( m_instance.p_separateEarthMoonPerturbers );
+   GUI->RelativisticPerturbations_CheckBox.SetChecked( m_instance.p_relativisticPerturbations );
+   GUI->FigureEffects_CheckBox.SetChecked( m_instance.p_figureEffects );
 
    GUI->StartTime_Edit.SetText( TimeParameterValueToString( m_instance.p_startTimeJD ) );
    GUI->EndTime_Edit.SetText( TimeParameterValueToString( m_instance.p_endTimeJD ) );
@@ -292,6 +294,15 @@ void EphemerisGeneratorInterface::UpdateControls()
    GUI->OutputXEPHFilePath_Label.Enable( m_instance.p_outputXEPHFile );
    GUI->OutputXEPHFilePath_Edit.Enable( m_instance.p_outputXEPHFile );
    GUI->OutputXEPHFilePath_ToolButton.Enable( m_instance.p_outputXEPHFile );
+
+   GUI->OutputVelocityExpansions_CheckBox.SetChecked( m_instance.p_velocityExpansions );
+   GUI->OutputVelocityExpansions_CheckBox.Enable( m_instance.p_outputXEPHFile );
+
+   GUI->MaxExpansionLength_SpinBox.SetValue( m_instance.p_ephemerisMaxExpansionLength );
+   GUI->MaxExpansionLength_SpinBox.Enable( m_instance.p_outputXEPHFile );
+
+   GUI->MaxTruncationError_NumericEdit.SetValue( m_instance.p_ephemerisMaxTruncationError );
+   GUI->MaxTruncationError_NumericEdit.Enable( m_instance.p_outputXEPHFile );
 
    GUI->OverwriteExistingFiles_CheckBox.Enable( m_instance.p_outputXEPHFile );
    GUI->OverwriteExistingFiles_CheckBox.SetChecked( m_instance.p_overwriteExistingFiles );
@@ -530,6 +541,17 @@ void EphemerisGeneratorInterface::e_EditValueUpdated( NumericEdit& sender, doubl
       m_instance.p_B_V = value;
    else if ( sender == GUI->D_NumericEdit )
       m_instance.p_D = value;
+
+   else if ( sender == GUI->MaxTruncationError_NumericEdit )
+      m_instance.p_ephemerisMaxTruncationError = value;
+}
+
+// ----------------------------------------------------------------------------
+
+void EphemerisGeneratorInterface::e_SpinValueUpdated( SpinBox& sender, int value )
+{
+   if ( sender == GUI->MaxExpansionLength_SpinBox )
+      m_instance.p_ephemerisMaxExpansionLength = value;
 }
 
 // ----------------------------------------------------------------------------
@@ -791,6 +813,18 @@ void EphemerisGeneratorInterface::e_Click( Button& sender, bool checked )
          UpdateControls();
       }
    }
+   else if ( sender == GUI->SeparateEarthMoon_CheckBox )
+   {
+      m_instance.p_separateEarthMoonPerturbers = checked;
+   }
+   else if ( sender == GUI->RelativisticPerturbations_CheckBox )
+   {
+      m_instance.p_relativisticPerturbations = checked;
+   }
+   else if ( sender == GUI->FigureEffects_CheckBox )
+   {
+      m_instance.p_figureEffects = checked;
+   }
    else if ( sender == GUI->OutputXEPHFile_CheckBox )
    {
       m_instance.p_outputXEPHFile = checked;
@@ -808,6 +842,10 @@ void EphemerisGeneratorInterface::e_Click( Button& sender, bool checked )
          m_instance.p_outputXEPHFilePath = d.FileName();
          UpdateControls();
       }
+   }
+   else if ( sender == GUI->OutputVelocityExpansions_CheckBox )
+   {
+      m_instance.p_velocityExpansions = checked;
    }
    else if ( sender == GUI->OverwriteExistingFiles_CheckBox )
    {
@@ -1631,16 +1669,43 @@ EphemerisGeneratorInterface::GUIData::GUIData( EphemerisGeneratorInterface& w )
 
    //
 
-//    SeparateEarthMoon_CheckBox.SetText( "Separate Earth and Moon" );
-//    SeparateEarthMoon_CheckBox.SetToolTip( "<p>Consider Earth and Moon as two separate perturber bodies.</p>"
-//                         "<p>If disabled, a combined Earth-Moon perturber with Earth-Moon barycenter coordinates "
-//                         "and combined mass parameter will be used instead.</p>"
-//                         "<p>Under normal working conditions this option should always be enabled for the sake "
-//                         "of accuracy in computed ephemerides. It can be disabled for testing purposes.</p>" );
-//    SeparateEarthMoon_CheckBox.OnClick( (Button::click_event_handler)&EphemerisGeneratorInterface::e_Click, w );
-//
-//    SeparateEarthMoon_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
-//    SeparateEarthMoon_Sizer.Add( SeparateEarthMoon_CheckBox );
+   SeparateEarthMoon_CheckBox.SetText( "Separate Earth and Moon" );
+   SeparateEarthMoon_CheckBox.SetToolTip( "<p>Consider Earth and Moon as two separate perturber bodies.</p>"
+                        "<p>If disabled, a combined Earth-Moon perturber with Earth-Moon barycenter coordinates "
+                        "and combined mass parameter will be used instead.</p>"
+                        "<p>Under normal working conditions this option should always be enabled for the sake "
+                        "of accuracy in computed ephemerides. It can be disabled for testing purposes.</p>" );
+   SeparateEarthMoon_CheckBox.OnClick( (Button::click_event_handler)&EphemerisGeneratorInterface::e_Click, w );
+
+   SeparateEarthMoon_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   SeparateEarthMoon_Sizer.Add( SeparateEarthMoon_CheckBox );
+
+   //
+
+   RelativisticPerturbations_CheckBox.SetText( "Relativistic perturbations" );
+   RelativisticPerturbations_CheckBox.SetToolTip( "<p>Compute relativistic perturbations. We implement the "
+                        "parametrized post-Newtonian (PPN) n-body metric used in JPL's DE440 ephemerides for "
+                        "the point-mass accelerations induced by all planets, Moon, Pluto and the five most "
+                        "massive asteroids. If this option is disabled, only Newtonian accelerations will be "
+                        "computed.</p>"
+                        "<p>Under normal working conditions this option should always be enabled for the sake "
+                        "of accuracy in computed ephemerides. It can be disabled for testing purposes.</p>" );
+   RelativisticPerturbations_CheckBox.OnClick( (Button::click_event_handler)&EphemerisGeneratorInterface::e_Click, w );
+
+   RelativisticPerturbations_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   RelativisticPerturbations_Sizer.Add( RelativisticPerturbations_CheckBox );
+
+   //
+
+   FigureEffects_CheckBox.SetText( "Figure effects" );
+   FigureEffects_CheckBox.SetToolTip( "<p>Compute direct acceleration perturbation terms caused by oblateness. "
+                        "Zonal harmonics J2 are computed for Sun, Earth, Mars, Jupiter, Saturn, Uranus and Neptune.</p>"
+                        "<p>Under normal working conditions this option should always be enabled for the sake "
+                        "of accuracy in computed ephemerides. It can be disabled for testing purposes.</p>" );
+   FigureEffects_CheckBox.OnClick( (Button::click_event_handler)&EphemerisGeneratorInterface::e_Click, w );
+
+   FigureEffects_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   FigureEffects_Sizer.Add( FigureEffects_CheckBox );
 
    //
 
@@ -1652,7 +1717,9 @@ EphemerisGeneratorInterface::GUIData::GUIData( EphemerisGeneratorInterface& w )
    NumericalIntegration_Sizer.Add( AsteroidEphemerides_Sizer );
    NumericalIntegration_Sizer.Add( KBOPerturbers_Sizer );
    NumericalIntegration_Sizer.Add( KBOEphemerides_Sizer );
-//    NumericalIntegration_Sizer.Add( SeparateEarthMoon_Sizer );
+   NumericalIntegration_Sizer.Add( SeparateEarthMoon_Sizer );
+   NumericalIntegration_Sizer.Add( RelativisticPerturbations_Sizer );
+   NumericalIntegration_Sizer.Add( FigureEffects_Sizer );
 
    NumericalIntegration_Control.SetSizer( NumericalIntegration_Sizer );
 
@@ -1702,6 +1769,47 @@ EphemerisGeneratorInterface::GUIData::GUIData( EphemerisGeneratorInterface& w )
 
    //
 
+   OutputVelocityExpansions_CheckBox.SetText( "Velocity expansions" );
+   OutputVelocityExpansions_CheckBox.SetToolTip( "<p>Compute velocity Chebyshev polynomial expansions and include them "
+      "in generated XEPH files along with position expansions.</p>" );
+   OutputVelocityExpansions_CheckBox.OnClick( (Button::click_event_handler)&EphemerisGeneratorInterface::e_Click, w );
+
+   OutputVelocityExpansions_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   OutputVelocityExpansions_Sizer.Add( OutputVelocityExpansions_CheckBox );
+
+   //
+
+   const char* maxExpansionLengthToolTip = "<p>Maxium length of fitted Chebyshev polynomial expansions for position and velocity.</p>";
+
+   MaxExpansionLength_Label.SetText( "Maximum expansion length:" );
+   MaxExpansionLength_Label.SetFixedWidth( labelWidth1 );
+   MaxExpansionLength_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   MaxExpansionLength_Label.SetToolTip( maxExpansionLengthToolTip );
+
+   MaxExpansionLength_SpinBox.SetRange( int( TheEGEphemerisMaxExpansionLengthParameter->MinimumValue() ), int( TheEGEphemerisMaxExpansionLengthParameter->MaximumValue() ) );
+   MaxExpansionLength_SpinBox.SetToolTip( maxExpansionLengthToolTip );
+   //MaxExpansionLength_SpinBox.SetFixedWidth( editWidth1 );
+   MaxExpansionLength_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&EphemerisGeneratorInterface::e_SpinValueUpdated, w );
+
+   MaxExpansionLength_Sizer.SetSpacing( 4 );
+   MaxExpansionLength_Sizer.Add( MaxExpansionLength_Label );
+   MaxExpansionLength_Sizer.Add( MaxExpansionLength_SpinBox );
+   MaxExpansionLength_Sizer.AddStretch();
+
+   //
+
+   MaxTruncationError_NumericEdit.label.SetText( "Maximum truncation error:" );
+   MaxTruncationError_NumericEdit.label.SetFixedWidth( labelWidth1 );
+   MaxTruncationError_NumericEdit.SetReal();
+   MaxTruncationError_NumericEdit.SetRange( TheEGEphemerisMaxTruncationErrorParameter->MinimumValue(), TheEGEphemerisMaxTruncationErrorParameter->MaximumValue() );
+   MaxTruncationError_NumericEdit.SetPrecision( TheEGEphemerisMaxTruncationErrorParameter->Precision() );
+   MaxTruncationError_NumericEdit.EnableScientificNotation();
+   MaxTruncationError_NumericEdit.sizer.AddStretch();
+   MaxTruncationError_NumericEdit.SetToolTip( "<p>Maximum truncation error of fitted Chebyshev polynomial expansions.</p>" );
+   MaxTruncationError_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&EphemerisGeneratorInterface::e_EditValueUpdated, w );
+
+   //
+
    OverwriteExistingFiles_CheckBox.SetText( "Overwrite existing files" );
    OverwriteExistingFiles_CheckBox.SetToolTip( "<p>If this option is selected, EphemerisGenerator will overwrite "
       "existing .xeph files with the same names as generated output files. This can be dangerous because the original "
@@ -1717,6 +1825,9 @@ EphemerisGeneratorInterface::GUIData::GUIData( EphemerisGeneratorInterface& w )
    Output_Sizer.SetSpacing( 4 );
    Output_Sizer.Add( OutputXEPHFile_Sizer );
    Output_Sizer.Add( OutputXEPHFilePath_Sizer );
+   Output_Sizer.Add( OutputVelocityExpansions_Sizer );
+   Output_Sizer.Add( MaxExpansionLength_Sizer );
+   Output_Sizer.Add( MaxTruncationError_NumericEdit );
    Output_Sizer.Add( OverwriteExistingFiles_Sizer );
 
    Output_Control.SetSizer( Output_Sizer );
@@ -1796,4 +1907,4 @@ EphemerisGeneratorInterface::GUIData::GUIData( EphemerisGeneratorInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF EphemerisGeneratorInterface.cpp - Released 2022-11-21T14:47:17Z
+// EOF EphemerisGeneratorInterface.cpp - Released 2023-05-17T17:06:42Z

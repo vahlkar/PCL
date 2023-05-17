@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 1.3.1
+// Standard Geometry Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// DynamicCropInstance.h - Released 2022-11-21T14:47:17Z
+// DynamicCropInstance.h - Released 2023-05-17T17:06:42Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -83,22 +83,26 @@ public:
 
 private:
 
-   DPoint   p_center;            // Center of cropping rectangle
-   double   p_width, p_height;   // Dimensions of cropping area
-   double   p_angle;             // Rotation angle, radians
-   double   p_scaleX, p_scaleY;  // Scaling factors
-   pcl_bool p_optimizeFast;      // Optimize fast rotations: +/-90d, 180d
-   pcl_enum p_interpolation;     // Interpolation algorithm
-   float    p_clampingThreshold; // deringing clamping for bicubic spline and Lanczos
-   float    p_smoothness;        // smoothness for cubic filter interpolations
-   pcl_bool p_gammaCorrection;   // interpolate with gamma correction
-   DPoint   p_resolution;        // horizontal and vertical resolution in pixels
-   pcl_bool p_metric;            // metric resolution?
-   pcl_bool p_forceResolution;   // set resolution of target image window?
-   DVector  p_fillColor;         // Filling values for unused areas (R/K,G,B,A)
-   pcl_bool p_noGUIMessages;     // only show warning messages on the console
+   int32    p_refWidth, p_refHeight; // target image dimensions (px)
+   double   p_outWidth, p_outHeight; // output image dimensions (px)
+   DPoint   p_center;                // center of cropping rectangle
+   double   p_width, p_height;       // normalized dimensions of cropping area ### DEPRECATED
+   double   p_angle;                 // rotation angle, radians
+   double   p_scaleX, p_scaleY;      // scaling factors
+   pcl_bool p_optimizeFast;          // optimize fast rotations: +/-90d, 180d
+   pcl_enum p_interpolation;         // interpolation algorithm
+   float    p_clampingThreshold;     // deringing clamping for bicubic spline and Lanczos
+   float    p_smoothness;            // smoothness for cubic filter interpolations
+   pcl_bool p_gammaCorrection;       // interpolate with gamma correction
+   DPoint   p_resolution;            // horizontal and vertical resolution in pixels
+   pcl_bool p_metric;                // metric resolution?
+   pcl_bool p_forceResolution;       // set resolution of target image window?
+   DVector  p_fillColor;             // filling values for unused areas (R/K,G,B,A)
+   pcl_bool p_noGUIMessages;         // only show warning messages on the console
 
    RGBColorSystem m_rgbws;
+
+   void EnsureCompatibleWithV1Instance();
 
    friend class DynamicCropEngine;
    friend class DynamicCropInterface;
@@ -111,4 +115,4 @@ private:
 #endif   // __DynamicCropInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF DynamicCropInstance.h - Released 2022-11-21T14:47:17Z
+// EOF DynamicCropInstance.h - Released 2023-05-17T17:06:42Z

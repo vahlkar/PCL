@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.9.7
+// Standard ImageCalibration Process Module Version 1.9.8
 // ----------------------------------------------------------------------------
-// LocalNormalizationInterface.cpp - Released 2022-11-21T14:47:17Z
+// LocalNormalizationInterface.cpp - Released 2023-05-17T17:06:42Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -206,50 +206,14 @@ void LocalNormalizationInterface::UpdateControls()
 
 static int NormalizationScaleToComboBoxItem( int scale )
 {
-   switch ( scale )
-   {
-   case   32: return  0;
-   case   64: return  1;
-   case  128: return  2;
-   case  192: return  3;
-   case  256: return  4;
-   case  384: return  5;
-   case  512: return  6;
-   case  768: return  7;
-   default: // ?!
-   case 1024: return  8;
-   case 1536: return  9;
-   case 2048: return 10;
-   case 3072: return 11;
-   case 4096: return 12;
-   case 6144: return 13;
-   case 8192: return 14;
-
-
-   }
+   return LocalNormalizationProcess::SupportedNormalizationScales().Find(
+            LocalNormalizationProcess::NearestSupportedNormalizationScale( scale ) );
 }
 
 static int ComboBoxItemToNormalizationScale( int item )
 {
-   switch ( item )
-   {
-   case  0: return   32;
-   case  1: return   64;
-   case  2: return  128;
-   case  3: return  192;
-   case  4: return  256;
-   case  5: return  384;
-   case  6: return  512;
-   case  7: return  768;
-   default: // ?!
-   case  8: return 1024;
-   case  9: return 1536;
-   case 10: return 2048;
-   case 11: return 3072;
-   case 12: return 4096;
-   case 13: return 6144;
-   case 14: return 8192;
-   }
+   const IVector& supportedScales = LocalNormalizationProcess::SupportedNormalizationScales();
+   return supportedScales[Range( item, 0, supportedScales.Length()-1 )];
 }
 
 void LocalNormalizationInterface::UpdateGeneralParameterControls()
@@ -887,44 +851,36 @@ LocalNormalizationInterface::GUIData::GUIData( LocalNormalizationInterface& w )
 
    //
 
-   const char* scaleTip = "<p>Normalization scale.</p>"
-      "<p>LocalNormalization implements a multiscale normalization algorithm. This parameter is the size in pixels of the "
-      "sampling scale for local image normalization. The larger this parameter, the less locally adaptive the local "
-      "normalization function will be. Smaller values tend to reproduce variations among small-scale structures in the "
-      "reference image. Larger values tend to reproduce variations among large-scale structures.</p>"
-      "<p>To better understand the role of this parameter, suppose we applied the algorithm at the scale of one pixel. The "
-      "result would be an exact copy of the reference image. On the other hand, if we applied the algorithm at a scale similar "
-      "to the size of the whole image, the result would be a <i>global normalization</i>: a single linear function would be "
-      "applied for normalization of the entire target image.</p>"
-      "<p>The default scale is 1024 pixels, which is quite appropriate for most deep-sky images. Suitable scales are generally "
-      "in the range from 256 to 1024 pixels, depending on the dimensions of the image and the complexity of the gradients. "
-      "Although in theory the value of this parameter could be set arbitrarily, for performance and accuracy reasons the "
-      "current implementation is limited to a set of prescribed scales in the range from 32 to 8192 pixels.</p>";
+   {
+      const IVector& scales = LocalNormalizationProcess::SupportedNormalizationScales();
 
-   Scale_Label.SetText( "Scale:" );
-   Scale_Label.SetFixedWidth( labelWidth1 );
-   Scale_Label.SetToolTip( scaleTip );
-   Scale_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+      String scaleTip = "<p>Normalization scale.</p>"
+         "<p>LocalNormalization implements a multiscale normalization algorithm. This parameter is the size in pixels of the "
+         "sampling scale for local image normalization. The larger this parameter, the less locally adaptive the local "
+         "normalization function will be. Smaller values tend to reproduce variations among small-scale structures in the "
+         "reference image. Larger values tend to reproduce variations among large-scale structures.</p>"
+         "<p>To better understand the role of this parameter, suppose we applied the algorithm at the scale of one pixel. The "
+         "result would be an exact copy of the reference image. On the other hand, if we applied the algorithm at a scale similar "
+         "to the size of the whole image, the result would be a <i>global normalization</i>: a single linear function would be "
+         "applied for normalization of the entire target image.</p>"
+         "<p>The default scale is 1024 pixels, which is quite appropriate for most deep-sky images. Suitable scales are generally "
+         "in the range from 256 to 1024 pixels, depending on the dimensions of the image and the complexity of the gradients. "
+         "Although in theory the value of this parameter could be set arbitrarily, for performance and accuracy reasons the "
+         "current implementation is limited to a set of prescribed scales in the range from "
+         + String( scales[0] ) + " to " + String( scales[scales.Length()-1] ) + " pixels.</p>";
 
-   Scale_ComboBox.AddItem( "32" );
-   Scale_ComboBox.AddItem( "64" );
-   Scale_ComboBox.AddItem( "128" );
-   Scale_ComboBox.AddItem( "192" );
-   Scale_ComboBox.AddItem( "256" );
-   Scale_ComboBox.AddItem( "384" );
-   Scale_ComboBox.AddItem( "512" );
-   Scale_ComboBox.AddItem( "768" );
-   Scale_ComboBox.AddItem( "1024" );
-   Scale_ComboBox.AddItem( "1536" );
-   Scale_ComboBox.AddItem( "2048" );
-   Scale_ComboBox.AddItem( "3072" );
-   Scale_ComboBox.AddItem( "4096" );
-   Scale_ComboBox.AddItem( "6144" );
-   Scale_ComboBox.AddItem( "8192" );
+      Scale_Label.SetText( "Scale:" );
+      Scale_Label.SetFixedWidth( labelWidth1 );
+      Scale_Label.SetToolTip( scaleTip );
+      Scale_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
 
-   Scale_ComboBox.SetMinWidth( editWidth3 );
-   Scale_ComboBox.SetToolTip( scaleTip );
-   Scale_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&LocalNormalizationInterface::e_ItemSelected, w );
+      for ( int scale : scales )
+         Scale_ComboBox.AddItem( String( scale ) );
+
+      Scale_ComboBox.SetMinWidth( editWidth3 );
+      Scale_ComboBox.SetToolTip( scaleTip );
+      Scale_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&LocalNormalizationInterface::e_ItemSelected, w );
+   }
 
    Scale_Sizer.SetSpacing( 4 );
    Scale_Sizer.Add( Scale_Label );
@@ -1816,4 +1772,4 @@ LocalNormalizationInterface::GUIData::GUIData( LocalNormalizationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationInterface.cpp - Released 2022-11-21T14:47:17Z
+// EOF LocalNormalizationInterface.cpp - Released 2023-05-17T17:06:42Z

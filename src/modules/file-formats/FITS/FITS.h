@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard FITS File Format Module Version 1.1.10
+// Standard FITS File Format Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// FITS.h - Released 2022-11-21T14:46:51Z
+// FITS.h - Released 2023-05-17T17:06:31Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -53,33 +53,13 @@
 #ifndef __PCL_FITS_h
 #define __PCL_FITS_h
 
-#ifndef __PCL_Defs_h
 #include <pcl/Defs.h>
-#endif
 
-#ifndef __PCL_AutoPointer_h
 #include <pcl/AutoPointer.h>
-#endif
-
-#ifndef __PCL_File_h
 #include <pcl/File.h>
-#endif
-
-#ifndef __PCL_FITSHeaderKeyword_h
 #include <pcl/FITSHeaderKeyword.h>
-#endif
-
-#ifndef __PCL_ICCProfile_h
-#include <pcl/ICCProfile.h>
-#endif
-
-#ifndef __PCL_Image_h
 #include <pcl/Image.h>
-#endif
-
-#ifndef __PCL_ImageDescription_h
 #include <pcl/ImageDescription.h>
-#endif
 
 namespace pcl
 {
@@ -210,12 +190,6 @@ public:
                            "The FITS file contains no image HDU" )
    PCL_DECLARE_FITS_ERROR( NoReadableImage,
                            "The FITS file contains no readable image" )
-   PCL_DECLARE_FITS_ERROR( UnsupportedThumbnailImageDimensions,
-                           "Unsupported thumbnail image dimensions" )
-   PCL_DECLARE_FITS_ERROR( InvalidThumbnailImage,
-                           "Invalid thumbnail image" )
-   PCL_DECLARE_FITS_ERROR( UnsupportedThumbnailSampleFormat,
-                           "Unsupported thumbnail sample format" )
    PCL_DECLARE_FITS_ERROR( InvalidExtensionHDU,
                            "Invalid FITS extension HDU" )
    PCL_DECLARE_FITS_ERROR( FileWriteError,
@@ -238,14 +212,6 @@ public:
                            "Unable to create image FITS HDU" )
    PCL_DECLARE_FITS_ERROR( InvalidCloseImageOperation,
                            "Invalid close operation in FITS file" )
-   PCL_DECLARE_FITS_ERROR( UnableToCreateThumbnailHDU,
-                           "Unable to create thumbnail image HDU" )
-
-   enum
-   {
-      MinThumbnailSize = 32,
-      MaxThumbnailSize = 1024
-   };
 
    FITS();
 
@@ -391,8 +357,6 @@ public:
    /*
     * Embedded data.
     */
-   ICCProfile ReadICCProfile();
-   UInt8Image ReadThumbnail();
    FITSKeywordArray ReadFITSKeywords();
 
    /*
@@ -525,8 +489,6 @@ public:
    /*
     * Embeddings
     */
-   void WriteICCProfile( const ICCProfile& );
-   void WriteThumbnail( const UInt8Image& );
    void WriteFITSKeywords( const FITSKeywordArray& );
 
    const FITSKeywordArray& FITSKeywords() const;
@@ -579,4 +541,4 @@ private:
 #endif   // __PCL_FITS_h
 
 // ----------------------------------------------------------------------------
-// EOF FITS.h - Released 2022-11-21T14:46:51Z
+// EOF FITS.h - Released 2023-05-17T17:06:31Z

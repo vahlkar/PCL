@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard EphemerisGeneration Process Module Version 1.0.0
+// Standard EphemerisGeneration Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// EphemerisGeneratorInterface.h - Released 2022-11-21T14:47:17Z
+// EphemerisGeneratorInterface.h - Released 2023-05-17T17:06:42Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -63,6 +63,7 @@
 #include <pcl/PushButton.h>
 #include <pcl/SectionBar.h>
 #include <pcl/Sizer.h>
+#include <pcl/SpinBox.h>
 #include <pcl/TextBox.h>
 #include <pcl/ToolButton.h>
 
@@ -201,8 +202,12 @@ private:
             Label             KBOEphemerides_Label;
             Edit              KBOEphemerides_Edit;
             ToolButton        KBOEphemerides_ToolButton;
-//          HorizontalSizer   SeparateEarthMoon_Sizer;
-//             CheckBox          SeparateEarthMoon_CheckBox;
+         HorizontalSizer   SeparateEarthMoon_Sizer;
+            CheckBox          SeparateEarthMoon_CheckBox;
+         HorizontalSizer   RelativisticPerturbations_Sizer;
+            CheckBox          RelativisticPerturbations_CheckBox;
+         HorizontalSizer   FigureEffects_Sizer;
+            CheckBox          FigureEffects_CheckBox;
 
       SectionBar        Output_SectionBar;
       Control           Output_Control;
@@ -213,6 +218,12 @@ private:
             Label             OutputXEPHFilePath_Label;
             Edit              OutputXEPHFilePath_Edit;
             ToolButton        OutputXEPHFilePath_ToolButton;
+         HorizontalSizer   OutputVelocityExpansions_Sizer;
+            CheckBox          OutputVelocityExpansions_CheckBox;
+         HorizontalSizer   MaxExpansionLength_Sizer;
+            Label             MaxExpansionLength_Label;
+            SpinBox           MaxExpansionLength_SpinBox;
+         NumericEdit       MaxTruncationError_NumericEdit;
          HorizontalSizer   OverwriteExistingFiles_Sizer;
             CheckBox          OverwriteExistingFiles_CheckBox;
    };
@@ -228,6 +239,7 @@ private:
    void e_FilePathEditGetFocus( Control& sender );
    void e_FilePathEditLoseFocus( Control& sender );
    void e_EditValueUpdated( NumericEdit& sender, double value );
+   void e_SpinValueUpdated( SpinBox& sender, int value );
    void e_Click( Button& sender, bool checked );
    void e_ItemSelected( ComboBox& sender, int itemIndex );
    void e_TextUpdated( TextBox& sender, const String& );
@@ -253,4 +265,4 @@ PCL_END_LOCAL
 #endif   // __EphemerisGeneratorInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF EphemerisGeneratorInterface.h - Released 2022-11-21T14:47:17Z
+// EOF EphemerisGeneratorInterface.h - Released 2023-05-17T17:06:42Z

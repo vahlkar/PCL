@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard FITS File Format Module Version 1.1.10
+// Standard FITS File Format Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// FITSInstance.h - Released 2022-11-21T14:46:51Z
+// FITSInstance.h - Released 2023-05-17T17:06:31Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -84,11 +84,7 @@ public:
 
    void* FormatSpecificData() const override;
 
-   ICCProfile ReadICCProfile() override;
-   UInt8Image ReadThumbnail() override;
    FITSKeywordArray ReadFITSKeywords() override;
-   PropertyDescriptionArray ImagePropertyDescriptions() override;
-   Variant ReadImageProperty( const IsoString& property ) override;
 
    void ReadImage( Image& ) override;
    void ReadImage( DImage& ) override;
@@ -108,10 +104,7 @@ public:
    void SetOptions( const ImageOptions& options ) override;
    void SetFormatSpecificData( const void* data ) override;
 
-   void WriteICCProfile( const ICCProfile& ) override;
-   void WriteThumbnail( const UInt8Image& ) override;
    void WriteFITSKeywords( const FITSKeywordArray& ) override;
-   void WriteImageProperty( const IsoString& property, const Variant& value ) override;
 
    void WriteImage( const Image& ) override;
    void WriteImage( const DImage& ) override;
@@ -145,4 +138,4 @@ private:
 #endif   // __FITSInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF FITSInstance.h - Released 2022-11-21T14:46:51Z
+// EOF FITSInstance.h - Released 2023-05-17T17:06:31Z

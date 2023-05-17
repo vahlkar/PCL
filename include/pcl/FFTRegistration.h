@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// pcl/FFTRegistration.h - Released 2022-11-21T14:46:30Z
+// pcl/FFTRegistration.h - Released 2023-05-17T17:06:03Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -110,7 +110,7 @@ public:
    }
 
    /*!
-    * Destroys an %FFTRegistrationEngine object.
+    * Virtual destructor.
     */
    virtual ~FFTRegistrationEngine()
    {
@@ -125,7 +125,7 @@ public:
    }
 
    /*!
-    * Initializes this registration engine for the specified reference image
+    * Initializes this registration engine for the specified reference
     * \a image.
     *
     * Once initialized, subsequent calls to Evaluate() will compute
@@ -321,7 +321,7 @@ public:
    /*!
     * Destroys an %FFTTranslation object.
     */
-   virtual ~FFTTranslation()
+   ~FFTTranslation() override
    {
    }
 
@@ -470,16 +470,16 @@ class PCL_CLASS FFTRotationAndScaling : public FFTRegistrationEngine
 public:
 
    /*!
-    * Constructs a %FFTRotationAndScaling object.
+    * Constructs an %FFTRotationAndScaling object.
     *
     * Scaling ratio evaluation (see EvaluatesScaling()) is disabled by default.
     */
    FFTRotationAndScaling() = default;
 
    /*!
-    * Destroys a %FFTRotationAndScaling object.
+    * Destroys an %FFTRotationAndScaling object.
     */
-   virtual ~FFTRotationAndScaling()
+   ~FFTRotationAndScaling() override
    {
    }
 
@@ -608,4 +608,4 @@ protected:
 #endif   // __PCL_FFTRegistration_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FFTRegistration.h - Released 2022-11-21T14:46:30Z
+// EOF pcl/FFTRegistration.h - Released 2023-05-17T17:06:03Z

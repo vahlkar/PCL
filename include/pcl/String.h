@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// pcl/String.h - Released 2022-11-21T14:46:30Z
+// pcl/String.h - Released 2023-05-17T17:06:03Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -94,12 +94,14 @@
 #  include <QtCore/QByteArray>
 #  include <QtCore/QDateTime>
 #  include <QtCore/QString>
-#  define PCL_GET_CHARPTR_FROM_QSTRING( qs )    (qs.toLatin1().data())
-#  define PCL_GET_CHAR16PTR_FROM_QSTRING( qs )  ((char16_type*)( qs.utf16() ))
-#  define PCL_GET_QSTRING_FROM_CHAR16PTR( s )   (QString::fromUtf16( (const char16_t*)(s) ))
-#  define PCL_GET_CHARPTR_FROM_QBYTEARRAY( qb ) (qb.data())
-#  define PCL_QDATE_FMT_STR                     "yyyy/MM/dd"
-#  define PCL_QDATETIME_FMT_STR                 "yyyy/MM/dd hh:mm:ss"
+#  define PCL_GET_CHARPTR_FROM_QSTRING( qs )       (qs.toLatin1().data())
+#  define PCL_GET_CHAR16PTR_FROM_QSTRING( qs )     ((char16_type*)( qs.utf16() ))
+#  define PCL_GET_CHARPTR_FROM_QSTRINGVIEW( qv )   ((const char*)qv.data())
+#  define PCL_GET_CHAR16PTR_FROM_QSTRINGVIEW( qv ) ((const char16_type*)qv.data())
+#  define PCL_GET_QSTRING_FROM_CHAR16PTR( s )      (QString::fromUtf16( (const char16_t*)(s) ))
+#  define PCL_GET_CHARPTR_FROM_QBYTEARRAY( qb )    (qb.data())
+#  define PCL_QDATE_FMT_STR                        "yyyy/MM/dd"
+#  define PCL_QDATETIME_FMT_STR                    "yyyy/MM/dd hh:mm:ss"
 #endif
 
 namespace pcl
@@ -444,6 +446,25 @@ struct PCL_CLASS ISO8601ConversionOptions
     * Copy assignment operator. Returns a reference to this object.
     */
    ISO8601ConversionOptions& operator =( const ISO8601ConversionOptions& ) = default;
+};
+
+/*!
+ * \struct ISO8601ConversionOptionsNoTimeZone
+ * \brief Formatting options for string representations of dates and times in
+ * ISO 8601 format. Special variant to disable time zone specifiers.
+ *
+ * \sa IsoString::ToISO8601DateTime(), String::ToISO8601DateTime()
+ */
+struct PCL_CLASS ISO8601ConversionOptionsNoTimeZone : public ISO8601ConversionOptions
+{
+   /*!
+    * Default constructor.
+    */
+   constexpr ISO8601ConversionOptionsNoTimeZone( unsigned timeItems_ = 3,
+                                                 unsigned precision_ = 3 )
+      : ISO8601ConversionOptions( timeItems_, precision_, false/*timeZone*/, false/*zuluTime*/ )
+   {
+   }
 };
 
 // ----------------------------------------------------------------------------
@@ -5801,6 +5822,12 @@ public:
    }
 
    explicit
+   IsoString( const QAnyStringView& qv )
+      : string_base( qv.isEmpty() ? iterator( nullptr ) : iterator( PCL_GET_CHARPTR_FROM_QSTRINGVIEW( qv ) ) )
+   {
+   }
+
+   explicit
    IsoString( const QByteArray& qb )
       : string_base( qb.isEmpty() ? iterator( nullptr ) : iterator( PCL_GET_CHARPTR_FROM_QBYTEARRAY( qb ) ) )
    {
@@ -6505,6 +6532,11 @@ public:
    operator QString() const
    {
       return QString( c_str() );
+   }
+
+   operator QAnyStringView() const
+   {
+      return QAnyStringView( c_str() );
    }
 
    operator QByteArray() const
@@ -7592,7 +7624,8 @@ public:
     * a base 64 representation composed of printable characters. See RFC 1421
     * (http://tools.ietf.org/html/rfc1421).
     *
-    * \sa ToBase64( const C& ), ToHex(), ToByteArray()
+    * \sa ToBase64( const C& ), ToBase64URL( const void*, size_type ), ToHex(),
+    * ToByteArray()
     */
    static IsoString ToBase64( const void* data, size_type length );
 
@@ -7606,12 +7639,56 @@ public:
     * PCL container semantics: the Begin() and Length() standard container
     * functions are required.
     *
-    * \sa ToBase64( const void*, size_type ), ToByteArray()
+    * \sa ToBase64( const void*, size_type ), ToBase64URL( const C& ),
+    * ToByteArray()
     */
    template <class C>
    static IsoString ToBase64( const C& c )
    {
       return ToBase64( c.Begin(), c.Length()*sizeof( *c.Begin() ) );
+   }
+
+   /*!
+    * Returns a Base64URL-encoded string for a binary \a data block of the
+    * specified \a length in bytes.
+    *
+    * Base64URL is a modification of the Base64 encoding standard able to
+    * encode URL fragments. Base64URL is identical to Base64 with the following
+    * exceptions:
+    *
+    * \li The '+' character (plus) is replaced by '-' (minus)
+    * \li The '/' character (slash) is replaced by '_' (underline)
+    * \li All '=' padding characters are removed
+    *
+    * \sa ToBase64( const void*, size_type )
+    */
+   static IsoString ToBase64URL( const void* data, size_type length )
+   {
+      IsoString b64 = ToBase64( data, length );
+      b64.DeleteChar( '=' );
+      for ( char_type& c : b64 )
+         if ( c == '+' )
+            c = '-';
+         else if ( c == '/' )
+            c = '_';
+      return b64;
+   }
+
+   /*!
+    * Returns a Base64URL-encoded string for a container \a c, whose contents
+    * are treated as <em>raw binary data</em>.
+    *
+    * See ToBase64( const C& ) for complete information on Base64 encoding of
+    * contained objects. See ToBase64URL( const void*, size_type ) for
+    * information on Base64URL encoding and its differences with respect to
+    * standard Base64.
+    *
+    * \sa ToBase64( const C& ), ToBase64URL( const void*, size_type )
+    */
+   template <class C>
+   static IsoString ToBase64URL( const C& c )
+   {
+      return ToBase64URL( c.Begin(), c.Length()*sizeof( *c.Begin() ) );
    }
 
    /*!
@@ -7650,9 +7727,29 @@ public:
     *
     * If this string is empty, this function returns an empty %ByteArray.
     *
-    * \sa ToBase64(), FromHex()
+    * \sa ToBase64(), FromBase64URL(), FromHex()
     */
    ByteArray FromBase64() const;
+
+   /*!
+    * Decodes a Base64URL-encoded string, and returns the decoded binary raw
+    * data stored in a ByteArray object.
+    *
+    * See ToBase64URL( const void*, size_type ) for information on Base64URL
+    * encoding and its differences with respect to standard Base64.
+    *
+    * \sa FromBase64()
+    */
+   ByteArray FromBase64URL() const
+   {
+      IsoString b64 = *this;
+      for ( char_type& c : b64 )
+         if ( c == '-' )
+            c = '+';
+         else if ( c == '_' )
+            c = '/';
+      return b64.FromBase64();
+   }
 
    /*!
     * Generates a string of \a n random 8-bit code points, with character types
@@ -13889,4 +13986,4 @@ inline std::ostream& operator <<( std::ostream& o, const String& s )
 #endif   // __PCL_String_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/String.h - Released 2022-11-21T14:46:30Z
+// EOF pcl/String.h - Released 2023-05-17T17:06:03Z

@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// pcl/KeyCodes.h - Released 2022-11-21T14:46:30Z
+// pcl/KeyCodes.h - Released 2023-05-17T17:06:03Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -55,15 +55,16 @@
 /// \file pcl/KeyCodes.h
 
 #include <pcl/Defs.h>
-
-#ifndef __PCL_NO_KEY_QUERY_UTILITIES
-# ifdef __PCL_WINDOWS
-#  include <windows.h> // for virtual key codes
-# endif
-#endif
+#include <pcl/Flags.h>
 
 namespace pcl
 {
+
+// ----------------------------------------------------------------------------
+
+/*!
+ * \defgroup keyboard_utilities Keyboard Utilities
+ */
 
 // ----------------------------------------------------------------------------
 
@@ -197,6 +198,8 @@ namespace pcl
  * <tr><td>KeyCode::Tilde</td>             <td>0x0000007e</td></tr>
  * <tr><td>KeyCode::Unknown</td>           <td>0x7fffffff</td></tr>
  * </table>
+ *
+ * \ingroup keyboard_utilities
  */
 namespace KeyCode
 {
@@ -327,21 +330,65 @@ namespace KeyCode
    };
 }
 
-#ifndef __PCL_BUILDING_PIXINSIGHT_APPLICATION
+// ----------------------------------------------------------------------------
 
 /*!
- * \defgroup keyboard_utilities Keyboard Utilities
- */
-
-/*!
- * Returns true iff the specified keyboard key is currently pressed.
+ * \namespace pcl::KeyboardModifier
+ * \brief Defines PCL keyboard modifiers.
  *
- * The \a key1 and (optional) \a key2 parameters are platform-dependent
- * keyboard scan codes or virtual key identifiers.
+ * The %KeyboardModifier namespace defines platform-independent keyboard
+ * modifiers on the PixInsight/PCL framework.
+ *
+ * <table border="1" cellpadding="4" cellspacing="0">
+ * <tr><td>KeyboardModifier::None</td>     <td>No keyboard modifier is pressed.</td></tr>
+ * <tr><td>KeyboardModifier::Shift</td>    <td>A Shift key is pressed.</td></tr>
+ * <tr><td>KeyboardModifier::Control</td>  <td>A Control key is pressed.</td></tr>
+ * <tr><td>KeyboardModifier::Alt</td>      <td>An Alt key is pressed.</td></tr>
+ * <tr><td>KeyboardModifier::Cmd</td>      <td>A Cmd (Command) key is pressed (macOS only).</td></tr>
+ * <tr><td>KeyboardModifier::Meta</td>     <td>A Meta key is pressed.</td></tr>
+ * <tr><td>KeyboardModifier::SpaceBar</td> <td>The Space Bar key is pressed.</td></tr>
+ * </table>
+ *
+ * KeyboardModifier::Cmd is only available on macOS. This value is never present on
+ * the rest of platforms.
+ *
+ * KeyboardModifier::Meta is equivalent to KeyboardModifier::Control on macOS. On Windows
+ * (and also on modern Linux desktops) KeyboardModifier::Meta corresponds to the
+ * 'Windows' key.
  *
  * \ingroup keyboard_utilities
  */
-bool IsKeyPressed( int key1, int key2 = 0 ); // implemented in pcl/Keyboard.cpp
+namespace KeyboardModifier
+{
+   enum mask_type
+   {
+      None     = 0x00000000,
+      Shift    = 0x00000001,
+      Control  = 0x00000002,
+      Alt      = 0x00000004,
+      SpaceBar = 0x00000008,
+      Meta     = 0x00000010,
+      Cmd      = 0x00000020
+   };
+}
+
+/*!
+ * \class pcl::KeyboardModifiers
+ * \brief A combination of keyboard modifier codes.
+ *
+ * See the pcl::KeyboardModifier namespace for supported modifiers.
+ *
+ * \ingroup keyboard_utilities
+ */
+using KeyboardModifiers = Flags<KeyboardModifier::mask_type>;
+
+/*!
+ * Returns the current state of all supported keyboard modifiers.
+ * \ingroup keyboard_utilities
+ */
+KeyboardModifiers CurrentKeyboardModifiers(); // implemented in pcl/Keyboard.cpp
+
+// ----------------------------------------------------------------------------
 
 #ifndef __PCL_NO_KEY_QUERY_UTILITIES
 
@@ -351,37 +398,17 @@ bool IsKeyPressed( int key1, int key2 = 0 ); // implemented in pcl/Keyboard.cpp
  */
 inline bool IsSpaceBarPressed()
 {
-   return IsKeyPressed(
-#if defined( __PCL_X11 )
-               65
-#endif
-#if defined( __PCL_MACOSX )
-               0x31  // kVK_Space
-#endif
-#if defined( __PCL_WINDOWS )
-               VK_SPACE
-#endif
-            );
+   return CurrentKeyboardModifiers().IsFlagSet( KeyboardModifier::SpaceBar );
 }
 
 /*!
- * Returns true iff a Control key (also known as Meta key on Mac OS X) is
+ * Returns true iff a Control key (also known as Meta key on macOS) is
  * currently pressed.
  * \ingroup keyboard_utilities
  */
 inline bool IsControlPressed()
 {
-   return IsKeyPressed(
-#if defined( __PCL_X11 )
-               37, 109
-#endif
-#if defined( __PCL_MACOSX )
-               0x3B  // kVK_Control
-#endif
-#if defined( __PCL_WINDOWS )
-               VK_CONTROL
-#endif
-            );
+   return CurrentKeyboardModifiers().IsFlagSet( KeyboardModifier::Control );
 }
 
 /*!
@@ -390,66 +417,46 @@ inline bool IsControlPressed()
  */
 inline bool IsShiftPressed()
 {
-   return IsKeyPressed(
-#if defined( __PCL_X11 )
-               50, 62
-#endif
-#if defined( __PCL_MACOSX )
-               0x38  // kVK_Shift
-#endif
-#if defined( __PCL_WINDOWS )
-               VK_SHIFT
-#endif
-            );
+   return CurrentKeyboardModifiers().IsFlagSet( KeyboardModifier::Shift );
 }
 
 /*!
- * Returns true iff an Alt key (also known as Option key on Mac OS X) is
+ * Returns true iff an Alt key (also known as Option key on macOS) is
  * currently pressed.
  * \ingroup keyboard_utilities
  */
 inline bool IsAltPressed()
 {
-   return IsKeyPressed(
-#if defined( __PCL_X11 )
-               64, 113
-#endif
-#if defined( __PCL_MACOSX )
-               0x3A  // kVK_Option
-#endif
-#if defined( __PCL_WINDOWS )
-               VK_MENU
-#endif
-            );
+   return CurrentKeyboardModifiers().IsFlagSet( KeyboardModifier::Alt );
 }
 
 #if defined( __PCL_MACOSX )
 
 /*!
  * Returns true iff the Command key (Mac keyboard only) is currently pressed.
- *
- * \note This function is only defined on Mac OS X.
+ * \note This function is only defined on macOS.
  * \ingroup keyboard_utilities
  */
 inline bool IsCmdPressed()
 {
-   return IsKeyPressed( 0x37 );  // kVK_Command
+   return CurrentKeyboardModifiers().IsFlagSet( KeyboardModifier::Cmd );
 }
 
+#endif // __PCL_MACOSX
+
 /*!
- * Returns true iff the Meta key is currently pressed on the Mac keyboard.
+ * Returns true iff the Meta key is currently pressed.
  *
- * This function is a convenient alias for IsControlPressed(), only available
- * on Mac OS X.
+ * This function is equivalent to IsControlPressed() on macOS. On Windows (and
+ * also on modern Linux desktops) this function returns true if the Windows key
+ * is pressed.
  *
  * \ingroup keyboard_utilities
  */
 inline bool IsMetaPressed()
 {
-   return IsControlPressed();
+   return CurrentKeyboardModifiers().IsFlagSet( KeyboardModifier::Meta );
 }
-
-#endif // __PCL_MACOSX
 
 /*!
  * On UNIX, Linux and Windows platforms, returns true iff a Control key is
@@ -467,9 +474,15 @@ inline bool IsControlOrCmdPressed()
 #endif
 }
 
-#endif // !__PCL_NO_KEY_QUERY_UTILITIES
+/*!
+ * Returns true iff no keyboard modifier key is currently pressed.
+ */
+inline bool IsNoKeyboardModifierPressed()
+{
+   return CurrentKeyboardModifiers() == KeyboardModifier::None;
+}
 
-#endif // !__PCL_BUILDING_PIXINSIGHT_APPLICATION
+#endif // !__PCL_NO_KEY_QUERY_UTILITIES
 
 // ----------------------------------------------------------------------------
 
@@ -478,4 +491,4 @@ inline bool IsControlOrCmdPressed()
 #endif   // __PCL_KeyCodes_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/KeyCodes.h - Released 2022-11-21T14:46:30Z
+// EOF pcl/KeyCodes.h - Released 2023-05-17T17:06:03Z

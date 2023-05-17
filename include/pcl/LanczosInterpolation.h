@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// pcl/LanczosInterpolation.h - Released 2022-11-21T14:46:30Z
+// pcl/LanczosInterpolation.h - Released 2023-05-17T17:06:03Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -212,9 +212,9 @@ public:
    LanczosInterpolation( const LanczosInterpolation& ) = default;
 
    /*!
-    * Virtual destructor.
+    * Destroys a %LanczosInterpolation object.
     */
-   virtual ~LanczosInterpolation()
+   ~LanczosInterpolation() override
    {
    }
 
@@ -563,9 +563,9 @@ public:
    LanczosLUTInterpolationBase( const LanczosLUTInterpolationBase& ) = default;
 
    /*!
-    * Virtual destructor.
+    * Destroys a %LanczosLUTInterpolationBase object.
     */
-   virtual ~LanczosLUTInterpolationBase()
+   ~LanczosLUTInterpolationBase() override
    {
    }
 
@@ -839,9 +839,9 @@ public:
    Lanczos3LUTInterpolation( const Lanczos3LUTInterpolation& ) = default;
 
    /*!
-    * Virtual destructor.
+    * Destroys a %Lanczos3LUTInterpolation object.
     */
-   virtual ~Lanczos3LUTInterpolation()
+   ~Lanczos3LUTInterpolation() override
    {
    }
 };
@@ -894,9 +894,9 @@ public:
    Lanczos4LUTInterpolation( const Lanczos4LUTInterpolation& ) = default;
 
    /*!
-    * Virtual destructor.
+    * Destroys a %Lanczos4LUTInterpolation object.
     */
-   virtual ~Lanczos4LUTInterpolation()
+   ~Lanczos4LUTInterpolation() override
    {
    }
 };
@@ -949,9 +949,9 @@ public:
    Lanczos5LUTInterpolation( const Lanczos5LUTInterpolation& ) = default;
 
    /*!
-    * Virtual destructor.
+    * Destroys a %Lanczos5LUTInterpolation object.
     */
-   virtual ~Lanczos5LUTInterpolation()
+   ~Lanczos5LUTInterpolation() override
    {
    }
 };
@@ -973,4 +973,4 @@ public:
 #endif   // __PCL_LanczosInterpolation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/LanczosInterpolation.h - Released 2022-11-21T14:46:30Z
+// EOF pcl/LanczosInterpolation.h - Released 2023-05-17T17:06:03Z

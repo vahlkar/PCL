@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// pcl/ProjectionFactory.h - Released 2022-11-21T14:46:30Z
+// pcl/ProjectionFactory.h - Released 2023-05-17T17:06:03Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -106,10 +106,10 @@ public:
    }
 
    /*!
-    * Creates a new projection for the specified projection \a name and origin
-    * equatorial coordinates \a ra and \a dec in degrees.
+    * Creates a new projection for the specified projection \a identifier and
+    * origin equatorial coordinates \a ra and \a dec in degrees.
     *
-    * The following projection names are supported in current PCL versions:
+    * The following projection identifiers are supported in current PCL versions:
     *
     * Gnomonic\n
     * Stereographic\n
@@ -119,14 +119,14 @@ public:
     * ZenithalEqualArea\n
     * Orthographic
     *
-    * The specified projection \a name is case insensitive and can contain
+    * The specified projection \a identifier is case sensitive and can contain
     * leading and trailing spaces.
     */
-   static ProjectionBase* CreateByName( const IsoString& name, double ra, double dec );
+   static ProjectionBase* CreateByIdentifier( const IsoString& identifier, double ra, double dec );
 
-   static ProjectionBase* CreateByName( const IsoString::ustring_base& name, double ra, double dec )
+   static ProjectionBase* CreateByIdentifier( const IsoString::ustring_base& identifier, double ra, double dec )
    {
-      return CreateByName( IsoString( name ), ra, dec );
+      return CreateByIdentifier( IsoString( identifier ), ra, dec );
    }
 
    /*!
@@ -143,4 +143,4 @@ public:
 #endif   // __PCL_ProjectionFactory_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ProjectionFactory.h - Released 2022-11-21T14:46:30Z
+// EOF pcl/ProjectionFactory.h - Released 2023-05-17T17:06:03Z

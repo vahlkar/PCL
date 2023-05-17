@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// pcl/Graphics.cpp - Released 2022-11-21T14:46:37Z
+// pcl/Graphics.cpp - Released 2023-05-17T17:06:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -932,4 +932,4 @@ pcl::DRect VectorGraphics::TextRect( double x0, double y0, double x1, double y1,
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Graphics.cpp - Released 2022-11-21T14:46:37Z
+// EOF pcl/Graphics.cpp - Released 2023-05-17T17:06:11Z

@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// pcl/ProjectionBase.h - Released 2022-11-21T14:46:30Z
+// pcl/ProjectionBase.h - Released 2023-05-17T17:06:03Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -93,9 +93,14 @@ public:
    virtual ProjectionBase* Clone() const = 0;
 
    /*!
-    * Returns the WCS projection identifier for this projection system.
+    * Returns the FITS WCS projection identifier for this projection system.
     */
    virtual IsoString ProjCode() const = 0;
+
+   /*!
+    * Returns the XISF serializable projection identifier.
+    */
+   virtual IsoString Identifier() const = 0;
 
    /*!
     * Returns the readable name of this projection system.
@@ -107,11 +112,6 @@ public:
     * this projection.
     */
    virtual void GetWCS( WCSKeywords& wcs ) const;
-
-   /*!
-    *
-    */
-   void InitFromRefPoint( double lng0, double lat0, const Optional<double>& phip = Optional<double>() );
 
    /*!
     * Transforms from celestial coordinates to world coordinates.
@@ -183,14 +183,71 @@ public:
       return Deg( ArcCos( sinY1*sinY2 + cosY1*cosY2*Cos( Rad( p1.x - p2.x ) ) ) );
    }
 
+   /*!
+    * Returns the celestial equatorial coordinates (right ascension and
+    * declination in degrees) of the reference point of this projection system.
+    *
+    * The returned value is a vector suitable for XISF property serialization.
+    */
+   Vector ReferenceCelestialCoordinates() const
+   {
+      return Vector{ Deg( m_ra0  ), Deg( m_dec0 ) };
+   }
+
+   /*!
+    * Returns the native coordinates (longitude and latitude in degrees) of the
+    * reference point of this projection system.
+    *
+    * The returned value is a vector suitable for XISF property serialization.
+    */
+   Vector ReferenceNativeCoordinates() const
+   {
+      return Vector{ m_phi0, m_theta0 };
+   }
+
+   /*!
+    * Returns the native coordinates (longitude and latitude in degrees) of the
+    * north celestial pole in this projection system.
+    *
+    * The returned value is a vector suitable for XISF property serialization.
+    */
+   Vector CelestialPoleNativeCoordinates() const
+   {
+      double lonpole;
+      if ( m_lonpole.IsDefined() )
+         lonpole = m_lonpole();
+      else
+      {
+         // Default value for the native longitude of the celestial pole.
+         lonpole = ((Deg( m_dec0 ) < m_theta0) ? 180 : 0) + m_phi0;
+         if ( lonpole < -180 )
+            lonpole += 360;
+         else if ( lonpole > 180 )
+            lonpole -= 360;
+      }
+      return Vector{ lonpole, m_latpole.OrElse( 90.0 ) };
+   }
+
+   /*!
+    * Returns the XISF projection identifier corresponding to the specified
+    * FITS WCS projection code.
+    */
+   static IsoString WCSCodeToProjectionIdentifier( const IsoString& wcsCode );
+
+   /*!
+    * Returns the standard FITS WCS projection code corresponding to the
+    * specified XISF projection identifier.
+    */
+   static IsoString ProjectionIdentifierToWCSCode( const IsoString& identifier );
+
 protected:
 
-   double            m_ra0 = 0;    // radians
-   double            m_dec0 = 0;   // radians
-   double            m_theta0 = 0; // degrees
-   double            m_phi0 = 0;   // degrees
-   Optional<double>  m_lonpole;    // degrees
-   Optional<double>  m_latpole;    // degrees
+   double            m_ra0 = 0;    // celestial longitude of the reference point (radians)
+   double            m_dec0 = 0;   // celestial latitude of the reference point (radians)
+   double            m_phi0 = 0;   // native longitude of the reference point (degrees)
+   double            m_theta0 = 0; // native latitude of the reference point (degrees)
+   Optional<double>  m_lonpole;    // native longitude of the celestial pole (degrees)
+   Optional<double>  m_latpole;    // native latitude of the celestial pole (degrees)
    SphericalRotation m_sph;
 
    /*!
@@ -202,6 +259,12 @@ protected:
     * Copy constructor.
     */
    ProjectionBase( const ProjectionBase& ) = default;
+
+   /*!
+    * Initialization from reference celestial coordinates and optional native
+    * longitude of the celestial pole.
+    */
+   void InitFromRefPoint( double lng0, double lat0, const Optional<double>& lonpole = Optional<double>() );
 
    /*!
     * Initialization from WCS metadata.
@@ -228,4 +291,4 @@ protected:
 #endif   // __PCL_ProjectionBase_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ProjectionBase.h - Released 2022-11-21T14:46:30Z
+// EOF pcl/ProjectionBase.h - Released 2023-05-17T17:06:03Z

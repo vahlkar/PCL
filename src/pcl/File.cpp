@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// pcl/File.cpp - Released 2022-11-21T14:46:37Z
+// pcl/File.cpp - Released 2023-05-17T17:06:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -59,7 +59,9 @@
 #else
 #  include <sys/types.h>
 #  include <sys/stat.h>
-#  include <sys/statvfs.h>
+#  ifndef __PCL_MACOSX
+#    include <sys/statfs.h>
+#  endif
 #  include <limits.h>
 #  include <unistd.h>
 #  include <dirent.h>
@@ -2371,6 +2373,17 @@ String File::UniqueFileName( const String& directory, int n, const String& prefi
 
 // ----------------------------------------------------------------------------
 
+#ifdef __PCL_MACOSX
+/*
+ * Objective C helper routine implemented in an auxiliary .mm source file.
+ */
+bool GetVolumeAvailableCapacity( const uint16_t* pathUTF16,
+                                 size_t pathLength,
+                                 uint64_t* argTotalBytes,
+                                 uint64_t* argAvailableBytes,
+                                 uint64_t* argAvailableBytesForImportantUsage );
+#endif
+
 uint64 File::GetAvailableSpace( const String& dirPath, uint64* argTotalBytes, uint64* argFreeBytes )
 {
 #ifdef __PCL_WINDOWS
@@ -2393,9 +2406,9 @@ uint64 File::GetAvailableSpace( const String& dirPath, uint64* argTotalBytes, ui
 
    if ( ::GetDiskFreeSpaceExW( (LPCWSTR)dir.c_str(), &availableBytes, &totalBytes, &freeBytes ) )
    {
-      if ( argTotalBytes != 0 )
+      if ( argTotalBytes != nullptr )
          *argTotalBytes = totalBytes.QuadPart;
-      if ( argFreeBytes != 0 )
+      if ( argFreeBytes != nullptr )
          *argFreeBytes = freeBytes.QuadPart;
 
       return availableBytes.QuadPart;
@@ -2403,29 +2416,40 @@ uint64 File::GetAvailableSpace( const String& dirPath, uint64* argTotalBytes, ui
 
    throw File::Error( dirPath, "Unable to get file system information: " + WinErrorMessage() );
 
-#else
+#endif
+
+#ifdef __PCL_MACOSX
+
+   String dir = File::FullPath( TrailingSlashStripped( dirPath.Trimmed() ) );
+   uint64 availableBytes = 0;
+   if ( GetVolumeAvailableCapacity( dir.c_str(), dir.Length(), argTotalBytes, argFreeBytes, &availableBytes ) )
+      return availableBytes;
+
+   throw File::Error( dir, "Unable to get capacity information" );
+
+#endif
+
+#if defined( __PCL_LINUX ) || defined( __PCL_FREEBSD )
 
    String dir = File::FullPath( TrailingSlashStripped( dirPath.Trimmed() ) );
    IsoString utf8 = dir.ToUTF8();
    errno = 0;
-   struct statvfs buf;
-   if ( ::statvfs( utf8.c_str(), &buf ) == 0 )
+   struct statfs64 buf;
+   if ( ::statfs64( utf8.c_str(), &buf ) == 0 )
    {
-      // f_frsize is not guaranteed to be supported.
-      unsigned long blockSize = buf.f_frsize ? buf.f_frsize : buf.f_bsize;
-      if ( argTotalBytes != 0 )
-         *argTotalBytes = uint64( buf.f_blocks ) * blockSize;
-      if ( argFreeBytes != 0 )
-         *argFreeBytes = uint64( buf.f_bfree ) * blockSize;
-      return uint64( buf.f_bavail ) * blockSize;
+      if ( argTotalBytes != nullptr )
+         *argTotalBytes = buf.f_blocks * buf.f_bsize;
+      if ( argFreeBytes != nullptr )
+         *argFreeBytes = buf.f_bfree * buf.f_bsize;
+      return buf.f_bavail * buf.f_bsize;
    }
 
    if ( errno != 0 )
       throw File::Error( dir, "Unable to get file system information: " + String( ::strerror( errno ) ) );
 
-   if ( argTotalBytes != 0 )
+   if ( argTotalBytes != nullptr )
       *argTotalBytes = 0;
-   if ( argFreeBytes != 0 )
+   if ( argFreeBytes != nullptr )
       *argFreeBytes = 0;
    return 0;
 
@@ -2604,4 +2628,4 @@ bool File::IsValidHandle( handle h ) const
 }  // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/File.cpp - Released 2022-11-21T14:46:37Z
+// EOF pcl/File.cpp - Released 2023-05-17T17:06:11Z

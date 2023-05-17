@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard FITS File Format Module Version 1.1.10
+// Standard FITS File Format Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// FITS.cpp - Released 2022-11-21T14:46:51Z
+// FITS.cpp - Released 2023-05-17T17:06:31Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -57,7 +57,6 @@
 #endif
 #include <pcl/Console.h>
 #include <pcl/ErrorHandler.h>
-#include <pcl/ICCProfile.h>
 #include <pcl/MetaModule.h>
 #include <pcl/StandardStatus.h>
 #include <pcl/Version.h>
@@ -145,8 +144,6 @@ struct FITSHDUData
    double                     zeroOffset       = 0;           // BZERO
    double                     scaleRange       = 1;           // BSCALE
    bool                       signedIsPhysical = false;       // signed integer values store physical pixel data
-   IsoString                  iccExtName;                     // name of ICC profile extension
-   IsoString                  thumbExtName;                   // name of thumbnail image extension
 };
 
 // ----------------------------------------------------------------------------
@@ -560,7 +557,7 @@ void FITSReader::Open( const String& filePath )
          }
          if ( hdu.naxis > 0 && hdu.naxis != 2 && hdu.naxis != 3 )
          {
-            // NAXIS=1 for data extensions, such as ICC profile extensions or data properties.
+            // NAXIS=1 for data extensions.
             if ( hdu.naxis != 1 )
                if ( FITSOptions().verbosity > 0 )
                   Console().WarningLn( String().Format( "<end><cbr>** Skipping image with unsupported dimensions (%d) in HDU #%d", hdu.naxis, i+1 ) );
@@ -748,64 +745,10 @@ void FITSReader::Open( const String& filePath )
             else if ( !k.name.CompareIC( "EXTNAME" ) )
             {
                image.id = k.StripValueDelimiters();
-               // Don't load thumbnail image extensions as publicly visible images.
-               if ( !hdus.IsEmpty() )
-                  if ( image.id == hdus[0].thumbExtName )
-                     nonImageExtension = true;
             }
             else if ( !k.name.CompareIC( "EXPTIME" ) || !k.name.CompareIC( "EXPOSURE" ) )
             {
                image.options.exposure = ::atof( k.value.c_str() );
-            }
-            else if ( !k.name.CompareIC( "COLORSPC" ) )
-            {
-               // *** PCL private keyword: Color Space
-               IsoString value = k.StripValueDelimiters().CaseFolded();
-               if ( value == "grayscale" || value == "gray" )
-                  hdu.colorSpace = ColorSpace::Gray;
-               else if ( value == "rgb" || value == "rgbcolor" )
-                  hdu.colorSpace = ColorSpace::RGB;
-               else
-               {
-                  // Warning! We have not generated this keyword!
-                  // Invalid/unsupported key value: assuming the grayscale space.
-                  hdu.colorSpace = ColorSpace::Gray;
-               }
-            }
-            else if ( !k.name.CompareIC( "RESOLUTN" ) )
-            {
-               // *** PCL private keyword: Resolution in both axes.
-               image.options.xResolution = image.options.yResolution = ::atof( k.value.c_str() );
-            }
-            else if ( !k.name.CompareIC( "XRESOLTN" ) )
-            {
-               // *** PCL private keyword: Horizontal resolution.
-               image.options.xResolution = ::atof( k.value.c_str() );
-            }
-            else if ( !k.name.CompareIC( "YRESOLTN" ) )
-            {
-               // *** PCL private keyword: Vertical resolution.
-               image.options.yResolution = ::atof( k.value.c_str() );
-            }
-            else if ( !k.name.CompareIC( "RESOUNIT" ) )
-            {
-               // *** PCL private keyword: Resolution units.
-               IsoString value = k.StripValueDelimiters().CaseFolded();
-               image.options.metricResolution = value == "cm" || value == "centimeter" || value == "centimeters";
-            }
-            else if ( !k.name.CompareIC( "ICCPROFL" ) )
-            {
-               // *** PCL private keyword: ICC profile extension.
-               IsoString extName = k.StripValueDelimiters();
-               if ( extName.IsValidIdentifier() )
-                  hdu.iccExtName = extName;
-            }
-            else if ( !k.name.CompareIC( "THUMBIMG" ) )
-            {
-               // *** PCL private keyword: Thumbnail image extension.
-               IsoString extName = k.StripValueDelimiters();
-               if ( extName.IsValidIdentifier() )
-                  hdu.thumbExtName = extName;
             }
             else if ( !k.name.CompareIC( "XTENSION" ) )
             {
@@ -933,164 +876,6 @@ void FITSReader::SetFITSOptions( const FITSImageOptions& newOptions )
 
 // ----------------------------------------------------------------------------
 
-ICCProfile FITSReader::ReadICCProfile()
-{
-   if ( !IsOpen() )
-      throw FITS::InvalidReadOperation( String() );
-   if ( m_index >= int( hdus.Length() ) )
-      throw FITS::InvalidReadOperation( m_path );
-
-   ByteArray iccData;
-   if ( !hdus[m_index].iccExtName.IsEmpty() )
-      if ( ReadBLOB( iccData, hdus[m_index].iccExtName ) )
-         return ICCProfile( iccData );
-
-   if ( ReadBLOB( iccData, "ICCProfile" ) ||
-        ReadBLOB( iccData, "ICC_PROFILE" ) ||
-        ReadBLOB( iccData, "ICCPROFILE" ) )
-      return ICCProfile( iccData );
-
-   return ICCProfile();
-}
-
-// ----------------------------------------------------------------------------
-
-UInt8Image FITSReader::ReadThumbnail()
-{
-   static const char* extNames[] =
-   {
-      "Thumbnail",
-      "ThumbnailImage",
-      "THUMBNAIL",
-      "THUMBNAILIMAGE",
-      nullptr
-   };
-
-   if ( !IsOpen() )
-      throw FITS::InvalidReadOperation( String() );
-
-   if ( m_index >= int( hdus.Length() ) )
-      throw FITS::InvalidReadOperation( m_path );
-
-   UInt8Image image;
-
-   bool ok = false;
-
-   if ( !hdus[m_index].thumbExtName.IsEmpty() )
-   {
-      {
-         CFITSIO_LOCK
-         ::fits_movnam_hdu( fits_handle, IMAGE_HDU, hdus[m_index].thumbExtName.Begin(), 0, &fitsStatus );
-      }
-      if ( fitsStatus == 0 ) // HDU found ?
-         ok = true;
-   }
-
-   for ( const char** x = extNames; !ok; )
-   {
-      IsoString hduName( *x ); // make a temporary copy because fits_movnam_hdu takes a char* instead of const char* (?!)
-      {
-         CFITSIO_LOCK
-         ::fits_movnam_hdu( fits_handle, IMAGE_HDU, hduName.Begin(), 0, &fitsStatus );
-      }
-      if ( fitsStatus == 0 ) // HDU found ?
-         ok = true;
-      else
-      {
-         fitsStatus = 0;  // this is not an actual error condition
-         if ( *++x == nullptr ) // no more extension names to look for ?
-            return UInt8Image();
-      }
-   }
-
-   try
-   {
-      // Get number of thumbnail image dimensions.
-      // Must be 2 (x,y = grayscale) or 3 (x,y,c = RGB)
-      int naxis;
-      {
-         CFITSIO_LOCK
-         ::fits_get_img_dim( fits_handle, &naxis, &fitsStatus );
-      }
-      if ( naxis != 2 && naxis != 3 )
-         throw FITS::UnsupportedThumbnailImageDimensions( m_path );
-
-      // Get the size of the image for each dimension.
-      // Both dimensions must be within predefined limits.
-      long naxes[ 3 ];
-      {
-         CFITSIO_LOCK
-         ::fits_get_img_size( fits_handle, 3, naxes, &fitsStatus );
-      }
-      if ( naxes[0] < MinThumbnailSize || naxes[1] < MinThumbnailSize ||
-           naxes[0] > MaxThumbnailSize || naxes[1] > MaxThumbnailSize ||
-           naxis == 3 && naxes[2] != 3 )
-      {
-         throw FITS::InvalidThumbnailImage( m_path );
-      }
-
-      // Get thumbnail image sample type.
-      // Thumbnails must be unsigned 8-bit images.
-      int bitpix;
-      {
-         CFITSIO_LOCK
-         ::fits_get_img_type( fits_handle, &bitpix, &fitsStatus );
-      }
-      if ( bitpix != BYTE_IMG )
-         throw FITS::UnsupportedThumbnailSampleFormat( m_path );
-
-      // Allocate thumbnail pixel data.
-      image.AllocateData( naxes[0], naxes[1],
-                          (naxis == 2) ? 1 : 3,
-                          (naxis == 2) ? ColorSpace::Gray : ColorSpace::RGB );
-
-      // Coordinate selectors. N.B.: CFITSIO expects one-based indexes.
-      long fpixel[ 3 ];
-      fpixel[0] = 1;
-      fpixel[1] = 1;
-      fpixel[2] = 0;
-
-      // Read image channels
-      for ( int c = 0; c < image.NumberOfChannels(); ++c )
-      {
-         ++fpixel[2]; // next channel
-         {
-            CFITSIO_LOCK
-            ::fits_read_pix( fits_handle, TBYTE, fpixel,
-                             long( image.NumberOfPixels() ), 0, image[c], 0, &fitsStatus );
-         }
-         if ( fitsStatus != 0 )
-            throw FITS::FileReadError( m_path );
-      }
-
-      // Restore CFITSIO's current HDU to the current image HDU.
-      // N.B.: CFITSIO expects HDU numbers relative to 1.
-      {
-         CFITSIO_LOCK
-         ::fits_movabs_hdu( fits_handle, hdus[m_index].hduNumber+1, 0, &fitsStatus );
-      }
-      if ( fitsStatus != 0 )
-         throw FITS::UnableToAccessCurrentHDU( m_path );
-
-      return image;
-   }
-   catch ( UnableToAccessCurrentHDU& )
-   {
-      throw;
-   }
-   catch ( ... )
-   {
-      int dummy;
-      {
-         CFITSIO_LOCK
-         ::fits_movabs_hdu( fits_handle, hdus[m_index].hduNumber+1, 0, &dummy );
-      }
-      throw;
-   }
-}
-
-// ----------------------------------------------------------------------------
-
 FITSKeywordArray FITSReader::ReadFITSKeywords()
 {
    if ( !IsOpen() )
@@ -1187,11 +972,6 @@ bool FITSReader::ReadBLOB( ByteArray& extData, const IsoString& extName )
 
 // ----------------------------------------------------------------------------
 
-static bool IsReservedExtensionName( const IsoString& extName )
-{
-   return !extName.Compare( "ICCProfile" ) || !extName.Compare( "Thumbnail" );
-}
-
 IsoStringList FITSReader::DataExtensionNames() const
 {
    int numberOfHDUs;
@@ -1234,9 +1014,8 @@ IsoStringList FITSReader::DataExtensionNames() const
          {
             IsoString extName = FITSHeaderKeyword( "EXTNAME", cvalue ).StripValueDelimiters();
             if ( !extName.IsEmpty() ) // anonymous extensions are ignored
-               if ( !IsReservedExtensionName( extName ) ) // reserved properties are not listed
-                  if ( !extNames.Contains( extName ) ) // duplicate extensions are not allowed (only the 1st one is listed)
-                     extNames.Append( extName );
+               if ( !extNames.Contains( extName ) ) // duplicate extensions are not allowed (only the 1st one is listed)
+                  extNames.Append( extName );
          }
          else
             fitsStatus = 0; // don't propagate a false error condition
@@ -1392,21 +1171,15 @@ struct FITSWriterData
    AutoPointer<FITSHDUData> hdu; // current image HDU
    FITSImageOptions         fitsOptions;
    FITSKeywordArray         keywords;
-   ICCProfile               iccProfile;
-   UInt8Image               thumbnail;
    Array<FITSExtensionData> extensions;
 };
 
 // ----------------------------------------------------------------------------
 
-#define hdu               m_data->hdu
-#define fitsOptions       m_data->fitsOptions
-#define keywords          m_data->keywords
-#define iccProfile        m_data->iccProfile
-#define iccProfileExtName m_data->iccProfileExtName
-#define thumbnail         m_data->thumbnail
-#define thumbnailExtName  m_data->thumbnailExtName
-#define extensions        m_data->extensions
+#define hdu          m_data->hdu
+#define fitsOptions  m_data->fitsOptions
+#define keywords     m_data->keywords
+#define extensions   m_data->extensions
 
 // ----------------------------------------------------------------------------
 
@@ -1776,20 +1549,6 @@ void FITSWriter::SetFITSOptions( const FITSImageOptions& newOptions )
 }
 
 // ----------------------------------------------------------------------------
-
-void FITSWriter::WriteICCProfile( const ICCProfile& profile )
-{
-   if ( hdu )
-      throw FITS::InvalidWriteOperation( m_path );
-   iccProfile = profile;
-}
-
-void FITSWriter::WriteThumbnail( const UInt8Image& image )
-{
-   if ( hdu )
-      throw FITS::InvalidWriteOperation( m_path );
-   thumbnail = image;
-}
 
 void FITSWriter::WriteFITSKeywords( const FITSKeywordArray& kwds )
 {
@@ -2276,92 +2035,11 @@ void FITSWriter::CreateImage( const ImageInfo& info )
 
       if ( info.IsValid() )
       {
-         CFITSIO_LOCK
-
-         /*
-          * The COLORSPC keyword identifies the color space for this image
-          */
-         ::fits_write_key_str( fits_handle, "COLORSPC",
-                               const_cast<char*>( (info.colorSpace == ColorSpace::RGB) ? "RGB" : "Grayscale" ),
-                               "PCL: Color space",
-                               &fitsStatus );
-
-         /*
-          * Signal presence of alpha channels
-          */
-         if ( info.numberOfChannels > ((info.colorSpace == ColorSpace::RGB) ? 3 : 1) )
-            ::fits_write_key_flt( fits_handle, "ALPHACHN",
-                                  info.numberOfChannels - ((info.colorSpace == ColorSpace::RGB) ? 3 : 1), -6,
-                                  "PCL: Image includes alpha channels",
-                                  &fitsStatus );
-
-         /*
-          * Image resolution keywords
-          */
-         if ( m_options.xResolution == m_options.yResolution )
-            ::fits_write_key_flt( fits_handle, "RESOLUTN",
-                                  m_options.xResolution, -6,
-                                  "PCL: Resolution in pixels per resolution unit",
-                                  &fitsStatus );
-         else
-         {
-            ::fits_write_key_flt( fits_handle, "XRESOLTN",
-                                  m_options.xResolution, -6,
-                                  "PCL: Resolution in pixels: X-axis",
-                                  &fitsStatus );
-            ::fits_write_key_flt( fits_handle, "YRESOLTN",
-                                  m_options.yResolution, -6,
-                                  "PCL: Resolution in pixels: Y-axis",
-                                  &fitsStatus );
-         }
-         // Resolution unit
-         ::fits_write_key_str( fits_handle, "RESOUNIT",
-                               const_cast<char*>( m_options.metricResolution ? "cm" : "inch" ),
-                               "PCL: Resolution unit",
-                               &fitsStatus );
-
-         /*
-          * Signal presence of an ICC Profile extension, if ICC profile
-          * embedding has been requested, the profile has been specified, and
-          * it is not empty.
-          */
-         if ( m_options.embedICCProfile )
-            if ( iccProfile.IsProfile() )
-            {
-               if ( hdu->hduNumber > 0 )
-                  hdu->iccExtName.Format( "ICCProfile%02d", hdu->hduNumber );
-               else
-                  hdu->iccExtName = "ICCProfile";
-
-               ::fits_write_key_str( fits_handle, "ICCPROFL",
-                                     const_cast<char*>( hdu->iccExtName.c_str() ),
-                                     "PCL: File includes ICC color profile extension",
-                                     &fitsStatus );
-            }
-
-         /*
-          * Signal presence of a thumbnail image extension, if thumbnail
-          * embedding has been requested and a valid thumbnail image has been
-          * specified.
-          */
-         if ( m_options.embedThumbnail )
-            if ( !thumbnail.IsEmpty() )
-            {
-               if ( hdu->hduNumber > 0 )
-                  hdu->thumbExtName.Format( "Thumbnail%02d", hdu->hduNumber );
-               else
-                  hdu->thumbExtName = "Thumbnail";
-
-               ::fits_write_key_str( fits_handle, "THUMBIMG",
-                                     const_cast<char*>( hdu->thumbExtName.c_str() ),
-                                     "PCL: File includes thumbnail image extension",
-                                     &fitsStatus );
-            }
-
          /*
           * Nonstandard ROWORDER keyword - let's hope this ugly trick will shut
           * up most FITS orientation screams... (added July 2020)
           */
+         CFITSIO_LOCK
          ::fits_write_key_str( fits_handle, "ROWORDER",
                                const_cast<char*>( fitsOptions.bottomUp ? "BOTTOM-UP" : "TOP-DOWN" ),
                                "Order of pixel rows stored in the image array",
@@ -2394,8 +2072,8 @@ void FITSWriter::CreateImage( const ImageInfo& info )
          IsoString kname = k.name.Trimmed().Substring( 0, 8 ).Uppercase();
 
          /*
-          * Do not duplicate mandatory and PCL FITS keywords, and do not
-          * propagate some keywords that don't make sense.
+          * Do not duplicate mandatory and obsolete PCL FITS keywords. Also
+          * don't propagate some keywords that don't make sense.
           */
          if ( !kname.IsEmpty() &&
                kname          != "SIMPLE"    &&
@@ -2422,7 +2100,8 @@ void FITSWriter::CreateImage( const ImageInfo& info )
               !kname.StartsWith( "TDMIN" )   &&
               !kname.StartsWith( "TDMAX" )   &&
               !kname.StartsWith( "TDBIN" )   &&
-               kname          != "PINSIGHT"  && // obsolete
+               kname          != "ROWORDER"  && // nonstandard
+               kname          != "PINSIGHT"  && // obsoletes
                kname          != "COLORSPC"  &&
                kname          != "ALPHACHN"  &&
                kname          != "RESOLUTN"  &&
@@ -2431,7 +2110,6 @@ void FITSWriter::CreateImage( const ImageInfo& info )
                kname          != "RESOUNIT"  &&
                kname          != "ICCPROFL"  &&
                kname          != "THUMBIMG"  &&
-               kname          != "ROWORDER"  &&
                kname          != "XMPDATA" )
          {
             /*
@@ -2588,73 +2266,6 @@ void FITSWriter::CloseImage()
          }
       }
 
-      /*
-       * Embed thumbnail image if requested and specified.
-       */
-      if ( m_options.embedThumbnail && !thumbnail.IsEmpty() )
-      {
-         long naxes[ 3 ];
-         naxes[0] = thumbnail.Width();
-         naxes[1] = thumbnail.Height();
-         naxes[2] = thumbnail.NumberOfChannels();
-
-         // Verify validity of thumbnail image
-         if ( naxes[0] < MinThumbnailSize || naxes[1] < MinThumbnailSize ||
-              naxes[0] > MaxThumbnailSize || naxes[1] > MaxThumbnailSize ||
-              thumbnail.ColorSpace() != ColorSpace::Gray && thumbnail.ColorSpace() != ColorSpace::RGB ||
-              naxes[2] != (thumbnail.IsColor() ? 3 : 1) )
-         {
-            throw FITS::InvalidThumbnailImage( m_path );
-         }
-
-         // Create the thumbnail image extension HDU
-         {
-            CFITSIO_LOCK
-            ::fits_create_img( fits_handle, BYTE_IMG, (naxes[2] == 1) ? 2 : 3, naxes, &fitsStatus );
-         }
-         if ( fitsStatus != 0 )
-            throw FITS::UnableToCreateThumbnailHDU( m_path );
-
-         // Emit the extension name keyword.
-
-         IsoString ivers( Version::AsString() );
-         {
-            CFITSIO_LOCK
-            ::fits_write_key_str( fits_handle, "EXTNAME",
-                                  const_cast<char*>( hdu->thumbExtName.c_str() ),
-                                  const_cast<char*>( ivers.c_str() ),
-                                  &fitsStatus );
-         }
-         if ( fitsStatus != 0 )
-            throw FITS::FileWriteError( m_path );
-
-         // Coordinate selectors. N.B.: CFITSIO expects one-based indexes.
-         long fpixel[ 3 ];
-         fpixel[0] = 1;
-         fpixel[1] = 1;
-         fpixel[2] = 0;
-
-         // Write thumbnail image channels.
-         for ( int c = 0; c < thumbnail.NumberOfChannels(); ++c )
-         {
-            ++fpixel[2]; // next channel
-            {
-               CFITSIO_LOCK
-               ::fits_write_pix( fits_handle, TBYTE, fpixel,
-                                 long( thumbnail.NumberOfPixels() ),
-                                 const_cast<uint8*>( thumbnail[c] ), &fitsStatus );
-            }
-            if ( fitsStatus != 0 )
-               throw FITS::FileWriteError( m_path );
-         }
-      }
-
-      /*
-       * Embed an ICC color profile if requested and specified.
-       */
-      if ( m_options.embedICCProfile && iccProfile.IsProfile() )
-         WriteExtensionHDU( FITSExtensionData( iccProfile.ProfileData(), hdu->iccExtName ) );
-
       hdu.Destroy();
    }
    catch ( ... )
@@ -2730,4 +2341,4 @@ void FITSWriter::WriteExtensionHDU( const FITSExtensionData& ext )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITS.cpp - Released 2022-11-21T14:46:51Z
+// EOF FITS.cpp - Released 2023-05-17T17:06:31Z

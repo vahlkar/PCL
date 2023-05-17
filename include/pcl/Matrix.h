@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// pcl/Matrix.h - Released 2022-11-21T14:46:30Z
+// pcl/Matrix.h - Released 2023-05-17T17:06:03Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -358,9 +358,8 @@ public:
 #endif   // !__PCL_NO_MATRIX_IMAGE_CONVERSION
 
    /*!
-    * Destroys a %GenericMatrix object. This destructor dereferences the matrix
-    * data. If the matrix data becomes unreferenced, it is destroyed and
-    * deallocated immediately.
+    * Virtual destructor. Dereferences the matrix data. If the matrix data
+    * becomes unreferenced, it is destroyed and deallocated immediately.
     */
    virtual ~GenericMatrix()
    {
@@ -1407,8 +1406,8 @@ public:
    /*!
     * Returns a unit matrix of size \a n.
     *
-    * A unit matrix is an <em>n</em> x <em>n</em> square matrix whose elements
-    * are ones on its main diagonal and zeros elsewhere.
+    * A unit matrix is a square matrix whose elements are ones on its main
+    * diagonal and zeros elsewhere.
     */
    static GenericMatrix UnitMatrix( int n )
    {
@@ -1479,6 +1478,125 @@ public:
       GenericMatrix Tf( m_data->Cols(), m_data->Rows() );
       pcl::CopyReversed( Tf.m_data->End(), m_data->Begin(), m_data->End() );
       return Tf;
+   }
+
+   /*!
+    * Returns a 3x3 translation matrix.
+    *
+    * \param dx   Translation increment on the X axis.
+    * \param dy   Translation increment on the Y axis.
+    *
+    * The returned matrix is:
+    *
+    * <pre>
+    * 1   0   dx
+    * 0   1   dy
+    * 0   0   1
+    * </pre>
+    *
+    * \sa Translate( double, double )
+    */
+   static GenericMatrix Translation( double dx, double dy )
+   {
+      return GenericMatrix( element( 1 ), element( 0 ), element( dx ),
+                            element( 0 ), element( 1 ), element( dy ),
+                            element( 0 ), element( 0 ), element( 1  ) );
+   }
+
+   /*!
+    * Returns a 3x3 translation matrix for the specified translation vector
+    * \a delta.
+    *
+    * The type V is expected to provide the array subscript operator:
+    *
+    * C V::operator []( int i ) const
+    *
+    * where the type C must have conversion-to-double semantics. The subindex i
+    * will be either 0 or 1 for the translation increments on the X and Y axes,
+    * respectively.
+    *
+    * \sa Translation( double, double )
+    */
+   template <class V>
+   static GenericMatrix Translation( const V& delta )
+   {
+      return GenericMatrix( element( 1 ), element( 0 ), element( double( delta[0] ) ),
+                            element( 0 ), element( 1 ), element( double( delta[1] ) ),
+                            element( 0 ), element( 0 ), element( 1                ) );
+   }
+
+   /*!
+    * Translates this 3x3 matrix.
+    *
+    * \param dx   Translation increment on the X axis.
+    * \param dy   Translation increment on the Y axis.
+    *
+    * This function multiplies this matrix by the translation matrix:
+    *
+    * <pre>
+    * 1   0   dx
+    * 0   1   dy
+    * 0   0   1
+    * </pre>
+    *
+    * If this matrix has dimensions different from 3 rows and 3 columns, this
+    * function invokes undefined behavior. For the sake of performance, this
+    * condition is not explicitly verified.
+    *
+    * \sa Translation( double, double )
+    */
+   void Translate( double dx, double dy )
+   {
+      PCL_PRECONDITION( Rows() == 3 && Cols() == 3 )
+      EnsureUnique();
+      block_iterator __restrict__ A0 = m_data->v[0];
+      block_iterator __restrict__ A1 = m_data->v[1];
+      block_iterator __restrict__ A2 = m_data->v[2];
+      A0[2] = element( A0[2] + A0[0]*dx + A0[1]*dy );
+      A1[2] = element( A1[2] + A1[0]*dx + A1[1]*dy );
+      A2[2] = element( A2[2] + A2[0]*dx + A2[1]*dy );
+   }
+
+   /*!
+    * Translates this 3x3 matrix by the specified translation vector \a delta.
+    *
+    * See Translation( const V& ) for detailed information on the expected
+    * properties of the type V.
+    *
+    * \sa Translate( double, double )
+    */
+   template <class V>
+   void Translate( const V& delta )
+   {
+      Translate( double( delta[0] ), double( delta[1] ) );
+   }
+
+   /*!
+    * Returns a translated copy of this 3x3 matrix by the specified increments
+    * \a dx and \a dy on the X and Y axes, respectively. See Translate().
+    *
+    * \sa Translate( double, double )
+    */
+   GenericMatrix Translated( double dx, double dy ) const
+   {
+      GenericMatrix R( *this );
+      R.Translate( dx, dy );
+      return R;
+   }
+
+   /*!
+    * Returns a translated copy of this 3x3 matrix by the specified translation
+    * vector \a delta.
+    *
+    * See Translation( const V& ) for detailed information on the expected
+    * properties of the type V.
+    *
+    * \sa Translated( double, double )
+    */
+   template <class V>
+   GenericMatrix Translated( const V& delta ) const
+   {
+      return Translated( double( delta[0] ), double( delta[1] ) );
    }
 
    /*!
@@ -3746,4 +3864,4 @@ using LDMatrix = F80Matrix;
 #endif   // __PCL_Matrix_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Matrix.h - Released 2022-11-21T14:46:30Z
+// EOF pcl/Matrix.h - Released 2023-05-17T17:06:03Z

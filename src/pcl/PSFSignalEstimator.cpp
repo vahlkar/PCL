@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// pcl/PSFSignalEstimator.cpp - Released 2022-11-21T14:46:37Z
+// pcl/PSFSignalEstimator.cpp - Released 2023-05-17T17:06:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -180,6 +180,13 @@ static Array<float> LocalBackgroundResidual_Imp( const GenericImage<P>& image, i
    for ( int i = 0; i < M.NumberOfLayers(); ++i )
       M.DisableLayer( i );
 
+   bool initializeStatus = image.Status().IsInitializationEnabled();
+   if ( initializeStatus )
+   {
+      image.Status().Initialize( "Mean background estimation" );
+      image.Status().DisableInitialization();
+   }
+
    {
       /*
        * Working image
@@ -255,6 +262,12 @@ static Array<float> LocalBackgroundResidual_Imp( const GenericImage<P>& image, i
    }
 
    image.PopSelections();
+
+   if ( initializeStatus )
+   {
+      image.Status().Complete();
+      image.Status().EnableInitialization();
+   }
 
    return R;
 }
@@ -335,7 +348,11 @@ PSFSignalEstimator::Estimates PSFSignalEstimator::EstimateSignal( const ImageVar
       {
          double mean, sigma;
          int i, j;
-         RobustChauvenetRejection()( i, j, mean, sigma, psfMean );
+         RobustChauvenetRejection R;
+         // With large data sets we have a potential performance issue in the
+         // RCR routine. Force bulk rejection to accelerate the process.
+         R.SetLargeSampleSize( 1 );
+         R.PerformRejection( i, j, mean, sigma, psfMean );
          for ( int k = 0; k < i; ++k )
             psfMean[k] = psfMean[i];
          for ( int k = --j; ++k < n; )
@@ -378,4 +395,4 @@ PSFSignalEstimator::Estimates PSFSignalEstimator::EstimateSignal( const ImageVar
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFSignalEstimator.cpp - Released 2022-11-21T14:46:37Z
+// EOF pcl/PSFSignalEstimator.cpp - Released 2023-05-17T17:06:11Z

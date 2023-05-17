@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// pcl/Position.h - Released 2022-11-21T14:46:30Z
+// pcl/Position.h - Released 2023-05-17T17:06:03Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -463,6 +463,19 @@ public:
    }
 
    /*!
+    * Computes the light-travel time for a solar system body.
+    *
+    * The returned value is the light-travel time in days for the instant of
+    * calculation defined by this object in the TT timescale, calculated for
+    * the body defined by the specified ephemeris handle \a H.
+    */
+   double LightTravelTime( EphemerisFile::Handle& H )
+   {
+      (void)Geometric( H );
+      return m_tau;
+   }
+
+   /*!
     * Computes the geometric position of a solar system body.
     *
     * The components of the returned vector are the geocentric or topocentric
@@ -828,7 +841,7 @@ public:
     * Returns the time of calculation for this object in the Barycentric
     * Dynamical Time (TDB) timescale.
     *
-    * The times of calculation in different timescales are calculated by the
+    * The times of calculation in different timescales are computed by the
     * class constructor.
     */
    TimePoint TDB() const
@@ -841,7 +854,7 @@ public:
     * timescale defined by the JPL DE/LE numerical integration. For all
     * purposes this is equivalent to TDB.
     *
-    * The times of calculation in different timescales are calculated by the
+    * The times of calculation in different timescales are computed by the
     * class constructor.
     */
    TimePoint Teph() const
@@ -853,7 +866,7 @@ public:
     * Returns the time of calculation for this object in the Terrestrial Time
     * (TT) timescale.
     *
-    * The times of calculation in different timescales are calculated by the
+    * The times of calculation in different timescales are computed by the
     * class constructor.
     */
    TimePoint TT() const
@@ -862,10 +875,22 @@ public:
    }
 
    /*!
+    * Returns the time of calculation for this object in the Coordinated
+    * Universal Time (UTC) timescale.
+    *
+    * The times of calculation in different timescales are computed by the
+    * class constructor.
+    */
+   TimePoint UTC() const
+   {
+      return m_utc;
+   }
+
+   /*!
     * Returns the time of calculation for this object in the Universal Time
     * (UT1) timescale.
     *
-    * The times of calculation in different timescales are calculated by the
+    * The times of calculation in different timescales are computed by the
     * class constructor.
     */
    TimePoint UT1() const
@@ -1414,6 +1439,8 @@ private:
    TimePoint   m_t;
    // TT
    TimePoint   m_tt;
+   // UTC
+   TimePoint   m_utc;
    // UT1
    TimePoint   m_ut1;
    // TT in Julian centuries since J2000.0.
@@ -1519,4 +1546,4 @@ private:
 #endif  // __PCL_Position_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Position.h - Released 2022-11-21T14:46:30Z
+// EOF pcl/Position.h - Released 2023-05-17T17:06:03Z

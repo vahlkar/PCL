@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.9.7
+// Standard ImageCalibration Process Module Version 1.9.8
 // ----------------------------------------------------------------------------
-// OutputFileData.h - Released 2022-11-21T14:47:17Z
+// OutputFileData.h - Released 2023-05-17T17:06:42Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -109,13 +109,11 @@ struct OutputFileData
    ~OutputFileData()
    {
       if ( format )
-      {
          if ( fsData != nullptr )
          {
             format->DisposeFormatSpecificData( const_cast<void*>( fsData ) );
             fsData = nullptr;
          }
-      }
    }
 
    OutputFileData& operator =( const OutputFileData& ) = delete;
@@ -139,4 +137,4 @@ struct OutputFileData
 #endif   // __OutputFileData_h
 
 // ----------------------------------------------------------------------------
-// EOF OutputFileData.h - Released 2022-11-21T14:47:17Z
+// EOF OutputFileData.h - Released 2023-05-17T17:06:42Z

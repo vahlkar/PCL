@@ -2,16 +2,17 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard CometAlignment Process Module Version 1.2.6
+// Standard CometAlignment Process Module Version 1.3.7
 // ----------------------------------------------------------------------------
-// CometAlignmentParameters.cpp - Released 2022-11-21T14:47:18Z
+// CometAlignmentParameters.cpp - Released 2023-05-17T17:06:42Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CometAlignment PixInsight module.
 //
-// Copyright (c) 2012-2018 Nikolay Volkov
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2012-2023 Nikolay Volkov
+// Copyright (c) 2019-2023 Juan Conejero (PTeam)
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -57,46 +58,51 @@ namespace pcl
 {
 // ----------------------------------------------------------------------------
 
-CATargetFrames* TheTargetFrames = nullptr;
+CATargetFrames*                  TheCATargetFramesParameter = nullptr;
+CATargetFramePath*               TheCATargetFramePathParameter = nullptr;
+CATargetFrameEnabled*            TheCATargetFrameEnabledParameter = nullptr;
+CATargetFrameDate*               TheCATargetFrameDateParameter = nullptr;
+CATargetFrameJDate*              TheCATargetFrameJDateParameter = nullptr;
+CATargetFrameX*                  TheCATargetFrameXParameter = nullptr;
+CATargetFrameY*                  TheCATargetFrameYParameter = nullptr;
+CATargetFrameFixed*              TheCATargetFrameFixedParameter = nullptr;
+CATargetFrameDrizzlePath*        TheCATargetFrameDrizzlePathParameter = nullptr;
 
-CATargetFramePath* TheTargetFramePath = nullptr;
-CATargetFrameEnabled* TheTargetFrameEnabled = nullptr;
+CAReferenceIndex*                TheCAReferenceIndexParameter = nullptr;
+CAFitPSF*                        TheCAFitPSFParameter = nullptr;
+CAOperandImageFilePath*          TheCAOperandImageFilePathParameter = nullptr;
+CAOperandSubtractAligned*        TheCAOperandSubtractAlignedParameter = nullptr;
+CAOperandLinearFit*              TheCAOperandLinearFitParameter = nullptr;
+CAOperandLinearFitLow*           TheCAOperandLinearFitLowParameter = nullptr;
+CAOperandLinearFitHigh*          TheCAOperandLinearFitHighParameter = nullptr;
+CAOperandNormalize*              TheCAOperandNormalizeParameter = nullptr;
+CADrizzleWriteStarAlignedImage*  TheCADrizzleWriteStarAlignedImageParameter = nullptr;
+CADrizzleWriteCometAlignedImage* TheCADrizzleWriteCometAlignedImageParameter = nullptr;
+CAPixelInterpolation*            TheCAPixelInterpolationParameter = nullptr;
+CALinearClampingThreshold*       TheCALinearClampingThresholdParameter = nullptr;
 
-CATargetFrameDate* TheTargetFrameDate = nullptr;
-CATargetFrameJDate* TheTargetFrameJDate = nullptr;
-CATargetFrameX* TheTargetFrameX = nullptr;
-CATargetFrameY* TheTargetFrameY = nullptr;
-CADrizzlePath* TheDrizzlePath = nullptr;
+CAInputHints*                    TheCAInputHintsParameter = nullptr;
+CAOutputHints*                   TheCAOutputHintsParameter = nullptr;
 
-CAInputHints* TheCAInputHintsParameter = nullptr;
-CAOutputHints* TheCAOutputHintsParameter = nullptr;
-CAOutputDir* TheOutputDir = nullptr;
-CAOutputExtension* TheCAOutputExtensionParameter = nullptr;
-CAPrefix* ThePrefix = nullptr;
-CAPostfix* ThePostfix = nullptr;
-CAOverwrite* TheOverwrite = nullptr;
+CAOutputDirectory*               TheCAOutputDirectoryParameter = nullptr;
+CAOutputExtension*               TheCAOutputExtensionParameter = nullptr;
+CAOutputPrefix*                  TheCAOutputPrefixParameter = nullptr;
+CAOutputPostfix*                 TheCAOutputPostfixParameter = nullptr;
+CAOverwriteExistingFiles*        TheCAOverwriteExistingFilesParameter = nullptr;
+CAGenerateCometPathMap*          TheCAGenerateCometPathMapParameter = nullptr;
+CAOnError*                       TheCAOnErrorParameter = nullptr;
 
-CAReference* TheReference = nullptr;
-
-CASubtractFile* TheSubtractFile = nullptr;
-CASubtractMode* TheSubtractMode = nullptr;
-CAOperandIsDI* TheOperandIsDI = nullptr;
-CANormalize* TheNormalize = nullptr;
-CAEnableLinearFit* TheEnableLinearFit = nullptr;
-CARejectLow* TheRejectLow = nullptr;
-CARejectHigh* TheRejectHigh = nullptr;
-CADrzSaveSA* TheDrzSaveSA = nullptr;
-CADrzSaveCA* TheDrzSaveCA = nullptr;
-
-CAPixelInterpolation* ThePixelInterpolationParameter = nullptr;
-CALinearClampingThreshold* TheLinearClampingThresholdParameter = nullptr;
+CAUseFileThreads*                TheCAUseFileThreadsParameter = nullptr;
+CAFileThreadOverload*            TheCAFileThreadOverloadParameter = nullptr;
+CAMaxFileReadThreads*            TheCAMaxFileReadThreadsParameter = nullptr;
+CAMaxFileWriteThreads*           TheCAMaxFileWriteThreadsParameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
 CATargetFrames::CATargetFrames( MetaProcess* P )
    : MetaTable( P )
 {
-   TheTargetFrames = this;
+   TheCATargetFramesParameter = this;
 }
 
 IsoString CATargetFrames::Id() const
@@ -106,10 +112,23 @@ IsoString CATargetFrames::Id() const
 
 // ----------------------------------------------------------------------------
 
+CATargetFramePath::CATargetFramePath( MetaTable* T )
+   : MetaString( T )
+{
+   TheCATargetFramePathParameter = this;
+}
+
+IsoString CATargetFramePath::Id() const
+{
+   return "path";
+}
+
+// ----------------------------------------------------------------------------
+
 CATargetFrameEnabled::CATargetFrameEnabled( MetaTable* T )
    : MetaBoolean( T )
 {
-   TheTargetFrameEnabled = this;
+   TheCATargetFrameEnabledParameter = this;
 }
 
 IsoString CATargetFrameEnabled::Id() const
@@ -124,23 +143,10 @@ bool CATargetFrameEnabled::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-CATargetFramePath::CATargetFramePath( MetaTable* T )
+CATargetFrameDate::CATargetFrameDate( MetaTable* T ) // ### DEPRECATED
    : MetaString( T )
 {
-   TheTargetFramePath = this;
-}
-
-IsoString CATargetFramePath::Id() const
-{
-   return "path";
-}
-
-// ----------------------------------------------------------------------------
-
-CATargetFrameDate::CATargetFrameDate( MetaTable* T )
-   : MetaString( T )
-{
-   TheTargetFrameDate = this;
+   TheCATargetFrameDateParameter = this;
 }
 
 IsoString CATargetFrameDate::Id() const
@@ -153,10 +159,15 @@ IsoString CATargetFrameDate::Id() const
 CATargetFrameJDate::CATargetFrameJDate( MetaTable* T )
    : MetaDouble( T )
 {
-   TheTargetFrameJDate = this;
+   TheCATargetFrameJDateParameter = this;
 }
 
 IsoString CATargetFrameJDate::Id() const
+{
+   return "jd";
+}
+
+IsoString CATargetFrameJDate::Aliases() const
 {
    return "jDate";
 }
@@ -171,7 +182,7 @@ int CATargetFrameJDate::Precision() const
 CATargetFrameX::CATargetFrameX( MetaTable* T )
    : MetaDouble( T )
 {
-   TheTargetFrameX = this;
+   TheCATargetFrameXParameter = this;
 }
 
 IsoString CATargetFrameX::Id() const
@@ -181,7 +192,7 @@ IsoString CATargetFrameX::Id() const
 
 int CATargetFrameX::Precision() const
 {
-   return 8;
+   return 2;
 }
 
 double CATargetFrameX::MinimumValue() const
@@ -191,7 +202,7 @@ double CATargetFrameX::MinimumValue() const
 
 double CATargetFrameX::MaximumValue() const
 {
-   return 100000;
+   return int32_max;
 }
 
 // ----------------------------------------------------------------------------
@@ -199,7 +210,7 @@ double CATargetFrameX::MaximumValue() const
 CATargetFrameY::CATargetFrameY( MetaTable* T )
    : MetaDouble( T )
 {
-   TheTargetFrameY = this;
+   TheCATargetFrameYParameter = this;
 }
 
 IsoString CATargetFrameY::Id() const
@@ -209,7 +220,7 @@ IsoString CATargetFrameY::Id() const
 
 int CATargetFrameY::Precision() const
 {
-   return 8;
+   return 2;
 }
 
 double CATargetFrameY::MinimumValue() const
@@ -219,20 +230,363 @@ double CATargetFrameY::MinimumValue() const
 
 double CATargetFrameY::MaximumValue() const
 {
-   return 100000;
+   return int32_max;
 }
 
 // ----------------------------------------------------------------------------
 
-CADrizzlePath::CADrizzlePath( MetaTable* T )
-   : MetaString( T )
+CATargetFrameFixed::CATargetFrameFixed( MetaTable* T )
+   : MetaBoolean( T )
 {
-   TheDrizzlePath = this;
+   TheCATargetFrameFixedParameter = this;
 }
 
-IsoString CADrizzlePath::Id() const
+IsoString CATargetFrameFixed::Id() const
+{
+   return "fixed";
+}
+
+bool CATargetFrameFixed::DefaultValue() const
+{
+   return false;
+}
+
+// ----------------------------------------------------------------------------
+
+CATargetFrameDrizzlePath::CATargetFrameDrizzlePath( MetaTable* T )
+   : MetaString( T )
+{
+   TheCATargetFrameDrizzlePathParameter = this;
+}
+
+IsoString CATargetFrameDrizzlePath::Id() const
 {
    return "drizzlePath";
+}
+
+// ----------------------------------------------------------------------------
+
+CAReferenceIndex::CAReferenceIndex( MetaProcess* P )
+   : MetaUInt32( P )
+{
+   TheCAReferenceIndexParameter = this;
+}
+
+IsoString CAReferenceIndex::Id() const
+{
+   return "referenceIndex";
+}
+
+IsoString CAReferenceIndex::Aliases() const
+{
+   return "reference";
+}
+
+// ----------------------------------------------------------------------------
+
+CAFitPSF::CAFitPSF( MetaProcess* P )
+   : MetaBoolean( P )
+{
+   TheCAFitPSFParameter = this;
+}
+
+IsoString CAFitPSF::Id() const
+{
+   return "fitPSF";
+}
+
+bool CAFitPSF::DefaultValue() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+CAOperandImageFilePath::CAOperandImageFilePath( MetaProcess* P )
+   : MetaString( P )
+{
+   TheCAOperandImageFilePathParameter = this;
+}
+
+IsoString CAOperandImageFilePath::Id() const
+{
+   return "operandImageFilePath";
+}
+
+IsoString CAOperandImageFilePath::Aliases() const
+{
+   return "subtractFile";
+}
+
+// ----------------------------------------------------------------------------
+
+CAOperandSubtractAligned::CAOperandSubtractAligned( MetaProcess* P )
+   : MetaBoolean( P )
+{
+   TheCAOperandSubtractAlignedParameter = this;
+}
+
+IsoString CAOperandSubtractAligned::Id() const
+{
+   return "operandSubtractAligned";
+}
+
+IsoString CAOperandSubtractAligned::Aliases() const
+{
+   return "subtractMode";
+}
+
+bool CAOperandSubtractAligned::DefaultValue() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+CAOperandLinearFit::CAOperandLinearFit( MetaProcess* P )
+   : MetaBoolean( P )
+{
+   TheCAOperandLinearFitParameter = this;
+}
+
+IsoString CAOperandLinearFit::Id() const
+{
+   return "operandLinearFit";
+}
+
+IsoString CAOperandLinearFit::Aliases() const
+{
+   return "enableLinearFit";
+}
+
+bool CAOperandLinearFit::DefaultValue() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+CAOperandLinearFitLow::CAOperandLinearFitLow( MetaProcess* P )
+   : MetaFloat( P )
+{
+   TheCAOperandLinearFitLowParameter = this;
+}
+
+IsoString CAOperandLinearFitLow::Id() const
+{
+   return "operandLinearFitLow";
+}
+
+IsoString CAOperandLinearFitLow::Aliases() const
+{
+   return "rejectLow";
+}
+
+int CAOperandLinearFitLow::Precision() const
+{
+   return 6;
+}
+
+double CAOperandLinearFitLow::MinimumValue() const
+{
+   return 0;
+}
+
+double CAOperandLinearFitLow::MaximumValue() const
+{
+   return 1;
+}
+
+double CAOperandLinearFitLow::DefaultValue() const
+{
+   return 0;
+}
+
+// ----------------------------------------------------------------------------
+
+CAOperandLinearFitHigh::CAOperandLinearFitHigh( MetaProcess* P )
+   : MetaFloat( P )
+{
+   TheCAOperandLinearFitHighParameter = this;
+}
+
+IsoString CAOperandLinearFitHigh::Id() const
+{
+   return "operandLinearFitHigh";
+}
+
+IsoString CAOperandLinearFitHigh::Aliases() const
+{
+   return "rejectHigh";
+}
+
+int CAOperandLinearFitHigh::Precision() const
+{
+   return 6;
+}
+
+double CAOperandLinearFitHigh::MinimumValue() const
+{
+   return 0;
+}
+
+double CAOperandLinearFitHigh::MaximumValue() const
+{
+   return 1;
+}
+
+double CAOperandLinearFitHigh::DefaultValue() const
+{
+   return 0.92;
+}
+
+// ----------------------------------------------------------------------------
+
+CAOperandNormalize::CAOperandNormalize( MetaProcess* P )
+   : MetaBoolean( P )
+{
+   TheCAOperandNormalizeParameter = this;
+}
+
+IsoString CAOperandNormalize::Id() const
+{
+   return "operandNormalize";
+}
+
+IsoString CAOperandNormalize::Aliases() const
+{
+   return "normalize";
+}
+
+bool CAOperandNormalize::DefaultValue() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+CADrizzleWriteStarAlignedImage::CADrizzleWriteStarAlignedImage( MetaProcess* P )
+   : MetaBoolean( P )
+{
+   TheCADrizzleWriteStarAlignedImageParameter = this;
+}
+
+IsoString CADrizzleWriteStarAlignedImage::Id() const
+{
+   return "drizzleWriteStarAlignedImage";
+}
+
+IsoString CADrizzleWriteStarAlignedImage::Aliases() const
+{
+   return "drzSaveStarsAligned";
+}
+
+bool CADrizzleWriteStarAlignedImage::DefaultValue() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+CADrizzleWriteCometAlignedImage::CADrizzleWriteCometAlignedImage( MetaProcess* P )
+   : MetaBoolean( P )
+{
+   TheCADrizzleWriteCometAlignedImageParameter = this;
+}
+
+IsoString CADrizzleWriteCometAlignedImage::Id() const
+{
+   return "drizzleWriteCometAlignedImage";
+}
+
+IsoString CADrizzleWriteCometAlignedImage::Aliases() const
+{
+   return "drzSaveCometAligned";
+}
+
+bool CADrizzleWriteCometAlignedImage::DefaultValue() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+CAPixelInterpolation::CAPixelInterpolation( MetaProcess* p )
+   : MetaEnumeration( p )
+{
+   TheCAPixelInterpolationParameter = this;
+}
+
+IsoString CAPixelInterpolation::Id() const
+{
+   return "pixelInterpolation";
+}
+
+size_type CAPixelInterpolation::NumberOfElements() const
+{
+   return NumberOfInterpolationAlgorithms;
+}
+
+IsoString CAPixelInterpolation::ElementId( size_type i ) const
+{
+   switch ( i )
+   {
+   case NearestNeighbor:         return "NearestNeighbor";
+   case Bilinear:                return "Bilinear";
+   case BicubicSpline:           return "BicubicSpline";
+   case BicubicBSpline:          return "BicubicBSpline";
+   case Lanczos3:                return "Lanczos3";
+   default:
+   case Lanczos4:                return "Lanczos4";
+   case Lanczos5:                return "Lanczos5";
+   case MitchellNetravaliFilter: return "MitchellNetravaliFilter";
+   case CatmullRomSplineFilter:  return "CatmullRomSplineFilter";
+   case CubicBSplineFilter:      return "CubicBSplineFilter";
+   case Auto:                    return "Auto";
+   }
+}
+
+int CAPixelInterpolation::ElementValue( size_type i ) const
+{
+   return int( i );
+}
+
+size_type CAPixelInterpolation::DefaultValueIndex() const
+{
+   return size_type( Default );
+}
+
+// ----------------------------------------------------------------------------
+
+CALinearClampingThreshold::CALinearClampingThreshold( MetaProcess* p )
+   : MetaFloat( p )
+{
+   TheCALinearClampingThresholdParameter = this;
+}
+
+IsoString CALinearClampingThreshold::Id() const
+{
+   return "linearClampingThreshold";
+}
+
+int CALinearClampingThreshold::Precision() const
+{
+   return 2;
+}
+
+double CALinearClampingThreshold::DefaultValue() const
+{
+   return 0.3;
+} // __PCL_BICUBIC_SPLINE_CLAMPING_THRESHOLD;
+
+double CALinearClampingThreshold::MinimumValue() const
+{
+   return 0;
+}
+
+double CALinearClampingThreshold::MaximumValue() const
+{
+   return 1;
 }
 
 // ----------------------------------------------------------------------------
@@ -263,18 +617,23 @@ IsoString CAOutputHints::Id() const
 
 // ----------------------------------------------------------------------------
 
-CAOutputDir::CAOutputDir( MetaProcess* P )
+CAOutputDirectory::CAOutputDirectory( MetaProcess* P )
    : MetaString( P )
 {
-   TheOutputDir = this;
+   TheCAOutputDirectoryParameter = this;
 }
 
-IsoString CAOutputDir::Id() const
+IsoString CAOutputDirectory::Id() const
+{
+   return "outputDirectory";
+}
+
+IsoString CAOutputDirectory::Aliases() const
 {
    return "outputDir";
 }
 
-String CAOutputDir::DefaultValue() const
+String CAOutputDirectory::DefaultValue() const
 {
    return String();
 }
@@ -299,355 +658,240 @@ String CAOutputExtension::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-CAPrefix::CAPrefix( MetaProcess* P )
+CAOutputPrefix::CAOutputPrefix( MetaProcess* P )
    : MetaString( P )
 {
-   ThePrefix = this;
+   TheCAOutputPrefixParameter = this;
 }
 
-IsoString CAPrefix::Id() const
+IsoString CAOutputPrefix::Id() const
+{
+   return "outputPrefix";
+}
+
+IsoString CAOutputPrefix::Aliases() const
 {
    return "prefix";
 }
 
-String CAPrefix::DefaultValue() const
+String CAOutputPrefix::DefaultValue() const
 {
    return "";
 }
 
 // ----------------------------------------------------------------------------
 
-CAPostfix::CAPostfix( MetaProcess* P )
+CAOutputPostfix::CAOutputPostfix( MetaProcess* P )
    : MetaString( P )
 {
-   ThePostfix = this;
+   TheCAOutputPostfixParameter = this;
 }
 
-IsoString CAPostfix::Id() const
+IsoString CAOutputPostfix::Id() const
+{
+   return "outputPostfix";
+}
+
+IsoString CAOutputPostfix::Aliases() const
 {
    return "postfix";
 }
 
-String CAPostfix::DefaultValue() const
+String CAOutputPostfix::DefaultValue() const
 {
    return "_ca";
 }
 
 // ----------------------------------------------------------------------------
 
-CAOverwrite::CAOverwrite( MetaProcess* P )
+CAOverwriteExistingFiles::CAOverwriteExistingFiles( MetaProcess* P )
    : MetaBoolean( P )
 {
-   TheOverwrite = this;
+   TheCAOverwriteExistingFilesParameter = this;
 }
 
-IsoString CAOverwrite::Id() const
+IsoString CAOverwriteExistingFiles::Id() const
+{
+   return "overwriteExistingFiles";
+}
+
+IsoString CAOverwriteExistingFiles::Aliases() const
 {
    return "overwrite";
 }
 
-bool CAOverwrite::DefaultValue() const
+bool CAOverwriteExistingFiles::DefaultValue() const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
 
-CAReference::CAReference( MetaProcess* P )
-   : MetaUInt16( P )
-{
-   TheReference = this;
-}
-
-IsoString CAReference::Id() const
-{
-   return "reference";
-}
-
-// ----------------------------------------------------------------------------
-
-CASubtractFile::CASubtractFile( MetaProcess* P )
-   : MetaString( P )
-{
-   TheSubtractFile = this;
-}
-
-IsoString CASubtractFile::Id() const
-{
-   return "subtractFile";
-}
-
-String CASubtractFile::DefaultValue() const
-{
-   return "";
-}
-
-// ----------------------------------------------------------------------------
-
-CASubtractMode::CASubtractMode( MetaProcess* P )
+CAGenerateCometPathMap::CAGenerateCometPathMap( MetaProcess* P )
    : MetaBoolean( P )
 {
-   TheSubtractMode = this;
+   TheCAGenerateCometPathMapParameter = this;
 }
 
-IsoString CASubtractMode::Id() const
+IsoString CAGenerateCometPathMap::Id() const
 {
-   return "subtractMode";
+   return "generateCometPathMap";
 }
 
-bool CASubtractMode::DefaultValue() const
+bool CAGenerateCometPathMap::DefaultValue() const
 {
-   return true;
+   return false;
 }
 
 // ----------------------------------------------------------------------------
 
-CANormalize::CANormalize( MetaProcess* P )
-   : MetaBoolean( P )
-{
-   TheNormalize = this;
-}
-
-IsoString CANormalize::Id() const
-{
-   return "normalize";
-}
-
-bool CANormalize::DefaultValue() const
-{
-   return true;
-}
-
-// ----------------------------------------------------------------------------
-
-CAEnableLinearFit::CAEnableLinearFit( MetaProcess* P )
-   : MetaBoolean( P )
-{
-   TheEnableLinearFit = this;
-}
-
-IsoString CAEnableLinearFit::Id() const
-{
-   return "enableLinearFit";
-}
-
-bool CAEnableLinearFit::DefaultValue() const
-{
-   return true;
-}
-
-// ----------------------------------------------------------------------------
-
-CARejectLow::CARejectLow( MetaProcess* P )
-   : MetaFloat( P )
-{
-   TheRejectLow = this;
-}
-
-IsoString CARejectLow::Id() const
-{
-   return "rejectLow";
-}
-
-int CARejectLow::Precision() const
-{
-   return 6;
-}
-
-double CARejectLow::MinimumValue() const
-{
-   return 0;
-}
-
-double CARejectLow::MaximumValue() const
-{
-   return 1;
-}
-
-double CARejectLow::DefaultValue() const
-{
-   return 0;
-}
-
-// ----------------------------------------------------------------------------
-
-CARejectHigh::CARejectHigh( MetaProcess* P )
-   : MetaFloat( P )
-{
-   TheRejectHigh = this;
-}
-
-IsoString CARejectHigh::Id() const
-{
-   return "rejectHigh";
-}
-
-int CARejectHigh::Precision() const
-{
-   return 6;
-}
-
-double CARejectHigh::MinimumValue() const
-{
-   return 0;
-}
-
-double CARejectHigh::MaximumValue() const
-{
-   return 1;
-}
-
-double CARejectHigh::DefaultValue() const
-{
-   return 0.92;
-}
-
-// ----------------------------------------------------------------------------
-
-CADrzSaveSA::CADrzSaveSA( MetaProcess* P )
-   : MetaBoolean( P )
-{
-   TheDrzSaveSA = this;
-}
-
-IsoString CADrzSaveSA::Id() const
-{
-   return "drzSaveStarsAligned";
-}
-
-bool CADrzSaveSA::DefaultValue() const
-{
-   return true;
-}
-
-// ----------------------------------------------------------------------------
-
-CADrzSaveCA::CADrzSaveCA( MetaProcess* P )
-   : MetaBoolean( P )
-{
-   TheDrzSaveCA = this;
-}
-
-IsoString CADrzSaveCA::Id() const
-{
-   return "drzSaveCometAligned";
-}
-
-bool CADrzSaveCA::DefaultValue() const
-{
-   return true;
-}
-// ----------------------------------------------------------------------------
-
-CAOperandIsDI::CAOperandIsDI( MetaProcess* P )
-   : MetaBoolean( P )
-{
-   TheOperandIsDI = this;
-}
-
-IsoString CAOperandIsDI::Id() const
-{
-   return "operandIsDI";
-}
-
-bool CAOperandIsDI::DefaultValue() const
-{
-   return true;
-}
-
-// ----------------------------------------------------------------------------
-
-CAPixelInterpolation::CAPixelInterpolation( MetaProcess* p )
+CAOnError::CAOnError( MetaProcess* p )
    : MetaEnumeration( p )
 {
-   ThePixelInterpolationParameter = this;
+   TheCAOnErrorParameter = this;
 }
 
-IsoString CAPixelInterpolation::Id() const
+IsoString CAOnError::Id() const
 {
-   return "pixelInterpolation";
+   return "onError";
 }
 
-size_type CAPixelInterpolation::NumberOfElements() const
+size_type CAOnError::NumberOfElements() const
 {
-   return NumberOfInterpolationAlgorithms;
+   return NumberOfItems;
 }
 
-IsoString CAPixelInterpolation::ElementId( size_type i ) const
+IsoString CAOnError::ElementId( size_type i ) const
 {
    switch ( i )
    {
-   case NearestNeighbor:
-      return "NearestNeighbor";
-   case Bilinear:
-      return "Bilinear";
    default:
-   case BicubicSpline:
-      return "BicubicSpline";
-   case BicubicBSpline:
-      return "BicubicBSpline";
-   case Lanczos3:
-      return "Lanczos3";
-   case Lanczos4:
-      return "Lanczos4";
-   case Lanczos5:
-      return "Lanczos5";
-   case MitchellNetravaliFilter:
-      return "MitchellNetravaliFilter";
-   case CatmullRomSplineFilter:
-      return "CatmullRomSplineFilter";
-   case CubicBSplineFilter:
-      return "CubicBSplineFilter";
-   case Auto:
-      return "Auto";
+   case Continue: return "OnError_Continue";
+   case Abort:    return "OnError_Abort";
+   case AskUser:  return "OnError_AskUser";
    }
 }
 
-int CAPixelInterpolation::ElementValue( size_type i ) const
+int CAOnError::ElementValue( size_type i ) const
 {
    return int( i );
 }
 
-size_type CAPixelInterpolation::DefaultValueIndex() const
+size_type CAOnError::DefaultValueIndex() const
 {
    return size_type( Default );
 }
 
 // ----------------------------------------------------------------------------
 
-CALinearClampingThreshold::CALinearClampingThreshold( MetaProcess* p )
+CAUseFileThreads::CAUseFileThreads( MetaProcess* p )
+   : MetaBoolean( p )
+{
+   TheCAUseFileThreadsParameter = this;
+}
+
+IsoString CAUseFileThreads::Id() const
+{
+   return "useFileThreads";
+}
+
+bool CAUseFileThreads::DefaultValue() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+CAFileThreadOverload::CAFileThreadOverload( MetaProcess* p )
    : MetaFloat( p )
 {
-   TheLinearClampingThresholdParameter = this;
+   TheCAFileThreadOverloadParameter = this;
 }
 
-IsoString CALinearClampingThreshold::Id() const
+IsoString CAFileThreadOverload::Id() const
 {
-   return "linearClampingThreshold";
+   return "fileThreadOverload";
 }
 
-int CALinearClampingThreshold::Precision() const
+int CAFileThreadOverload::Precision() const
 {
    return 2;
 }
 
-double CALinearClampingThreshold::DefaultValue() const
+double CAFileThreadOverload::DefaultValue() const
 {
-   return 0.3;
-} // __PCL_BICUBIC_SPLINE_CLAMPING_THRESHOLD;
-
-double CALinearClampingThreshold::MinimumValue() const
-{
-   return 0;
+   return 1.0;
 }
 
-double CALinearClampingThreshold::MaximumValue() const
+double CAFileThreadOverload::MinimumValue() const
 {
    return 1;
 }
 
+double CAFileThreadOverload::MaximumValue() const
+{
+   return 10;
+}
+
 // ----------------------------------------------------------------------------
+
+CAMaxFileReadThreads::CAMaxFileReadThreads( MetaProcess* p )
+   : MetaInt32( p )
+{
+   TheCAMaxFileReadThreadsParameter = this;
+}
+
+IsoString CAMaxFileReadThreads::Id() const
+{
+   return "maxFileReadThreads";
+}
+
+double CAMaxFileReadThreads::DefaultValue() const
+{
+   return 0;
+}
+
+double CAMaxFileReadThreads::MinimumValue() const
+{
+   return 0;
+}
+
+double CAMaxFileReadThreads::MaximumValue() const
+{
+   return 1024;
+}
+
+// ----------------------------------------------------------------------------
+
+CAMaxFileWriteThreads::CAMaxFileWriteThreads( MetaProcess* p )
+   : MetaInt32( p )
+{
+   TheCAMaxFileWriteThreadsParameter = this;
+}
+
+IsoString CAMaxFileWriteThreads::Id() const
+{
+   return "maxFileWriteThreads";
+}
+
+double CAMaxFileWriteThreads::DefaultValue() const
+{
+   return 0;
+}
+
+double CAMaxFileWriteThreads::MinimumValue() const
+{
+   return 0;
+}
+
+double CAMaxFileWriteThreads::MaximumValue() const
+{
+   return 1024;
+}
+
+// ----------------------------------------------------------------------------
+
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF CometAlignmentParameters.cpp - Released 2022-11-21T14:47:18Z
+// EOF CometAlignmentParameters.cpp - Released 2023-05-17T17:06:42Z

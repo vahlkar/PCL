@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// pcl/XML.cpp - Released 2022-11-21T14:46:37Z
+// pcl/XML.cpp - Released 2023-05-17T17:06:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -485,7 +485,7 @@ void XMLElement::Serialize( IsoString& text, bool autoFormat, char indentChar, u
       text << "/>";
    else
    {
-      text << ">" /*<< IsoString().Format( "(%d)", ChildCount() )*/;
+      text << '>' /*<< IsoString().Format( "(%d)", ChildCount() )*/;
 
       if ( autoFormat && First().NLAfter( *this ) )
       {
@@ -503,6 +503,75 @@ void XMLElement::Serialize( IsoString& text, bool autoFormat, char indentChar, u
          }
          else
             j->Serialize( text, false, 0, 0, level+1 );
+
+      if ( autoFormat && NLAfter( Last() ) )
+      {
+         text << '\n';
+         text.Append( indentChar, indentSize*level );
+      }
+      text << "</" << m_name.ToUTF8() << '>';
+   }
+}
+
+// ----------------------------------------------------------------------------
+
+void XMLElement::SerializeAsHTML( IsoString& text, bool autoFormat, char indentChar, unsigned indentSize, unsigned level ) const
+{
+   if ( autoFormat )
+      if ( indentSize > 0 )
+         if ( level > 0 )
+            text.Append( indentChar, indentSize*level );
+   text << '<' << m_name.ToUTF8();
+
+   if ( HasAttributes() )
+   {
+      text << ' ';
+      SerializeAttributes( text );
+   }
+
+   if ( IsEmpty() )
+   {
+      /*
+       * Void HTML elements:
+       * https://html.spec.whatwg.org/multipage/syntax.html#void-elements
+       */
+      if ( m_name == "br"
+        || m_name == "img"
+        || m_name == "hr"
+        || m_name == "meta"
+        || m_name == "link"
+        || m_name == "area"
+        || m_name == "base"
+        || m_name == "col"
+        || m_name == "embed"
+        || m_name == "input"
+        || m_name == "source"
+        || m_name == "track"
+        || m_name == "wbr" )
+         text << "/>";
+      else
+         text << "></" << m_name.ToUTF8() << '>';
+   }
+   else
+   {
+      text << '>' /*<< IsoString().Format( "(%d)", ChildCount() )*/;
+
+      if ( autoFormat && First().NLAfter( *this ) )
+      {
+         text << '\n';
+         First().SerializeAsHTML( text, true, indentChar, indentSize, level+1 );
+      }
+      else
+         First().SerializeAsHTML( text, false, 0, 0, level+1 );
+
+      for ( const_iterator j = Begin(), i = j; ++j != End(); ++i )
+         if ( autoFormat && j->NLAfter( *i ) )
+         {
+            text << '\n';
+            j->SerializeAsHTML( text, true, indentChar, indentSize, level+1 );
+         }
+         else
+            j->SerializeAsHTML( text, false, 0, 0, level+1 );
 
       if ( autoFormat && NLAfter( Last() ) )
       {
@@ -604,7 +673,7 @@ void XMLDocTypeDeclaration::Serialize( IsoString& text ) const
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-IsoString XMLDocument::Serialize() const
+IsoString XMLDocument::Serialize( bool isHTML ) const
 {
    IsoString text;
 
@@ -624,12 +693,20 @@ IsoString XMLDocument::Serialize() const
 
    char indentChar = m_indentTabs ? '\t' : ' ';
    int indentSize = m_indentTabs ? 1 : m_indentSize;
-   for ( const XMLNode& node : m_nodes )
-   {
-      node.Serialize( text, m_autoFormatting, indentChar, indentSize, 0/*level*/ );
-      if ( m_autoFormatting )
-         text << '\n';
-   }
+   if ( unlikely( isHTML ) )
+      for ( const XMLNode& node : m_nodes )
+      {
+         node.SerializeAsHTML( text, m_autoFormatting, indentChar, indentSize, 0/*level*/ );
+         if ( m_autoFormatting )
+            text << '\n';
+      }
+   else
+      for ( const XMLNode& node : m_nodes )
+      {
+         node.Serialize( text, m_autoFormatting, indentChar, indentSize, 0/*level*/ );
+         if ( m_autoFormatting )
+            text << '\n';
+      }
 
    return text;
 }
@@ -639,6 +716,11 @@ IsoString XMLDocument::Serialize() const
 void XMLDocument::SerializeToFile( const String& path ) const
 {
    File::WriteTextFile( path, Serialize() );
+}
+
+void XMLDocument::SerializeToFileAsHTML( const String& path ) const
+{
+   File::WriteTextFile( path, SerializeAsHTML() );
 }
 
 // ----------------------------------------------------------------------------
@@ -1044,4 +1126,4 @@ void XMLDocument::Parse( const String& text )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/XML.cpp - Released 2022-11-21T14:46:37Z
+// EOF pcl/XML.cpp - Released 2023-05-17T17:06:11Z

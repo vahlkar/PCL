@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// pcl/Flags.h - Released 2022-11-21T14:46:30Z
+// pcl/Flags.h - Released 2023-05-17T17:06:03Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -301,6 +301,15 @@ public:
    }
 
    /*!
+    * Returns the internal representation of flags as an integer value.
+    * Equivalent to operator flag_type().
+    */
+   constexpr flag_type AsInteger() const
+   {
+      return m_flags;
+   }
+
+   /*!
     * Returns a %Flags object whose value is the bitwise negation of the flags
     * stored in this object.
     */
@@ -405,4 +414,4 @@ private:
 #endif   // __PCL_Flags_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Flags.h - Released 2022-11-21T14:46:30Z
+// EOF pcl/Flags.h - Released 2023-05-17T17:06:03Z

@@ -72,7 +72,7 @@ For each [module_name] module and third-party or PCL [library_name], makefiles a
 **[PCL]/src/pcl/freebsd/g++**
 
 <dl><dd>
-   Makefiles for FreeBSD 12 with the system Clang C++ compiler
+   Makefiles for FreeBSD >= 12 with the system Clang C++ compiler
 </dd></dl>
 
 **[PCL]/src/3rdparty/[library_name]/linux/g++**<br/>
@@ -81,7 +81,7 @@ For each [module_name] module and third-party or PCL [library_name], makefiles a
 **[PCL]/src/pcl/linux/g++**
 
 <dl><dd>
-   Makefiles for Linux with GCC >= 7 (GCC 9 or higher recommended)
+   Makefiles for Linux with GCC >= 10
 </dd></dl>
 
 **[PCL]/src/3rdparty/[library_name]/macosx/g++**<br/>
@@ -93,15 +93,6 @@ For each [module_name] module and third-party or PCL [library_name], makefiles a
    Makefiles for macOS >= 10.14 with Clang C++ compiler/Xcode version >= 11.0
 </dd></dl>
 
-**[PCL]/src/3rdparty/[library_name]/windows/vc15**<br/>
-**[PCL]/src/modules/file-formats/[module_name]/windows/vc15**<br/>
-**[PCL]/src/modules/processes/[module_name]/windows/vc15**<br/>
-**[PCL]/src/pcl/windows/vc15**<br/>
-
-<dl><dd>
-   Project files (.vcxproj) for Microsoft Visual C++ 2017
-</dd></dl>
-
 **[PCL]/src/3rdparty/[library_name]/windows/vc16**<br/>
 **[PCL]/src/modules/file-formats/[module_name]/windows/vc16**<br/>
 **[PCL]/src/modules/processes/[module_name]/windows/vc16**<br/>
@@ -111,6 +102,15 @@ For each [module_name] module and third-party or PCL [library_name], makefiles a
    Project files (.vcxproj) for Microsoft Visual C++ 2019
 </dd></dl>
 
+**[PCL]/src/3rdparty/[library_name]/windows/vc17**<br/>
+**[PCL]/src/modules/file-formats/[module_name]/windows/vc17**<br/>
+**[PCL]/src/modules/processes/[module_name]/windows/vc17**<br/>
+**[PCL]/src/pcl/windows/vc17**<br/>
+
+<dl><dd>
+   Project files (.vcxproj) for Microsoft Visual C++ 2022
+</dd></dl>
+
 
 
 
@@ -118,10 +118,9 @@ For each [module_name] module and third-party or PCL [library_name], makefiles a
 
 The current version of PCL has been built with:
 
-   * Ubuntu 18.04 and 20.04 LTS: GCC C/C++ compiler 9.3.0.
-   * FreeBSD 12.0: Clang C/C++ compiler, default system compiler version.
-   * macOS 11.3.1: Clang C/C++ compiler with Xcode 12.0.5, as provided by Apple.
-   * Windows 10: Microsoft Visual C++ 2019 Community Edition.
+   * Ubuntu 20.04 LTS: GCC C/C++ compiler 10.3.0.
+   * macOS 13.3.1: Clang C/C++ compiler with Xcode 14.3, as provided by Apple.
+   * Windows 11: Microsoft Visual C++ 2022 Community Edition.
 
 This version of PCL requires a compiler with C++17 language support.
 
@@ -129,7 +128,7 @@ The GCC and Clang C++ compilers provide higher conformance to ISO C++ standards 
 
 On Linux and UNIX platforms we support GNU make exclusively, so you must use 'gmake' on FreeBSD instead of the default make utility.
 
-On Windows, we provide project files for the Microsoft Visual Studio integrated development environment (.vcxproj files). As of PCL version 2.4.9 we support Visual C++ 2019 exclusively.
+On Windows, we provide project files for the Microsoft Visual Studio integrated development environment (.vcxproj files). As of PCL version 2.5.3 we support Visual C++ 2019 and 2022 exclusively.
 
 
 ## Environment Variables
@@ -215,4 +214,4 @@ With the following environment variables correctly defined, you can generate mak
 
 
 ******
-###### Copyright (C) 2003-2022 Pleiades Astrophoto
+###### Copyright (C) 2003-2023 Pleiades Astrophoto

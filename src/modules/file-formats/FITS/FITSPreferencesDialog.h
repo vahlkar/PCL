@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard FITS File Format Module Version 1.1.10
+// Standard FITS File Format Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// FITSPreferencesDialog.h - Released 2022-11-21T14:46:51Z
+// FITSPreferencesDialog.h - Released 2023-05-17T17:06:31Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -73,12 +73,9 @@ class FITSPreferencesDialog: public Dialog
 {
 public:
 
-   FITSPreferencesDialog(
-      const FITSFormat::OutOfRangePolicyOptions&,
-      const FITSFormat::EmbeddingOverrides&, const FITSImageOptions& );
+   FITSPreferencesDialog( const FITSFormat::OutOfRangePolicyOptions&, const FITSImageOptions& );
 
    FITSFormat::OutOfRangePolicyOptions outOfRange;
-   FITSFormat::EmbeddingOverrides      overrides;
    FITSImageOptions                    fitsOptions;
 
 private:
@@ -116,15 +113,6 @@ private:
       HorizontalSizer   CleanupHeaders_Sizer;
          CheckBox          CleanupHeaders_CheckBox;
 
-   GroupBox          EmbeddedData_GroupBox;
-   HorizontalSizer   EmbeddedData_Sizer;
-      VerticalSizer     EmbeddedDataLeft_Sizer;
-         CheckBox          ICCProfile_CheckBox;
-         CheckBox          Properties_CheckBox;
-      VerticalSizer     EmbeddedDataRight_Sizer;
-         CheckBox          Thumbnail_CheckBox;
-         CheckBox          FixedPrecision_CheckBox;
-
    HorizontalSizer   BottomSection_Sizer;
       PushButton        Reset_PushButton;
       PushButton        OK_PushButton;
@@ -141,4 +129,4 @@ private:
 #endif   // __FITSPreferencesDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF FITSPreferencesDialog.h - Released 2022-11-21T14:46:51Z
+// EOF FITSPreferencesDialog.h - Released 2023-05-17T17:06:31Z

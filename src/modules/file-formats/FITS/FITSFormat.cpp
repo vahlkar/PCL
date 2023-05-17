@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard FITS File Format Module Version 1.1.10
+// Standard FITS File Format Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// FITSFormat.cpp - Released 2022-11-21T14:46:51Z
+// FITSFormat.cpp - Released 2023-05-17T17:06:31Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -175,20 +175,6 @@ String FITSFormat::Implementation() const
 "\n-------------------------------------------------------------------------------"
 "\nignore-roworder-keywords (r )  Ignore existing ROWORDER keywords."
 "\n-------------------------------------------------------------------------------"
-"\nproperties               (rw)  Read/write image properties stored as BLOBs in"
-"\n                               FITS image extensions."
-"\n-------------------------------------------------------------------------------"
-"\nno-properties            (rw)  Do not read/write BLOB image properties."
-"\n-------------------------------------------------------------------------------"
-"\nicc-profile              ( w)  Write ICC profiles stored as special FITS image"
-"\n                               extensions."
-"\n-------------------------------------------------------------------------------"
-"\nno-icc-profile           ( w)  Do not write ICC profile image extensions."
-"\n-------------------------------------------------------------------------------"
-"\nthumbnail                ( w)  Write thumbnail image extensions."
-"\n-------------------------------------------------------------------------------"
-"\nno-thumbnail             ( w)  Do not write thumbnail image extensions."
-"\n-------------------------------------------------------------------------------"
 "\nverbosity n              (rw)  n is a verbosity level in the range [0,3] to"
 "\n                               control the amount of generated messages"
 "\n                               (default = 1)."
@@ -285,7 +271,7 @@ bool FITSFormat::CanStoreDouble() const
 
 bool FITSFormat::CanStoreResolution() const
 {
-   return true;
+   return false;
 }
 
 // ----------------------------------------------------------------------------
@@ -299,21 +285,21 @@ bool FITSFormat::CanStoreKeywords() const
 
 bool FITSFormat::CanStoreICCProfiles() const
 {
-   return true;
+   return false;
 }
 
 // ----------------------------------------------------------------------------
 
 bool FITSFormat::CanStoreThumbnails() const
 {
-   return true;
+   return false;
 }
 
 // ----------------------------------------------------------------------------
 
 bool FITSFormat::CanStoreImageProperties() const
 {
-   return true; // BLOBs only
+   return false;
 }
 
 // ----------------------------------------------------------------------------
@@ -371,10 +357,9 @@ FileFormatImplementation* FITSFormat::Create() const
 bool FITSFormat::EditPreferences() const
 {
    OutOfRangePolicyOptions outOfRange = DefaultOutOfRangePolicyOptions();
-   EmbeddingOverrides overrides = DefaultEmbeddingOverrides();
    FITSImageOptions options = DefaultOptions();
 
-   FITSPreferencesDialog dlg( outOfRange, overrides, options );
+   FITSPreferencesDialog dlg( outOfRange, options );
 
    while ( dlg.Execute() == StdDialogCode::Ok )
    {
@@ -394,20 +379,12 @@ bool FITSFormat::EditPreferences() const
          continue;
       }
 
-      overrides = dlg.overrides;
       options = dlg.fitsOptions;
 
       Settings::Write ( "FITSLowerRange",                        outOfRange.lowerRange );
       Settings::Write ( "FITSUpperRange",                        outOfRange.upperRange );
       Settings::WriteI( "FITSOutOfRangePolicy",                  outOfRange.outOfRangePolicy );
       Settings::WriteI( "FITSOutOfRangeFixMode",                 outOfRange.outOfRangeFixMode );
-
-      Settings::Write ( "FITSOverrideICCProfileEmbedding",       overrides.overrideICCProfileEmbedding );
-      Settings::Write ( "FITSEmbedICCProfiles",                  overrides.embedICCProfiles );
-      Settings::Write ( "FITSOverrideThumbnailEmbedding",        overrides.overrideThumbnailEmbedding );
-      Settings::Write ( "FITSEmbedThumbnails",                   overrides.embedThumbnails );
-      Settings::Write ( "FITSOverridePropertyEmbedding",         overrides.overridePropertyEmbedding );
-      Settings::Write ( "FITSEmbedProperties",                   overrides.embedProperties );
 
       Settings::Write ( "FITSBottomUp",                          options.bottomUp );
       Settings::Write ( "FITSUseRowOrderKeywords",               options.useRowOrderKeywords );
@@ -462,22 +439,6 @@ FITSFormat::OutOfRangePolicyOptions FITSFormat::DefaultOutOfRangePolicyOptions()
 }
 
 // ----------------------------------------------------------------------------
-
-FITSFormat::EmbeddingOverrides FITSFormat::DefaultEmbeddingOverrides()
-{
-   EmbeddingOverrides overrides;
-
-   Settings::Read( "FITSOverrideICCProfileEmbedding", overrides.overrideICCProfileEmbedding );
-   Settings::Read( "FITSEmbedICCProfiles",            overrides.embedICCProfiles );
-   Settings::Read( "FITSOverrideThumbnailEmbedding",  overrides.overrideThumbnailEmbedding );
-   Settings::Read( "FITSEmbedThumbnails",             overrides.embedThumbnails );
-   Settings::Read( "FITSOverridePropertyEmbedding",   overrides.overridePropertyEmbedding );
-   Settings::Read( "FITSEmbedProperties",             overrides.embedProperties );
-
-   return overrides;
-}
-
-// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 #define FITS_SIGNATURE  0x46495453u // 'FITS'
@@ -509,4 +470,4 @@ FITSFormat::FormatOptions* FITSFormat::FormatOptions::FromGenericDataBlock( cons
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITSFormat.cpp - Released 2022-11-21T14:46:51Z
+// EOF FITSFormat.cpp - Released 2023-05-17T17:06:31Z

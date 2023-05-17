@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// pcl/WCSKeywords.h - Released 2022-11-21T14:46:30Z
+// pcl/WCSKeywords.h - Released 2023-05-17T17:06:03Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -100,10 +100,10 @@ public:
    Optional<double> altobs;    //!< Geodetic height of the observation location in meters.
    Optional<double> focallen;  //!< Focal length in millimeters.
    Optional<double> xpixsz;    //!< Pixel size in micrometers.
-   Optional<double> crval1;    //!< WCS coordinate at the reference pixel, X axis.
-   Optional<double> crval2;    //!< WCS coordinate at the reference pixel, Y axis.
-   Optional<double> crpix1;    //!< Image coordinate of the reference pixel on the X axis.
-   Optional<double> crpix2;    //!< Image coordinate of the reference pixel on the Y axis.
+   Optional<double> crval1;    //!< WCS coordinate at the reference point, X axis.
+   Optional<double> crval2;    //!< WCS coordinate at the reference point, Y axis.
+   Optional<double> crpix1;    //!< Image coordinate of the reference point on the X axis.
+   Optional<double> crpix2;    //!< Image coordinate of the reference point on the Y axis.
    Optional<double> cd1_1;     //!< Rotation and scaling matrix:  CDELT1 * cos(CROTA2)
    Optional<double> cd1_2;     //!< Rotation and scaling matrix: -CDELT2 * sin(CROTA2)
    Optional<double> cd2_1;     //!< Rotation and scaling matrix:  CDELT1 * sin(CROTA2)
@@ -116,9 +116,8 @@ public:
    IsoString        ctype2;    //!< Coordinate type and projection, Y axis.
    Optional<double> pv1_1;     //!< Native longitude of the reference point in degrees.
    Optional<double> pv1_2;     //!< Native latitude of the reference point in degrees.
-   Optional<double> lonpole;   //!< Native longitude of the pole of the coordinate system in degrees.
-   Optional<double> latpole;   //!< Native latitude of the pole of the coordinate system in degrees.
-   IsoString        refSpline; //!< If nonempty, the astrometric solution uses thin plate splines instead of WCS polynomials.
+   Optional<double> lonpole;   //!< Native longitude of the celestial north pole in degrees.
+   Optional<double> latpole;   //!< Native latitude of the celestial north pole in degrees.
 
    /*!
     * Default constructor. Constructs an uninitialized/undefined %WCSKeywords
@@ -157,9 +156,41 @@ public:
    void Read( const PropertyArray& properties, const FITSKeywordArray& keywords = FITSKeywordArray() );
 
    /*!
+    * Generates a dynamic array of XISF properties equivalent to the metadata
+    * currently stored in this object. The returned array includes the
+    * following properties when the corresponding items are defined:
+    *
+    * <pre>
+    * Observation:Center:RA
+    * Observation:Center:Dec
+    * Observation:CelestialReferenceSystem
+    * Observation:Equinox
+    * Observation:Time:Start
+    * Observation:Time:End
+    * Observation:Location:Longitude
+    * Observation:Location:Latitude
+    * Observation:Location:Elevation
+    * Instrument:Telescope:FocalLength
+    * Instrument:Sensor:XPixelSize
+    * Instrument:ExposureTime
+    * PCL:AstrometricSolution:ProjectionSystem
+    * PCL:AstrometricSolution:ReferenceCelestialCoordinates
+    * PCL:AstrometricSolution:ReferenceImageCoordinates
+    * PCL:AstrometricSolution:ReferenceNativeCoordinates
+    * PCL:AstrometricSolution:CelestialPoleNativeCoordinates
+    * PCL:AstrometricSolution:LinearTransformationMatrix
+    * </pre>
+    */
+   PropertyArray ToProperties() const;
+
+   /*!
     *
     */
    bool ExtractWorldTransformation( LinearTransformation& transIW, int imageHeight );
+
+private:
+
+   bool m_fromFITS = false;
 };
 
 // ----------------------------------------------------------------------------
@@ -169,4 +200,4 @@ public:
 #endif   // __PCL_WCSKeywords_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/WCSKeywords.h - Released 2022-11-21T14:46:30Z
+// EOF pcl/WCSKeywords.h - Released 2023-05-17T17:06:03Z

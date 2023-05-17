@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.127
-# Copyright (C) 2009-2022 Pleiades Astrophoto
+# PixInsight Makefile Generator Script v1.129
+# Copyright (C) 2009-2023 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2022-11-21T14:48:53.946Z
+# Generated on .... 2023-05-17T18:34:59.103Z
 # Project id ...... CometAlignment
 # Project type .... Module
 # Platform ........ Linux/g++
@@ -19,36 +19,36 @@ all: $(OBJ_DIR)/CometAlignment-pxm.so
 #
 
 SRC_FILES= \
+../../CentroidDetector.cpp \
 ../../CometAlignmentInstance.cpp \
 ../../CometAlignmentInterface.cpp \
 ../../CometAlignmentModule.cpp \
 ../../CometAlignmentParameters.cpp \
-../../CometAlignmentProcess.cpp \
-../../StarDetector.cpp
+../../CometAlignmentProcess.cpp
 
 #
 # Object files
 #
 
 OBJ_FILES= \
+./x64/Release/CentroidDetector.o \
 ./x64/Release/CometAlignmentInstance.o \
 ./x64/Release/CometAlignmentInterface.o \
 ./x64/Release/CometAlignmentModule.o \
 ./x64/Release/CometAlignmentParameters.o \
-./x64/Release/CometAlignmentProcess.o \
-./x64/Release/StarDetector.o
+./x64/Release/CometAlignmentProcess.o
 
 #
 # Dependency files
 #
 
 DEP_FILES= \
+./x64/Release/CentroidDetector.d \
 ./x64/Release/CometAlignmentInstance.d \
 ./x64/Release/CometAlignmentInterface.d \
 ./x64/Release/CometAlignmentModule.d \
 ./x64/Release/CometAlignmentParameters.d \
-./x64/Release/CometAlignmentProcess.d \
-./x64/Release/StarDetector.d
+./x64/Release/CometAlignmentProcess.d
 
 #
 # Rules
@@ -69,6 +69,6 @@ post-build:
 	cp $(OBJ_DIR)/CometAlignment-pxm.so $(PCLBINDIR64)
 
 ./x64/Release/%.o: ../../%.cpp
-	g++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -D__PCL_CUDA -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"$(CUDA_HOME)/include" -mtune=znver2 -mfpmath=sse -msse4.2 -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -fnon-call-exceptions -std=c++17 -Wall -Wno-parentheses -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	g++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"$(CUDA_HOME)/include" -mtune=znver3 -mfpmath=sse -msse4.2 -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -fnon-call-exceptions -std=c++17 -Wall -Wno-parentheses -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 

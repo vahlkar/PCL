@@ -2,16 +2,17 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard CometAlignment Process Module Version 1.2.6
+// Standard CometAlignment Process Module Version 1.3.7
 // ----------------------------------------------------------------------------
-// CometAlignmentProcess.cpp - Released 2022-11-21T14:47:18Z
+// CometAlignmentProcess.cpp - Released 2023-05-17T17:06:42Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CometAlignment PixInsight module.
 //
-// Copyright (c) 2012-2018 Nikolay Volkov
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2012-2023 Nikolay Volkov
+// Copyright (c) 2019-2023 Juan Conejero (PTeam)
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -70,32 +71,43 @@ CometAlignmentProcess::CometAlignmentProcess()
    TheCometAlignmentProcess = this;
 
    new CATargetFrames( this );
-   new CATargetFrameEnabled( TheTargetFrames );
-   new CATargetFramePath( TheTargetFrames );
-   new CATargetFrameDate( TheTargetFrames );
-   new CATargetFrameJDate( TheTargetFrames );
-   new CATargetFrameX( TheTargetFrames );
-   new CATargetFrameY( TheTargetFrames );
-   new CADrizzlePath( TheTargetFrames );
-   new CAInputHints( this );
-   new CAOutputHints( this );
-   new CAOutputDir( this );
-   new CAOutputExtension( this );
-   new CAPrefix( this );
-   new CAPostfix( this );
-   new CAOverwrite( this );
-   new CAReference( this );
-   new CASubtractFile( this );
-   new CASubtractMode( this );
-   new CAEnableLinearFit( this );
-   new CARejectLow( this );
-   new CARejectHigh( this );
-   new CANormalize( this );
-   new CADrzSaveSA( this );
-   new CADrzSaveCA( this );
-   new CAOperandIsDI( this );
+   new CATargetFramePath( TheCATargetFramesParameter );
+   new CATargetFrameEnabled( TheCATargetFramesParameter );
+   new CATargetFrameDate( TheCATargetFramesParameter );
+   new CATargetFrameJDate( TheCATargetFramesParameter );
+   new CATargetFrameX( TheCATargetFramesParameter );
+   new CATargetFrameY( TheCATargetFramesParameter );
+   new CATargetFrameFixed( TheCATargetFramesParameter );
+   new CATargetFrameDrizzlePath( TheCATargetFramesParameter );
+
+   new CAReferenceIndex( this );
+   new CAFitPSF( this );
+   new CAOperandImageFilePath( this );
+   new CAOperandSubtractAligned( this );
+   new CAOperandLinearFit( this );
+   new CAOperandLinearFitLow( this );
+   new CAOperandLinearFitHigh( this );
+   new CAOperandNormalize( this );
+   new CADrizzleWriteStarAlignedImage( this );
+   new CADrizzleWriteCometAlignedImage( this );
    new CAPixelInterpolation( this );
    new CALinearClampingThreshold( this );
+
+   new CAInputHints( this );
+   new CAOutputHints( this );
+
+   new CAOutputDirectory( this );
+   new CAOutputExtension( this );
+   new CAOutputPrefix( this );
+   new CAOutputPostfix( this );
+   new CAOverwriteExistingFiles( this );
+   new CAGenerateCometPathMap( this );
+   new CAOnError( this );
+
+   new CAUseFileThreads( this );
+   new CAFileThreadOverload( this );
+   new CAMaxFileReadThreads( this );
+   new CAMaxFileWriteThreads( this );
 }
 
 // ----------------------------------------------------------------------------
@@ -160,4 +172,4 @@ ProcessImplementation* CometAlignmentProcess::Clone( const ProcessImplementation
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF CometAlignmentProcess.cpp - Released 2022-11-21T14:47:18Z
+// EOF CometAlignmentProcess.cpp - Released 2023-05-17T17:06:42Z

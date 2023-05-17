@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 1.3.1
+// Standard Geometry Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// DynamicCropInstance.cpp - Released 2022-11-21T14:47:17Z
+// DynamicCropInstance.cpp - Released 2023-05-17T17:06:42Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -70,9 +70,13 @@ namespace pcl
 
 DynamicCropInstance::DynamicCropInstance( const MetaProcess* P )
    : ProcessImplementation( P )
+   , p_refWidth( TheDCRefWidthParameter->DefaultValue() )
+   , p_refHeight( TheDCRefHeightParameter->DefaultValue() )
+   , p_outWidth( TheDCOutWidthParameter->DefaultValue() )
+   , p_outHeight( TheDCOutHeightParameter->DefaultValue() )
    , p_center( TheDCCenterXParameter->DefaultValue(), TheDCCenterYParameter->DefaultValue() )
-   , p_width( TheDCWidthParameter->DefaultValue() )
-   , p_height( TheDCHeightParameter->DefaultValue() )
+   , p_width( TheDCWidthParameter->DefaultValue() )   // ### DEPRECATED
+   , p_height( TheDCHeightParameter->DefaultValue() ) // ### DEPRECATED
    , p_angle( TheDCRotationAngleParameter->DefaultValue() )
    , p_scaleX( TheDCScaleXParameter->DefaultValue() )
    , p_scaleY( TheDCScaleYParameter->DefaultValue() )
@@ -107,6 +111,10 @@ void DynamicCropInstance::Assign( const ProcessImplementation& p )
    const DynamicCropInstance* x = dynamic_cast<const DynamicCropInstance*>( &p );
    if ( x != nullptr )
    {
+      p_refWidth          = x->p_refWidth;
+      p_refHeight         = x->p_refHeight;
+      p_outWidth          = x->p_outWidth;
+      p_outHeight         = x->p_outHeight;
       p_center            = x->p_center;
       p_width             = x->p_width;
       p_height            = x->p_height;
@@ -123,6 +131,8 @@ void DynamicCropInstance::Assign( const ProcessImplementation& p )
       p_forceResolution   = x->p_forceResolution;
       p_fillColor         = x->p_fillColor;
       p_noGUIMessages     = x->p_noGUIMessages;
+
+      EnsureCompatibleWithV1Instance();
    }
 }
 
@@ -166,11 +176,12 @@ bool DynamicCropInstance::CanExecuteOn( const View& v, String& whyNot ) const
 
 bool DynamicCropInstance::BeforeExecution( View& view )
 {
-   ImageVariant image = view.Image();
-   int currentWidth = image.Width();
-   int currentHeight = image.Height();
-   int newWidth = Max( 1, RoundInt( p_scaleX*p_width*currentWidth ) );
-   int newHeight = Max( 1, RoundInt( p_scaleY*p_height*currentHeight ) );
+   EnsureCompatibleWithV1Instance();
+
+   int currentWidth = view.Width();
+   int currentHeight = view.Height();
+   int newWidth = Max( 1, RoundInt( currentWidth * p_scaleX * p_outWidth/p_refWidth ) );
+   int newHeight = Max( 1, RoundInt( currentHeight * p_scaleY * p_outHeight/p_refHeight ) );
    bool crop = newWidth != currentWidth || newHeight != currentHeight || p_center != 0.5;
    bool rotate = p_angle != 0;
    bool scale = p_scaleX != 1 || p_scaleY != 1;
@@ -195,8 +206,8 @@ public:
       data.m_sourceHeight = image.Height();
 
       // Dimensions of the cropped and scaled image
-      data.m_width  = Max( 1, RoundInt( C.p_scaleX*C.p_width*data.m_sourceWidth ) );
-      data.m_height = Max( 1, RoundInt( C.p_scaleY*C.p_height*data.m_sourceHeight ) );
+      data.m_width  = Max( 1, RoundInt( data.m_sourceWidth * C.p_scaleX * C.p_outWidth/C.p_refWidth ) );
+      data.m_height = Max( 1, RoundInt( data.m_sourceHeight * C.p_scaleY * C.p_outHeight/C.p_refHeight ) );
 
       // On 32-bit systems, make sure the resulting image requires less than 4 GiB.
       if ( sizeof( void* ) == sizeof( uint32 ) )
@@ -262,8 +273,8 @@ public:
          {
             interpolation = NewInterpolation( C.p_interpolation,
                                               data.m_width, data.m_height,
-                                              Max( 1, RoundInt( C.p_width*data.m_sourceWidth ) ),
-                                              Max( 1, RoundInt( C.p_height*data.m_sourceHeight ) ),
+                                              Max( 1, RoundInt( data.m_sourceWidth * C.p_outWidth/C.p_refWidth ) ),
+                                              Max( 1, RoundInt( data.m_sourceHeight * C.p_outHeight/C.p_refHeight ) ),
                                               data.m_rotateSlow, C.p_clampingThreshold, C.p_smoothness, (P*)0 );
 
             info = interpolation->Description() + String().Format( ": %dx%d pixels, %d channels",
@@ -561,6 +572,14 @@ bool DynamicCropInstance::ExecuteOn( View& view )
 
 void* DynamicCropInstance::LockParameter( const MetaParameter* p, size_type /*tableRow*/ )
 {
+   if ( p == TheDCRefWidthParameter )
+      return &p_refWidth;
+   if ( p == TheDCRefHeightParameter )
+      return &p_refHeight;
+   if ( p == TheDCOutWidthParameter )
+      return &p_outWidth;
+   if ( p == TheDCOutHeightParameter )
+      return &p_outHeight;
    if ( p == TheDCCenterXParameter )
       return &p_center.x;
    if ( p == TheDCCenterYParameter )
@@ -608,7 +627,32 @@ void* DynamicCropInstance::LockParameter( const MetaParameter* p, size_type /*ta
 
 // ----------------------------------------------------------------------------
 
+/*
+ * Compatibility with versions before the refWidth/outWidth and
+ * refHeight/outHeight parameters.
+ */
+void DynamicCropInstance::EnsureCompatibleWithV1Instance()
+{
+   if ( double( p_refWidth ) == p_outWidth && p_width != 1 )
+   {
+      p_refWidth = 100000000;
+      p_outWidth = p_width * p_refWidth;
+   }
+   else
+      p_width = p_outWidth/p_refWidth;
+
+   if ( double( p_refHeight ) == p_outHeight && p_height != 1 )
+   {
+      p_refHeight = 100000000;
+      p_outHeight = p_height * p_refHeight;
+   }
+   else
+      p_height = p_outHeight/p_refHeight;
+}
+
+// ----------------------------------------------------------------------------
+
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DynamicCropInstance.cpp - Released 2022-11-21T14:47:17Z
+// EOF DynamicCropInstance.cpp - Released 2023-05-17T17:06:42Z

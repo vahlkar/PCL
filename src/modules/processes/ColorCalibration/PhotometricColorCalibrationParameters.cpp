@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.9.0
+// Standard ColorCalibration Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationParameters.cpp - Released 2022-11-21T14:47:17Z
+// PhotometricColorCalibrationParameters.cpp - Released 2023-05-17T17:06:42Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -79,6 +79,7 @@ PCCServerURL*                     ThePCCServerURLParameter = nullptr;
 PCCStructureLayers*               ThePCCStructureLayersParameter = nullptr;
 PCCSaturationThreshold*           ThePCCSaturationThresholdParameter = nullptr;
 PCCSaturationRelative*            ThePCCSaturationRelativeParameter = nullptr;
+PCCSaturationShrinkFactor*        ThePCCSaturationShrinkFactorParameter = nullptr;
 PCCPSFNoiseLayers*                ThePCCPSFNoiseLayersParameter = nullptr;
 PCCPSFHotPixelFilterRadius*       ThePCCPSFHotPixelFilterRadiusParameter = nullptr;
 PCCPSFNoiseReductionFilterRadius* ThePCCPSFNoiseReductionFilterRadiusParameter = nullptr;
@@ -490,6 +491,39 @@ IsoString PCCSaturationRelative::Id() const
 bool PCCSaturationRelative::DefaultValue() const
 {
    return true;
+}
+
+// ----------------------------------------------------------------------------
+
+PCCSaturationShrinkFactor::PCCSaturationShrinkFactor( MetaProcess* P )
+   : MetaFloat( P )
+{
+   ThePCCSaturationShrinkFactorParameter = this;
+}
+
+IsoString PCCSaturationShrinkFactor::Id() const
+{
+   return "saturationShrinkFactor";
+}
+
+int PCCSaturationShrinkFactor::Precision() const
+{
+   return 2;
+}
+
+double PCCSaturationShrinkFactor::DefaultValue() const
+{
+   return 0.1;
+}
+
+double PCCSaturationShrinkFactor::MinimumValue() const
+{
+   return 0;
+}
+
+double PCCSaturationShrinkFactor::MaximumValue() const
+{
+   return 0.25;
 }
 
 // ----------------------------------------------------------------------------
@@ -1144,4 +1178,4 @@ String PCCOutputDirectory::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationParameters.cpp - Released 2022-11-21T14:47:17Z
+// EOF PhotometricColorCalibrationParameters.cpp - Released 2023-05-17T17:06:42Z

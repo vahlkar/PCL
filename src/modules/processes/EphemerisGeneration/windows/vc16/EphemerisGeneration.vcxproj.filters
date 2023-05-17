@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.127
-# Copyright (C) 2009-2022 Pleiades Astrophoto
+# PixInsight Makefile Generator Script v1.129
+# Copyright (C) 2009-2023 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2022-11-21T14:48:26.641Z
+# Generated on .... 2023-05-17T18:34:46.604Z
 # Project id ...... EphemerisGeneration
 # Project type .... Module
 # Platform ........ Windows/vc16
@@ -16,13 +16,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>1315c066-736a-41d6-b09c-f2078b935952</UniqueIdentifier>
+      <UniqueIdentifier>32c1cf3c-85f9-4cd1-9d72-230eb76c740d</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>761d9ca8-64e6-4ed7-902e-fb4d34c3d47f</UniqueIdentifier>
+      <UniqueIdentifier>2225484c-8c65-4c6f-bae4-b6474da13787</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>76a879a7-f74a-4490-a46b-201c1b1ce96b</UniqueIdentifier>
+      <UniqueIdentifier>b47c64d5-27cc-4fdb-9be4-991580057cf9</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -48,9 +48,6 @@
         <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\TextDatabase.cpp">
-        <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XEPHGenerator.cpp">
         <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -83,9 +80,6 @@
         <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\TextDatabase.h">
-        <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\XEPHGenerator.h">
         <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

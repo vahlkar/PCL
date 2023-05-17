@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 1.3.1
+// Standard Geometry Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// CommonParameters.cpp - Released 2022-11-21T14:47:17Z
+// CommonParameters.cpp - Released 2023-05-17T17:06:42Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -60,7 +60,8 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-RotationAngle::RotationAngle( MetaProcess* P ) : MetaDouble( P )
+RotationAngle::RotationAngle( MetaProcess* P )
+   : MetaDouble( P )
 {
 }
 
@@ -71,7 +72,7 @@ IsoString RotationAngle::Id() const
 
 int RotationAngle::Precision() const
 {
-   return 4;
+   return 10; // ensure 0.01 arcseconds in degrees <-> radians conversions
 }
 
 double RotationAngle::DefaultValue() const
@@ -91,7 +92,8 @@ double RotationAngle::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-OptimizeFastRotations::OptimizeFastRotations( MetaProcess* P ) : MetaBoolean( P )
+OptimizeFastRotations::OptimizeFastRotations( MetaProcess* P )
+   : MetaBoolean( P )
 {
 }
 
@@ -107,7 +109,8 @@ bool OptimizeFastRotations::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-GammaCorrection::GammaCorrection( MetaProcess* P ) : MetaBoolean( P )
+GammaCorrection::GammaCorrection( MetaProcess* P )
+   : MetaBoolean( P )
 {
 }
 
@@ -123,7 +126,8 @@ bool GammaCorrection::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-InterpolationAlgorithm::InterpolationAlgorithm( MetaProcess* P ) : MetaEnumeration( P )
+InterpolationAlgorithm::InterpolationAlgorithm( MetaProcess* P )
+   : MetaEnumeration( P )
 {
 }
 
@@ -197,7 +201,8 @@ PixelInterpolation* NewInterpolation( int interpolation, int w, int h, int w0, i
 
 // ----------------------------------------------------------------------------
 
-ClampingThreshold::ClampingThreshold( MetaProcess* P ) : MetaFloat( P )
+ClampingThreshold::ClampingThreshold( MetaProcess* P )
+   : MetaFloat( P )
 {
 }
 
@@ -228,7 +233,8 @@ double ClampingThreshold::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-Smoothness::Smoothness( MetaProcess* P ) : MetaFloat( P )
+Smoothness::Smoothness( MetaProcess* P )
+   : MetaFloat( P )
 {
 }
 
@@ -259,7 +265,8 @@ double Smoothness::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-XResolution::XResolution( MetaProcess* P ) : MetaDouble( P )
+XResolution::XResolution( MetaProcess* P )
+   : MetaDouble( P )
 {
 }
 
@@ -290,7 +297,8 @@ double XResolution::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-YResolution::YResolution( MetaProcess* P ) : MetaDouble( P )
+YResolution::YResolution( MetaProcess* P )
+   : MetaDouble( P )
 {
 }
 
@@ -321,7 +329,8 @@ double YResolution::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-MetricResolution::MetricResolution( MetaProcess* P ) : MetaBoolean( P )
+MetricResolution::MetricResolution( MetaProcess* P )
+   : MetaBoolean( P )
 {
 }
 
@@ -337,7 +346,8 @@ bool MetricResolution::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-ForceResolution::ForceResolution( MetaProcess* P ) : MetaBoolean( P )
+ForceResolution::ForceResolution( MetaProcess* P )
+   : MetaBoolean( P )
 {
 }
 
@@ -353,7 +363,8 @@ bool ForceResolution::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-FillRed::FillRed( MetaProcess* P ) : MetaDouble( P )
+FillRed::FillRed( MetaProcess* P )
+   : MetaDouble( P )
 {
 }
 
@@ -384,7 +395,8 @@ double FillRed::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-FillGreen::FillGreen( MetaProcess* P ) : MetaDouble( P )
+FillGreen::FillGreen( MetaProcess* P )
+   : MetaDouble( P )
 {
 }
 
@@ -415,7 +427,8 @@ double FillGreen::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-FillBlue::FillBlue( MetaProcess* P ) : MetaDouble( P )
+FillBlue::FillBlue( MetaProcess* P )
+   : MetaDouble( P )
 {
 }
 
@@ -446,7 +459,8 @@ double FillBlue::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-FillAlpha::FillAlpha( MetaProcess* P ) : MetaDouble( P )
+FillAlpha::FillAlpha( MetaProcess* P )
+   : MetaDouble( P )
 {
 }
 
@@ -477,7 +491,8 @@ double FillAlpha::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-NoGUIMessages::NoGUIMessages( MetaProcess* p ) : MetaBoolean( p )
+NoGUIMessages::NoGUIMessages( MetaProcess* p )
+   : MetaBoolean( p )
 {
 }
 
@@ -496,4 +511,4 @@ bool NoGUIMessages::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CommonParameters.cpp - Released 2022-11-21T14:47:17Z
+// EOF CommonParameters.cpp - Released 2023-05-17T17:06:42Z

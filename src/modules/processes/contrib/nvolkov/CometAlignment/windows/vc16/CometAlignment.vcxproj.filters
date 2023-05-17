@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.127
-# Copyright (C) 2009-2022 Pleiades Astrophoto
+# PixInsight Makefile Generator Script v1.129
+# Copyright (C) 2009-2023 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2022-11-21T14:48:54.347Z
+# Generated on .... 2023-05-17T18:34:59.261Z
 # Project id ...... CometAlignment
 # Project type .... Module
 # Platform ........ Windows/vc16
@@ -16,16 +16,19 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>e1d298bf-6945-4b3e-a764-7643e0a671aa</UniqueIdentifier>
+      <UniqueIdentifier>2160cf54-c593-44f9-92ab-a74d46b4573d</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>b4767a5d-1ef3-47e7-9754-23f3afc78ea0</UniqueIdentifier>
+      <UniqueIdentifier>e97cb77c-085e-440c-8d88-0f353f7d25ea</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>c5d588cb-f262-47e8-a604-671fb03ad363</UniqueIdentifier>
+      <UniqueIdentifier>456727c6-63a3-4aa9-8783-10833eb10944</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\CentroidDetector.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\CometAlignmentInstance.cpp">
         <Filter>Source Files</Filter>
     </ClCompile>
@@ -41,11 +44,11 @@
     <ClCompile Include="..\..\CometAlignmentProcess.cpp">
         <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\StarDetector.cpp">
-        <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\CentroidDetector.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\CometAlignmentInstance.h">
         <Filter>Header Files</Filter>
     </ClInclude>
@@ -59,9 +62,6 @@
         <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\CometAlignmentProcess.h">
-        <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\StarDetector.h">
         <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

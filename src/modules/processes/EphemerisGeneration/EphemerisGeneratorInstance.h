@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard EphemerisGeneration Process Module Version 1.0.0
+// Standard EphemerisGeneration Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// EphemerisGeneratorInstance.h - Released 2022-11-21T14:47:17Z
+// EphemerisGeneratorInstance.h - Released 2023-05-17T17:06:42Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -80,44 +80,47 @@ public:
 
 private:
 
-   pcl_enum p_workingMode;          // state vectors, elements, or database objects
-   Vector   p_position;             // position vector
-   Vector   p_velocity;             // velocity vector
-   Vector   p_elements;             // osculating orbital elements: a, q, e, M, T, i, O, w
-   double   p_epochJD;              // epoch of initial conditions, JD, TDB
-   String   p_objectId;             // identifier of the object being integrated
-   String   p_objectName;           // name of the object being integrated
-   float    p_H;                    // absolute visual magnitude
-   float    p_G;                    // slope parameter
-   pcl_bool p_B_V_defined;          // B-V value provided?
-   float    p_B_V;                  // optional B-V color index (mag)
-   pcl_bool p_D_defined;            // D value provided?
-   float    p_D;                    // optional object diameter (km)
-   String   p_databaseFilePath;     // object database
-   String   p_databaseFormatName;   // known database format description
-   String   p_objects;              // comma separated list of objects to integrate
-   pcl_bool p_useRegularExpressions; // p_objects contains regexps
-   pcl_bool p_excludeCoreAsteroids; // don't include asteroids found in core ephemerides
-   String   p_fundamentalFilePath;  // fundamental ephemerides
-   String   p_asteroidsFilePath;    // asteroid ephemerides
-   String   p_KBOsFilePath;         // KBO ephemerides
-   double   p_startTimeJD;          // starting time of integration, JD, TDB
-   double   p_endTimeJD;            // final time of integration, JD, TDB
-   pcl_bool p_useAsteroidPerturbers; // integrate with asteroid perturbers?
-   pcl_bool p_useKBOPerturbers;     // integrate with KBO perturbers?
-   pcl_bool p_velocityExpansions;   // generate velocity expansions?
+   pcl_enum p_workingMode;             // state vectors, elements, or database objects
+   Vector   p_position;                // position vector
+   Vector   p_velocity;                // velocity vector
+   Vector   p_elements;                // osculating orbital elements: a, q, e, M, T, i, O, w
+   double   p_epochJD;                 // epoch of initial conditions, JD, TDB
+   String   p_objectId;                // identifier of the object being integrated
+   String   p_objectName;              // name of the object being integrated
+   float    p_H;                       // absolute visual magnitude
+   float    p_G;                       // slope parameter
+   pcl_bool p_B_V_defined;             // B-V value provided?
+   float    p_B_V;                     // optional B-V color index (mag)
+   pcl_bool p_D_defined;               // D value provided?
+   float    p_D;                       // optional object diameter (km)
+   String   p_databaseFilePath;        // object database
+   String   p_databaseFormatName;      // known database format description
+   String   p_objects;                 // comma separated list of objects to integrate
+   pcl_bool p_useRegularExpressions;   // p_objects contains regexps
+   pcl_bool p_excludeCoreAsteroids;    // don't include asteroids found in core ephemerides
+   String   p_fundamentalFilePath;     // fundamental ephemerides
+   String   p_asteroidsFilePath;       // asteroid ephemerides
+   String   p_KBOsFilePath;            // KBO ephemerides
+   double   p_startTimeJD;             // starting time of integration, JD, TDB
+   double   p_endTimeJD;               // final time of integration, JD, TDB
+   pcl_bool p_useAsteroidPerturbers;   // integrate with asteroid perturbers?
+   pcl_bool p_useKBOPerturbers;        // integrate with KBO perturbers?
+   pcl_bool p_velocityExpansions;      // generate velocity expansions?
    pcl_bool p_separateEarthMoonPerturbers; // individual Earth and Moon perturbers, or combined E-M barycenter
    pcl_bool p_relativisticPerturbations; // include relativistic perturbations (PPN n-body model)
-   pcl_bool p_figureEffects;        // include oblateness perturbations
-   pcl_bool p_outputXEPHFile;       // whether to generate an ephemeris file
-   String   p_outputXEPHFilePath;   // the output XEPH file
-   pcl_bool p_overwriteExistingFiles; // whether existing files should be overwritten or preserved
+   pcl_bool p_figureEffects;           // include oblateness perturbations
+   pcl_bool p_outputXEPHFile;          // whether to generate an ephemeris file
+   String   p_outputXEPHFilePath;      // the output XEPH file
+   pcl_bool p_outputLogFile;           // write a log file for multithreaded ephemeris generation
+   pcl_bool p_overwriteExistingFiles;  // whether existing files should be overwritten or preserved
    double   p_denseOutputToleranceFactor; // factor to scale up tolerance for integration dense output generation
-   double   p_ephemerisToleranceFactor;   // additional factor to scale up tolerance for ephemeris generation
-
+   double   p_ephemerisToleranceFactor; // additional factor to scale up tolerance for ephemeris generation
+   int32    p_ephemerisMaxExpansionLength; // maximum number of coefficients in XEPH Chebyshev expansions
+   double   p_ephemerisMaxTruncationError; // maximum truncation error in XEPH Chebyshev expansions
 
    friend class Ephemerides;
    template <class, class, class, class> friend class Integration;
+   friend class EphemerisGenerationEngine;
    friend class IntegrationThread;
    friend class TextDatabase;
    friend class EphemerisGeneratorProcess;
@@ -143,4 +146,4 @@ private:
 #endif   // __EphemerisGeneratorInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF EphemerisGeneratorInstance.h - Released 2022-11-21T14:47:17Z
+// EOF EphemerisGeneratorInstance.h - Released 2023-05-17T17:06:42Z

@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.9.0
+// Standard ColorCalibration Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationInstance.cpp - Released 2022-11-21T14:47:17Z
+// PhotometricColorCalibrationInstance.cpp - Released 2023-05-17T17:06:42Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -94,6 +94,7 @@ PhotometricColorCalibrationInstance::PhotometricColorCalibrationInstance( const 
    , p_structureLayers( ThePCCStructureLayersParameter->DefaultValue() )
    , p_saturationThreshold( ThePCCSaturationThresholdParameter->DefaultValue() )
    , p_saturationRelative( ThePCCSaturationRelativeParameter->DefaultValue() )
+   , p_saturationShrinkFactor( ThePCCSaturationShrinkFactorParameter->DefaultValue() )
    , p_psfNoiseLayers( ThePCCPSFNoiseLayersParameter->DefaultValue() )
    , p_psfHotPixelFilterRadius( ThePCCPSFHotPixelFilterRadiusParameter->DefaultValue() )
    , p_psfNoiseReductionFilterRadius( ThePCCPSFNoiseReductionFilterRadiusParameter->DefaultValue() )
@@ -147,6 +148,7 @@ void PhotometricColorCalibrationInstance::Assign( const ProcessImplementation& p
       p_structureLayers = x->p_structureLayers;
       p_saturationThreshold = x->p_saturationThreshold;
       p_saturationRelative = x->p_saturationRelative;
+      p_saturationShrinkFactor = x->p_saturationShrinkFactor;
       p_psfNoiseLayers = x->p_psfNoiseLayers;
       p_psfHotPixelFilterRadius = x->p_psfHotPixelFilterRadius;
       p_psfNoiseReductionFilterRadius = x->p_psfNoiseReductionFilterRadius;
@@ -190,18 +192,8 @@ void PhotometricColorCalibrationInstance::Assign( const ProcessImplementation& p
 
 UndoFlags PhotometricColorCalibrationInstance::UndoMode( const View& ) const
 {
-   /*
-    * ### BUG We have a core bug where thin plate spline based astrometric
-    * solutions are not restored correctly after several undo/redo operations
-    * because the Transformation_ImageToProjection property is lost.
-    *
-    * The workaround is including UndoFlag::AstrometricSolution here, even if
-    * we don't change astrometric solutions, to ensure that a fresh copy is
-    * stored in each processing history entry. ### Don't forget to remove this
-    * when no longer necessary.
-    */
-   return p_applyCalibration ? UndoFlag::Keywords | UndoFlag::PixelData | UndoFlag::AstrometricSolution
-                             : UndoFlag::Keywords | UndoFlag::AstrometricSolution;
+   return p_applyCalibration ? UndoFlag::Keywords | UndoFlag::PixelData
+                             : UndoFlag::Keywords;
 }
 
 // ----------------------------------------------------------------------------
@@ -878,12 +870,30 @@ bool PhotometricColorCalibrationInstance::ExecuteOn( View& view )
    console.WriteLn( String().Format( "<end><cbr><br>%u catalog sources found.", catalogStars.Length() ) );
    Module->ProcessEvents();
 
+   // Search tree
    QuadTree<StarData> T( catalogStars );
+
+   /*
+    * Find optimal saturation threshold
+    */
+   ImageVariant image = view.Image();
+   float saturationThreshold = p_saturationThreshold;
+   if ( p_saturationRelative )
+   {
+      // Exclude border regions, which can contain outliers.
+      int dx = TruncInt( image.Bounds().Width() * p_saturationShrinkFactor );
+      int dy = TruncInt( image.Bounds().Height() * p_saturationShrinkFactor );
+      Rect rect = image.Bounds().DeflatedBy( dx, dy );
+      // The saturation limit is the smallest maximum among the three channels.
+      saturationThreshold *= Min( Min( image.MaximumSampleValue( rect, 0, 0 ),
+                                       image.MaximumSampleValue( rect, 1, 1 ) ),
+                                       image.MaximumSampleValue( rect, 2, 2 ) );
+      console.WriteLn( String().Format( "<end><cbr><br>Saturation threshold: %.4f", saturationThreshold ) );
+   }
 
    /*
     * Configure PSF signal evaluation
     */
-   ImageVariant image = view.Image();
    PSFEstimator E;
    E.Detector().SetStructureLayers( p_structureLayers );
    E.Detector().SetNoiseLayers( p_psfNoiseLayers );
@@ -893,8 +903,8 @@ bool PhotometricColorCalibrationInstance::ExecuteOn( View& view )
    E.Detector().SetMinSNR( p_psfMinSNR );
    E.Detector().EnableClusteredSources( p_psfAllowClusteredSources );
    E.SetPSFType( PCCPSFType::ToPSFFunction( p_psfType ) );
-   E.SetSaturationThreshold( p_saturationThreshold );
-   E.EnableRelativeSaturation( p_saturationRelative );
+   E.SetSaturationThreshold( saturationThreshold );
+   E.DisableRelativeSaturation();
    E.SetGrowthFactorForFluxMeasurement( p_psfGrowth );
    E.SetMaxStars( p_psfMaxStars );
 
@@ -1247,6 +1257,8 @@ void* PhotometricColorCalibrationInstance::LockParameter( const MetaParameter* p
       return &p_saturationThreshold;
    if ( p == ThePCCSaturationRelativeParameter )
       return &p_saturationRelative;
+   if ( p == ThePCCSaturationShrinkFactorParameter )
+      return &p_saturationShrinkFactor;
    if ( p == ThePCCPSFNoiseLayersParameter )
       return &p_psfNoiseLayers;
    if ( p == ThePCCPSFHotPixelFilterRadiusParameter )
@@ -1370,4 +1382,4 @@ size_type PhotometricColorCalibrationInstance::ParameterLength( const MetaParame
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationInstance.cpp - Released 2022-11-21T14:47:17Z
+// EOF PhotometricColorCalibrationInstance.cpp - Released 2023-05-17T17:06:42Z

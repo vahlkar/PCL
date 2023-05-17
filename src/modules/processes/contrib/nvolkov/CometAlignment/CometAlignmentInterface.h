@@ -2,16 +2,17 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard CometAlignment Process Module Version 1.2.6
+// Standard CometAlignment Process Module Version 1.3.7
 // ----------------------------------------------------------------------------
-// CometAlignmentInterface.h - Released 2022-11-21T14:47:18Z
+// CometAlignmentInterface.h - Released 2023-05-17T17:06:42Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CometAlignment PixInsight module.
 //
-// Copyright (c) 2012-2018 Nikolay Volkov
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2012-2023 Nikolay Volkov
+// Copyright (c) 2019-2023 Juan Conejero (PTeam)
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -71,6 +72,7 @@
 
 namespace pcl
 {
+
 // ----------------------------------------------------------------------------
 
 class CometAlignmentInterface : public ProcessInterface
@@ -92,6 +94,8 @@ public:
    bool RequiresInstanceValidation() const override;
    bool ImportProcess( const ProcessImplementation& ) override;
    bool IsDynamicInterface() const override;
+   bool EnterDynamicMode() override;
+   void ExitDynamicMode() override;
    void DynamicMousePress( View&, const DPoint&, int button, unsigned buttons, unsigned modifiers ) override;
    bool RequiresDynamicUpdate( const View&, const DRect& ) const override;
    void DynamicPaint( const View&, VectorGraphics&, const DRect& ) const override;
@@ -108,144 +112,133 @@ private:
       VerticalSizer Global_Sizer;
 
       TreeBox Monitor_TreeBox;
-      SectionBar TargetImages_SectionBar;
-      Control TargetImages_Control;
-      HorizontalSizer TargetImages_Sizer;
-      TreeBox TargetImages_TreeBox;
-      VerticalSizer TargetButtons_Sizer;
-      PushButton AddFiles_PushButton;
-      PushButton AddDrizzleFiles_PushButton;
-      PushButton ClearDrizzleFiles_PushButton;
-      PushButton SetReference_PushButton;
-      PushButton SelectAll_PushButton;
-      PushButton InvertSelection_PushButton;
-      PushButton ToggleSelected_PushButton;
-      PushButton RemoveSelected_PushButton;
-      PushButton Clear_PushButton;
-      CheckBox FullPaths_CheckBox;
 
-      SectionBar FormatHints_SectionBar;
-      Control FormatHints_Control;
-      VerticalSizer FormatHints_Sizer;
-      HorizontalSizer InputHints_Sizer;
-      Label InputHints_Label;
-      Edit InputHints_Edit;
-      HorizontalSizer OutputHints_Sizer;
-      Label OutputHints_Label;
-      Edit OutputHints_Edit;
+      SectionBar        TargetImages_SectionBar;
+      Control           TargetImages_Control;
+      HorizontalSizer   TargetImages_Sizer;
+         TreeBox           TargetImages_TreeBox;
+         VerticalSizer  TargetButtons_Sizer;
+            PushButton     AddFiles_PushButton;
+            PushButton     AddDrizzleFiles_PushButton;
+            PushButton     ClearDrizzleFiles_PushButton;
+            PushButton     SetReference_PushButton;
+            PushButton     SelectAll_PushButton;
+            PushButton     InvertSelection_PushButton;
+            PushButton     ToggleSelected_PushButton;
+            PushButton     RemoveSelected_PushButton;
+            PushButton     Clear_PushButton;
+            CheckBox       FullPaths_CheckBox;
 
-      SectionBar Output_SectionBar;
-      Control Output_Control;
-      VerticalSizer Output_Sizer;
-      HorizontalSizer OutputDir_Sizer;
-      Label OutputDir_Label;
-      Edit OutputDir_Edit;
-      ToolButton OutputDir_SelectButton;
-      HorizontalSizer OutputChunks_Sizer;
-      Label Prefix_Label;
-      Edit Prefix_Edit;
-      Label Postfix_Label;
-      Edit Postfix_Edit;
-      CheckBox Overwrite_CheckBox;
+      SectionBar        FormatHints_SectionBar;
+      Control           FormatHints_Control;
+      VerticalSizer     FormatHints_Sizer;
+         HorizontalSizer   InputHints_Sizer;
+            Label             InputHints_Label;
+            Edit              InputHints_Edit;
+         HorizontalSizer   OutputHints_Sizer;
+            Label             OutputHints_Label;
+            Edit              OutputHints_Edit;
 
-      SectionBar Parameter_SectionBar;
-      Control Parameter_Control;
-      VerticalSizer Parameter_Sizer;
-      HorizontalSizer File0_Sizer;
-      NumericEdit x0_NumericEdit;
-      NumericEdit y0_NumericEdit;
-      PushButton File0_PushButton;
-      Label File0_Label;
-      HorizontalSizer File1_Sizer;
-      NumericEdit x1_NumericEdit;
-      NumericEdit y1_NumericEdit;
-      PushButton File1_PushButton;
-      Label File1_Label;
-      HorizontalSizer Delta_Sizer;
-      NumericEdit xDelta_NumericEdit;
-      NumericEdit yDelta_NumericEdit;
+      SectionBar        Output_SectionBar;
+      Control           Output_Control;
+      VerticalSizer     Output_Sizer;
+         HorizontalSizer   OutputDir_Sizer;
+            Label             OutputDir_Label;
+            Edit              OutputDir_Edit;
+            ToolButton        OutputDir_SelectButton;
+         HorizontalSizer   OutputChunks_Sizer;
+            Label             Prefix_Label;
+            Edit              Prefix_Edit;
+            Label             Postfix_Label;
+            Edit              Postfix_Edit;
+            CheckBox          Overwrite_CheckBox;
+         HorizontalSizer   CometPathMap_Sizer;
+            CheckBox          CometPathMap_CheckBox;
 
-      SectionBar Subtract_SectionBar;
-      Control Subtract_Control;
-      VerticalSizer Subtract_Sizer;
-      HorizontalSizer SubtractFile_Sizer;
-      Label SubtractFile_Label;
-      Edit SubtractFile_Edit;
-      ToolButton SubtractFile_SelectButton;
-      ToolButton SubtractFile_ClearButton;
-      HorizontalSizer SubtractImgOption_Sizer;
-      GroupBox SubtractOrigin_GroupBox;
-      VerticalSizer SubtractOrigin_Sizer;
-      RadioButton SubtractII_RadioButton;
-      RadioButton SubtractDI_RadioButton;
-      GroupBox SubtractImgType_GroupBox;
-      VerticalSizer SubtractImgType_Sizer;
-      RadioButton SubtractStars_RadioButton;
-      RadioButton SubtractComet_RadioButton;
-      GroupBox DrzSave_GroupBox;
-      VerticalSizer DrzSave_Sizer;
-      CheckBox DrzSaveSA_CheckBox;
-      CheckBox DrzSaveCA_CheckBox;
-      HorizontalSizer SubtractChekers_Sizer;
-      CheckBox LinearFit_CheckBox;
-      CheckBox Normalize_CheckBox;
-      NumericControl RejectLow_NumericControl;
-      NumericControl RejectHigh_NumericControl;
+      SectionBar        Parameter_SectionBar;
+      Control           Parameter_Control;
+      VerticalSizer     Parameter_Sizer;
+         HorizontalSizer   FirstFrame_Sizer;
+            NumericEdit       X0_NumericEdit;
+            NumericEdit       Y0_NumericEdit;
+            PushButton        ShowFirstFrame_PushButton;
+         HorizontalSizer   LastFrame_Sizer;
+            NumericEdit       X1_NumericEdit;
+            NumericEdit       Y1_NumericEdit;
+            PushButton        ShowLastFrame_PushButton;
+         HorizontalSizer   Velocity_Sizer;
+            NumericEdit       XDot_NumericEdit;
+            NumericEdit       YDot_NumericEdit;
+            PushButton        ResetPositions_PushButton;
+         HorizontalSizer   PSFFits_Sizer;
+            CheckBox          PSFFits_CheckBox;
 
-      SectionBar Interpolation_SectionBar;
-      Control Interpolation_Control;
-      VerticalSizer Interpolation_Sizer;
-      HorizontalSizer PixelInterpolation_Sizer;
-      Label PixelInterpolation_Label;
-      ComboBox PixelInterpolation_ComboBox;
-      NumericControl ClampingThreshold_NumericControl;
+      SectionBar        Subtract_SectionBar;
+      Control           Subtract_Control;
+      VerticalSizer     Subtract_Sizer;
+         HorizontalSizer   SubtractFile_Sizer;
+            Label             SubtractFile_Label;
+            Edit              SubtractFile_Edit;
+            ToolButton        SubtractFile_SelectButton;
+            ToolButton        SubtractFile_ShowButton;
+            ToolButton        SubtractFile_ClearButton;
+         HorizontalSizer   SubtractImgOption_Sizer;
+            GroupBox          SubtractImgType_GroupBox;
+            VerticalSizer     SubtractImgType_Sizer;
+               RadioButton       SubtractStars_RadioButton;
+               RadioButton       SubtractComet_RadioButton;
+            GroupBox          DrzSave_GroupBox;
+            VerticalSizer        DrzSave_Sizer;
+               CheckBox          DrzSaveSA_CheckBox;
+               CheckBox          DrzSaveCA_CheckBox;
+         HorizontalSizer   SubtractChekers_Sizer;
+            CheckBox          LinearFit_CheckBox;
+            CheckBox          Normalize_CheckBox;
+         NumericControl    RejectLow_NumericControl;
+         NumericControl    RejectHigh_NumericControl;
+
+      SectionBar        Interpolation_SectionBar;
+      Control           Interpolation_Control;
+      VerticalSizer     Interpolation_Sizer;
+         HorizontalSizer   PixelInterpolation_Sizer;
+            Label             PixelInterpolation_Label;
+            ComboBox          PixelInterpolation_ComboBox;
+            NumericControl    ClampingThreshold_NumericControl;
    };
 
    GUIData* GUI = nullptr;
 
-   // Workbench
-   size_t m_length;
-
-   String m_path0; // File path of first image
-   double m_date0; // Julian Date of first image
-   DPoint m_pos0;  // comet position(X,Y) in first image
-
-   String m_path1; // File path of first image
-   double m_date1; // Julian Date of last image
-   DPoint m_pos1;  // comet position(X,Y) in last image
-
-   double m_DateDelta; // days passed from first to last image
-   DPoint m_PosDelta;  // how many X,Y pixels comet passed from first to last image
-
-   bool drizzle; //true == is .drz file present for every image
+   bool           m_drizzle;  // true iff .xdrz file present for every image
+   mutable DPoint m_imagePos; // centroid position on the image (dynamic paint)
 
    // Main routines
-   void SelectDir();                                 // Select output directory
-   void SelectSubtractFile();                        // Select image for subtract from targets
-   void GetPoint( DPoint& pos, const double jDate ); // Calculate new x,y coordinate = FirstImage + Delta
-   void SetFirst( const DPoint pos );                // Set x,y, in First image
-   void SetLast( const DPoint pos );                 // Set x,y, in Last image
+   void SelectDir();
+   void SelectSubtractFile();
+   void ShowSubtractFile();
+   void SetFramePosition( size_type index, const DPoint& );
+   void ResetFramePositions();
+   void RedrawAll();
 
    // CometAlignmentInterface Updates
    void UpdateControls();
-   void UpdateTargetImageItem( size_type );
+   void UpdateTargetImageItem( size_type index );
    void UpdateTargetImagesList();
    void UpdateImageSelectionButtons();
    void UpdateSubtractSection();
-   void SetReference( const int index ); // Settings for ExecuteGlobal: Move all images arround the reference image. Don't move the reference image.
+   void SetReferenceFrame( size_type index );
 
-   void __TargetImages_CurrentNodeUpdated( TreeBox& sender, TreeBox::Node& current, TreeBox::Node& oldCurrent );
-   void __TargetImages_NodeActivated( TreeBox& sender, TreeBox::Node& node, int col );
-   void __TargetImages_NodeSelectionUpdated( TreeBox& sender );
-   void __TargetImages_BottonClick( Button& sender, bool checked );
-   void __ToggleSection( SectionBar& sender, Control& section, bool start );
-   void __MouseDoubleClick( Control& sender, const Point& pos, unsigned buttons, unsigned modifiers );
-   void __EditCompleted( Edit& sender );
-   void __Button_Click( Button& sender, bool checked );
-   void __RealValueUpdated( NumericEdit& sender, double value );
-   void __ItemSelected( ComboBox& sender, int itemIndex );
-   void __FileDrag( Control& sender, const Point& pos, const StringList& files, unsigned modifiers, bool& wantsFiles );
-   void __FileDrop( Control& sender, const Point& pos, const StringList& files, unsigned modifiers );
+   // Event handlers
+   void e_CurrentNodeUpdated( TreeBox& sender, TreeBox::Node& current, TreeBox::Node& oldCurrent );
+   void e_NodeActivated( TreeBox& sender, TreeBox::Node& node, int col );
+   void e_NodeSelectionUpdated( TreeBox& sender );
+   void e_TargetFrames_ButtonClick( Button& sender, bool checked );
+   void e_ToggleSection( SectionBar& sender, Control& section, bool start );
+   void e_EditCompleted( Edit& sender );
+   void e_ButtonClick( Button& sender, bool checked );
+   void e_ValueUpdated( NumericEdit& sender, double value );
+   void e_ItemSelected( ComboBox& sender, int itemIndex );
+   void e_FileDrag( Control& sender, const Point& pos, const StringList& files, unsigned modifiers, bool& wantsFiles );
+   void e_FileDrop( Control& sender, const Point& pos, const StringList& files, unsigned modifiers );
 
    void AddFiles( const StringList& );
    String DrizzleTargetName( const String& filePath );
@@ -267,4 +260,4 @@ PCL_END_LOCAL
 #endif // __CometAlignmentInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF CometAlignmentInterface.h - Released 2022-11-21T14:47:18Z
+// EOF CometAlignmentInterface.h - Released 2023-05-17T17:06:42Z

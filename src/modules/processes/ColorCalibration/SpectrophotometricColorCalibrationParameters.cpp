@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.9.0
+// Standard ColorCalibration Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// SpectrophotometricColorCalibrationParameters.cpp - Released 2022-11-21T14:47:17Z
+// SpectrophotometricColorCalibrationParameters.cpp - Released 2023-05-17T17:06:42Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -94,6 +94,7 @@ SPCCTargetSourceCount*             TheSPCCTargetSourceCountParameter = nullptr;
 SPCCStructureLayers*               TheSPCCStructureLayersParameter = nullptr;
 SPCCSaturationThreshold*           TheSPCCSaturationThresholdParameter = nullptr;
 SPCCSaturationRelative*            TheSPCCSaturationRelativeParameter = nullptr;
+SPCCSaturationShrinkFactor*        TheSPCCSaturationShrinkFactorParameter = nullptr;
 SPCCPSFNoiseLayers*                TheSPCCPSFNoiseLayersParameter = nullptr;
 SPCCPSFHotPixelFilterRadius*       TheSPCCPSFHotPixelFilterRadiusParameter = nullptr;
 SPCCPSFNoiseReductionFilterRadius* TheSPCCPSFNoiseReductionFilterRadiusParameter = nullptr;
@@ -762,6 +763,39 @@ bool SPCCSaturationRelative::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
+SPCCSaturationShrinkFactor::SPCCSaturationShrinkFactor( MetaProcess* P )
+   : MetaFloat( P )
+{
+   TheSPCCSaturationShrinkFactorParameter = this;
+}
+
+IsoString SPCCSaturationShrinkFactor::Id() const
+{
+   return "saturationShrinkFactor";
+}
+
+int SPCCSaturationShrinkFactor::Precision() const
+{
+   return 2;
+}
+
+double SPCCSaturationShrinkFactor::DefaultValue() const
+{
+   return 0.1;
+}
+
+double SPCCSaturationShrinkFactor::MinimumValue() const
+{
+   return 0;
+}
+
+double SPCCSaturationShrinkFactor::MaximumValue() const
+{
+   return 0.25;
+}
+
+// ----------------------------------------------------------------------------
+
 SPCCPSFNoiseLayers::SPCCPSFNoiseLayers( MetaProcess* p )
    : MetaInt32( p )
 {
@@ -1412,4 +1446,4 @@ String SPCCOutputDirectory::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SpectrophotometricColorCalibrationParameters.cpp - Released 2022-11-21T14:47:17Z
+// EOF SpectrophotometricColorCalibrationParameters.cpp - Released 2023-05-17T17:06:42Z

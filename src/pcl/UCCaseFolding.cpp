@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// pcl/UCCaseFolding.cpp - Released 2022-11-21T14:46:37Z
+// pcl/UCCaseFolding.cpp - Released 2023-05-17T17:06:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -51,7 +51,7 @@
 
 /*
  * PCL Unicode case folding selection routine.
- * Automatically generated on Fri, 20 Mar 2015 16:18:43 GMT
+ * Automatically generated on Fri, 10 Mar 2023 17:12:55 GMT
  */
 
 #include <pcl/Defs.h>
@@ -61,15 +61,15 @@ namespace pcl
 
 char16_type PCL_FUNC PCL_ToCaseFolded( char16_type c )
 {
-   if ( c < 1022 )
+   if ( c < 4295 )
    {
-      if ( c < 461 )
+      if ( c < 503 )
       {
-         if ( c < 400 )
+         if ( c < 404 )
          {
-            if ( c < 377 )
+            if ( c < 383 )
             {
-               if ( c < 256 )
+               if ( c < 306 )
                {
                   if ( c < 192 )
                   {
@@ -84,57 +84,54 @@ char16_type PCL_FUNC PCL_ToCaseFolded( char16_type c )
                         return c + 32;
                      if ( c >= 216 && c <= 222 )
                         return c + 32;
+                     if ( c >= 256 && c <= 302 && (c & 1) == 0 )
+                        return c + 1;
                   }
                }
                else
                {
-                  if ( c < 313 )
+                  if ( c < 330 )
                   {
-                     if ( c >= 256 && c <= 302 && (c & 1) == 0 )
-                        return c + 1;
                      if ( c == 306 || c == 308 || c == 310 )
+                        return c + 1;
+                     if ( c >= 313 && c <= 327 && (c & 1) != 0 )
                         return c + 1;
                   }
                   else
                   {
-                     if ( c >= 313 && c <= 327 && (c & 1) != 0 )
-                        return c + 1;
                      if ( c >= 330 && c <= 374 && (c & 1) == 0 )
                         return c + 1;
                      if ( c == 376 )
                         return 255;
+                     if ( c == 377 || c == 379 || c == 381 )
+                        return c + 1;
                   }
                }
             }
             else
             {
-               if ( c < 390 )
+               if ( c < 393 )
                {
-                  if ( c < 385 )
+                  if ( c < 386 )
                   {
-                     if ( c == 377 || c == 379 || c == 381 )
-                        return c + 1;
                      if ( c == 383 )
                         return 115;
+                     if ( c == 385 )
+                        return 595;
                   }
                   else
                   {
-                     if ( c == 385 )
-                        return 595;
                      if ( c == 386 || c == 388 )
                         return c + 1;
-                  }
-               }
-               else
-               {
-                  if ( c < 393 )
-                  {
                      if ( c == 390 )
                         return 596;
                      if ( c == 391 || c == 395 )
                         return c + 1;
                   }
-                  else
+               }
+               else
+               {
+                  if ( c < 400 )
                   {
                      if ( c == 393 || c == 394 )
                         return c + 205;
@@ -143,103 +140,88 @@ char16_type PCL_FUNC PCL_ToCaseFolded( char16_type c )
                      if ( c == 399 )
                         return 601;
                   }
-               }
-            }
-         }
-         else
-         {
-            if ( c < 422 )
-            {
-               if ( c < 406 )
-               {
-                  if ( c < 403 )
+                  else
                   {
                      if ( c == 400 )
                         return 603;
                      if ( c == 401 || c == 408 )
                         return c + 1;
-                  }
-                  else
-                  {
                      if ( c == 403 )
                         return 608;
-                     if ( c == 404 )
-                        return 611;
                   }
                }
-               else
+            }
+         }
+         else
+         {
+            if ( c < 433 )
+            {
+               if ( c < 416 )
                {
-                  if ( c < 413 )
+                  if ( c < 407 )
                   {
+                     if ( c == 404 )
+                        return 611;
                      if ( c == 406 || c == 412 )
                         return c + 211;
-                     if ( c == 407 )
-                        return 616;
                   }
                   else
                   {
+                     if ( c == 407 )
+                        return 616;
                      if ( c == 413 )
                         return 626;
                      if ( c == 415 )
                         return 629;
+                  }
+               }
+               else
+               {
+                  if ( c < 423 )
+                  {
                      if ( c == 416 || c == 418 || c == 420 )
+                        return c + 1;
+                     if ( c == 422 || c == 425 )
+                        return c + 218;
+                  }
+                  else
+                  {
+                     if ( c == 423 || c == 428 )
+                        return c + 1;
+                     if ( c == 430 )
+                        return 648;
+                     if ( c == 431 || c == 435 )
                         return c + 1;
                   }
                }
             }
             else
             {
-               if ( c < 437 )
+               if ( c < 456 )
                {
-                  if ( c < 430 )
+                  if ( c < 439 )
                   {
-                     if ( c == 422 || c == 425 )
-                        return c + 218;
-                     if ( c == 423 || c == 428 )
-                        return c + 1;
-                  }
-                  else
-                  {
-                     if ( c == 430 )
-                        return 648;
-                     if ( c == 431 || c == 435 )
-                        return c + 1;
                      if ( c == 433 || c == 434 )
                         return c + 217;
-                  }
-               }
-               else
-               {
-                  if ( c < 444 )
-                  {
                      if ( c == 437 || c == 440 )
                         return c + 1;
-                     if ( c == 439 )
-                        return 658;
                   }
                   else
                   {
+                     if ( c == 439 )
+                        return 658;
                      if ( c == 444 || c == 453 )
                         return c + 1;
                      if ( c == 452 || c == 455 || c == 458 )
                         return c + 2;
-                     if ( c == 456 || c == 459 )
-                        return c + 1;
                   }
                }
-            }
-         }
-      }
-      else
-      {
-         if ( c < 886 )
-         {
-            if ( c < 570 )
-            {
-               if ( c < 502 )
+               else
                {
                   if ( c < 497 )
                   {
+                     if ( c == 456 || c == 459 )
+                        return c + 1;
                      if ( c >= 461 && c <= 475 && (c & 1) != 0 )
                         return c + 1;
                      if ( c >= 478 && c <= 494 && (c & 1) == 0 )
@@ -251,174 +233,162 @@ char16_type PCL_FUNC PCL_ToCaseFolded( char16_type c )
                         return 499;
                      if ( c == 498 || c == 500 )
                         return c + 1;
-                  }
-               }
-               else
-               {
-                  if ( c < 504 )
-                  {
                      if ( c == 502 )
                         return 405;
+                  }
+               }
+            }
+         }
+      }
+      else
+      {
+         if ( c < 975 )
+         {
+            if ( c < 581 )
+            {
+               if ( c < 571 )
+               {
+                  if ( c < 544 )
+                  {
                      if ( c == 503 )
                         return 447;
+                     if ( c >= 504 && c <= 542 && (c & 1) == 0 )
+                        return c + 1;
                   }
                   else
                   {
-                     if ( c >= 504 && c <= 542 && (c & 1) == 0 )
-                        return c + 1;
                      if ( c == 544 || c == 1021 )
                         return c - 130;
                      if ( c >= 546 && c <= 562 && (c & 1) == 0 )
                         return c + 1;
+                     if ( c == 570 )
+                        return 11365;
+                  }
+               }
+               else
+               {
+                  if ( c < 574 )
+                  {
+                     if ( c == 571 || c == 577 )
+                        return c + 1;
+                     if ( c == 573 )
+                        return 410;
+                  }
+                  else
+                  {
+                     if ( c == 574 )
+                        return 11366;
+                     if ( c == 579 )
+                        return 384;
+                     if ( c == 580 )
+                        return 649;
                   }
                }
             }
             else
             {
-               if ( c < 580 )
+               if ( c < 902 )
                {
-                  if ( c < 573 )
+                  if ( c < 837 )
                   {
-                     if ( c == 570 )
-                        return 11365;
-                     if ( c == 571 || c == 577 )
-                        return c + 1;
-                  }
-                  else
-                  {
-                     if ( c == 573 )
-                        return 410;
-                     if ( c == 574 )
-                        return 11366;
-                     if ( c == 579 )
-                        return 384;
-                  }
-               }
-               else
-               {
-                  if ( c < 582 )
-                  {
-                     if ( c == 580 )
-                        return 649;
                      if ( c == 581 )
                         return 652;
+                     if ( c >= 582 && c <= 590 && (c & 1) == 0 )
+                        return c + 1;
                   }
                   else
                   {
-                     if ( c >= 582 && c <= 590 && (c & 1) == 0 )
-                        return c + 1;
                      if ( c == 837 || c == 895 )
                         return c + 116;
                      if ( c == 880 || c == 882 )
                         return c + 1;
+                     if ( c == 886 || c == 962 )
+                        return c + 1;
+                  }
+               }
+               else
+               {
+                  if ( c < 910 )
+                  {
+                     if ( c == 902 )
+                        return 940;
+                     if ( c == 904 || c == 905 || c == 906 )
+                        return c + 37;
+                     if ( c == 908 )
+                        return 972;
+                  }
+                  else
+                  {
+                     if ( c == 910 || c == 911 )
+                        return c + 63;
+                     if ( c >= 913 && c <= 929 )
+                        return c + 32;
+                     if ( c >= 931 && c <= 939 )
+                        return c + 32;
                   }
                }
             }
          }
          else
          {
-            if ( c < 977 )
+            if ( c < 1017 )
             {
-               if ( c < 910 )
+               if ( c < 984 )
                {
-                  if ( c < 904 )
+                  if ( c < 977 )
                   {
-                     if ( c == 886 || c == 962 )
-                        return c + 1;
-                     if ( c == 902 )
-                        return 940;
-                  }
-                  else
-                  {
-                     if ( c == 904 || c == 905 || c == 906 )
-                        return c + 37;
-                     if ( c == 908 )
-                        return 972;
-                  }
-               }
-               else
-               {
-                  if ( c < 931 )
-                  {
-                     if ( c == 910 || c == 911 )
-                        return c + 63;
-                     if ( c >= 913 && c <= 929 )
-                        return c + 32;
-                  }
-                  else
-                  {
-                     if ( c >= 931 && c <= 939 )
-                        return c + 32;
                      if ( c == 975 )
                         return 983;
                      if ( c == 976 )
                         return 946;
                   }
-               }
-            }
-            else
-            {
-               if ( c < 1009 )
-               {
-                  if ( c < 982 )
+                  else
                   {
                      if ( c == 977 )
                         return 952;
                      if ( c == 981 )
                         return 966;
-                  }
-                  else
-                  {
                      if ( c == 982 )
                         return 960;
-                     if ( c >= 984 && c <= 1006 && (c & 1) == 0 )
-                        return c + 1;
-                     if ( c == 1008 )
-                        return 954;
                   }
                }
                else
                {
-                  if ( c < 1013 )
+                  if ( c < 1012 )
                   {
-                     if ( c == 1009 )
-                        return 961;
-                     if ( c == 1012 )
-                        return 952;
+                     if ( c >= 984 && c <= 1006 && (c & 1) == 0 )
+                        return c + 1;
+                     if ( c == 1008 )
+                        return 954;
+                     if ( c == 1009 || c == 42948 )
+                        return c - 48;
                   }
                   else
                   {
+                     if ( c == 1012 )
+                        return 952;
                      if ( c == 1013 )
                         return 949;
                      if ( c == 1015 || c == 1018 )
                         return c + 1;
-                     if ( c == 1017 || c == 8172 )
-                        return c - 7;
                   }
                }
             }
-         }
-      }
-   }
-   else
-   {
-      if ( c < 8490 )
-      {
-         if ( c < 8008 )
-         {
-            if ( c < 4256 )
+            else
             {
                if ( c < 1162 )
                {
-                  if ( c < 1040 )
+                  if ( c < 1024 )
                   {
+                     if ( c == 1017 || c == 8172 )
+                        return c - 7;
                      if ( c == 1022 || c == 1023 )
                         return c - 130;
-                     if ( c >= 1024 && c <= 1039 )
-                        return c + 80;
                   }
                   else
                   {
+                     if ( c >= 1024 && c <= 1039 )
+                        return c + 80;
                      if ( c >= 1040 && c <= 1071 )
                         return c + 32;
                      if ( c >= 1120 && c <= 1152 && (c & 1) == 0 )
@@ -427,21 +397,73 @@ char16_type PCL_FUNC PCL_ToCaseFolded( char16_type c )
                }
                else
                {
-                  if ( c < 1217 )
+                  if ( c < 1232 )
                   {
                      if ( c >= 1162 && c <= 1214 && (c & 1) == 0 )
                         return c + 1;
                      if ( c == 1216 )
                         return 1231;
+                     if ( c >= 1217 && c <= 1229 && (c & 1) != 0 )
+                        return c + 1;
                   }
                   else
                   {
-                     if ( c >= 1217 && c <= 1229 && (c & 1) != 0 )
-                        return c + 1;
                      if ( c >= 1232 && c <= 1326 && (c & 1) == 0 )
                         return c + 1;
                      if ( c >= 1329 && c <= 1366 )
                         return c + 48;
+                     if ( c >= 4256 && c <= 4293 )
+                        return c + 7264;
+                  }
+               }
+            }
+         }
+      }
+   }
+   else
+   {
+      if ( c < 8579 )
+      {
+         if ( c < 8025 )
+         {
+            if ( c < 7312 )
+            {
+               if ( c < 7299 )
+               {
+                  if ( c < 7296 )
+                  {
+                     if ( c == 4295 || c == 4301 )
+                        return c + 7264;
+                     if ( c >= 5112 && c <= 5117 )
+                        return c - 8;
+                  }
+                  else
+                  {
+                     if ( c == 7296 )
+                        return 1074;
+                     if ( c == 7297 )
+                        return 1076;
+                     if ( c == 7298 )
+                        return 1086;
+                  }
+               }
+               else
+               {
+                  if ( c < 7302 )
+                  {
+                     if ( c == 7299 || c == 7300 )
+                        return c - 6210;
+                     if ( c == 7301 )
+                        return 1090;
+                  }
+                  else
+                  {
+                     if ( c == 7302 )
+                        return 1098;
+                     if ( c == 7303 )
+                        return 1123;
+                     if ( c == 7304 )
+                        return 42571;
                   }
                }
             }
@@ -451,10 +473,10 @@ char16_type PCL_FUNC PCL_ToCaseFolded( char16_type c )
                {
                   if ( c < 7680 )
                   {
-                     if ( c >= 4256 && c <= 4293 )
-                        return c + 7264;
-                     if ( c == 4295 || c == 4301 )
-                        return c + 7264;
+                     if ( c >= 7312 && c <= 7354 )
+                        return c - 3008;
+                     if ( c == 7357 || c == 7358 || c == 7359 )
+                        return c - 3008;
                   }
                   else
                   {
@@ -468,20 +490,22 @@ char16_type PCL_FUNC PCL_ToCaseFolded( char16_type c )
                }
                else
                {
-                  if ( c < 7960 )
+                  if ( c < 7976 )
                   {
                      if ( c >= 7840 && c <= 7934 && (c & 1) == 0 )
                         return c + 1;
                      if ( c >= 7944 && c <= 7951 )
                         return c - 8;
+                     if ( c >= 7960 && c <= 7965 )
+                        return c - 8;
                   }
                   else
                   {
-                     if ( c >= 7960 && c <= 7965 )
-                        return c - 8;
                      if ( c >= 7976 && c <= 7983 )
                         return c - 8;
                      if ( c >= 7992 && c <= 7999 )
+                        return c - 8;
+                     if ( c >= 8008 && c <= 8013 )
                         return c - 8;
                   }
                }
@@ -489,35 +513,30 @@ char16_type PCL_FUNC PCL_ToCaseFolded( char16_type c )
          }
          else
          {
-            if ( c < 8126 )
+            if ( c < 8154 )
             {
-               if ( c < 8088 )
+               if ( c < 8120 )
                {
-                  if ( c < 8040 )
+                  if ( c < 8072 )
                   {
-                     if ( c >= 8008 && c <= 8013 )
-                        return c - 8;
                      if ( c >= 8025 && c <= 8031 && (c & 1) != 0 )
+                        return c - 8;
+                     if ( c >= 8040 && c <= 8047 )
                         return c - 8;
                   }
                   else
                   {
-                     if ( c >= 8040 && c <= 8047 )
-                        return c - 8;
                      if ( c >= 8072 && c <= 8079 )
                         return c - 8;
-                  }
-               }
-               else
-               {
-                  if ( c < 8120 )
-                  {
                      if ( c >= 8088 && c <= 8095 )
                         return c - 8;
                      if ( c >= 8104 && c <= 8111 )
                         return c - 8;
                   }
-                  else
+               }
+               else
+               {
+                  if ( c < 8126 )
                   {
                      if ( c == 8120 || c == 8121 )
                         return c - 8;
@@ -526,46 +545,57 @@ char16_type PCL_FUNC PCL_ToCaseFolded( char16_type c )
                      if ( c == 8124 || c == 8140 )
                         return c - 9;
                   }
-               }
-            }
-            else
-            {
-               if ( c < 8170 )
-               {
-                  if ( c < 8152 )
+                  else
                   {
                      if ( c == 8126 )
                         return 953;
                      if ( c >= 8136 && c <= 8139 )
                         return c - 86;
-                  }
-                  else
-                  {
                      if ( c == 8152 || c == 8153 )
                         return c - 8;
+                  }
+               }
+            }
+            else
+            {
+               if ( c < 8188 )
+               {
+                  if ( c < 8170 )
+                  {
                      if ( c == 8154 || c == 8155 )
                         return c - 100;
                      if ( c == 8168 || c == 8169 )
                         return c - 8;
                   }
-               }
-               else
-               {
-                  if ( c < 8186 )
+                  else
                   {
                      if ( c == 8170 || c == 8171 )
                         return c - 112;
                      if ( c == 8184 || c == 8185 )
                         return c - 128;
-                  }
-                  else
-                  {
                      if ( c == 8186 || c == 8187 )
                         return c - 126;
+                  }
+               }
+               else
+               {
+                  if ( c < 8491 )
+                  {
                      if ( c == 8188 )
                         return 8179;
                      if ( c == 8486 )
                         return 969;
+                     if ( c == 8490 )
+                        return 107;
+                  }
+                  else
+                  {
+                     if ( c == 8491 )
+                        return 229;
+                     if ( c == 8498 )
+                        return 8526;
+                     if ( c >= 8544 && c <= 8559 )
+                        return c + 16;
                   }
                }
             }
@@ -573,28 +603,11 @@ char16_type PCL_FUNC PCL_ToCaseFolded( char16_type c )
       }
       else
       {
-         if ( c < 11506 )
+         if ( c < 42877 )
          {
-            if ( c < 11364 )
+            if ( c < 11376 )
             {
-               if ( c < 8579 )
-               {
-                  if ( c < 8498 )
-                  {
-                     if ( c == 8490 )
-                        return 107;
-                     if ( c == 8491 )
-                        return 229;
-                  }
-                  else
-                  {
-                     if ( c == 8498 )
-                        return 8526;
-                     if ( c >= 8544 && c <= 8559 )
-                        return c + 16;
-                  }
-               }
-               else
+               if ( c < 11364 )
                {
                   if ( c < 11264 )
                   {
@@ -605,7 +618,7 @@ char16_type PCL_FUNC PCL_ToCaseFolded( char16_type c )
                   }
                   else
                   {
-                     if ( c >= 11264 && c <= 11310 )
+                     if ( c >= 11264 && c <= 11311 )
                         return c + 48;
                      if ( c == 11362 )
                         return 619;
@@ -613,10 +626,7 @@ char16_type PCL_FUNC PCL_ToCaseFolded( char16_type c )
                         return 7549;
                   }
                }
-            }
-            else
-            {
-               if ( c < 11376 )
+               else
                {
                   if ( c < 11373 )
                   {
@@ -635,7 +645,10 @@ char16_type PCL_FUNC PCL_ToCaseFolded( char16_type c )
                         return 592;
                   }
                }
-               else
+            }
+            else
+            {
+               if ( c < 11506 )
                {
                   if ( c < 11390 )
                   {
@@ -654,85 +667,112 @@ char16_type PCL_FUNC PCL_ToCaseFolded( char16_type c )
                         return c + 1;
                   }
                }
-            }
-         }
-         else
-         {
-            if ( c < 42893 )
-            {
-               if ( c < 42802 )
+               else
                {
-                  if ( c < 42624 )
+                  if ( c < 42786 )
                   {
                      if ( c == 11506 || c == 42560 )
                         return c + 1;
                      if ( c >= 42562 && c <= 42604 && (c & 1) == 0 )
                         return c + 1;
+                     if ( c >= 42624 && c <= 42650 && (c & 1) == 0 )
+                        return c + 1;
                   }
                   else
                   {
-                     if ( c >= 42624 && c <= 42650 && (c & 1) == 0 )
-                        return c + 1;
                      if ( c >= 42786 && c <= 42798 && (c & 1) == 0 )
                         return c + 1;
-                  }
-               }
-               else
-               {
-                  if ( c < 42877 )
-                  {
                      if ( c >= 42802 && c <= 42862 && (c & 1) == 0 )
                         return c + 1;
                      if ( c == 42873 || c == 42875 )
                         return c + 1;
                   }
-                  else
+               }
+            }
+         }
+         else
+         {
+            if ( c < 42929 )
+            {
+               if ( c < 42904 )
+               {
+                  if ( c < 42891 )
                   {
                      if ( c == 42877 )
                         return 7545;
                      if ( c >= 42878 && c <= 42886 && (c & 1) == 0 )
                         return c + 1;
+                  }
+                  else
+                  {
                      if ( c == 42891 || c == 42896 )
                         return c + 1;
-                  }
-               }
-            }
-            else
-            {
-               if ( c < 42924 )
-               {
-                  if ( c < 42904 )
-                  {
                      if ( c == 42893 )
                         return 613;
                      if ( c == 42898 || c == 42902 )
                         return c + 1;
                   }
-                  else
-                  {
-                     if ( c >= 42904 && c <= 42920 && (c & 1) == 0 )
-                        return c + 1;
-                     if ( c == 42922 )
-                        return 614;
-                     if ( c == 42923 )
-                        return 604;
-                  }
                }
                else
                {
-                  if ( c < 42928 )
+                  if ( c < 42924 )
+                  {
+                     if ( c >= 42904 && c <= 42920 && (c & 1) == 0 )
+                        return c + 1;
+                     if ( c == 42922 || c == 42926 )
+                        return c - 42308;
+                     if ( c == 42923 )
+                        return 604;
+                  }
+                  else
                   {
                      if ( c == 42924 )
                         return 609;
                      if ( c == 42925 )
                         return 620;
+                     if ( c == 42928 )
+                        return 670;
+                  }
+               }
+            }
+            else
+            {
+               if ( c < 42950 )
+               {
+                  if ( c < 42931 )
+                  {
+                     if ( c == 42929 )
+                        return 647;
+                     if ( c == 42930 )
+                        return 669;
                   }
                   else
                   {
-                     if ( c == 42928 )
-                        return 670;
-                     if ( c == 42929 )
-                        return 647;
+                     if ( c == 42931 )
+                        return 43859;
+                     if ( c >= 42932 && c <= 42946 && (c & 1) == 0 )
+                        return c + 1;
+                     if ( c == 42949 )
+                        return 642;
+                  }
+               }
+               else
+               {
+                  if ( c < 42968 )
+                  {
+                     if ( c == 42950 )
+                        return 7566;
+                     if ( c == 42951 || c == 42953 )
+                        return c + 1;
+                     if ( c == 42960 || c == 42966 )
+                        return c + 1;
+                  }
+                  else
+                  {
+                     if ( c == 42968 || c == 42997 )
+                        return c + 1;
+                     if ( c >= 43888 && c <= 43967 )
+                        return c - 38864;
                      if ( c >= 65313 && c <= 65338 )
                         return c + 32;
                   }
@@ -747,4 +787,4 @@ char16_type PCL_FUNC PCL_ToCaseFolded( char16_type c )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/UCCaseFolding.cpp - Released 2022-11-21T14:46:37Z
+// EOF pcl/UCCaseFolding.cpp - Released 2023-05-17T17:06:11Z

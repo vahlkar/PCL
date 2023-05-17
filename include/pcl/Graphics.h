@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// pcl/Graphics.h - Released 2022-11-21T14:46:30Z
+// pcl/Graphics.h - Released 2023-05-17T17:06:03Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -257,7 +257,7 @@ public:
     * Destroys a %GraphicsContextBase object. If this graphics context is
     * active, it is terminated upon destruction.
     */
-   virtual ~GraphicsContextBase()
+   ~GraphicsContextBase() override
    {
       if ( !IsNull() )
          if ( IsPainting() )
@@ -704,7 +704,7 @@ public:
     * Destroys a %Graphics object. If this graphics context is active, it is
     * terminated upon destruction.
     */
-   virtual ~Graphics()
+   ~Graphics() override
    {
    }
 
@@ -1521,7 +1521,7 @@ public:
     * Destroys a %VectorGraphics object. If this graphics context is active, it
     * is terminated upon destruction.
     */
-   virtual ~VectorGraphics()
+   ~VectorGraphics() override
    {
    }
 
@@ -2326,4 +2326,4 @@ private:
 #endif   // __PCL_Graphics_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Graphics.h - Released 2022-11-21T14:46:30Z
+// EOF pcl/Graphics.h - Released 2023-05-17T17:06:03Z

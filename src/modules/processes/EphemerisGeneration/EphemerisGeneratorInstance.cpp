@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard EphemerisGeneration Process Module Version 1.0.0
+// Standard EphemerisGeneration Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// EphemerisGeneratorInstance.cpp - Released 2022-11-21T14:47:17Z
+// EphemerisGeneratorInstance.cpp - Released 2023-05-17T17:06:42Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -55,7 +55,6 @@
 #include "EphemerisGeneratorParameters.h"
 #include "EphemerisGeneratorProcess.h"
 #include "Integration.h"
-#include "XEPHGenerator.h"
 
 #include <pcl/AutoPointer.h>
 #include <pcl/Console.h>
@@ -106,9 +105,12 @@ EphemerisGeneratorInstance::EphemerisGeneratorInstance( const MetaProcess* m )
    , p_figureEffects( TheEGFigureEffectsParameter->DefaultValue() )
    , p_outputXEPHFile( TheEGOutputXEPHFileParameter->DefaultValue() )
    , p_outputXEPHFilePath( TheEGOutputXEPHFilePathParameter->DefaultValue() )
+   , p_outputLogFile( TheEGOutputLogFileParameter->DefaultValue() )
    , p_overwriteExistingFiles( TheEGOverwriteExistingFilesParameter->DefaultValue() )
    , p_denseOutputToleranceFactor( TheEGDenseOutputToleranceFactorParameter->DefaultValue() )
    , p_ephemerisToleranceFactor( TheEGEphemerisToleranceFactorParameter->DefaultValue() )
+   , p_ephemerisMaxExpansionLength( int32( TheEGEphemerisMaxExpansionLengthParameter->DefaultValue() ) )
+   , p_ephemerisMaxTruncationError( TheEGEphemerisMaxTruncationErrorParameter->DefaultValue() )
 {
    el_a = TheEGElemAParameter->DefaultValue();
    el_q = TheEGElemQParameter->DefaultValue();
@@ -168,9 +170,12 @@ void EphemerisGeneratorInstance::Assign( const ProcessImplementation& p )
       p_figureEffects = x->p_figureEffects;
       p_outputXEPHFile = x->p_outputXEPHFile;
       p_outputXEPHFilePath = x->p_outputXEPHFilePath;
+      p_outputLogFile = x->p_outputLogFile;
       p_overwriteExistingFiles = x->p_overwriteExistingFiles;
       p_denseOutputToleranceFactor = x->p_denseOutputToleranceFactor;
       p_ephemerisToleranceFactor = x->p_ephemerisToleranceFactor;
+      p_ephemerisMaxExpansionLength = x->p_ephemerisMaxExpansionLength;
+      p_ephemerisMaxTruncationError = x->p_ephemerisMaxTruncationError;
    }
 }
 
@@ -178,6 +183,28 @@ void EphemerisGeneratorInstance::Assign( const ProcessImplementation& p )
 
 bool EphemerisGeneratorInstance::CanExecuteOn( const View&, String& whyNot ) const
 {
+//    long double a0, d0, W;
+//    PerturberJupiter Ju( EphemerisFile::FundamentalEphemerides() );
+//    Ju.GetRotation( a0, d0, W, TimePoint( IsoString( "2022-12-26T00:00:00" ) ) );
+//
+//    double sa = Sin( a0 );
+//    double ca = Cos( a0 );
+//    double sd = Sin( d0 );
+//    double cd = Cos( d0 );
+//    double sW = Sin( W );
+//    double cW = Cos( W );
+//    Matrix M(
+//          -cW*sa - ca*sd*sW,  ca*cW - sa*sd*sW, cd*sW,
+//          -ca*cW*sd + sa*sW, -cW*sa*sd - ca*sW, cd*cW,
+//           ca*cd,             cd*sa,            sd );
+//
+//    std::cout << IsoString().Format( "%+.16f %+.16f %+.16f\n"
+//                                     "%+.16f %+.16f %+.16f\n"
+//                                     "%+.16f %+.16f %+.16f\n\n",
+//                                     M[0][0], M[0][1], M[0][2],
+//                                     M[1][0], M[1][1], M[1][2],
+//                                     M[2][0], M[2][1], M[2][2] );
+
    return false;
 }
 
@@ -189,6 +216,265 @@ bool EphemerisGeneratorInstance::CanExecuteGlobal( String& whyNot ) const
    return true;
 }
 
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+
+class EphemerisGenerationEngine
+{
+public:
+
+   static SerializableEphemerisObjectData MakeEphemeris( const EphemerisGeneratorInstance& instance
+                           , const IntegrationDenseOutputData& data
+                           , int startJDI, int endJDI
+                           , const IsoString& id, const String& name
+                           , Optional<double> H, Optional<double> G, Optional<double> B_V, Optional<double> D )
+   {
+      if ( data.IsEmpty() )
+         throw Error( "MakeEphemeris(): Internal error: Empty integration data." );
+
+      if ( data[0].t > startJDI + 0.5 || data[data.Length()-1].t + data[data.Length()-1].h < endJDI + 0.5 )
+         throw Error( "MakeEphemeris(): Internal error: invalid dense output time spans." );
+
+      IsoString objectId = id.Trimmed();
+      if ( objectId.IsEmpty() )
+         throw Error( "MakeEphemeris(): Internal error: empty object identifier." );
+
+      Console console;
+      console.WriteLn( "<end><cbr><br>* Generating ephemeris data for " + id + ' ' + name + "<br>" );
+      bool rootThread = Thread::IsRootThread();
+
+      SerializableEphemerisObjectData object( id, "SSB", name );
+      object.H = H;
+      object.G = G;
+      object.B_V = B_V;
+      object.D = D;
+
+      bool haveVelocity = !data[0].c1[0].IsEmpty();
+
+      for ( int order = 0, startDelta = 0; order <= 1; ++order )
+      {
+         IntegrationDenseOutputEvaluation eval( data, order );
+         if ( order == 0 )
+            startDelta = InitialExpansionSpan( eval( startJDI + 0.5 ).L2Norm() );
+
+         int delta = startDelta;
+         int minDelta = int32_max;
+         int maxDelta = 0;
+         double maxError[ 3 ] = {};
+         int totalCoefficients = 0;
+
+         for ( int jdi1 = startJDI, count = 0; jdi1 < endJDI; ++count )
+         {
+            int jdi2;
+            int length = 25;
+            Vector epsilon( eval.Tolerance( jdi1 + 0.5 ) * instance.p_ephemerisToleranceFactor, 3 );
+            ChebyshevFit T;
+
+            for ( bool reduce = false, truncated = false;; )
+            {
+               Module->ProcessEvents();
+               if ( rootThread )
+                  if ( console.AbortRequested() )
+                     throw ProcessAborted();
+
+               jdi2 = jdi1 + delta;
+               if ( jdi2 > endJDI )
+               {
+                  jdi2 = endJDI;
+                  delta = jdi2 - jdi1;
+               }
+
+               T = ChebyshevFit( [=]( double dt )
+                                 {
+                                    return eval( jdi1 + 0.5 + dt );
+                                 },
+                                 0, delta, 3, 2*length );
+
+               T.Truncate( epsilon );
+               if ( T.TruncatedLength() > length )
+               {
+                  --delta;
+                  reduce = true;
+               }
+               else if ( !reduce && jdi2 < endJDI )
+               {
+                  ++delta;
+               }
+               else
+               {
+                  if ( truncated )
+                     console.WarningLn( String().Format( "** Warning: Increased truncation error to %.3e", epsilon.MaxComponent() ) );
+                  break;
+               }
+
+               if ( delta == 0 )
+               {
+                  if ( !truncated )
+                     truncated = length >= instance.p_ephemerisMaxExpansionLength;
+
+                  if ( !truncated )
+                  {
+                     /*
+                      * Fast movement: try with longer coefficient series.
+                      * This may happen during close encounters.
+                      */
+                     length += 5;
+                  }
+                  else
+                  {
+                     /*
+                      * Extremely fast movement or too low tolerance factor:
+                      * Increase truncation error.
+                      */
+                     for ( int i = 0; i < 3; ++i )
+                        if ( T.TruncatedLength( i ) > length )
+                        {
+                           epsilon[i] *= 1.1;
+                           if ( epsilon[i] > instance.p_ephemerisMaxTruncationError )
+                              throw Error( String().Format( "Maximum allowed truncation error exceeded (%.3e) for object ", epsilon[i] ) + id + ' ' + name );
+                        }
+                  }
+
+                  delta = 16;
+                  reduce = false;
+               }
+            }
+
+            if ( T.TruncationError() > epsilon.MaxComponent() )
+               throw Error( String().Format( "MakeEphemeris(): Internal error: %d -> %d (%d) : nx=%d ny=%d nz=%d e=%.3e",
+                              jdi1, jdi2, delta,
+                              T.TruncatedLength( 0 ), T.TruncatedLength( 1 ), T.TruncatedLength( 2 ), T.TruncationError() ) );
+
+            object.data[order] << SerializableEphemerisData( TimePoint( jdi1, 0.5 ), T );
+
+            console.WriteLn( String().Format( "%5d : %+10.1f -> %+10.1f (%5d) : %3d %3d %3d %.3e %.3e %.3e"
+                                    , count, jdi1+0.5, jdi2+0.5, delta
+                                    , T.TruncatedLength( 0 ), T.TruncatedLength( 1 ), T.TruncatedLength( 2 )
+                                    , T.TruncationError( 0 ), T.TruncationError( 1 ), T.TruncationError( 2 ) ) );
+            Module->ProcessEvents();
+
+            for ( int i = 0; i < 3; ++i )
+               if ( T.TruncationError( i ) > maxError[i] )
+                  maxError[i] = T.TruncationError( i );
+
+            totalCoefficients += T.NumberOfTruncatedCoefficients();
+
+            if ( delta < minDelta )
+               if ( jdi2 < endJDI || count == 0 )
+                  minDelta = delta;
+            if ( delta > maxDelta )
+               maxDelta = delta;
+
+            jdi1 = jdi2;
+         }
+
+         console.WriteLn( "\nObject ....................... " + id + ' ' + name
+                        + "\nDerivative order ............. " + String( order )
+                        + "\nTotal time span .............. " + String().Format( "%+10.1f -> %+10.1f (%d days)"
+                                                                  , startJDI+0.5, endJDI+0.5, Abs( endJDI - startJDI ) )
+                        + "\nTotal Chebyshev expansions ... " + String( object.data[order].Length() )
+                        + "\nSmallest time span ........... " + String( minDelta ) + " (days)"
+                        + "\nLargest time span ............ " + String( maxDelta ) + " (days)"
+                        + "\nLargest truncation errors .... " + String().Format( "%.3e  %.3e  %.3e  (%s)"
+                                                                  , maxError[0], maxError[1], maxError[2], order ? "au/day" : "au" )
+                        + "\nTotal coefficients ........... " + String( totalCoefficients ) );
+
+         Module->ProcessEvents();
+
+         if ( !haveVelocity )
+            break;
+      }
+
+      return object;
+   }
+
+private:
+
+   static int InitialExpansionSpan( double d )
+   {
+      if ( d < 0.5 )
+         return 30;
+      if ( d < 0.7 )
+         return 140;
+      if ( d < 1.2 )
+         return 100;
+      if ( d < 1.5 )
+         return 250;
+      if ( d < 3 )
+         return 400;
+      if ( d < 5 )
+         return 700;
+      if ( d < 8 )
+         return 1000;
+      if ( d < 15 )
+         return 3400;
+      if ( d < 30 )
+         return 4500;
+      return 5400;
+   }
+
+   class IntegrationDenseOutputEvaluation
+   {
+   public:
+
+      IntegrationDenseOutputEvaluation( const IntegrationDenseOutputData& data, int order )
+         : m_data( data )
+         , m_order( order )
+      {
+      }
+
+      Vector operator()( TimePoint t ) const
+      {
+         Update( t.JD() );
+         return m_itemExpansion( t - m_itemStartTime );
+      }
+
+      double Tolerance( TimePoint t ) const
+      {
+         Update( t.JD() );
+         return m_data[m_itemIndex].eps;
+      }
+
+   private:
+
+        const IntegrationDenseOutputData& m_data;
+              int                         m_order;
+      mutable int                         m_itemIndex = -1;
+      mutable TimePoint                   m_itemStartTime;
+      mutable ChebyshevFit                m_itemExpansion;
+
+      void Update( double t ) const
+      {
+         for ( int N = int( m_data.Length() ), l = 0, r = N-1; ; )
+         {
+            int m = (l + r) >> 1;
+            const IntegrationDenseOutputItem& item = m_data[m];
+            if ( t < item.t )
+               r = m;
+            else
+            {
+               if ( m == N-1 || t <= item.t + item.h )
+               {
+                  if ( m != m_itemIndex )
+                  {
+                     m_itemIndex = m;
+                     m_itemStartTime = item.t;
+                     m_itemExpansion = ChebyshevFit(
+                        ChebyshevFit::coefficient_series( m_order ? item.c1[0] : item.c0[0]
+                                                        , m_order ? item.c1[1] : item.c0[1]
+                                                        , m_order ? item.c1[2] : item.c0[2] ), 0, item.h );
+                  }
+                  break;
+               }
+
+               l = m + 1;
+            }
+         }
+      }
+   };
+};
+
+// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 struct IntegrationObjectData
@@ -204,172 +490,201 @@ struct IntegrationObjectData
    Optional<double> D;
 };
 
+using IntegrationObjectDataList = Array<IntegrationObjectData>;
+
 class IntegrationThread : public Thread
 {
 public:
 
-   IntegrationThread( const EphemerisGeneratorInstance& instance
+   IntegrationThread( AbstractImage::ThreadData& threadData
+                    , const EphemerisGeneratorInstance& instance
                     , const Ephemerides& eph
-                    , const IntegrationObjectData& object
-                    , XEPHGenerator* xeph )
-      : m_instance( instance )
+                    , const IntegrationObjectDataList& objects
+                    , size_type start, size_type end )
+      : m_data( threadData )
+      , m_instance( instance )
       , m_eph( eph )
-      , m_object( object )
-      , m_xeph( xeph )
+      , m_objects( objects )
+      , m_start( start )
+      , m_end( end )
    {
    }
 
    void Run() override
    {
-      try
+      INIT_THREAD_MONITOR()
+
+      Console console;
+      bool rootThread = IsRootThread();
+
+      for ( size_type index = m_start; index < m_end; ++index )
       {
-         m_success = false;
+         const IntegrationObjectData& object = m_objects[index];
 
-         Console console;
-         console.WriteLn(    "<end><cbr><br>Integrating orbital motion for " + m_object.objectId + ' ' + m_object.objectName + "<br>" );
-         console.WriteLn(                  "Initial conditions:" );
-         console.WriteLn( String().Format( "Epoch (TDB) ......... %.6f", m_object.epoch.JD() ) + " = " + m_object.epoch.ToString() );
-         console.WriteLn( String().Format( "Position (au) ....... %+.16e %+.16e %+.16e<br>"
-                                           "Velocity (au/day) ... %+.16e %+.16e %+.16e"
-                                           , m_object.initialPosition[0], m_object.initialPosition[1], m_object.initialPosition[2]
-                                           , m_object.initialVelocity[0], m_object.initialVelocity[1], m_object.initialVelocity[2] ) );
-
-         TimePoint startTime( Min( m_instance.p_startTimeJD, m_instance.p_endTimeJD ) );
-         TimePoint endTime( Max( m_instance.p_startTimeJD, m_instance.p_endTimeJD ) );
-         if ( startTime > m_object.epoch )
-            startTime = m_object.epoch;
-         if ( endTime < m_object.epoch )
-            endTime = m_object.epoch;
-
-         StandardStatus status;
-         StatusMonitor monitor;
-         monitor.SetCallback( &status );
-         monitor.Initialize( String().Format( "Performing numerical integration: %.6f -> %.6f", startTime.JD(), endTime.JD() )
-                           , size_type( endTime - startTime ) );
-
-         Integration integrator( m_eph, m_instance, m_object.objectId/*excludeId*/, m_object.objectName/*excludeName*/ );
-
-         IntegrationDenseOutputData data;
-         TimePoint t0, t1;
-         Vector r0, v0, r1, v1;
-         bool rootThread = IsRootThread();
-         double hacc = 0;
-
-         for ( int forward = 0; forward < 2; ++forward )
-         {
-            Vector r = m_object.initialPosition;
-            Vector v = m_object.initialVelocity;
-            TimePoint t = forward ? endTime : startTime;
-            if ( t != m_object.epoch )
-            {
-               integrator( r, v, m_object.epoch, t,
-                           [&]( size_type step, double h )
-                           {
-                              hacc += h;
-                              if ( hacc > 1 )
-                              {
-                                 size_type d = size_type( hacc );
-                                 hacc -= d;
-                                 monitor += d;
-                              }
-                              Module->ProcessEvents();
-                              if ( rootThread )
-                                 if ( console.AbortRequested() )
-                                    throw ProcessAborted();
-                           } );
-
-               if ( m_xeph != nullptr )
-                  data << integrator.OutputData();
-
-               t = integrator.FinalTime();
-               Integration<>::State s = integrator.FinalState();
-               r = Vector( s[0], s[1], s[2] );
-               v = Vector( s[3], s[4], s[5] );
-            }
-
-            if ( forward )
-            {
-               t1 = t;
-               r1 = r;
-               v1 = v;
-            }
-            else
-            {
-               t0 = t;
-               r0 = r;
-               v0 = v;
-            }
-         }
-
-         monitor.Complete();
-
-         console.WriteLn(    "<end><cbr><br>Integration results:<br>" );
-         console.WriteLn( String().Format( "Start time (TDB) .... %.6f", t0.JD() ) + " = " + t0.ToString() );
-         console.WriteLn( String().Format( "Position (au) ....... %+.10e %+.10e %+.10e<br>"
-                                           "Velocity (au/day) ... %+.10e %+.10e %+.10e<br>"
-                                           , r0[0], r0[1], r0[2], v0[0], v0[1], v0[2] ) );
-         console.WriteLn( String().Format( "End time (TDB) ...... %.6f", t1.JD() ) + " = " + t1.ToString() );
-         console.WriteLn( String().Format( "Position (au) ....... %+.10e %+.10e %+.10e<br>"
-                                           "Velocity (au/day) ... %+.10e %+.10e %+.10e"
-                                           , r1[0], r1[1], r1[2], v1[0], v1[1], v1[2] ) );
-
-         if ( m_xeph != nullptr )
-         {
-            data.Sort();
-            m_xeph->AddObject( data, t0, t1
-                             , m_instance.p_ephemerisToleranceFactor
-                             , m_object.objectId, m_object.objectName
-                             , m_object.H, m_object.G, m_object.B_V, m_object.D );
-         }
-
-         m_success = true;
-      }
-      catch ( ... )
-      {
-         if ( IsRootThread() )
-            throw;
-
-         String text = ConsoleOutputText();
-         ClearConsoleOutputText();
          try
          {
-            throw;
+            console.WriteLn(    "<end><cbr><br>Integrating orbital motion for " + object.objectId + ' ' + object.objectName + "<br>" );
+            console.WriteLn(                  "Initial conditions:" );
+            console.WriteLn( String().Format( "Epoch (TDB) ......... %.8f", object.epoch.JD() ) + " = " + TimeToString( object.epoch ) );
+            console.WriteLn( String().Format( "Position (au) ....... %+.16e %+.16e %+.16e<br>"
+                                              "Velocity (au/day) ... %+.16e %+.16e %+.16e"
+                                             , object.initialPosition[0], object.initialPosition[1], object.initialPosition[2]
+                                             , object.initialVelocity[0], object.initialVelocity[1], object.initialVelocity[2] ) );
+
+            TimePoint ephemerisStartTime( Min( m_instance.p_startTimeJD, m_instance.p_endTimeJD ) );
+            TimePoint ephemerisEndTime( Max( m_instance.p_startTimeJD, m_instance.p_endTimeJD ) );
+
+            TimePoint startTime = ephemerisStartTime;
+            TimePoint endTime = ephemerisEndTime;
+            if ( startTime > object.epoch )
+               startTime = object.epoch;
+            if ( endTime < object.epoch )
+               endTime = object.epoch;
+
+            StandardStatus status;
+            StatusMonitor monitor;
+            if ( rootThread )
+            {
+               monitor.SetCallback( &status );
+               monitor.Initialize( String().Format( "Performing numerical integration: %.6f -> %.6f", startTime.JD(), endTime.JD() )
+                                 , size_type( endTime - startTime ) );
+            }
+
+            Integration integrator( m_eph, m_instance, object.objectId/*excludeId*/, object.objectName/*excludeName*/ );
+
+            IntegrationDenseOutputData integrationData;
+            TimePoint t0, t1;
+            Vector r0, v0, r1, v1;
+            double hacc = 0;
+
+            for ( int forward = 0; forward < 2; ++forward )
+            {
+               Vector r = object.initialPosition;
+               Vector v = object.initialVelocity;
+               TimePoint t = forward ? endTime : startTime;
+               if ( t != object.epoch )
+               {
+                  integrator( r, v, object.epoch, t,
+                              [&]( size_type step, double h, bool stop )
+                              {
+                                 if ( unlikely( stop ) )
+                                 {
+                                    monitor.Clear();
+                                    return;
+                                 }
+
+                                 hacc += h;
+                                 if ( hacc > 1 )
+                                 {
+                                    size_type d = size_type( hacc );
+                                    hacc -= d;
+                                    if ( rootThread )
+                                       monitor += d;
+                                 }
+                                 Module->ProcessEvents();
+                                 if ( rootThread )
+                                    if ( console.AbortRequested() )
+                                       throw ProcessAborted();
+                              } );
+
+                  if ( m_instance.p_outputXEPHFile )
+                     integrationData << integrator.OutputData();
+
+                  t = integrator.FinalTime();
+                  Integration<>::State s = integrator.FinalState();
+                  r = Vector( s[0], s[1], s[2] );
+                  v = Vector( s[3], s[4], s[5] );
+               }
+
+               if ( forward )
+               {
+                  t1 = t;
+                  r1 = r;
+                  v1 = v;
+               }
+               else
+               {
+                  t0 = t;
+                  r0 = r;
+                  v0 = v;
+               }
+            }
+
+            if ( rootThread )
+               monitor.Complete();
+
+            console.WriteLn(    "<end><cbr><br>Integration results:<br>" );
+            console.WriteLn( String().Format( "Start time (TDB) .... %.8f", t0.JD() ) + " = " + TimeToString( t0 ) );
+            console.WriteLn( String().Format( "Position (au) ....... %+.10e %+.10e %+.10e<br>"
+                                              "Velocity (au/day) ... %+.10e %+.10e %+.10e<br>"
+                                             , r0[0], r0[1], r0[2], v0[0], v0[1], v0[2] ) );
+            console.WriteLn( String().Format( "End time (TDB) ...... %.8f", t1.JD() ) + " = " + TimeToString( t1 ) );
+            console.WriteLn( String().Format( "Position (au) ....... %+.10e %+.10e %+.10e<br>"
+                                              "Velocity (au/day) ... %+.10e %+.10e %+.10e"
+                                             , r1[0], r1[1], r1[2], v1[0], v1[1], v1[2] ) );
+
+            if ( m_instance.p_outputXEPHFile )
+            {
+               integrationData.Sort();
+               int startJDI = ephemerisStartTime.JDI();
+               int endJDI = ephemerisEndTime.JDI();
+               if ( ephemerisEndTime.JDF() < 0.5 )
+                  --endJDI;
+               m_ephemerides << EphemerisGenerationEngine::MakeEphemeris( m_instance
+                                                      , integrationData
+                                                      , startJDI, endJDI
+                                                      , object.objectId, object.objectName
+                                                      , object.H, object.G, object.B_V, object.D );
+            }
          }
-         ERROR_HANDLER
-         m_errorInfo = ConsoleOutputText();
-         ClearConsoleOutputText();
-         Console().Write( text );
+         catch ( ... )
+         {
+            m_failed << object.objectId.ToString() + ' ' + object.objectName;
+
+            try
+            {
+               throw;
+            }
+            ERROR_HANDLER
+         }
+
+         UPDATE_THREAD_MONITOR( 1 )
       }
    }
 
-   bool Succeeded() const
+   const SerializableEphemerisObjectDataList& EphemeridesData() const
    {
-      return m_success;
+      return m_ephemerides;
    }
 
-   const String& ErrorInfo() const
+   bool Failed() const
    {
-      return m_errorInfo;
+      return !m_failed.IsEmpty();
    }
 
-   IsoString ObjectIdAndName() const
+   const StringList& FailedObjects() const
    {
-      if ( m_object.objectId.IsEmpty() )
-         return m_object.objectName;
-      return m_object.objectId + ' ' + m_object.objectName;
+      return m_failed;
    }
 
 private:
 
-   const EphemerisGeneratorInstance& m_instance;
-   const Ephemerides&                m_eph;
-         IntegrationObjectData       m_object;
-         XEPHGenerator*              m_xeph;
-         String                      m_errorInfo;
-         bool                        m_success = false;
+   const AbstractImage::ThreadData&          m_data;
+   const EphemerisGeneratorInstance&         m_instance;
+   const Ephemerides&                        m_eph;
+   const IntegrationObjectDataList&          m_objects;
+         size_type                           m_start, m_end;
+         SerializableEphemerisObjectDataList m_ephemerides;
+         StringList                          m_failed;
+
+   static String TimeToString( const TimePoint& t )
+   {
+      return t.ToString( ISO8601ConversionOptionsNoTimeZone() );
+   }
 };
 
-typedef IndirectArray<IntegrationThread> thread_list;
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 static String UniqueFilePath( const String& filePath )
 {
@@ -392,17 +707,23 @@ bool EphemerisGeneratorInstance::ExecuteGlobal()
 
    Ephemerides eph( *this );
 
-   AutoPointer<XEPHGenerator> xeph;
    if ( p_outputXEPHFile )
    {
       if ( p_outputXEPHFilePath.IsEmpty() )
          throw Error( "No output ephemerides file has been specified." );
       if ( File::ExtractSuffix( p_outputXEPHFilePath ) != ".xeph" )
          throw Error( "The output ephemerides file name must have the '.xeph' extension." );
-      xeph = new XEPHGenerator;
    }
 
-   Array<IntegrationObjectData> objects;
+   /*
+    * N.B. Unique object identifiers are mandatory in XEPH files, so we have to
+    * generate one (a dumb one, really) automatically when none is available.
+    * Automatically generated object identifiers follow the pattern X<n>, where
+    * <n> is a zero-padded running number from 1 to N and N is the total number
+    * of objects in the XEPH file.
+    */
+
+   IntegrationObjectDataList objects;
 
    switch ( p_workingMode )
    {
@@ -411,7 +732,8 @@ bool EphemerisGeneratorInstance::ExecuteGlobal()
       {
          objects << IntegrationObjectData{ p_position, p_velocity
                                           , p_epochJD
-                                          , p_objectId.ToIsoString(), p_objectName.ToIsoString()
+                                          , p_objectId.IsEmpty() ? IsoString( "X0001" ) : p_objectId.ToIsoString()
+                                          , p_objectName.ToIsoString()
                                           , p_H, p_G
                                           , p_B_V_defined ? Optional<double>( p_B_V ) : Optional<double>()
                                           , p_D_defined ? Optional<double>( p_D ) : Optional<double>() };
@@ -435,7 +757,8 @@ bool EphemerisGeneratorInstance::ExecuteGlobal()
 
          objects << IntegrationObjectData{ initialPosition, initialVelocity
                                           , p_epochJD
-                                          , p_objectId.ToIsoString(), p_objectName.ToIsoString()
+                                          , p_objectId.IsEmpty() ? IsoString( "X0001" ) : p_objectId.ToIsoString()
+                                          , p_objectName.ToIsoString()
                                           , p_H, p_G
                                           , p_B_V_defined ? Optional<double>( p_B_V ) : Optional<double>()
                                           , p_D_defined ? Optional<double>( p_D ) : Optional<double>() };
@@ -484,7 +807,8 @@ bool EphemerisGeneratorInstance::ExecuteGlobal()
 
             objects << IntegrationObjectData{ initialPosition, initialVelocity
                                              , object.epochJD
-                                             , object.id, object.name
+                                             , object.id.IsEmpty() ? IsoString().Format( "X%04u", objects.Length()+1 ) : object.id
+                                             , object.name
                                              , object.H, object.G
                                              , object.B_V, object.D };
          }
@@ -494,165 +818,94 @@ bool EphemerisGeneratorInstance::ExecuteGlobal()
 
    Console console;
    console.EnableAbort();
-   console.WriteLn( String().Format( "<end><cbr><br>Performing numerical integration: %u object%s."
-                                    , objects.Length(), (objects.Length() > 1) ? "s" : "" ) );
 
-   Array<size_type> pendingItems;
-   for ( size_type i = 0; i < objects.Length(); ++i )
-      pendingItems << i;
+   StatusMonitor monitor;
 
-   int succeeded = 0;
-   int failed = 0;
+   SerializableEphemerisObjectDataList ephemerides;
+   StringList failed;
 
-   int numberOfThreadsAvailable = Thread::NumberOfThreads( PCL_MAX_PROCESSORS, 1 );
-
-   IsoStringList textOutput, failedObjects;
-
-   if ( pendingItems.Length() > 1 && numberOfThreadsAvailable > 1 )
+   if ( objects.Length() > 1 )
    {
-      int numberOfThreads = Min( numberOfThreadsAvailable, int( pendingItems.Length() ) );
-      thread_list runningThreads( numberOfThreads ); // N.B.: all pointers are set to nullptr by IndirectArray's ctor.
+      Array<size_type> L = Thread::OptimalThreadLoads( objects.Length() );
+      if ( L.Length() > 1 )
+         console.NoteLn( String().Format( "<end><cbr><br>* EphemerisGenerator: Using %u worker threads.", L.Length() ) );
 
-      console.NoteLn( String().Format( "* Using %d worker threads.", numberOfThreads ) );
+      StandardStatus status;
+      monitor.SetCallback( &status );
+      monitor.Initialize( "Performing numerical integration", objects.Length() );
+      Module->ProcessEvents();
 
-      try
+      AbstractImage::ThreadData threadData( monitor, objects.Length() );
+
+      ReferenceArray<IntegrationThread> threads;
+      for ( size_type i = 0, n = 0; i < L.Length(); n += L[i++] )
+         if ( L[i] > 0 ) // ?!
+            threads.Add( new IntegrationThread( threadData, *this, eph, objects, n, n + L[i] ) );
+      AbstractImage::RunThreads( threads, threadData );
+
+      for ( const IntegrationThread& thread : threads )
+         failed << thread.FailedObjects();
+
+      if ( p_outputXEPHFile )
       {
-         /*
-          * Thread execution loop.
-          */
-         for ( ;; )
+         for ( const IntegrationThread& thread : threads )
+            ephemerides << thread.EphemeridesData();
+
+         if ( p_outputLogFile )
          {
-            try
-            {
-               int running = 0;
-               for ( thread_list::iterator i = runningThreads.Begin(); i != runningThreads.End(); ++i )
+            IsoString logText;
+            logText << IsoString( '*', 79 ) << '\n'
+                  << TimePoint::Now().ToIsoString() << '\n'
+                  << IsoString( '*', 79 ) << '\n';
+            for ( const IntegrationThread& thread : threads )
+               logText << thread.ConsoleOutputText().ToUTF8();
+            logText.DeleteString( "<end>" );
+            logText.DeleteString( "<cbr>" );
+            logText.DeleteString( "\x1b[31m" );
+            logText.DeleteString( "\x1b[32m" );
+            logText.DeleteString( "\x1b[35m" );
+            logText.DeleteString( "\x1b[39m" );
+            logText.ReplaceString( "<br>", "\n" );
+
+            String logFilePath = File::ChangeExtension( p_outputXEPHFilePath, ".log" );
+            console.WriteLn( "<end><cbr><br>Generating output log file: <raw>" + logFilePath + "</raw>" );
+            if ( File::Exists( logFilePath ) )
+               if ( p_overwriteExistingFiles )
+                  console.WarningLn( "** Warning: Overwriting existing file" );
+               else
                {
-                  Module->ProcessEvents();
-                  if ( console.AbortRequested() )
-                     throw ProcessAborted();
-
-                  if ( *i != nullptr )
-                  {
-                     if ( !(*i)->Wait( 150 ) )
-                     {
-                        ++running;
-                        continue;
-                     }
-
-                     /*
-                      * A thread has just finished.
-                      */
-                     (*i)->FlushConsoleOutputText();
-                     console.WriteLn();
-                     String errorInfo;
-                     if ( !(*i)->Succeeded() )
-                     {
-                        errorInfo = (*i)->ErrorInfo();
-                        failedObjects << (*i)->ObjectIdAndName();
-                     }
-
-                     /*
-                      * N.B.: IndirectArray<>::Delete() sets to zero the
-                      * pointer pointed to by the iterator, but does not
-                      * remove the array element.
-                      */
-                     runningThreads.Delete( i );
-
-                     if ( !errorInfo.IsEmpty() )
-                        throw Error( errorInfo );
-
-                     ++succeeded;
-                  }
-
-                  /*
-                   * If there are pending items, create a new thread and
-                   * fire the next one.
-                   */
-                  if ( !pendingItems.IsEmpty() )
-                  {
-                     *i = new IntegrationThread( *this, eph, objects[*pendingItems], xeph.Ptr() );
-                     pendingItems.Remove( pendingItems.Begin() );
-                     size_type threadIndex = i - runningThreads.Begin();
-                     console.NoteLn( String().Format( "<end><cbr>[%03u] ", threadIndex ) + (*i)->ObjectIdAndName() );
-                     (*i)->Start( ThreadPriority::DefaultMax, threadIndex );
-                     ++running;
-                     if ( pendingItems.IsEmpty() )
-                        console.NoteLn( "<br>* Waiting for running tasks to terminate...<br>" );
-                     else if ( succeeded+failed > 0 )
-                        console.WriteLn();
-                  }
+                  logFilePath = UniqueFilePath( logFilePath );
+                  console.NoteLn( "* File already exists, writing to: " + logFilePath );
                }
-
-               if ( !running )
-                  break;
-            }
-            catch ( ProcessAborted& )
-            {
-               throw;
-            }
-            catch ( ... )
-            {
-               if ( console.AbortRequested() )
-                  throw ProcessAborted();
-
-               ++failed;
-               try
-               {
-                  throw;
-               }
-               ERROR_HANDLER
-            }
-         } // for
+            File::WriteTextFile( logFilePath, logText );
+         }
       }
-      catch ( ... )
-      {
-         console.NoteLn( "<end><cbr><br>* Waiting for running tasks to terminate..." );
-         for ( IntegrationThread* thread : runningThreads )
-            if ( thread != nullptr )
-               thread->Abort();
-         for ( IntegrationThread* thread : runningThreads )
-            if ( thread != nullptr )
-               thread->Wait();
-         runningThreads.Destroy();
-         throw;
-      }
+
+      threads.Destroy();
    }
-   else // pendingItems.Length() == 1 || numberOfThreadsAvailable == 1
+   else
    {
-      for ( size_type itemIndex : pendingItems )
-      {
-         try
-         {
-            console.WriteLn( "<end><cbr><br>" );
-            IntegrationThread thread( *this, eph, objects[itemIndex], xeph.Ptr() );
-            thread.Run();
-            ++succeeded;
-         }
-         catch ( ProcessAborted& )
-         {
-            throw;
-         }
-         catch ( ... )
-         {
-            if ( console.AbortRequested() )
-               throw ProcessAborted();
+      console.WriteLn( String().Format( "<end><cbr><br>Performing numerical integration: %u object%s."
+                                       , objects.Length(), (objects.Length() > 1) ? "s" : "" ) );
+      Module->ProcessEvents();
 
-            ++failed;
-            try
-            {
-               throw;
-            }
-            ERROR_HANDLER
-         }
-      }
+      AbstractImage::ThreadData threadData;
+      IntegrationThread thread( threadData, *this, eph, objects, 0, objects.Length() );
+      thread.Run();
+
+      failed << thread.FailedObjects();
+
+      if ( p_outputXEPHFile )
+         ephemerides = thread.EphemeridesData();
    }
 
    Module->ProcessEvents();
 
-   if ( succeeded == 0 )
+   if ( failed.Length() == objects.Length() )
       throw Error( "No object could be successfully integrated." );
-   else if ( !failedObjects.IsEmpty() )
-      console.CriticalLn( "<end><cbr><br>*** The following objects couldn't be successfully integrated:<br>" + String().ToCommaSeparated( failedObjects ) );
+
+   if ( !failed.IsEmpty() )
+      console.CriticalLn( "<end><cbr><br>*** Error: The following objects couldn't be successfully integrated:<br>" + String().ToNewLineSeparated( failed ) );
 
    if ( p_outputXEPHFile )
    {
@@ -676,12 +929,18 @@ bool EphemerisGeneratorInstance::ExecuteGlobal()
 //    metadata.description = ;
       metadata.organizationName = "Pleiades Astrophoto S.L.";
       metadata.authors = "PTeam";
-      metadata.copyright = String().Format( "Copyright (C) %d, Pleiades Astrophoto S.L.", TimePoint::Now().Year() );
+      metadata.copyright = String().Format( "Copyright (c) %d, Pleiades Astrophoto S.L.", TimePoint::Now().Year() );
 
-      xeph->Serialize( outputFilePath, metadata );
+      int startJDI = startTime.JDI();
+      int endJDI = endTime.JDI();
+      if ( endTime.JDF() < 0.5 )
+         --endJDI;
+
+      EphemerisFile::Serialize( outputFilePath,
+                                TimePoint( startJDI, 0.5 ), TimePoint( endJDI, 0.5 ),
+                                ephemerides, metadata );
    }
 
-   console.NoteLn( String().Format( "<end><cbr><br>===== EphemerisGenerator: %d succeeded, %d failed =====", succeeded, failed ) );
    return true;
 }
 
@@ -773,12 +1032,18 @@ void* EphemerisGeneratorInstance::LockParameter( const MetaParameter* p, size_ty
       return &p_outputXEPHFile;
    if ( p == TheEGOutputXEPHFilePathParameter )
       return p_outputXEPHFilePath.Begin();
+   if ( p == TheEGOutputLogFileParameter )
+      return &p_outputLogFile;
    if ( p == TheEGOverwriteExistingFilesParameter )
       return &p_overwriteExistingFiles;
    if ( p == TheEGDenseOutputToleranceFactorParameter )
       return &p_denseOutputToleranceFactor;
    if ( p == TheEGEphemerisToleranceFactorParameter )
       return &p_ephemerisToleranceFactor;
+   if ( p == TheEGEphemerisMaxExpansionLengthParameter )
+      return &p_ephemerisMaxExpansionLength;
+   if ( p == TheEGEphemerisMaxTruncationErrorParameter )
+      return &p_ephemerisMaxTruncationError;
 
    return nullptr;
 }
@@ -878,4 +1143,4 @@ size_type EphemerisGeneratorInstance::ParameterLength( const MetaParameter* p, s
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF EphemerisGeneratorInstance.cpp - Released 2022-11-21T14:47:17Z
+// EOF EphemerisGeneratorInstance.cpp - Released 2023-05-17T17:06:42Z

@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.9.0
+// Standard ColorCalibration Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// CurveExplorerDialog.cpp - Released 2022-11-21T14:47:17Z
+// CurveExplorerDialog.cpp - Released 2023-05-17T17:06:42Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -225,6 +225,7 @@ void CurveExplorerDialog::UpdateCurves()
 void CurveExplorerDialog::UpdateGraph()
 {
    SampledSpectrumDataList curves;
+   int qeCurveCount = 0, filterCurveCount = 0;
    {
       IndirectArray<TreeBox::Node> nodes = Curves_TreeBox.SelectedNodes();
       if ( nodes.IsEmpty() )
@@ -240,7 +241,13 @@ void CurveExplorerDialog::UpdateGraph()
       {
          int i = sourceCurves.Find( node->Text( 2 ) );
          if ( i >= 0 )
+         {
             curves << sourceCurves[i];
+            if ( sourceCurves[i].channel == "Q" )
+               ++qeCurveCount;
+            else
+               ++filterCurveCount;
+         }
       }
 
       if ( curves.IsEmpty() )
@@ -314,6 +321,22 @@ void CurveExplorerDialog::UpdateGraph()
 
       String coreSrcDir = PixInsightSettings::GlobalString ( "Application/SrcDirectory" );
 
+      String yLabel;
+      if ( m_workingWithFilters )
+      {
+         if ( qeCurveCount > 0 )
+         {
+            if ( filterCurveCount > 0 )
+               yLabel = "Transmission / Quantum efficiency";
+            else
+               yLabel = "Quantum efficiency";
+         }
+         else
+            yLabel = "Transmission";
+      }
+      else
+         yLabel = "Normalized flux";
+
       String html =
 "<!DOCTYPE html>\n"
 "<html>\n"
@@ -337,7 +360,7 @@ graphData + ",\n"
 "         legend: 'always',\n"
 "         labels: " + graphLabels + ",\n"
 "         xlabel: 'Wavelength (nm)',\n"
-"         ylabel: '" + String( m_workingWithFilters ? "Transmission" : "Normalized flux" ) + "',\n"
+"         ylabel: '" + yLabel + "',\n"
 "         xLabelHeight: 15,\n"
 "         yLabelWidth: 15,\n"
 "         axisLabelFontSize: 10,\n"
@@ -766,4 +789,4 @@ void CurveExplorerDialog::e_Hide( Control& sender )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CurveExplorerDialog.cpp - Released 2022-11-21T14:47:17Z
+// EOF CurveExplorerDialog.cpp - Released 2023-05-17T17:06:42Z

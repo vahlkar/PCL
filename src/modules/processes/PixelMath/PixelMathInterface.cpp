@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.9.2
+// Standard PixelMath Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// PixelMathInterface.cpp - Released 2022-11-21T14:47:18Z
+// PixelMathInterface.cpp - Released 2023-05-17T17:06:42Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -330,28 +330,40 @@ void PixelMathInterface::UpdateControls()
 
 void PixelMathInterface::ImportSourceCode()
 {
-   String x0 = m_instance.p_expression[0].Trimmed();
-   String x1 = m_instance.p_expression[1].Trimmed();
-   String x2 = m_instance.p_expression[2].Trimmed();
-   String x3 = m_instance.p_expression[3].Trimmed();
-   String x4 = m_instance.p_symbols.Trimmed();
+   String text0 = m_instance.p_expression[0].Trimmed();
+   String text1 = m_instance.p_expression[1].Trimmed();
+   String text2 = m_instance.p_expression[2].Trimmed();
+   String text3 = m_instance.p_expression[3].Trimmed();
+   String textS = m_instance.p_symbols.Trimmed();
 
-   if ( !x0.IsEmpty() )
-      x0 << '\n';
-   if ( !x1.IsEmpty() )
-      x1 << '\n';
-   if ( !x2.IsEmpty() )
-      x2 << '\n';
-   if ( !x3.IsEmpty() )
-      x3 << '\n';
-   if ( !x4.IsEmpty() )
-      x4 << '\n';
+   if ( !text0.IsEmpty() )
+      text0 << '\n';
+   if ( !text1.IsEmpty() )
+      text1 << '\n';
+   if ( !text2.IsEmpty() )
+      text2 << '\n';
+   if ( !text3.IsEmpty() )
+      text3 << '\n';
+   if ( !textS.IsEmpty() )
+      textS << '\n';
 
-   GUI->RK_CodeEditor.SetText( x0 );
-   GUI->G_CodeEditor.SetText( x1 );
-   GUI->B_CodeEditor.SetText( x2 );
-   GUI->A_CodeEditor.SetText( x3 );
-   GUI->Symbols_CodeEditor.SetText( x4 );
+   /*
+    * ### BUG
+    * Replacing editor text contents with existing selections leads to crash.
+    * ### TODO
+    * Fix this in core 1.8.9-2
+    */
+   GUI->RK_CodeEditor.SetSelection( Rect( 0 ) );
+   GUI->G_CodeEditor.SetSelection( Rect( 0 ) );
+   GUI->B_CodeEditor.SetSelection( Rect( 0 ) );
+   GUI->A_CodeEditor.SetSelection( Rect( 0 ) );
+   GUI->Symbols_CodeEditor.SetSelection( Rect( 0 ) );
+
+   GUI->RK_CodeEditor.SetText( text0 );
+   GUI->G_CodeEditor.SetText( text1 );
+   GUI->B_CodeEditor.SetText( text2 );
+   GUI->A_CodeEditor.SetText( text3 );
+   GUI->Symbols_CodeEditor.SetText( textS );
 
    MakeSummary();
 
@@ -1010,4 +1022,4 @@ PixelMathInterface::GUIData::GUIData( PixelMathInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PixelMathInterface.cpp - Released 2022-11-21T14:47:18Z
+// EOF PixelMathInterface.cpp - Released 2023-05-17T17:06:42Z

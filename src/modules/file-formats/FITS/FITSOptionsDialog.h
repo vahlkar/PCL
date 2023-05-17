@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard FITS File Format Module Version 1.1.10
+// Standard FITS File Format Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// FITSOptionsDialog.h - Released 2022-11-21T14:46:51Z
+// FITSOptionsDialog.h - Released 2023-05-17T17:06:31Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -91,14 +91,6 @@ private:
          RadioButton       Float_RadioButton;
          RadioButton       Double_RadioButton;
 
-   GroupBox          EmbeddedData_GroupBox;
-   HorizontalSizer   EmbeddedData_Sizer;
-      VerticalSizer     EmbeddedDataLeft_Sizer;
-         CheckBox          ICCProfile_CheckBox;
-         CheckBox          Properties_CheckBox;
-      VerticalSizer     EmbeddedDataRight_Sizer;
-         CheckBox          Thumbnail_CheckBox;
-         CheckBox          FixedPrecision_CheckBox;
    HorizontalSizer   BottomSection_Sizer;
       PushButton        OK_PushButton;
       PushButton        Cancel_PushButton;
@@ -114,4 +106,4 @@ private:
 #endif   // __FITSOptionsDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF FITSOptionsDialog.h - Released 2022-11-21T14:46:51Z
+// EOF FITSOptionsDialog.h - Released 2023-05-17T17:06:31Z

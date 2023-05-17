@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// pcl/SphericalRotation.h - Released 2022-11-21T14:46:30Z
+// pcl/SphericalRotation.h - Released 2023-05-17T17:06:03Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -70,7 +70,7 @@ namespace pcl
 
 /*!
  * \class SphericalRotation
- * \brief Rotation in spherical coordinates
+ * \brief Rotation in spherical coordinates.
  *
  * \ingroup astrometry_support
  */
@@ -91,10 +91,27 @@ public:
    SphericalRotation( const SphericalRotation& ) = default;
 
    /*!
+    * Construction with explicit initialization.
     *
+    * \param lon0    Celestial longitude of the reference point in degrees.
+    *
+    * \param lat0    Celestial latitude of the reference point in degrees.
+    *
+    * \param phi0    Native projection longitude of the reference point in
+    *                degrees.
+    *
+    * \param theta0  Native projection latitude of the reference point in
+    *                degrees.
+    *
+    * \param phip    Native projection longitude of the north celestial pole in
+    *                degrees.
+    *
+    * \param thetap  Native projection latitude of the north celestial pole in
+    *                degrees. This parameter is optional. If not specified, 90
+    *                degrees will be assumed.
     */
-   SphericalRotation( double lng0, double lat0, double phi0, double theta0, double phip,
-                      const Optional<double>& latpole );
+   SphericalRotation( double lon0, double lat0, double phi0, double theta0, double phip,
+                      const Optional<double>& thetap );
 
    /*!
     * Copy assignment operator. Returns a reference to this object.
@@ -102,12 +119,14 @@ public:
    SphericalRotation& operator =( const SphericalRotation& ) = default;
 
    /*!
-    *
+    * Returns the celestial coordinates corresponding to the specified location
+    * in projection native coordinates.
     */
    DPoint NativeToCelestial( const DPoint& np ) const;
 
    /*!
-    *
+    * Returns the projection native coordinates corresponding to the specified
+    * location in celestial coordinates.
     */
    DPoint CelestialToNative( const DPoint& cp ) const;
 
@@ -128,4 +147,4 @@ private:
 #endif   // __PCL_SphericalRotation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SphericalRotation.h - Released 2022-11-21T14:46:30Z
+// EOF pcl/SphericalRotation.h - Released 2023-05-17T17:06:03Z

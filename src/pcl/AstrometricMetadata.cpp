@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// pcl/AstrometricMetadata.cpp - Released 2022-11-21T14:46:37Z
+// pcl/AstrometricMetadata.cpp - Released 2023-05-17T17:06:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -79,8 +79,7 @@ AstrometricMetadata::AstrometricMetadata( ProjectionBase* projection,
 
 // ----------------------------------------------------------------------------
 
-void AstrometricMetadata::Build( const PropertyArray& properties, const FITSKeywordArray& keywords,
-                                 const ByteArray& controlPoints, int width, int height )
+void AstrometricMetadata::Build( const PropertyArray& properties, const FITSKeywordArray& keywords, int width, int height )
 {
    m_description.Destroy();
 
@@ -109,19 +108,42 @@ void AstrometricMetadata::Build( const PropertyArray& properties, const FITSKeyw
    m_height = height;
    m_resolution = 0;
 
+   m_creationTime = Optional<TimePoint>();
+   m_catalog.Clear();
+   m_creatorApp.Clear();
+   m_creatorModule.Clear();
+   m_creatorOS.Clear();
+
+   ByteArray splineWT;
+   for ( const Property& property : properties )
+      if ( property.Id() == "PCL:AstrometricSolution:SplineWorldTransformation"
+        || property.Id() == "Transformation_ImageToProjection" ) // core < 1.8.9-2
+         splineWT = property.Value().ToByteArray();
+      else if ( property.Id() == "PCL:AstrometricSolution:CreationTime" )
+         m_creationTime = property.Value().ToTimePoint();
+      else if ( property.Id() == "PCL:AstrometricSolution:Catalog" )
+         m_catalog = property.Value().ToString();
+      else if ( property.Id() == "PCL:AstrometricSolution:CreatorApplication" )
+         m_creatorApp = property.Value().ToString();
+      else if ( property.Id() == "PCL:AstrometricSolution:CreatorModule" )
+         m_creatorModule = property.Value().ToString();
+      else if ( property.Id() == "PCL:AstrometricSolution:CreatorOS" )
+         m_creatorOS = property.Value().ToString();
+
    if ( wcs.ctype1.StartsWith( "RA--" ) &&
         wcs.ctype2.StartsWith( "DEC-" ) &&
-        wcs.crpix1.IsDefined() && wcs.crpix2.IsDefined() && wcs.crval1.IsDefined() && wcs.crval2.IsDefined() )
+        wcs.crpix1.IsDefined() && wcs.crpix2.IsDefined() &&
+        wcs.crval1.IsDefined() && wcs.crval2.IsDefined() )
    {
       m_projection = ProjectionFactory::Create( wcs );
 
       LinearTransformation linearTransIW;
       if ( wcs.ExtractWorldTransformation( linearTransIW, m_height ) )
       {
-         if ( controlPoints.IsEmpty() )
+         if ( splineWT.IsEmpty() )
             m_transformWI = new LinearWorldTransformation( linearTransIW );
          else
-            m_transformWI = new SplineWorldTransformation( controlPoints, linearTransIW );
+            m_transformWI = new SplineWorldTransformation( splineWT, linearTransIW );
 
          double resx = Sqrt( linearTransIW.A00()*linearTransIW.A00() + linearTransIW.A01()*linearTransIW.A01() );
          double resy = Sqrt( linearTransIW.A10()*linearTransIW.A10() + linearTransIW.A11()*linearTransIW.A11() );
@@ -165,13 +187,7 @@ AstrometricMetadata::AstrometricMetadata( const ImageWindow& window )
    int width, height;
    View view = window.MainView();
    view.GetSize( width, height );
-
-   ByteArray controlPoints;
-   Variant v = view.PropertyValue( "Transformation_ImageToProjection" );
-   if ( v.IsValid() )
-      controlPoints = v.ToByteArray();
-
-   Build( view.Properties(), window.Keywords(), controlPoints, width, height );
+   Build( view.Properties(), window.Keywords(), width, height );
 }
 
 // ----------------------------------------------------------------------------
@@ -179,13 +195,7 @@ AstrometricMetadata::AstrometricMetadata( const ImageWindow& window )
 AstrometricMetadata::AstrometricMetadata( XISFReader& reader )
 {
    ImageInfo info = reader.ImageInfo();
-
-   ByteArray controlPoints;
-   Variant v = reader.ReadImageProperty( "Transformation_ImageToProjection" );
-   if ( v.IsValid() )
-      controlPoints = v.ToByteArray();
-
-   Build( reader.ReadImageProperties(), reader.ReadFITSKeywords(), controlPoints, info.width, info.height );
+   Build( reader.ReadImageProperties(), reader.ReadFITSKeywords(), info.width, info.height );
 }
 
 // ----------------------------------------------------------------------------
@@ -205,49 +215,93 @@ void AstrometricMetadata::Write( ImageWindow& window, bool notify ) const
    window.SetKeywords( keywords );
 
    if ( m_focalLength.IsDefined() && m_focalLength() > 0 )
-      view.SetStorablePropertyValue( "Instrument:Telescope:FocalLength", Round( m_focalLength()/1000, 6 ), notify );
+      view.SetStorablePermanentPropertyValue( "Instrument:Telescope:FocalLength", Round( m_focalLength()/1000, 6 ), notify );
 
    if ( m_pixelSize.IsDefined() && m_pixelSize() > 0 )
    {
-      view.SetStorablePropertyValue( "Instrument:Sensor:XPixelSize", Round( m_pixelSize(), 3 ), notify );
-      view.SetStorablePropertyValue( "Instrument:Sensor:YPixelSize", Round( m_pixelSize(), 3 ), notify );
+      view.SetStorablePermanentPropertyValue( "Instrument:Sensor:XPixelSize", Round( m_pixelSize(), 3 ), notify );
+      view.SetStorablePermanentPropertyValue( "Instrument:Sensor:YPixelSize", Round( m_pixelSize(), 3 ), notify );
    }
 
    if ( m_obsStartTime.IsDefined() )
-      view.SetStorablePropertyValue( "Observation:Time:Start", m_obsStartTime(), notify );
+      view.SetStorablePermanentPropertyValue( "Observation:Time:Start", m_obsStartTime(), notify );
 
    if ( m_obsEndTime.IsDefined() )
-      view.SetStorablePropertyValue( "Observation:Time:End", m_obsEndTime(), notify );
+      view.SetStorablePermanentPropertyValue( "Observation:Time:End", m_obsEndTime(), notify );
 
    if ( m_geoLongitude.IsDefined() && m_geoLatitude.IsDefined() )
    {
-      view.SetStorablePropertyValue( "Observation:Location:Longitude", Round( m_geoLongitude(), 6 ), notify );
-      view.SetStorablePropertyValue( "Observation:Location:Latitude", Round( m_geoLatitude(), 6 ), notify );
+      view.SetStorablePermanentPropertyValue( "Observation:Location:Longitude", Round( m_geoLongitude(), 6 ), notify );
+      view.SetStorablePermanentPropertyValue( "Observation:Location:Latitude", Round( m_geoLatitude(), 6 ), notify );
       if ( m_geoHeight.IsDefined() )
-         view.SetStorablePropertyValue( "Observation:Location:Elevation", RoundInt( m_geoHeight() ), notify );
+         view.SetStorablePermanentPropertyValue( "Observation:Location:Elevation", RoundInt( m_geoHeight() ), notify );
    }
 
    DPoint pRD;
    if ( ImageToCelestial( pRD, DPoint( m_width/2.0, m_height/2.0 ) ) )
    {
-      view.SetStorablePropertyValue( "Observation:Center:RA", pRD.x, notify );
-      view.SetStorablePropertyValue( "Observation:Center:Dec", pRD.y, notify );
-      view.SetStorablePropertyValue( "Observation:CelestialReferenceSystem", ReferenceSystem(), notify );
-      view.SetStorablePropertyValue( "Observation:Equinox", 2000.0, notify );
+      view.SetStorablePermanentPropertyValue( "Observation:Center:RA", pRD.x, notify );
+      view.SetStorablePermanentPropertyValue( "Observation:Center:Dec", pRD.y, notify );
+      view.SetStorablePermanentPropertyValue( "Observation:CelestialReferenceSystem", ReferenceSystem(), notify );
+      view.SetStorablePermanentPropertyValue( "Observation:Equinox", 2000.0, notify );
       // The default reference point is the geometric center of the image.
       view.DeletePropertyIfExists( "Observation:Center:X", notify );
       view.DeletePropertyIfExists( "Observation:Center:Y", notify );
    }
 
-   const SplineWorldTransformation* splineTransform = dynamic_cast<const SplineWorldTransformation*>( m_transformWI.Pointer() );
-   if ( splineTransform != nullptr )
+   LinearTransformation trans_I_W = m_transformWI->ApproximateLinearTransform();
+   Matrix LT( 2, 2 );
+   LT[0][0] = trans_I_W.A00();
+   LT[0][1] = trans_I_W.A01();
+   LT[1][0] = trans_I_W.A10();
+   LT[1][1] = trans_I_W.A11();
+
+   DPoint p0 = trans_I_W.TransformInverse( DPoint( 0 ) );
+
+   view.SetStorablePermanentPropertyValue( "PCL:AstrometricSolution:ProjectionSystem", m_projection->Identifier(), notify );
+   view.SetStorablePermanentPropertyValue( "PCL:AstrometricSolution:ReferenceCelestialCoordinates", m_projection->ReferenceCelestialCoordinates(), notify );
+   view.SetStorablePermanentPropertyValue( "PCL:AstrometricSolution:ReferenceImageCoordinates", Vector{ p0.x, p0.y }, notify );
+   view.SetStorablePermanentPropertyValue( "PCL:AstrometricSolution:ReferenceNativeCoordinates", m_projection->ReferenceNativeCoordinates(), notify );
+   view.SetStorablePermanentPropertyValue( "PCL:AstrometricSolution:CelestialPoleNativeCoordinates", m_projection->CelestialPoleNativeCoordinates(), notify );
+   view.SetStorablePermanentPropertyValue( "PCL:AstrometricSolution:LinearTransformationMatrix", LT, notify );
+
+   const SplineWorldTransformation* S = dynamic_cast<const SplineWorldTransformation*>( m_transformWI.Pointer() );
+   if ( S != nullptr )
    {
       ByteArray data;
-      splineTransform->Serialize( data );
-      view.SetStorablePropertyValue( "Transformation_ImageToProjection", data, notify );
+      S->Serialize( data );
+      view.SetStorablePermanentPropertyValue( "PCL:AstrometricSolution:SplineWorldTransformation", data, notify );
    }
    else
-      view.DeletePropertyIfExists( "Transformation_ImageToProjection", notify );
+      view.DeletePropertyIfExists( "PCL:AstrometricSolution:SplineWorldTransformation", notify );
+
+   // Remove old properties used in core versions < 1.8.9-2.
+   view.DeletePropertyIfExists( "Transformation_ImageToProjection", notify );
+
+   if ( m_creationTime.IsDefined() )
+      view.SetStorablePermanentPropertyValue( "PCL:AstrometricSolution:CreationTime", m_creationTime(), notify );
+   else
+      view.DeletePropertyIfExists( "PCL:AstrometricSolution:CreationTime", notify );
+
+   if ( !m_catalog.IsEmpty() )
+      view.SetStorablePermanentPropertyValue( "PCL:AstrometricSolution:Catalog", m_catalog, notify );
+   else
+      view.DeletePropertyIfExists( "PCL:AstrometricSolution:Catalog", notify );
+
+   if ( !m_creatorOS.IsEmpty() )
+      view.SetStorablePermanentPropertyValue( "PCL:AstrometricSolution:CreatorOS", m_creatorOS, notify );
+   else
+      view.DeletePropertyIfExists( "PCL:AstrometricSolution:CreatorOS", notify );
+
+   if ( !m_creatorApp.IsEmpty() )
+      view.SetStorablePermanentPropertyValue( "PCL:AstrometricSolution:CreatorApplication", m_creatorApp, notify );
+   else
+      view.DeletePropertyIfExists( "PCL:AstrometricSolution:CreatorApplication", notify );
+
+   if ( !m_creatorModule.IsEmpty() )
+      view.SetStorablePermanentPropertyValue( "PCL:AstrometricSolution:CreatorModule", m_creatorModule, notify );
+   else
+      view.DeletePropertyIfExists( "PCL:AstrometricSolution:CreatorModule", notify );
 }
 
 // ----------------------------------------------------------------------------
@@ -297,15 +351,59 @@ void AstrometricMetadata::Write( XISFWriter& writer ) const
       writer.RemoveImageProperty( "Observation:Center:Y" );
    }
 
-   const SplineWorldTransformation* splineTransform = dynamic_cast<const SplineWorldTransformation*>( m_transformWI.Pointer() );
-   if ( splineTransform != nullptr )
+   LinearTransformation trans_I_W = m_transformWI->ApproximateLinearTransform();
+   Matrix LT( 2, 2 );
+   LT[0][0] = trans_I_W.A00();
+   LT[0][1] = trans_I_W.A01();
+   LT[1][0] = trans_I_W.A10();
+   LT[1][1] = trans_I_W.A11();
+
+   DPoint p0 = trans_I_W.TransformInverse( DPoint( 0 ) );
+
+   writer.WriteImageProperty( "PCL:AstrometricSolution:ProjectionSystem", m_projection->Identifier() );
+   writer.WriteImageProperty( "PCL:AstrometricSolution:ReferenceCelestialCoordinates", m_projection->ReferenceCelestialCoordinates() );
+   writer.WriteImageProperty( "PCL:AstrometricSolution:ReferenceImageCoordinates", Vector{ p0.x, p0.y } );
+   writer.WriteImageProperty( "PCL:AstrometricSolution:ReferenceNativeCoordinates", m_projection->ReferenceNativeCoordinates() );
+   writer.WriteImageProperty( "PCL:AstrometricSolution:CelestialPoleNativeCoordinates", m_projection->CelestialPoleNativeCoordinates() );
+   writer.WriteImageProperty( "PCL:AstrometricSolution:LinearTransformationMatrix", LT );
+
+   const SplineWorldTransformation* S = dynamic_cast<const SplineWorldTransformation*>( m_transformWI.Pointer() );
+   if ( S != nullptr )
    {
       ByteArray data;
-      splineTransform->Serialize( data );
-      writer.WriteImageProperty( "Transformation_ImageToProjection", data );
+      S->Serialize( data );
+      writer.WriteImageProperty( "PCL:AstrometricSolution:SplineWorldTransformation", data );
    }
    else
-      writer.RemoveImageProperty( "Transformation_ImageToProjection" );
+      writer.RemoveImageProperty( "PCL:AstrometricSolution:SplineWorldTransformation" );
+
+   // Remove old properties used in core versions < 1.8.9-2.
+   writer.RemoveImageProperty( "Transformation_ImageToProjection" );
+
+   if ( m_creationTime.IsDefined() )
+      writer.WriteImageProperty( "PCL:AstrometricSolution:CreationTime", m_creationTime() );
+   else
+      writer.RemoveImageProperty( "PCL:AstrometricSolution:CreationTime" );
+
+   if ( !m_catalog.IsEmpty() )
+      writer.WriteImageProperty( "PCL:AstrometricSolution:Catalog", m_catalog );
+   else
+      writer.RemoveImageProperty( "PCL:AstrometricSolution:Catalog" );
+
+   if ( !m_creatorOS.IsEmpty() )
+      writer.WriteImageProperty( "PCL:AstrometricSolution:CreatorOS", m_creatorOS );
+   else
+      writer.RemoveImageProperty( "PCL:AstrometricSolution:CreatorOS" );
+
+   if ( !m_creatorApp.IsEmpty() )
+      writer.WriteImageProperty( "PCL:AstrometricSolution:CreatorApplication", m_creatorApp );
+   else
+      writer.RemoveImageProperty( "PCL:AstrometricSolution:CreatorApplication" );
+
+   if ( !m_creatorModule.IsEmpty() )
+      writer.WriteImageProperty( "PCL:AstrometricSolution:CreatorModule", m_creatorModule );
+   else
+      writer.RemoveImageProperty( "PCL:AstrometricSolution:CreatorModule" );
 }
 
 // ----------------------------------------------------------------------------
@@ -398,13 +496,25 @@ String AstrometricMetadata::Summary() const
    UpdateDescription();
 
    String summary;
-   summary    << "Referentiation matrix (world[ra,dec] = matrix * image[x,y]):" << '\n'
+
+   if ( !m_description->creationTime.IsEmpty() )
+      summary << "Creation time ............ " << m_description->creationTime << '\n';
+   if ( !m_description->creationSoftware.IsEmpty() )
+      summary << "Creation software ........ " << m_description->creationSoftware << '\n';
+
+   if ( !m_description->referenceCatalog.IsEmpty() )
+      summary << "Reference catalog ........ " << m_description->referenceCatalog << '\n';
+
+   summary    << "Linear transformation matrix (world[ra,dec] = matrix * image[x,y]):" << '\n'
               << m_description->referenceMatrix << '\n'
               << "WCS transformation ....... " << m_description->wcsTransformationType << '\n';
+
    if ( !m_description->controlPoints.IsEmpty() )
       summary << "Control points ........... " << m_description->controlPoints << '\n';
+
    if ( !m_description->splineLengths.IsEmpty() )
       summary << "Spline lengths ........... " << m_description->splineLengths << '\n';
+
    summary    << "Projection ............... " << m_description->projectionName << '\n'
               << "Projection origin ........ " << m_description->projectionOrigin << '\n'
               << "Resolution ............... " << m_description->resolution << '\n'
@@ -474,8 +584,6 @@ static void RemoveKeyword( FITSKeywordArray& keywords, const IsoString& name )
 
 void AstrometricMetadata::UpdateBasicKeywords( FITSKeywordArray& keywords ) const
 {
-   ModifySignatureKeyword( keywords );
-
    if ( m_focalLength.IsDefined() && m_focalLength() > 0 )
       ModifyKeyword( keywords, "FOCALLEN", IsoString().Format( "%.8g", m_focalLength() ), "Focal length (mm)" );
    else
@@ -542,40 +650,14 @@ void AstrometricMetadata::UpdateBasicKeywords( FITSKeywordArray& keywords ) cons
 
 // ----------------------------------------------------------------------------
 
-void AstrometricMetadata::UpdateWCSKeywords( FITSKeywordArray& keywords ) const
+void AstrometricMetadata::UpdateWCSKeywords( FITSKeywordArray& keywords, bool generate ) const
 {
-   RemoveKeyword( keywords, "RADESYS" );
-   RemoveKeyword( keywords, "EQUINOX" );
-   RemoveKeyword( keywords, "EPOCH" );
-   RemoveKeyword( keywords, "CTYPE1" );
-   RemoveKeyword( keywords, "CTYPE2" );
-   RemoveKeyword( keywords, "CRPIX1" );
-   RemoveKeyword( keywords, "CRPIX2" );
-   RemoveKeyword( keywords, "CRVAL1" );
-   RemoveKeyword( keywords, "CRVAL2" );
-   RemoveKeyword( keywords, "PV1_1" );
-   RemoveKeyword( keywords, "PV1_2" );
-   RemoveKeyword( keywords, "PV1_3" );
-   RemoveKeyword( keywords, "PV1_4" );
-   RemoveKeyword( keywords, "LONPOLE" );
-   RemoveKeyword( keywords, "LATPOLE" );
-   RemoveKeyword( keywords, "CD1_1" );
-   RemoveKeyword( keywords, "CD1_2" );
-   RemoveKeyword( keywords, "CD2_1" );
-   RemoveKeyword( keywords, "CD2_2" );
-   RemoveKeyword( keywords, "PC1_1" );
-   RemoveKeyword( keywords, "PC1_2" );
-   RemoveKeyword( keywords, "PC2_1" );
-   RemoveKeyword( keywords, "PC2_2" );
-   RemoveKeyword( keywords, "REFSPLIN" );
-   RemoveKeyword( keywords, "REFSPLINE" ); // N.B. 9-char keyword name written by old versions, not FITS-compliant.
-   RemoveKeyword( keywords, "CDELT1" );
-   RemoveKeyword( keywords, "CDELT2" );
-   RemoveKeyword( keywords, "CROTA1" );
-   RemoveKeyword( keywords, "CROTA2" );
+   RemoveKeywords( keywords, false/*removeCenterKeywords*/, false/*removeScaleKeywords*/ );
 
-   if ( IsValid() )
+   if ( generate && IsValid() )
    {
+      ModifySignatureKeyword( keywords );
+
       IsoString refSys = ReferenceSystem();
       if ( refSys == "ICRS" )
          keywords << FITSHeaderKeyword( "RADESYS", "'ICRS'", "Coordinates referred to ICRS / J2000.0" );
@@ -594,29 +676,26 @@ void AstrometricMetadata::UpdateWCSKeywords( FITSKeywordArray& keywords ) const
 
       keywords << FITSHeaderKeyword( "CTYPE1", wcs.ctype1, "Axis1 projection: " + m_projection->Name() )
                << FITSHeaderKeyword( "CTYPE2", wcs.ctype2, "Axis2 projection: " + m_projection->Name() )
-               << FITSHeaderKeyword( "CRPIX1", IsoString().Format( "%.16g", wcs.crpix1() ), "Axis1 reference pixel" )
-               << FITSHeaderKeyword( "CRPIX2", IsoString().Format( "%.16g", wcs.crpix2() ), "Axis2 reference pixel" );
+               << FITSHeaderKeyword( "CRPIX1", IsoString().Format( "%.16g", wcs.crpix1() ), "Axis1 reference pixel coordinate" )
+               << FITSHeaderKeyword( "CRPIX2", IsoString().Format( "%.16g", wcs.crpix2() ), "Axis2 reference pixel coordinate" );
 
       if ( wcs.crval1.IsDefined() )
-         keywords << FITSHeaderKeyword( "CRVAL1", IsoString().Format( "%.16g", wcs.crval1() ), "Axis1 reference value" );
+         keywords << FITSHeaderKeyword( "CRVAL1", IsoString().Format( "%.16g", wcs.crval1() ), "Axis1 reference celestial coordinate" );
       if ( wcs.crval2.IsDefined() )
-         keywords << FITSHeaderKeyword( "CRVAL2", IsoString().Format( "%.16g", wcs.crval2() ), "Axis2 reference value" );
+         keywords << FITSHeaderKeyword( "CRVAL2", IsoString().Format( "%.16g", wcs.crval2() ), "Axis2 reference celestial coordinate" );
       if ( wcs.pv1_1.IsDefined() )
          keywords << FITSHeaderKeyword( "PV1_1", IsoString().Format( "%.16g", wcs.pv1_1() ), "Native longitude of the reference point (deg)" );
       if ( wcs.pv1_2.IsDefined() )
          keywords << FITSHeaderKeyword( "PV1_2", IsoString().Format( "%.16g", wcs.pv1_2() ), "Native latitude of the reference point (deg)" );
       if ( wcs.lonpole.IsDefined() )
-         keywords << FITSHeaderKeyword( "LONPOLE", IsoString().Format( "%.16g", wcs.lonpole() ), "Longitude of the celestial pole (deg)" );
+         keywords << FITSHeaderKeyword( "LONPOLE", IsoString().Format( "%.16g", wcs.lonpole() ), "Native longitude of the celestial north pole (deg)" );
       if ( wcs.latpole.IsDefined() )
-         keywords << FITSHeaderKeyword( "LATPOLE", IsoString().Format( "%.16g", wcs.latpole() ), "Latitude of the celestial pole (deg)" );
+         keywords << FITSHeaderKeyword( "LATPOLE", IsoString().Format( "%.16g", wcs.latpole() ), "Native latitude of the celestial north pole (deg)" );
 
-      keywords << FITSHeaderKeyword( "CD1_1", IsoString().Format( "%.16g", wcs.cd1_1() ), "Scale matrix (1,1)" )
-               << FITSHeaderKeyword( "CD1_2", IsoString().Format( "%.16g", wcs.cd1_2() ), "Scale matrix (1,2)" )
-               << FITSHeaderKeyword( "CD2_1", IsoString().Format( "%.16g", wcs.cd2_1() ), "Scale matrix (2,1)" )
-               << FITSHeaderKeyword( "CD2_2", IsoString().Format( "%.16g", wcs.cd2_2() ), "Scale matrix (2,2)" );
-
-      if ( HasSplineWorldTransformation() )
-         keywords << FITSHeaderKeyword( "REFSPLIN", "T", "Thin plate spline astrometric solution available" );
+      keywords << FITSHeaderKeyword( "CD1_1", IsoString().Format( "%.16g", wcs.cd1_1() ), "Linear transformation matrix (1,1)" )
+               << FITSHeaderKeyword( "CD1_2", IsoString().Format( "%.16g", wcs.cd1_2() ), "Linear transformation matrix (1,2)" )
+               << FITSHeaderKeyword( "CD2_1", IsoString().Format( "%.16g", wcs.cd2_1() ), "Linear transformation matrix (2,1)" )
+               << FITSHeaderKeyword( "CD2_2", IsoString().Format( "%.16g", wcs.cd2_2() ), "Linear transformation matrix (2,2)" );
 
       // AIPS keywords (CDELT1, CDELT2, CROTA1, CROTA2)
       keywords << FITSHeaderKeyword( "CDELT1", IsoString().Format( "%.16g", wcs.cdelt1() ), "Axis1 scale" )
@@ -663,18 +742,34 @@ void AstrometricMetadata::RemoveKeywords( FITSKeywordArray& keywords, bool remov
    RemoveKeyword( keywords, "PC1_2" );
    RemoveKeyword( keywords, "PC2_1" );
    RemoveKeyword( keywords, "PC2_2" );
-   RemoveKeyword( keywords, "CDELT1" );
-   RemoveKeyword( keywords, "CDELT2" );
-   RemoveKeyword( keywords, "CROTA1" );
-   RemoveKeyword( keywords, "CROTA2" );
    RemoveKeyword( keywords, "PV1_1" );
    RemoveKeyword( keywords, "PV1_2" );
    RemoveKeyword( keywords, "PV1_3" );
    RemoveKeyword( keywords, "PV1_4" );
    RemoveKeyword( keywords, "LONPOLE" );
    RemoveKeyword( keywords, "LATPOLE" );
+   RemoveKeyword( keywords, "CDELT1" );
+   RemoveKeyword( keywords, "CDELT2" );
+   RemoveKeyword( keywords, "CROTA1" );
+   RemoveKeyword( keywords, "CROTA2" );
+
+   /*
+    * Remove obsolete FITS keywords generated by plate solving scripts and
+    * processes before core version 1.8.9-2.
+    */
+   RemoveKeyword( keywords, "POLYNDEG" );
    RemoveKeyword( keywords, "REFSPLIN" );
    RemoveKeyword( keywords, "REFSPLINE" ); // N.B. 9-char keyword name written by old versions, not FITS-compliant.
+
+   /*
+    * Remove COMMENT signature keywords, e.g.:
+    *    'Astrometric solution by PixInsight x.y.z-t'
+    */
+   keywords.Remove( FITSHeaderKeyword(),
+      []( const FITSHeaderKeyword& k1, const FITSHeaderKeyword& )
+      {
+         return k1.name == "COMMENT" && k1.comment.ContainsIC( "astrometric" ) && k1.comment.ContainsIC( "pixinsight" );
+      } );
 }
 
 // ----------------------------------------------------------------------------
@@ -747,18 +842,75 @@ void AstrometricMetadata::UpdateProperties( PropertyArray& properties ) const
          RemoveProperty( properties, "Observation:Center:Y" );
       }
 
-      const SplineWorldTransformation* splineTransform = dynamic_cast<const SplineWorldTransformation*>( m_transformWI.Pointer() );
-      if ( splineTransform != nullptr )
+      LinearTransformation trans_I_W = m_transformWI->ApproximateLinearTransform();
+      Matrix LT( 2, 2 );
+      LT[0][0] = trans_I_W.A00();
+      LT[0][1] = trans_I_W.A01();
+      LT[1][0] = trans_I_W.A10();
+      LT[1][1] = trans_I_W.A11();
+
+      DPoint p0 = trans_I_W.TransformInverse( DPoint( 0 ) );
+
+      ModifyProperty( properties, "PCL:AstrometricSolution:ProjectionSystem", m_projection->Identifier() );
+      ModifyProperty( properties, "PCL:AstrometricSolution:ReferenceCelestialCoordinates", m_projection->ReferenceCelestialCoordinates() );
+      ModifyProperty( properties, "PCL:AstrometricSolution:ReferenceImageCoordinates", Vector{ p0.x, p0.y } );
+      ModifyProperty( properties, "PCL:AstrometricSolution:ReferenceNativeCoordinates", m_projection->ReferenceNativeCoordinates() );
+      ModifyProperty( properties, "PCL:AstrometricSolution:CelestialPoleNativeCoordinates", m_projection->CelestialPoleNativeCoordinates() );
+      ModifyProperty( properties, "PCL:AstrometricSolution:LinearTransformationMatrix", LT );
+
+      const SplineWorldTransformation* S = dynamic_cast<const SplineWorldTransformation*>( m_transformWI.Pointer() );
+      if ( S != nullptr )
       {
          ByteArray data;
-         splineTransform->Serialize( data );
-         ModifyProperty( properties, "Transformation_ImageToProjection", data );
+         S->Serialize( data );
+         ModifyProperty( properties, "PCL:AstrometricSolution:SplineWorldTransformation", data );
       }
       else
-         RemoveProperty( properties, "Transformation_ImageToProjection" );
+         RemoveProperty( properties, "PCL:AstrometricSolution:SplineWorldTransformation" );
+
+      if ( m_creationTime.IsDefined() )
+         ModifyProperty( properties, "PCL:AstrometricSolution:CreationTime", m_creationTime() );
+      else
+         RemoveProperty( properties, "PCL:AstrometricSolution:CreationTime" );
+
+      if ( !m_catalog.IsEmpty() )
+         ModifyProperty( properties, "PCL:AstrometricSolution:Catalog", m_catalog );
+      else
+         RemoveProperty( properties, "PCL:AstrometricSolution:Catalog" );
+
+      if ( !m_creatorOS.IsEmpty() )
+         ModifyProperty( properties, "PCL:AstrometricSolution:CreatorOS", m_creatorOS );
+      else
+         RemoveProperty( properties, "PCL:AstrometricSolution:CreatorOS" );
+
+      if ( !m_creatorApp.IsEmpty() )
+         ModifyProperty( properties, "PCL:AstrometricSolution:CreatorApplication", m_creatorApp );
+      else
+         RemoveProperty( properties, "PCL:AstrometricSolution:CreatorApplication" );
+
+      if ( !m_creatorModule.IsEmpty() )
+         ModifyProperty( properties, "PCL:AstrometricSolution:CreatorModule", m_creatorModule );
+      else
+         RemoveProperty( properties, "PCL:AstrometricSolution:CreatorModule" );
    }
    else
-      RemoveProperty( properties, "Transformation_ImageToProjection" );
+   {
+      RemoveProperty( properties, "PCL:AstrometricSolution:ProjectionSystem" );
+      RemoveProperty( properties, "PCL:AstrometricSolution:ReferenceCelestialCoordinates" );
+      RemoveProperty( properties, "PCL:AstrometricSolution:ReferenceImageCoordinates" );
+      RemoveProperty( properties, "PCL:AstrometricSolution:ReferenceNativeCoordinates" );
+      RemoveProperty( properties, "PCL:AstrometricSolution:CelestialPoleNativeCoordinates" );
+      RemoveProperty( properties, "PCL:AstrometricSolution:LinearTransformationMatrix" );
+      RemoveProperty( properties, "PCL:AstrometricSolution:SplineWorldTransformation" );
+      RemoveProperty( properties, "PCL:AstrometricSolution:CreationTime" );
+      RemoveProperty( properties, "PCL:AstrometricSolution:Catalog" );
+      RemoveProperty( properties, "PCL:AstrometricSolution:CreatorOS" );
+      RemoveProperty( properties, "PCL:AstrometricSolution:CreatorApplication" );
+      RemoveProperty( properties, "PCL:AstrometricSolution:CreatorModule" );
+   }
+
+   // Remove old properties used in core versions < 1.8.9-2.
+   RemoveProperty( properties, "Transformation_ImageToProjection" );
 }
 
 // ----------------------------------------------------------------------------
@@ -782,6 +934,18 @@ void AstrometricMetadata::RemoveProperties( PropertyArray& properties, bool remo
 
    RemoveProperty( properties, "Observation:CelestialReferenceSystem" );
    RemoveProperty( properties, "Observation:Equinox" );
+   RemoveProperty( properties, "PCL:AstrometricSolution:ProjectionSystem" );
+   RemoveProperty( properties, "PCL:AstrometricSolution:ReferenceCelestialCoordinates" );
+   RemoveProperty( properties, "PCL:AstrometricSolution:ReferenceImageCoordinates" );
+   RemoveProperty( properties, "PCL:AstrometricSolution:ReferenceNativeCoordinates" );
+   RemoveProperty( properties, "PCL:AstrometricSolution:CelestialPoleNativeCoordinates" );
+   RemoveProperty( properties, "PCL:AstrometricSolution:LinearTransformationMatrix" );
+   RemoveProperty( properties, "PCL:AstrometricSolution:SplineWorldTransformation" );
+   RemoveProperty( properties, "PCL:AstrometricSolution:CreationTime" );
+   RemoveProperty( properties, "PCL:AstrometricSolution:Catalog" );
+   RemoveProperty( properties, "PCL:AstrometricSolution:CreatorOS" );
+   RemoveProperty( properties, "PCL:AstrometricSolution:CreatorApplication" );
+   RemoveProperty( properties, "PCL:AstrometricSolution:CreatorModule" );
    RemoveProperty( properties, "Transformation_ImageToProjection" );
 }
 
@@ -806,6 +970,18 @@ void AstrometricMetadata::RemoveProperties( ImageWindow& window, bool removeCent
 
    view.DeletePropertyIfExists( "Observation:CelestialReferenceSystem" );
    view.DeletePropertyIfExists( "Observation:Equinox" );
+   view.DeletePropertyIfExists( "PCL:AstrometricSolution:ProjectionSystem" );
+   view.DeletePropertyIfExists( "PCL:AstrometricSolution:ReferenceCelestialCoordinates" );
+   view.DeletePropertyIfExists( "PCL:AstrometricSolution:ReferenceImageCoordinates" );
+   view.DeletePropertyIfExists( "PCL:AstrometricSolution:ReferenceNativeCoordinates" );
+   view.DeletePropertyIfExists( "PCL:AstrometricSolution:CelestialPoleNativeCoordinates" );
+   view.DeletePropertyIfExists( "PCL:AstrometricSolution:LinearTransformationMatrix" );
+   view.DeletePropertyIfExists( "PCL:AstrometricSolution:SplineWorldTransformation" );
+   view.DeletePropertyIfExists( "PCL:AstrometricSolution:CreationTime" );
+   view.DeletePropertyIfExists( "PCL:AstrometricSolution:Catalog" );
+   view.DeletePropertyIfExists( "PCL:AstrometricSolution:CreatorOS" );
+   view.DeletePropertyIfExists( "PCL:AstrometricSolution:CreatorApplication" );
+   view.DeletePropertyIfExists( "PCL:AstrometricSolution:CreatorModule" );
    view.DeletePropertyIfExists( "Transformation_ImageToProjection" );
 }
 
@@ -839,8 +1015,8 @@ WCSKeywords AstrometricMetadata::ComputeWCSKeywords() const
    if ( !IsValid() )
       throw Error( "AstrometricMetadata::ComputeWCSKeywords(): Invalid or uninitialized metadata" );
 
-   LinearTransformation trans_F_I( 1,  0, -0.5,
-                                   0, -1,  m_height+0.5 );
+   LinearTransformation trans_F_I( 1,  0,         -0.5,
+                                   0, -1, m_height+0.5 );
    LinearTransformation trans_I_W = m_transformWI->ApproximateLinearTransform();
    LinearTransformation trans_F_W = trans_I_W.Multiply( trans_F_I );
 
@@ -1024,6 +1200,20 @@ void AstrometricMetadata::UpdateDescription() const
             m_description->bottomLeftCoordinates << ReprojectionErrorsToString( e3 );
             m_description->bottomRightCoordinates << ReprojectionErrorsToString( e4 );
          }
+
+         m_description->referenceCatalog = m_catalog;
+
+         if ( m_creationTime.IsDefined() )
+            m_description->creationTime = m_creationTime().ToString( "%Y-%M-%D %h:%m:%s0 UTC" );
+
+         if ( !m_creatorApp.IsEmpty() )
+         {
+            m_description->creationSoftware = m_creatorApp;
+            if ( !m_creatorModule.IsEmpty() )
+               m_description->creationSoftware << " / " << m_creatorModule;
+            if ( !m_creatorOS.IsEmpty() )
+               m_description->creationSoftware << " (" << m_creatorOS << ")";
+         }
       }
 }
 
@@ -1032,4 +1222,4 @@ void AstrometricMetadata::UpdateDescription() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AstrometricMetadata.cpp - Released 2022-11-21T14:46:37Z
+// EOF pcl/AstrometricMetadata.cpp - Released 2023-05-17T17:06:11Z

@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// pcl/TreeBox.h - Released 2022-11-21T14:46:30Z
+// pcl/TreeBox.h - Released 2023-05-17T17:06:03Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -91,7 +91,8 @@ public:
    {
    public:
 
-      /*! #
+      /*!
+       * Default constructor.
        */
       Node();
 
@@ -106,18 +107,24 @@ public:
        * which is obviously incorrect and looks like an obscure compiler bug.
        * Note that the same problem exists with g++ 4.8.x (at least).
        */
-      /*! #
+      /*!
+       * Constructs a new %TreeBox::Node child object of the specified
+       * \a parent node, inserted at the specified zero-based \a index.
        */
       Node( Node& parent, int index );
 
-      /*! #
+      /*!
+       * Constructs a new top-level %TreeBox::Node child object of the
+       * specified \a parent tree, inserted at the specified zero-based
+       * \a index. If \a index is negative, the new node is appended to the
+       * current list of top-level child nodes of the \a parent tree.
        */
-      Node( TreeBox& parentTree, int index = -1 );
+      Node( TreeBox& parent, int index = -1 );
 
       /*!
        * Destroys a %TreeBox::Node object.
        */
-      virtual ~Node();
+      ~Node() override;
 
       /*! #
        */
@@ -369,7 +376,7 @@ public:
    /*!
     * Destroys a %TreeBox control.
     */
-   virtual ~TreeBox();
+   ~TreeBox() override;
 
    /*! #
     */
@@ -961,4 +968,4 @@ protected:
 #endif   // __PCL_TreeBox_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/TreeBox.h - Released 2022-11-21T14:46:30Z
+// EOF pcl/TreeBox.h - Released 2023-05-17T17:06:03Z

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+********************************************************************
+PixInsight XML Process Serialization Module - XPSM 1.0
+********************************************************************
+Generated on 2022-12-08T01:36:02.473Z
+PixInsight Core 1.8.9-1 (x64)
+Copyright (c) 2003-2022 Pleiades Astrophoto
+********************************************************************
+-->
+<xpsm version="1.0" xmlns="http://www.pixinsight.com/xpsm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.pixinsight.com/xpsm http://pixinsight.com/xpsm/xpsm-1.0.xsd">
+   <instance class="Script" version="256" id="Process01_instance">
+      <parameter id="filePath">$PXI_SRCDIR/scripts/MakefileGenerator/MakefileGenerator.js</parameter>
+      <parameter id="md5sum">a44a5f463dc053bbf6dbf086e5dce5d7</parameter>
+      <table id="parameters" rows="21">
+         <tr>
+            <td id="id">directory</td>
+            <td id="value">/PixInsight/src/utils/astjpl2pcl</td>
+         </tr>
+         <tr>
+            <td id="id">id</td>
+            <td id="value"></td>
+         </tr>
+         <tr>
+            <td id="id">type</td>
+            <td id="value">3</td>
+         </tr>
+         <tr>
+            <td id="id">platform</td>
+            <td id="value">0</td>
+         </tr>
+         <tr>
+            <td id="id">allPlatforms</td>
+            <td id="value">true</td>
+         </tr>
+         <tr>
+            <td id="id">avx2Instructions</td>
+            <td id="value">false</td>
+         </tr>
+         <tr>
+            <td id="id">compatibilityBuilds</td>
+            <td id="value">false</td>
+         </tr>
+         <tr>
+            <td id="id">hostMakefiles</td>
+            <td id="value">true</td>
+         </tr>
+         <tr>
+            <td id="id">osxArchOptions</td>
+            <td id="value">true</td>
+         </tr>
+         <tr>
+            <td id="id">osxSDKVersion</td>
+            <td id="value">7</td>
+         </tr>
+         <tr>
+            <td id="id">signed</td>
+            <td id="value">false</td>
+         </tr>
+         <tr>
+            <td id="id">signingIdentity</td>
+            <td id="value"></td>
+         </tr>
+         <tr>
+            <td id="id">gccDebug</td>
+            <td id="value">false</td>
+         </tr>
+         <tr>
+            <td id="id">gccUnstripped</td>
+            <td id="value">false</td>
+         </tr>
+         <tr>
+            <td id="id">gccSuffixLinux</td>
+            <td id="value"></td>
+         </tr>
+         <tr>
+            <td id="id">gccOptimization</td>
+            <td id="value">3</td>
+         </tr>
+         <tr>
+            <td id="id">diagnostics</td>
+            <td id="value">0</td>
+         </tr>
+         <tr>
+            <td id="id">extraDefinitions</td>
+            <td id="value"></td>
+         </tr>
+         <tr>
+            <td id="id">extraIncludeDirs</td>
+            <td id="value">/PixInsight/src/utils/cspice/include
+</td>
+         </tr>
+         <tr>
+            <td id="id">extraLibraryDirs</td>
+            <td id="value">/PixInsight/src/utils/cspice/lib
+</td>
+         </tr>
+         <tr>
+            <td id="id">extraLibraries</td>
+            <td id="value">cspice
+csupport
+</td>
+         </tr>
+      </table>
+   </instance>
+   <icon id="Process01" instance="Process01_instance" xpos="2064" ypos="168" workspace="Workspace02"/>
+</xpsm>

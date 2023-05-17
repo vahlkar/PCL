@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.9.0
+// Standard ColorCalibration Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// SpectrophotometricColorCalibrationInstance.cpp - Released 2022-11-21T14:47:17Z
+// SpectrophotometricColorCalibrationInstance.cpp - Released 2023-05-17T17:06:42Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -98,6 +98,7 @@ SpectrophotometricColorCalibrationInstance::SpectrophotometricColorCalibrationIn
    , p_structureLayers( TheSPCCStructureLayersParameter->DefaultValue() )
    , p_saturationThreshold( TheSPCCSaturationThresholdParameter->DefaultValue() )
    , p_saturationRelative( TheSPCCSaturationRelativeParameter->DefaultValue() )
+   , p_saturationShrinkFactor( TheSPCCSaturationShrinkFactorParameter->DefaultValue() )
    , p_psfNoiseLayers( TheSPCCPSFNoiseLayersParameter->DefaultValue() )
    , p_psfHotPixelFilterRadius( TheSPCCPSFHotPixelFilterRadiusParameter->DefaultValue() )
    , p_psfNoiseReductionFilterRadius( TheSPCCPSFNoiseReductionFilterRadiusParameter->DefaultValue() )
@@ -164,6 +165,7 @@ void SpectrophotometricColorCalibrationInstance::Assign( const ProcessImplementa
       p_structureLayers = x->p_structureLayers;
       p_saturationThreshold = x->p_saturationThreshold;
       p_saturationRelative = x->p_saturationRelative;
+      p_saturationShrinkFactor = x->p_saturationShrinkFactor;
       p_psfNoiseLayers = x->p_psfNoiseLayers;
       p_psfHotPixelFilterRadius = x->p_psfHotPixelFilterRadius;
       p_psfNoiseReductionFilterRadius = x->p_psfNoiseReductionFilterRadius;
@@ -192,18 +194,8 @@ void SpectrophotometricColorCalibrationInstance::Assign( const ProcessImplementa
 
 UndoFlags SpectrophotometricColorCalibrationInstance::UndoMode( const View& ) const
 {
-   /*
-    * ### BUG We have a core bug where thin plate spline based astrometric
-    * solutions are not restored correctly after several undo/redo operations
-    * because the Transformation_ImageToProjection property is lost.
-    *
-    * The workaround is including UndoFlag::AstrometricSolution here, even if
-    * we don't change astrometric solutions, to ensure that a fresh copy is
-    * stored in each processing history entry. ### Don't forget to remove this
-    * when no longer necessary.
-    */
-   return p_applyCalibration ? UndoFlag::Keywords | UndoFlag::PixelData | UndoFlag::AstrometricSolution
-                             : UndoFlag::Keywords | UndoFlag::AstrometricSolution;
+   return p_applyCalibration ? UndoFlag::Keywords | UndoFlag::PixelData
+                             : UndoFlag::Keywords;
 }
 
 // ----------------------------------------------------------------------------
@@ -718,15 +710,15 @@ bool SpectrophotometricColorCalibrationInstance::ExecuteOn( View& view )
    bandwidths[2] = p_blueFilterBandwidth;
 
    bool redIsGreen = false, blueIsGreen = false;
-   if ( p_narrowbandMode )
-   {
-      redIsGreen = p_redFilterWavelength == p_greenFilterWavelength && p_redFilterBandwidth == p_greenFilterBandwidth;
-      blueIsGreen = p_blueFilterWavelength == p_greenFilterWavelength && p_blueFilterBandwidth == p_greenFilterBandwidth;
-      if ( redIsGreen )
-         if ( blueIsGreen )
-            throw Error( "Identical wavelengths and bandwidths have been defined for the red, green and blue channels. "
-                         "At least two different filters are required for calibration in narrowband mode." );
-   }
+//    if ( p_narrowbandMode )
+//    {
+//       redIsGreen = p_redFilterWavelength == p_greenFilterWavelength && p_redFilterBandwidth == p_greenFilterBandwidth;
+//       blueIsGreen = p_blueFilterWavelength == p_greenFilterWavelength && p_blueFilterBandwidth == p_greenFilterBandwidth;
+//       if ( redIsGreen )
+//          if ( blueIsGreen )
+//             throw Error( "Identical wavelengths and bandwidths have been defined for the red, green and blue channels. "
+//                          "At least two different filters are required for calibration in narrowband mode." );
+//    }
 
    AutoViewLock lock( view );
 
@@ -791,12 +783,30 @@ bool SpectrophotometricColorCalibrationInstance::ExecuteOn( View& view )
    console.WriteLn( String().Format( "<end><cbr><br>%u catalog sources found.", catalogStars.Length() ) );
    Module->ProcessEvents();
 
+   // Search tree
    QuadTree<StarSPData> T( catalogStars );
+
+   /*
+    * Find optimal saturation threshold
+    */
+   ImageVariant image = view.Image();
+   float saturationThreshold = p_saturationThreshold;
+   if ( p_saturationRelative )
+   {
+      // Exclude border regions, which can contain outliers.
+      int dx = TruncInt( image.Bounds().Width() * p_saturationShrinkFactor );
+      int dy = TruncInt( image.Bounds().Height() * p_saturationShrinkFactor );
+      Rect rect = image.Bounds().DeflatedBy( dx, dy );
+      // The saturation limit is the smallest maximum among the three channels.
+      saturationThreshold *= Min( Min( image.MaximumSampleValue( rect, 0, 0 ),
+                                       image.MaximumSampleValue( rect, 1, 1 ) ),
+                                       image.MaximumSampleValue( rect, 2, 2 ) );
+      console.WriteLn( String().Format( "<end><cbr><br>Saturation threshold: %.4f", saturationThreshold ) );
+   }
 
    /*
     * Configure PSF signal evaluation
     */
-   ImageVariant image = view.Image();
    PSFEstimator E;
    E.Detector().SetStructureLayers( p_structureLayers );
    E.Detector().SetNoiseLayers( p_psfNoiseLayers );
@@ -806,8 +816,8 @@ bool SpectrophotometricColorCalibrationInstance::ExecuteOn( View& view )
    E.Detector().SetMinSNR( p_psfMinSNR );
    E.Detector().EnableClusteredSources( p_psfAllowClusteredSources );
    E.SetPSFType( SPCCPSFType::ToPSFFunction( p_psfType ) );
-   E.SetSaturationThreshold( p_saturationThreshold );
-   E.EnableRelativeSaturation( p_saturationRelative );
+   E.SetSaturationThreshold( saturationThreshold );
+   E.DisableRelativeSaturation();
    E.SetGrowthFactorForFluxMeasurement( p_psfGrowth );
    E.SetMaxStars( p_psfMaxStars );
 
@@ -1005,21 +1015,45 @@ bool SpectrophotometricColorCalibrationInstance::ExecuteOn( View& view )
    double whiteSamples[ 3 ];
    for ( int c = 0; c < 3; ++c )
    {
-      const SPInterpolation& filter = filters[c];
-      float l0 = filter.X()[0];
-      float l1 = filter.X()[filter.X().Length()-1];
-      whiteSamples[c] = 0;
-      for ( int i = 1;; ++i )
+      if ( p_narrowbandMode )
       {
-         double la = l0 + (i-1)*p_broadbandIntegrationStepSize;
-         double lb = l0 + i*p_broadbandIntegrationStepSize;
-         double lm = (la + lb)/2;
-         double fa = filter( la ) * deviceQECurve( la ) * whiteReference( la );
-         double fb = filter( lb ) * deviceQECurve( lb ) * whiteReference( lb );
-         double fm = filter( lm ) * deviceQECurve( lm ) * whiteReference( lm );
-         whiteSamples[c] += (fa + fb + 4*fm)*(lb - la)/6;
-         if ( lb >= l1 )
-            break;
+         float l0 = wavelengths[c] - bandwidths[c]/2;
+         float l1 = wavelengths[c] + bandwidths[c]/2;
+         float dl = (l1 - l0)/p_narrowbandIntegrationSteps;
+         whiteSamples[c] = 0;
+         for ( int i = 1;; ++i )
+         {
+            double la = l0 + (i-1)*dl;
+            double lb = l0 + i*dl;
+            double lm = (la + lb)/2;
+            double fa = deviceQECurve( la ) * whiteReference( la );
+            double fb = deviceQECurve( lb ) * whiteReference( lb );
+            double fm = deviceQECurve( lm ) * whiteReference( lm );
+            whiteSamples[c] += (fa + fb + 4*fm)*(lb - la)/6;
+            if ( lb >= l1 )
+               break;
+         }
+         if ( p_narrowbandOptimizeStars )
+            whiteSamples[c] /= bandwidths[c];
+      }
+      else
+      {
+         const SPInterpolation& filter = filters[c];
+         float l0 = filter.X()[0];
+         float l1 = filter.X()[filter.X().Length()-1];
+         whiteSamples[c] = 0;
+         for ( int i = 1;; ++i )
+         {
+            double la = l0 + (i-1)*p_broadbandIntegrationStepSize;
+            double lb = l0 + i*p_broadbandIntegrationStepSize;
+            double lm = (la + lb)/2;
+            double fa = filter( la ) * deviceQECurve( la ) * whiteReference( la );
+            double fb = filter( lb ) * deviceQECurve( lb ) * whiteReference( lb );
+            double fm = filter( lm ) * deviceQECurve( lm ) * whiteReference( lm );
+            whiteSamples[c] += (fa + fb + 4*fm)*(lb - la)/6;
+            if ( lb >= l1 )
+               break;
+         }
       }
    }
 
@@ -1258,6 +1292,8 @@ void* SpectrophotometricColorCalibrationInstance::LockParameter( const MetaParam
       return &p_saturationThreshold;
    if ( p == TheSPCCSaturationRelativeParameter )
       return &p_saturationRelative;
+   if ( p == TheSPCCSaturationShrinkFactorParameter )
+      return &p_saturationShrinkFactor;
    if ( p == TheSPCCPSFNoiseLayersParameter )
       return &p_psfNoiseLayers;
    if ( p == TheSPCCPSFHotPixelFilterRadiusParameter )
@@ -1469,4 +1505,4 @@ void SpectrophotometricColorCalibrationInstance::SetDefaultSpectrumData()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SpectrophotometricColorCalibrationInstance.cpp - Released 2022-11-21T14:47:17Z
+// EOF SpectrophotometricColorCalibrationInstance.cpp - Released 2023-05-17T17:06:42Z

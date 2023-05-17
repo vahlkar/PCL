@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.9.0
+// Standard ColorCalibration Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// SpectrophotometricColorCalibrationParameters.h - Released 2022-11-21T14:47:17Z
+// SpectrophotometricColorCalibrationParameters.h - Released 2023-05-17T17:06:42Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -476,6 +476,23 @@ extern SPCCSaturationRelative* TheSPCCSaturationRelativeParameter;
 
 // ----------------------------------------------------------------------------
 
+class SPCCSaturationShrinkFactor : public MetaFloat
+{
+public:
+
+   SPCCSaturationShrinkFactor( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern SPCCSaturationShrinkFactor* TheSPCCSaturationShrinkFactorParameter;
+
+// ----------------------------------------------------------------------------
+
 class SPCCPSFNoiseLayers : public MetaInt32
 {
 public:
@@ -884,4 +901,4 @@ PCL_END_LOCAL
 #endif   // __SpectrophotometricColorCalibrationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF SpectrophotometricColorCalibrationParameters.h - Released 2022-11-21T14:47:17Z
+// EOF SpectrophotometricColorCalibrationParameters.h - Released 2023-05-17T17:06:42Z

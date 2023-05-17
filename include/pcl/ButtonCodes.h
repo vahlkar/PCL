@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// pcl/ButtonCodes.h - Released 2022-11-21T14:46:30Z
+// pcl/ButtonCodes.h - Released 2023-05-17T17:06:03Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -80,12 +80,12 @@ namespace MouseButton
 {
    enum mask_type
    {
+      Unknown  = 0,     // Unknown/unsupported mouse button
       Left     = 0x01,  // Primary mouse button
       Right    = 0x02,  // Secondary mouse button
       Middle   = 0x04,  // Middle mouse button
       X1       = 0x10,  // First X button
-      X2       = 0x20,  // Second X button
-      Unknown  = 0      // Unknown/unsupported mouse button
+      X2       = 0x20   // Second X button
    };
 }
 
@@ -98,7 +98,17 @@ using MouseButtons = Flags<MouseButton::mask_type>;
 
 /*!
  * \namespace pcl::KeyModifier
- * \brief Defines PCL keyboard modifiers
+ * \brief Defines PCL key modifier codes
+ *
+ * The %KeyModifier namespace defines platform-independent key modifiers on the
+ * PixInsight/PCL framework. Key modifiers are sent to event handlers (such as
+ * Control::OnKeyPress(), Control::OnMousePress(), etc.) and used to specify
+ * keyboard shortcuts; see for example Action::SetAccelerator().
+ *
+ * To query the current state of supported keyboard modifier keys in real time,
+ * see the pcl::KeyboardModifier namespace and the CurrentKeyboardModifiers()
+ * global function, defined and declared, respectively, in the pcl/KeyCodes.h
+ * header file.
  *
  * <table border="1" cellpadding="4" cellspacing="0">
  * <tr><td>KeyModifier::Shift</td>    <td>Shift key</td></tr>
@@ -132,4 +142,4 @@ using KeyModifiers = Flags<KeyModifier::mask_type>;
 #endif   // __PCL_ButtonCodes_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ButtonCodes.h - Released 2022-11-21T14:46:30Z
+// EOF pcl/ButtonCodes.h - Released 2023-05-17T17:06:03Z

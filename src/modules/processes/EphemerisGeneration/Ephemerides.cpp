@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard EphemerisGeneration Process Module Version 1.0.0
+// Standard EphemerisGeneration Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// Ephemerides.cpp - Released 2022-11-21T14:47:17Z
+// Ephemerides.cpp - Released 2023-05-17T17:06:42Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -138,48 +138,54 @@ struct KBOData
 };
 
 static SortedArray<KBOData> s_knownKBOs;
+static AtomicInt s_knownKBOsInitialized;
 
 double Ephemerides::KBOMass( const EphemerisObject& obj )
 {
-   static Mutex mutex;
+   if ( s_knownKBOsInitialized.Load() == 0 )
    {
+      static Mutex mutex;
       volatile AutoLock lock( mutex );
+      if ( s_knownKBOsInitialized.Load() == 0 )
+      {
+         /*
+          * The following mass parameters have been taken from DE440 headers
+          * (MA8001 ... MA8030 integration constants).
+          */
+         if ( s_knownKBOs.IsEmpty() )
+            s_knownKBOs << KBOData{ "136199", "Eris",       2.48544803028732e-12 }
+                        << KBOData{ "136108", "Haumea",     5.96163005450428e-13 }
+                        << KBOData{ "90377",  "Sedna",      1.49348678842449e-13 }
+                        << KBOData{ "136472", "Makemake",   3.43185550062921e-13 }
+                        << KBOData{ "50000",  "Quaoar",     1.52948774597511e-13 }
+                        << KBOData{ "84522",  "2002 TC302", 2.28199634312045e-13 }
+                        << KBOData{ "90482",  "Orcus",      9.40962464315611e-14 }
+                        << KBOData{ "20000",  "Varuna",     5.49507522341186e-14 }
+                        << KBOData{ "55637",  "2002 UX25",  1.86035124454487e-14 }
+                        << KBOData{ "28978",  "Ixion",      4.51766562250976e-14 }
+                        << KBOData{ "307261", "2002 MS4",   7.65350174906720e-14 }
+                        << KBOData{ "174567", "Varda",      3.96577688696419e-14 }
+                        << KBOData{ "",       "2006 QH181", 6.99160258973788e-14 }
+                        << KBOData{ "612911", "2004 XR190", 2.90409951818848e-14 }
+                        << KBOData{ "55565",  "2002 AW197", 6.02473242459976e-14 }
+                        << KBOData{ "145452", "2005 RN43",  3.62854799177896e-14 }
+                        << KBOData{ "90568",  "2004 GV9",   3.71935023738244e-14 }
+                        << KBOData{ "208996", "2003 AZ84",  6.08212352839477e-14 }
+                        << KBOData{ "225088", "Gonggong",   2.58567882770904e-13 }
+                        << KBOData{ "19521",  "Chaos",      2.53837964562973e-14 }
+                        << KBOData{ "120347", "Salacia",    6.51170207936313e-14 }
+                        << KBOData{ "278361", "2007 JJ43",  2.67691589753377e-14 }
+                        << KBOData{ "",       "2010 KZ39",  2.95798751569601e-14 }
+                        << KBOData{ "230965", "2004 XA192", 3.64502260200911e-15 }
+                        << KBOData{ "42301",  "2001 UR163", 2.72519389203377e-14 }
+                        << KBOData{ "455502", "2003 UZ413", 6.48385807558172e-14 }
+                        << KBOData{ "589683", "2010 RF43",  1.75614259349073e-14 }
+                        << KBOData{ "523639", "2010 RE64",  1.91288669686944e-14 }
+                        << KBOData{ "528381", "2008 ST291", 2.13389035100458e-14 }
+                        << KBOData{ "",       "2010 FX86",  2.57103425708102e-14 };
 
-      /*
-       * The following mass parameters have been taken from DE440 headers
-       * (MA8001 ... MA8030 integration constants).
-       */
-      if ( s_knownKBOs.IsEmpty() )
-         s_knownKBOs << KBOData{ "136199", "Eris",       2.48544803028732e-12 }
-                     << KBOData{ "136108", "Haumea",     5.96163005450428e-13 }
-                     << KBOData{ "90377",  "Sedna",      1.49348678842449e-13 }
-                     << KBOData{ "136472", "Makemake",   3.43185550062921e-13 }
-                     << KBOData{ "50000",  "Quaoar",     1.52948774597511e-13 }
-                     << KBOData{ "84522",  "2002 TC302", 2.28199634312045e-13 }
-                     << KBOData{ "90482",  "Orcus",      9.40962464315611e-14 }
-                     << KBOData{ "20000",  "Varuna",     5.49507522341186e-14 }
-                     << KBOData{ "55637",  "2002 UX25",  1.86035124454487e-14 }
-                     << KBOData{ "28978",  "Ixion",      4.51766562250976e-14 }
-                     << KBOData{ "307261", "2002 MS4",   7.65350174906720e-14 }
-                     << KBOData{ "174567", "Varda",      3.96577688696419e-14 }
-                     << KBOData{ "",       "2006 QH181", 6.99160258973788e-14 }
-                     << KBOData{ "",       "2004 XR190", 2.90409951818848e-14 }
-                     << KBOData{ "55565",  "2002 AW197", 6.02473242459976e-14 }
-                     << KBOData{ "145452", "2005 RN43",  3.62854799177896e-14 }
-                     << KBOData{ "90568",  "2004 GV9",   3.71935023738244e-14 }
-                     << KBOData{ "208996", "2003 AZ84",  6.08212352839477e-14 }
-                     << KBOData{ "225088", "Gonggong",   2.58567882770904e-13 }
-                     << KBOData{ "19521",  "Chaos",      2.53837964562973e-14 }
-                     << KBOData{ "120347", "Salacia",    6.51170207936313e-14 }
-                     << KBOData{ "278361", "2007 JJ43",  2.67691589753377e-14 }
-                     << KBOData{ "",       "2010 KZ39",  2.95798751569601e-14 }
-                     << KBOData{ "230965", "2004 XA192", 3.64502260200911e-15 }
-                     << KBOData{ "42301",  "2001 UR163", 2.72519389203377e-14 }
-                     << KBOData{ "455502", "2003 UZ413", 6.48385807558172e-14 }
-                     << KBOData{ "",       "2010 RF43",  1.75614259349073e-14 }
-                     << KBOData{ "523639", "2010 RE64",  1.91288669686944e-14 }
-                     << KBOData{ "528381", "2008 ST291", 2.13389035100458e-14 }
-                     << KBOData{ "",       "2010 FX86",  2.57103425708102e-14 };
+         s_knownKBOsInitialized.Store( 1 );
+      }
    }
 
    SortedArray<KBOData>::const_iterator i = s_knownKBOs.Search( KBOData{ obj.objectId, obj.objectName, 0 } );
@@ -191,4 +197,4 @@ double Ephemerides::KBOMass( const EphemerisObject& obj )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Ephemerides.cpp - Released 2022-11-21T14:47:17Z
+// EOF Ephemerides.cpp - Released 2023-05-17T17:06:42Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard RAW File Format Module Version 1.6.0
+// Standard RAW File Format Module Version 1.6.2
 // ----------------------------------------------------------------------------
-// RawModule.cpp - Released 2023-01-03T13:43:21Z
+// RawModule.cpp - Released 2023-05-17T17:06:31Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RAW PixInsight module.
 //
@@ -52,13 +52,13 @@
 
 #define MODULE_VERSION_MAJOR     1
 #define MODULE_VERSION_MINOR     6
-#define MODULE_VERSION_REVISION  0
+#define MODULE_VERSION_REVISION  2
 #define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2023
-#define MODULE_RELEASE_MONTH     1
-#define MODULE_RELEASE_DAY       3
+#define MODULE_RELEASE_MONTH     5
+#define MODULE_RELEASE_DAY       17
 
 #include "RawModule.h"
 #include "RawFormat.h"
@@ -155,12 +155,10 @@ void RawModule::GetReleaseDate( int& year, int& month, int& day ) const
 PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 {
    new pcl::RawModule;
-
    if ( mode == pcl::InstallMode::FullInstall )
       new pcl::RawFormat;
-
    return 0;
 }
 
 // ----------------------------------------------------------------------------
-// EOF RawModule.cpp - Released 2023-01-03T13:43:21Z
+// EOF RawModule.cpp - Released 2023-05-17T17:06:31Z

@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// pcl/MetaModule.cpp - Released 2022-11-21T14:46:37Z
+// pcl/MetaModule.cpp - Released 2023-05-17T17:06:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -286,10 +286,10 @@ bool MetaModule::GetPhysicalMemoryStatus( size_type& totalBytes, size_type& avai
 
 #ifdef __PCL_MACOSX
 
+   // https://unix.stackexchange.com/questions/175806/accounting-for-missing-memory-from-sysctl
    totalBytes = 0;
-   int mib[ 2 ] = { CTL_HW, HW_PHYSMEM };
    size_t size = sizeof( totalBytes );
-   if ( sysctl( mib, 2, &totalBytes, &size, 0, 0 ) == 0 )
+   if ( sysctlbyname( "hw.memsize", &totalBytes, &size, NULL, 0 ) == 0 )
    {
       mach_port_t host = mach_host_self();
       kern_return_t kret;
@@ -298,7 +298,7 @@ bool MetaModule::GetPhysicalMemoryStatus( size_type& totalBytes, size_type& avai
       natural_t count = HOST_VM_INFO64_COUNT;
       kret = host_statistics64( host, HOST_VM_INFO64, (host_info64_t)&vm_stat, &count );
 # else
-      struct vm_statistics	vm_stat;
+      struct vm_statistics vm_stat;
       natural_t count = HOST_VM_INFO_COUNT;
       kret = host_statistics( host, HOST_VM_INFO, (host_info_t)&vm_stat, &count );
 # endif
@@ -446,4 +446,4 @@ void MetaModule::PerformAPIDefinitions() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MetaModule.cpp - Released 2022-11-21T14:46:37Z
+// EOF pcl/MetaModule.cpp - Released 2023-05-17T17:06:11Z

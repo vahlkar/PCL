@@ -7,7 +7,7 @@
 // ----------------------------------------------------------------------------
 // This file is part of PixInsight X11 UNIX/Linux Installer
 // ----------------------------------------------------------------------------
-// 2022/05/17 15:33:17 UTC
+// 2023/05/17 17:07:57 UTC
 // installer.cpp
 // ----------------------------------------------------------------------------
 // Copyright (c) 2013-2021 Pleiades Astrophoto S.L.
@@ -250,10 +250,10 @@ private:
     *    /foo/foo/bar.bin
     *
     * Subdirectories are guaranteed to be reported before their contained files
-    * in the returned StringList.
+    * in the returned list.
     */
    static StringList SearchDirectory( const String& dirPath );
-   static void       DirectorySearch_Recursive( StringList& foundFiles, const String& dirPath, const String& baseDir );
+   static void       SearchDirectory_Recursive( StringList& foundFiles, const String& dirPath, const String& baseDir );
 
    /*
     * Removes a directory tree recursively.
@@ -262,9 +262,9 @@ private:
    static void       RemoveDirectory_Recursive( const String& dirPath, const String& baseDir );
 
    /*
-    * Removes an existing file.
+    * Removes an existing file. Does nothing if the file does not exist.
     */
-   static void       RemoveFileIfExists( const String& filePath );
+   static void       RemoveExistingFile( const String& filePath );
 
    /*
     * If the specified directory exists, renames it to a unique name and
@@ -332,60 +332,60 @@ PixInsightX11Installer::PixInsightX11Installer( int argc, const char** argv )
    ArgumentList arguments = ExtractArguments( inputArgs, ArgumentItemMode::NoItems );
 
    // Iterate and interpret command-line arguments.
-   for ( ArgumentList::const_iterator i = arguments.Begin(); i != arguments.End(); ++i )
+   for ( const Argument& arg : arguments )
    {
-      if ( i->IsNumeric() )
+      if ( arg.IsNumeric() )
       {
-         throw Error( "Unknown numeric argument: " + i->Token() );
+         throw Error( "Unknown numeric argument: " + arg.Token() );
       }
-      else if ( i->IsString() )
+      else if ( arg.IsString() )
       {
-         if ( i->Id() == "-source-dir" || i->Id() == "s" )
-            m_sourceDir = i->StringValue();
-         else if ( i->Id() == "-install-dir" || i->Id() == "i" )
-            m_installDir = i->StringValue();
-         else if ( i->Id() == "-install-desktop-dir" )
-            m_installDesktopDir = i->StringValue();
-         else if ( i->Id() == "-install-mime-dir" )
-            m_installMIMEDir = i->StringValue();
-         else if ( i->Id() == "-install-icons-dir" )
-            m_installIconsDir = i->StringValue();
+         if ( arg.Id() == "-source-dir" || arg.Id() == "s" )
+            m_sourceDir = arg.StringValue();
+         else if ( arg.Id() == "-install-dir" || arg.Id() == "i" )
+            m_installDir = arg.StringValue();
+         else if ( arg.Id() == "-install-desktop-dir" )
+            m_installDesktopDir = arg.StringValue();
+         else if ( arg.Id() == "-install-mime-dir" )
+            m_installMIMEDir = arg.StringValue();
+         else if ( arg.Id() == "-install-icons-dir" )
+            m_installIconsDir = arg.StringValue();
          else
-            throw Error( "Unknown string argument: " + i->Token() );
+            throw Error( "Unknown string argument: " + arg.Token() );
       }
-      else if ( i->IsSwitch() )
+      else if ( arg.IsSwitch() )
       {
-         if ( i->Id() == "-remove" || i->Id() == "r" )
-            m_removePrevious = i->SwitchState();
-         else if ( i->Id() == "-bin-launcher" )
-            m_createBinLauncher = i->SwitchState();
+         if ( arg.Id() == "-remove" || arg.Id() == "r" )
+            m_removePrevious = arg.SwitchState();
+         else if ( arg.Id() == "-bin-launcher" )
+            m_createBinLauncher = arg.SwitchState();
          else
-            throw Error( "Unknown switch argument: " + i->Token() );
+            throw Error( "Unknown switch argument: " + arg.Token() );
       }
-      else if ( i->IsLiteral() )
+      else if ( arg.IsLiteral() )
       {
-         if ( i->Id() == "-remove" || i->Id() == "r" )
+         if ( arg.Id() == "-remove" || arg.Id() == "r" )
             m_removePrevious = true;
-         else if ( i->Id() == "-no-remove" || i->Id() == "r" ) // also support the --no-xxx idiom
+         else if ( arg.Id() == "-no-remove" || arg.Id() == "r" ) // also support the --no-xxx idiom
             m_removePrevious = false;
-         else if ( i->Id() == "-bin-launcher" )
+         else if ( arg.Id() == "-bin-launcher" )
             m_createBinLauncher = true;
-         else if ( i->Id() == "-no-bin-launcher" )
+         else if ( arg.Id() == "-no-bin-launcher" )
             m_createBinLauncher = false;
-         else if ( i->Id() == "-uninstall" || i->Id() == "u" )
+         else if ( arg.Id() == "-uninstall" || arg.Id() == "u" )
             m_task = UninstallTask;
-         else if ( i->Id() == "-version" )
+         else if ( arg.Id() == "-version" )
             m_task = ShowVersionTask;
-         else if ( i->Id() == "-yes" || i->Id() == "y" )
+         else if ( arg.Id() == "-yes" || arg.Id() == "y" )
             m_forceYes = true;
-         else if ( i->Id() == "-help" )
+         else if ( arg.Id() == "-help" )
             m_task = ShowHelpTask;
          else
-            throw Error( "Unknown argument: " + i->Token() );
+            throw Error( "Unknown argument: " + arg.Token() );
       }
-      else if ( i->IsItemList() )
+      else if ( arg.IsItemList() )
       {
-         throw Error( "Unexpected non-parametric argument: " + i->Token() );
+         throw Error( "Unexpected non-parametric argument: " + arg.Token() );
       }
    }
 
@@ -779,27 +779,27 @@ bool PixInsightX11Installer::DoUninstall()
    std::cout << "\nPlease wait while PixInsight is being uninstalled...\n" << std::flush;
 
    RemoveDirectory( m_installDir );
-   RemoveFileIfExists( m_binLauncherFile );
-   RemoveFileIfExists( m_desktopEntryFile );
-   RemoveFileIfExists( m_mimeDescriptionFile );
-   RemoveFileIfExists( m_icon16x16File );
-   RemoveFileIfExists( m_icon24x24File );
-   RemoveFileIfExists( m_icon32x32File );
-   RemoveFileIfExists( m_icon48x48File );
-   RemoveFileIfExists( m_icon64x64File );
-   RemoveFileIfExists( m_icon128x128File );
-   RemoveFileIfExists( m_icon256x256File );
-   RemoveFileIfExists( m_icon512x512File );
-   RemoveFileIfExists( m_iconScalableFile );
-   RemoveFileIfExists( m_bundleIcon16x16File );
-   RemoveFileIfExists( m_bundleIcon24x24File );
-   RemoveFileIfExists( m_bundleIcon32x32File );
-   RemoveFileIfExists( m_bundleIcon48x48File );
-   RemoveFileIfExists( m_bundleIcon64x64File );
-   RemoveFileIfExists( m_bundleIcon128x128File );
-   RemoveFileIfExists( m_bundleIcon256x256File );
-   RemoveFileIfExists( m_bundleIcon512x512File );
-   RemoveFileIfExists( m_bundleIconScalableFile );
+   RemoveExistingFile( m_binLauncherFile );
+   RemoveExistingFile( m_desktopEntryFile );
+   RemoveExistingFile( m_mimeDescriptionFile );
+   RemoveExistingFile( m_icon16x16File );
+   RemoveExistingFile( m_icon24x24File );
+   RemoveExistingFile( m_icon32x32File );
+   RemoveExistingFile( m_icon48x48File );
+   RemoveExistingFile( m_icon64x64File );
+   RemoveExistingFile( m_icon128x128File );
+   RemoveExistingFile( m_icon256x256File );
+   RemoveExistingFile( m_icon512x512File );
+   RemoveExistingFile( m_iconScalableFile );
+   RemoveExistingFile( m_bundleIcon16x16File );
+   RemoveExistingFile( m_bundleIcon24x24File );
+   RemoveExistingFile( m_bundleIcon32x32File );
+   RemoveExistingFile( m_bundleIcon48x48File );
+   RemoveExistingFile( m_bundleIcon64x64File );
+   RemoveExistingFile( m_bundleIcon128x128File );
+   RemoveExistingFile( m_bundleIcon256x256File );
+   RemoveExistingFile( m_bundleIcon512x512File );
+   RemoveExistingFile( m_bundleIconScalableFile );
 
    std::cout << "\n* PixInsight has been successfully uninstalled.\n\n";
    return true;
@@ -973,9 +973,9 @@ void PixInsightX11Installer::CopyFiles( const String& targetDir, const String& s
    StringList sourceItems = SearchDirectory( sourceDir );
 
    size_type sourceDirLen = sourceDir.Length();
-   for ( StringList::const_iterator i = sourceItems.Begin(); i != sourceItems.End(); ++i )
+   for ( const String& item : sourceItems )
    {
-      String relSourcePath = *i;
+      String relSourcePath = item;
       relSourcePath.DeleteLeft( sourceDirLen );
 
       String targetPath = targetDir + relSourcePath;
@@ -988,7 +988,7 @@ void PixInsightX11Installer::CopyFiles( const String& targetDir, const String& s
          if ( !File::DirectoryExists( targetPath ) )
          {
             File::CreateDirectory( targetPath );
-            String sourcePath = *i;
+            String sourcePath = item;
             sourcePath.Delete( sourcePath.UpperBound() );
             File::CopyTimesAndPermissions( targetPath, sourcePath );
          }
@@ -999,10 +999,10 @@ void PixInsightX11Installer::CopyFiles( const String& targetDir, const String& s
           * Copy a file
           */
          /*
-          * ### N.B. We don't have to create subdirectories here becase they
-          * have been reported by SearchDirectory(), and we are creating them
-          * before copying files. SearchDirectory() promises that all
-          * subdirectories are reported before their contained files.
+          * ### N.B. SearchDirectory() promises that all subdirectories are
+          * reported before their contained files. Therefore we don't have to
+          * create subdirectories here becase they have already been created
+          * before copying files.
           */
          /*
          String targetSubdir = File::ExtractDirectory( targetPath );
@@ -1011,7 +1011,7 @@ void PixInsightX11Installer::CopyFiles( const String& targetDir, const String& s
          if ( !File::DirectoryExists( targetSubdir ) )
             File::CreateDirectory( targetSubdir );
          */
-         File::CopyFile( targetPath, *i );
+         File::CopyFile( targetPath, item );
       }
    }
 }
@@ -1026,14 +1026,14 @@ StringList PixInsightX11Installer::SearchDirectory( const String& dirPath )
       throw Error( "SearchDirectory(): Incorrectly terminated directory." );
 
    StringList foundItems;
-   DirectorySearch_Recursive( foundItems, dirPath, dirPath );
+   SearchDirectory_Recursive( foundItems, dirPath, dirPath );
    return foundItems;
 }
 
-void PixInsightX11Installer::DirectorySearch_Recursive( StringList& foundItems, const String& dirPath, const String& baseDir )
+void PixInsightX11Installer::SearchDirectory_Recursive( StringList& foundItems, const String& dirPath, const String& baseDir )
 {
    if ( dirPath.Contains( ".." ) )
-      throw Error( "SearchDirectory(): Attempt to redirect outside the base directory." );
+      throw Error( "SearchDirectory(): Attempt to climb up the filesystem." );
    if ( !dirPath.StartsWith( baseDir ) )
       throw Error( "SearchDirectory(): Attempt to redirect outside the base directory." );
    if ( !File::DirectoryExists( dirPath ) )
@@ -1041,7 +1041,7 @@ void PixInsightX11Installer::DirectorySearch_Recursive( StringList& foundItems, 
 
    String currentDir = dirPath;
    if ( !currentDir.EndsWith( '/' ) )
-      currentDir += '/';
+      currentDir << '/';
 
    StringList directories;
    FindFileInfo info;
@@ -1050,15 +1050,15 @@ void PixInsightX11Installer::DirectorySearch_Recursive( StringList& foundItems, 
       {
          if ( info.name != "." && info.name != ".." )
          {
-            directories.Add( info.name );
-            foundItems.Add( currentDir + info.name + '/' );
+            directories << info.name;
+            foundItems << currentDir + info.name + '/';
          }
       }
       else
-         foundItems.Add( currentDir + info.name );
+         foundItems << currentDir + info.name;
 
-   for ( StringList::const_iterator i = directories.Begin(); i != directories.End(); ++i )
-      DirectorySearch_Recursive( foundItems, currentDir + *i, baseDir );
+   for ( const String& dir : directories )
+      SearchDirectory_Recursive( foundItems, currentDir + dir, baseDir );
 }
 
 // ----------------------------------------------------------------------------
@@ -1087,7 +1087,7 @@ void PixInsightX11Installer::RemoveDirectory_Recursive( const String& dirPath, c
 
    String currentDir = dirPath;
    if ( !currentDir.EndsWith( '/' ) )
-      currentDir += '/';
+      currentDir << '/';
 
    FindFileInfo info;
    for ( File::Find f( currentDir + "*" ); f.NextItem( info ); )
@@ -1110,7 +1110,7 @@ void PixInsightX11Installer::RemoveDirectory_Recursive( const String& dirPath, c
 
 // ----------------------------------------------------------------------------
 
-void PixInsightX11Installer::RemoveFileIfExists( const String& filePath )
+void PixInsightX11Installer::RemoveExistingFile( const String& filePath )
 {
    if ( File::Exists( filePath ) )
       File::Remove( filePath );
@@ -1171,14 +1171,23 @@ bool PixInsightX11Installer::IsPixInsightInstallation( const String& dirPath )
 
 bool PixInsightX11Installer::AskForConfirmation()
 {
-   std::cout << "\n==> Are you sure [yes|no] ? " << std::flush;
-   IsoString answer( ' ', 8 );
-   std::cin.getline( answer.Begin(), 8 );
-   answer.ResizeToNullTerminated();
-   if ( answer.Trimmed().CaseFolded() == "yes" )
-      return true;
-   std::cout << "\n** Canceled\n\n";
-   return false;
+   for ( ;; )
+   {
+      std::cout << "\n==> Are you sure [yes|no] ? " << std::flush;
+      IsoString answer( ' ', 8 );
+      std::cin.getline( answer.Begin(), 8 );
+      answer.ResizeToNullTerminated();
+      answer.Trim();
+      answer.ToCaseFolded();
+      if ( answer == "yes" )
+         return true;
+      if ( answer == "no" )
+      {
+         std::cout << "\n** Canceled\n\n";
+         return false;
+      }
+      std::cout << "\n*** Unrecognized answer. Expected either 'yes' or 'no'.\n\n";
+   }
 }
 
 // ----------------------------------------------------------------------------
@@ -1236,5 +1245,5 @@ int main( int argc, const char** argv )
 }
 
 // ----------------------------------------------------------------------------
-// 2022/05/17 15:33:17 UTC
+// 2023/05/17 17:07:57 UTC
 // installer.cpp

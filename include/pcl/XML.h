@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// pcl/XML.h - Released 2022-11-21T14:46:30Z
+// pcl/XML.h - Released 2023-05-17T17:06:03Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -347,6 +347,13 @@ public:
    XMLComponent( const XMLComponent& ) = default;
 
    /*!
+    * Virtual destructor.
+    */
+   virtual ~XMLComponent()
+   {
+   }
+
+   /*!
     * Returns a pointer to the parent %XML element of this component, or
     * \c nullptr if this object has no parent element.
     */
@@ -530,9 +537,9 @@ public:
    }
 
    /*!
-    * Virtual destructor.
+    * Destroys an %XMLNode object.
     */
-   virtual ~XMLNode()
+   ~XMLNode() override
    {
    }
 
@@ -613,6 +620,23 @@ public:
     *             for indentation, when \a autoFormat is true.
     */
    virtual void Serialize( IsoString& text, bool autoFormat, char indentChar, unsigned indentSize, unsigned level ) const = 0;
+
+   /*!
+    * Serializes this document node as an %XML fragment encoded in UTF-8,
+    * following a set of rules and restrictions pertaining to HTML.
+    *
+    * In particular, HTML restricts self-closing tags to a reduced subset of
+    * <em>void elements</em>. See section 13.1.2 of the HTML Living Standard
+    * for details:
+    *
+    * https://html.spec.whatwg.org/multipage/syntax.html#void-elements
+    *
+    * See Serialize() for complete information on function parameters.
+    */
+   virtual void SerializeAsHTML( IsoString& text, bool autoFormat, char indentChar, unsigned indentSize, unsigned level ) const
+   {
+      Serialize( text, autoFormat, indentChar, indentSize, level );
+   }
 
    /*!
     * Returns true iff a new line character (\#x0A) can be inserted before
@@ -1199,10 +1223,10 @@ public:
    XMLElement& operator =( const XMLElement& ) = delete;
 
    /*!
-    * Virtual destructor. If this element contains child nodes, all of them
-    * will be destroyed recursively.
+    * Destroys an %XMLElement object. If this element contains child nodes, all
+    * of them will be destroyed recursively.
     */
-   virtual ~XMLElement()
+   ~XMLElement() override
    {
       DestroyChildNodes();
    }
@@ -1669,6 +1693,29 @@ public:
    }
 
    /*!
+    * Returns true iff this element has at least one child element with the
+    * specified \a name.
+    *
+    * if \a recursive is \c true, this member function performs a recursive
+    * search across the entire tree structure rooted at this element. Otherwise
+    * only the direct descendant elements will be checked.
+    */
+   bool HasChildElementWithName( const String& name, bool recursive = false ) const
+   {
+      for ( const XMLNode& node : m_childNodes )
+         if ( node.IsElement() )
+         {
+            const XMLElement& element = static_cast<const XMLElement&>( node );
+            if ( element.Name() == name )
+               return true;
+            if ( recursive )
+               if ( element.HasChildElementWithName( name, recursive ) )
+                  return true;
+         }
+      return false;
+   }
+
+   /*!
     * \internal
     */
    void GetChildNodesByType( XMLNodeList& list, XMLNodeTypes types, bool recursive ) const
@@ -1732,6 +1779,29 @@ public:
       XMLNodeList list;
       GetChildNodesThat( list, u, recursive );
       return list;
+   }
+
+   /*!
+    * Returns true iff this element has at least one child node that satisfies
+    * the specified unary predicate \a u.
+    *
+    * if \a recursive is \c true, this member function performs a recursive
+    * search across the entire tree structure rooted at this element. Otherwise
+    * only the direct descendant nodes will be checked.
+    */
+   template <class UP>
+   bool HasChildNodeThat( UP u, bool recursive = false ) const
+   {
+      for ( const XMLNode& node : m_childNodes )
+      {
+         if ( u( node ) )
+            return true;
+         if ( recursive )
+            if ( node.IsElement() )
+               if ( static_cast<const XMLElement&>( node ).HasChildNodeThat( u, recursive ) )
+                  return true;
+      }
+      return false;
    }
 
    /*!
@@ -1833,6 +1903,16 @@ public:
     * See XMLNode::Serialize() for information on function parameters.
     */
    void Serialize( IsoString& text, bool autoFormat, char indentChar, unsigned indentSize, unsigned level ) const override;
+
+   /*!
+    * Recursively serializes this %XML element and its contents following a set
+    * of rules and restrictions pertaining to HTML. Appends the generated %XML
+    * source code to the specified 8-bit \a text string, encoded in UTF-8.
+    *
+    * See XMLNode::SerializeAsHTML() for information on HTML serialization. See
+    * XMLNode::Serialize() for information on function parameters.
+    */
+   void SerializeAsHTML( IsoString& text, bool autoFormat, char indentChar, unsigned indentSize, unsigned level ) const override;
 
 private:
 
@@ -3049,7 +3129,28 @@ public:
     * For formatting and indentation settings, see IsAutoFormatting(),
     * IndentSize() and IsIndentTabs().
     */
-   IsoString Serialize() const;
+   IsoString Serialize() const
+   {
+      return Serialize( false/*isHTML*/ );
+   }
+
+   /*!
+    * Serializes this %XML document following a set of rules and exceptions
+    * pertaining to HTML. Returns the generated serialization as a Unicode
+    * string encoded in UTF-8.
+    *
+    * In particular, HTML restricts self-closing tags to a reduced subset of
+    * <em>void elements</em>. See section 13.1.2 of the HTML Living Standard
+    * for details:
+    *
+    * https://html.spec.whatwg.org/multipage/syntax.html#void-elements
+    *
+    * See Serialize() for more information on %XML serializations.
+    */
+   IsoString SerializeAsHTML() const
+   {
+      return Serialize( true/*isHTML*/ );
+   }
 
    /*!
     * Serializes this %XML document and writes the result to a file at the
@@ -3061,6 +3162,18 @@ public:
     * contents will be lost after calling this function.
     */
    void SerializeToFile( const String& path ) const;
+
+   /*!
+    * Serializes this %XML document following a set of rules and exceptions
+    * pertaining to HTML and writes the result to a file at the specified
+    * \a path with UTF-8 encoding.
+    *
+    * See Serialize() for more information.
+    *
+    * \warning If a file already exists at the specified path, its previous
+    * contents will be lost after calling this function.
+    */
+   void SerializeToFileAsHTML( const String& path ) const;
 
 private:
 
@@ -3074,6 +3187,8 @@ private:
    bool                  m_autoFormatting = false;
    bool                  m_indentTabs = false;
    int                   m_indentSize = 3;
+
+   IsoString Serialize( bool isHTML ) const;
 };
 
 // ----------------------------------------------------------------------------
@@ -3083,4 +3198,4 @@ private:
 #endif   // __PCL_XML_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/XML.h - Released 2022-11-21T14:46:30Z
+// EOF pcl/XML.h - Released 2023-05-17T17:06:03Z

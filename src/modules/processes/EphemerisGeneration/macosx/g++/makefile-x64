@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.127
-# Copyright (C) 2009-2022 Pleiades Astrophoto
+# PixInsight Makefile Generator Script v1.129
+# Copyright (C) 2009-2023 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2022-11-21T14:48:26.364Z
+# Generated on .... 2023-05-17T18:34:46.503Z
 # Project id ...... EphemerisGeneration
 # Project type .... Module
 # Platform ........ MacOSX/g++
@@ -26,8 +26,7 @@ SRC_FILES= \
 ../../EphemerisGeneratorInterface.cpp \
 ../../EphemerisGeneratorParameters.cpp \
 ../../EphemerisGeneratorProcess.cpp \
-../../TextDatabase.cpp \
-../../XEPHGenerator.cpp
+../../TextDatabase.cpp
 
 #
 # Object files
@@ -41,8 +40,7 @@ OBJ_FILES= \
 ./x64/Release/EphemerisGeneratorInterface.o \
 ./x64/Release/EphemerisGeneratorParameters.o \
 ./x64/Release/EphemerisGeneratorProcess.o \
-./x64/Release/TextDatabase.o \
-./x64/Release/XEPHGenerator.o
+./x64/Release/TextDatabase.o
 
 #
 # Dependency files
@@ -56,8 +54,7 @@ DEP_FILES= \
 ./x64/Release/EphemerisGeneratorInterface.d \
 ./x64/Release/EphemerisGeneratorParameters.d \
 ./x64/Release/EphemerisGeneratorProcess.d \
-./x64/Release/TextDatabase.d \
-./x64/Release/XEPHGenerator.d
+./x64/Release/TextDatabase.d
 
 #
 # Rules
@@ -66,7 +63,7 @@ DEP_FILES= \
 -include $(DEP_FILES)
 
 $(OBJ_DIR)/EphemerisGeneration-pxm.dylib: $(OBJ_FILES)
-	clang++ -arch x86_64 -fPIC -headerpad_max_install_names -Wl,-syslibroot,/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.0.sdk -mmacosx-version-min=10.13 -stdlib=libc++ -Wl,-dead_strip -rdynamic -dynamiclib -install_name @executable_path/EphemerisGeneration-pxm.dylib -L"$(PCLLIBDIR64)" -o $(OBJ_DIR)/EphemerisGeneration-pxm.dylib $(OBJ_FILES) -framework CoreFoundation -lpthread -lPCL-pxi -llz4-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi
+	clang++ -arch x86_64 -fPIC -headerpad_max_install_names -Wl,-syslibroot,/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk -mmacosx-version-min=11 -stdlib=libc++ -Wl,-dead_strip -rdynamic -dynamiclib -install_name @executable_path/EphemerisGeneration-pxm.dylib -L"$(PCLLIBDIR64)" -o $(OBJ_DIR)/EphemerisGeneration-pxm.dylib $(OBJ_FILES) -framework CoreFoundation -lpthread -lPCL-pxi -llz4-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi
 	$(MAKE) -f ./makefile-x64 --no-print-directory post-build
 
 .PHONY: clean
@@ -79,6 +76,6 @@ post-build:
 	codesign --deep --options=runtime -s pleiades -f -v --timestamp $(PCLBINDIR64)/EphemerisGeneration-pxm.dylib
 
 ./x64/Release/%.o: ../../%.cpp
-	clang++ -c -pipe -pthread -arch x86_64 -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.0.sdk -mmacosx-version-min=10.13 -D_REENTRANT -D__PCL_MACOSX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mtune=skylake -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -std=c++17 -stdlib=libc++ -Wall -Wno-parentheses -Wno-extern-c-compat -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	clang++ -c -pipe -pthread -arch x86_64 -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk -mmacosx-version-min=11 -D_REENTRANT -D__PCL_MACOSX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mtune=skylake -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -std=c++17 -stdlib=libc++ -Wall -Wno-parentheses -Wno-extern-c-compat -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 

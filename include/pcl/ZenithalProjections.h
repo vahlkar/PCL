@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// pcl/ZenithalProjections.h - Released 2022-11-21T14:46:30Z
+// pcl/ZenithalProjections.h - Released 2023-05-17T17:06:03Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -101,6 +101,11 @@ protected:
    virtual IsoString ProjCode() const override = 0;
 
    /*!
+    * Returns the XISF serializable projection identifier.
+    */
+   virtual IsoString Identifier() const override = 0;
+
+   /*!
     * Returns the readable name of this projection system.
     */
    virtual IsoString Name() const override = 0;
@@ -173,6 +178,14 @@ public:
    }
 
    /*!
+    * Returns the XISF serializable projection identifier.
+    */
+   IsoString Identifier() const override
+   {
+      return "ZenithalEqualArea";
+   };
+
+   /*!
     * Returns the readable name of this projection system.
     */
    IsoString Name() const override
@@ -243,6 +256,14 @@ public:
    }
 
    /*!
+    * Returns the XISF serializable projection identifier.
+    */
+   IsoString Identifier() const override
+   {
+      return "Stereographic";
+   };
+
+   /*!
     * Returns the readable name of this projection system.
     */
    IsoString Name() const override
@@ -278,4 +299,4 @@ private:
 #endif   // __PCL_ZenithalProjections_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ZenithalProjections.h - Released 2022-11-21T14:46:30Z
+// EOF pcl/ZenithalProjections.h - Released 2023-05-17T17:06:03Z

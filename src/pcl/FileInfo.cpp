@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// pcl/FileInfo.cpp - Released 2022-11-21T14:46:37Z
+// pcl/FileInfo.cpp - Released 2023-05-17T17:06:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -49,6 +49,7 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
+#include <pcl/File.h>
 #include <pcl/FileInfo.h>
 
 #ifdef __PCL_WINDOWS
@@ -155,7 +156,7 @@ static void POSIXFileTimeToPCL( pcl::FileTime& t, time_t ft )
 
 void FileInfo::Refresh()
 {
-   ClearData();
+   ClearInfo();
 
    if ( m_path.IsEmpty() )
       return;
@@ -263,19 +264,23 @@ String FileInfo::SymbolicLinkTarget() const
 #endif
 }
 
+// ----------------------------------------------------------------------------
+
 void FileInfo::Refresh( const String& path )
 {
    m_path = File::FullPath( path );
    Refresh();
 }
 
+// ----------------------------------------------------------------------------
+
 void FileInfo::Clear()
 {
    m_path.Clear();
-   ClearData();
+   ClearInfo();
 }
 
-void FileInfo::ClearData()
+void FileInfo::ClearInfo()
 {
    m_attributes.Clear();
    m_size = 0;
@@ -290,7 +295,39 @@ void FileInfo::ClearData()
 
 // ----------------------------------------------------------------------------
 
+String FileInfo::Drive() const
+{
+   return File::ExtractDrive( m_path );
+}
+
+String FileInfo::Directory() const
+{
+   return File::ExtractDirectory( m_path );
+}
+
+String FileInfo::Name() const
+{
+   return File::ExtractName( m_path );
+}
+
+String FileInfo::Extension() const
+{
+   return File::ExtractExtension( m_path );
+}
+
+String FileInfo::CompleteSuffix() const
+{
+   return File::ExtractCompleteSuffix( m_path );
+}
+
+String FileInfo::NameAndExtension() const
+{
+   return File::ExtractNameAndExtension( m_path );
+}
+
+// ----------------------------------------------------------------------------
+
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FileInfo.cpp - Released 2022-11-21T14:46:37Z
+// EOF pcl/FileInfo.cpp - Released 2023-05-17T17:06:11Z

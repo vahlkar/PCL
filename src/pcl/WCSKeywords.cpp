@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// pcl/WCSKeywords.cpp - Released 2022-11-21T14:46:37Z
+// pcl/WCSKeywords.cpp - Released 2023-05-17T17:06:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -50,6 +50,7 @@
 // ----------------------------------------------------------------------------
 
 #include <pcl/LinearTransformation.h>
+#include <pcl/ProjectionBase.h>
 #include <pcl/TimePoint.h>
 #include <pcl/WCSKeywords.h>
 
@@ -68,9 +69,6 @@ void WCSKeywords::Read( const PropertyArray& properties, const FITSKeywordArray&
 
    /*
     * XISF properties take precedence over FITS keywords.
-    *
-    * ### TODO: When defined by the XISF standard, include all properties in
-    *           the WCS namespace.
     */
    for ( const Property& property : properties )
    {
@@ -98,7 +96,70 @@ void WCSKeywords::Read( const PropertyArray& properties, const FITSKeywordArray&
          xpixsz = property.Value().ToDouble();
       else if ( property.Id() == "Instrument:ExposureTime" )
          expTime = property.Value().ToDouble();
+
+      /*
+       * Since core version 1.8.9-2
+       * ### TODO: When defined by the XISF standard, remove the PCL prefix.
+       */
+      else if ( property.Id() == "PCL:AstrometricSolution:ProjectionSystem" )
+      {
+         IsoString wcsCode = ProjectionBase::ProjectionIdentifierToWCSCode( property.Value().ToIsoString() );
+         if ( !wcsCode.IsEmpty() )
+         {
+            ctype1 = "RA---" + wcsCode;
+            ctype2 = "DEC--" + wcsCode;
+         }
+      }
+      else if ( property.Id() == "PCL:AstrometricSolution:ReferenceCelestialCoordinates" )
+      {
+         Vector p = property.Value().ToVector();
+         if ( p.Length() == 2 )
+         {
+            crval1 = p[0];
+            crval2 = p[1];
+         }
+      }
+      else if ( property.Id() == "PCL:AstrometricSolution:ReferenceImageCoordinates" )
+      {
+         Vector p = property.Value().ToVector();
+         if ( p.Length() == 2 )
+         {
+            crpix1 = p[0];
+            crpix2 = p[1];
+         }
+      }
+      else if ( property.Id() == "PCL:AstrometricSolution:ReferenceNativeCoordinates" )
+      {
+         Vector p = property.Value().ToVector();
+         if ( p.Length() == 2 )
+         {
+            pv1_1 = p[0];
+            pv1_2 = p[1];
+         }
+      }
+      else if ( property.Id() == "PCL:AstrometricSolution:CelestialPoleNativeCoordinates" )
+      {
+         Vector p = property.Value().ToVector();
+         if ( p.Length() == 2 )
+         {
+            lonpole = p[0];
+            latpole = p[1];
+         }
+      }
+      else if ( property.Id() == "PCL:AstrometricSolution:LinearTransformationMatrix" )
+      {
+         Matrix L = property.Value().ToMatrix();
+         if ( L.Rows() == 2 && L.Columns() == 2 )
+         {
+            cd1_1 = L[0][0];
+            cd1_2 = L[0][1];
+            cd2_1 = L[1][0];
+            cd2_2 = L[1][1];
+         }
+      }
    }
+
+   m_fromFITS = !cd1_1.IsDefined();
 
    /*
     * Standard WCS FITS keywords.
@@ -107,50 +168,50 @@ void WCSKeywords::Read( const PropertyArray& properties, const FITSKeywordArray&
    {
       IsoString svalue = keyword.StripValueDelimiters();
       double nvalue;
-      if ( keyword.name == "CTYPE1" )
+      if ( ctype1.IsEmpty() && keyword.name == "CTYPE1" )
       {
          ctype1 = svalue;
       }
-      else if ( keyword.name == "CTYPE2" )
+      else if ( ctype2.IsEmpty() && keyword.name == "CTYPE2" )
       {
          ctype2 = svalue;
       }
-      else if ( keyword.name == "CRVAL1" )
+      else if ( !crval1.IsDefined() && keyword.name == "CRVAL1" )
       {
          if ( svalue.TryToDouble( nvalue ) )
             crval1 = nvalue;
       }
-      else if ( keyword.name == "CRVAL2" )
+      else if ( !crval2.IsDefined() && keyword.name == "CRVAL2" )
       {
          if ( svalue.TryToDouble( nvalue ) )
             crval2 = nvalue;
       }
-      else if ( keyword.name == "CRPIX1" )
+      else if ( !crpix1.IsDefined() && keyword.name == "CRPIX1" )
       {
          if ( svalue.TryToDouble( nvalue ) )
             crpix1 = nvalue;
       }
-      else if ( keyword.name == "CRPIX2" )
+      else if ( !crpix2.IsDefined() && keyword.name == "CRPIX2" )
       {
          if ( svalue.TryToDouble( nvalue ) )
             crpix2 = nvalue;
       }
-      else if ( keyword.name == "CD1_1" )
+      else if ( !cd1_1.IsDefined() && keyword.name == "CD1_1" )
       {
          if ( svalue.TryToDouble( nvalue ) )
             cd1_1 = nvalue;
       }
-      else if ( keyword.name == "CD1_2" )
+      else if ( !cd1_2.IsDefined() && keyword.name == "CD1_2" )
       {
          if ( svalue.TryToDouble( nvalue ) )
             cd1_2 = nvalue;
       }
-      else if ( keyword.name == "CD2_1" )
+      else if ( !cd2_1.IsDefined() && keyword.name == "CD2_1" )
       {
          if ( svalue.TryToDouble( nvalue ) )
             cd2_1 = nvalue;
       }
-      else if ( keyword.name == "CD2_2" )
+      else if ( !cd2_2.IsDefined() && keyword.name == "CD2_2" )
       {
          if ( svalue.TryToDouble( nvalue ) )
             cd2_2 = nvalue;
@@ -175,31 +236,25 @@ void WCSKeywords::Read( const PropertyArray& properties, const FITSKeywordArray&
          if ( svalue.TryToDouble( nvalue ) )
             crota2 = nvalue;
       }
-      else if ( keyword.name == "PV1_1" )
+      else if ( !pv1_1.IsDefined() && keyword.name == "PV1_1" )
       {
          if ( svalue.TryToDouble( nvalue ) )
             pv1_1 = nvalue;
       }
-      else if ( keyword.name == "PV1_2" )
+      else if ( !pv1_2.IsDefined() && keyword.name == "PV1_2" )
       {
          if ( svalue.TryToDouble( nvalue ) )
             pv1_2 = nvalue;
       }
-      else if ( keyword.name == "PV1_3" || keyword.name == "LONPOLE" )
+      else if ( !lonpole.IsDefined() && (keyword.name == "PV1_3" || keyword.name == "LONPOLE") )
       {
          if ( svalue.TryToDouble( nvalue ) )
             lonpole = nvalue;
       }
-      else if ( keyword.name == "PV1_4" || keyword.name == "LATPOLE" )
+      else if ( !latpole.IsDefined() && (keyword.name == "PV1_4" || keyword.name == "LATPOLE") )
       {
          if ( svalue.TryToDouble( nvalue ) )
             latpole = nvalue;
-      }
-      else if ( keyword.name == "REFSPLIN" || keyword.name == "REFSPLINE" )
-      {
-         // N.B. Be compatible with 9-char keyword "REFSPLINE" written by old
-         // versions of the ImageSolver script.
-         refSpline = svalue;
       }
    }
 
@@ -403,16 +458,105 @@ void WCSKeywords::Read( const PropertyArray& properties, const FITSKeywordArray&
 
 // ----------------------------------------------------------------------------
 
-bool WCSKeywords::ExtractWorldTransformation( LinearTransformation& transIW, int imageHeight )
+PropertyArray WCSKeywords::ToProperties() const
 {
-   /*
-    * Transform pixel coordinates in FITS convention to World coordinates.
-    */
-   LinearTransformation transFW;
+   PropertyArray properties;
+
+   if ( objctra.IsDefined() )
+      properties << Property( "Observation:Center:RA", objctra() );
+
+   if ( objctdec.IsDefined() )
+      properties << Property( "Observation:Center:Dec", objctdec() );
+
+   if ( !radesys.IsEmpty() )
+      properties << Property( "Observation:CelestialReferenceSystem", radesys );
+
+   if ( equinox.IsDefined() )
+      properties << Property( "Observation:Equinox", equinox() );
+
+   if ( dateobs.IsDefined() )
+      properties << Property( "Observation:Time:Start", dateobs() );
+
+   if ( dateend.IsDefined() )
+      properties << Property( "Observation:Time:End", dateend() );
+
+   if ( longobs.IsDefined() && latobs.IsDefined() )
+   {
+      properties << Property( "Observation:Location:Longitude", longobs() );
+      properties << Property( "Observation:Location:Latitude", latobs() );
+      if ( altobs.IsDefined() )
+         properties << Property( "Observation:Location:Elevation", altobs() );
+   }
+
+   if ( focallen.IsDefined() )
+      properties << Property( "Instrument:Telescope:FocalLength", focallen() );
+
+   if ( xpixsz.IsDefined() )
+      properties << Property( "Instrument:Sensor:XPixelSize", xpixsz() );
+
+   if ( !ctype1.IsEmpty() )
+      properties << Property( "PCL:AstrometricSolution:ProjectionSystem", ProjectionBase::WCSCodeToProjectionIdentifier( ctype1.Substring( 5, 3 ) ) );
+
+   if ( crval1.IsDefined() && crval2.IsDefined() )
+      properties << Property( "PCL:AstrometricSolution:ReferenceCelestialCoordinates", Vector{ crval1(), crval2() } );
+
+   if ( crpix1.IsDefined() && crpix2.IsDefined() )
+      properties << Property( "PCL:AstrometricSolution:ReferenceImageCoordinates", Vector{ crpix1(), crpix2() } );
+
+   if ( pv1_1.IsDefined() && pv1_2.IsDefined() )
+      properties << Property( "PCL:AstrometricSolution:ReferenceNativeCoordinates", Vector{ pv1_1(), pv1_2() } );
+
+   if ( lonpole.IsDefined() && latpole.IsDefined() )
+      properties << Property( "PCL:AstrometricSolution:CelestialPoleNativeCoordinates", Vector{ lonpole(), latpole() } );
+
    if ( cd1_1.IsDefined() && cd1_2.IsDefined() && cd2_1.IsDefined() && cd2_2.IsDefined() )
    {
-      transFW = LinearTransformation( cd1_1(), cd1_2(), -cd1_1()*crpix1() - cd1_2()*crpix2(),
+      Matrix L( 2, 2 );
+      L[0][0] = cd1_1();
+      L[0][1] = cd1_2();
+      L[1][0] = cd2_1();
+      L[1][1] = cd2_2();
+      properties << Property( "PCL:AstrometricSolution:LinearTransformationMatrix", L );
+   }
+
+   return properties;
+}
+
+// ----------------------------------------------------------------------------
+
+bool WCSKeywords::ExtractWorldTransformation( LinearTransformation& transIW, int imageHeight )
+{
+   bool bottomUp = true;
+   if ( cd1_1.IsDefined() && cd1_2.IsDefined() && cd2_1.IsDefined() && cd2_2.IsDefined() )
+   {
+      transIW = LinearTransformation( cd1_1(), cd1_2(), -cd1_1()*crpix1() - cd1_2()*crpix2(),
                                       cd2_1(), cd2_2(), -cd2_1()*crpix1() - cd2_2()*crpix2() );
+      if ( m_fromFITS )
+      {
+         /*
+          * See "Representations of celestial coordinates in FITS", Sect. 6.2.
+          */
+         double rot1, rot2;
+         if ( cd2_1() > 0 )
+            rot1 = ArcTan( cd2_1(), cd1_1() );
+         else if ( cd2_1() < 0 )
+            rot1 = ArcTan( -cd2_1(), -cd1_1() );
+         else
+            rot1 = 0;
+
+         if ( cd1_2() > 0 )
+            rot2 = ArcTan( cd1_2(), -cd2_2() );
+         else if ( cd1_2() < 0 )
+            rot2 = ArcTan( -cd1_2(), cd2_2() );
+         else
+            rot2 = 0;
+
+         double sinrot, cosrot;
+         SinCos( (rot1 + rot2)/2, sinrot, cosrot );
+         double cdelt2 = (Abs( cosrot ) > Abs( sinrot )) ? cd2_2()/cosrot : -cd1_2()/sinrot;
+         if ( cdelt2 < 0 )
+            bottomUp = false;
+      }
    }
    else if ( cdelt1.IsDefined() && cdelt2.IsDefined() )
    {
@@ -424,18 +568,32 @@ bool WCSKeywords::ExtractWorldTransformation( LinearTransformation& transIW, int
       double cd1_2 = -cdelt2()*sinr;
       double cd2_1 =  cdelt1()*sinr;
       double cd2_2 =  cdelt2()*cosr;
-      transFW = LinearTransformation( cd1_1, cd1_2, -cd1_1*crpix1() - cd1_2*crpix2(),
+      transIW = LinearTransformation( cd1_1, cd1_2, -cd1_1*crpix1() - cd1_2*crpix2(),
                                       cd2_1, cd2_2, -cd2_1*crpix1() - cd2_2*crpix2() );
+      if ( m_fromFITS )
+         if ( cdelt2() < 0 )
+            bottomUp = false;
    }
    else
       return false;
 
    /*
-    * Transforms pixel coordinates between FITS and PixInsight conventions.
+    * If the data comes from FITS keywords, transform pixel coordinates from
+    * the FITS coordinate system to our native coordinate system.
     */
-   LinearTransformation ref_F_I( 1,  0,              -0.5,
-                                 0, -1, imageHeight + 0.5 );
-   transIW = transFW.Multiply( ref_F_I.Inverse() );
+   if ( m_fromFITS )
+   {
+      LinearTransformation ref_F_I;
+      if ( bottomUp )
+         ref_F_I = LinearTransformation( 1,  0,            -0.5,
+                                         0, -1, imageHeight+0.5 );
+      else
+         ref_F_I = LinearTransformation( 1,  0,            -0.5,
+                                         0,  1,            -0.5 );
+
+      transIW = transIW.Multiply( ref_F_I.Inverse() );
+   }
+
    return true;
 }
 
@@ -444,4 +602,4 @@ bool WCSKeywords::ExtractWorldTransformation( LinearTransformation& transIW, int
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/WCSKeywords.cpp - Released 2022-11-21T14:46:37Z
+// EOF pcl/WCSKeywords.cpp - Released 2023-05-17T17:06:11Z

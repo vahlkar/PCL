@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.9.7
+// Standard ImageCalibration Process Module Version 1.9.8
 // ----------------------------------------------------------------------------
-// LocalNormalizationInstance.cpp - Released 2022-11-21T14:47:17Z
+// LocalNormalizationInstance.cpp - Released 2023-05-17T17:06:42Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -52,6 +52,7 @@
 
 #include "LocalNormalizationInstance.h"
 #include "LocalNormalizationParameters.h"
+#include "LocalNormalizationProcess.h"
 #include "OutputFileData.h"
 
 #include <pcl/ATrousWaveletTransform.h>
@@ -444,8 +445,6 @@ public:
 
    void Run() override
    {
-      Console console;
-
       try
       {
          Module->ProcessEvents();
@@ -466,7 +465,7 @@ public:
       {
          if ( IsRootThread() )
          {
-            if ( !m_invalid )
+            if ( !m_invalidData )
                throw;
 
             try
@@ -479,7 +478,7 @@ public:
             return;
          }
 
-         if ( m_invalid )
+         if ( m_invalidData )
          {
             try
             {
@@ -500,7 +499,7 @@ public:
             ERROR_HANDLER
             m_errorInfo = ConsoleOutputText();
             ClearConsoleOutputText();
-            console.Write( text );
+            Console().Write( text );
          }
       }
    }
@@ -743,7 +742,7 @@ public:
 
    bool GeneratesNormalizedImages() const
    {
-      return !m_invalid &&
+      return !m_invalidData &&
              (m_instance.p_generateNormalizedImages == LNGenerateNormalizedImages::Always ||
               m_instance.p_generateNormalizedImages == (ExecutedOnView() ?
                                     LNGenerateNormalizedImages::ViewExecutionOnly :
@@ -760,7 +759,7 @@ public:
       o.outputFilePathXNML = m_outputFilePathXNML;
       o.outputFilePath = m_outputFilePath;
       o.scaleFactors = m_scaleFactors;
-      o.valid = !m_invalid;
+      o.valid = !m_invalidData;
    }
 
    String TargetFilePath() const
@@ -773,9 +772,9 @@ public:
       return m_success;
    }
 
-   bool Invalid() const
+   bool InvalidData() const
    {
-      return m_invalid;
+      return m_invalidData;
    }
 
    String ErrorInfo() const
@@ -807,7 +806,7 @@ private:
          FVector                     m_scaleFactors = Vector( 1.0F, 3 );
          String                      m_errorInfo;
          StatusMonitor               m_monitor;
-         bool                        m_invalid = false;
+         bool                        m_invalidData = false;
          bool                        m_success = false;
 
    // -------------------------------------------------------------------------
@@ -1047,7 +1046,7 @@ private:
        * with linear components.
        */
       int n, r;
-      switch ( m_instance.p_scale )
+      switch ( m_instance.m_scale )
       {
       case 8192: n = 9; r = 16; break;
       case 6144: n = 9; r = 12; break;
@@ -1106,7 +1105,7 @@ private:
        * Apply a convolution with a Gaussian filter to smooth out
        * discontinuities.
        */
-      GaussianFilter H( (m_instance.p_scale >> 1)|1 );
+      GaussianFilter H( (m_instance.m_scale >> 1)|1 );
       if (     H.Size() >= FFTConvolution::FasterThanSeparableFilterSize( Thread::NumberOfThreads( m_maxThreads ) )
             || H.Size() >= image.Width()
             || H.Size() >= image.Height() )
@@ -1481,7 +1480,7 @@ private:
                   PSFScaleEstimator::Estimates se = m_scaleEstimators[c].EstimateScale( ImageVariant( &T ) );
                   if ( !se.IsValid() )
                   {
-                     m_invalid = m_instance.p_generateInvalidData;
+                     m_invalidData = m_instance.p_generateInvalidData;
                      throw Error( String().Format( "Unable to compute a valid scale estimate (channel %d)", c ) );
                   }
 
@@ -1547,7 +1546,7 @@ private:
                               S << double( *r - *rb )/(*t - *tb);
                   if ( S.Length() < 64 )
                   {
-                     m_invalid = m_instance.p_generateInvalidData;
+                     m_invalidData = m_instance.p_generateInvalidData;
                      throw Error( String().Format( "Unable to compute a valid scale estimate (channel %d)", c ) );
                   }
 
@@ -1712,8 +1711,8 @@ __rcr_end:
          }
 
       {
-         BicubicFilterPixelInterpolation BF( m_instance.p_scale, m_instance.p_scale, CubicBSplineFilter() );
-         Resample S( BF, m_instance.p_modelScalingFactor/m_instance.p_scale );
+         BicubicFilterPixelInterpolation BF( m_instance.m_scale, m_instance.m_scale, CubicBSplineFilter() );
+         Resample S( BF, m_instance.p_modelScalingFactor/m_instance.m_scale );
          S.SetMaxProcessors( m_maxThreads );
          S.EnableUnclippedInterpolation();
          S >> m_A0;
@@ -2018,10 +2017,10 @@ __rcr_end:
          LocalNormalizationData data;
          data.SetReferenceFilePath( m_referenceFilePath );
          data.SetTargetFilePath( m_targetFilePath );
-         data.SetNormalizationScale( m_instance.p_scale );
+         data.SetNormalizationScale( m_instance.m_scale );
          data.SetReferenceDimensions( m_R.Width(), m_R.Height() );
 
-         if ( m_invalid )
+         if ( m_invalidData )
          {
             console.WarningLn( "** Warning: Writing a local normalization data file tagged as invalid." );
             data.TagAsInvalid();
@@ -2216,6 +2215,8 @@ bool LocalNormalizationInstance::ExecuteOn( View& view )
          throw Error( why );
    }
 
+   m_scale = LocalNormalizationProcess::NearestSupportedNormalizationScale( p_scale );
+
    m_maxFileReadThreads = p_maxFileReadThreads;
    if ( m_maxFileReadThreads < 1 )
       m_maxFileReadThreads = Max( 1, PixInsightSettings::GlobalInteger( "Process/MaxFileReadThreads" ) );
@@ -2225,6 +2226,8 @@ bool LocalNormalizationInstance::ExecuteOn( View& view )
       m_maxFileWriteThreads = Max( 1, PixInsightSettings::GlobalInteger( "Process/MaxFileWriteThreads" ) );
 
    Console console;
+
+   console.WriteLn( String().Format( "<end><cbr><br>Normalization scale: %d px", m_scale ) );
 
    View referenceView = View::Null();
    if ( p_referenceIsView )
@@ -2247,13 +2250,13 @@ bool LocalNormalizationInstance::ExecuteOn( View& view )
    ImageVariant referenceImage;
    if ( p_referenceIsView )
    {
-      console.WriteLn( "<end><cbr><br>Reference view: " + p_referencePathOrViewId );
+      console.WriteLn( "<end><cbr>Reference view: " + p_referencePathOrViewId );
       referenceImage = referenceView.Image();
    }
    else
       LoadImage( referenceImage, p_referencePathOrViewId, p_inputHints, "reference" );
 
-   if ( Min( referenceImage.Width(), referenceImage.Height() ) < 2*p_scale )
+   if ( Min( referenceImage.Width(), referenceImage.Height() ) < 2*m_scale )
       throw Error( "Insufficient image dimensions for the selected normalization scale: " + p_referencePathOrViewId );
 
    if ( Min( referenceImage.Width(), referenceImage.Height() ) < 256 )
@@ -2353,6 +2356,10 @@ bool LocalNormalizationInstance::ExecuteGlobal()
          }
    }
 
+   m_scale = LocalNormalizationProcess::NearestSupportedNormalizationScale( p_scale );
+
+   console.WriteLn( String().Format( "<end><cbr><br>Normalization scale: %d px", m_scale ) );
+
    m_maxFileReadThreads = p_maxFileReadThreads;
    if ( m_maxFileReadThreads < 1 )
       m_maxFileReadThreads = Max( 1, PixInsightSettings::GlobalInteger( "Process/MaxFileReadThreads" ) );
@@ -2386,13 +2393,13 @@ bool LocalNormalizationInstance::ExecuteGlobal()
 
       if ( p_referenceIsView )
       {
-         console.WriteLn( "<end><cbr><br>Reference view: " + p_referencePathOrViewId );
+         console.WriteLn( "<end><cbr>Reference view: " + p_referencePathOrViewId );
          referenceImage = referenceView.Image();
       }
       else
          LoadImage( referenceImage, p_referencePathOrViewId, p_inputHints, "reference" );
 
-      if ( Min( referenceImage.Width(), referenceImage.Height() ) < 2*p_scale )
+      if ( Min( referenceImage.Width(), referenceImage.Height() ) < 2*m_scale )
          throw Error( "Insufficient image dimensions for the selected normalization scale: " + p_referencePathOrViewId );
 
       if ( Min( referenceImage.Width(), referenceImage.Height() ) < 256 )
@@ -2493,7 +2500,7 @@ bool LocalNormalizationInstance::ExecuteGlobal()
                         /*
                          * Optional generation of invalid normalization data.
                          */
-                        if ( (*i)->Invalid() )
+                        if ( (*i)->InvalidData() )
                         {
                            ++failed;
                            --succeeded; // compensate ++succeeded below
@@ -2578,7 +2585,7 @@ bool LocalNormalizationInstance::ExecuteGlobal()
                LocalNormalizationThread thread( *this, itemIndex, R, RB, RM, RS, Rc, S );
                thread.Run();
                thread.GetOutputData( o_output[itemIndex] );
-               if ( thread.Invalid() )
+               if ( thread.InvalidData() )
                   ++failed;
                else
                   ++succeeded;
@@ -2939,4 +2946,4 @@ size_type LocalNormalizationInstance::ParameterLength( const MetaParameter* p, s
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationInstance.cpp - Released 2022-11-21T14:47:17Z
+// EOF LocalNormalizationInstance.cpp - Released 2023-05-17T17:06:42Z

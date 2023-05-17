@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard RAW File Format Module Version 1.6.0
+// Standard RAW File Format Module Version 1.6.2
 // ----------------------------------------------------------------------------
-// RawModule.h - Released 2023-01-03T13:43:21Z
+// RawModule.h - Released 2023-05-17T17:06:31Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RAW PixInsight module.
 //
@@ -84,4 +84,4 @@ public:
 #endif   // __RawModule_h
 
 // ----------------------------------------------------------------------------
-// EOF RawModule.h - Released 2023-01-03T13:43:21Z
+// EOF RawModule.h - Released 2023-05-17T17:06:31Z

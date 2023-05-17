@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard RAW File Format Module Version 1.6.0
+// Standard RAW File Format Module Version 1.6.2
 // ----------------------------------------------------------------------------
-// RawInstance.cpp - Released 2023-01-03T13:43:21Z
+// RawInstance.cpp - Released 2023-05-17T17:06:31Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RAW PixInsight module.
 //
@@ -409,7 +409,8 @@ private:
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-RawInstance::RawInstance( const RawFormat* F ) : FileFormatImplementation( F )
+RawInstance::RawInstance( const RawFormat* F )
+   : FileFormatImplementation( F )
 {
 }
 
@@ -551,8 +552,10 @@ ImageDescriptionArray RawInstance::Open( const String& filePath, const IsoString
       */
 
       bool xtrans = idata.filters == 9;
+      bool fullColor = idata.filters == 0;
       bool foveon = idata.is_foveon;
-      bool raw = (m_preferences.outputCFA || m_preferences.outputRawRGB || m_preferences.createSuperPixels && !xtrans) && !foveon;
+      bool mosaiced = !(fullColor || foveon);
+      bool raw = mosaiced && (m_preferences.outputCFA || m_preferences.outputRawRGB || m_preferences.createSuperPixels && !xtrans);
       bool noAutoCrop = raw && m_preferences.noAutoCrop
                             && m_preferences.noWhiteBalance
                             && m_preferences.noBlackPointCorrection
@@ -571,7 +574,7 @@ ImageDescriptionArray RawInstance::Open( const String& filePath, const IsoString
       m_cameraManufacturer = IsoString( idata.make ).Trimmed();
       m_cameraModel = IsoString( idata.model ).Trimmed();
 
-      if ( !foveon )
+      if ( mosaiced )
       {
          /*
           * Get the CFA pattern of the raw image.
@@ -778,7 +781,7 @@ ImageDescriptionArray RawInstance::Open( const String& filePath, const IsoString
        * Geometry and color space image properties.
        */
       ImageInfo i;
-      i.supported        = idata.filters >= 1000 || xtrans || foveon;
+      i.supported        = idata.filters >= 1000 || xtrans || fullColor || foveon;
       i.colorSpace       = m_preferences.outputCFA ? ColorSpace::Gray : ColorSpace::RGB;
       i.numberOfChannels = m_preferences.outputCFA ? 1 : 3;
 
@@ -884,45 +887,51 @@ ImageDescriptionArray RawInstance::Open( const String& filePath, const IsoString
          if ( sizes.flip > 0 )
             console.WriteLn( String().Format(    "Image rotation .... %d deg", (sizes.flip == 5) ? 90 : ((sizes.flip == 6) ? 270 : 180) ) );
          console.WriteLn( "<end><cbr>" );
-      }
 
-      if ( m_verbosity > 1 )
-      {
-         Console console;
-         console.WriteLn( "<end><cbr>Raw decoding parameters:" );
-         console.WriteLn(                  "Output mode ............... " + m_preferences.OutputModeAsString() );
-         if ( raw )
+         if ( m_verbosity > 1 )
          {
-            console.WriteLn(               "Auto crop ................. " + EnabledOrDisabled( !noAutoCrop ) );
-         }
-         else
-         {
-            console.Write(                 "Interpolation ............. " );
-            if ( xtrans )
-               console.WriteLn( "X-Trans" );
-            else if ( foveon )
-               console.WriteLn( "Foveon" );
+            console.WriteLn( "<end><cbr>Raw decoding parameters:" );
+            console.WriteLn(                     "Output mode ............... " + m_preferences.OutputModeAsString() );
+            if ( raw )
+            {
+               console.WriteLn(                  "Auto crop ................. " + EnabledOrDisabled( !noAutoCrop ) );
+            }
             else
             {
-               console.WriteLn( m_preferences.InterpolationAsString() );
-               if ( m_preferences.interpolation == RawPreferences::DCB )
+               if ( mosaiced )
+                  console.Write(                 "Interpolation ............. " );
+               else
+                  console.Write(                 "Full-color frame .......... " );
+
+               if ( xtrans )
+                  console.WriteLn( "X-Trans" );
+               else if ( fullColor )
+                  console.WriteLn( "RGB" );
+               else if ( foveon )
+                  console.WriteLn( "Foveon" );
+               else
                {
-                  console.WriteLn(         "DCB iterations ............ " + String( m_preferences.dcbIterations ) );
-                  console.WriteLn(         "DCB refinement ............ " + EnabledOrDisabled( m_preferences.dcbRefinement ) );
+                  console.WriteLn( m_preferences.InterpolationAsString() );
+                  if ( m_preferences.interpolation == RawPreferences::DCB )
+                  {
+                     console.WriteLn(            "DCB iterations ............ " + String( m_preferences.dcbIterations ) );
+                     console.WriteLn(            "DCB refinement ............ " + EnabledOrDisabled( m_preferences.dcbRefinement ) );
+                  }
+                  console.WriteLn(               "Interpolate as 4 colors ... " + EnabledOrDisabled( m_preferences.interpolateAs4Colors ) );
                }
-               console.WriteLn(            "Interpolate as 4 colors ... " + EnabledOrDisabled( m_preferences.interpolateAs4Colors ) );
+
+               if ( mosaiced && !xtrans )
+                  console.WriteLn(               "FBDD noise reduction ...... " + String( m_preferences.fbddNoiseReduction ) );
             }
-            if ( !xtrans && !foveon )
-               console.WriteLn(            "FBDD noise reduction ...... " + String( m_preferences.fbddNoiseReduction ) );
+            console.WriteLn(                     "Wavelet noise threshold ... " + String( m_preferences.noiseThreshold ) );
+            console.WriteLn(                     "White balancing ........... " + m_preferences.WhiteBalancingAsString() );
+            console.WriteLn(                     "Black point correction .... " + EnabledOrDisabled( !m_preferences.noBlackPointCorrection  ) );
+            console.WriteLn(                     "Highlights clipping ....... " + EnabledOrDisabled( !m_preferences.noClipHighlights ) );
+            console.WriteLn(                     "Auto rotate ............... " + EnabledOrDisabled( !m_preferences.noAutoFlip ) );
+            console.WriteLn( String().Format(    "Output image .............. w=%d h=%d n=%d %s", i.width, i.height, i.numberOfChannels,
+                                                                              (i.colorSpace == ColorSpace::RGB) ? "RGB" : "Gray" ) );
+            console.WriteLn( "<end><cbr>" );
          }
-         console.WriteLn(                  "Wavelet noise threshold ... " + String( m_preferences.noiseThreshold ) );
-         console.WriteLn(                  "White balancing ........... " + m_preferences.WhiteBalancingAsString() );
-         console.WriteLn(                  "Black point correction .... " + EnabledOrDisabled( !m_preferences.noBlackPointCorrection  ) );
-         console.WriteLn(                  "Highlights clipping ....... " + EnabledOrDisabled( !m_preferences.noClipHighlights ) );
-         console.WriteLn(                  "Auto rotate ............... " + EnabledOrDisabled( !m_preferences.noAutoFlip ) );
-         console.WriteLn( String().Format( "Output image .............. w=%d h=%d n=%d %s", i.width, i.height, i.numberOfChannels,
-                                                                           (i.colorSpace == ColorSpace::RGB) ? "RGB" : "Gray" ) );
-         console.WriteLn( "<end><cbr>" );
       }
 
       return ImageDescriptionArray() << ImageDescription( i, o );
@@ -1203,8 +1212,10 @@ public:
       instance.CheckLibRawReturnCode( RAW->unpack() );
 
       bool xtrans = idata.filters == 9;
+      bool fullColor = idata.filters == 0;
       bool foveon = idata.is_foveon;
-      bool raw = (preferences.outputCFA || preferences.outputRawRGB || preferences.createSuperPixels && !xtrans) && !foveon;
+      bool mosaiced = !(fullColor || foveon);
+      bool raw = mosaiced && (preferences.outputCFA || preferences.outputRawRGB || preferences.createSuperPixels && !xtrans);
 
       /*
        * Set up dcraw processing parameters.
@@ -1245,7 +1256,7 @@ public:
       {
          params.no_interpolation = 1;
       }
-      else if ( !foveon && !xtrans )
+      else if ( !xtrans )
       {
          if ( preferences.interpolation == RawPreferences::HalfSize )
             params.half_size = 1;
@@ -1614,4 +1625,4 @@ UInt8Image RawInstance::ReadThumbnail()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RawInstance.cpp - Released 2023-01-03T13:43:21Z
+// EOF RawInstance.cpp - Released 2023-05-17T17:06:31Z

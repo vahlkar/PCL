@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.127
-# Copyright (C) 2009-2022 Pleiades Astrophoto
+# PixInsight Makefile Generator Script v1.129
+# Copyright (C) 2009-2023 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2022-11-21T14:48:26.096Z
+# Generated on .... 2023-05-17T18:34:46.403Z
 # Project id ...... EphemerisGeneration
 # Project type .... Module
 # Platform ........ FreeBSD/g++
@@ -26,8 +26,7 @@ SRC_FILES= \
 ../../EphemerisGeneratorInterface.cpp \
 ../../EphemerisGeneratorParameters.cpp \
 ../../EphemerisGeneratorProcess.cpp \
-../../TextDatabase.cpp \
-../../XEPHGenerator.cpp
+../../TextDatabase.cpp
 
 #
 # Object files
@@ -41,8 +40,7 @@ OBJ_FILES= \
 ./x64/Release/EphemerisGeneratorInterface.o \
 ./x64/Release/EphemerisGeneratorParameters.o \
 ./x64/Release/EphemerisGeneratorProcess.o \
-./x64/Release/TextDatabase.o \
-./x64/Release/XEPHGenerator.o
+./x64/Release/TextDatabase.o
 
 #
 # Dependency files
@@ -56,8 +54,7 @@ DEP_FILES= \
 ./x64/Release/EphemerisGeneratorInterface.d \
 ./x64/Release/EphemerisGeneratorParameters.d \
 ./x64/Release/EphemerisGeneratorProcess.d \
-./x64/Release/TextDatabase.d \
-./x64/Release/XEPHGenerator.d
+./x64/Release/TextDatabase.d
 
 #
 # Rules
@@ -78,6 +75,6 @@ post-build:
 	cp $(OBJ_DIR)/EphemerisGeneration-pxm.so $(PCLBINDIR64)
 
 ./x64/Release/%.o: ../../%.cpp
-	clang++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_FREEBSD -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mtune=znver2 -msse4.2 -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -std=c++17 -Wall -Wno-parentheses -Wno-extern-c-compat -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	clang++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_FREEBSD -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mtune=znver3 -msse4.2 -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -std=c++17 -Wall -Wno-parentheses -Wno-extern-c-compat -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 

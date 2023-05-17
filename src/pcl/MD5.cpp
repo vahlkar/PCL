@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// pcl/MD5.cpp - Released 2022-11-21T14:46:37Z
+// pcl/MD5.cpp - Released 2023-05-17T17:06:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -368,7 +368,7 @@ void MD5::Update( const void* data, size_type size )
       }
 }
 
-void MD5::Finalize( void* hash )
+void MD5::DoFinalize( void* hash )
 {
    if ( m_context == nullptr )
       throw Error( "MD5::Finalize(): Invalid call on uninitialized object." );
@@ -381,4 +381,4 @@ void MD5::Finalize( void* hash )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MD5.cpp - Released 2022-11-21T14:46:37Z
+// EOF pcl/MD5.cpp - Released 2023-05-17T17:06:11Z

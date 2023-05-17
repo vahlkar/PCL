@@ -1,7 +1,7 @@
 // ----------------------------------------------------------------------------
 // PixInsight JavaScript Runtime API - PJSR Version 1.0
 // ----------------------------------------------------------------------------
-// INDICCDControllerTests.js - Released 2022-11-21T14:47:18Z
+// INDICCDControllerTests.js - Released 2023-05-17T17:06:42Z
 // ----------------------------------------------------------------------------
 //
 //
@@ -294,4 +294,4 @@ function INDICCDControllerTests( parent )
 INDICCDControllerTests.prototype = new Test;
 
 // ----------------------------------------------------------------------------
-// EOF INDICCDControllerTests.js - Released 2022-11-21T14:47:18Z
+// EOF INDICCDControllerTests.js - Released 2023-05-17T17:06:42Z

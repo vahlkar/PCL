@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// pcl/ChebyshevFit.h - Released 2022-11-21T14:46:30Z
+// pcl/ChebyshevFit.h - Released 2023-05-17T17:06:03Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -430,6 +430,8 @@ public:
     * truncation is not feasible, yielding the original, untruncated Chebyshev
     * polynomials for those components. In such case this function returns
     * \c false.
+    *
+    * \sa Truncate( const coefficients&, int )
     */
    bool Truncate( Ty e, int mmin = 2 )
    {
@@ -439,6 +441,37 @@ public:
       int tc = 0;
       for ( int i = 0; i < N; ++i )
       {
+         Ty s = Ty( 0 );
+         for ( m[i] = c[i].Length(); m[i] > mmin; --m[i] )
+            if ( (s += Abs( c[i][m[i]-1] )) >= e )
+               break;
+         if ( m[i] < c[i].Length() )
+            ++tc;
+      }
+      return tc == N;
+   }
+
+   /*!
+    * Attempts to truncate the Chebyshev polynomial expansion for the specified
+    * vector of maximum truncation errors \a eps. Returns \c true iff the
+    * expansion could be truncated successfully for all vector components of
+    * the fitted function.
+    *
+    * This function is equivalent to Truncate( Ty, int ), but instead of a
+    * unique maximum truncation error applied to all vector components of the
+    * fitted function, it applies a specific maximum truncation error for each
+    * vector component.
+    *
+    * \sa Truncate( Ty, int )
+    */
+   bool Truncate( const coefficients& eps, int mmin = 2 )
+   {
+      mmin = Max( 2, mmin );
+      int N = NumberOfComponents();
+      int tc = 0;
+      for ( int i = 0; i < N; ++i )
+      {
+         Ty e = Abs( eps[i] );
          Ty s = Ty( 0 );
          for ( m[i] = c[i].Length(); m[i] > mmin; --m[i] )
             if ( (s += Abs( c[i][m[i]-1] )) >= e )
@@ -942,4 +975,4 @@ using LDScalarChebyshevFit = F80ScalarChebyshevFit;
 #endif  // __PCL_ChebyshevFit_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ChebyshevFit.h - Released 2022-11-21T14:46:30Z
+// EOF pcl/ChebyshevFit.h - Released 2023-05-17T17:06:03Z

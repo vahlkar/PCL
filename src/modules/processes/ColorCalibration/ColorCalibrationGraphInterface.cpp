@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.9.0
+// Standard ColorCalibration Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// ColorCalibrationGraphInterface.cpp - Released 2022-11-21T14:47:17Z
+// ColorCalibrationGraphInterface.cpp - Released 2023-05-17T17:06:42Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -194,10 +194,10 @@ void ColorCalibrationGraphInterface::UpdateGraphs(
          "            ctx.save();\n"
          "            ctx.strokeStyle = 'black';\n"
          "            ctx.beginPath();\n"
-         "            ctx.moveTo( h0[0], h0[1] );\n"
-         "            ctx.lineTo( h1[0], h1[1] );\n"
-         "            ctx.moveTo( v0[0], v0[1] );\n"
-         "            ctx.lineTo( v1[0], v1[1] );\n"
+         "            ctx.moveTo( -100000, h0[1] );\n"
+         "            ctx.lineTo( +100000, h1[1] );\n"
+         "            ctx.moveTo( v0[0], -100000 );\n"
+         "            ctx.lineTo( v1[0], +100000 );\n"
          "            ctx.closePath();\n"
          "            ctx.stroke();\n"
          "            ctx.beginPath();\n"
@@ -272,10 +272,10 @@ void ColorCalibrationGraphInterface::UpdateGraphs(
          "            ctx.save();\n"
          "            ctx.strokeStyle = 'black';\n"
          "            ctx.beginPath();\n"
-         "            ctx.moveTo( h0[0], h0[1] );\n"
-         "            ctx.lineTo( h1[0], h1[1] );\n"
-         "            ctx.moveTo( v0[0], v0[1] );\n"
-         "            ctx.lineTo( v1[0], v1[1] );\n"
+         "            ctx.moveTo( -100000, h0[1] );\n"
+         "            ctx.lineTo( +100000, h1[1] );\n"
+         "            ctx.moveTo( v0[0], -100000 );\n"
+         "            ctx.lineTo( v1[0], +100000 );\n"
          "            ctx.closePath();\n"
          "            ctx.stroke();\n"
          "            ctx.beginPath();\n"
@@ -310,7 +310,7 @@ void ColorCalibrationGraphInterface::UpdateGraphs(
       BGFunctionInfo =
          BGFunc + " linear fit .......... " + String().Format( "y = +%.6f&middot;x %c %.6f, &sigma; = %.6f\n",
                                                                fitBG.b, (fitBG.a < 0) ? '-' : '+', Abs( fitBG.a ), fitBG.adev ) +
-         BGFunc + " white point ......... " + String().Format( "x = %.6f, y = %.6f\n", catWB, fitRG( catWB ) );
+         BGFunc + " white point ......... " + String().Format( "x = %.6f, y = %.6f\n", catWB, fitBG( catWB ) );
    }
 
    String coreSrcDir = PixInsightSettings::GlobalString ( "Application/SrcDirectory" );
@@ -329,7 +329,7 @@ void ColorCalibrationGraphInterface::UpdateGraphs(
 ".dygraph-legend {\n"
 "  left: 70px !important;\n"
 "  width: 400px !important;\n"
-"  background-color: rgba(200, 200, 200, 0.25) !important;\n"
+"  background-color: rgba(230, 230, 230, 1.0) !important;\n"
 "  font-size: 11px !important;\n"
 "}\n"
 "</style>\n"
@@ -528,4 +528,4 @@ ColorCalibrationGraphInterface::GUIData::GUIData( ColorCalibrationGraphInterface
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ColorCalibrationGraphInterface.cpp - Released 2022-11-21T14:47:17Z
+// EOF ColorCalibrationGraphInterface.cpp - Released 2023-05-17T17:06:42Z

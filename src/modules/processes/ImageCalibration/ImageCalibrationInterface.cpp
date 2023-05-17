@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.9.7
+// Standard ImageCalibration Process Module Version 1.9.8
 // ----------------------------------------------------------------------------
-// ImageCalibrationInterface.cpp - Released 2022-11-21T14:47:17Z
+// ImageCalibrationInterface.cpp - Released 2023-05-17T17:06:42Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -1404,9 +1404,8 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    SaturationThreshold_NumericControl.edit.SetFixedWidth( editWidth1 );
    SaturationThreshold_NumericControl.SetToolTip( "<p>Saturation threshold in the [0,1] range.</p>"
       "<p>Detected stars with one or more pixels with values above this threshold will be excluded for signal evaluation. "
-      "This parameter is expressed in the [0,1] range. It can be applied either as an absolute pixel sample value in the "
-      "normalized [0,1] range, or as a value relative to the maximum pixel sample value of the measured image (see the <i>Relative "
-      "saturation threshold</i> parameter).</p>"
+      "This parameter is expressed in the [0,1] range. It can be applied either as an absolute pixel sample value or as a value "
+      "relative to the maximum pixel sample value of the measured image (see the <i>Relative saturation threshold</i> parameter).</p>"
       "<p>The default saturation threshold is 1.0. For signal evaluation, the implemented star detection and outlier rejection "
       "routines are normally able to avoid contamination from saturated sources, so the default value of this parameter should "
       "not be changed under normal conditions.</p>" );
@@ -1415,7 +1414,7 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    SaturationRelative_CheckBox.SetText( "Relative saturation threshold" );
    SaturationRelative_CheckBox.SetToolTip( "<p>The saturation threshold parameter can be applied either as an absolute pixel "
       "sample value in the normalized [0,1] range, or as a value relative to the maximum pixel sample value of the measured image.</p>"
-      "The relative saturation threshold option is enabled by default.</p>" );
+      "The relative saturation threshold option is disabled by default.</p>" );
    SaturationRelative_CheckBox.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::e_Click, w );
 
    SaturationRelative_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
@@ -2435,4 +2434,4 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInterface.cpp - Released 2022-11-21T14:47:17Z
+// EOF ImageCalibrationInterface.cpp - Released 2023-05-17T17:06:42Z

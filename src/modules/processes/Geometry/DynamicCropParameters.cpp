@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 1.3.1
+// Standard Geometry Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// DynamicCropParameters.cpp - Released 2022-11-21T14:47:17Z
+// DynamicCropParameters.cpp - Released 2023-05-17T17:06:42Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -59,6 +59,10 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
+DCRefWidth*             TheDCRefWidthParameter = nullptr;
+DCRefHeight*            TheDCRefHeightParameter = nullptr;
+DCOutWidth*             TheDCOutWidthParameter = nullptr;
+DCOutHeight*            TheDCOutHeightParameter = nullptr;
 DCCenterX*              TheDCCenterXParameter = nullptr;
 DCCenterY*              TheDCCenterYParameter = nullptr;
 DCWidth*                TheDCWidthParameter = nullptr;
@@ -83,7 +87,90 @@ NoGUIMessages*          TheDCNoGUIMessagesParameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
-DCCenterX::DCCenterX( MetaProcess* P ) : MetaDouble( P )
+DCRefWidth::DCRefWidth( MetaProcess* P )
+   : MetaInt32( P )
+{
+   TheDCRefWidthParameter = this;
+}
+
+IsoString DCRefWidth::Id() const
+{
+   return "refWidth";
+}
+
+double DCRefWidth::DefaultValue() const
+{
+   return 1;
+}
+
+// ----------------------------------------------------------------------------
+
+DCRefHeight::DCRefHeight( MetaProcess* P )
+   : MetaInt32( P )
+{
+   TheDCRefHeightParameter = this;
+}
+
+IsoString DCRefHeight::Id() const
+{
+   return "refHeight";
+}
+
+double DCRefHeight::DefaultValue() const
+{
+   return 1;
+}
+
+// ----------------------------------------------------------------------------
+
+DCOutWidth::DCOutWidth( MetaProcess* P )
+   : MetaDouble( P )
+{
+   TheDCOutWidthParameter = this;
+}
+
+IsoString DCOutWidth::Id() const
+{
+   return "outWidth";
+}
+
+int DCOutWidth::Precision() const
+{
+   return 2;
+}
+
+double DCOutWidth::DefaultValue() const
+{
+   return 1;
+}
+
+// ----------------------------------------------------------------------------
+
+DCOutHeight::DCOutHeight( MetaProcess* P )
+   : MetaDouble( P )
+{
+   TheDCOutHeightParameter = this;
+}
+
+IsoString DCOutHeight::Id() const
+{
+   return "outHeight";
+}
+
+int DCOutHeight::Precision() const
+{
+   return 2;
+}
+
+double DCOutHeight::DefaultValue() const
+{
+   return 1;
+}
+
+// ----------------------------------------------------------------------------
+
+DCCenterX::DCCenterX( MetaProcess* P )
+   : MetaDouble( P )
 {
    TheDCCenterXParameter = this;
 }
@@ -95,7 +182,7 @@ IsoString DCCenterX::Id() const
 
 int DCCenterX::Precision() const
 {
-   return 5;
+   return 8;
 }
 
 double DCCenterX::DefaultValue() const
@@ -105,7 +192,8 @@ double DCCenterX::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-DCCenterY::DCCenterY( MetaProcess* P ) : MetaDouble( P )
+DCCenterY::DCCenterY( MetaProcess* P )
+   : MetaDouble( P )
 {
    TheDCCenterYParameter = this;
 }
@@ -117,7 +205,7 @@ IsoString DCCenterY::Id() const
 
 int DCCenterY::Precision() const
 {
-   return 5;
+   return 8;
 }
 
 double DCCenterY::DefaultValue() const
@@ -127,7 +215,8 @@ double DCCenterY::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-DCWidth::DCWidth( MetaProcess* P ) : MetaDouble( P )
+DCWidth::DCWidth( MetaProcess* P )
+   : MetaDouble( P )
 {
    TheDCWidthParameter = this;
 }
@@ -139,17 +228,18 @@ IsoString DCWidth::Id() const
 
 int DCWidth::Precision() const
 {
-   return 5;
+   return 8;
 }
 
 double DCWidth::DefaultValue() const
 {
-   return 1.0;
+   return 1;
 }
 
 // ----------------------------------------------------------------------------
 
-DCHeight::DCHeight( MetaProcess* P ) : MetaDouble( P )
+DCHeight::DCHeight( MetaProcess* P )
+   : MetaDouble( P )
 {
    TheDCHeightParameter = this;
 }
@@ -161,17 +251,18 @@ IsoString DCHeight::Id() const
 
 int DCHeight::Precision() const
 {
-   return 5;
+   return 8;
 }
 
 double DCHeight::DefaultValue() const
 {
-   return 1.0;
+   return 1;
 }
 
 // ----------------------------------------------------------------------------
 
-DCScaleX::DCScaleX( MetaProcess* P ) : MetaDouble( P )
+DCScaleX::DCScaleX( MetaProcess* P )
+   : MetaDouble( P )
 {
    TheDCScaleXParameter = this;
 }
@@ -183,7 +274,7 @@ IsoString DCScaleX::Id() const
 
 int DCScaleX::Precision() const
 {
-   return 5;
+   return 8;
 }
 
 double DCScaleX::DefaultValue() const
@@ -193,7 +284,8 @@ double DCScaleX::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-DCScaleY::DCScaleY( MetaProcess* P ) : MetaDouble( P )
+DCScaleY::DCScaleY( MetaProcess* P )
+   : MetaDouble( P )
 {
    TheDCScaleYParameter = this;
 }
@@ -205,7 +297,7 @@ IsoString DCScaleY::Id() const
 
 int DCScaleY::Precision() const
 {
-   return 5;
+   return 8;
 }
 
 double DCScaleY::DefaultValue() const
@@ -218,4 +310,4 @@ double DCScaleY::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DynamicCropParameters.cpp - Released 2022-11-21T14:47:17Z
+// EOF DynamicCropParameters.cpp - Released 2023-05-17T17:06:42Z

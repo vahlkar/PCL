@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// pcl/PSFFit.cpp - Released 2022-11-21T14:46:37Z
+// pcl/PSFFit.cpp - Released 2023-05-17T17:06:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -92,7 +92,7 @@ public:
       /*
        * f(x,y) = B + A*Exp(-(a*(x - x0)^2 + 2*b*(x - x0)*(y - y0) + c*(y - y0)^2))
        */
-      if ( F->m_bkg > 0 && Abs( B - F->m_bkg)/F->m_bkg > F->m_bkgMaxVar || A < 0 )
+      if ( A < 0 )
       {
          for ( int i = 0; i < m; ++i )
             *fvec++ = std::numeric_limits<double>::max();
@@ -137,8 +137,7 @@ public:
       /*
        * f(x,y) = B + A/(1 + a*(x - x0)^2 + 2*b*(x - x0)*(y - y0) + c*(y - y0)^2)^beta
        */
-      if ( F->m_bkg > 0 && Abs( B - F->m_bkg)/F->m_bkg > F->m_bkgMaxVar
-        || A < 0 || beta < 0 || beta > 10 || Abs( beta - F->m_beta )/F->m_beta > 0.05 )
+      if ( A < 0 || beta < 0 || beta > 10 || Abs( beta - F->m_beta )/F->m_beta > 0.05 )
       {
          for ( int i = 0; i < m; ++i )
             *fvec++ = std::numeric_limits<double>::max();
@@ -185,7 +184,7 @@ public:
  */
 #define E_MOFFAT_IMPL( zmul )                                                    \
                                                                                  \
-   if ( F->m_bkg > 0 && Abs( B - F->m_bkg)/F->m_bkg > F->m_bkgMaxVar || A < 0 )  \
+   if ( A < 0 )                                                                  \
    {                                                                             \
       for ( int i = 0; i < m; ++i )                                              \
          *fvec++ = std::numeric_limits<double>::max();                           \
@@ -270,7 +269,7 @@ public:
       /*
        * f(x,y) = B + A/(1 + a*(x - x0)^2 + 2*b*(x - x0)*(y - y0) + c*(y - y0)^2)^beta
        */
-      if ( F->m_bkg > 0 && Abs( B - F->m_bkg)/F->m_bkg > F->m_bkgMaxVar || A < 0 )
+      if ( A < 0 )
       {
          for ( int i = 0; i < m; ++i )
             *fvec++ = std::numeric_limits<double>::max();
@@ -315,7 +314,7 @@ public:
       /*
        * f(x,y) = B + A*Exp( -((dx^k)/(k*sx^k) + (dy^k)/(k*sy^k)) )
        */
-      if ( F->m_bkg > 0 && Abs( B - F->m_bkg)/F->m_bkg > F->m_bkgMaxVar || A < 0 )
+      if ( A < 0 )
       {
          for ( int i = 0; i < m; ++i )
             *fvec++ = std::numeric_limits<double>::max();
@@ -378,7 +377,7 @@ public:
       /*
        * f(x,y) = B + A*Exp( -((x - x0)^2 + (y - y0)^2)/(2*sigma^2) )
        */
-      if ( F->m_bkg > 0 && Abs( B - F->m_bkg)/F->m_bkg > F->m_bkgMaxVar || A < 0 )
+      if ( A < 0 )
       {
          for ( int i = 0; i < m; ++i )
             *fvec++ = std::numeric_limits<double>::max();
@@ -413,8 +412,7 @@ public:
       /*
        * f(x,y) = B + A/(1 + ((x - x0)^2 + (y - y0)^2)/sigma^2)^beta
        */
-      if ( F->m_bkg > 0 && Abs( B - F->m_bkg)/F->m_bkg > F->m_bkgMaxVar
-        || A < 0 || beta < 0 || beta > 10 || Abs( beta - F->m_beta )/F->m_beta > 0.05 )
+      if ( A < 0 || beta < 0 || beta > 10 || Abs( beta - F->m_beta )/F->m_beta > 0.05 )
       {
          for ( int i = 0; i < m; ++i )
             *fvec++ = std::numeric_limits<double>::max();
@@ -451,7 +449,7 @@ public:
  */
 #define C_MOFFAT_IMPL( zmul )                                                    \
                                                                                  \
-   if ( F->m_bkg > 0 && Abs( B - F->m_bkg)/F->m_bkg > F->m_bkgMaxVar || A < 0 )  \
+   if ( A < 0 )                                                                  \
    {                                                                             \
       for ( int i = 0; i < m; ++i )                                              \
          *fvec++ = std::numeric_limits<double>::max();                           \
@@ -526,7 +524,7 @@ public:
       /*
        * f(x,y) = B + A/(1 + ((x - x0)^2 + (y - y0)^2)/sigma^2)^beta
        */
-      if ( F->m_bkg > 0 && Abs( B - F->m_bkg)/F->m_bkg > F->m_bkgMaxVar || A < 0 )
+      if ( A < 0 )
       {
          for ( int i = 0; i < m; ++i )
             *fvec++ = std::numeric_limits<double>::max();
@@ -561,7 +559,7 @@ public:
       /*
        * f(x,y) = B + A*Exp( -((x - x0)^k + (y - y0)^k)/(k*sigma^k) )
        */
-      if ( F->m_bkg > 0 && Abs( B - F->m_bkg)/F->m_bkg > F->m_bkgMaxVar || A < 0 )
+      if ( A < 0 )
       {
          for ( int i = 0; i < m; ++i )
             *fvec++ = std::numeric_limits<double>::max();
@@ -1051,10 +1049,18 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
    {
       // Estimated local background. Must be >= 0.
       psf.B = Max( 0.0, P[0] );
+      // Constrain local background by limiting its maximum variation w.r.t the
+      // initial mean background estimate.
+      if ( m_bkg > 0 )
+         if ( Abs( psf.B - m_bkg )/m_bkg > m_bkgMaxVar )
+            psf.B = P[0] = m_bkg;
+
       // Estimated function maximum.
       psf.A = P[1];
+
       // Barycenter coordinates from star detection.
       psf.b0 = pos;
+
       // Centroid coordinates.
       psf.c0.x = P[2] + r0.x;
       psf.c0.y = P[3] + r0.y;
@@ -1609,4 +1615,4 @@ String PSFData::StatusText() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFFit.cpp - Released 2022-11-21T14:46:37Z
+// EOF pcl/PSFFit.cpp - Released 2023-05-17T17:06:11Z

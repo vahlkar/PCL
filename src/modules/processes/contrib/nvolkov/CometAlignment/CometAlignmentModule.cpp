@@ -2,16 +2,17 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard CometAlignment Process Module Version 1.2.6
+// Standard CometAlignment Process Module Version 1.3.7
 // ----------------------------------------------------------------------------
-// CometAlignmentModule.cpp - Released 2022-11-21T14:47:18Z
+// CometAlignmentModule.cpp - Released 2023-05-17T17:06:42Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CometAlignment PixInsight module.
 //
-// Copyright (c) 2012-2018 Nikolay Volkov
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2012-2023 Nikolay Volkov
+// Copyright (c) 2019-2023 Juan Conejero (PTeam)
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -52,14 +53,14 @@
 // ----------------------------------------------------------------------------
 
 #define MODULE_VERSION_MAJOR     1
-#define MODULE_VERSION_MINOR     2
-#define MODULE_VERSION_REVISION  6
+#define MODULE_VERSION_MINOR     3
+#define MODULE_VERSION_REVISION  7
 #define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE eng
 
-#define MODULE_RELEASE_YEAR      2022
-#define MODULE_RELEASE_MONTH     11
-#define MODULE_RELEASE_DAY       21
+#define MODULE_RELEASE_YEAR      2023
+#define MODULE_RELEASE_MONTH     5
+#define MODULE_RELEASE_DAY       17
 
 #include "CometAlignmentModule.h"
 #include "CometAlignmentInterface.h"
@@ -110,14 +111,14 @@ String CometAlignmentModule::Company() const
 
 String CometAlignmentModule::Author() const
 {
-   return "Nikolay Volkov (PTeam)";
+   return "Nikolay Volkov / Juan Conejero (PTeam)";
 }
 
 // ----------------------------------------------------------------------------
 
 String CometAlignmentModule::Copyright() const
 {
-   return "Copyright (c) 2012-2022 Nikolay Volkov";
+   return "Copyright (c) 2012-2023 Nikolay Volkov / 2019-2023 Pleiades Astrophoto";
 }
 
 // ----------------------------------------------------------------------------
@@ -174,4 +175,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF CometAlignmentModule.cpp - Released 2022-11-21T14:47:18Z
+// EOF CometAlignmentModule.cpp - Released 2023-05-17T17:06:42Z

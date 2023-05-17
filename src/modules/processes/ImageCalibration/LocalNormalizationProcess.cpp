@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.9.7
+// Standard ImageCalibration Process Module Version 1.9.8
 // ----------------------------------------------------------------------------
-// LocalNormalizationProcess.cpp - Released 2022-11-21T14:47:17Z
+// LocalNormalizationProcess.cpp - Released 2023-05-17T17:06:42Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -190,7 +190,27 @@ ProcessImplementation* LocalNormalizationProcess::Clone( const ProcessImplementa
 
 // ----------------------------------------------------------------------------
 
+const IVector& LocalNormalizationProcess::SupportedNormalizationScales()
+{
+   static IVector scales;
+   if ( scales.IsEmpty() ) // N.B.: Not thread-safe!
+      scales = IVector{ 32, 64, 128, 192, 256, 384, 512, 768, 1024, 1536, 2048, 3072, 4096, 6144, 8192 };
+   return scales;
+}
+
+int LocalNormalizationProcess::NearestSupportedNormalizationScale( int scale )
+{
+   const IVector& scales = SupportedNormalizationScales();
+   if ( scale > scales[0] )
+      for ( int i = scales.Length(); --i >= 0; )
+         if ( scale >= scales[i] )
+            return scales[(i+1 == scales.Length() || scale - scales[i] <= scales[i+1] - scale) ? i : i+1];
+   return scales[0];
+}
+
+// ----------------------------------------------------------------------------
+
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationProcess.cpp - Released 2022-11-21T14:47:17Z
+// EOF LocalNormalizationProcess.cpp - Released 2023-05-17T17:06:42Z

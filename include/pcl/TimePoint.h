@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// pcl/TimePoint.h - Released 2022-11-21T14:46:30Z
+// pcl/TimePoint.h - Released 2023-05-17T17:06:03Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -1095,15 +1095,27 @@ private:
    /*!
     * \internal
     * Ensures that the internal Julian date separate representation is optimal
-    * in terms of time resolution by constraining JDF to [0,1).
+    * and coherent by constraining Abs( JDF ) to [0,1) and ensuring coherence
+    * of signs between the integer and fractional components.
     */
    void Normalize()
    {
-      if ( Abs( m_jdf ) >= 1 )
-      {
-         m_jdi += TruncInt( m_jdf );
-         m_jdf = Frac( m_jdf );
-      }
+      m_jdi += TruncInt( m_jdf );
+      m_jdf = Frac( m_jdf );
+      if ( m_jdf != 0 )
+         if ( m_jdf < 0 )
+         {
+            if ( m_jdi > 0 )
+            {
+               --m_jdi;
+               m_jdf += 1;
+            }
+         }
+         else if ( m_jdi < 0 )
+         {
+            ++m_jdi;
+            m_jdf -= 1;
+         }
    }
 
    template <class S>
@@ -1255,4 +1267,4 @@ inline TimePoint operator -( const TimePoint& t, double d )
 #endif   // __PCL_TimePoint_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/TimePoint.h - Released 2022-11-21T14:46:30Z
+// EOF pcl/TimePoint.h - Released 2023-05-17T17:06:03Z

@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard FITS File Format Module Version 1.1.10
+// Standard FITS File Format Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// FITSOptionsDialog.cpp - Released 2022-11-21T14:46:51Z
+// FITSOptionsDialog.cpp - Released 2023-05-17T17:06:31Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -107,43 +107,6 @@ FITSOptionsDialog::FITSOptionsDialog( const pcl::ImageOptions& o, const pcl::FIT
 
    //
 
-   ICCProfile_CheckBox.SetText( "ICC Profile" );
-   ICCProfile_CheckBox.SetMinWidth( labelWidth );
-   ICCProfile_CheckBox.SetToolTip( "<p>Embed an ICC profile.</p>" );
-
-   Properties_CheckBox.SetText( "Properties" );
-   Properties_CheckBox.SetMinWidth( labelWidth );
-   Properties_CheckBox.SetToolTip( "<p>Embed image properties (as BLOBs in FITS image extensions).</p>" );
-
-   EmbeddedDataLeft_Sizer.SetSpacing( 4 );
-   EmbeddedDataLeft_Sizer.Add( ICCProfile_CheckBox );
-   EmbeddedDataLeft_Sizer.Add( Properties_CheckBox );
-   //EmbeddedDataLeft_Sizer.AddStretch();
-
-   Thumbnail_CheckBox.SetText( "Thumbnail Image" );
-   Thumbnail_CheckBox.SetMinWidth( labelWidth );
-   Thumbnail_CheckBox.SetToolTip( "<p>Embed an 8-bit reduced version of the image for quick reference.</p>" );
-
-   FixedPrecision_CheckBox.SetText( "Fixed-precision keywords" );
-   FixedPrecision_CheckBox.SetMinWidth( labelWidth );
-   FixedPrecision_CheckBox.SetToolTip( "<p>Write fixed-precision floating-point FITS keywords.</p>" );
-
-   EmbeddedDataRight_Sizer.SetSpacing( 4 );
-   EmbeddedDataRight_Sizer.Add( Thumbnail_CheckBox );
-   EmbeddedDataRight_Sizer.Add( FixedPrecision_CheckBox );
-   //EmbeddedDataRight_Sizer.AddStretch();
-
-   EmbeddedData_Sizer.SetMargin( 6 );
-   EmbeddedData_Sizer.SetSpacing( 12 );
-   EmbeddedData_Sizer.Add( EmbeddedDataLeft_Sizer );
-   EmbeddedData_Sizer.Add( EmbeddedDataRight_Sizer );
-
-   EmbeddedData_GroupBox.SetTitle( "Embedded Data" );
-   EmbeddedData_GroupBox.SetSizer( EmbeddedData_Sizer );
-   EmbeddedData_GroupBox.AdjustToContents();
-
-   //
-
    OK_PushButton.SetText( "OK" );
    OK_PushButton.SetDefault();
    OK_PushButton.SetCursor( StdCursor::Checkmark );
@@ -163,7 +126,6 @@ FITSOptionsDialog::FITSOptionsDialog( const pcl::ImageOptions& o, const pcl::FIT
    Global_Sizer.SetMargin( 8 );
    Global_Sizer.SetSpacing( 8 );
    Global_Sizer.Add( SampleFormat_GroupBox );
-   Global_Sizer.Add( EmbeddedData_GroupBox );
    Global_Sizer.AddSpacing( 8 );
    Global_Sizer.Add( BottomSection_Sizer );
 
@@ -184,11 +146,6 @@ FITSOptionsDialog::FITSOptionsDialog( const pcl::ImageOptions& o, const pcl::FIT
    UnsignedIntegers_Checkbox.Enable( !options.ieeefpSampleFormat && options.bitsPerSample != 8 );
    Float_RadioButton.SetChecked( options.bitsPerSample == 32 && options.ieeefpSampleFormat );
    Double_RadioButton.SetChecked( options.bitsPerSample == 64 && options.ieeefpSampleFormat );
-
-   ICCProfile_CheckBox.SetChecked( options.embedICCProfile );
-   Properties_CheckBox.SetChecked( options.embedProperties );
-   FixedPrecision_CheckBox.SetChecked( fitsOptions.writeFixedFloatKeywords );
-   Thumbnail_CheckBox.SetChecked( options.embedThumbnail );
 }
 
 // ----------------------------------------------------------------------------
@@ -239,12 +196,6 @@ void FITSOptionsDialog::Dialog_Return( Dialog& /*sender*/, int retVal )
          options.bitsPerSample = 64;
          options.ieeefpSampleFormat = true;
       }
-
-      options.embedICCProfile = ICCProfile_CheckBox.IsChecked();
-      options.embedThumbnail = Thumbnail_CheckBox.IsChecked();
-      options.embedProperties = Properties_CheckBox.IsChecked();
-
-      fitsOptions.writeFixedFloatKeywords = FixedPrecision_CheckBox.IsChecked();
    }
 }
 
@@ -253,4 +204,4 @@ void FITSOptionsDialog::Dialog_Return( Dialog& /*sender*/, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITSOptionsDialog.cpp - Released 2022-11-21T14:46:51Z
+// EOF FITSOptionsDialog.cpp - Released 2023-05-17T17:06:31Z

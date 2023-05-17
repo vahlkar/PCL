@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// pcl/ProjectionFactory.cpp - Released 2022-11-21T14:46:37Z
+// pcl/ProjectionFactory.cpp - Released 2023-05-17T17:06:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -66,35 +66,37 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-static ProjectionBase* CreateProjectionByWCSCode( bool& needsInitialization, const IsoString& wcsCode, double ra, double dec )
+ProjectionBase* ProjectionFactory::CreateByWCSCode( const IsoString& wcsCode, double ra, double dec )
 {
-   needsInitialization = true;
+   ProjectionBase* projection = nullptr;
+   bool needsInitialization = true;
    switch ( wcsCode.Trimmed().CaseFolded().Hash32() )
    {
-   case 0x5e1ebd44: // "TAN"
+   case 0x5e1ebd44: // TAN
+      projection = new GnomonicProjection( ra, dec );
       needsInitialization = false;
-      return new GnomonicProjection( ra, dec );
-   case 0x1cafa6e6: // "STG"
-      return new StereographicProjection();
-   case 0x9f2b1ebc: // "CAR"
-      return new PlateCarreeProjection();
-   case 0xecd36fef: // "MER"
-      return new MercatorProjection();
-   case 0xaa395586: // "AIT"
-      return new HammerAitoffProjection();
-   case 0x97c16049: // "ZEA"
-      return new ZenithalEqualAreaProjection();
-   case 0x6e069940: // "SIN"
-      return new OrthographicProjection();
+      break;
+   case 0x1cafa6e6: // STG
+      projection = new StereographicProjection();
+      break;
+   case 0x9f2b1ebc: // CAR
+      projection = new PlateCarreeProjection();
+      break;
+   case 0xecd36fef: // MER
+      projection = new MercatorProjection();
+      break;
+   case 0xaa395586: // AIT
+      projection = new HammerAitoffProjection();
+      break;
+   case 0x97c16049: // ZEA
+      projection = new ZenithalEqualAreaProjection();
+      break;
+   case 0x6e069940: // SIN
+      projection = new OrthographicProjection();
+      break;
    default:
       throw Error( "ProjectionFactory: Invalid/unsupported WCS projection code \'" + wcsCode + '\'' );
    }
-}
-
-ProjectionBase* ProjectionFactory::CreateByWCSCode( const IsoString& code, double ra, double dec )
-{
-   bool needsInitialization;
-   ProjectionBase* projection = CreateProjectionByWCSCode( needsInitialization, code, ra, dec );
    if ( needsInitialization )
       projection->InitFromRefPoint( ra, dec );
    return projection;
@@ -102,35 +104,37 @@ ProjectionBase* ProjectionFactory::CreateByWCSCode( const IsoString& code, doubl
 
 // ----------------------------------------------------------------------------
 
-static ProjectionBase* CreateProjectionByName( bool& needsInitialization, const IsoString& name, double ra, double dec )
+ProjectionBase* ProjectionFactory::CreateByIdentifier( const IsoString& identifier, double ra, double dec )
 {
-   needsInitialization = true;
-   switch ( name.Trimmed().CaseFolded().Hash32() )
+   ProjectionBase* projection = nullptr;
+   bool needsInitialization = true;
+   switch ( identifier.Trimmed().Hash32() )
    {
-   case 0xd91ba2fe: // Gnomonic
+   case 0x4418268d: // Gnomonic
+      projection = new GnomonicProjection( ra, dec );
       needsInitialization = false;
-      return new GnomonicProjection( ra, dec );
-   case 0xf75bc292: // Stereographic
-      return new StereographicProjection();
-   case 0xcf20742f: // PlateCarree
-      return new PlateCarreeProjection();
-   case 0xde9d75b3: // Mercator
-      return new MercatorProjection();
-   case 0x164deada: // HammerAitoff
-      return new HammerAitoffProjection();
-   case 0xdee97130: // ZenithalEqualArea
-      return new ZenithalEqualAreaProjection();
-   case 0x9463e32f: // Orthographic
-      return new OrthographicProjection();
+      break;
+   case 0xc92ad8b1: // Stereographic
+      projection = new StereographicProjection();
+      break;
+   case 0x43a51256: // PlateCarree
+      projection = new PlateCarreeProjection();
+      break;
+   case 0x2edafe59: // Mercator
+      projection = new MercatorProjection();
+      break;
+   case 0x50df063f: // HammerAitoff
+      projection = new HammerAitoffProjection();
+      break;
+   case 0xbbb316b7: // ZenithalEqualArea
+      projection = new ZenithalEqualAreaProjection();
+      break;
+   case 0xe5ca11ab: // Orthographic
+      projection = new OrthographicProjection();
+      break;
    default:
-      throw Error( "ProjectionFactory: Invalid/unsupported projection name \'" + name + '\'' );
+      throw Error( "ProjectionFactory: Invalid/unsupported projection identifier \'" + identifier + '\'' );
    }
-}
-
-ProjectionBase* ProjectionFactory::CreateByName( const IsoString& name, double ra, double dec )
-{
-   bool needsInitialization;
-   ProjectionBase* projection = CreateProjectionByName( needsInitialization, name, ra, dec );
    if ( needsInitialization )
       projection->InitFromRefPoint( ra, dec );
    return projection;
@@ -143,12 +147,8 @@ ProjectionBase* ProjectionFactory::Create( const WCSKeywords& wcs )
    IsoString ptype1 = wcs.ctype1.Substring( 5, 3 );
    IsoString ptype2 = wcs.ctype2.Substring( 5, 3 );
    if ( ptype1 != ptype2 )
-      throw Error( "ProjectionFactory::Create(): Unsupported WCS coordinates: Axes with different projections." );
-   bool needsInitialization;
-   ProjectionBase* projection = CreateProjectionByWCSCode( needsInitialization, ptype1, wcs.crval1, wcs.crval2 );
-   if ( needsInitialization )
-      projection->InitFromWCS( wcs );
-   return projection;
+      throw Error( "ProjectionFactory::Create(): Unsupported WCS coordinates: axes with different projections." );
+   return CreateByWCSCode( ptype1, wcs.crval1, wcs.crval2 );
 }
 
 // ----------------------------------------------------------------------------
@@ -156,4 +156,4 @@ ProjectionBase* ProjectionFactory::Create( const WCSKeywords& wcs )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ProjectionFactory.cpp - Released 2022-11-21T14:46:37Z
+// EOF pcl/ProjectionFactory.cpp - Released 2023-05-17T17:06:11Z

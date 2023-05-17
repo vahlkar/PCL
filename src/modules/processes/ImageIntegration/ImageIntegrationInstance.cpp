@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.5.0
+// Standard ImageIntegration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// ImageIntegrationInstance.cpp - Released 2022-11-21T14:47:17Z
+// ImageIntegrationInstance.cpp - Released 2023-05-17T17:06:42Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -1953,6 +1953,8 @@ ImageIntegrationInstance::scale_estimates ImageIntegrationInstance::EvaluateNois
    image->Status().Initialize( "Computing noise scaling factors" );
    image->Status().DisableInitialization();
 
+   Module->ProcessEvents();
+
    scale_estimates noiseScale( image->NumberOfChannels() );
 
    image->ResetSelections();
@@ -1962,6 +1964,8 @@ ImageIntegrationInstance::scale_estimates ImageIntegrationInstance::EvaluateNois
    for ( int c = 0; c < image->NumberOfChannels(); ++c )
    {
       image->SelectChannel( c );
+
+      Module->ProcessEvents();
 
       const double clipLow = 2.0/65535;
       const double clipHigh = 1.0 - 2.0/65535;
@@ -2000,8 +2004,9 @@ ImageIntegrationInstance::signal_estimates ImageIntegrationInstance::EvaluatePSF
 
    SpinStatus spin;
    image->SetStatusCallback( &spin );
-   image->Status().Initialize( "PSF signal evaluation" );
-   image->Status().DisableInitialization();
+   image->Status().EnableInitialization();
+
+   Module->ProcessEvents();
 
    signal_estimates psfSignal( image->NumberOfChannels() );
 
@@ -2014,8 +2019,14 @@ ImageIntegrationInstance::signal_estimates ImageIntegrationInstance::EvaluatePSF
    E.SetPSFType( IIPSFType::ToPSFFunction( p_psfType ) );
    for ( int c = 0; c < image.NumberOfChannels(); ++c )
    {
+      console.WriteLn( String().Format( "<end><cbr>PSF signal evaluation (ch %d):", c ) );
+      Module->ProcessEvents();
+
       image.SelectChannel( c );
       psfSignal[c] = E( image );
+
+      image->Status().Complete();
+      Module->ProcessEvents();
 
       if ( final )
       {
@@ -2029,8 +2040,6 @@ ImageIntegrationInstance::signal_estimates ImageIntegrationInstance::EvaluatePSF
       }
    }
 
-   image->Status().Complete();
-   image->Status().EnableInitialization();
    image->SetStatusCallback( nullptr );
    image->ResetSelections();
 
@@ -2061,4 +2070,4 @@ ImageWindow ImageIntegrationInstance::CreateImageWindow( const IsoString& id, in
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationInstance.cpp - Released 2022-11-21T14:47:17Z
+// EOF ImageIntegrationInstance.cpp - Released 2023-05-17T17:06:42Z

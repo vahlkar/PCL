@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard FITS File Format Module Version 1.1.10
+// Standard FITS File Format Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// FITSPreferencesDialog.cpp - Released 2022-11-21T14:46:51Z
+// FITSPreferencesDialog.cpp - Released 2023-05-17T17:06:31Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -59,10 +59,8 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-FITSPreferencesDialog::FITSPreferencesDialog( const FITSFormat::OutOfRangePolicyOptions& r,
-                                              const FITSFormat::EmbeddingOverrides& o, const FITSImageOptions& f )
+FITSPreferencesDialog::FITSPreferencesDialog( const FITSFormat::OutOfRangePolicyOptions& r, const FITSImageOptions& f )
    : outOfRange( r )
-   , overrides( o )
    , fitsOptions( f )
 {
    pcl::Font fnt = Font();
@@ -293,49 +291,6 @@ FITSPreferencesDialog::FITSPreferencesDialog( const FITSFormat::OutOfRangePolicy
 
    //
 
-   ICCProfile_CheckBox.SetText( "ICC Profile" );
-   ICCProfile_CheckBox.SetTristateMode();
-   ICCProfile_CheckBox.SetToolTip( "Override global core application settings for embedded ICC profiles." );
-   ICCProfile_CheckBox.SetState( overrides.overrideICCProfileEmbedding ?
-      (overrides.embedICCProfiles ? CheckState::Checked : CheckState::Unchecked) : CheckState::ThirdState );
-
-   Properties_CheckBox.SetText( "Properties" );
-   Properties_CheckBox.SetTristateMode();
-   Properties_CheckBox.SetToolTip( "Override global core application settings for embedded image properties." );
-   Properties_CheckBox.SetState( overrides.overridePropertyEmbedding ?
-      (overrides.embedProperties ? CheckState::Checked : CheckState::Unchecked) : CheckState::ThirdState );
-
-   EmbeddedDataLeft_Sizer.SetSpacing( 4 );
-   EmbeddedDataLeft_Sizer.Add( ICCProfile_CheckBox );
-   EmbeddedDataLeft_Sizer.Add( Properties_CheckBox );
-   //EmbeddedDataLeft_Sizer.AddStretch();
-
-   Thumbnail_CheckBox.SetText( "Thumbnail Image" );
-   Thumbnail_CheckBox.SetTristateMode();
-   Thumbnail_CheckBox.SetToolTip( "Override global core application settings for embedded thumbnails." );
-   Thumbnail_CheckBox.SetState( overrides.overrideThumbnailEmbedding ?
-      (overrides.embedThumbnails ? CheckState::Checked : CheckState::Unchecked) : CheckState::ThirdState );
-
-   FixedPrecision_CheckBox.SetText( "Fixed-precision keywords" );
-   FixedPrecision_CheckBox.SetToolTip( "Write fixed-precision floating-point FITS keywords" );
-   FixedPrecision_CheckBox.SetChecked( fitsOptions.writeFixedFloatKeywords );
-
-   EmbeddedDataRight_Sizer.SetSpacing( 4 );
-   EmbeddedDataRight_Sizer.Add( Thumbnail_CheckBox );
-   EmbeddedDataRight_Sizer.Add( FixedPrecision_CheckBox );
-   //EmbeddedDataRight_Sizer.AddStretch();
-
-   EmbeddedData_Sizer.SetMargin( 6 );
-   EmbeddedData_Sizer.SetSpacing( 12 );
-   EmbeddedData_Sizer.Add( EmbeddedDataLeft_Sizer );
-   EmbeddedData_Sizer.Add( EmbeddedDataRight_Sizer );
-
-   EmbeddedData_GroupBox.SetTitle( "Override Embedding Settings" );
-   EmbeddedData_GroupBox.SetSizer( EmbeddedData_Sizer );
-   EmbeddedData_GroupBox.AdjustToContents();
-
-   //
-
    Reset_PushButton.SetText( "Reset" );
    Reset_PushButton.SetDefault();
    Reset_PushButton.OnClick( (pcl::Button::click_event_handler)&FITSPreferencesDialog::Button_Click, *this );
@@ -362,7 +317,6 @@ FITSPreferencesDialog::FITSPreferencesDialog( const FITSFormat::OutOfRangePolicy
    Global_Sizer.Add( ReadRange_GroupBox );
    Global_Sizer.Add( ReadRangeOptions_GroupBox );
    Global_Sizer.Add( MiscellaneousOptions_GroupBox );
-   Global_Sizer.Add( EmbeddedData_GroupBox );
    Global_Sizer.SetSpacing( 12 );
    Global_Sizer.Add( BottomSection_Sizer );
 
@@ -388,17 +342,12 @@ void FITSPreferencesDialog::Button_Click( Button& sender, bool checked )
       ReadRangeMode_ComboBox.SetCurrentItem( FITSFormat::OutOfRangePolicy_Default );
       ReadRescaleMode_ComboBox.SetCurrentItem( FITSFormat::OutOfRangeFix_Default );
 
-      ICCProfile_CheckBox.SetState( CheckState::ThirdState );
-      Thumbnail_CheckBox.SetState( CheckState::ThirdState );
-      Properties_CheckBox.SetState( CheckState::ThirdState );
-
       FITSImageOptions o;
       CoordinateOrigin_ComboBox.SetCurrentItem( o.bottomUp ? 1 : 0 );
       IntegerSignedness_ComboBox.SetCurrentItem( o.unsignedIntegers ? 1 : 0 );
       UseRowOrderKeywords_CheckBox.SetChecked( o.useRowOrderKeywords );
       WriteScalingKeywordsForSignedData_CheckBox.SetChecked( o.writeScalingKeywordsForSignedData );
       SignedIntegersArePhysical_CheckBox.SetChecked( fitsOptions.signedIntegersArePhysical );
-      FixedPrecision_CheckBox.SetChecked( o.writeFixedFloatKeywords );
    }
    else if ( sender == OK_PushButton )
       Ok();
@@ -417,17 +366,7 @@ void FITSPreferencesDialog::Dialog_Return( Dialog& sender, int retVal )
       outOfRange.outOfRangePolicy = FITSFormat::out_of_range_policy( ReadRangeMode_ComboBox.CurrentItem() );
       outOfRange.outOfRangeFixMode = FITSFormat::out_of_range_fix_mode( ReadRescaleMode_ComboBox.CurrentItem() );
 
-      overrides.overrideICCProfileEmbedding = ICCProfile_CheckBox.State() != CheckState::ThirdState;
-      overrides.embedICCProfiles = ICCProfile_CheckBox.IsChecked();
-
-      overrides.overrideThumbnailEmbedding = Thumbnail_CheckBox.State() != CheckState::ThirdState;
-      overrides.embedThumbnails = Thumbnail_CheckBox.IsChecked();
-
-      overrides.overridePropertyEmbedding = Properties_CheckBox.State() != CheckState::ThirdState;
-      overrides.embedProperties = Properties_CheckBox.IsChecked();
-
       fitsOptions.unsignedIntegers = IntegerSignedness_ComboBox.CurrentItem() == 1;
-      fitsOptions.writeFixedFloatKeywords = FixedPrecision_CheckBox.IsChecked();
       fitsOptions.writeScalingKeywordsForSignedData = WriteScalingKeywordsForSignedData_CheckBox.IsChecked();
       fitsOptions.bottomUp = CoordinateOrigin_ComboBox.CurrentItem() == 1;
       fitsOptions.useRowOrderKeywords = UseRowOrderKeywords_CheckBox.IsChecked();
@@ -441,4 +380,4 @@ void FITSPreferencesDialog::Dialog_Return( Dialog& sender, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITSPreferencesDialog.cpp - Released 2022-11-21T14:46:51Z
+// EOF FITSPreferencesDialog.cpp - Released 2023-05-17T17:06:31Z

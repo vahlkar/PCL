@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 1.3.1
+// Standard Geometry Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// RotationInterface.cpp - Released 2022-11-21T14:47:17Z
+// RotationInterface.cpp - Released 2023-05-17T17:06:42Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -406,7 +406,8 @@ RotationInterface::GUIData::GUIData( RotationInterface& w )
    Rotation_SectionBar.SetSection( Rotation_Control );
 
    Angle_NumericEdit.SetReal();
-   Angle_NumericEdit.SetPrecision( 3 );
+   Angle_NumericEdit.SetPrecision( 5 );
+   Angle_NumericEdit.EnableFixedPrecision();
    Angle_NumericEdit.SetRange( 0, 180 );
    Angle_NumericEdit.label.SetText( "Angle (\xb0):" );
    Angle_NumericEdit.label.SetFixedWidth( labelWidth1 );
@@ -592,4 +593,4 @@ RotationInterface::GUIData::GUIData( RotationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RotationInterface.cpp - Released 2022-11-21T14:47:17Z
+// EOF RotationInterface.cpp - Released 2023-05-17T17:06:42Z

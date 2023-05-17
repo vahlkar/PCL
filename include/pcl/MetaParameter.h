@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// pcl/MetaParameter.h - Released 2022-11-21T14:46:30Z
+// pcl/MetaParameter.h - Released 2023-05-17T17:06:03Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -116,7 +116,7 @@ public:
    /*!
     * Destroys a %MetaParameter object.
     */
-   virtual ~MetaParameter() noexcept( false )
+   ~MetaParameter() noexcept( false ) override
    {
    }
 
@@ -437,7 +437,7 @@ public:
    /*!
     * Destroys a %MetaNumeric object.
     */
-   virtual ~MetaNumeric() noexcept( false )
+   ~MetaNumeric() noexcept( false ) override
    {
    }
 
@@ -556,7 +556,7 @@ public:
    /*!
     * Destroys a %MetaInteger object.
     */
-   virtual ~MetaInteger() noexcept( false )
+   ~MetaInteger() noexcept( false ) override
    {
    }
 
@@ -619,7 +619,7 @@ public:
    /*!
     * Destroys a %MetaUnsignedInteger object.
     */
-   virtual ~MetaUnsignedInteger() noexcept( false )
+   ~MetaUnsignedInteger() noexcept( false ) override
    {
    }
 
@@ -676,7 +676,7 @@ public:
    /*!
     * Destroys a %MetaSignedInteger object.
     */
-   virtual ~MetaSignedInteger() noexcept( false )
+   ~MetaSignedInteger() noexcept( false ) override
    {
    }
 
@@ -733,7 +733,7 @@ public:
    /*!
     * Destroys a %MetaUInt8 object.
     */
-   virtual ~MetaUInt8() noexcept( false )
+   ~MetaUInt8() noexcept( false ) override
    {
    }
 
@@ -783,7 +783,7 @@ public:
    /*!
     * Destroys a %MetaUInt16 object.
     */
-   virtual ~MetaUInt16() noexcept( false )
+   ~MetaUInt16() noexcept( false ) override
    {
    }
 
@@ -833,7 +833,7 @@ public:
    /*!
     * Destroys a %MetaUInt32 object.
     */
-   virtual ~MetaUInt32() noexcept( false )
+   ~MetaUInt32() noexcept( false ) override
    {
    }
 
@@ -883,7 +883,7 @@ public:
    /*!
     * Destroys a %MetaUInt64 object.
     */
-   virtual ~MetaUInt64() noexcept( false )
+   ~MetaUInt64() noexcept( false ) override
    {
    }
 
@@ -931,7 +931,7 @@ public:
    /*!
     * Destroys a %MetaInt8 object.
     */
-   virtual ~MetaInt8() noexcept( false )
+   ~MetaInt8() noexcept( false ) override
    {
    }
 
@@ -981,7 +981,7 @@ public:
    /*!
     * Destroys a %MetaInt16 object.
     */
-   virtual ~MetaInt16() noexcept( false )
+   ~MetaInt16() noexcept( false ) override
    {
    }
 
@@ -1031,7 +1031,7 @@ public:
    /*!
     * Destroys a %MetaInt32 object.
     */
-   virtual ~MetaInt32() noexcept( false )
+   ~MetaInt32() noexcept( false ) override
    {
    }
 
@@ -1081,7 +1081,7 @@ public:
    /*!
     * Destroys a %MetaInt64 object.
     */
-   virtual ~MetaInt64() noexcept( false )
+   ~MetaInt64() noexcept( false ) override
    {
    }
 
@@ -1131,7 +1131,7 @@ public:
    /*!
     * Destroys a %MetaReal object.
     */
-   virtual ~MetaReal() noexcept( false )
+   ~MetaReal() noexcept( false ) override
    {
    }
 
@@ -1243,7 +1243,7 @@ public:
    /*!
     * Destroys a %MetaFloat object.
     */
-   virtual ~MetaFloat() noexcept( false )
+   ~MetaFloat() noexcept( false ) override
    {
    }
 
@@ -1294,7 +1294,7 @@ public:
    /*!
     * Destroys a %MetaDouble object.
     */
-   virtual ~MetaDouble() noexcept( false )
+   ~MetaDouble() noexcept( false ) override
    {
    }
 
@@ -1352,7 +1352,7 @@ public:
    /*!
     * Destroys a %MetaBoolean object.
     */
-   virtual ~MetaBoolean() noexcept( false )
+   ~MetaBoolean() noexcept( false ) override
    {
    }
 
@@ -1518,7 +1518,7 @@ public:
    /*!
     * Destroys a %MetaEnumeration object.
     */
-   virtual ~MetaEnumeration() noexcept( false )
+   ~MetaEnumeration() noexcept( false ) override
    {
    }
 
@@ -1673,7 +1673,7 @@ public:
    /*!
     * Destroys a %MetaVariableLengthParameter object.
     */
-   virtual ~MetaVariableLengthParameter() noexcept( false )
+   ~MetaVariableLengthParameter() noexcept( false ) override
    {
    }
 
@@ -1757,7 +1757,7 @@ public:
    /*!
     * Destroys a %MetaString object.
     */
-   virtual ~MetaString() noexcept( false )
+   ~MetaString() noexcept( false ) override
    {
    }
 
@@ -1838,7 +1838,7 @@ public:
    /*!
     * Destroys a %MetaTable object.
     */
-   virtual ~MetaTable() noexcept( false )
+   ~MetaTable() noexcept( false ) override
    {
    }
 
@@ -1912,7 +1912,7 @@ public:
    /*!
     * Destroys a %MetaBlock object.
     */
-   virtual ~MetaBlock() noexcept( false )
+   ~MetaBlock() noexcept( false ) override
    {
    }
 
@@ -1996,4 +1996,4 @@ private:
 #endif   // __PCL_MetaParameter_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MetaParameter.h - Released 2022-11-21T14:46:30Z
+// EOF pcl/MetaParameter.h - Released 2023-05-17T17:06:03Z

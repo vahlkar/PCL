@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// pcl/AstrometricMetadata.h - Released 2022-11-21T14:46:30Z
+// pcl/AstrometricMetadata.h - Released 2023-05-17T17:06:03Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -140,6 +140,9 @@ public:
       String topRightCoordinates;
       String bottomLeftCoordinates;
       String bottomRightCoordinates;
+      String referenceCatalog;
+      String creationTime;
+      String creationSoftware;
    };
 
    /*!
@@ -195,7 +198,7 @@ public:
    AstrometricMetadata( ProjectionBase* projection, WorldTransformation* worldTransformation, int width, int height );
 
 #ifdef __PCL_BUILDING_PIXINSIGHT_APPLICATION
-   // Implemented in /core/Components/ImageWindow.cpp
+   // Implemented in /core/Components/ImageWindow/ImageWindow.cpp
    AstrometricMetadata( const pi::ImageWindow* );
 #else
    /*!
@@ -681,6 +684,58 @@ public:
    }
 
    /*!
+    * Returns the time this astrometric solution was generated, if available.
+    * When defined, the returned value should be represented in the UTC
+    * timescale.
+    */
+   Optional<TimePoint> CreationTime() const
+   {
+      return m_creationTime;
+   }
+
+   /*!
+    * Returns the name of the star catalog used to generate this astrometric
+    * solution, or an empty string if the corresponding metadata item is not
+    * available.
+    */
+   String Catalog() const
+   {
+      return m_catalog;
+   }
+
+   /*!
+    * Returns the name (typically with version numbers) of the software
+    * application used to generate this astrometric solution, or an empty
+    * string if the corresponding metadata item is not available.
+    */
+   String CreatorApplication() const
+   {
+      return m_creatorApp;
+   }
+
+   /*!
+    * Returns the name (typically with version numbers) of the software module
+    * or subsystem (such as a process or script) used to generate this
+    * astrometric solution, or an empty string if the corresponding metadata
+    * item is not available.
+    */
+   String CreatorModule() const
+   {
+      return m_creatorModule;
+   }
+
+   /*!
+    * Returns the name of the operating system under which this astrometric
+    * solution was generated, or an empty string if the corresponding metadata
+    * item is not available. Currently this member function can return one of
+    * "FreeBSD", "Linux", "macOS", and "Windows".
+    */
+   String CreatorOS() const
+   {
+      return m_creatorOS;
+   }
+
+   /*!
     * Transformation from image coordinates to celestial coordinates.
     *
     * \param[out] pRD   Reference to a point where the output equatorial
@@ -795,16 +850,13 @@ public:
     * \param properties       A list of XISF image properties describing
     *                         critical astrometry-related metadata items.
     *
-    * \param keywords         A list of FITS header keywords, which should
-    *                         contain at least a minimal set of standard WCS
-    *                         keywords to define a linear world transformation
-    *                         from celestial to image coordinates.
-    *
-    * \param controlPoints    If not empty, this array must contain a list of
-    *                         spline control points and generation parameters
-    *                         serialized in raw binary format. See the
-    *                         SplineWorldTransformation class for more
-    *                         information.
+    * \param keywords         A list of FITS header keywords, which may
+    *                         contain a set of standard WCS keywords to define
+    *                         a linear world transformation from celestial to
+    *                         image coordinates. If the required metadata is
+    *                         available in the \a properties array, the
+    *                         corresponding keywords contained by this object
+    *                         will be ignored.
     *
     * \param width            Width in pixels of the image with which this
     *                         astrometric solution is associated.
@@ -812,7 +864,7 @@ public:
     * \param height           Height in pixels of the image with which this
     *                         astrometric solution is associated.
     *
-    * The following standard XISF properties will be extracted from the
+    * The following standard %XISF properties will be extracted from the
     * specified \a properties array, if available:
     *
     * <pre>
@@ -829,26 +881,44 @@ public:
     * Instrument:Sensor:XPixelSize
     * </pre>
     *
-    * %XISF properties will take precedence over equivalent %FITS keywords.
+    * The following nonstandard %XISF properties support our native astrometric
+    * solutions since core version 1.8.9-2:
     *
-    * If the specified \a controlPoints array contains a valid serialization of
-    * spline control points, the astrometric solution will use a high-precision
-    * world transformation based on two-dimensional surface splines, also knwon
-    * as <em>thin plate splines</em>, which is capable of modeling local image
-    * distortions that are intractable with WCS linear transformations.
+    * <pre>
+    * PCL:AstrometricSolution:ProjectionSystem
+    * PCL:AstrometricSolution:ReferenceCelestialCoordinates
+    * PCL:AstrometricSolution:ReferenceImageCoordinates
+    * PCL:AstrometricSolution:ReferenceNativeCoordinates
+    * PCL:AstrometricSolution:CelestialPoleNativeCoordinates
+    * PCL:AstrometricSolution:LinearTransformationMatrix
+    * PCL:AstrometricSolution:SplineWorldTransformation
+    * PCL:AstrometricSolution:Catalog
+    * PCL:AstrometricSolution:CreationTime
+    * PCL:AstrometricSolution:CreatorApplication
+    * PCL:AstrometricSolution:CreatorOS
+    * PCL:AstrometricSolution:CreatorModule
+    * </pre>
+    *
+    * %XISF properties will always take precedence over existing equivalent
+    * %FITS keywords.
+    *
+    * If the specified \a properties array contains a valid serialization of
+    * spline parameters and control points, the astrometric solution will use a
+    * high-precision world transformation based on two-dimensional surface
+    * splines, also knwon as <em>thin plate splines</em>, which is capable of
+    * modeling local image distortions that are intractable with WCS linear
+    * transformations.
     *
     * If this object contains valid metadata before calling this function, it
     * will be disposed as appropriate, and a completely new astrometric
     * solution will be constructed.
     *
-    * This member function can throw exceptions (of the Error class) if either
-    * the specified \a controlPoints array is not empty and does not contain a
-    * valid raw serialization of a spline-based transformation, or if the
-    * generated coordinate transformations are not invalid (in the numerical or
-    * geometric sense).
+    * This member function can throw exceptions (of the Error class) if the
+    * specified \a properties and/or \a keywords arrays contain wrong or
+    * invalid data, or if the generated coordinate transformations are invalid
+    * (in the numerical or geometric sense).
     */
-   void Build( const PropertyArray& properties, const FITSKeywordArray& keywords,
-               const ByteArray& controlPoints, int width, int height );
+   void Build( const PropertyArray& properties, const FITSKeywordArray& keywords, int width, int height );
 
    /*!
     * Updates the specified \a keywords array with basic astrometric FITS
@@ -880,8 +950,8 @@ public:
    void UpdateBasicKeywords( FITSKeywordArray& keywords ) const;
 
    /*!
-    * Updates the specified \a keywords array with the set of standard WCS FITS
-    * header keywords:
+    * Updates or removes standard WCS FITS header keywords in the specified
+    * \a keywords array:
     *
     * <pre>
     * RADESYS
@@ -913,14 +983,16 @@ public:
     * LATPOLE
     * </pre>
     *
-    * In addition, a custom nonstandard keyword is also generated to signal the
-    * availability of a spline-based astrometric solution:
+    * if \a generate is true, a new set of WCS FITS keywords will be generated
+    * (by replacing existing ones or creating them as necessary) in the
+    * \a keywords array.
     *
-    * <pre>
-    * REFSPLIN
-    * </pre>
+    * If \a generate is false, existing WCS FITS keywords will be removed and
+    * no new ones will be generated. This is the default behavior since
+    * PixInsight core version 1.8.9-2, when our native astrometric solutions
+    * no longer depend on FITS keywords.
     */
-   void UpdateWCSKeywords( FITSKeywordArray& keywords ) const;
+   void UpdateWCSKeywords( FITSKeywordArray& keywords, bool generate = false ) const;
 
    /*!
     * Updates the specified \a properties array with a restricted set of view
@@ -959,11 +1031,23 @@ public:
     * Observation:Location:Elevation
     * </pre>
     *
-    * In addition, the following nonstandard property, used by platform image
-    * plate solving scripts, will be created, redefined, or removed:
+    * The following nonstandard properties (which support our native
+    * astrometric solutions since core version 1.8.9-2) and will be created,
+    * redefined, or removed as necessary:
     *
     * <pre>
-    * Transformation_ImageToProjection
+    * PCL:AstrometricSolution:ProjectionSystem
+    * PCL:AstrometricSolution:ReferenceCelestialCoordinates
+    * PCL:AstrometricSolution:ReferenceImageCoordinates
+    * PCL:AstrometricSolution:ReferenceNativeCoordinates
+    * PCL:AstrometricSolution:CelestialPoleNativeCoordinates
+    * PCL:AstrometricSolution:LinearTransformationMatrix
+    * PCL:AstrometricSolution:SplineWorldTransformation
+    * PCL:AstrometricSolution:Catalog
+    * PCL:AstrometricSolution:CreationTime
+    * PCL:AstrometricSolution:CreatorApplication
+    * PCL:AstrometricSolution:CreatorOS
+    * PCL:AstrometricSolution:CreatorModule
     * </pre>
     */
    void UpdateProperties( PropertyArray& properties ) const;
@@ -1018,7 +1102,6 @@ public:
     * PV1_4
     * LONPOLE
     * LATPOLE
-    * REFSPLIN
     * </pre>
     *
     * If \a removeCenterKeywords is true, the following keywords will also be
@@ -1086,11 +1169,21 @@ public:
     * Instrument:Sensor:YPixelSize
     * </pre>
     *
-    * In addition, the following nonstandard property, used by platform image
-    * plate solving scripts, will be removed:
+    * The following nonstandard properties will always be removed:
     *
     * <pre>
-    * Transformation_ImageToProjection
+    * PCL:AstrometricSolution:ProjectionSystem
+    * PCL:AstrometricSolution:ReferenceCelestialCoordinates
+    * PCL:AstrometricSolution:ReferenceImageCoordinates
+    * PCL:AstrometricSolution:ReferenceNativeCoordinates
+    * PCL:AstrometricSolution:CelestialPoleNativeCoordinates
+    * PCL:AstrometricSolution:LinearTransformationMatrix
+    * PCL:AstrometricSolution:SplineWorldTransformation
+    * PCL:AstrometricSolution:Catalog
+    * PCL:AstrometricSolution:CreationTime
+    * PCL:AstrometricSolution:CreatorApplication
+    * PCL:AstrometricSolution:CreatorOS
+    * PCL:AstrometricSolution:CreatorModule
     * </pre>
     */
    static void RemoveProperties( PropertyArray& properties, bool removeCenterProperties = true, bool removeScaleProperties = true );
@@ -1167,6 +1260,11 @@ private:
    Optional<double>                 m_geoHeight;      // m
    double                           m_resolution = 0; // deg/px
    Optional<double>                 m_focalLength;    // mm
+   Optional<TimePoint>              m_creationTime;
+   String                           m_catalog;
+   String                           m_creatorApp;
+   String                           m_creatorModule;
+   String                           m_creatorOS;
    mutable
    AutoPointer<DescriptionItems>    m_description;
 
@@ -1179,4 +1277,4 @@ private:
 #endif // __AstrometricMetadata_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AstrometricMetadata.h - Released 2022-11-21T14:46:30Z
+// EOF pcl/AstrometricMetadata.h - Released 2023-05-17T17:06:03Z

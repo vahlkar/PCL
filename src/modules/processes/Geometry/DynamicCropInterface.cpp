@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 1.3.1
+// Standard Geometry Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// DynamicCropInterface.cpp - Released 2022-11-21T14:47:17Z
+// DynamicCropInterface.cpp - Released 2023-05-17T17:06:42Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -216,8 +216,8 @@ bool DynamicCropInterface::RequiresInstanceValidation() const
 
 bool DynamicCropInterface::ImportProcess( const ProcessImplementation& p )
 {
-   const DynamicCropInstance* i = dynamic_cast<const DynamicCropInstance*>( &p );
-   if ( i == nullptr )
+   const DynamicCropInstance* instance = dynamic_cast<const DynamicCropInstance*>( &p );
+   if ( instance == nullptr )
       throw Error( "Not a DynamicCrop instance." );
 
    if ( m_view.IsNull() )
@@ -231,21 +231,20 @@ bool DynamicCropInterface::ImportProcess( const ProcessImplementation& p )
 
       m_view = window.MainView();
       m_view.AddToDynamicTargets();
-      //Console().WriteLn( "<end><cbr>DynamicCrop: Selected target view: " + m_view.Id() );
    }
    else
       UpdateView();
 
-   m_instance.Assign( *i );
+   m_instance.Assign( *instance );
 
-   int w0 = m_view.Width();
-   int h0 = m_view.Height();
+   int targetWidth = m_view.Width();
+   int targetHeight = m_view.Height();
 
-   m_width = Max( 1.0, Round( m_instance.p_width*w0, 2 ) );
-   m_height = Max( 1.0, Round( m_instance.p_height*h0, 2 ) );
+   m_width = Max( 1.0, Round( targetWidth * m_instance.p_outWidth/m_instance.p_refWidth, 2 ) );
+   m_height = Max( 1.0, Round( targetHeight * m_instance.p_outHeight/m_instance.p_refHeight, 2 ) );
 
-   m_anchor.x = m_center.x = m_rotationCenter.x = Round( m_instance.p_center.x*w0, 2 );
-   m_anchor.y = m_center.y = m_rotationCenter.y = Round( m_instance.p_center.y*h0, 2 );
+   m_anchor.x = m_center.x = m_rotationCenter.x = Round( m_instance.p_center.x*targetWidth, 2 );
+   m_anchor.y = m_center.y = m_rotationCenter.y = Round( m_instance.p_center.y*targetHeight, 2 );
    m_anchorPoint = 4; // center
 
    m_rotationFixed = false;
@@ -616,13 +615,14 @@ void DynamicCropInterface::Initialize( const Rect& r )
    m_anchorPoint = 4; // center
    m_rotationFixed = false;
 
-   int w0 = m_view.Width();
-   int h0 = m_view.Height();
-
-   m_instance.p_center.x = m_center.x/w0;
-   m_instance.p_center.y = m_center.y/h0;
-   m_instance.p_width = m_width/w0;
-   m_instance.p_height = m_height/h0;
+   m_instance.p_refWidth = m_view.Width();
+   m_instance.p_refHeight = m_view.Height();
+   m_instance.p_outWidth = m_width;
+   m_instance.p_outHeight = m_height;
+   m_instance.p_center.x = m_center.x/m_instance.p_refWidth;
+   m_instance.p_center.y = m_center.y/m_instance.p_refHeight;
+   m_instance.p_width = m_width/m_instance.p_refWidth;    // ### DEPRECATED
+   m_instance.p_height = m_height/m_instance.p_refHeight; // ### DEPRECATED
    m_instance.p_angle = 0;
    m_instance.p_scaleX = m_instance.p_scaleY = 1;
 
@@ -797,9 +797,7 @@ void DynamicCropInterface::UpdateRotation( DPoint& p, unsigned /*modifiers*/ )
    m_instance.p_angle = ArcTan( Sin( a ), Cos( a ) );
 
    UpdateAnchorPosition();
-
    UpdateInstance();
-
    UpdateView();
    //m_view.Window().CommitPendingUpdates();
 
@@ -1015,9 +1013,7 @@ void DynamicCropInterface::UpdateResize( DPoint& p, unsigned modifiers )
       m_rotationCenter = m_center;
 
    UpdateAnchorPosition();
-
    UpdateInstance();
-
    UpdateView();
    //m_view.Window().CommitPendingUpdates();
 
@@ -1042,9 +1038,7 @@ void DynamicCropInterface::SetRotationAngle( double a )
    m_instance.p_angle = ArcTan( Sin( a ), Cos( a ) );
 
    UpdateAnchorPosition();
-
    UpdateInstance();
-
    UpdateView();
    //m_view.Window().CommitPendingUpdates();
 
@@ -1175,12 +1169,14 @@ void DynamicCropInterface::UpdateInstance()
 {
    if ( !m_view.IsNull() )
    {
-      int w0 = m_view.Width();
-      int h0 = m_view.Height();
-      m_instance.p_width = m_width/w0;
-      m_instance.p_height = m_height/h0;
-      m_instance.p_center.x = m_center.x/w0;
-      m_instance.p_center.y = m_center.y/h0;
+      m_instance.p_refWidth = m_view.Width();
+      m_instance.p_refHeight = m_view.Height();
+      m_instance.p_outWidth = m_width;
+      m_instance.p_outHeight = m_height;
+      m_instance.p_width = m_width/m_instance.p_refWidth;    // ### DEPRECATED
+      m_instance.p_height = m_height/m_instance.p_refHeight; // ### DEPRECATED
+      m_instance.p_center.x = m_center.x/m_instance.p_refWidth;
+      m_instance.p_center.y = m_center.y/m_instance.p_refHeight;
    }
 }
 
@@ -1830,7 +1826,7 @@ void DynamicCropInterface::e_MouseMove( Control& sender, const Point& pos, unsig
       if ( m_dragging )
       {
          double a = Round( Deg( ArcTan( double( (sender.ClientHeight() >> 1) - pos.y ),
-                                       double( pos.x - (sender.ClientWidth() >> 1) ) ) ), 3 );
+                                        double( pos.x - (sender.ClientWidth() >> 1) ) ) ), 3 );
          SetRotationAngle( Rad( a ) );
          //sender.Update();
       }
@@ -1917,7 +1913,7 @@ DynamicCropInterface::GUIData::GUIData( DynamicCropInterface& w )
    pcl::Font fnt = w.Font();
    int labelWidth1 = fnt.Width( String( "Smoothness:" ) + 'T' );
    int labelWidth3 = fnt.Width( String( 'M',  2 ) );
-   int editWidth   = fnt.Width( String( '0', 10 ) );
+   int editWidth   = fnt.Width( String( '0', 11 ) );
    int ui4 = w.LogicalPixelsToPhysical( 4 );
 
    //
@@ -1990,7 +1986,7 @@ DynamicCropInterface::GUIData::GUIData( DynamicCropInterface& w )
    Rotation_SectionBar.SetSection( Rotation_Control );
 
    Angle_NumericEdit.SetReal();
-   Angle_NumericEdit.SetPrecision( 3 );
+   Angle_NumericEdit.SetPrecision( 5 );
    Angle_NumericEdit.EnableFixedPrecision();
    Angle_NumericEdit.SetRange( 0, 180 );
    Angle_NumericEdit.label.SetText( "Angle (\xb0):" );
@@ -2354,4 +2350,4 @@ DynamicCropInterface::GUIData::GUIData( DynamicCropInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DynamicCropInterface.cpp - Released 2022-11-21T14:47:17Z
+// EOF DynamicCropInterface.cpp - Released 2023-05-17T17:06:42Z

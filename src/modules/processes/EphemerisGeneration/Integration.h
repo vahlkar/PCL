@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.35
+// /_/     \____//_____/   PCL 2.5.3
 // ----------------------------------------------------------------------------
-// Standard EphemerisGeneration Process Module Version 1.0.0
+// Standard EphemerisGeneration Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// Integration.h - Released 2022-11-21T14:47:17Z
+// Integration.h - Released 2023-05-17T17:06:42Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
-// Copyright (c) 2003-2022 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -54,7 +54,6 @@
 #define __Integration_h
 
 #include "Ephemerides.h"
-#include "EphemerisGeneratorInstance.h"
 #include "Perturber.h"
 
 #include <pcl/AutoPointer.h>
@@ -98,7 +97,7 @@ struct IntegrationDenseOutputItem
    }
 };
 
-typedef Array<IntegrationDenseOutputItem>  IntegrationDenseOutputData;
+using IntegrationDenseOutputData = Array<IntegrationDenseOutputItem>;
 
 // ----------------------------------------------------------------------------
 
@@ -141,15 +140,15 @@ public:
    /*
     * Basic type definitions.
     */
-   typedef PerturberBase<Scalar_, Vector_>   perturber;
-   typedef PerturberBody<Scalar_, Vector_>   perturber_body;
-   typedef typename perturber::scalar_type   scalar_type;
-   typedef typename perturber::vector_type   vector_type;
-   typedef GenericMatrix<scalar_type>        matrix_type;
-   typedef scalar_type                       time_type;
-   typedef HScalar_                          hscalar_type;
-   typedef HVector_                          hvector_type;
-   typedef GenericMatrix<hscalar_type>       hmatrix_type;
+   using perturber      = PerturberBase<Scalar_, Vector_>;
+   using perturber_body = PerturberBody<Scalar_, Vector_>;
+   using scalar_type    = typename perturber::scalar_type;
+   using vector_type    = typename perturber::vector_type;
+   using matrix_type    = GenericMatrix<scalar_type>;
+   using time_type      = scalar_type;
+   using hscalar_type   = HScalar_;
+   using hvector_type   = HVector_;
+   using hmatrix_type   = GenericMatrix<hscalar_type>;
 
    /*
     * Integration state vectors compatible with boost::odeint
@@ -158,9 +157,9 @@ public:
    {
    public:
 
-      typedef scalar_type        value_type;
-      typedef scalar_type*       iterator;
-      typedef const scalar_type* const_iterator;
+      using value_type     = scalar_type;
+      using iterator       = scalar_type*;
+      using const_iterator = const scalar_type*;
 
       State() = default;
       State( const State& ) = default;
@@ -220,6 +219,15 @@ public:
          return Vector( m_y[3], m_y[4], m_y[5] );
       }
 
+      State Backwards() const
+      {
+         State s1( *this );
+         s1.m_y[3] = -s1.m_y[3];
+         s1.m_y[4] = -s1.m_y[4];
+         s1.m_y[5] = -s1.m_y[5];
+         return s1;
+      }
+
    private:
 
       // Position and velocity components
@@ -233,8 +241,7 @@ public:
    {
    public:
 
-      typedef std::function<void ( const State&, State&, const time_type& )>
-                        step_func_type;
+      using step_func_type = std::function<void ( const State&, State&, const time_type& )>;
 
       Stepper() = default;
 
@@ -260,17 +267,15 @@ public:
    {
    public:
 
-      typedef typename Stepper::step_func_type  step_func_type;
-
-      typedef bulirsch_stoer_dense_out<State, scalar_type, State, time_type>
-                                                stepper_type;
+      using step_func_type = typename Stepper::step_func_type;
+      using stepper_type   = bulirsch_stoer_dense_out<State, scalar_type, State, time_type>;
 
       BulirschStoerStepper( scalar_type epsAbs, scalar_type epsRel )
       {
          m_stepper = new stepper_type( epsAbs, epsRel );
       }
 
-      virtual ~BulirschStoerStepper()
+      ~BulirschStoerStepper() override
       {
          delete m_stepper;
       }
@@ -319,20 +324,16 @@ public:
    {
    public:
 
-      typedef typename Stepper::step_func_type  step_func_type;
-
-      typedef runge_kutta_dopri5<State, scalar_type, State, time_type>
-                                                rkdopri5_stepper;
-
-      typedef typename result_of::make_dense_output<rkdopri5_stepper>::type
-                                                stepper_type;
+      using step_func_type   = typename Stepper::step_func_type;
+      using rkdopri5_stepper = runge_kutta_dopri5<State, scalar_type, State, time_type>;
+      using stepper_type     = typename result_of::make_dense_output<rkdopri5_stepper>::type;
 
       RungeKuttaDOPRI5Stepper( scalar_type epsAbs, scalar_type epsRel )
       {
          m_stepper = new stepper_type( make_dense_output( epsAbs, epsRel, rkdopri5_stepper() ) );
       }
 
-      virtual ~RungeKuttaDOPRI5Stepper()
+      ~RungeKuttaDOPRI5Stepper() override
       {
          delete m_stepper;
       }
@@ -375,20 +376,26 @@ public:
    };
 
    /*
-    * The exception we throw when we detect a potential collision between the
-    * body being integrated and a perturber body.
+    * Data gathered when we find a collision with a perturber body.
     */
-   class CollisionException : public Error
+   struct CollisionData
+   {
+      time_type        detected = 0;   // integration time of detection
+      const perturber* body = nullptr; // perturber body (collision target)
+      TimePoint        time;           // time of collision
+      vector_type      Rb;             // body-fixed coordinates
+   };
+
+   /*
+    * The exception we throw when we find a collision between the body being
+    * integrated and a perturber body.
+    */
+   class CollisionException : public Exception
    {
    public:
 
       CollisionException() = default;
       CollisionException( const CollisionException& ) = default;
-
-      CollisionException( const TimePoint& T, const perturber* P )
-         : Error( String() << "Collision detected: " << T.ToIsoString() << " | (" << P->Id() << ") " << P->Name() )
-      {
-      }
    };
 
    /*
@@ -518,13 +525,15 @@ public:
        */
       m_startTime = startTime;
       m_endTime = endTime;
-      time_type timeDelta = time_type( m_endTime - m_startTime );
+      m_backwards = endTime < startTime;
+      time_type timeDelta = Abs( time_type( m_endTime - m_startTime ) );
 
       /*
        * Initial state vectors.
        */
       State initialState( initialPosition, initialVelocity );
       m_finalState = initialState;
+      m_haveCollision = false;
 
       /*
        * The integration tolerance is a function of the maximum position vector
@@ -536,88 +545,160 @@ public:
        * Build an integration stepper with the initial absolute and relative
        * tolerances.
        */
-      AutoPointer<Stepper> stepper = NewStepper();
+      m_stepper = NewStepper();
 
       /*
-       * Initialize the integration stepper for the required time span and
-       * integration direction.
+       * Initialize the integration m_stepper for the required time span.
        */
-      stepper->Initialize( initialState
-                         , time_type( 0.0 ) /*start_time*/
-                         , time_type( (m_startTime < m_endTime) ? +10.0 : -10.0 ) /*dt*/ );
-
-      using boost::numeric::odeint::detail::less_with_sign;
-      using boost::numeric::odeint::detail::less_eq_with_sign;
-
+      m_stepper->Initialize( m_backwards ? initialState.Backwards() : initialState
+                           , time_type( 0.0 ) /*start_time*/
+                           , +10.0 /*dt*/ );
       try
       {
          size_type stepCount = 0;
 
-         while ( less_with_sign( stepper->CurrentTime()
-                              , timeDelta
-                              , stepper->CurrentTimeStep() ) )
+         while ( m_stepper->CurrentTime() < timeDelta )
          {
-            while ( less_eq_with_sign( time_type( stepper->CurrentTime() + stepper->CurrentTimeStep() )
-                                    , timeDelta
-                                    , stepper->CurrentTimeStep() ) )
+            while ( time_type( m_stepper->CurrentTime() + m_stepper->CurrentTimeStep() ) <= timeDelta )
             {
                /*
                 * Check if the optimal integration tolerance has changed for
                 * the current distance to the center of integration. If this
-                * happens, create a new stepper with the new optimal tolerances
+                * happens, create a new m_stepper with the new optimal tolerances
                 * and continue with current time parameters.
                 */
-               double eps = Tolerance( stepper->CurrentState().Position() );
+               double eps = Tolerance( m_stepper->CurrentState().Position() );
                if ( eps != m_eps )
                {
                   m_eps = eps;
-                  State y = stepper->CurrentState();
-                  time_type t = stepper->CurrentTime();
-                  time_type dt = stepper->CurrentTimeStep();
-                  stepper = NewStepper();
-                  stepper->Initialize( y, t, dt );
+                  State y = m_stepper->CurrentState();
+                  time_type t = m_stepper->CurrentTime();
+                  time_type dt = m_stepper->CurrentTimeStep();
+                  m_stepper = NewStepper();
+                  m_stepper->Initialize( y, t, dt );
                }
 
                /*
                 * Perform an adaptive integration step.
                 */
-               std::pair<time_type, time_type> ts = stepper->DoStep(
+               std::pair<time_type, time_type> ts = m_stepper->DoStep(
                   [this]( const State& y, State& dydt, const time_type& t )
                   {
-                     m_finalState = y;
-                     m_finalTime = m_startTime + double( t );
+                     if ( m_backwards )
+                     {
+                        m_finalState = y.Backwards();
+                        m_finalTime = m_startTime - double( t );
+                     }
+                     else
+                     {
+                        m_finalState = y;
+                        m_finalTime = m_startTime + double( t );
+                     }
                      Motion( y, dydt, t );
                   } );
+
+               /*
+                * Manage a possible collision with a perturber body.
+                */
+               if ( m_haveCollision )
+               {
+                  /*
+                   * Find an accurate collision time with the perturber body's
+                   * surface. We implement a binary search scheme by halving
+                   * the time elapsed from the beginning of this integration
+                   * step to the detected collision time. Dense integration
+                   * output is required for this task.
+                   */
+                  for ( time_type t0 = ts.first, t1 = m_collision.detected;; )
+                  {
+                     time_type t = (t0 + t1)/2;
+                     TimePoint T = m_backwards ? m_startTime - double( t ) : m_startTime + double( t );
+
+                     // Position of integrated body.
+                     State y;
+                     m_stepper->CalcState( t, y );
+                     vector_type Ri = y.Position();
+
+                     // Position of perturber body.
+                     vector_type Rj;
+                     m_collision.body->ComputeState( Rj, T );
+
+                     // Position vector in perturber's body-fixed coordinates.
+                     vector_type Rijb = m_collision.body->ToBodyFixedMatrix( T )*(Ri - Rj);
+
+                     // Iterate to convergence to within one second.
+                     if ( t1 - t0 < 1.0/86400 )
+                     {
+                        m_collision.time = T;
+                        m_collision.Rb = Rijb;
+                        throw CollisionException();
+                     }
+
+                     // Check for position interior to perturber's ellipsoid.
+                     scalar_type Re = m_collision.body->Re();
+                     scalar_type Rp = m_collision.body->Rp();
+                     scalar_type dijb = Rijb[0]*Rijb[0]/Re/Re
+                                      + Rijb[1]*Rijb[1]/Re/Re
+                                      + Rijb[2]*Rijb[2]/Rp/Rp;
+                     if ( dijb < 1 )
+                        t1 = t; // inside
+                     else
+                        t0 = t; // outside
+                  }
+               }
 
                /*
                 * Perform dense output. Dense output of position and (optional)
                 * velocity components is fitted with truncated Chebyshev
                 * polynomials at each integration step.
                 */
-               FitDenseOutput( ts.first, ts.second, stepper.Ptr() );
+               FitDenseOutput( ts.first, ts.second );
 
                /*
                 * Perform monitoring.
                 */
-               monitor( ++stepCount, Abs( ts.second - ts.first ) );
+               monitor( ++stepCount, ts.second - ts.first, false/*stop*/ );
             }
 
             /*
              * Last step to arrive exactly at the requested end time.
              */
-            stepper->Initialize( stepper->CurrentState(), stepper->CurrentTime(), timeDelta - stepper->CurrentTime() );
+            m_stepper->Initialize( m_stepper->CurrentState(), m_stepper->CurrentTime(), timeDelta - m_stepper->CurrentTime() );
          }
 
-         m_finalState = stepper->CurrentState();
-         m_finalTime = m_startTime + double( stepper->CurrentTime() );
+         if ( m_backwards )
+         {
+            m_finalState = m_stepper->CurrentState().Backwards();
+            m_finalTime = m_startTime - double( m_stepper->CurrentTime() );
+         }
+         else
+         {
+            m_finalState = m_stepper->CurrentState();
+            m_finalTime = m_startTime + double( m_stepper->CurrentTime() );
+         }
       }
-      catch ( CollisionException& x )
+      catch ( CollisionException& )
       {
          Console console;
-         console.WriteLn(    "<end><cbr><br>"
-                             "***" );
-         console.CriticalLn( "*** " + x.Message() );
-         console.WriteLn(    "***<br><br><br><br>" );
+         console.WriteLn( "<end><cbr>" );
+         console.CriticalLn( "*** Collision detected ..... "
+                           + m_collision.time.ToString( ISO8601ConversionOptionsNoTimeZone() )
+                           + " TDB | (" + m_collision.body->Id() + ") " + m_collision.body->Name() );
+         double lt = m_collision.body->LightTravelTime( m_collision.time );
+         console.CriticalLn( "*** Observed impact time ... "
+                           + Position( m_collision.time + lt, "TDB" ).UTC().ToString( ISO8601ConversionOptionsNoTimeZone() )
+                           + " UTC" );
+         double l, b;
+         m_collision.Rb.ToSpherical2Pi( l, b );
+
+         scalar_type a0, d0, W;
+         m_collision.body->GetRotation( a0, d0, W, m_collision.time );
+         l = double( Norm2Pi( W - l ) );
+
+         console.CriticalLn( IsoString().Format(
+                             "*** Impact coordinates ..... l = %.3f deg | b = %+.3f deg | r = %.2f km",
+                                                 Deg( l ), Deg( b ), double( m_collision.Rb.L2Norm()*s_au_km ) ) );
+         monitor( 0, 0, true/*stop*/ );
       }
       catch ( ... )
       {
@@ -655,6 +736,10 @@ private:
          IndirectArray<perturber>    m_perturbers; // the perturber bodies
          TimePoint                   m_startTime;  // starting time of integration
          TimePoint                   m_endTime;    // end time of integration
+         bool                        m_backwards;  // integrating with m_endTime < m_startTime
+         AutoPointer<Stepper>        m_stepper;    // the integration stepper
+ mutable bool                        m_haveCollision = false;
+ mutable CollisionData               m_collision;
    const EphemerisGeneratorInstance& m_instance;   // the instance being executed
          scalar_type                 m_eps;        // current integration tolerance (au)
          IntegrationDenseOutputData  m_outputData; // output times and coordinate expansions
@@ -672,8 +757,6 @@ private:
     */
    void Motion( const State& y, State& dydt, const time_type& t ) const
    {
-      TimePoint T = m_startTime + double( t );
-
       /*
        * Velocity components
        */
@@ -686,6 +769,13 @@ private:
        */
       vector_type Ri( y[0], y[1], y[2] );
       hvector_type Vi( y[3], y[4], y[5] );
+      if ( m_backwards )
+         Vi.ReverseSign();
+
+      /*
+       * Current integration time.
+       */
+      TimePoint T = m_backwards ? m_startTime - double( t ) : m_startTime + double( t );
 
       /*
        * Perturber position vectors, distances, and mass factors.
@@ -725,8 +815,21 @@ private:
           * (infinite acceleration) - just as the body cannot continue in the
           * real world.
           */
-         if ( rij[j] - m_perturbers[j]->Re() <= 0 )
-            throw CollisionException( T, m_perturbers[j] );
+         if ( rij[j] <= m_perturbers[j]->Re() )
+         {
+            // Position vector in body-fixed coordinates.
+            vector_type Rijb = m_perturbers[j]->ToBodyFixedMatrix( T )*Rij[j];
+            // Check for position interior to perturber ellipsoid.
+            scalar_type dijb = Rijb[0]*Rijb[0]/m_perturbers[j]->Re()/m_perturbers[j]->Re()
+                             + Rijb[1]*Rijb[1]/m_perturbers[j]->Re()/m_perturbers[j]->Re()
+                             + Rijb[2]*Rijb[2]/m_perturbers[j]->Rp()/m_perturbers[j]->Rp();
+            if ( dijb <= 1 )
+            {
+               m_haveCollision = true;
+               m_collision.detected = t;
+               m_collision.body = m_perturbers[j];
+            }
+         }
 
          /*
           * Newtonian point-mass acceleration vector.
@@ -794,7 +897,12 @@ private:
           *
           * Moyer, Theodore D. (1971), Mathematical Formulation of the
           * Double-Precision Orbit Determination Program (DPODP). JPL Technical
-          * Report 32-1527, pp 31-34.
+          * Report 32-1527, pp. 31-34.
+          *
+          * Moyer, Theodore D., Yuen, Joseph H. (Ed.) (2000), Formulation for
+          * Observed and Computed Values of Deep Space Network Data Types for
+          * Navigation. Deep Space Communications And Navigation Series. JPL
+          * Publication 00-7, pp. 4-30 - 4-32, 6-5.
           *
           * Urban, Sean E.; Seidelmann, P. K. (2014), Explanatory Supplement to
           * the Astronomical Almanac (3rd Edition), pp. 309-310.
@@ -804,36 +912,19 @@ private:
                if ( m_perturbers[j]->WithinHarmonicSphere( rij[j] ) )
                {
                   /*
-                   * North pole and prime meridian coordinates.
-                   */
-                  scalar_type a0, d0, W;
-                  m_perturbers[j]->GetRotation( a0, d0, W, T );
-
-                  /*
-                   * Transformation matrices from barycentric equatorial to
+                   * Matrix T for transformation from barycentric equatorial to
                    * body-fixed coordinates.
                    */
-                  hscalar_type sa0 = Sin( a0 );
-                  hscalar_type ca0 = Cos( a0 );
-                  hscalar_type sd0 = Sin( d0 );
-                  hscalar_type cd0 = Cos( d0 );
-                  hscalar_type sW = Sin( W );
-                  hscalar_type cW = Cos( W );
-                  hmatrix_type T( -sa0,      ca0,      _0_,
-                                  -ca0*sd0, -sa0*sd0,  cd0,
-                                   ca0*cd0,  sa0*cd0,  sd0 );
-                  hmatrix_type V(  cW,   sW,   _0_,
-                                  -sW,   cW,   _0_,
-                                   _0_,  _0_,  _1_ );
+                  hmatrix_type TB = hmatrix_type( m_perturbers[j]->ToBodyFixedMatrix( T ) );
 
                   /*
                    * Position vector in body-fixed coordinates.
                    */
-                  hvector_type rb = V*T*Rij[j];
+                  hvector_type rb = TB*Rij[j];
 
                   /*
                    * Transpose of matrix R for transformation from r' to
-                   * body-fixed coordinates (Moyer 1971, Eq. 161 - 164).
+                   * body-fixed coordinates (Moyer 1971, Eq. 161 - 168).
                    */
                   hscalar_type db = rij[j];
                   hscalar_type n2 = Sqrt( rb[0]*rb[0] + rb[1]*rb[1] );
@@ -841,27 +932,29 @@ private:
                   hscalar_type cp = n2/db;
                   hscalar_type sl = rb[1]/n2;
                   hscalar_type cl = rb[0]/n2;
-                  hmatrix_type R( cp*cl, -sl,  -sp*cl,
-                                  cp*sl,  cl,  -sp*sl,
-                                  sp,     _0_,  cp );
+                  hmatrix_type Rt( cp*cl, -sl, -sp*cl,
+                                   cp*sl,  cl, -sp*sl,
+                                   sp,    _0_,  cp );
 
                   /*
-                   * Acceleration vector due to oblateness in body-fixed
-                   * coordinates. Here we apply the r' to rb transformation
-                   * matrix R in the same expression.
+                   * Acceleration vector due to oblateness in r' body-centered
+                   * coordinates (Moyer 1971, Eq. 173).
                    */
-                  hvector_type a1( R *
+                  hvector_type a1(
                      ((mj[j]
                        * m_perturbers[j]->J2()
-                       * m_perturbers[j]->Re()*m_perturbers[j]->Re()/db/db/db/db)
+                       * m_perturbers[j]->Rm()*m_perturbers[j]->Rm()/db/db/db/db)
                        * hvector_type( (9*sp*sp - 3)/2,
                                        _0_,
                                        -3*cp*sp )) );
+// {
+//    Vector a = TB.Transpose()*Rt*a1;
+//    std::cout << IsoString().Format( "%.16e %.16e %.16e\n", a[0], a[1], a[2] );
+// }
                   /*
-                   * Transformation from body-fixed to barycentric equatorial
-                   * coordinates.
+                   * Transformation to barycentric equatorial coordinates.
                    */
-                  A << T.Transpose()*V.Transpose()*a1;
+                  A << TB.Transpose()*Rt*a1;
                }
       } // for each perturber body
 
@@ -904,28 +997,26 @@ private:
     * happen under normal working conditions, maybe except in extreme cases of
     * very fast movement, such as close encounters.
     */
-   void FitDenseOutput( const time_type& t0, const time_type& t1, Stepper* stepper, int nrec = 0 )
+   void FitDenseOutput( const time_type& t0, const time_type& t1, int nrec = 0 )
    {
-      const int n = 20;
+      const int n = 30;
 
-      // The starting time of this integration step
-      time_type t = Min( t0, t1 );
       // The current integration step size
-      time_type h = Abs( t1 - t0 );
+      double h = double( t1 - t0 );
       // The output tolerance for this integration step
-      double eps = OutputTolerance( stepper->CurrentState().Position() );
+      double eps = OutputTolerance( m_stepper->CurrentState().Position() );
 
       /*
        * Fit Chebyshev expansion for position.
        */
       ChebyshevFit T0(
-         [&stepper,t]( double dt )
+         [t0,t1,this]( double dt )
          {
             State y;
-            stepper->CalcState( t + dt, y );
+            m_stepper->CalcState( m_backwards ? t1 - dt : t0 + dt, y );
             return y.Position();
          },
-         0, double( h ), 3, 2*n );
+         0, h, 3, 2*n );
 
       /*
        * Attempt to truncate expansions to the required relative precision.
@@ -940,13 +1031,13 @@ private:
           * If requested, fit Chebyshev expansion for velocity.
           */
          ChebyshevFit T1(
-            [&stepper,t]( double dt )
+            [t0,t1,this]( double dt )
             {
                State y;
-               stepper->CalcState( t + dt, y );
-               return y.Velocity();
+               m_stepper->CalcState( m_backwards ? t1 - dt : t0 + dt, y );
+               return m_backwards ? -y.Velocity() : y.Velocity();
             },
-            0, double( h ), 3, 2*n );
+            0, h, 3, 2*n );
 
          T1.Truncate( eps, 4 );
          if ( unlikely( T1.TruncatedLength() > n ) )
@@ -955,27 +1046,27 @@ private:
          /*
           * Gather successfully fitted dense output for position and velocity.
           */
-// std::cout << "t = " << IsoString().Format( "%+.6f", double( t0 ) )
-//           << " s = " << IsoString().Format( "%+.6f", double( t1-t0 ) )
-//           << " n0 = " << T0.TruncatedLength()
-//           << " n1 = " << T1.TruncatedLength()
-//           << " e = " << IsoString().Format( "%.2e", eps )
-//           << " nrec = " << nrec
+// std::cout << "t0   = " << IsoString().Format( "%+.6f", double( t0 ) )
+//           << "h    = " << IsoString().Format( "%+.6f", h )
+//           << "n0   = " << T0.TruncatedLength()
+//           << "n1   = " << T1.TruncatedLength()
+//           << "eps  = " << IsoString().Format( "%.2e", eps )
+//           << "nrec = " << nrec
 //           << '\n' << std::flush;
-         Output( T0, T1, t, eps );
+         Output( T0, T1, t0, t1, eps );
       }
       else
       {
          /*
           * Gather successfully fitted dense output for position only.
           */
-// std::cout << "t = " << IsoString().Format( "%+.6f", double( t0 ) )
-//           << " s = " << IsoString().Format( "%+.6f", double( t1-t0 ) )
-//           << " n0 = " << T0.TruncatedLength()
-//           << " e = " << IsoString().Format( "%.2e", eps )
-//           << " nrec = " << nrec
+// std::cout << "t0   = " << IsoString().Format( "%+.6f", double( t0 ) )
+//           << "h    = " << IsoString().Format( "%+.6f", h )
+//           << "n0   = " << T0.TruncatedLength()
+//           << "eps  = " << IsoString().Format( "%.2e", eps )
+//           << "nrec = " << nrec
 //           << '\n' << std::flush;
-         Output( T0, t, eps );
+         Output( T0, t0, t1, eps );
       }
 
       return;
@@ -992,20 +1083,20 @@ __recurse:
        */
       if ( h < 0.0001 || nrec == 4 )
          throw Error( String().Format( "Unable to fit integration dense output: t = %.7f, h = %.7f"
-                                       , double( t ), double( h ) ) );
-      FitDenseOutput( t0, (t0 + t1)/2, stepper, nrec+1 );
-      FitDenseOutput( (t0 + t1)/2, t1, stepper, nrec+1 );
+                                       , double( t0 ), h ) );
+      FitDenseOutput( t0, (t0 + t1)/2, nrec+1 );
+      FitDenseOutput( (t0 + t1)/2, t1, nrec+1 );
    }
 
    /*
     * Gather dense integration output of time points and Chebyshev polynomial
     * coefficients for position and velocity.
     */
-   void Output( const ChebyshevFit& T0, const ChebyshevFit& T1, double t, double eps )
+   void Output( const ChebyshevFit& T0, const ChebyshevFit& T1, double t0, double t1, double eps )
    {
       const ChebyshevFit::coefficient_series c0 = T0.Coefficients();
       const ChebyshevFit::coefficient_series c1 = T1.Coefficients();
-      m_outputData << IntegrationDenseOutputItem{ (m_startTime + t).JD()
+      m_outputData << IntegrationDenseOutputItem{ m_backwards ? m_startTime.JD() - t1 : m_startTime.JD() + t0
                                                    , T0.UpperBound()
                                                    , eps
                                                    , { c0[0], c0[1], c0[2] }
@@ -1016,10 +1107,10 @@ __recurse:
     * Gather dense integration output of time points and Chebyshev polynomial
     * coefficients for position only.
     */
-   void Output( const ChebyshevFit& T0, double t, double eps )
+   void Output( const ChebyshevFit& T0, double t0, double t1, double eps )
    {
       const ChebyshevFit::coefficient_series c0 = T0.Coefficients();
-      m_outputData << IntegrationDenseOutputItem{ (m_startTime + t).JD()
+      m_outputData << IntegrationDenseOutputItem{ m_backwards ? m_startTime.JD() - t1 : m_startTime.JD() + t0
                                                    , T0.UpperBound()
                                                    , eps
                                                    , { c0[0], c0[1], c0[2] }
@@ -1083,9 +1174,10 @@ __recurse:
     */
    Stepper* NewStepper() const
    {
-      if ( m_startTime < m_endTime )
-         return new BulirschStoerStepper( m_eps/*eps_abs*/, m_eps/*eps_rel*/ );
-      return new RungeKuttaDOPRI5Stepper( m_eps/*eps_abs*/, m_eps/*eps_rel*/ );
+      return new BulirschStoerStepper( m_eps/*eps_abs*/, m_eps/*eps_rel*/ );
+//       if ( m_startTime < m_endTime )
+//          return new BulirschStoerStepper( m_eps/*eps_abs*/, m_eps/*eps_rel*/ );
+//       return new RungeKuttaDOPRI5Stepper( m_eps/*eps_abs*/, m_eps/*eps_rel*/ );
    }
 
    /*
@@ -1149,4 +1241,4 @@ __recurse:
 #endif   // __Integration_h
 
 // ----------------------------------------------------------------------------
-// EOF Integration.h - Released 2022-11-21T14:47:17Z
+// EOF Integration.h - Released 2023-05-17T17:06:42Z
