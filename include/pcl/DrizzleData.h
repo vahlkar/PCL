@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.3
+// /_/     \____//_____/   PCL 2.5.4
 // ----------------------------------------------------------------------------
-// pcl/DrizzleData.h - Released 2023-05-17T17:06:03Z
+// pcl/DrizzleData.h - Released 2023-06-12T18:01:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -115,8 +115,7 @@ class PCL_CLASS XMLElement;
  *
  * \li 2. Image registration. Generates image alignment information in the form
  * of alignment matrices (projective transformations) and/or two-dimensional
- * surface splines (for arbitrary distortion correction, global and local
- * distortion correction models).
+ * surface splines for arbitrary distortion correction.
  *
  * \li 3. Image integration. Generates statistical data for each channel of the
  * integrated image. This includes estimates of location and scale, statistical
@@ -159,13 +158,13 @@ public:
 
    /*!
     * An ordered list of image coordinates. Used to store reference image
-    * coordinates or image displacements in local distortion models. Also used
-    * to store interpolation node coordinates for adaptive normalization.
+    * coordinates or image displacements in distortion models. Also used to
+    * store interpolation node coordinates for adaptive normalization.
     */
    using point_list = Array<DPoint>;
 
    /*!
-    * An ordered list of statistical weights corresponding to points in a local
+    * An ordered list of statistical weights corresponding to points in a
     * distortion model.
     */
    using weight_vector = Array<float>;
@@ -655,6 +654,11 @@ public:
     * specified arrays \a P1, \a D2, \a P2 and \a D1 will be empty after
     * calling this function.
     *
+    * \deprecated This function is deprecated. It is kept only to support
+    * existing drizzle data files and dependent applications. This function
+    * should not be used in newly produced code unless strictly necessary for
+    * backwards compatibility.
+    *
     * \sa SetLocalDistortionModel(), HasLocalDistortionModel()
     */
    void GetLocalDistortionModel( point_list& P1, point_list& D2,
@@ -673,73 +677,14 @@ public:
    }
 
    /*!
-    * Defines a new local distortion model. This function is reserved for
-    * image registration tasks involved in drizzle integration processes.
-    *
-    * \param P1   Reference to an array of points in reference image
-    *             coordinates.
-    *
-    * \param D2   Reference to an array of point displacements in taget image
-    *             coordinates.
-    *
-    * \param P2   Reference to an array of points in target image coordinates.
-    *
-    * \param D1   Reference to an array of point displacements in reference
-    *             image coordinates.
-    *
-    * \param W    Reference to an array of statistical weights associated with
-    *             the points in the local distortion model. This array can be
-    *             empty if the local distortion model is unweighted. If
-    *             nonempty, this array must have the same length as \a P1.
-    *
-    * \param order   Derivability order for surface interpolation generation.
-    *             Normally this is a surface spline derivative order. The
-    *             default value is 2, which is the usual choice for generation
-    *             of thin plate splines.
-    *
-    * \param regularization   The regularization factor for surface
-    *             interpolation generation, which should be &ge; 0. Normally
-    *             this is a thin plate spline smoothness factor. Set to zero to
-    *             disable surface spline regularization. The default value is
-    *             0.01 for regularization at the centipixel level.
-    *
-    * \param extrapolate   True if the local distortion model has to be
-    *             extrapolated over the entire reference image; false if the
-    *             model can only be interpolated within the containing
-    *             rectangle of the set \a P. Extrapolation is enabled by
-    *             default.
-    *
-    * Each point in the reference array \a P1 must have a counterpart in the
-    * array \a D2. Point displacements are intended to be applied to projected
-    * reference coordinates on the registration target image. The same applies
-    * to the inverse local distortion model \a P2 and \a D1, but points in
-    * \a P2 are target image coordinates and points in \a D1 are projected
-    * displacements in reference image coordinates.
-    *
-    * \sa GetLocalDistortionModel(), HasLocalDistortionModel()
-    */
-   void SetLocalDistortionModel( const point_list& P1, const point_list& D2,
-                                 const point_list& P2, const point_list& D1,
-                                 const weight_vector& W,
-                                 int order = 2, float regularization = 0.01F, bool extrapolate = true )
-   {
-      PCL_PRECONDITION( P1.Length() == D2.Length() )
-      PCL_PRECONDITION( P2.Length() == D1.Length() )
-      PCL_PRECONDITION( W.IsEmpty() || W.Length() >= P1.Length() )
-      m_LP1 = P1;
-      m_LD2 = D2;
-      m_LP2 = P2;
-      m_LD1 = D1;
-      m_LW = W;
-      m_localDistortionOrder = Max( 2, order );
-      m_localDistortionRegularization = Max( .0F, regularization );
-      m_localDistortionExtrapolation = extrapolate;
-   }
-
-   /*!
     * Returns true iff this instance defines a local distortion model
     * consisting of a list of reference points and their corresponding pixel
     * displacements in image coordinates.
+    *
+    * \deprecated This function is deprecated. It is kept only to support
+    * existing drizzle data files and dependent applications. This function
+    * should not be used in newly produced code unless strictly necessary for
+    * backwards compatibility.
     */
    bool HasLocalDistortionModel() const
    {
@@ -1398,14 +1343,14 @@ private:
            Matrix         m_H;
            vector_spline  m_S;
            vector_spline  m_Sinv;
-           point_list     m_LP1;
-           point_list     m_LD2;
-           point_list     m_LP2;
-           point_list     m_LD1;
-           weight_vector  m_LW;
-           int            m_localDistortionOrder = 2;
-           float          m_localDistortionRegularization = 0.01F;
-           bool           m_localDistortionExtrapolation = true;
+           point_list     m_LP1;                                   // D* = deprecated
+           point_list     m_LD2;                                   // D*
+           point_list     m_LP2;                                   // D*
+           point_list     m_LD1;                                   // D*
+           weight_vector  m_LW;                                    // D*
+           int            m_localDistortionOrder = 2;              // D*
+           float          m_localDistortionRegularization = 0.01F; // D*
+           bool           m_localDistortionExtrapolation = true;   // D*
            String         m_metadata;
            double         m_pedestal = 0.0;
            Vector         m_location;
@@ -1429,8 +1374,10 @@ private:
            // Working data for spline deserialization.
            spline         m_Sx;
            spline         m_Sy;
+           Matrix         m_SH;
            spline         m_Sxinv;
            spline         m_Syinv;
+           Matrix         m_SinvH;
 
            // Working data for old text format compatibility.
            rejection_data m_rejectLowData;
@@ -1513,4 +1460,4 @@ private:
 #endif   // __PCL_DrizzleData_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/DrizzleData.h - Released 2023-05-17T17:06:03Z
+// EOF pcl/DrizzleData.h - Released 2023-06-12T18:01:05Z

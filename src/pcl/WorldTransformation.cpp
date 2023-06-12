@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.3
+// /_/     \____//_____/   PCL 2.5.4
 // ----------------------------------------------------------------------------
-// pcl/WorldTransformation.cpp - Released 2023-05-17T17:06:11Z
+// pcl/WorldTransformation.cpp - Released 2023-06-12T18:01:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -193,6 +193,54 @@ void SplineWorldTransformation::InitializeSplines()
             if ( m_weights.Length() != n )
                throw Error( "Invalid length of point weights vector." );
 
+      double xmin = m_controlPointsI[0].x, xmax = xmin;
+      double ymin = m_controlPointsI[0].y, ymax = ymin;
+      double lmin = m_controlPointsW[0].x, lmax = lmin;
+      double bmin = m_controlPointsW[0].y, bmax = bmin;
+      DVector l( n ), b( n ), x( n ), y( n );
+      for ( int i = 0; i < n; ++i )
+      {
+         if ( m_controlPointsI[i].x < xmin )
+            xmin = m_controlPointsI[i].x;
+         if ( m_controlPointsI[i].x > xmax )
+            xmax = m_controlPointsI[i].x;
+
+         if ( m_controlPointsI[i].y < ymin )
+            ymin = m_controlPointsI[i].y;
+         if ( m_controlPointsI[i].y > ymax )
+            ymax = m_controlPointsI[i].y;
+
+         if ( m_controlPointsW[i].x < lmin )
+            lmin = m_controlPointsW[i].x;
+         if ( m_controlPointsW[i].x > lmax )
+            lmax = m_controlPointsW[i].x;
+
+         if ( m_controlPointsW[i].y < bmin )
+            bmin = m_controlPointsW[i].y;
+         if ( m_controlPointsW[i].y > bmax )
+            bmax = m_controlPointsW[i].y;
+
+         l[i] = m_controlPointsW[i].x;
+         b[i] = m_controlPointsW[i].y;
+         x[i] = m_controlPointsI[i].x;
+         y[i] = m_controlPointsI[i].y;
+      }
+
+      /*
+       * Image resolution in degrees/pixel with respect to native projection
+       * coordinates. We use this value to scale the tolerance of the surface
+       * simplifier and the spline smoothness factor for the image-to-world
+       * transformation.
+       */
+      double dx = xmax - xmin;
+      double dy = ymax - ymin;
+      double dl = lmax - lmin;
+      double db = bmax - bmin;
+      double resolution = Sqrt( dl*dl + db*db )/Sqrt( dx*dx + dy*dy );
+
+      SurfaceSplineBase::rbf_type rbfType =
+         (m_order == 2) ? RadialBasisFunction::ThinPlateSpline : RadialBasisFunction::VariableOrder;
+
       if ( m_enableSimplifier )
       {
          /*
@@ -202,50 +250,6 @@ void SplineWorldTransformation::InitializeSplines()
           * case, just to filter out residual noise, since surface
           * simplification applies robust outlier rejection techniques.
           */
-         double xmin = m_controlPointsI[0].x, xmax = xmin;
-         double ymin = m_controlPointsI[0].y, ymax = ymin;
-         double lmin = m_controlPointsW[0].x, lmax = lmin;
-         double bmin = m_controlPointsW[0].y, bmax = bmin;
-         DVector l( n ), b( n ), x( n ), y( n );
-         for ( int i = 0; i < n; ++i )
-         {
-            if ( m_controlPointsI[i].x < xmin )
-               xmin = m_controlPointsI[i].x;
-            if ( m_controlPointsI[i].x > xmax )
-               xmax = m_controlPointsI[i].x;
-
-            if ( m_controlPointsI[i].y < ymin )
-               ymin = m_controlPointsI[i].y;
-            if ( m_controlPointsI[i].y > ymax )
-               ymax = m_controlPointsI[i].y;
-
-            if ( m_controlPointsW[i].x < lmin )
-               lmin = m_controlPointsW[i].x;
-            if ( m_controlPointsW[i].x > lmax )
-               lmax = m_controlPointsW[i].x;
-
-            if ( m_controlPointsW[i].y < bmin )
-               bmin = m_controlPointsW[i].y;
-            if ( m_controlPointsW[i].y > bmax )
-               bmax = m_controlPointsW[i].y;
-
-            l[i] = m_controlPointsW[i].x;
-            b[i] = m_controlPointsW[i].y;
-            x[i] = m_controlPointsI[i].x;
-            y[i] = m_controlPointsI[i].y;
-         }
-
-         /*
-          * Image resolution in degrees/pixel with respect to native
-          * projection coordinates. We use this value to scale the tolerance
-          * of the surface simplifier for the image-to-world transformation.
-          */
-         double dx = xmax - xmin;
-         double dy = ymax - ymin;
-         double dl = lmax - lmin;
-         double db = bmax - bmin;
-         double rs = Sqrt( dl*dl + db*db )/Sqrt( dx*dx + dy*dy );
-
          SurfaceSimplifier SS;
          SS.EnableRejection();
          SS.SetRejectFraction( m_simplifierRejectFraction );
@@ -259,7 +263,7 @@ void SplineWorldTransformation::InitializeSplines()
           */
          SS.SetTolerance( m_simplifierTolerance ); // in pixels
          SS.Simplify( xs1, ys1, zxs, l, b, x );
-         if ( xs1 > __PCL_WCS_MAX_SPLINE_POINTS )
+         if ( xs1.Length() > __PCL_WCS_MAX_SPLINE_POINTS )
          {
             m_truncated = true;
             xs1 = DVector( xs1.Begin(), __PCL_WCS_MAX_SPLINE_POINTS );
@@ -267,7 +271,7 @@ void SplineWorldTransformation::InitializeSplines()
             zxs = DVector( zxs.Begin(), __PCL_WCS_MAX_SPLINE_POINTS );
          }
          SS.Simplify( xs2, ys2, zys, l, b, y );
-         if ( xs2 > __PCL_WCS_MAX_SPLINE_POINTS )
+         if ( xs2.Length() > __PCL_WCS_MAX_SPLINE_POINTS )
          {
             m_truncated = true;
             xs2 = DVector( xs2.Begin(), __PCL_WCS_MAX_SPLINE_POINTS );
@@ -275,15 +279,16 @@ void SplineWorldTransformation::InitializeSplines()
             zys = DVector( zys.Begin(), __PCL_WCS_MAX_SPLINE_POINTS );
          }
          m_splineWI.Initialize( xs1, ys1, zxs, xs2, ys2, zys,
-                                m_smoothness,
-                                FVector()/*xWeights*/, FVector()/*yWeights*/, m_order );
+                                m_smoothness, // in pixels
+                                FVector()/*xWeights*/, FVector()/*yWeights*/,
+                                m_order, rbfType );
 
          /*
           * Simplify the image-to-world transformation surface.
           */
-         SS.SetTolerance( m_simplifierTolerance*rs ); // in degrees
+         SS.SetTolerance( m_simplifierTolerance*resolution ); // in degrees
          SS.Simplify( xs1, ys1, zxs, x, y, l );
-         if ( xs1 > __PCL_WCS_MAX_SPLINE_POINTS )
+         if ( xs1.Length() > __PCL_WCS_MAX_SPLINE_POINTS )
          {
             m_truncated = true;
             xs1 = DVector( xs1.Begin(), __PCL_WCS_MAX_SPLINE_POINTS );
@@ -291,7 +296,7 @@ void SplineWorldTransformation::InitializeSplines()
             zxs = DVector( zxs.Begin(), __PCL_WCS_MAX_SPLINE_POINTS );
          }
          SS.Simplify( xs2, ys2, zys, x, y, b );
-         if ( xs2 > __PCL_WCS_MAX_SPLINE_POINTS )
+         if ( xs2.Length() > __PCL_WCS_MAX_SPLINE_POINTS )
          {
             m_truncated = true;
             xs2 = DVector( xs2.Begin(), __PCL_WCS_MAX_SPLINE_POINTS );
@@ -299,8 +304,9 @@ void SplineWorldTransformation::InitializeSplines()
             zys = DVector( zys.Begin(), __PCL_WCS_MAX_SPLINE_POINTS );
          }
          m_splineIW.Initialize( xs1, ys1, zxs, xs2, ys2, zys,
-                                m_smoothness,
-                                FVector()/*xWeights*/, FVector()/*yWeights*/, m_order );
+                                m_smoothness*resolution, // in degrees
+                                FVector()/*xWeights*/, FVector()/*yWeights*/,
+                                m_order, rbfType );
       }
       else
       {
@@ -315,13 +321,21 @@ void SplineWorldTransformation::InitializeSplines()
             Array<DPoint> PW( m_controlPointsW.Begin(), m_controlPointsW.At( __PCL_WCS_MAX_SPLINE_POINTS ) );
             Array<DPoint> PI( m_controlPointsI.Begin(), m_controlPointsI.At( __PCL_WCS_MAX_SPLINE_POINTS ) );
             FVector w = m_weights.IsEmpty() ? FVector() : FVector( m_weights.Begin(), __PCL_WCS_MAX_SPLINE_POINTS );
-            m_splineWI.Initialize( PW, PI, m_smoothness, w, m_order );
-            m_splineIW.Initialize( PI, PW, m_smoothness, w, m_order );
+            m_splineWI.Initialize( PW, PI,
+                                   m_smoothness, w,
+                                   m_order, rbfType );
+            m_splineIW.Initialize( PI, PW,
+                                   m_smoothness*resolution, w,
+                                   m_order, rbfType );
          }
          else
          {
-            m_splineWI.Initialize( m_controlPointsW, m_controlPointsI, m_smoothness, m_weights, m_order );
-            m_splineIW.Initialize( m_controlPointsI, m_controlPointsW, m_smoothness, m_weights, m_order );
+            m_splineWI.Initialize( m_controlPointsW, m_controlPointsI,
+                                   m_smoothness, m_weights,
+                                   m_order, rbfType );
+            m_splineIW.Initialize( m_controlPointsI, m_controlPointsW,
+                                   m_smoothness*resolution, m_weights,
+                                   m_order, rbfType );
          }
       }
 
@@ -388,4 +402,4 @@ void SplineWorldTransformation::CalculateLinearApproximation()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/WorldTransformation.cpp - Released 2023-05-17T17:06:11Z
+// EOF pcl/WorldTransformation.cpp - Released 2023-06-12T18:01:12Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.3
+// /_/     \____//_____/   PCL 2.5.4
 // ----------------------------------------------------------------------------
-// pcl/Homography.h - Released 2023-05-17T17:06:03Z
+// pcl/Homography.h - Released 2023-06-12T18:01:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -98,7 +98,7 @@ public:
    using point_list = Array<point>;
 
    /*!
-    * Default constructor. Constructs a no-op transformation with a unit matrix
+    * Default constructor. Constructs a no-op transformation with a unit
     * transformation matrix.
     */
    Homography()
@@ -164,6 +164,36 @@ public:
    Homography& operator =( Homography&& ) = default;
 
    /*!
+    * Coordinate transformation. Applies the homography matrix to the
+    * specified \a x and \a y coordinates.
+    *
+    * The type T must be constructible from \c double.
+    */
+   template <typename T>
+   void Apply( T& x, T& y ) const
+   {
+      double w = m_H[2][0]*x + m_H[2][1]*y + m_H[2][2];
+      PCL_CHECK( 1 + w != 1 )
+      double x1 = (m_H[0][0]*x + m_H[0][1]*y + m_H[0][2])/w;
+      double y1 = (m_H[1][0]*x + m_H[1][1]*y + m_H[1][2])/w;
+      x = T( x1 );
+      y = T( y1 );
+   }
+
+   /*!
+    * Coordinate transformation. Applies the homography matrix to the
+    * specified point \a p. Returns a reference to \a p;
+    *
+    * The type T must be constructible from \c double.
+    */
+   template <typename T>
+   GenericPoint<T>& Apply( GenericPoint<T>& p ) const
+   {
+      Apply( p.x, p.y );
+      return p;
+   }
+
+   /*!
     * Coordinate transformation operator. Applies the homography matrix to the
     * specified \a x and \a y coordinates. Returns the transformed point as a
     * two-dimensional point with real coordinates.
@@ -171,10 +201,9 @@ public:
    template <typename T>
    DPoint operator ()( T x, T y ) const
    {
-      double w = m_H[2][0]*x + m_H[2][1]*y + m_H[2][2];
-      PCL_CHECK( 1 + w != 1 )
-      return DPoint( (m_H[0][0]*x + m_H[0][1]*y + m_H[0][2])/w,
-                     (m_H[1][0]*x + m_H[1][1]*y + m_H[1][2])/w );
+      DPoint p( x, y );
+      Apply( p.x, p.y );
+      return p;
    }
 
    /*!
@@ -275,10 +304,10 @@ private:
          double d0 = 0;
          for ( const auto& p : points )
          {
-            double x = p.x - centroid.x;
-            double y = p.y - centroid.y;
-            N << DPoint( x, y );
-            d0 += Sqrt( x*x + y*y );
+            double dx = p.x - centroid.x;
+            double dy = p.y - centroid.y;
+            N << DPoint( dx, dy );
+            d0 += Sqrt( dx*dx + dy*dy );
          }
          d0 /= points.Length();
 
@@ -403,4 +432,4 @@ private:
 #endif   // __PCL_Homography_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Homography.h - Released 2023-05-17T17:06:03Z
+// EOF pcl/Homography.h - Released 2023-06-12T18:01:05Z

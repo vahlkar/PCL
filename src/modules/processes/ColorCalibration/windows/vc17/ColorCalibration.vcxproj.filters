@@ -4,7 +4,7 @@
 # PixInsight Makefile Generator Script v1.129
 # Copyright (C) 2009-2023 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2023-05-17T18:34:44.086Z
+# Generated on .... 2023-06-12T18:50:37.985Z
 # Project id ...... ColorCalibration
 # Project type .... Module
 # Platform ........ Windows/vc17
@@ -16,13 +16,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>d91c58a2-d457-432a-b50b-e19bdc3f1ed3</UniqueIdentifier>
+      <UniqueIdentifier>963f91b8-30af-4f60-993d-f7df52e68123</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>75efe9c1-5337-475d-9997-2ab1b04d53b7</UniqueIdentifier>
+      <UniqueIdentifier>d760d7b3-1180-4de0-bcfa-2a47e6266c42</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>8dbefcaa-4c19-45d1-b853-728a3d7ae92a</UniqueIdentifier>
+      <UniqueIdentifier>aa83496f-74ca-433a-9f6d-0a70ec30262f</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

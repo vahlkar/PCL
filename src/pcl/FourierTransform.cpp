@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.3
+// /_/     \____//_____/   PCL 2.5.4
 // ----------------------------------------------------------------------------
-// pcl/FourierTransform.cpp - Released 2023-05-17T17:06:11Z
+// pcl/FourierTransform.cpp - Released 2023-06-12T18:01:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -339,4 +339,4 @@ void FourierTransform::Apply( UInt32Image& image ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FourierTransform.cpp - Released 2023-05-17T17:06:11Z
+// EOF pcl/FourierTransform.cpp - Released 2023-06-12T18:01:12Z

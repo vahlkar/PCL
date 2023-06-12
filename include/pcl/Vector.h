@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.3
+// /_/     \____//_____/   PCL 2.5.4
 // ----------------------------------------------------------------------------
-// pcl/Vector.h - Released 2023-05-17T17:06:03Z
+// pcl/Vector.h - Released 2023-06-12T18:01:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -1103,10 +1103,15 @@ public:
    {
       iterator i = m_data->Begin();
       if ( m_data->Length() > 0 )
-         for ( iterator j = m_data->Begin(); ++j < m_data->End(); )
+      {
+         while ( *i == component( 0 ) )
+            if ( ++i == m_data->End() )
+               return m_data->Length();
+         for ( iterator j = i; ++j < m_data->End(); )
             if ( *j != component( 0 ) )
                if ( *j < *i )
                   i = j;
+      }
       return i - m_data->Begin();
    }
 
@@ -1122,10 +1127,15 @@ public:
    {
       iterator i = m_data->Begin();
       if ( m_data->Length() > 0 )
-         for ( iterator j = m_data->Begin(); ++j < m_data->End(); )
+      {
+         while ( *i == component( 0 ) )
+            if ( ++i == m_data->End() )
+               return m_data->Length();
+         for ( iterator j = i; ++j < m_data->End(); )
             if ( *j != component( 0 ) )
                if ( *j <= *i )
                   i = j;
+      }
       return i - m_data->Begin();
    }
 
@@ -3337,4 +3347,4 @@ using LDVector = F80Vector;
 #endif   // __PCL_Vector_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Vector.h - Released 2023-05-17T17:06:03Z
+// EOF pcl/Vector.h - Released 2023-06-12T18:01:05Z

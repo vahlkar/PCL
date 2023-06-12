@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.3
+// /_/     \____//_____/   PCL 2.5.4
 // ----------------------------------------------------------------------------
-// pcl/DrizzleData.cpp - Released 2023-05-17T17:06:11Z
+// pcl/DrizzleData.cpp - Released 2023-06-12T18:01:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -76,6 +76,7 @@ void DrizzleData::Clear()
    m_LD1.Clear();
    m_LW.Clear();
    m_Sx = m_Sy = m_Sxinv = m_Syinv = spline();
+   m_SH = m_SinvH = Matrix();
    ClearIntegrationData();
 }
 
@@ -157,27 +158,16 @@ XMLDocument* DrizzleData::Serialize() const
       SerializeSpline( new XMLElement( *root, "AlignmentSplineX" ), m_S.m_Sx );
       SerializeSpline( new XMLElement( *root, "AlignmentSplineY" ), m_S.m_Sy );
 
+      if ( m_S.IncrementalFunctionEnabled() )
+         *(new XMLElement( *root, "AlignmentReferenceMatrix" )) << new XMLText( String().ToCommaSeparated( Matrix( m_S.m_H ) ) );
+
       if ( m_Sinv.IsValid() )
       {
          SerializeSpline( new XMLElement( *root, "AlignmentInverseSplineX" ), m_Sinv.m_Sx );
          SerializeSpline( new XMLElement( *root, "AlignmentInverseSplineY" ), m_Sinv.m_Sy );
-      }
 
-      if ( !m_LP1.IsEmpty() && !m_LD2.IsEmpty() )
-      {
-         XMLElement* element = new XMLElement( *root, "LocalDistortionModel", XMLAttributeList()
-                                 << XMLAttribute( "order", String( m_localDistortionOrder ) )
-                                 << XMLAttribute( "regularization", String( m_localDistortionRegularization ) )
-                                 << XMLAttribute( "extrapolation", String( m_localDistortionExtrapolation ) ) );
-         SerializePoints( new XMLElement( *element, "ReferencePoints" ), m_LP1 );
-         SerializePoints( new XMLElement( *element, "TargetDisplacements" ), m_LD2 );
-         if ( !m_LW.IsEmpty() )
-            SerializeDistortionWeights( new XMLElement( *element, "PointWeights" ), m_LW );
-         if ( !m_LP2.IsEmpty() && !m_LD1.IsEmpty() )
-         {
-            SerializePoints( new XMLElement( *element, "TargetPoints" ), m_LP2 );
-            SerializePoints( new XMLElement( *element, "ReferenceDisplacements" ), m_LD1 );
-         }
+         if ( m_Sinv.IncrementalFunctionEnabled() )
+            *(new XMLElement( *root, "AlignmentInverseReferenceMatrix" )) << new XMLText( String().ToCommaSeparated( Matrix( m_Sinv.m_H ) ) );
       }
    }
 
@@ -528,6 +518,11 @@ void DrizzleData::Parse( const XMLElement& root, DrizzleParserOptions options )
          {
             ParseSpline( m_Sy, element );
          }
+         else if ( element.Name() == "AlignmentReferenceMatrix" )
+         {
+            Vector v = ParseListOfRealValues( element, 9, 9 );
+            m_SH = Matrix( v.Begin(), 3, 3 );
+         }
          else if ( element.Name() == "AlignmentInverseSplineX" )
          {
             ParseSpline( m_Sxinv, element );
@@ -536,8 +531,15 @@ void DrizzleData::Parse( const XMLElement& root, DrizzleParserOptions options )
          {
             ParseSpline( m_Syinv, element );
          }
+         else if ( element.Name() == "AlignmentInverseReferenceMatrix" )
+         {
+            Vector v = ParseListOfRealValues( element, 9, 9 );
+            m_SinvH = Matrix( v.Begin(), 3, 3 );
+         }
          else if ( element.Name() == "LocalDistortionModel" )
          {
+            // ### DEPRECATED
+
             String s = element.AttributeValue( "order" );
             if ( !s.IsEmpty() )
             {
@@ -795,12 +797,26 @@ void DrizzleData::Parse( const XMLElement& root, DrizzleParserOptions options )
       m_Sx.Clear();
       m_Sy.Clear();
 
+      if ( !m_SH.IsEmpty() )
+      {
+         m_S.m_incremental = true;
+         m_S.m_H = m_SH;
+         m_SH = Matrix();
+      }
+
       if ( m_Sxinv.IsValid() )
       {
          m_Sinv.m_Sx = m_Sxinv;
          m_Sinv.m_Sy = m_Syinv;
          m_Sxinv.Clear();
          m_Syinv.Clear();
+
+         if ( !m_SinvH.IsEmpty() )
+         {
+            m_Sinv.m_incremental = true;
+            m_Sinv.m_H = m_SinvH;
+            m_SinvH = Matrix();
+         }
       }
    }
 }
@@ -911,8 +927,9 @@ void DrizzleData::ParseSpline( DrizzleData::spline& S, const XMLElement& root )
    if ( s.IsEmpty() )
       throw Error( "Missing surface spline order attribute." );
    S.m_order = s.ToInt();
-   if ( S.m_order < 1 )
+   if ( S.m_order < 2 )
       throw Error( "Invalid surface spline derivative order '" + s + '\'' );
+   S.m_rbf = (S.m_order == 2) ? RadialBasisFunction::ThinPlateSpline : RadialBasisFunction::VariableOrder;
 
    // Smoothing factor, or interpolating 2-D spline if m_smoothing == 0
    s = root.AttributeValue( "smoothing" );
@@ -934,7 +951,7 @@ void DrizzleData::ParseSpline( DrizzleData::spline& S, const XMLElement& root )
    {
       if ( !node.IsElement() )
       {
-         WarnOnUnexpectedChildNode( node, "AlignmentSplineX/AlignmentSplineY" );
+         WarnOnUnexpectedChildNode( node, root.Name() );
          continue;
       }
 
@@ -949,7 +966,7 @@ void DrizzleData::ParseSpline( DrizzleData::spline& S, const XMLElement& root )
       else if ( element.Name() == "NodeWeights" )
          S.m_weights = ParseBase64EncodedVector<FVector::scalar>( element, 3 );
       else
-         WarnOnUnknownChildElement( element, "AlignmentSplineX/AlignmentSplineY" );
+         WarnOnUnknownChildElement( element, root.Name() );
    }
 
    if ( S.m_x.Length() < 3 )
@@ -982,7 +999,7 @@ void DrizzleData::SerializeSpline( XMLElement* root, const DrizzleData::spline& 
    {
       root->SetAttribute( "smoothing", String( S.m_smoothing ) );
       if ( !S.m_weights.IsEmpty() )
-         (*new XMLElement( *root, "NodeWeights" )) << new XMLText( IsoString::ToBase64( S.m_weights ) );
+         *(new XMLElement( *root, "NodeWeights" )) << new XMLText( IsoString::ToBase64( S.m_weights ) );
    }
 }
 
@@ -1312,4 +1329,4 @@ void DrizzleData::PlainTextSplineDecoder::ProcessBlock( IsoString& s, const IsoS
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/DrizzleData.cpp - Released 2023-05-17T17:06:11Z
+// EOF pcl/DrizzleData.cpp - Released 2023-06-12T18:01:12Z

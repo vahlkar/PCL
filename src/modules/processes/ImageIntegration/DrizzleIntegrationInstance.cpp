@@ -327,7 +327,7 @@ class CFAIndex
 {
 public:
 
-   typedef GenericMatrix<bool>   cfa_channel_index;
+   using cfa_channel_index = GenericMatrix<bool>;
 
    CFAIndex() = default;
    CFAIndex( const CFAIndex& ) = default;
@@ -431,8 +431,8 @@ public:
 
 private:
 
-   typedef GridInterpolation     interpolation;
-   typedef Array<interpolation>  interpolators;
+   using interpolation = GridInterpolation;
+   using interpolators = Array<interpolation>;
 
    interpolators m_m;
    interpolators m_s0;
@@ -564,10 +564,10 @@ public:
 
 private:
 
-   typedef DrizzleIntegrationInstance::input_data_list   input_data_list;
-   typedef Homography<DPoint>                            homography;
-   typedef PointGridInterpolation                        grid_interpolation;
-   typedef RecursivePointSurfaceSpline<DPoint>           local_distortion_model;
+   using input_data_list        = DrizzleIntegrationInstance::input_data_list;
+   using homography             = Homography<DPoint>;
+   using grid_interpolation     = PointGridInterpolation;
+   using local_distortion_model = RecursivePointSurfaceSpline<DPoint>;
 
    typedef double (DrizzleIntegrationEngine::*normalization_function_ptr)( double, const Point&, int ) const;
 

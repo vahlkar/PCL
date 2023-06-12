@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.3
+// /_/     \____//_____/   PCL 2.5.4
 // ----------------------------------------------------------------------------
-// pcl/AstrometricMetadata.h - Released 2023-05-17T17:06:03Z
+// pcl/AstrometricMetadata.h - Released 2023-06-12T18:01:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -168,6 +168,12 @@ public:
       , m_geoHeight( x.m_geoHeight )
       , m_resolution( x.m_resolution )
       , m_focalLength( x.m_focalLength )
+      , m_creationTime( x.m_creationTime )
+      , m_catalog( x.m_catalog )
+      , m_creatorApp( x.m_creatorApp )
+      , m_creatorModule( x.m_creatorModule )
+      , m_creatorOS( x.m_creatorOS )
+      , m_description( x.m_description )
    {
    }
 
@@ -226,21 +232,26 @@ public:
     */
    AstrometricMetadata& operator =( const AstrometricMetadata& x )
    {
-      m_projection   = x.m_projection->Clone();
-      m_transformWI  = x.m_transformWI->Clone();
-      m_refSys       = x.m_refSys;
-      m_equinox      = x.m_equinox;
-      m_width        = x.m_width;
-      m_height       = x.m_height;
-      m_pixelSize    = x.m_pixelSize;
-      m_obsStartTime = x.m_obsStartTime;
-      m_obsEndTime   = x.m_obsEndTime;
-      m_geoLongitude = x.m_geoLongitude;
-      m_geoLatitude  = x.m_geoLatitude;
-      m_geoHeight    = x.m_geoHeight;
-      m_resolution   = x.m_resolution;
-      m_focalLength  = x.m_focalLength;
-      m_description  = x.m_description;
+      m_projection    = x.m_projection->Clone();
+      m_transformWI   = x.m_transformWI->Clone();
+      m_refSys        = x.m_refSys;
+      m_equinox       = x.m_equinox;
+      m_width         = x.m_width;
+      m_height        = x.m_height;
+      m_pixelSize     = x.m_pixelSize;
+      m_obsStartTime  = x.m_obsStartTime;
+      m_obsEndTime    = x.m_obsEndTime;
+      m_geoLongitude  = x.m_geoLongitude;
+      m_geoLatitude   = x.m_geoLatitude;
+      m_geoHeight     = x.m_geoHeight;
+      m_resolution    = x.m_resolution;
+      m_focalLength   = x.m_focalLength;
+      m_creationTime  = x.m_creationTime;
+      m_catalog       = x.m_catalog;
+      m_creatorApp    = x.m_creatorApp;
+      m_creatorModule = x.m_creatorModule;
+      m_creatorOS     = x.m_creatorOS;
+      m_description   = x.m_description;
       return *this;
    }
 
@@ -1277,4 +1288,4 @@ private:
 #endif // __AstrometricMetadata_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AstrometricMetadata.h - Released 2023-05-17T17:06:03Z
+// EOF pcl/AstrometricMetadata.h - Released 2023-06-12T18:01:05Z

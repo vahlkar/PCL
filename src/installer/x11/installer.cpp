@@ -7,7 +7,7 @@
 // ----------------------------------------------------------------------------
 // This file is part of PixInsight X11 UNIX/Linux Installer
 // ----------------------------------------------------------------------------
-// 2023/05/17 17:07:57 UTC
+// 2023/06/12 18:03:10 UTC
 // installer.cpp
 // ----------------------------------------------------------------------------
 // Copyright (c) 2013-2021 Pleiades Astrophoto S.L.
@@ -582,6 +582,9 @@ bool PixInsightX11Installer::DoInstall()
    // Write the desktop entry file:
    // https://specifications.freedesktop.org/desktop-entry-spec/latest/
    // https://specifications.freedesktop.org/menu-spec/latest/
+   //
+   // For additional information on the MIME type for PixInsight projects:
+   // https://unix.stackexchange.com/questions/689203/custom-mime-type-for-directories
    {
       File f = File::CreateFileForWriting( m_desktopEntryFile );
       f.OutTextLn( "[Desktop Entry]" );
@@ -596,7 +599,8 @@ bool PixInsightX11Installer::DoInstall()
       f.OutTextLn( "Icon=PixInsight" );
       f.OutTextLn( "X-KDE-StartupNotify=false" );
       f.OutTextLn( "Categories=ImageProcessing;Astronomy;RasterGraphics;Development;Science;Photography;Graphics" );
-      f.OutTextLn( "MimeType=application/x-xosm;"
+      f.OutTextLn( "MimeType=application/x-pixinsight-project;"
+                            "application/x-xosm;"
                             "application/x-xpsm;application/x-psm;"
                             "image/bmp;application/bmp;"
                             "image/fits;application/fits;"
@@ -622,7 +626,6 @@ bool PixInsightX11Installer::DoInstall()
                             "image/x-sigma-x3f;"
                             "image/x-sony-arw;image/x-sony-sr2;image/x-sony-srf;"
                             "image/x-xisf;"
-                            "inode/vnd.pixinsight.project;"
                             "text/x-pidoc;" );
       f.Close();
    }
@@ -680,38 +683,44 @@ bool PixInsightX11Installer::DoInstall()
       File f = File::CreateFileForWriting( m_mimeDescriptionFile );
       f.OutTextLn( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" );
       f.OutTextLn( "<mime-info xmlns=\"http://www.freedesktop.org/standards/shared-mime-info\">" );
-      f.OutTextLn( "   <mime-type type=\"inode/vnd.pixinsight.project\">" );
+      f.OutTextLn( "   <mime-type type=\"application/x-pixinsight-project\">" );
       f.OutTextLn( "      <sub-class-of type=\"inode/directory\"/>" );
       f.OutTextLn( "      <icon name=\"PixInsightBundle\"/>" );
       f.OutTextLn( "      <comment>PixInsight project bundle</comment>" );
+      f.OutTextLn( "      <glob-deleteall/>" );
       f.OutTextLn( "      <glob pattern=\"*.pxiproject\"/>" );
       f.OutTextLn( "   </mime-type>" );
       f.OutTextLn( "   <mime-type type=\"application/x-xosm\">" );
       f.OutTextLn( "      <sub-class-of type=\"application/xml\"/>" );
       f.OutTextLn( "      <icon name=\"PixInsight\"/>" );
       f.OutTextLn( "      <comment>PixInsight project file</comment>" );
+      f.OutTextLn( "      <glob-deleteall/>" );
       f.OutTextLn( "      <glob pattern=\"*.xosm\"/>" );
       f.OutTextLn( "   </mime-type>" );
       f.OutTextLn( "   <mime-type type=\"application/x-xpsm\">" );
       f.OutTextLn( "      <sub-class-of type=\"application/xml\"/>" );
       f.OutTextLn( "      <icon name=\"PixInsight\"/>" );
       f.OutTextLn( "      <comment>PixInsight process icon file</comment>" );
+      f.OutTextLn( "      <glob-deleteall/>" );
       f.OutTextLn( "      <glob pattern=\"*.xpsm\"/>" );
       f.OutTextLn( "   </mime-type>" );
       f.OutTextLn( "   <mime-type type=\"application/x-psm\">" );
       f.OutTextLn( "      <icon name=\"PixInsight\"/>" );
       f.OutTextLn( "      <comment>PixInsight process icon file</comment>" );
+      f.OutTextLn( "      <glob-deleteall/>" );
       f.OutTextLn( "      <glob pattern=\"*.psm\"/>" );
       f.OutTextLn( "   </mime-type>" );
       f.OutTextLn( "   <mime-type type=\"image/x-xisf\">" );
       f.OutTextLn( "      <icon name=\"PixInsight\"/>" );
       f.OutTextLn( "      <comment>Extensible Image Serialization Format</comment>" );
+      f.OutTextLn( "      <glob-deleteall/>" );
       f.OutTextLn( "      <glob pattern=\"*.xisf\"/>" );
       f.OutTextLn( "   </mime-type>" );
       f.OutTextLn( "   <mime-type type=\"text/x-pidoc\">" );
       f.OutTextLn( "      <sub-class-of type=\"text/plain\"/>" );
       f.OutTextLn( "      <icon name=\"PixInsight\"/>" );
       f.OutTextLn( "      <comment>PixInsight documentation source file</comment>" );
+      f.OutTextLn( "      <glob-deleteall/>" );
       f.OutTextLn( "      <glob pattern=\"*.pidoc\"/>" );
       f.OutTextLn( "   </mime-type>" );
       f.OutTextLn( "</mime-info>" );
@@ -1245,5 +1254,5 @@ int main( int argc, const char** argv )
 }
 
 // ----------------------------------------------------------------------------
-// 2023/05/17 17:07:57 UTC
+// 2023/06/12 18:03:10 UTC
 // installer.cpp

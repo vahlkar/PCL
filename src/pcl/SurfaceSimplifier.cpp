@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.3
+// /_/     \____//_____/   PCL 2.5.4
 // ----------------------------------------------------------------------------
-// pcl/SurfaceSimplifier.cpp - Released 2023-05-17T17:06:11Z
+// pcl/SurfaceSimplifier.cpp - Released 2023-06-12T18:01:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -466,7 +466,7 @@ struct GrahamScan
           * Keep removing top while the angle formed by points next-to-top,
           * top, and points[i] makes a non-left turn.
           */
-         while ( Orientation( S.NextToTop(), S.Top(), points[i] ) != COUNTER_CLOCKWISE )
+         while ( S.Length() > 1 && Orientation( S.NextToTop(), S.Top(), points[i] ) != COUNTER_CLOCKWISE )
             S.Pop();
          S.Push( points[i] );
       }
@@ -487,4 +487,4 @@ SurfaceSimplifier::point_list SurfaceSimplifier::ConvexHull( point_list& P )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SurfaceSimplifier.cpp - Released 2023-05-17T17:06:11Z
+// EOF pcl/SurfaceSimplifier.cpp - Released 2023-06-12T18:01:12Z

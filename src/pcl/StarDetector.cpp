@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.3
+// /_/     \____//_____/   PCL 2.5.4
 // ----------------------------------------------------------------------------
-// pcl/StarDetector.cpp - Released 2023-05-17T17:06:11Z
+// pcl/StarDetector.cpp - Released 2023-06-12T18:01:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -57,6 +57,7 @@
 #include <pcl/MetaModule.h>
 #include <pcl/MorphologicalTransformation.h>
 #include <pcl/MuteStatus.h>
+#include <pcl/QuadTree.h>
 #include <pcl/Selection.h>
 #include <pcl/SeparableConvolution.h>
 #include <pcl/StarDetector.h>
@@ -744,6 +745,17 @@ StarDetector::star_list StarDetector::DetectStars( Image& image ) const
          S << thread.stars;
 
       threads.Destroy();
+
+      /*
+       * Remove potential duplicate objects
+       */
+      QuadTree<Star> T( S );
+      Array<Star> S1;
+      for ( const Star& s : S )
+         if ( T.Search( QuadTree<Star>::rectangle( s.pos.x - 1, s.pos.y - 1,
+                                                   s.pos.x + 1, s.pos.y + 1 ) ).Length() == 1 )
+            S1 << s;
+      S = S1;
    }
 
    if ( initializeStatus )
@@ -857,4 +869,4 @@ Image StarDetector::Structures( const ImageVariant& image ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/StarDetector.cpp - Released 2023-05-17T17:06:11Z
+// EOF pcl/StarDetector.cpp - Released 2023-06-12T18:01:12Z

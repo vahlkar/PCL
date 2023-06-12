@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.3
+// /_/     \____//_____/   PCL 2.5.4
 // ----------------------------------------------------------------------------
-// pcl/AstrometricMetadata.cpp - Released 2023-05-17T17:06:11Z
+// pcl/AstrometricMetadata.cpp - Released 2023-06-12T18:01:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -1129,7 +1129,12 @@ void AstrometricMetadata::UpdateDescription() const
          m_description->referenceMatrix = linearTransIW.ToString();
          if ( S != nullptr )
          {
-            m_description->wcsTransformationType = "Thin plate spline";
+            if ( S->SplineOrder() == 2 )
+               m_description->wcsTransformationType = "Thin plate spline";
+            else if ( S->SplineOrder() == 3 )
+               m_description->wcsTransformationType = "3rd order surface spline";
+            else
+               m_description->wcsTransformationType = String( S->SplineOrder() ) + "th order surface spline";
             m_description->controlPoints = String( S->NumberOfControlPoints() );
             int xWI, yWI, xIW, yIW;
             S->GetSplineLengths( xWI, yWI, xIW, yIW );
@@ -1222,4 +1227,4 @@ void AstrometricMetadata::UpdateDescription() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AstrometricMetadata.cpp - Released 2023-05-17T17:06:11Z
+// EOF pcl/AstrometricMetadata.cpp - Released 2023-06-12T18:01:12Z
