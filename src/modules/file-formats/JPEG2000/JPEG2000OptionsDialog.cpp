@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.3
+// /_/     \____//_____/   PCL 2.5.5
 // ----------------------------------------------------------------------------
 // Standard JPEG2000 File Format Module Version 1.0.3
 // ----------------------------------------------------------------------------
-// JPEG2000OptionsDialog.cpp - Released 2023-05-17T17:06:31Z
+// JPEG2000OptionsDialog.cpp - Released 2023-06-21T16:30:03Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG2000 PixInsight module.
 //
@@ -282,4 +282,4 @@ void JPEG2000OptionsDialog::Dialog_Return( Dialog& /*sender*/, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF JPEG2000OptionsDialog.cpp - Released 2023-05-17T17:06:31Z
+// EOF JPEG2000OptionsDialog.cpp - Released 2023-06-21T16:30:03Z

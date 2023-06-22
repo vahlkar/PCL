@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.3
+// /_/     \____//_____/   PCL 2.5.5
 // ----------------------------------------------------------------------------
-// Standard Image Process Module Version 1.3.3
+// Standard Image Process Module Version 1.3.4
 // ----------------------------------------------------------------------------
-// DynamicPSFInstance.cpp - Released 2023-05-17T17:06:42Z
+// DynamicPSFInstance.cpp - Released 2023-06-21T16:30:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -66,6 +66,7 @@ DynamicPSFInstance::DynamicPSFInstance( const MetaProcess* P )
    , p_signedAngles( TheDPSignedAnglesParameter->DefaultValue() )
    , p_regenerate( TheDPRegenerateParameter->DefaultValue() )
    , p_astrometry( TheDPAstrometryParameter->DefaultValue() )
+   , p_astrometryPrecision( TheDPAstrometryPrecisionParameter->DefaultValue() )
    , p_searchRadius( TheDPSearchRadiusParameter->DefaultValue() )
    , p_threshold( TheDPThresholdParameter->DefaultValue() )
    , p_autoAperture( TheDPAutoApertureParameter->DefaultValue() )
@@ -137,6 +138,7 @@ void DynamicPSFInstance::Assign( const ProcessImplementation& p )
          p_signedAngles = x->p_signedAngles;
          p_regenerate = x->p_regenerate;
          p_astrometry = x->p_astrometry;
+         p_astrometryPrecision = x->p_astrometryPrecision;
          p_searchRadius = x->p_searchRadius;
          p_threshold = x->p_threshold;
          p_autoAperture = x->p_autoAperture;
@@ -176,6 +178,7 @@ void DynamicPSFInstance::AssignOptions( const DynamicPSFInstance& x )
    p_signedAngles = x.p_signedAngles;
    p_regenerate = x.p_regenerate;
    p_astrometry = x.p_astrometry;
+   p_astrometryPrecision = x.p_astrometryPrecision;
    p_searchRadius = x.p_searchRadius;
    p_threshold = x.p_threshold;
    p_autoAperture = x.p_autoAperture;
@@ -327,6 +330,8 @@ void* DynamicPSFInstance::LockParameter( const MetaParameter* p, size_type table
       return &p_regenerate;
    if ( p == TheDPAstrometryParameter )
       return &p_astrometry;
+   if ( p == TheDPAstrometryPrecisionParameter )
+      return &p_astrometryPrecision;
 
    if ( p == TheDPSearchRadiusParameter )
       return &p_searchRadius;
@@ -432,4 +437,4 @@ size_type DynamicPSFInstance::ParameterLength( const MetaParameter* p, size_type
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DynamicPSFInstance.cpp - Released 2023-05-17T17:06:42Z
+// EOF DynamicPSFInstance.cpp - Released 2023-06-21T16:30:12Z

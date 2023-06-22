@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.3
+// /_/     \____//_____/   PCL 2.5.5
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.8.5
+// Standard SubframeSelector Process Module Version 1.8.6
 // ----------------------------------------------------------------------------
-// SubframeSelectorMeasurementsInterface.cpp - Released 2023-05-17T17:06:42Z
+// SubframeSelectorMeasurementsInterface.cpp - Released 2023-06-21T16:30:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -234,7 +234,6 @@ void SubframeSelectorMeasurementsInterface::Cleanup()
    {
       GUI->MeasurementTable_TreeBox.Clear();
       GUI->MeasurementGraph_WebView.Cleanup();
-      GUI->MeasurementDistributionGraph_WebView.Cleanup();
    }
 }
 
@@ -719,6 +718,12 @@ void SubframeSelectorMeasurementsInterface::ExportCSV() const
 
       IsoStringList lines;
 
+      // Newline characters must be represented as \n in CSV text fields.
+      IsoString approvalExpression = m_instance.p_approvalExpression.ToUTF8().Trimmed();
+      approvalExpression.ReplaceString( "\n", "\\n" );
+      IsoString weightingExpression = m_instance.p_weightingExpression.ToUTF8().Trimmed();
+      weightingExpression.ReplaceString( "\n", "\\n" );
+
       /*
        * CSV file header
        */
@@ -744,8 +749,8 @@ void SubframeSelectorMeasurementsInterface::ExportCSV() const
                                    m_instance.p_roi.Width(), m_instance.p_roi.Height() )
             << "PSF Type,\"" + TheSSPSFFitParameter->ElementLabel( m_instance.p_psfFit ) + "\""
             << IsoString().Format( "Circular PSF,%s", m_instance.p_psfFitCircular ? "true" : "false" )
-            << "Approval expression,\"" + m_instance.p_approvalExpression + "\""
-            << "Weighting expression,\"" + m_instance.p_weightingExpression + "\"";
+            << "Approval expression,\"" + approvalExpression + "\""
+            << "Weighting expression,\"" + weightingExpression + "\"";
 
       /*
        * CSV table header
@@ -1020,8 +1025,6 @@ void SubframeSelectorMeasurementsInterface::e_ItemSelected( ComboBox& sender, in
 // ----------------------------------------------------------------------------
 
 SubframeSelectorMeasurementsInterface::GUIData::GUIData( SubframeSelectorMeasurementsInterface& w )
-   : MeasurementGraph_WebView( w )
-   , MeasurementDistributionGraph_WebView( w )
 {
    MeasurementTable_SectionBar.SetTitle( "Measurements Table" );
    MeasurementTable_SectionBar.SetSection( MeasurementTable_Control );
@@ -1251,4 +1254,4 @@ SubframeSelectorMeasurementsInterface::GUIData::GUIData( SubframeSelectorMeasure
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorMeasurementsInterface.cpp - Released 2023-05-17T17:06:42Z
+// EOF SubframeSelectorMeasurementsInterface.cpp - Released 2023-06-21T16:30:12Z

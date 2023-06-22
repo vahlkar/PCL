@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.3
+// /_/     \____//_____/   PCL 2.5.5
 // ----------------------------------------------------------------------------
 // Standard JPEG2000 File Format Module Version 1.0.3
 // ----------------------------------------------------------------------------
-// JPEG2000Format.cpp - Released 2023-05-17T17:06:31Z
+// JPEG2000Format.cpp - Released 2023-06-21T16:30:03Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG2000 PixInsight module.
 //
@@ -111,7 +111,7 @@ String JPCFormat::Implementation() const
    "Copyright (c) 2001-2007 Michael David Adams</p>"
 
    "<p>PixInsight Class Library (PCL):<br/>"
-   "Copyright (c) 2003-2022 Pleiades Astrophoto</p>"
+   "Copyright (c) 2003-2023 Pleiades Astrophoto</p>"
 
    "<p style=\"white-space:pre;\">"
 "\n-------------------------------------------------------------------------------"
@@ -405,4 +405,4 @@ JPEG2000FormatOptions* JPEG2000FormatOptions::FromGenericDataBlock( const void* 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF JPEG2000Format.cpp - Released 2023-05-17T17:06:31Z
+// EOF JPEG2000Format.cpp - Released 2023-06-21T16:30:03Z

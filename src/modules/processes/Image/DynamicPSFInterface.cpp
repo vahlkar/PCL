@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.3
+// /_/     \____//_____/   PCL 2.5.5
 // ----------------------------------------------------------------------------
-// Standard Image Process Module Version 1.3.3
+// Standard Image Process Module Version 1.3.4
 // ----------------------------------------------------------------------------
-// DynamicPSFInterface.cpp - Released 2023-05-17T17:06:42Z
+// DynamicPSFInterface.cpp - Released 2023-06-21T16:30:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -400,10 +400,6 @@ public:
    {
    }
 
-   virtual ~PSFTreeNode()
-   {
-   }
-
    virtual void Update() = 0;
 };
 
@@ -424,7 +420,7 @@ public:
       Expand();
    }
 
-   virtual ~PSFCollectionNode()
+   ~PSFCollectionNode() override
    {
       if ( collection != nullptr )
          collection->node = nullptr;
@@ -458,7 +454,7 @@ public:
       Expand();
    }
 
-   virtual ~StarNode()
+   ~StarNode() override
    {
       if ( star != nullptr )
          star->node = nullptr;
@@ -485,7 +481,7 @@ class PSFNode : public PSFTreeNode
 {
 public:
 
-   DynamicPSFInterface::PSF* psf;
+   DynamicPSFInterface::PSF* psf = nullptr;
 
    PSFNode( TreeBox::Node& parent, DynamicPSFInterface::PSF* p )
       : PSFTreeNode( parent )
@@ -495,7 +491,7 @@ public:
       Update();
    }
 
-   virtual ~PSFNode()
+   ~PSFNode() override
    {
       if ( psf != nullptr )
          psf->node = nullptr;
@@ -520,8 +516,8 @@ public:
 
          if ( psf->HasCelestialCoordinates() )
          {
-            SetText( 6, String().ToSexagesimal( psf->q0.x/15, RAConversionOptions() ) );
-            SetText( 7, String().ToSexagesimal( psf->q0.y, DecConversionOptions() ) );
+            SetText( 6, String().ToSexagesimal( psf->q0.x/15, RAConversionOptions( TheDynamicPSFInterface->AstrometryPrecision() + 1 ) ) );
+            SetText( 7, String().ToSexagesimal( psf->q0.y, DecConversionOptions( TheDynamicPSFInterface->AstrometryPrecision() ) ) );
          }
 
          SetText( 8, String().Format( "%6.2f", psf->sx ) );
@@ -584,10 +580,10 @@ DynamicPSFInterface::PSF::~PSF()
 // ----------------------------------------------------------------------------
 
 DynamicPSFInterface::DynamicPSFInterface()
-   : instance( TheDynamicPSFProcess )
+   : m_instance( TheDynamicPSFProcess )
 {
    TheDynamicPSFInterface = this;
-   signedAngles = &instance.p_signedAngles;
+   signedAngles = &m_instance.p_signedAngles;
 }
 
 // ----------------------------------------------------------------------------
@@ -661,7 +657,7 @@ bool DynamicPSFInterface::Launch( const MetaProcess& P, const ProcessImplementat
 ProcessImplementation* DynamicPSFInterface::NewProcess() const
 {
    DynamicPSFInstance* exportInstance = new DynamicPSFInstance( TheDynamicPSFProcess );
-   exportInstance->AssignOptions( instance );
+   exportInstance->AssignOptions( m_instance );
    for ( const PSFCollection& collection : m_collections )
    {
       exportInstance->p_views << collection.ViewId();
@@ -708,13 +704,13 @@ bool DynamicPSFInterface::ImportProcess( const ProcessImplementation& P )
 
    GUI->Data_TreeBox.Clear();
 
-   instance.AssignOptions( *importInstance );
+   m_instance.AssignOptions( *importInstance );
 
    for ( size_type i = 0; i < importInstance->p_views.Length(); ++i )
    {
       PSFCollection* collection = new PSFCollection( importInstance->p_views[i], importInstance->p_astrometry );
       m_collections << collection;
-      collection->UpdateImageScale( instance.p_scaleMode, instance.p_scaleValue, instance.p_scaleKeyword );
+      collection->UpdateImageScale( m_instance.p_scaleMode, m_instance.p_scaleValue, m_instance.p_scaleKeyword );
 
       for ( size_type j = 0; j < importInstance->p_stars.Length(); ++j )
       {
@@ -733,7 +729,7 @@ bool DynamicPSFInterface::ImportProcess( const ProcessImplementation& P )
    }
 
    for ( PSFCollection& collection : m_collections )
-      collection.Recalculate( instance.p_threshold, instance.p_autoAperture, instance.p_psfOptions );
+      collection.Recalculate( m_instance.p_threshold, m_instance.p_autoAperture, m_instance.p_psfOptions );
 
    RegenerateDataTree();
    Update();
@@ -842,11 +838,11 @@ void DynamicPSFInterface::DynamicMouseRelease( View& view, const DPoint& pos, in
                break;
             }
 
-            StarDetector D( collection->image, ch, pos, instance.p_searchRadius, instance.p_threshold, instance.p_autoAperture );
+            StarDetector D( collection->image, ch, pos, m_instance.p_searchRadius, m_instance.p_threshold, m_instance.p_autoAperture );
             if ( D )
             {
                Star* star = collection->AddStar( D.star );
-               star->Regenerate( instance.p_psfOptions );
+               star->Regenerate( m_instance.p_psfOptions );
                new StarNode( *collection->node, star );
                star->CreatePSFNodes();
                stars << star;
@@ -1080,7 +1076,7 @@ void DynamicPSFInterface::UpdateControls()
    GUI->AverageStars_ToolButton.Enable( haveStars );
    GUI->ExportCSV_ToolButton.Enable( haveStars );
 
-   bool fixedPSF = !instance.p_psfOptions.autoPSF;
+   bool fixedPSF = !m_instance.p_psfOptions.autoPSF;
    GUI->Gaussian_CheckBox.Enable( fixedPSF );
    GUI->VariableShape_CheckBox.Enable( fixedPSF );
    GUI->Moffat_CheckBox.Enable( fixedPSF );
@@ -1093,35 +1089,35 @@ void DynamicPSFInterface::UpdateControls()
    GUI->Lorentzian_CheckBox.Enable( fixedPSF );
 
    GUI->AutoPSF_CheckBox.SetChecked( !fixedPSF );
-   GUI->Gaussian_CheckBox.SetChecked( instance.p_psfOptions.gaussian );
-   GUI->VariableShape_CheckBox.SetChecked( instance.p_psfOptions.variableShape );
-   GUI->Moffat_CheckBox.SetChecked( instance.p_psfOptions.moffat );
-   GUI->MoffatA_CheckBox.SetChecked( instance.p_psfOptions.moffatA );
-   GUI->Moffat8_CheckBox.SetChecked( instance.p_psfOptions.moffat8 );
-   GUI->Moffat6_CheckBox.SetChecked( instance.p_psfOptions.moffat6 );
-   GUI->Moffat4_CheckBox.SetChecked( instance.p_psfOptions.moffat4 );
-   GUI->Moffat25_CheckBox.SetChecked( instance.p_psfOptions.moffat25 );
-   GUI->Moffat15_CheckBox.SetChecked( instance.p_psfOptions.moffat15 );
-   GUI->Lorentzian_CheckBox.SetChecked( instance.p_psfOptions.lorentzian );
-   GUI->CircularPSF_CheckBox.SetChecked( instance.p_psfOptions.circular );
-   GUI->SignedAngles_CheckBox.SetChecked( instance.p_signedAngles );
-   GUI->AutoVariableShapePSF_CheckBox.SetChecked( instance.p_psfOptions.autoVariableShapePSF );
+   GUI->Gaussian_CheckBox.SetChecked( m_instance.p_psfOptions.gaussian );
+   GUI->VariableShape_CheckBox.SetChecked( m_instance.p_psfOptions.variableShape );
+   GUI->Moffat_CheckBox.SetChecked( m_instance.p_psfOptions.moffat );
+   GUI->MoffatA_CheckBox.SetChecked( m_instance.p_psfOptions.moffatA );
+   GUI->Moffat8_CheckBox.SetChecked( m_instance.p_psfOptions.moffat8 );
+   GUI->Moffat6_CheckBox.SetChecked( m_instance.p_psfOptions.moffat6 );
+   GUI->Moffat4_CheckBox.SetChecked( m_instance.p_psfOptions.moffat4 );
+   GUI->Moffat25_CheckBox.SetChecked( m_instance.p_psfOptions.moffat25 );
+   GUI->Moffat15_CheckBox.SetChecked( m_instance.p_psfOptions.moffat15 );
+   GUI->Lorentzian_CheckBox.SetChecked( m_instance.p_psfOptions.lorentzian );
+   GUI->CircularPSF_CheckBox.SetChecked( m_instance.p_psfOptions.circular );
+   GUI->SignedAngles_CheckBox.SetChecked( m_instance.p_signedAngles );
+   GUI->AutoVariableShapePSF_CheckBox.SetChecked( m_instance.p_psfOptions.autoVariableShapePSF );
    GUI->ShowFWHM_CheckBox.SetChecked( m_showFWHM );
    GUI->ShowFWTM_CheckBox.SetChecked( m_showFWTM );
    GUI->ShowBestFit_CheckBox.SetChecked( m_showBestFit );
 
-   GUI->SearchRadius_SpinBox.SetValue( instance.p_searchRadius );
-   GUI->Threshold_NumericEdit.SetValue( instance.p_threshold );
-   GUI->AutoAperture_CheckBox.SetChecked( instance.p_autoAperture );
+   GUI->SearchRadius_SpinBox.SetValue( m_instance.p_searchRadius );
+   GUI->Threshold_NumericEdit.SetValue( m_instance.p_threshold );
+   GUI->AutoAperture_CheckBox.SetChecked( m_instance.p_autoAperture );
 
-   GUI->ScaleMode_ComboBox.SetCurrentItem( instance.p_scaleMode );
+   GUI->ScaleMode_ComboBox.SetCurrentItem( m_instance.p_scaleMode );
 
-   GUI->ScaleValue_NumericEdit.SetValue( instance.p_scaleValue );
-   GUI->ScaleValue_NumericEdit.Enable( instance.p_scaleMode == DPScaleMode::LiteralValue );
+   GUI->ScaleValue_NumericEdit.SetValue( m_instance.p_scaleValue );
+   GUI->ScaleValue_NumericEdit.Enable( m_instance.p_scaleMode == DPScaleMode::LiteralValue );
 
-   GUI->ScaleKeyword_Edit.SetText( instance.p_scaleKeyword );
-   GUI->ScaleKeyword_Label.Enable( instance.p_scaleMode == DPScaleMode::CustomKeyword );
-   GUI->ScaleKeyword_Edit.Enable( instance.p_scaleMode == DPScaleMode::CustomKeyword );
+   GUI->ScaleKeyword_Edit.SetText( m_instance.p_scaleKeyword );
+   GUI->ScaleKeyword_Label.Enable( m_instance.p_scaleMode == DPScaleMode::CustomKeyword );
+   GUI->ScaleKeyword_Edit.Enable( m_instance.p_scaleMode == DPScaleMode::CustomKeyword );
 
    UpdateStarInfo();
 }
@@ -1151,7 +1147,7 @@ static double KeywordValue( const FITSKeywordArray& keywords, const IsoString& k
 void DynamicPSFInterface::UpdateScaleItems()
 {
    for ( PSFCollection& collection : m_collections )
-      collection.UpdateImageScale( instance.p_scaleMode, instance.p_scaleValue, instance.p_scaleKeyword );
+      collection.UpdateImageScale( m_instance.p_scaleMode, m_instance.p_scaleValue, m_instance.p_scaleKeyword );
    AdjustDataTreeColumns();
 }
 
@@ -1261,37 +1257,37 @@ void DynamicPSFInterface::SetPSFunction( PSFData::psf_function f, bool onOff )
    {
    default:
    case PSFunction::Gaussian:
-      instance.p_psfOptions.gaussian = onOff;
+      m_instance.p_psfOptions.gaussian = onOff;
       break;
    case PSFunction::Moffat:
-      instance.p_psfOptions.moffat = onOff;
+      m_instance.p_psfOptions.moffat = onOff;
       break;
    case PSFunction::MoffatA:
-      instance.p_psfOptions.moffatA = onOff;
+      m_instance.p_psfOptions.moffatA = onOff;
       break;
    case PSFunction::Moffat8:
-      instance.p_psfOptions.moffat8 = onOff;
+      m_instance.p_psfOptions.moffat8 = onOff;
       break;
    case PSFunction::Moffat6:
-      instance.p_psfOptions.moffat6 = onOff;
+      m_instance.p_psfOptions.moffat6 = onOff;
       break;
    case PSFunction::Moffat4:
-      instance.p_psfOptions.moffat4 = onOff;
+      m_instance.p_psfOptions.moffat4 = onOff;
       break;
    case PSFunction::Moffat25:
-      instance.p_psfOptions.moffat25 = onOff;
+      m_instance.p_psfOptions.moffat25 = onOff;
       break;
    case PSFunction::Moffat15:
-      instance.p_psfOptions.moffat15 = onOff;
+      m_instance.p_psfOptions.moffat15 = onOff;
       break;
    case PSFunction::Lorentzian:
-      instance.p_psfOptions.lorentzian = onOff;
+      m_instance.p_psfOptions.lorentzian = onOff;
       break;
    case PSFunction::VariableShape:
-      instance.p_psfOptions.variableShape = onOff;
+      m_instance.p_psfOptions.variableShape = onOff;
       break;
    }
-   instance.p_psfOptions.Validate();
+   m_instance.p_psfOptions.Validate();
    UpdateControls();
 }
 
@@ -1536,7 +1532,7 @@ void DynamicPSFInterface::e_Click( Button& sender, bool checked )
          for ( Star& star : m_selectedStars )
          {
             star.DestroyPSFNodes();
-            star.Regenerate( instance.p_threshold, instance.p_autoAperture, instance.p_psfOptions );
+            star.Regenerate( m_instance.p_threshold, m_instance.p_autoAperture, m_instance.p_psfOptions );
             star.CreatePSFNodes();
             star.Update();
          }
@@ -1555,7 +1551,7 @@ void DynamicPSFInterface::e_Click( Button& sender, bool checked )
       ProcessEvents();
 
       for ( PSFCollection& collection : m_collections )
-         collection.Regenerate( instance.p_threshold, instance.p_autoAperture, instance.p_psfOptions );
+         collection.Regenerate( m_instance.p_threshold, m_instance.p_autoAperture, m_instance.p_psfOptions );
 
       RegenerateDataTree();
 
@@ -1688,12 +1684,12 @@ void DynamicPSFInterface::e_Click( Button& sender, bool checked )
    }
    else if ( sender == GUI->AutoPSF_CheckBox )
    {
-      instance.p_psfOptions.autoPSF = checked;
-      if ( !instance.p_psfOptions.autoPSF )
-         if ( !instance.p_psfOptions.Validate() )
+      m_instance.p_psfOptions.autoPSF = checked;
+      if ( !m_instance.p_psfOptions.autoPSF )
+         if ( !m_instance.p_psfOptions.Validate() )
          {
-            instance.p_psfOptions.autoPSF = false;
-            instance.p_psfOptions.gaussian = true;
+            m_instance.p_psfOptions.autoPSF = false;
+            m_instance.p_psfOptions.gaussian = true;
          }
       UpdateControls();
    }
@@ -1718,18 +1714,18 @@ void DynamicPSFInterface::e_Click( Button& sender, bool checked )
    else if ( sender == GUI->Lorentzian_CheckBox )
       SetPSFunction( PSFunction::Lorentzian, checked );
    else if ( sender == GUI->CircularPSF_CheckBox )
-      instance.p_psfOptions.circular = checked;
+      m_instance.p_psfOptions.circular = checked;
    else if ( sender == GUI->SignedAngles_CheckBox )
    {
-      instance.p_signedAngles = checked;
+      m_instance.p_signedAngles = checked;
       for ( PSFCollection& collection : m_collections )
          collection.UpdateNodes();
       AdjustDataTreeColumns();
    }
    else if ( sender == GUI->AutoVariableShapePSF_CheckBox )
-      instance.p_psfOptions.autoVariableShapePSF = checked;
+      m_instance.p_psfOptions.autoVariableShapePSF = checked;
    else if ( sender == GUI->AutoAperture_CheckBox )
-      instance.p_autoAperture = checked;
+      m_instance.p_autoAperture = checked;
    else if ( sender == GUI->ShowFWHM_CheckBox )
    {
       m_showFWHM = checked;
@@ -1752,10 +1748,10 @@ void DynamicPSFInterface::e_Click( Button& sender, bool checked )
 void DynamicPSFInterface::e_NumericEdit_ValueUpdated( NumericEdit& sender, double value )
 {
    if ( sender == GUI->Threshold_NumericEdit )
-      instance.p_threshold = value;
+      m_instance.p_threshold = value;
    else if ( sender == GUI->ScaleValue_NumericEdit )
    {
-      instance.p_scaleValue = value;
+      m_instance.p_scaleValue = value;
       UpdateControls();
       UpdateScaleItems();
    }
@@ -1766,7 +1762,7 @@ void DynamicPSFInterface::e_NumericEdit_ValueUpdated( NumericEdit& sender, doubl
 void DynamicPSFInterface::e_SpinBox_ValueUpdated( SpinBox& sender, int value )
 {
    if ( sender == GUI->SearchRadius_SpinBox )
-      instance.p_searchRadius = value;
+      m_instance.p_searchRadius = value;
 }
 
 // ----------------------------------------------------------------------------
@@ -1775,7 +1771,7 @@ void DynamicPSFInterface::e_ItemSelected( ComboBox& sender, int itemIndex )
 {
    if ( sender == GUI->ScaleMode_ComboBox )
    {
-      instance.p_scaleMode = itemIndex;
+      m_instance.p_scaleMode = itemIndex;
       UpdateControls();
       UpdateScaleItems();
    }
@@ -1787,7 +1783,7 @@ void DynamicPSFInterface::e_EditCompleted( Edit& sender )
 {
    if ( sender == GUI->ScaleKeyword_Edit )
    {
-      instance.p_scaleKeyword = sender.Text().Trimmed();
+      m_instance.p_scaleKeyword = sender.Text().Trimmed();
       UpdateControls();
       UpdateScaleItems();
    }
@@ -1814,8 +1810,8 @@ DynamicPSFInterface::PSFCollection* DynamicPSFInterface::AcquirePSFCollection( V
    PSFCollection* collection = FindPSFCollection( view );
    if ( collection == nullptr )
    {
-      m_collections.Add( collection = new PSFCollection( view, instance.p_astrometry ) );
-      collection->UpdateImageScale( instance.p_scaleMode, instance.p_scaleValue, instance.p_scaleKeyword );
+      m_collections.Add( collection = new PSFCollection( view, m_instance.p_astrometry ) );
+      collection->UpdateImageScale( m_instance.p_scaleMode, m_instance.p_scaleValue, m_instance.p_scaleKeyword );
       new PSFCollectionNode( GUI->Data_TreeBox, collection );
    }
    return collection;
@@ -1936,8 +1932,8 @@ void DynamicPSFInterface::ExportCSV( const String& filePath )
             IsoString alpha, delta;
             if ( psf.HasCelestialCoordinates() )
             {
-               alpha = IsoString().ToSexagesimal( psf.q0.x/15, RAConversionOptions( 3/*precision*/, 0/*width*/ ) );
-               delta = IsoString().ToSexagesimal( psf.q0.y, DecConversionOptions( 2/*precision*/, 0/*width*/ ) );
+               alpha = IsoString().ToSexagesimal( psf.q0.x/15, RAConversionOptions( m_instance.p_astrometryPrecision + 1, 0/*width*/ ) );
+               delta = IsoString().ToSexagesimal( psf.q0.y, DecConversionOptions( m_instance.p_astrometryPrecision, 0/*width*/ ) );
             }
 
             f.OutTextLn( viewIdAndStarIdAndCh +
@@ -2002,7 +1998,7 @@ void DynamicPSFInterface::DrawPSF( VectorGraphics& g, double penWidth,
       double ry = window.ImageScalarToViewport( ty2 );
       if ( rx > 0.5 && ry > 0.5 )
          g.StrokeEllipse( -rx, -ry, +rx, +ry,
-               Pen( star.selected ? instance.p_selectedStarColor : instance.p_starColor,
+               Pen( star.selected ? m_instance.p_selectedStarColor : m_instance.p_starColor,
                   penWidth, PenStyle::Dash ) );
 
       star.drawRect.x0 = Min( star.rect.x0, psf.c0.x - tx2 );
@@ -2023,7 +2019,7 @@ void DynamicPSFInterface::DrawStar( VectorGraphics& g, double penWidth,
    {
       DRect rect = window.ImageToViewport( star.rect );
 
-      g.SetPen( star.selected ? instance.p_selectedStarColor : instance.p_starColor, penWidth );
+      g.SetPen( star.selected ? m_instance.p_selectedStarColor : m_instance.p_starColor, penWidth );
 
       if ( star )
       {
@@ -2051,7 +2047,7 @@ void DynamicPSFInterface::DrawStar( VectorGraphics& g, double penWidth,
       }
       else
       {
-         g.FillRect( rect, instance.p_badStarFillColor );
+         g.FillRect( rect, m_instance.p_badStarFillColor );
       }
    }
 }
@@ -3239,4 +3235,4 @@ DynamicPSFInterface::GUIData::GUIData( DynamicPSFInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DynamicPSFInterface.cpp - Released 2023-05-17T17:06:42Z
+// EOF DynamicPSFInterface.cpp - Released 2023-06-21T16:30:12Z

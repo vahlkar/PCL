@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.3
+// /_/     \____//_____/   PCL 2.5.5
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.8.5
+// Standard SubframeSelector Process Module Version 1.8.6
 // ----------------------------------------------------------------------------
-// GraphWebView.h - Released 2023-05-17T17:06:42Z
+// GraphWebView.h - Released 2023-06-21T16:30:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -79,7 +79,7 @@ class GraphWebView : public WebView
 {
 public:
 
-   GraphWebView( Control& parent );
+   GraphWebView( Control& parent = Control::Null() );
 
    void SetDataset( const String& dataName, const String& auxDataName, const DataPointVector& dataset );
 
@@ -129,4 +129,4 @@ private:
 #endif   // __GRAPHWEBVIEW_h
 
 // ----------------------------------------------------------------------------
-// EOF GraphWebView.h - Released 2023-05-17T17:06:42Z
+// EOF GraphWebView.h - Released 2023-06-21T16:30:12Z

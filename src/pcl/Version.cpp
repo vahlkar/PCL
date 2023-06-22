@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.4
+// /_/     \____//_____/   PCL 2.5.5
 // ----------------------------------------------------------------------------
-// pcl/Version.cpp - Released 2023-06-12T18:01:12Z
+// pcl/Version.cpp - Released 2023-06-21T16:29:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -77,14 +77,14 @@ int Version::Minor()
 
 int Version::Release()
 {
-   return 4;
+   return 5;
 }
 
 // ----------------------------------------------------------------------------
 
 int Version::Build()
 {
-   return 1012;
+   return 1013;
 }
 
 // ----------------------------------------------------------------------------
@@ -267,4 +267,4 @@ String PixInsightVersion::AsString( bool withCodename )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Version.cpp - Released 2023-06-12T18:01:12Z
+// EOF pcl/Version.cpp - Released 2023-06-21T16:29:53Z

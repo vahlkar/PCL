@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.3
+// /_/     \____//_____/   PCL 2.5.5
 // ----------------------------------------------------------------------------
 // Standard CloneStamp Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// CloneStampModule.cpp - Released 2023-05-17T17:06:42Z
+// CloneStampModule.cpp - Released 2023-06-21T16:30:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CloneStamp PixInsight module.
 //
@@ -57,8 +57,8 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2023
-#define MODULE_RELEASE_MONTH     5
-#define MODULE_RELEASE_DAY       17
+#define MODULE_RELEASE_MONTH     6
+#define MODULE_RELEASE_DAY       21
 
 #include "CloneStampInterface.h"
 #include "CloneStampModule.h"
@@ -116,7 +116,7 @@ String CloneStampModule::Author() const
 
 String CloneStampModule::Copyright() const
 {
-   return "Copyright (c) 2007-2022 Pleiades Astrophoto";
+   return "Copyright (c) 2007-2023 Pleiades Astrophoto";
 }
 
 // ----------------------------------------------------------------------------
@@ -173,4 +173,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF CloneStampModule.cpp - Released 2023-05-17T17:06:42Z
+// EOF CloneStampModule.cpp - Released 2023-06-21T16:30:12Z

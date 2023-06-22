@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.3
+// /_/     \____//_____/   PCL 2.5.5
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// AutoHistogramInstance.cpp - Released 2023-05-17T17:06:42Z
+// AutoHistogramInstance.cpp - Released 2023-06-21T16:30:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -352,4 +352,4 @@ void* AutoHistogramInstance::LockParameter( const MetaParameter* p, size_type /*
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF AutoHistogramInstance.cpp - Released 2023-05-17T17:06:42Z
+// EOF AutoHistogramInstance.cpp - Released 2023-06-21T16:30:12Z

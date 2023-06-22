@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.3
+// /_/     \____//_____/   PCL 2.5.5
 // ----------------------------------------------------------------------------
 // Standard EphemerisGeneration Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// Elements.cpp - Released 2023-05-17T17:06:42Z
+// Elements.cpp - Released 2023-06-21T16:30:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -417,4 +417,4 @@ void OrbitalElementsFromStateVectors( Vector& el, const Vector& r, const Vector&
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Elements.cpp - Released 2023-05-17T17:06:42Z
+// EOF Elements.cpp - Released 2023-06-21T16:30:12Z

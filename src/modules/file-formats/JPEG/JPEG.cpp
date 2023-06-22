@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.3
+// /_/     \____//_____/   PCL 2.5.5
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// JPEG.cpp - Released 2023-05-17T17:06:31Z
+// JPEG.cpp - Released 2023-06-21T16:30:03Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -634,7 +634,7 @@ static void WriteJPEGImage( const GenericImage<P>& image, JPEGWriter& writer,
    { 'J', 'P', 'E', 'G', 'Q', 'u', 'a', 'l', 'i', 't', 'y', 0, 0 };
 
    unsigned char* outputBuffer = nullptr;
-   unsigned long outputSize = 0;
+   size_t outputSize = 0;
 
    try
    {
@@ -894,4 +894,4 @@ void JPEGWriter::WriteImage( const UInt32Image& image )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF JPEG.cpp - Released 2023-05-17T17:06:31Z
+// EOF JPEG.cpp - Released 2023-06-21T16:30:03Z

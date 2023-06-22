@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.3
+// /_/     \____//_____/   PCL 2.5.5
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// CurveExplorerDialog.h - Released 2023-05-17T17:06:42Z
+// CurveExplorerDialog.h - Released 2023-06-21T16:30:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -129,4 +129,4 @@ private:
 #endif   // __CurveExplorerDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF CurveExplorerDialog.h - Released 2023-05-17T17:06:42Z
+// EOF CurveExplorerDialog.h - Released 2023-06-21T16:30:12Z

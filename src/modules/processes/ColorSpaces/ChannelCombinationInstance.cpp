@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.3
+// /_/     \____//_____/   PCL 2.5.5
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// ChannelCombinationInstance.cpp - Released 2023-05-17T17:06:42Z
+// ChannelCombinationInstance.cpp - Released 2023-06-21T16:30:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -54,7 +54,6 @@
 #include "ChannelCombinationParameters.h"
 #include "ChannelCombinationProcess.h"
 
-#include <pcl/AstrometricMetadata.h>
 #include <pcl/AutoViewLock.h>
 #include <pcl/ImageWindow.h>
 #include <pcl/IntegrationMetadata.h>
@@ -574,25 +573,18 @@ bool ChannelCombinationInstance::ExecuteOn( View& view )
                }
 
          if ( asFound )
-         {
-            AstrometricMetadata A( asSourceWindow );
-            if ( A.IsValid() )
+            if ( window.CopyAstrometricSolution( asSourceWindow ) )
             {
-               A.Write( window );
-               if ( window.RegenerateAstrometricSolution() )
-               {
-                  window.MainView().SetStorablePermanentPropertyValue( "PCL:AstrometricSolution:Information",
-                                                                       "source=inherited,process=ChannelCombination" );
-                  Console().NoteLn( "<end><cbr>* Astrometric solution inherited: "
-                                    + asSourceWindow.MainView().Id() + " => " + window.MainView().Id() );
-               }
+               window.MainView().SetStorablePermanentPropertyValue( "PCL:AstrometricSolution:Information",
+                                                                    "source=inherited,process=ChannelCombination" );
+               Console().NoteLn( "<end><cbr>* Astrometric solution inherited: "
+                                 + asSourceWindow.MainView().Id() + " => " + window.MainView().Id() );
             }
             else
             {
                Console().WarningLn( "<end><cbr>** Invalid astrometric solution ignored: "
                                     + asSourceWindow.MainView().Id() );
             }
-         }
       }
    }
 
@@ -761,25 +753,18 @@ bool ChannelCombinationInstance::ExecuteGlobal()
                }
 
          if ( asFound )
-         {
-            AstrometricMetadata A( asSourceWindow );
-            if ( A.IsValid() )
+            if ( outputWindow.CopyAstrometricSolution( asSourceWindow ) )
             {
-               A.Write( outputWindow );
-               if ( outputWindow.RegenerateAstrometricSolution() )
-               {
-                  outputView.SetStorablePermanentPropertyValue( "PCL:AstrometricSolution:Information",
-                                                                "source=inherited,process=ChannelCombination" );
-                  console.NoteLn( "<end><cbr>* Astrometric solution inherited: "
-                                 + asSourceWindow.MainView().Id() + " => " + baseId );
-               }
+               outputView.SetStorablePermanentPropertyValue( "PCL:AstrometricSolution:Information",
+                                                             "source=inherited,process=ChannelCombination" );
+               console.NoteLn( "<end><cbr>* Astrometric solution inherited: "
+                              + asSourceWindow.MainView().Id() + " => " + baseId );
             }
             else
             {
                console.WarningLn( "<end><cbr>** Invalid astrometric solution ignored: "
                                  + asSourceWindow.MainView().Id() );
             }
-         }
       }
 
       outputWindow.Show();
@@ -844,4 +829,4 @@ size_type ChannelCombinationInstance::ParameterLength( const MetaParameter* p, s
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ChannelCombinationInstance.cpp - Released 2023-05-17T17:06:42Z
+// EOF ChannelCombinationInstance.cpp - Released 2023-06-21T16:30:12Z

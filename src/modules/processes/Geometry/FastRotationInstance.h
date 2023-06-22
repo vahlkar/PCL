@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.3
+// /_/     \____//_____/   PCL 2.5.5
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// FastRotationInstance.h - Released 2023-05-17T17:06:42Z
+// FastRotationInstance.h - Released 2023-06-21T16:30:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -93,4 +93,4 @@ private:
 #endif   // __FastRotationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF FastRotationInstance.h - Released 2023-05-17T17:06:42Z
+// EOF FastRotationInstance.h - Released 2023-06-21T16:30:12Z

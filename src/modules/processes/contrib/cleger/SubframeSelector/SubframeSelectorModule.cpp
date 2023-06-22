@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.3
+// /_/     \____//_____/   PCL 2.5.5
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.8.5
+// Standard SubframeSelector Process Module Version 1.8.6
 // ----------------------------------------------------------------------------
-// SubframeSelectorModule.cpp - Released 2023-05-17T17:06:42Z
+// SubframeSelectorModule.cpp - Released 2023-06-21T16:30:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -57,13 +57,13 @@
 
 #define MODULE_VERSION_MAJOR     1
 #define MODULE_VERSION_MINOR     8
-#define MODULE_VERSION_REVISION  5
+#define MODULE_VERSION_REVISION  6
 #define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2023
-#define MODULE_RELEASE_MONTH     5
-#define MODULE_RELEASE_DAY       17
+#define MODULE_RELEASE_MONTH     6
+#define MODULE_RELEASE_DAY       21
 
 namespace pcl
 {
@@ -117,7 +117,7 @@ String SubframeSelectorModule::Author() const
 
 String SubframeSelectorModule::Copyright() const
 {
-   return "Copyright (c) 2017-2022, Cameron Leger / Juan Conejero";
+   return "Copyright (c) 2017-2023, Cameron Leger / Juan Conejero";
 }
 
 // ----------------------------------------------------------------------------
@@ -184,4 +184,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorModule.cpp - Released 2023-05-17T17:06:42Z
+// EOF SubframeSelectorModule.cpp - Released 2023-06-21T16:30:12Z

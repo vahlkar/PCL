@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.3
+// /_/     \____//_____/   PCL 2.5.5
 // ----------------------------------------------------------------------------
-// Standard Image Process Module Version 1.3.3
+// Standard Image Process Module Version 1.3.4
 // ----------------------------------------------------------------------------
-// DynamicPSFInstance.h - Released 2023-05-17T17:06:42Z
+// DynamicPSFInstance.h - Released 2023-06-21T16:30:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -191,6 +191,7 @@ private:
    pcl_bool       p_signedAngles; // show rotation angles in [0,180] or [-90,+90]
    pcl_bool       p_regenerate;   // do a regeneration or a recalculation in ExecuteGlobal()?
    pcl_bool       p_astrometry;   // compute celestial coordinates using existing astrometric solutions
+   int32          p_astrometryPrecision; // number of decimal digits shown for declination (R.A. +1)
 
    /*
     * Star detection parameters
@@ -225,4 +226,4 @@ private:
 #endif   // __DynamicPSFInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF DynamicPSFInstance.h - Released 2023-05-17T17:06:42Z
+// EOF DynamicPSFInstance.h - Released 2023-06-21T16:30:12Z

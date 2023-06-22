@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.4
+// /_/     \____//_____/   PCL 2.5.5
 // ----------------------------------------------------------------------------
-// pcl/PSFEstimator.cpp - Released 2023-06-12T18:01:12Z
+// pcl/PSFEstimator.cpp - Released 2023-06-21T16:29:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -52,6 +52,7 @@
 #include <pcl/AutoStatusCallbackRestorer.h>
 #include <pcl/MuteStatus.h>
 #include <pcl/PSFEstimator.h>
+#include <pcl/QuadTree.h>
 
 namespace pcl
 {
@@ -218,9 +219,23 @@ Array<PSFData> PSFEstimator::FitStars( const ImageVariant& image ) const
       if ( !psfs.IsEmpty() )
       {
          /*
+          * Remove highly uncertain sources
+          */
+         QuadTree<PSFData> T( psfs );
+         Array<PSFData> P;
+         for ( const PSFData& p : psfs )
+            if ( T.Search( QuadTree<PSFData>::rectangle( p[0] - 1, p[1] - 1,
+                                                         p[0] + 1, p[1] + 1 ) ).Length() == 1 )
+               P << p;
+         psfs = P;
+      }
+
+      if ( !psfs.IsEmpty() )
+      {
+         /*
           * PSF flux estimates can optionally be weighted by inverse mean
           * absolute deviations of fitted PSFs with respect to sampled data. In
-          * such case the minimum PSF mean absolute deviation determines the
+          * such a case the minimum PSF mean absolute deviation determines the
           * maximum sample weight.
           */
          if ( m_weighted )
@@ -257,4 +272,4 @@ Array<PSFData> PSFEstimator::FitStars( const ImageVariant& image ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFEstimator.cpp - Released 2023-06-12T18:01:12Z
+// EOF pcl/PSFEstimator.cpp - Released 2023-06-21T16:29:53Z

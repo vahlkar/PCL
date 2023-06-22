@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.4
+// /_/     \____//_____/   PCL 2.5.5
 // ----------------------------------------------------------------------------
-// pcl/APIInterface.h - Released 2023-06-12T18:01:05Z
+// pcl/APIInterface.h - Released 2023-06-21T16:29:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -56,7 +56,7 @@
 
 // Global namespace
 
-#define PCL_API_Version 0x0176
+#define PCL_API_Version 0x0177
 
 extern "C"
 {
@@ -2501,6 +2501,7 @@ struct api_context ImageWindowContext
 
    api_bool       (api_func* GetImageWindowHasAstrometricSolution)( const_window_handle );
    api_bool       (api_func* RegenerateImageWindowAstrometricSolution)( window_handle, api_bool, api_bool );
+   api_bool       (api_func* CopyImageWindowAstrometricSolution)( window_handle, const_window_handle, api_bool );
    void           (api_func* ClearImageWindowAstrometricSolution)( window_handle, api_bool );
    void           (api_func* UpdateImageWindowAstrometryMetadata)( window_handle, api_bool );
 
@@ -3083,4 +3084,4 @@ extern "C" void* api_func APIFunctionResolver( const char* );
 #endif   // __PCL_API_APIInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/APIInterface.h - Released 2023-06-12T18:01:05Z
+// EOF pcl/APIInterface.h - Released 2023-06-21T16:29:45Z

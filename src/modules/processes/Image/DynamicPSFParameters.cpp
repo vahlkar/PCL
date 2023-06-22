@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.3
+// /_/     \____//_____/   PCL 2.5.5
 // ----------------------------------------------------------------------------
-// Standard Image Process Module Version 1.3.3
+// Standard Image Process Module Version 1.3.4
 // ----------------------------------------------------------------------------
-// DynamicPSFParameters.cpp - Released 2023-05-17T17:06:42Z
+// DynamicPSFParameters.cpp - Released 2023-06-21T16:30:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -110,6 +110,7 @@ DPBetaMax*               TheDPBetaMaxParameter = nullptr;
 DPSignedAngles*          TheDPSignedAnglesParameter = nullptr;
 DPRegenerate*            TheDPRegenerateParameter = nullptr;
 DPAstrometry*            TheDPAstrometryParameter = nullptr;
+DPAstrometryPrecision*   TheDPAstrometryPrecisionParameter = nullptr;
 
 DPSearchRadius*          TheDPSearchRadiusParameter = nullptr;
 DPThreshold*             TheDPThresholdParameter = nullptr;
@@ -1199,6 +1200,33 @@ bool DPAstrometry::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
+DPAstrometryPrecision::DPAstrometryPrecision( MetaProcess* P ) : MetaInt32( P )
+{
+   TheDPAstrometryPrecisionParameter = this;
+}
+
+IsoString DPAstrometryPrecision::Id() const
+{
+   return "astrometryPrecision";
+}
+
+double DPAstrometryPrecision::DefaultValue() const
+{
+   return 2;
+}
+
+double DPAstrometryPrecision::MinimumValue() const
+{
+   return 0;
+}
+
+double DPAstrometryPrecision::MaximumValue() const
+{
+   return 6;
+}
+
+// ----------------------------------------------------------------------------
+
 DPSearchRadius::DPSearchRadius( MetaProcess* P ) : MetaInt32( P )
 {
    TheDPSearchRadiusParameter = this;
@@ -1452,4 +1480,4 @@ double DPBadStarFillColor::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DynamicPSFParameters.cpp - Released 2023-05-17T17:06:42Z
+// EOF DynamicPSFParameters.cpp - Released 2023-06-21T16:30:12Z

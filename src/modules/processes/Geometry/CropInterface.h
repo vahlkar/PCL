@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.3
+// /_/     \____//_____/   PCL 2.5.5
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// CropInterface.h - Released 2023-05-17T17:06:42Z
+// CropInterface.h - Released 2023-06-21T16:30:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -231,4 +231,4 @@ PCL_END_LOCAL
 #endif   // __CropInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF CropInterface.h - Released 2023-05-17T17:06:42Z
+// EOF CropInterface.h - Released 2023-06-21T16:30:12Z

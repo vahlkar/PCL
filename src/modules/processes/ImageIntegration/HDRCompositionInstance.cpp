@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.3
+// /_/     \____//_____/   PCL 2.5.5
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// HDRCompositionInstance.cpp - Released 2023-05-17T17:06:42Z
+// HDRCompositionInstance.cpp - Released 2023-06-21T16:30:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -587,6 +587,27 @@ private:
       mask.Status().Initialize( "<end><cbr>Building HDR composition mask", 4*N );
       mask.Status().DisableInitialization();
 
+      /*
+       * Compute the adaptive mask binarizing threshold for this image
+       */
+      double maskBinarizingThreshold = m_instance->p_maskBinarizingThreshold;
+      // Exclude border regions, which can contain outliers.
+      int dx = TruncInt( hdr.Width() * 0.1 );
+      int dy = TruncInt( hdr.Height() * 0.1 );
+      Rect rect = image.Bounds().DeflatedBy( dx, dy );
+      // The mask binarizing limit is the smallest maximum among channels.
+      if ( hdr.IsColor() )
+         maskBinarizingThreshold *= Min( Min( hdr.MaximumSampleValue( rect, 0, 0 ),
+                                              hdr.MaximumSampleValue( rect, 1, 1 ) ),
+                                              hdr.MaximumSampleValue( rect, 2, 2 ) );
+      else
+         maskBinarizingThreshold *= hdr.MaximumSampleValue( rect, 0, 0 );
+
+      console.WriteLn( String().Format( "<end><cbr><br>Mask binarizing threshold: %.4f", maskBinarizingThreshold ) );
+
+      /*
+       * Generate the composition mask
+       */
       {
          size_type count = 0;
          Image::sample_iterator m( mask );
@@ -594,21 +615,21 @@ private:
          {
             typename GenericImage<P>::const_pixel_iterator f( hdr );
             for ( ; f; ++f, ++m, ++mask.Status() )  // N
-               if ( Max( Max( f[0], f[1] ), f[2] ) >= m_instance->p_maskBinarizingThreshold )
+               if ( Max( Max( f[0], f[1] ), f[2] ) >= maskBinarizingThreshold )
                   *m = 1, ++count;
          }
          else
          {
             typename GenericImage<P>::const_sample_iterator f( hdr );
             for ( ; f; ++f, ++m, ++mask.Status() )  // N
-               if ( *f >= m_instance->p_maskBinarizingThreshold )
+               if ( *f >= maskBinarizingThreshold )
                   *m = 1, ++count;
          }
 
          if ( count == 0 )
          {
             mask.Status().Complete();
-            maskWindow.Close();
+            maskWindow.ForceClose();
             return false;
          }
       }
@@ -656,6 +677,9 @@ private:
       if ( index == 1 )
          outlierMask.One();
 
+      /*
+       * Fit the linear HDR image
+       */
       {
          SpinStatus spin;
          StatusMonitor monitor;
@@ -753,6 +777,9 @@ private:
 //          w2.Show();
       }
 
+      /*
+       * Perform HDR composition
+       */
       {
          StatusMonitor monitor;
          monitor.SetCallback( &status );
@@ -778,7 +805,7 @@ private:
       if ( m_instance->p_outputMasks )
          maskWindow.Show();
       else
-         maskWindow.Close();
+         maskWindow.ForceClose();
 
       return true;
    }
@@ -976,4 +1003,4 @@ size_type HDRCompositionInstance::ParameterLength( const MetaParameter* p, size_
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF HDRCompositionInstance.cpp - Released 2023-05-17T17:06:42Z
+// EOF HDRCompositionInstance.cpp - Released 2023-06-21T16:30:12Z

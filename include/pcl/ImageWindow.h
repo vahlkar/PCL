@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.4
+// /_/     \____//_____/   PCL 2.5.5
 // ----------------------------------------------------------------------------
-// pcl/ImageWindow.h - Released 2023-06-12T18:01:05Z
+// pcl/ImageWindow.h - Released 2023-06-21T16:29:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -1354,13 +1354,58 @@ public:
    bool RegenerateAstrometricSolution( bool allowGUIMessages = true, bool notify = true );
 
    /*!
-    * Removes an existing astrometric solution from this image window.
+    * Copies an astrometric solution from another image window.
+    *
+    * \param source     The image window with the astrometric solution that
+    *                   will be copied to this window.
     *
     * \param notify     Whether to notify the platform on the property changes.
     *                   This is true by default.
     *
-    * If the image has no valid astrometric solution, calling this member
-    * function has no effect.
+    * If the \a source image window has a valid and compatible astrometric
+    * solution, it will be copied to this window along with all of its
+    * associated metadata. This function returns true upon successful
+    * completion. The \a source image must have the same pixel dimensions as
+    * this image; otherwise, the existing solution is incompatible, and this
+    * function will fail without taking any action, returning false.
+    *
+    * If the \a source image window has no valid astrometric solution, calling
+    * this function has no effect, and false is returned.
+    *
+    * \ingroup astrometry_support
+    * \sa AstrometricMetadata
+    */
+   bool CopyAstrometricSolution( const ImageWindow& source, bool notify = true );
+
+   /*!
+    * Removes an existing astrometric solution and its associated metadata from
+    * this image window.
+    *
+    * \param notify     Whether to notify the platform on the property changes.
+    *                   This is true by default.
+    *
+    * This function removes a number of special view properties associated with
+    * an astrometric solution if they exist for the main view in this window,
+    * irrespective of whether there is a valid astrometric solution or not. The
+    * following XISF properties will be removed:
+    *
+    * Observation:CelestialReferenceSystem
+    * Observation:Equinox
+    * PCL:AstrometricSolution:Catalog
+    * PCL:AstrometricSolution:CelestialPoleNativeCoordinates
+    * PCL:AstrometricSolution:CreationTime
+    * PCL:AstrometricSolution:CreatorApplication
+    * PCL:AstrometricSolution:CreatorModule
+    * PCL:AstrometricSolution:CreatorOS
+    * PCL:AstrometricSolution:LinearTransformationMatrix
+    * PCL:AstrometricSolution:ProjectionSystem
+    * PCL:AstrometricSolution:ReferenceCelestialCoordinates
+    * PCL:AstrometricSolution:ReferenceImageCoordinates
+    * PCL:AstrometricSolution:ReferenceNativeCoordinates
+    * PCL:AstrometricSolution:SplineWorldTransformation
+    *
+    * Besides removing the above properties, if the image has an astrometric
+    * solution defined it will be destroyed and deallocated.
     *
     * \ingroup astrometry_support
     * \sa AstrometricMetadata
@@ -3022,4 +3067,4 @@ private:
 #endif   // __PCL_ImageWindow_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ImageWindow.h - Released 2023-06-12T18:01:05Z
+// EOF pcl/ImageWindow.h - Released 2023-06-21T16:29:45Z
