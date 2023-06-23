@@ -22,6 +22,8 @@ LIB_3RDPARTY_SCRIPT="${PCLSRCDIR}/3rdparty/linux/rebuild-3rdparty-libs.sh"
 FILE_FORMAT_SCRIPT="${PCLSRCDIR}/src/modules/processes/linux/rebuild-file-formats.sh"
 PROCESSES_SCRIPT="${PCLSRCDIR}/modules/processes/linux/rebuild-processes.sh"
 
+set -e
+
 # build PCL
 cd $PCL_MAKE_PATH
 make clean
