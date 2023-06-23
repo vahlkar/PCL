@@ -19,8 +19,10 @@ fi
 
 PCL_MAKE_PATH="${PCLSRCDIR}/pcl/linux/g++"
 LIB_3RDPARTY_SCRIPT="${PCLSRCDIR}/3rdparty/linux/make-3rdparty-libs.sh"
-FILE_FORMAT_SCRIPT="${PCLSRCDIR}/src/modules/processes/linux/make-file-formats.sh"
+FILE_FORMAT_SCRIPT="${PCLSRCDIR}/modules/file-formats/linux/make-file-formats.sh"
 PROCESSES_SCRIPT="${PCLSRCDIR}/modules/processes/linux/make-processes.sh"
+
+set -e
 
 # build PCL
 cd $PCL_MAKE_PATH
