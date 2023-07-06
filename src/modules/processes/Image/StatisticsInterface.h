@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.5
+// /_/     \____//_____/   PCL 2.5.6
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.4
 // ----------------------------------------------------------------------------
-// StatisticsInterface.h - Released 2023-06-21T16:30:12Z
+// StatisticsInterface.h - Released 2023-07-06T16:53:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -199,4 +199,4 @@ PCL_END_LOCAL
 #endif   // __StatisticsInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF StatisticsInterface.h - Released 2023-06-21T16:30:12Z
+// EOF StatisticsInterface.h - Released 2023-07-06T16:53:46Z

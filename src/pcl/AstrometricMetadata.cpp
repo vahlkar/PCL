@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.5
+// /_/     \____//_____/   PCL 2.5.6
 // ----------------------------------------------------------------------------
-// pcl/AstrometricMetadata.cpp - Released 2023-06-21T16:29:53Z
+// pcl/AstrometricMetadata.cpp - Released 2023-07-06T16:53:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -514,6 +514,8 @@ String AstrometricMetadata::Summary() const
 
    if ( !m_description->splineLengths.IsEmpty() )
       summary << "Spline lengths ........... " << m_description->splineLengths << '\n';
+   if ( !m_description->splineErrors.IsEmpty() )
+      summary << "Spline residuals ......... " << m_description->splineErrors << '\n';
 
    summary    << "Projection ............... " << m_description->projectionName << '\n'
               << "Projection origin ........ " << m_description->projectionOrigin << '\n'
@@ -1136,9 +1138,12 @@ void AstrometricMetadata::UpdateDescription() const
             else
                m_description->wcsTransformationType = String( S->SplineOrder() ) + "th order surface spline";
             m_description->controlPoints = String( S->NumberOfControlPoints() );
-            int xWI, yWI, xIW, yIW;
-            S->GetSplineLengths( xWI, yWI, xIW, yIW );
-            m_description->splineLengths = String().Format( "l:%d b:%d X:%d Y:%d", xWI, yWI, xIW, yIW );
+            int nxWI, nyWI, nxIW, nyIW;
+            S->GetSplineLengths( nxWI, nyWI, nxIW, nyIW );
+            m_description->splineLengths = String().Format( "l:%d b:%d X:%d Y:%d", nxWI, nyWI, nxIW, nyIW );
+            double exWI, eyWI, exIW, eyIW;
+            S->GetSplineErrors( exWI, eyWI, exIW, eyIW );
+            m_description->splineErrors = String().Format( "l:%.3f px b:%.3f px X:%.3f as Y:%.3f as", exWI, eyWI, exIW*3600, eyIW*3600 );
          }
          else
             m_description->wcsTransformationType = "Linear";
@@ -1227,4 +1232,4 @@ void AstrometricMetadata::UpdateDescription() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AstrometricMetadata.cpp - Released 2023-06-21T16:29:53Z
+// EOF pcl/AstrometricMetadata.cpp - Released 2023-07-06T16:53:28Z

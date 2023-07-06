@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.5
+// /_/     \____//_____/   PCL 2.5.6
 // ----------------------------------------------------------------------------
-// pcl/Homography.h - Released 2023-06-21T16:29:45Z
+// pcl/Homography.h - Released 2023-07-06T16:53:21Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -81,21 +81,9 @@ namespace pcl
  * vision. On the PixInsight platform, this class is an essential component of
  * image registration and astrometry processes.
  */
-template <class P = DPoint>
 class PCL_CLASS Homography
 {
 public:
-
-   /*!
-    * Represents a reference point in two dimensions.
-    */
-   using point = P;
-
-   /*!
-    * Represents a list of two-dimensional reference points involved in a
-    * homography transformation.
-    */
-   using point_list = Array<point>;
 
    /*!
     * Default constructor. Constructs a no-op transformation with a unit
@@ -138,7 +126,8 @@ public:
     * Transactions on Pattern Analysis and Machine Intelligence, vol. 19, pp.
     * 580–593, June 1997.
     */
-   Homography( const point_list& P1, const point_list& P2 )
+   template <class point_list1, class point_list2>
+   Homography( const point_list1& P1, const point_list2& P2 )
       : m_H( DLT( P1, P2 ) )
    {
    }
@@ -167,24 +156,25 @@ public:
     * Coordinate transformation. Applies the homography matrix to the
     * specified \a x and \a y coordinates.
     *
-    * The type T must be constructible from \c double.
+    * The types T1 and T2 must be constructible from and convertible to
+    * \c double.
     */
-   template <typename T>
-   void Apply( T& x, T& y ) const
+   template <typename T1, typename T2>
+   void Apply( T1& x, T2& y ) const
    {
-      double w = m_H[2][0]*x + m_H[2][1]*y + m_H[2][2];
+      double fx = double( x );
+      double fy = double( y );
+      double w = m_H[2][0]*fx + m_H[2][1]*fy + m_H[2][2];
       PCL_CHECK( 1 + w != 1 )
-      double x1 = (m_H[0][0]*x + m_H[0][1]*y + m_H[0][2])/w;
-      double y1 = (m_H[1][0]*x + m_H[1][1]*y + m_H[1][2])/w;
-      x = T( x1 );
-      y = T( y1 );
+      x = T1( (m_H[0][0]*fx + m_H[0][1]*fy + m_H[0][2])/w );
+      y = T2( (m_H[1][0]*fx + m_H[1][1]*fy + m_H[1][2])/w );
    }
 
    /*!
     * Coordinate transformation. Applies the homography matrix to the
     * specified point \a p. Returns a reference to \a p;
     *
-    * The type T must be constructible from \c double.
+    * The type T must be constructible from and convertible to \c double.
     */
    template <typename T>
    GenericPoint<T>& Apply( GenericPoint<T>& p ) const
@@ -198,8 +188,7 @@ public:
     * specified \a x and \a y coordinates. Returns the transformed point as a
     * two-dimensional point with real coordinates.
     */
-   template <typename T>
-   DPoint operator ()( T x, T y ) const
+   DPoint operator ()( double x, double y ) const
    {
       DPoint p( x, y );
       Apply( p.x, p.y );
@@ -214,7 +203,7 @@ public:
    template <typename T>
    DPoint operator ()( const GenericPoint<T>& p ) const
    {
-      return operator ()( p.x, p.y );
+      return operator ()( double( p.x ), double( p.y ) );
    }
 
    /*!
@@ -288,6 +277,7 @@ private:
       Array<DPoint> N; // the normalized points
       Matrix        T; // 3x3 normalization matrix
 
+      template <class point_list>
       NormalizedPoints( const point_list& points )
       {
          /*
@@ -295,7 +285,7 @@ private:
           */
          DPoint centroid( 0 );
          for ( const auto& p : points )
-            centroid += p;
+            centroid += DPoint( p.x, p.y );
          centroid /= points.Length();
 
          /*
@@ -304,8 +294,8 @@ private:
          double d0 = 0;
          for ( const auto& p : points )
          {
-            double dx = p.x - centroid.x;
-            double dy = p.y - centroid.y;
+            double dx = double( p.x ) - centroid.x;
+            double dy = double( p.y ) - centroid.y;
             N << DPoint( dx, dy );
             d0 += Sqrt( dx*dx + dy*dy );
          }
@@ -331,7 +321,8 @@ private:
     * Implementation of the Direct Linear Transformation (DLT) method to
     * compute a normalized homography matrix.
     */
-   static Matrix DLT( const point_list& P1, const point_list& P2 )
+   template <class point_list1, class point_list2>
+   static Matrix DLT( const point_list1& P1, const point_list2& P2 )
    {
       int n = Min( P1.Length(), P2.Length() );
       if ( n < 4 )
@@ -432,4 +423,4 @@ private:
 #endif   // __PCL_Homography_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Homography.h - Released 2023-06-21T16:29:45Z
+// EOF pcl/Homography.h - Released 2023-07-06T16:53:21Z

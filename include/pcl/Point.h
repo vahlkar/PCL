@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.5
+// /_/     \____//_____/   PCL 2.5.6
 // ----------------------------------------------------------------------------
-// pcl/Point.h - Released 2023-06-21T16:29:45Z
+// pcl/Point.h - Released 2023-07-06T16:53:21Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -101,7 +101,7 @@ class PCL_CLASS GenericPoint
 public:
 
    /*!
-    * Represents the type of a point component.
+    * Represents the scalar type of a point component.
     */
    using component = T;
 
@@ -124,11 +124,10 @@ public:
     * Constructs a %GenericPoint instance given its coordinates \a xPos and
     * \a yPos in the plane.
     *
-    * The type T1 can be any suitable real or integer numerical type, or a type
-    * with numeric conversion semantics.
+    * The types \c T1 and \c T2 must be convertible to the component type \c T.
     */
-   template <typename T1>
-   constexpr GenericPoint( T1 xPos, T1 yPos )
+   template <typename T1, typename T2>
+   constexpr GenericPoint( T1 xPos, T2 yPos )
       : x( component( xPos ) )
       , y( component( yPos ) )
    {
@@ -167,6 +166,8 @@ public:
     *    Point p2( 1, 0 );
     *    Point p3( 1, 2 );
     * \endcode
+    *
+    * The type \c T1 must be convertible to the component type \c T.
     */
    template <typename T1>
    GenericPoint( std::initializer_list<T1> l )
@@ -191,18 +192,20 @@ public:
    /*!
     * Nontrivial copy constructor. Constructs a %GenericPoint instance as a
     * copy (possibly involving a conversion between different numerical types)
-    * of another point \a p with different template argument.
+    * of another point \a p with a different template argument.
+    *
+    * The type \c T1 must be convertible to the component type \c T.
     */
    template <typename T1>
    GenericPoint( const GenericPoint<T1>& p )
-      : GenericPoint( component( p.x ), component( p.y ) )
+      : GenericPoint( p.x, p.y )
    {
       PCL_ASSERT_POINT_SIZE();
    }
 
 #ifdef __PCL_QT_INTERFACE
    GenericPoint( const QPoint& p )
-      : GenericPoint( component( p.x() ), component( p.y() ) )
+      : GenericPoint( p.x(), p.y() )
    {
       PCL_ASSERT_POINT_SIZE();
    }
@@ -220,6 +223,8 @@ public:
     * unnecessary in some practical cases. One of them is ordering of
     * distances: Sqrt(A) < Sqrt(B) implies A < B.
     *
+    * The type \c T1 must be convertible to \c double.
+    *
     * \sa DistanceTo(), ManhattanDistanceTo()
     */
    template <typename T1>
@@ -236,6 +241,8 @@ public:
     *
     * The Euclidian distance between two points p and q is the length of the
     * straight line between both points: Sqrt( (p.x - q.x)^2 + (p.y - q.y)^2 ).
+    *
+    * The type \c T1 must be convertible to \c double.
     *
     * \sa SquaredDistanceTo(), ManhattanDistanceTo()
     */
@@ -289,6 +296,8 @@ public:
     * The Manhattan distance between two points p and q is the sum of distances
     * measured along axes at right angles: |p.x - q.x| + |p.y - q.y|.
     *
+    * The type \c T1 must be convertible to \c double.
+    *
     * \sa DistanceTo(), ManhattanDistanceToOrigin()
     */
    template <typename T1>
@@ -318,6 +327,8 @@ public:
    /*!
     * Moves this point to the location of another point \a p.
     *
+    * The type \c T1 must be convertible to the component type \c T.
+    *
     * \sa MoveBy()
     */
    template <typename T1>
@@ -330,10 +341,12 @@ public:
     * Moves this point to the specified absolute coordinates \a xPos and
     * \a yPos in the plane.
     *
+    * The types \c T1 and \c T2 must be convertible to the component type \c T.
+    *
     * \sa MoveBy()
     */
-   template <typename T1>
-   void MoveTo( T1 xPos, T1 yPos ) noexcept
+   template <typename T1, typename T2>
+   void MoveTo( T1 xPos, T2 yPos ) noexcept
    {
       x = component( xPos ); y = component( yPos );
    }
@@ -348,6 +361,8 @@ public:
    /*!
     * Returns a point whose coordinates are equal to the coordinates of the
     * specified point \a d.
+    *
+    * The type \c T1 must be convertible to the component type \c T.
     */
    template <typename T1>
    GenericPoint MovedTo( const GenericPoint<T1>& p ) const noexcept
@@ -357,9 +372,11 @@ public:
 
    /*!
     * Returns a point at the specified \a xPos and \a yPos coordinates.
+    *
+    * The types \c T1 and \c T2 must be convertible to the component type \c T.
     */
-   template <typename T1>
-   GenericPoint MovedTo( T1 xPos, T1 yPos ) const noexcept
+   template <typename T1, typename T2>
+   GenericPoint MovedTo( T1 xPos, T2 yPos ) const noexcept
    {
       return GenericPoint( component( xPos ), component( yPos ) );
    }
@@ -370,6 +387,8 @@ public:
     *
     * \param d    Increments in the X and Y directions, given by \a d.x and
     *             \a d.y, respectively.
+    *
+    * The type \c T1 must be convertible to the component type \c T.
     *
     * \sa MoveTo()
     */
@@ -394,10 +413,12 @@ public:
     * p.MoveTo( p.x-3, p.y+7 );
     * \endcode
     *
+    * The types \c T1 and \c T2 must be convertible to the component type \c T.
+    *
     * \sa MoveTo()
     */
-   template <typename T1>
-   void MoveBy( T1 dx, T1 dy ) noexcept
+   template <typename T1, typename T2>
+   void MoveBy( T1 dx, T2 dy ) noexcept
    {
       x += component( dx ); y += component( dy );
    }
@@ -428,6 +449,8 @@ public:
    /*!
     * Returns a point whose coordinates are the coordinates of this point
     * displaced by the increments specified as the point \a d.
+    *
+    * The type \c T1 must be convertible to the component type \c T.
     */
    template <typename T1>
    GenericPoint MovedBy( const GenericPoint<T1>& d ) const noexcept
@@ -438,9 +461,11 @@ public:
    /*!
     * Returns a point whose coordinates are the coordinates of this point
     * displaced by the specified increments \a dx and \a dy.
+    *
+    * The types \c T1 and \c T2 must be convertible to the component type \c T.
     */
-   template <typename T1>
-   GenericPoint MovedBy( T1 dx, T1 dy ) const noexcept
+   template <typename T1, typename T2>
+   GenericPoint MovedBy( T1 dx, T2 dy ) const noexcept
    {
       return GenericPoint( x + component( dx ), y + component( dy ) );
    }
@@ -449,6 +474,8 @@ public:
     * Rotates this point in the plane by the specified \a angle in radians,
     * with respect to a center of rotation given by its coordinates \a xc and
     * \a yc.
+    *
+    * The types \c T1 and \c T2 must be convertible to \c double.
     */
    template <typename T1, typename T2>
    void Rotate( T1 angle, T2 xc, T2 yc ) noexcept
@@ -459,6 +486,8 @@ public:
    /*!
     * Rotates this point in the plane by the specified \a angle in radians,
     * with respect to the specified \a center of rotation.
+    *
+    * The types \c T1 and \c T2 must be convertible to \c double.
     */
    template <typename T1, typename T2>
    void Rotate( T1 angle, const GenericPoint<T2>& center ) noexcept
@@ -470,6 +499,8 @@ public:
     * Rotates this point in the plane by the specified angle, given by its sine
     * and cosine, \a sa and \a ca respectively, with respect to a center of
     * rotation given by its coordinates \a xc and \a yc.
+    *
+    * The types \c T1 and \c T2 must be convertible to \c double.
     */
    template <typename T1, typename T2>
    void Rotate( T1 sa, T1 ca, T2 xc, T2 yc ) noexcept
@@ -481,6 +512,8 @@ public:
     * Rotates this point in the plane by the specified angle, given by its sine
     * and cosine, \a sa and \a ca respectively, with respect to the specified
     * \a center of rotation.
+    *
+    * The types \c T1 and \c T2 must be convertible to \c double.
     */
    template <typename T1, typename T2>
    void Rotate( T1 sa, T1 ca, const GenericPoint<T2>& center ) noexcept
@@ -492,6 +525,8 @@ public:
     * Returns a point whose coordinates are the coordinates of this point
     * rotated in the plane by the specified \a angle in radians, with respect
     * to a center of rotation given by its coordinates \a xc and \a yc.
+    *
+    * The types \c T1 and \c T2 must be convertible to \c double.
     */
    template <typename T1, typename T2>
    GenericPoint Rotated( T1 angle, T2 xc, T2 yc ) const noexcept
@@ -505,6 +540,8 @@ public:
     * Returns a point whose coordinates are the coordinates of this point
     * rotated in the plane by the specified \a angle in radians, with respect
     * to the specified \a center of rotation.
+    *
+    * The types \c T1 and \c T2 must be convertible to \c double.
     */
    template <typename T1, typename T2>
    GenericPoint Rotated( T1 angle, const GenericPoint<T2>& center ) const noexcept
@@ -519,6 +556,8 @@ public:
     * rotated in the plane by the specified angle given by its sine and cosine,
     * \a sa and \a ca respectively, with respect to a center of rotation given
     * by its coordinates \a xc and \a yc.
+    *
+    * The types \c T1 and \c T2 must be convertible to \c double.
     */
    template <typename T1, typename T2>
    GenericPoint Rotated( T1 sa, T1 ca, T2 xc, T2 yc ) const noexcept
@@ -533,6 +572,8 @@ public:
     * rotated in the plane by the specified angle given by its sine and cosine,
     * \a sa and \a ca respectively, with respect to the specified \a center of
     * rotation.
+    *
+    * The types \c T1 and \c T2 must be convertible to \c double.
     */
    template <typename T1, typename T2>
    GenericPoint Rotated( T1 sa, T1 ca, const GenericPoint<T2>& center ) const noexcept
@@ -638,8 +679,10 @@ public:
    }
 
    /*!
-    * Assignment operator. Moves this point to the location specified as a
-    * point \a p. Returns a reference to this point.
+    * Nontrivial assignment operator. Moves this point to the location
+    * specified as a point \a p. Returns a reference to this point.
+    *
+    * The type \c T1 must be convertible to the component type \c T.
     *
     * \sa MoveTo()
     */
@@ -675,6 +718,8 @@ public:
    /*!
     * Adds each coordinate of a given point \a p to its homonym coordinate in
     * this point. Returns a reference to this point.
+    *
+    * The type \c T1 must be convertible to the component type \c T.
     *
     * \sa MoveBy(), operator -=()
     */
@@ -712,6 +757,8 @@ public:
     * Subtracts each coordinate of a given point \a p from its homonym
     * coordinate in this point. Returns a reference to this point.
     *
+    * The type \c T1 must be convertible to the component type \c T.
+    *
     * \sa MoveBy(), operator +=()
     */
    template <typename T1>
@@ -748,6 +795,8 @@ public:
     * Multiplies each coordinate of this point by its homonym coordinate of a
     * given point \a p. Returns a reference to this point.
     *
+    * The type \c T1 must be convertible to the component type \c T.
+    *
     * \sa operator /=(), operator +=()
     */
    template <typename T1>
@@ -783,6 +832,8 @@ public:
    /*!
     * Divides each coordinate of this point by its homonym coordinate of a
     * given point \a p. Returns a reference to this point.
+    *
+    * The type \c T1 must be convertible to the component type \c T.
     *
     * \sa operator *=(), operator -=()
     */
@@ -960,6 +1011,8 @@ public:
    /*!
     * Returns the dot product of this point and another point given by its
     * coordinates \a px and \a py.
+    *
+    * The types \c T1 and \c T2 must be convertible to \c double.
     */
    template <typename T1, typename T2>
    double Dot( T1 px, T2 py ) const noexcept
@@ -969,6 +1022,8 @@ public:
 
    /*!
     * Returns the dot product of this point and another point \a p.
+    *
+    * The type \c T1 must be convertible to \c double.
     */
    template <typename T1>
    double Dot( const GenericPoint<T1>& p ) const noexcept
@@ -1481,4 +1536,4 @@ using DPoint = F64Point;
 #endif  // __PCL_Point_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Point.h - Released 2023-06-21T16:29:45Z
+// EOF pcl/Point.h - Released 2023-07-06T16:53:21Z

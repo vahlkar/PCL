@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.5
+// /_/     \____//_____/   PCL 2.5.6
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.3.4
+// Standard Global Process Module Version 1.4.1
 // ----------------------------------------------------------------------------
-// PreferencesProcess.cpp - Released 2023-06-21T16:30:12Z
+// PreferencesProcess.cpp - Released 2023-07-06T16:53:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -127,6 +127,10 @@ PreferencesProcess::PreferencesProcess()
    new METAPARAMETER_ID( MainWindow,  fadeToolTip )( this );
    new METAPARAMETER_ID( MainWindow,  explodeIcons )( this );
    new METAPARAMETER_ID( MainWindow,  implodeIcons )( this );
+   new METAPARAMETER_ID( MainWindow,  dropShadowChildWindows )( this );
+   new METAPARAMETER_ID( MainWindow,  dropShadowIcons )( this );
+   new METAPARAMETER_ID( MainWindow,  dropShadowBlurRadius )( this );
+   new METAPARAMETER_ID( MainWindow,  dropShadowColor )( this );
    new METAPARAMETER_ID( MainWindow,  animateWindows )( this );
    new METAPARAMETER_ID( MainWindow,  animateMenu )( this );
    new METAPARAMETER_ID( MainWindow,  animateCombo )( this );
@@ -393,4 +397,4 @@ int PreferencesProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesProcess.cpp - Released 2023-06-21T16:30:12Z
+// EOF PreferencesProcess.cpp - Released 2023-07-06T16:53:46Z

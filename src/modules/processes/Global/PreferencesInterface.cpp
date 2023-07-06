@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.5
+// /_/     \____//_____/   PCL 2.5.6
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.3.4
+// Standard Global Process Module Version 1.4.1
 // ----------------------------------------------------------------------------
-// PreferencesInterface.cpp - Released 2023-06-21T16:30:12Z
+// PreferencesInterface.cpp - Released 2023-07-06T16:53:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -421,6 +421,15 @@ GlobalColorControl::GlobalColorControl()
 {
    colorComboBox.OnColorSelected( (ColorComboBox::color_event_handler)&GlobalColorControl::__ColorSelected, *this );
 
+   opacityEdit.SetReal();
+   opacityEdit.SetRange( 0, 1 );
+   opacityEdit.SetPrecision( 2 );
+   opacityEdit.SetToolTip( "<p>Opacity:<br/>"
+                              "0 = transparent<br/>"
+                              "1 = opaque</p>" );
+   opacityEdit.OnValueUpdated( (NumericEdit::value_event_handler)&GlobalColorControl::__ValueUpdated, *this );
+   opacityEdit.Hide();
+
    colorSample.SetScaledMinWidth( 30 );
    colorSample.SetCursor( StdCursor::UpArrow );
    colorSample.OnPaint( (Control::paint_event_handler)&GlobalColorControl::__ColorSample_Paint, *this );
@@ -428,6 +437,7 @@ GlobalColorControl::GlobalColorControl()
 
    colorSizer.SetSpacing( 4 );
    colorSizer.Add( colorComboBox, 100 );
+   colorSizer.Add( opacityEdit );
    colorSizer.Add( colorSample );
 
    sizer.Add( label );
@@ -439,15 +449,27 @@ void GlobalColorControl::Synchronize()
    if ( item != nullptr )
    {
       colorComboBox.SetCurrentColor( *item );
+      opacityEdit.SetValue( Alpha( *item )/255.0 );
       colorSample.Update();
    }
 }
 
-void GlobalColorControl::__ColorSelected( ColorComboBox& /*sender*/, RGBA color )
+void GlobalColorControl::EnableOpacity()
+{
+   m_opacityEnabled = true;
+   opacityEdit.Show();
+}
+
+void GlobalColorControl::__ColorSelected( ColorComboBox& sender, RGBA color )
 {
    if ( item != nullptr )
    {
-      *item = uint32( color );
+      if ( m_opacityEnabled )
+         SetAlpha( color, Alpha( *item ) );
+      else
+         ClearAlpha( color );
+
+      *item = color;
       colorSample.Update();
    }
 }
@@ -475,6 +497,17 @@ void GlobalColorControl::__ColorSample_MouseRelease(
             colorComboBox.SetCurrentColor( *item );
             colorSample.Update();
          }
+      }
+}
+
+void GlobalColorControl::__ValueUpdated( NumericEdit& sender, double value )
+{
+   if ( item != nullptr )
+      if ( m_opacityEnabled )
+      {
+         ClearAlpha( *item );
+         SetAlpha( *item, value * 0xff );
+         colorSample.Update();
       }
 }
 
@@ -1710,7 +1743,29 @@ GUIEffectsPreferencesPage::GUIEffectsPreferencesPage( PreferencesInstance& insta
    AnimateToolBox_Flag.checkBox.SetText( "Animate tool boxes" );
    AnimateToolBox_Flag.item = &instance.mainWindow.animateToolBox;
    AnimateToolBox_Flag.SetToolTip(
-      "<p>Enable to show animated tool boxes (currently not used; reserved for future extension).</p>" );
+      "<p>Enable to show animated tool boxes (currently not used; reserved for future extensions).</p>" );
+
+   DropShadowChildWindows_Flag.checkBox.SetText( "Drop shadows for workspace child windows" );
+   DropShadowChildWindows_Flag.item = &instance.mainWindow.dropShadowChildWindows;
+   DropShadowChildWindows_Flag.SetToolTip(
+      "<p>Show drop shadow decorations for workspace child windows (e.g., image windows).</p>" );
+
+   DropShadowIcons_Flag.checkBox.SetText( "Drop shadows for icons" );
+   DropShadowIcons_Flag.item = &instance.mainWindow.dropShadowIcons;
+   DropShadowIcons_Flag.SetToolTip(
+      "<p>Show drop shadow decorations for icons.</p>" );
+
+   DropShadowBlurRadius_Real.label.SetText( "Drop shadow blur radius" );
+   DropShadowBlurRadius_Real.numericEdit.SetReal();
+   DropShadowBlurRadius_Real.numericEdit.SetRange( 0, 100 );
+   DropShadowBlurRadius_Real.numericEdit.SetPrecision( 1 );
+   DropShadowBlurRadius_Real.item = &instance.mainWindow.dropShadowBlurRadius;
+   DropShadowBlurRadius_Real.SetToolTip(
+      "<p>Radius in pixels of a Gaussian filter applied to drop shadow decorations.</p>" );
+
+   DropShadowColor_Color.label.SetText( "Drop shadow color" );
+   DropShadowColor_Color.item = &instance.mainWindow.dropShadowColor;
+   DropShadowColor_Color.EnableOpacity();
 
    Page_Sizer.SetSpacing( 4 );
    Page_Sizer.Add( HoverableAutoHideWindows_Flag );
@@ -1730,6 +1785,10 @@ GUIEffectsPreferencesPage::GUIEffectsPreferencesPage( PreferencesInstance& insta
    Page_Sizer.Add( AnimateCombo_Flag );
    Page_Sizer.Add( AnimateToolTip_Flag );
    Page_Sizer.Add( AnimateToolBox_Flag );
+   Page_Sizer.Add( DropShadowChildWindows_Flag );
+   Page_Sizer.Add( DropShadowIcons_Flag );
+   Page_Sizer.Add( DropShadowBlurRadius_Real );
+   Page_Sizer.Add( DropShadowColor_Color );
    Page_Sizer.AddStretch();
 
    SetSizer( Page_Sizer );
@@ -1754,6 +1813,10 @@ void GUIEffectsPreferencesPage::TransferSettings( PreferencesInstance& to, const
    to.mainWindow.animateCombo               = from.mainWindow.animateCombo;
    to.mainWindow.animateToolTip             = from.mainWindow.animateToolTip;
    to.mainWindow.animateToolBox             = from.mainWindow.animateToolBox;
+   to.mainWindow.dropShadowChildWindows     = from.mainWindow.dropShadowChildWindows;
+   to.mainWindow.dropShadowIcons            = from.mainWindow.dropShadowIcons;
+   to.mainWindow.dropShadowBlurRadius       = from.mainWindow.dropShadowBlurRadius;
+   to.mainWindow.dropShadowColor            = from.mainWindow.dropShadowColor;
 }
 
 // ----------------------------------------------------------------------------
@@ -2948,4 +3011,4 @@ void PreferencesInterface::GUIData::InitializeCategories()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInterface.cpp - Released 2023-06-21T16:30:12Z
+// EOF PreferencesInterface.cpp - Released 2023-07-06T16:53:46Z

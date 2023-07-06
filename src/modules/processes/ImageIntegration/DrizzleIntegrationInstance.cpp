@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.5
+// /_/     \____//_____/   PCL 2.5.6
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// DrizzleIntegrationInstance.cpp - Released 2023-06-21T16:30:12Z
+// DrizzleIntegrationInstance.cpp - Released 2023-07-06T16:53:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -564,10 +564,7 @@ public:
 
 private:
 
-   using input_data_list        = DrizzleIntegrationInstance::input_data_list;
-   using homography             = Homography<DPoint>;
-   using grid_interpolation     = PointGridInterpolation;
-   using local_distortion_model = RecursivePointSurfaceSpline<DPoint>;
+   using input_data_list = DrizzleIntegrationInstance::input_data_list;
 
    typedef double (DrizzleIntegrationEngine::*normalization_function_ptr)( double, const Point&, int ) const;
 
@@ -610,8 +607,8 @@ private:
             Image&                    result;     // output drizzle integrated image
             Image&                    weight;     // output drizzle weights map
             DPoint                    origin;     // alignment origin
-            homography                H, Hinv;    // projective transformation
-            grid_interpolation        G, Ginv;    // discretized thin plate splines
+            Homography                H, Hinv;    // projective transformation
+            PointGridInterpolation        G, Ginv;    // discretized thin plate splines
             double                    dropDelta0; // drop reduction, top-left
             double                    dropDelta1; // drop reduction, bottom-right
             bool                      splines;    // have alignment splines?
@@ -1751,7 +1748,7 @@ void DrizzleIntegrationEngine::Perform()
                                    static_cast<Image&>( *weightImage ),
                                    monitor, m_height );
             threadData.origin = m_decoder.AlignmentOrigin();
-            threadData.H = homography( m_decoder.AlignmentMatrix() );
+            threadData.H = Homography( m_decoder.AlignmentMatrix() );
             if ( m_instance.p_enableSurfaceSplines )
                if ( m_decoder.HasAlignmentSplines() )
                   threadData.G.Initialize( Rect( m_referenceWidth, m_referenceHeight ),
@@ -1786,13 +1783,13 @@ void DrizzleIntegrationEngine::Perform()
                      float regularization;
                      bool extrapolation;
                      m_decoder.GetLocalDistortionModel( LP1, LD2, LP2, LD1, LW, order, regularization, extrapolation );
-                     local_distortion_model L12( LP1, LD2, regularization, order, LW, extrapolation );
+                     RecursivePointSurfaceSpline L12( LP1, LD2, regularization, order, LW, extrapolation );
                      if ( L12.IsValid() )
                      {
                         threadData.G.ApplyLocalModel( L12, "Applying local distortion model" );
 //                         if ( threadData.Ginv.IsValid() )
 //                         {
-//                            local_distortion_model L21( LP2, LD1, regularization, order, FVector()/*weights*/, extrapolation );
+//                            RecursivePointSurfaceSpline L21( LP2, LD1, regularization, order, FVector()/*weights*/, extrapolation );
 //                            if ( L21.IsValid() )
 //                               threadData.Ginv.ApplyLocalModel( L21, "Applying inverse local distortion model" );
 //                         }
@@ -2285,4 +2282,4 @@ size_type DrizzleIntegrationInstance::ParameterLength( const MetaParameter* p, s
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DrizzleIntegrationInstance.cpp - Released 2023-06-21T16:30:12Z
+// EOF DrizzleIntegrationInstance.cpp - Released 2023-07-06T16:53:46Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.5
+// /_/     \____//_____/   PCL 2.5.6
 // ----------------------------------------------------------------------------
-// pcl/GlobalSettings.h - Released 2023-06-21T16:29:45Z
+// pcl/GlobalSettings.h - Released 2023-07-06T16:53:21Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -112,7 +112,7 @@ namespace GlobalVariableType
  * pcl::GlobalVariableType namespace for more details.
  *
  * Below is a complete list of all global settings available in current
- * versions of the PixInsight platform (updated as of core version 1.8.8-13).
+ * versions of the PixInsight platform (up-to-date as of core version 1.8.9-2).
  *
  * <h3>PixInsight Public Global Variables</h3>
  *
@@ -170,6 +170,8 @@ namespace GlobalVariableType
  * <tr><td>MainWindow/ConfirmProgramTermination</td><td></td></tr>
  * <tr><td>MainWindow/DesktopSettingsAware</td><td></td></tr>
  * <tr><td>MainWindow/DoubleClickLaunchesOpenDialog</td><td></td></tr>
+ * <tr><td>MainWindow/DropShadowChildWindows</td><td></td></tr>
+ * <tr><td>MainWindow/DropShadowIcons</td><td></td></tr>
  * <tr><td>MainWindow/ExpandFavoritesAtStartup</td><td></td></tr>
  * <tr><td>MainWindow/ExpandMostUsedAtStartup</td><td></td></tr>
  * <tr><td>MainWindow/ExpandRecentlyUsedAtStartup</td><td></td></tr>
@@ -255,13 +257,14 @@ namespace GlobalVariableType
  * <h4>Global Reals</h4>
  *
  * <table border="1" cellpadding="4" cellspacing="0">
- * <tr><td>Application/StartJD</td><td>Starting time of the core application instance as a Julian day number. Read-only.</td></tr>
+ * <tr><td>Application/StartJD</td><td>Starting time of the core application instance as a Julian date. Read-only.</td></tr>
  * <tr><td>Application/UIScalingFactor</td><td>Global interface scaling factor of the core application. In the range [1.0,4.0].</td></tr>
  * <tr><td>ImageWindow/DefaultHorizontalResolution</td><td>In device pixels per resolution unit. See the ImageWindow/DefaultMetricResolution global variable.</td></tr>
  * <tr><td>ImageWindow/DefaultVerticalResolution</td><td>In device pixels per resolution unit. See the ImageWindow/DefaultMetricResolution global variable.</td></tr>
  * <tr><td>ImageWindow/PinchSensitivity</td><td>For touch events. In device pixels.</td></tr>
  * <tr><td>MainWindow/ActiveWindowOpacity</td><td>Window opacity in the [0,1] range.</td></tr>
  * <tr><td>MainWindow/AutoHideWindowOpacity</td><td>Window opacity in the [0,1] range.</td></tr>
+ * <tr><td>MainWindow/DropShadowBlurRadius</td><td>Radius in pixels of the Gaussian filter applied to drop shadow decorations.</td></tr>
  * <tr><td>MainWindow/InactiveChildWindowOpacity</td><td>Window opacity in the [0,1] range.</td></tr>
  * <tr><td>MainWindow/InactiveWindowOpacity</td><td>Window opacity in the [0,1] range.</td></tr>
  * <tr><td>MainWindow/MovingChildWindowOpacity</td><td>Window opacity in the [0,1] range.</td></tr>
@@ -276,7 +279,8 @@ namespace GlobalVariableType
  * (i.e., not related to the appearance of GUI controls).
  *
  * <table border="1" cellpadding="4" cellspacing="0">
- * <tr><td>ColorManagement/GamutWarningColor</td><td>For signaling out-of-gamut pixels in color proofing image renditions.</td></tr>
+ * <tr><td>ColorManagement/GamutWarningColor</td><td>Color used for signaling out-of-gamut pixels in color proofing image renditions.</td></tr>
+ * <tr><td>MainWindow/DropShadowColor</td><td>The color of drop shadow decorations.</td></tr>
  * <tr><td>TransparencyBrush/BackgroundColor</td><td>Background brush color for renditions of translucent image pixels.</td></tr>
  * <tr><td>TransparencyBrush/DefaultColor</td><td>Opaque color for renditions of translucent image pixels.</td></tr>
  * <tr><td>TransparencyBrush/ForegroundColor</td><td>Foreground brush color for renditions of translucent image pixels.</td></tr>
@@ -525,4 +529,4 @@ public:
 #endif   // __PCL_GlobalSettings_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/GlobalSettings.h - Released 2023-06-21T16:29:45Z
+// EOF pcl/GlobalSettings.h - Released 2023-07-06T16:53:21Z

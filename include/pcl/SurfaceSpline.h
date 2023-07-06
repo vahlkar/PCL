@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.5
+// /_/     \____//_____/   PCL 2.5.6
 // ----------------------------------------------------------------------------
-// pcl/SurfaceSpline.h - Released 2023-06-21T16:29:44Z
+// pcl/SurfaceSpline.h - Released 2023-07-06T16:53:21Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -79,9 +79,9 @@ namespace pcl
 // ----------------------------------------------------------------------------
 
 /*
- *
+ * The maximum allowed number of points in a point surface spline by default.
  */
-#define __PCL_PSSPLINE_SIMPLIFY_MAX_POINTS            2100
+#define __PCL_PSSPLINE_DEFAULT_MAX_POINTS             2100
 
 /*
  * Default quadtree bucket capacity for recursive surface subspline generation.
@@ -932,20 +932,9 @@ protected:
  *
  * \sa SurfaceSpline, RecursivePointSurfaceSpline
  */
-template <class P = DPoint>
 class PCL_CLASS PointSurfaceSpline
 {
 public:
-
-   /*!
-    * Represents an interpolation point in two dimensions.
-    */
-   using point = P;
-
-   /*!
-    * Represents a sequence of interpolation points.
-    */
-   using point_list = Array<point>;
 
    /*!
     * Represents a coordinate interpolating/approximating surface spline.
@@ -981,8 +970,8 @@ public:
     * See the corresponding Initialize() member function for a detailed
     * description of parameters.
     */
-   template <class weight_vector = FVector>
-   PointSurfaceSpline( const point_list& P1, const point_list& P2,
+   template <class point_list1, class point_list2, class weight_vector = FVector>
+   PointSurfaceSpline( const point_list1& P1, const point_list2& P2,
                        float smoothness = 0, int order = 2,
                        const weight_vector& W = weight_vector(),
                        rbf_type rbf = RadialBasisFunction::Default,
@@ -1007,7 +996,7 @@ public:
    /*!
     * Copy assignment operator. Returns a reference to this object.
     */
-   PointSurfaceSpline& operator =( const PointSurfaceSpline& ) = default;
+   PointSurfaceSpline& operator =( const PointSurfaceSpline& other ) = default;
 
    /*!
     * Move assignment operator. Returns a reference to this object.
@@ -1091,8 +1080,8 @@ public:
     * RBFs only interpolation surface splines can be generated with this
     * implementation, and hence these parameters are always ignored.
     */
-   template <class weight_vector = FVector>
-   void Initialize( const point_list& P1, const point_list& P2,
+   template <class point_list1, class point_list2, class weight_vector = FVector>
+   void Initialize( const point_list1& P1, const point_list2& P2,
                     float smoothness = 0, const weight_vector& W = weight_vector(), int order = 2,
                     rbf_type rbf = RadialBasisFunction::Default,
                     double eps = 0,
@@ -1124,156 +1113,127 @@ public:
       m_Sy.SetSmoothing( smoothness );
 
       DVector X( N ), Y( N ), ZX( N ), ZY( N );
-      if ( m_incremental )
+      double zxMin =  std::numeric_limits<double>::max();
+      double zxMax = -std::numeric_limits<double>::max();
+      double zyMin =  std::numeric_limits<double>::max();
+      double zyMax = -std::numeric_limits<double>::max();
+      for ( int i = 0; i < N; ++i )
       {
-         for ( int i = 0; i < N; ++i )
+         X[i] = double( P1[i].x );
+         Y[i] = double( P1[i].y );
+
+         if ( m_incremental )
          {
-            ZX[i] = X[i] = P1[i].x;
-            ZY[i] = Y[i] = P1[i].y;
+            ZX[i] = X[i];
+            ZY[i] = Y[i];
             m_H.Apply( ZX[i], ZY[i] );
-            ZX[i] = P2[i].x - ZX[i];
-            ZY[i] = P2[i].y - ZY[i];
+            ZX[i] = double( P2[i].x ) - ZX[i];
+            ZY[i] = double( P2[i].y ) - ZY[i];
          }
-      }
-      else
-      {
-         for ( int i = 0; i < N; ++i )
+         else
          {
-            X[i] = P1[i].x;
-            Y[i] = P1[i].y;
-            ZX[i] = P2[i].x;
-            ZY[i] = P2[i].y;
+            ZX[i] = double( P2[i].x );
+            ZY[i] = double( P2[i].y );
          }
+
+         if ( ZX[i] < zxMin )
+            zxMin = ZX[i];
+         if ( ZX[i] > zxMax )
+            zxMax = ZX[i];
+         if ( ZY[i] < zyMin )
+            zyMin = ZY[i];
+         if ( ZY[i] > zyMax )
+            zyMax = ZY[i];
       }
 
       if ( m_useSimplifiers )
       {
          SurfaceSimplifier SS;
          SS.EnableRejection();
-         SS.SetRejectFraction( 0.10 );
+         SS.SetRejectFraction( m_simplifierRejectFraction );
          SS.EnableCentroidInclusion();
 
          // Simplified surface, X axis.
          DVector XXS, YXS, ZXS;
-         m_epsX = 0.01;
-         double epsLow = 0, epsHigh = 1;
-         for ( int i = 0; i < 100; ++i )
+         m_epsX = (zxMax - zxMin)/100;
+         double epsLow = 0, epsHigh = (zxMax - zxMin)/10;
+         for ( int i = 0; i < 200; ++i )
          {
             SS.SetTolerance( m_epsX );
             SS.Simplify( XXS, YXS, ZXS, X, Y, ZX );
-            if ( XXS.Length() > __PCL_PSSPLINE_SIMPLIFY_MAX_POINTS )
+            if ( XXS.Length() > m_maxSplinePoints )
             {
                epsLow = m_epsX;
-               if ( epsHigh - epsLow <= 0.10 )
+               if ( epsHigh - epsLow <= 4*std::numeric_limits<double>::epsilon() )
                   epsHigh *= 2;
             }
             else
             {
-               if ( epsHigh - epsLow <= 0.01 )
+               if ( epsHigh - epsLow <= 2*std::numeric_limits<double>::epsilon() )
                   break;
                epsHigh = m_epsX;
             }
             m_epsX = (epsLow + epsHigh)/2;
          }
-         if ( XXS.Length() > __PCL_PSSPLINE_SIMPLIFY_MAX_POINTS )
+         if ( XXS.Length() > m_maxSplinePoints )
          {
             m_truncatedX = true;
-            XXS = DVector( XXS.Begin(), __PCL_PSSPLINE_SIMPLIFY_MAX_POINTS );
-            YXS = DVector( YXS.Begin(), __PCL_PSSPLINE_SIMPLIFY_MAX_POINTS );
-            ZXS = DVector( ZXS.Begin(), __PCL_PSSPLINE_SIMPLIFY_MAX_POINTS );
+            XXS = DVector( XXS.Begin(), m_maxSplinePoints );
+            YXS = DVector( YXS.Begin(), m_maxSplinePoints );
+            ZXS = DVector( ZXS.Begin(), m_maxSplinePoints );
          }
 
          // Simplified surface, Y axis.
          DVector XYS, YYS, ZYS;
-         m_epsY = 0.01;
-         epsLow = 0, epsHigh = 1;
-         for ( int i = 0; i < 100; ++i )
+         m_epsY = (zyMax - zyMin)/100;
+         epsLow = 0, epsHigh = (zyMax - zyMin)/10;
+         for ( int i = 0; i < 200; ++i )
          {
             SS.SetTolerance( m_epsY );
             SS.Simplify( XYS, YYS, ZYS, X, Y, ZY );
-            if ( XXS.Length() > __PCL_PSSPLINE_SIMPLIFY_MAX_POINTS )
+            if ( XYS.Length() > m_maxSplinePoints )
             {
                epsLow = m_epsY;
-               if ( epsHigh - epsLow <= 0.10 )
+               if ( epsHigh - epsLow <= 4*std::numeric_limits<double>::epsilon() )
                   epsHigh *= 2;
             }
             else
             {
-               if ( epsHigh - epsLow <= 0.01 )
+               if ( epsHigh - epsLow <= 2*std::numeric_limits<double>::epsilon() )
                   break;
                epsHigh = m_epsY;
             }
             m_epsY = (epsLow + epsHigh)/2;
          }
-         if ( XYS.Length() > __PCL_PSSPLINE_SIMPLIFY_MAX_POINTS )
+         if ( XYS.Length() > m_maxSplinePoints )
          {
             m_truncatedY = true;
-            XYS = DVector( XYS.Begin(), __PCL_PSSPLINE_SIMPLIFY_MAX_POINTS );
-            YYS = DVector( YYS.Begin(), __PCL_PSSPLINE_SIMPLIFY_MAX_POINTS );
-            ZYS = DVector( ZYS.Begin(), __PCL_PSSPLINE_SIMPLIFY_MAX_POINTS );
+            XYS = DVector( XYS.Begin(), m_maxSplinePoints );
+            YYS = DVector( YYS.Begin(), m_maxSplinePoints );
+            ZYS = DVector( ZYS.Begin(), m_maxSplinePoints );
          }
 
-         m_Sx.Initialize( XXS.Begin(), YXS.Begin(), ZXS.Begin(), XXS.Length() );
-         m_Sy.Initialize( XYS.Begin(), YYS.Begin(), ZYS.Begin(), XYS.Length() );
+         SplineGenerationThread<weight_vector> Tx( m_Sx, XXS, YXS, ZXS, XXS.Length(), weight_vector() );
+         SplineGenerationThread<weight_vector> Ty( m_Sy, XYS, YYS, ZYS, XYS.Length(), weight_vector() );
+         Tx.Start( ThreadPriority::DefaultMax );
+         Ty.Start( ThreadPriority::DefaultMax );
+         Tx.Wait();
+         Ty.Wait();
+         Tx.ValidateOrThrow();
+         Ty.ValidateOrThrow();
       }
       else
       {
-         m_Sx.Initialize( X.Begin(), Y.Begin(), ZX.Begin(), N, W.Begin() );
-         m_Sy.Initialize( X.Begin(), Y.Begin(), ZY.Begin(), N, W.Begin() );
+         m_truncatedX = m_truncatedY = N > m_maxSplinePoints;
+         SplineGenerationThread<weight_vector> Tx( m_Sx, X, Y, ZX, Min( N, m_maxSplinePoints ), W );
+         SplineGenerationThread<weight_vector> Ty( m_Sy, X, Y, ZY, Min( N, m_maxSplinePoints ), W );
+         Tx.Start( ThreadPriority::DefaultMax );
+         Ty.Start( ThreadPriority::DefaultMax );
+         Tx.Wait();
+         Ty.Wait();
+         Tx.ValidateOrThrow();
+         Ty.ValidateOrThrow();
       }
-   }
-
-   /*!
-    * \internal
-    * Internal-use initialization routine.
-    */
-   void Initialize( const DVector& X1, const DVector& Y1, const DVector& Z1,
-                    const DVector& X2, const DVector& Y2, const DVector& Z2,
-                    float smoothness = 0,
-                    const FVector& W1 = FVector(), const FVector& W2 = FVector(),
-                    int order = 2,
-                    rbf_type rbf = RadialBasisFunction::Default,
-                    double eps = 0,
-                    bool polynomial = true )
-   {
-      PCL_PRECONDITION( X1.Length() >= 3 )
-      PCL_PRECONDITION( X2.Length() >= 3 )
-      PCL_PRECONDITION( X1.Length() <= Y1.Length() )
-      PCL_PRECONDITION( X1.Length() <= Z1.Length() )
-      PCL_PRECONDITION( W1.IsEmpty() || X1.Length() <= W1.Length() )
-      PCL_PRECONDITION( X2.Length() <= Y2.Length() )
-      PCL_PRECONDITION( X2.Length() <= Z2.Length() )
-      PCL_PRECONDITION( W2.IsEmpty() || X2.Length() <= W2.Length() )
-      PCL_PRECONDITION( order >= 2 )
-
-      Clear();
-      m_useSimplifiers = m_incremental = false;
-      m_H = Homography();
-
-      if ( X1.Length() < 3 || X2.Length() < 3 )
-         throw Error( "PointSurfaceSpline::Initialize(): At least three input nodes must be specified." );
-
-      if ( X1.Length() > Y1.Length() ||
-           X1.Length() > Z1.Length() ||
-           !W1.IsEmpty() && X1.Length() > W1.Length() ||
-           X2.Length() > Y2.Length() ||
-           X2.Length() > Z2.Length() ||
-           !W2.IsEmpty() && X2.Length() > W2.Length() )
-         throw Error( "PointSurfaceSpline::Initialize(): Insufficient data." );
-
-      m_Sx.SetRBFType( rbf );
-      m_Sx.SetOrder( order );
-      m_Sx.SetShapeParameter( eps );
-      m_Sx.EnablePolynomial( polynomial );
-      m_Sx.SetSmoothing( smoothness );
-      m_Sx.Initialize( X1.Begin(), Y1.Begin(), Z1.Begin(), X1.Length(), W1.Begin() );
-
-      m_Sy.SetRBFType( rbf );
-      m_Sy.SetOrder( order );
-      m_Sy.SetShapeParameter( eps );
-      m_Sy.EnablePolynomial( polynomial );
-      m_Sy.SetSmoothing( smoothness );
-      m_Sy.Initialize( X2.Begin(), Y2.Begin(), Z2.Begin(), X2.Length(), W2.Begin() );
    }
 
    /*!
@@ -1408,6 +1368,29 @@ public:
    }
 
    /*!
+    * Returns the maximum number of interpolation points allowed for this point
+    * surface spline.
+    */
+   int MaxSplinePoints() const
+   {
+      return m_maxSplinePoints;
+   }
+
+   /*!
+    * Sets the maximum number of interpolation points allowed for this point
+    * surface spline.
+    *
+    * The default maximum number of interpolation points allowed for point
+    * surface splines is 2100 in current PCL versions. Take into account that
+    * surface spline generation has O(n^3) time complexity.
+    */
+   void SetMaxSplinePoints( int n )
+   {
+      PCL_PRECONDITION( n >= 3 )
+      m_maxSplinePoints = Max( 3, n );
+   }
+
+   /*!
     * Returns true iff automatic surface simplification is enabled for this
     * point surface spline.
     *
@@ -1440,6 +1423,28 @@ public:
    void DisableSimplifiers( bool disable = true )
    {
       EnableSimplifiers( !disable );
+   }
+
+   /*!
+    * Returns the fraction of outlier points rejected by surface simplifiers.
+    *
+    * See SetSimplifierRejectFraction() for more information on this parameter.
+    */
+   float SimplifierRejectFraction() const
+   {
+      return m_simplifierRejectFraction;
+   }
+
+   /*!
+    * Sets the fraction of outlier points rejected by surface simplifiers.
+    *
+    * See SurfaceSimplifier::SetRejectFraction() for a detailed description of
+    * the role of this parameter.
+    */
+   void SetSimplifierRejectFraction( float rejectFraction )
+   {
+      PCL_PRECONDITION( rejectFraction > 0 && rejectFraction < 1 )
+      m_simplifierRejectFraction = Range( rejectFraction, 0.0F, 1.0F );
    }
 
    /*!
@@ -1478,6 +1483,16 @@ public:
    bool TruncatedY() const
    {
       return m_truncatedY;
+   }
+
+   /*!
+    * Returns true iff the set of interpolation nodes was truncated during
+    * automatic simplification, either on the X axis, on the Y axis, or both.
+    * This should never happen under normal working conditions.
+    */
+   bool Truncated() const
+   {
+      return TruncatedX() || TruncatedY();
    }
 
    /*!
@@ -1545,8 +1560,7 @@ public:
    /*!
     * Returns an interpolated point at the specified coordinates.
     */
-   template <typename T>
-   DPoint operator ()( T x, T y ) const
+   DPoint operator ()( double x, double y ) const
    {
       DPoint p( m_Sx( x, y ), m_Sy( x, y ) );
       if ( m_incremental )
@@ -1560,7 +1574,7 @@ public:
    template <typename T>
    DPoint operator ()( const GenericPoint<T>& p ) const
    {
-      return operator ()( p.x, p.y );
+      return operator ()( double( p.x ), double( p.y ) );
    }
 
 private:
@@ -1568,22 +1582,69 @@ private:
    /*
     * The surface splines in the X and Y plane directions.
     */
-   spline m_Sx, m_Sy;
+   spline      m_Sx, m_Sy;
+   int         m_maxSplinePoints = __PCL_PSSPLINE_DEFAULT_MAX_POINTS;
 
    /*
     * Incremental surface splines.
     */
-   bool         m_incremental = false;  // true => fit differences w.r.t a projective transformation
-   Homography<> m_H;                    // base projective transformation when m_incremental = true
+   bool        m_incremental = false;  // true => fit differences w.r.t a projective transformation
+   Homography  m_H;                    // base projective transformation when m_incremental = true
 
    /*
-    * Surface simplification (only for initialization).
+    * Surface simplification.
     */
-   bool         m_useSimplifiers = false;
-   double       m_epsX = 0;             // simplification error on the X axis
-   double       m_epsY = 0;             // simplification error on the Y axis
-   bool         m_truncatedX = false;   // true => truncated vectors in the X axis
-   bool         m_truncatedY = false;   // true => truncated vectors in the Y axis
+   bool        m_useSimplifiers = false;
+   float       m_simplifierRejectFraction = 0.1;
+   double      m_epsX = 0;             // simplification error on the X axis
+   double      m_epsY = 0;             // simplification error on the Y axis
+   bool        m_truncatedX = false;   // true => truncated vectors in the X axis
+   bool        m_truncatedY = false;   // true => truncated vectors in the Y axis
+
+   template <class weight_vector>
+   class SplineGenerationThread : public Thread
+   {
+   public:
+
+      SplineGenerationThread( spline& S, const DVector& X, const DVector& Y, const DVector& Z, int N, const weight_vector& W )
+         : m_S( S ), m_X( X ), m_Y( Y ), m_Z( Z ), m_N( N ), m_W( W )
+      {
+      }
+
+      PCL_HOT_FUNCTION void Run() override
+      {
+         try
+         {
+            m_S.Initialize( m_X.Begin(), m_Y.Begin(), m_Z.Begin(), m_N, m_W.Begin() );
+            return;
+         }
+         catch ( const Exception& x )
+         {
+            m_exception = x;
+         }
+         catch ( ... )
+         {
+            m_exception = Error( "Unknown exception" );
+         }
+         m_S.Clear();
+      }
+
+      void ValidateOrThrow() const
+      {
+         if ( !m_S.IsValid() )
+            throw m_exception;
+      }
+
+   private:
+
+      spline&        m_S;
+      const DVector& m_X;
+      const DVector& m_Y;
+      const DVector& m_Z;
+      int            m_N;
+      weight_vector  m_W; // ### N.B. do not use a reference: the W ctor. argument can be a temporary object.
+      Exception      m_exception;
+   };
 
    friend class DrizzleData;
    friend class DrizzleDataDecoder;
@@ -1608,30 +1669,9 @@ private:
  *
  * \sa PointSurfaceSpline, SurfaceSpline
  */
-template <class P = DPoint>
 class PCL_CLASS RecursivePointSurfaceSpline : public ParallelProcess
 {
 public:
-
-   /*!
-    * Represents a point surface spline.
-    */
-   using spline = PointSurfaceSpline<P>;
-
-   /*
-    * Represents a recursive point surface spline.
-    */
-   using recursive_spline = RecursivePointSurfaceSpline<P>;
-
-   /*!
-    * Represents an interpolation point in two dimensions.
-    */
-   using point = typename spline::point;
-
-   /*!
-    * Represents a sequence of interpolation points.
-    */
-   using point_list = typename spline::point_list;
 
    /*!
     * Default constructor. Yields an empty instance that cannot be used without
@@ -1672,8 +1712,8 @@ public:
     * See the corresponding Initialize() member function for a detailed
     * description of parameters.
     */
-   template <class weight_vector = FVector>
-   RecursivePointSurfaceSpline( const point_list& P1, const point_list& P2,
+   template <class point_list1, class point_list2, class weight_vector = FVector>
+   RecursivePointSurfaceSpline( const point_list1& P1, const point_list2& P2,
                                 float smoothness = 0,
                                 int order = 2,
                                 const weight_vector& W = weight_vector(),
@@ -1769,8 +1809,8 @@ public:
     * than 3 may lead to numerically unstable interpolation devices, which
     * should always be used with care.
     */
-   template <class weight_vector = FVector>
-   void Initialize( const point_list& P1, const point_list& P2,
+   template <class point_list1, class point_list2, class weight_vector = FVector>
+   void Initialize( const point_list1& P1, const point_list2& P2,
                     float smoothness = 0,
                     const weight_vector& W = weight_vector(),
                     int order = 2,
@@ -1809,14 +1849,16 @@ public:
 #endif
          for ( const auto& p : P1 )
          {
-            if ( p.x < m_rect.x0 )
-               m_rect.x0 = p.x;
-            else if ( p.x > m_rect.x1 )
-               m_rect.x1 = p.x;
-            if ( p.y < m_rect.y0 )
-               m_rect.y0 = p.y;
-            else if ( p.y > m_rect.y1 )
-               m_rect.y1 = p.y;
+            double x = double( p.x );
+            double y = double( p.y );
+            if ( x < m_rect.x0 )
+               m_rect.x0 = x;
+            else if ( x > m_rect.x1 )
+               m_rect.x1 = x;
+            if ( y < m_rect.y0 )
+               m_rect.y0 = y;
+            else if ( y > m_rect.y1 )
+               m_rect.y1 = y;
          }
 
          m_spline.Initialize( P1, P2, smoothness, W, order,
@@ -1837,17 +1879,19 @@ public:
          node_list data;
          for ( size_type i = 0; i < P1.Length(); ++i )
          {
-            const point& p1 = P1[i];
-            const point& p2 = P2[i];
+            const auto& p1 = P1[i];
+            const auto& p2 = P2[i];
             data << (weighted ? Node( p1, p2, W[i] ) : Node( p1, p2 ));
-            if ( p1.x < rect.x0 )
-               rect.x0 = p1.x;
-            else if ( p1.x > rect.x1 )
-               rect.x1 = p1.x;
-            if ( p1.y < rect.y0 )
-               rect.y0 = p1.y;
-            else if ( p1.y > rect.y1 )
-               rect.y1 = p1.y;
+            double x = p1.x;
+            double y = p1.y;
+            if ( x < rect.x0 )
+               rect.x0 = x;
+            else if ( x > rect.x1 )
+               rect.x1 = x;
+            if ( y < rect.y0 )
+               rect.y0 = y;
+            else if ( y > rect.y1 )
+               rect.y1 = y;
          }
          // Force a square interpolation region for optimal quadtree behavior.
          if ( rect.Width() < rect.Height() )
@@ -1882,7 +1926,7 @@ public:
                 */
                if ( N.Length() > size_type( maxSplineLength ) )
                {
-                  point c = rect.Center();
+                  DPoint c = rect.Center();
                   double d = 0.61 * (Max( r.Width(), r.Height() )/2 + Max( rect.Width(), rect.Height() )/4);
                   N.Sort(
                      [&]( const auto& a, const auto& b )
@@ -1895,7 +1939,7 @@ public:
                 * Get the optimal subset of at most maxSplineLength redundant
                 * interpolation points for this quadtree node.
                 */
-               point_list P1, P2;
+               Array<DPoint> P1, P2;
                Array<float> PW;
                for ( int j = 0, l = Min( int( N.Length() ), maxSplineLength ); j < l; ++j )
                {
@@ -1949,7 +1993,7 @@ public:
       m_tree.Traverse(
          []( const search_rectangle&, node_list&, void*& D )
          {
-            delete reinterpret_cast<recursive_spline*&>( D );
+            delete reinterpret_cast<RecursivePointSurfaceSpline*&>( D );
          } );
       m_tree.Clear();
       m_spline.Clear();
@@ -1989,8 +2033,7 @@ public:
     * returned conventionally. Otherwise the nearest subspline will be used to
     * extrapolate the returned value.
     */
-   template <typename T>
-   DPoint operator ()( T x, T y ) const
+   DPoint operator ()( double x, double y ) const
    {
       if ( m_spline.IsValid() )
       {
@@ -2038,7 +2081,7 @@ public:
             const typename tree::LeafNode* leaf = static_cast<const typename tree::LeafNode*>( node );
             if ( leaf->data == nullptr ) // ?!
                return 0.0;
-            return reinterpret_cast<recursive_spline*>( leaf->data )->operator()( x, y );
+            return reinterpret_cast<RecursivePointSurfaceSpline*>( leaf->data )->operator()( x, y );
          }
 
          DPoint p = 0.0;
@@ -2055,7 +2098,7 @@ public:
 
             if ( leaf != nullptr )
             {
-               p += reinterpret_cast<recursive_spline*>( leaf->data )->operator()( x, y );
+               p += reinterpret_cast<RecursivePointSurfaceSpline*>( leaf->data )->operator()( x, y );
                ++n;
             }
          }
@@ -2071,7 +2114,7 @@ public:
 
             if ( leaf != nullptr )
             {
-               p += reinterpret_cast<recursive_spline*>( leaf->data )->operator()( x, y );
+               p += reinterpret_cast<RecursivePointSurfaceSpline*>( leaf->data )->operator()( x, y );
                ++n;
             }
          }
@@ -2087,7 +2130,7 @@ public:
 
             if ( leaf != nullptr )
             {
-               p += reinterpret_cast<recursive_spline*>( leaf->data )->operator()( x, y );
+               p += reinterpret_cast<RecursivePointSurfaceSpline*>( leaf->data )->operator()( x, y );
                ++n;
             }
          }
@@ -2103,7 +2146,7 @@ public:
 
             if ( leaf != nullptr )
             {
-               p += reinterpret_cast<recursive_spline*>( leaf->data )->operator()( x, y );
+               p += reinterpret_cast<RecursivePointSurfaceSpline*>( leaf->data )->operator()( x, y );
                ++n;
             }
          }
@@ -2127,7 +2170,7 @@ public:
    template <typename T>
    DPoint operator ()( const GenericPoint<T>& p ) const
    {
-      return operator ()( p.x, p.y );
+      return operator ()( double( p.x ), double( p.y ) );
    }
 
 private:
@@ -2137,32 +2180,34 @@ private:
     */
    struct Node
    {
-      using component = typename point::component;
-
-      point position, value;
+      DPoint position, value;
       float weight;
 
-      Node( const point& p, const point& v )
-         : position( p )
-         , value( v )
+      using component = DPoint::component;
+
+      template <class point1, class point2>
+      Node( const point1& p, const point2& v )
+         : position( double( p.x ), double( p.y ) )
+         , value( double( v.x ), double( v.y ) )
       {
       }
 
-      Node( const point& p, const point& v, float w )
-         : position( p )
-         , value( v )
+      template <class point1, class point2>
+      Node( const point1& p, const point2& v, float w )
+         : position( double( p.x ), double( p.y ) )
+         , value( double( v.x ), double( v.y ) )
          , weight( w )
       {
       }
 
       Node( const Node& ) = default;
 
-      component& operator []( int i )
+      double& operator []( int i )
       {
          return position[i];
       }
 
-      component operator []( int i ) const
+      double operator []( int i ) const
       {
          return position[i];
       }
@@ -2174,10 +2219,10 @@ private:
    using search_coordinate = typename tree::coordinate;
    using search_point = GenericPoint<search_coordinate>;
 
-   tree             m_tree;   // the tree of subsplines
-   spline           m_spline; // final point spline if there is no further recursion
-   search_rectangle m_rect = search_coordinate( 0 ); // the interpolation region for this subspline
-   bool             m_extrapolate = __PCL_RSSPLINE_DEFAULT_ALLOW_EXTRAPOLATION;
+   tree               m_tree;   // the tree of subsplines
+   PointSurfaceSpline m_spline; // final point spline if there is no further recursion
+   search_rectangle   m_rect = search_coordinate( 0 ); // the interpolation region for this subspline
+   bool               m_extrapolate = __PCL_RSSPLINE_DEFAULT_ALLOW_EXTRAPOLATION;
 
    static constexpr search_coordinate SearchDelta =
                         2 * std::numeric_limits<search_coordinate>::epsilon();
@@ -2187,11 +2232,11 @@ private:
     */
    struct SubsplineData
    {
-      point_list     P1, P2;
+      Array<DPoint>  P1, P2;
       Array<float>   PW;
       mutable void** nodeData;
 
-      SubsplineData( const point_list& p1, const point_list& p2, const Array<float>& pw, void*& nd )
+      SubsplineData( const Array<DPoint>& p1, const Array<DPoint>& p2, const Array<float>& pw, void*& nd )
          : P1( p1 )
          , P2( p2 )
          , PW( pw )
@@ -2231,13 +2276,13 @@ private:
          for ( int i = m_startIndex; i < m_endIndex; ++i )
          {
             const SubsplineData& d = m_subsplineData[i];
-            AutoPointer<recursive_spline> s(
-               new recursive_spline( d.P1, d.P2, m_smoothness, m_order, d.PW,
-                                     m_allowExtrapolation,
-                                     m_maxSplineLength,
-                                     m_bucketCapacity,
-                                     false/*verbose*/ ) );
-            *reinterpret_cast<recursive_spline**>( d.nodeData ) = s.Release();
+            AutoPointer<RecursivePointSurfaceSpline> s(
+               new RecursivePointSurfaceSpline( d.P1, d.P2, m_smoothness, m_order, d.PW,
+                                                m_allowExtrapolation,
+                                                m_maxSplineLength,
+                                                m_bucketCapacity,
+                                                false/*verbose*/ ) );
+            *reinterpret_cast<RecursivePointSurfaceSpline**>( d.nodeData ) = s.Release();
 
             UPDATE_THREAD_MONITOR( 1 )
          }
@@ -2274,4 +2319,4 @@ private:
 #endif   // __PCL_SurfaceSpline_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SurfaceSpline.h - Released 2023-06-21T16:29:44Z
+// EOF pcl/SurfaceSpline.h - Released 2023-07-06T16:53:21Z

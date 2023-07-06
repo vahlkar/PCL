@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.5
+// /_/     \____//_____/   PCL 2.5.6
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.3.4
+// Standard Global Process Module Version 1.4.1
 // ----------------------------------------------------------------------------
-// PreferencesInstance.h - Released 2023-06-21T16:30:12Z
+// PreferencesInstance.h - Released 2023-07-06T16:53:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -120,6 +120,10 @@ struct MainWindowPreferences
    pcl_bool    fadeToolTip;
    pcl_bool    explodeIcons;
    pcl_bool    implodeIcons;
+   pcl_bool    dropShadowChildWindows;
+   pcl_bool    dropShadowIcons;
+   double      dropShadowBlurRadius;
+   uint32      dropShadowColor;
    pcl_bool    animateWindows;
    pcl_bool    animateMenu;
    pcl_bool    animateCombo;
@@ -316,4 +320,4 @@ private:
 #endif   // __PreferencesInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInstance.h - Released 2023-06-21T16:30:12Z
+// EOF PreferencesInstance.h - Released 2023-07-06T16:53:46Z

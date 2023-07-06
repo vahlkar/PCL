@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.5
+// /_/     \____//_____/   PCL 2.5.6
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// AdaptiveStretchProcess.cpp - Released 2023-06-21T16:30:12Z
+// AdaptiveStretchProcess.cpp - Released 2023-07-06T16:53:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -141,4 +141,4 @@ ProcessImplementation* AdaptiveStretchProcess::Clone( const ProcessImplementatio
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF AdaptiveStretchProcess.cpp - Released 2023-06-21T16:30:12Z
+// EOF AdaptiveStretchProcess.cpp - Released 2023-07-06T16:53:46Z

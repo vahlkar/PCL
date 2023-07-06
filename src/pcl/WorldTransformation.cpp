@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.5
+// /_/     \____//_____/   PCL 2.5.6
 // ----------------------------------------------------------------------------
-// pcl/WorldTransformation.cpp - Released 2023-06-21T16:29:53Z
+// pcl/WorldTransformation.cpp - Released 2023-07-06T16:53:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -70,12 +70,11 @@ namespace pcl
 void SplineWorldTransformation::Serialize( ByteArray& data ) const
 {
    IsoString text;
-   text << "VERSION:1.1" << '\n'
+   text << "VERSION:1.2" << '\n'
         << "TYPE:SurfaceSpline" << '\n'
         << "ORDER:" << IsoString( m_order ) << '\n'
         << "SMOOTHING:" << IsoString().Format( "%.4f", m_smoothness ) << '\n'
-        << "SIMPLIFIER:" << (m_enableSimplifier ? '1' : '0') << '\n'
-        << "TOLERANCE:" << IsoString().Format( "%.2f", m_simplifierTolerance ) << '\n'
+        << "SIMPLIFIER:" << (m_useSimplifiers ? '1' : '0') << '\n'
         << "REJECTFRACTION:" << IsoString().Format( "%.2f", m_simplifierRejectFraction ) << '\n'
         << "CONTROLPOINTS:[" << '\n';
 
@@ -111,7 +110,7 @@ void SplineWorldTransformation::Deserialize( const ByteArray& data )
          lines[0].Break( tokens, ':' );
          if ( tokens.Length() != 2 || tokens[0] != "VERSION" )
             throw Error( "Invalid spline raw serialization version data." );
-         if ( tokens[1] != "1" && tokens[1] != "1.1" )
+         if ( tokens[1] != "1" && tokens[1] != "1.1" && tokens[1] != "1.2" )
             throw Error( "Unsupported spline raw serialization version '" + tokens[1] + "'." );
       }
 
@@ -128,9 +127,7 @@ void SplineWorldTransformation::Deserialize( const ByteArray& data )
          else if ( tokens[0] == "SMOOTHING" )
             m_smoothness = tokens[1].ToFloat();
          else if ( tokens[0] == "SIMPLIFIER" )
-            m_enableSimplifier = tokens[1].ToInt() != 0;
-         else if ( tokens[0] == "TOLERANCE" )
-            m_simplifierTolerance = tokens[1].ToFloat();
+            m_useSimplifiers = tokens[1].ToInt() != 0;
          else if ( tokens[0] == "REJECTFRACTION" )
             m_simplifierRejectFraction = tokens[1].ToFloat();
          else if ( tokens[0] == "CONTROLPOINTS" )
@@ -179,6 +176,56 @@ void SplineWorldTransformation::Deserialize( const ByteArray& data )
 
 // ----------------------------------------------------------------------------
 
+namespace pcl_SWT
+{
+   class SplineGenerationThread : public Thread
+   {
+   public:
+
+      SplineGenerationThread( PointSurfaceSpline& S, const Array<DPoint>& P1, const Array<DPoint>& P2, float smoothness, int order,
+                              const FVector& W = FVector() )
+         : m_S( S ), m_P1( P1 ), m_P2( P2 ), m_smoothness( smoothness ), m_order( order ), m_W( W )
+      {
+      }
+
+      PCL_HOT_FUNCTION void Run() override
+      {
+         try
+         {
+            SurfaceSplineBase::rbf_type rbfType =
+               (m_order == 2) ? RadialBasisFunction::ThinPlateSpline : RadialBasisFunction::VariableOrder;
+            m_S.Initialize( m_P1, m_P2, m_smoothness, m_W, m_order, rbfType );
+            return;
+         }
+         catch ( const Exception& x )
+         {
+            m_exception = x;
+         }
+         catch ( ... )
+         {
+            m_exception = Error( "Unknown exception" );
+         }
+         m_S.Clear();
+      }
+
+      void ValidateOrThrow() const
+      {
+         if ( !m_S.IsValid() )
+            throw m_exception;
+      }
+
+   private:
+
+      PointSurfaceSpline&  m_S;
+      const Array<DPoint>& m_P1;
+      const Array<DPoint>& m_P2;
+      float                m_smoothness;
+      int                  m_order;
+      FVector              m_W; // ### N.B. do not use a reference: the W ctor. argument can be a temporary object.
+      Exception            m_exception;
+   };
+}
+
 void SplineWorldTransformation::InitializeSplines()
 {
    try
@@ -197,7 +244,6 @@ void SplineWorldTransformation::InitializeSplines()
       double ymin = m_controlPointsI[0].y, ymax = ymin;
       double lmin = m_controlPointsW[0].x, lmax = lmin;
       double bmin = m_controlPointsW[0].y, bmax = bmin;
-      DVector l( n ), b( n ), x( n ), y( n );
       for ( int i = 0; i < n; ++i )
       {
          if ( m_controlPointsI[i].x < xmin )
@@ -219,11 +265,6 @@ void SplineWorldTransformation::InitializeSplines()
             bmin = m_controlPointsW[i].y;
          if ( m_controlPointsW[i].y > bmax )
             bmax = m_controlPointsW[i].y;
-
-         l[i] = m_controlPointsW[i].x;
-         b[i] = m_controlPointsW[i].y;
-         x[i] = m_controlPointsI[i].x;
-         y[i] = m_controlPointsI[i].y;
       }
 
       /*
@@ -236,12 +277,17 @@ void SplineWorldTransformation::InitializeSplines()
       double dy = ymax - ymin;
       double dl = lmax - lmin;
       double db = bmax - bmin;
-      double resolution = Sqrt( dl*dl + db*db )/Sqrt( dx*dx + dy*dy );
+      m_resolution = Sqrt( dl*dl + db*db )/Sqrt( dx*dx + dy*dy );
 
-      SurfaceSplineBase::rbf_type rbfType =
-         (m_order == 2) ? RadialBasisFunction::ThinPlateSpline : RadialBasisFunction::VariableOrder;
+      m_projectiveWI = Homography( m_controlPointsW, m_controlPointsI );
+      m_splineWI.SetLinearFunction( m_projectiveWI );
+      m_splineWI.EnableIncrementalFunction();
 
-      if ( m_enableSimplifier )
+      m_projectiveIW = Homography( m_controlPointsI, m_controlPointsW );
+      m_splineIW.SetLinearFunction( m_projectiveIW );
+      m_splineIW.EnableIncrementalFunction();
+
+      if ( m_useSimplifiers )
       {
          /*
           * With surface simplification enabled, build approximating surface
@@ -250,63 +296,24 @@ void SplineWorldTransformation::InitializeSplines()
           * case, just to filter out residual noise, since surface
           * simplification applies robust outlier rejection techniques.
           */
-         SurfaceSimplifier SS;
-         SS.EnableRejection();
-         SS.SetRejectFraction( m_simplifierRejectFraction );
-         SS.EnableCentroidInclusion();
+         m_splineWI.EnableSimplifiers();
+         m_splineWI.SetSimplifierRejectFraction( m_simplifierRejectFraction );
+         m_splineWI.SetMaxSplinePoints( __PCL_WCS_MAX_SPLINE_POINTS );
 
-         // Simplified surface coordinates.
-         DVector xs1, ys1, xs2, ys2, zxs, zys;
+         m_splineIW.EnableSimplifiers();
+         m_splineIW.SetSimplifierRejectFraction( m_simplifierRejectFraction );
+         m_splineIW.SetMaxSplinePoints( __PCL_WCS_MAX_SPLINE_POINTS );
 
-         /*
-          * Simplify the world-to-image transformation surface.
-          */
-         SS.SetTolerance( m_simplifierTolerance ); // in pixels
-         SS.Simplify( xs1, ys1, zxs, l, b, x );
-         if ( xs1.Length() > __PCL_WCS_MAX_SPLINE_POINTS )
-         {
-            m_truncated = true;
-            xs1 = DVector( xs1.Begin(), __PCL_WCS_MAX_SPLINE_POINTS );
-            ys1 = DVector( ys1.Begin(), __PCL_WCS_MAX_SPLINE_POINTS );
-            zxs = DVector( zxs.Begin(), __PCL_WCS_MAX_SPLINE_POINTS );
-         }
-         SS.Simplify( xs2, ys2, zys, l, b, y );
-         if ( xs2.Length() > __PCL_WCS_MAX_SPLINE_POINTS )
-         {
-            m_truncated = true;
-            xs2 = DVector( xs2.Begin(), __PCL_WCS_MAX_SPLINE_POINTS );
-            ys2 = DVector( ys2.Begin(), __PCL_WCS_MAX_SPLINE_POINTS );
-            zys = DVector( zys.Begin(), __PCL_WCS_MAX_SPLINE_POINTS );
-         }
-         m_splineWI.Initialize( xs1, ys1, zxs, xs2, ys2, zys,
-                                m_smoothness, // in pixels
-                                FVector()/*xWeights*/, FVector()/*yWeights*/,
-                                m_order, rbfType );
+         pcl_SWT::SplineGenerationThread TWI( m_splineWI, m_controlPointsW, m_controlPointsI, m_smoothness/*pixels*/, m_order );
+         pcl_SWT::SplineGenerationThread TIW( m_splineIW, m_controlPointsI, m_controlPointsW, m_smoothness*m_resolution/*degrees*/, m_order );
+         TWI.Start( ThreadPriority::DefaultMax );
+         TIW.Start( ThreadPriority::DefaultMax );
+         TWI.Wait();
+         TIW.Wait();
+         TWI.ValidateOrThrow();
+         TIW.ValidateOrThrow();
 
-         /*
-          * Simplify the image-to-world transformation surface.
-          */
-         SS.SetTolerance( m_simplifierTolerance*resolution ); // in degrees
-         SS.Simplify( xs1, ys1, zxs, x, y, l );
-         if ( xs1.Length() > __PCL_WCS_MAX_SPLINE_POINTS )
-         {
-            m_truncated = true;
-            xs1 = DVector( xs1.Begin(), __PCL_WCS_MAX_SPLINE_POINTS );
-            ys1 = DVector( ys1.Begin(), __PCL_WCS_MAX_SPLINE_POINTS );
-            zxs = DVector( zxs.Begin(), __PCL_WCS_MAX_SPLINE_POINTS );
-         }
-         SS.Simplify( xs2, ys2, zys, x, y, b );
-         if ( xs2.Length() > __PCL_WCS_MAX_SPLINE_POINTS )
-         {
-            m_truncated = true;
-            xs2 = DVector( xs2.Begin(), __PCL_WCS_MAX_SPLINE_POINTS );
-            ys2 = DVector( ys2.Begin(), __PCL_WCS_MAX_SPLINE_POINTS );
-            zys = DVector( zys.Begin(), __PCL_WCS_MAX_SPLINE_POINTS );
-         }
-         m_splineIW.Initialize( xs1, ys1, zxs, xs2, ys2, zys,
-                                m_smoothness*resolution, // in degrees
-                                FVector()/*xWeights*/, FVector()/*yWeights*/,
-                                m_order, rbfType );
+         m_truncated = m_splineWI.Truncated() || m_splineIW.Truncated();
       }
       else
       {
@@ -320,27 +327,32 @@ void SplineWorldTransformation::InitializeSplines()
             m_truncated = true;
             Array<DPoint> PW( m_controlPointsW.Begin(), m_controlPointsW.At( __PCL_WCS_MAX_SPLINE_POINTS ) );
             Array<DPoint> PI( m_controlPointsI.Begin(), m_controlPointsI.At( __PCL_WCS_MAX_SPLINE_POINTS ) );
-            FVector w = m_weights.IsEmpty() ? FVector() : FVector( m_weights.Begin(), __PCL_WCS_MAX_SPLINE_POINTS );
-            m_splineWI.Initialize( PW, PI,
-                                   m_smoothness, w,
-                                   m_order, rbfType );
-            m_splineIW.Initialize( PI, PW,
-                                   m_smoothness*resolution, w,
-                                   m_order, rbfType );
+            FVector W = m_weights.IsEmpty() ? FVector() : FVector( m_weights.Begin(), __PCL_WCS_MAX_SPLINE_POINTS );
+
+            pcl_SWT::SplineGenerationThread TWI( m_splineWI, PW, PI, m_smoothness/*pixels*/, m_order, W );
+            pcl_SWT::SplineGenerationThread TIW( m_splineIW, PI, PW, m_smoothness*m_resolution/*degrees*/, m_order, W );
+            TWI.Start( ThreadPriority::DefaultMax );
+            TIW.Start( ThreadPriority::DefaultMax );
+            TWI.Wait();
+            TIW.Wait();
+            TWI.ValidateOrThrow();
+            TIW.ValidateOrThrow();
          }
          else
          {
-            m_splineWI.Initialize( m_controlPointsW, m_controlPointsI,
-                                   m_smoothness, m_weights,
-                                   m_order, rbfType );
-            m_splineIW.Initialize( m_controlPointsI, m_controlPointsW,
-                                   m_smoothness*resolution, m_weights,
-                                   m_order, rbfType );
+            pcl_SWT::SplineGenerationThread TWI( m_splineWI, m_controlPointsW, m_controlPointsI, m_smoothness/*pixels*/, m_order, m_weights );
+            pcl_SWT::SplineGenerationThread TIW( m_splineIW, m_controlPointsI, m_controlPointsW, m_smoothness*m_resolution/*degrees*/, m_order, m_weights );
+            TWI.Start( ThreadPriority::DefaultMax );
+            TIW.Start( ThreadPriority::DefaultMax );
+            TWI.Wait();
+            TIW.Wait();
+            TWI.ValidateOrThrow();
+            TIW.ValidateOrThrow();
          }
       }
 
       if ( !m_splineWI.IsValid() || !m_splineIW.IsValid() )
-         throw Error( "Invalid surface spline initialization." );
+         throw Error( "Invalid surface spline initialization (unknown reason)." );
    }
    catch ( const Exception& x )
    {
@@ -402,4 +414,4 @@ void SplineWorldTransformation::CalculateLinearApproximation()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/WorldTransformation.cpp - Released 2023-06-21T16:29:53Z
+// EOF pcl/WorldTransformation.cpp - Released 2023-07-06T16:53:28Z

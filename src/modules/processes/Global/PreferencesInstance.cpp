@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.5
+// /_/     \____//_____/   PCL 2.5.6
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.3.4
+// Standard Global Process Module Version 1.4.1
 // ----------------------------------------------------------------------------
-// PreferencesInstance.cpp - Released 2023-06-21T16:30:12Z
+// PreferencesInstance.cpp - Released 2023-07-06T16:53:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -166,6 +166,10 @@ bool PreferencesInstance::ExecuteGlobal()
       PixInsightSettings::SetGlobalFlag    ( "MainWindow/FadeToolTip",                          mainWindow.fadeToolTip );
       PixInsightSettings::SetGlobalFlag    ( "MainWindow/ExplodeIcons",                         mainWindow.explodeIcons );
       PixInsightSettings::SetGlobalFlag    ( "MainWindow/ImplodeIcons",                         mainWindow.implodeIcons );
+      PixInsightSettings::SetGlobalFlag    ( "MainWindow/DropShadowChildWindows",               mainWindow.dropShadowChildWindows );
+      PixInsightSettings::SetGlobalFlag    ( "MainWindow/DropShadowIcons",                      mainWindow.dropShadowIcons );
+      PixInsightSettings::SetGlobalReal    ( "MainWindow/DropShadowBlurRadius",                 mainWindow.dropShadowBlurRadius );
+      PixInsightSettings::SetGlobalColor   ( "MainWindow/DropShadowColor",                      mainWindow.dropShadowColor );
       PixInsightSettings::SetGlobalFlag    ( "MainWindow/AnimateWindows",                       mainWindow.animateWindows );
       PixInsightSettings::SetGlobalFlag    ( "MainWindow/AnimateMenu",                          mainWindow.animateMenu );
       PixInsightSettings::SetGlobalFlag    ( "MainWindow/AnimateCombo",                         mainWindow.animateCombo );
@@ -406,6 +410,14 @@ void* PreferencesInstance::LockParameter( const MetaParameter* p, size_type tabl
       return &mainWindow.explodeIcons;
    if ( p == METAPARAMETER_INSTANCE_ID( MainWindow, implodeIcons ) )
       return &mainWindow.implodeIcons;
+   if ( p == METAPARAMETER_INSTANCE_ID( MainWindow, dropShadowChildWindows ) )
+      return &mainWindow.dropShadowChildWindows;
+   if ( p == METAPARAMETER_INSTANCE_ID( MainWindow, dropShadowIcons ) )
+      return &mainWindow.dropShadowIcons;
+   if ( p == METAPARAMETER_INSTANCE_ID( MainWindow, dropShadowBlurRadius ) )
+      return &mainWindow.dropShadowBlurRadius;
+   if ( p == METAPARAMETER_INSTANCE_ID( MainWindow, dropShadowColor ) )
+      return &mainWindow.dropShadowColor;
    if ( p == METAPARAMETER_INSTANCE_ID( MainWindow, animateWindows ) )
       return &mainWindow.animateWindows;
    if ( p == METAPARAMETER_INSTANCE_ID( MainWindow, animateMenu ) )
@@ -739,6 +751,10 @@ void PreferencesInstance::LoadDefaultSettings()
    mainWindow.fadeToolTip                       =         METAPARAMETER_INSTANCE_ID( MainWindow, fadeToolTip                       )->DefaultValue();
    mainWindow.explodeIcons                      =         METAPARAMETER_INSTANCE_ID( MainWindow, explodeIcons                      )->DefaultValue();
    mainWindow.implodeIcons                      =         METAPARAMETER_INSTANCE_ID( MainWindow, implodeIcons                      )->DefaultValue();
+   mainWindow.dropShadowChildWindows            =         METAPARAMETER_INSTANCE_ID( MainWindow, dropShadowChildWindows            )->DefaultValue();
+   mainWindow.dropShadowIcons                   =         METAPARAMETER_INSTANCE_ID( MainWindow, dropShadowIcons                   )->DefaultValue();
+   mainWindow.dropShadowBlurRadius              =         METAPARAMETER_INSTANCE_ID( MainWindow, dropShadowBlurRadius              )->DefaultValue();
+   mainWindow.dropShadowColor                   =         METAPARAMETER_INSTANCE_ID( MainWindow, dropShadowColor                   )->DefaultValue();
    mainWindow.animateWindows                    =         METAPARAMETER_INSTANCE_ID( MainWindow, animateWindows                    )->DefaultValue();
    mainWindow.animateMenu                       =         METAPARAMETER_INSTANCE_ID( MainWindow, animateMenu                       )->DefaultValue();
    mainWindow.animateCombo                      =         METAPARAMETER_INSTANCE_ID( MainWindow, animateCombo                      )->DefaultValue();
@@ -913,6 +929,10 @@ void PreferencesInstance::LoadCurrentSettings()
    mainWindow.fadeToolTip                       = PixInsightSettings::GlobalFlag    ( "MainWindow/FadeToolTip" );
    mainWindow.explodeIcons                      = PixInsightSettings::GlobalFlag    ( "MainWindow/ExplodeIcons" );
    mainWindow.implodeIcons                      = PixInsightSettings::GlobalFlag    ( "MainWindow/ImplodeIcons" );
+   mainWindow.dropShadowChildWindows            = PixInsightSettings::GlobalFlag    ( "MainWindow/DropShadowChildWindows" );
+   mainWindow.dropShadowIcons                   = PixInsightSettings::GlobalFlag    ( "MainWindow/DropShadowIcons" );
+   mainWindow.dropShadowBlurRadius              = PixInsightSettings::GlobalReal    ( "MainWindow/DropShadowBlurRadius" );
+   mainWindow.dropShadowColor                   = PixInsightSettings::GlobalColor   ( "MainWindow/DropShadowColor" );
    mainWindow.animateWindows                    = PixInsightSettings::GlobalFlag    ( "MainWindow/AnimateWindows" );
    mainWindow.animateMenu                       = PixInsightSettings::GlobalFlag    ( "MainWindow/AnimateMenu" );
    mainWindow.animateCombo                      = PixInsightSettings::GlobalFlag    ( "MainWindow/AnimateCombo" );
@@ -1149,4 +1169,4 @@ String* PreferencesInstance::StringParameterFromMetaParameter( const MetaParamet
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInstance.cpp - Released 2023-06-21T16:30:12Z
+// EOF PreferencesInstance.cpp - Released 2023-07-06T16:53:46Z

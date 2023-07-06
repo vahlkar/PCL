@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.5
+// /_/     \____//_____/   PCL 2.5.6
 // ----------------------------------------------------------------------------
-// pcl/WorldTransformation.h - Released 2023-06-21T16:29:45Z
+// pcl/WorldTransformation.h - Released 2023-07-06T16:53:21Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -71,9 +71,8 @@ namespace pcl
 // ----------------------------------------------------------------------------
 
 #define __PCL_WCS_DEFAULT_SPLINE_ORDER                       2
-#define __PCL_WCS_DEFAULT_SPLINE_SMOOTHNESS                  0.025F
+#define __PCL_WCS_DEFAULT_SPLINE_SMOOTHNESS                  0.01F
 #define __PCL_WCS_SURFACE_SIMPLIFIER_DEFAULT_ENABLED         true
-#define __PCL_WCS_SURFACE_SIMPLIFIER_DEFAULT_TOLERANCE       0.25F // px
 #define __PCL_WCS_SURFACE_SIMPLIFIER_DEFAULT_REJECT_FRACTION 0.10F
 #define __PCL_WCS_MAX_SPLINE_POINTS                          2100
 
@@ -266,19 +265,19 @@ public:
     *                         words, there must be a one-to-one correspondence
     *                         between world and image control points.
     *
-    * \param smoothness       When this parameter is greater than zero,
-    *                         approximating splines will be generated instead
-    *                         of interpolating splines. The higher this value,
-    *                         the closest will be the 2-D approximating surface
-    *                         to the reference plane of the image.
-    *                         Approximating surface splines are robust to
-    *                         outlier control points and hence recommended in
+    * \param smoothness       Spline regularization factor in pixels. When this
+    *                         parameter is greater than zero, approximating
+    *                         splines will be generated instead of
+    *                         interpolating splines. The higher this value, the
+    *                         closest will be the 2-D approximating surface to
+    *                         the reference plane of the image. Approximating
+    *                         surface splines are more robust to noise in the
+    *                         sets of control points and hence recommended in
     *                         virtually all cases. The value of this parameter
     *                         should be relatively small if \a enableSimplifier
     *                         is true, since the surface simplification
     *                         algorithm already performs robust rejection of
-    *                         outliers. The default value of 0.025 is normally
-    *                         quite appropriate.
+    *                         outliers. The default value is 0.01 pixels.
     *
     * \param weights          When the \a smoothness parameter is greater than
     *                         zero and this vector is not empty, it must define
@@ -316,10 +315,6 @@ public:
     *                         enabled by default. When this parameter is true,
     *                         the \a weights parameter is ignored.
     *
-    * \param simplifierTolerance       Tolerance of the surface simplification
-    *                         algorithm in pixels. The default value is 0.25
-    *                         pixels.
-    *
     * \param simplifierRejectFraction  Fraction of rejected control points for
     *                         simplification of surface subregions. The default
     *                         value is 0.10.
@@ -346,15 +341,13 @@ public:
                               const FVector& weights = FVector(),
                               int order = __PCL_WCS_DEFAULT_SPLINE_ORDER,
                               bool enableSimplifier = __PCL_WCS_SURFACE_SIMPLIFIER_DEFAULT_ENABLED,
-                              float simplifierTolerance = __PCL_WCS_SURFACE_SIMPLIFIER_DEFAULT_TOLERANCE,
                               float simplifierRejectFraction = __PCL_WCS_SURFACE_SIMPLIFIER_DEFAULT_REJECT_FRACTION )
       : m_controlPointsW( controlPointsW )
       , m_controlPointsI( controlPointsI )
       , m_order( order )
       , m_smoothness( smoothness )
       , m_weights( weights )
-      , m_enableSimplifier( enableSimplifier )
-      , m_simplifierTolerance( simplifierTolerance )
+      , m_useSimplifiers( enableSimplifier )
       , m_simplifierRejectFraction( simplifierRejectFraction )
    {
       InitializeSplines();
@@ -494,7 +487,7 @@ public:
     * reference rectangular region \a rect and grid distance \a delta in
     * pixels.
     *
-    * A grid distance of 24 pixels is applied by default. This is normally more
+    * A grid distance of 16 pixels is applied by default. This is normally more
     * than sufficient to yield accurate coordinate readouts, even for strongly
     * distorted images.
     *
@@ -505,7 +498,7 @@ public:
     * feedback must be provided to the user during the potentially long
     * operation, it must be given before calling this function.
     */
-   void InitializeGridInterpolations( const Rect& rect, int delta = 24 )
+   void InitializeGridInterpolations( const Rect& rect, int delta = 16 )
    {
       m_gridWI.Initialize( rect, delta, m_splineWI, false/*verbose*/ );
       m_gridIW.Initialize( rect, delta, m_splineIW, false/*verbose*/ );
@@ -614,18 +607,20 @@ public:
 
    /*!
     * Returns true iff the lists of transformation control points were
-    * truncated before generation of surface splines. If surface simplification
-    * is enabled, truncation may happen, when necessary, after simplification.
-    * If no simplification is used, truncation may happen directly on the
-    * original lists of control points.
+    * truncated before generation of surface splines.
     *
-    * A maximum of 2100 control points is imposed in the current implementation
+    * No truncation should happen under normal working conditions if surface
+    * simplification is enabled.
+    *
+    * If no simplification is used, truncation may happen directly on the
+    * original lists of control points. Without surface simplification, a
+    * maximum of 2100 control points is imposed in the current implementation
     * to prevent excessive execution times for surface spline generation, which
     * grow approximately with O(n^3) complexity.
     */
    bool TruncatedControlPoints() const
    {
-      return m_truncated;
+      return m_truncated; // fetched during initialization
    }
 
    /*!
@@ -633,19 +628,9 @@ public:
     * for generation of surface splines. See the class constructor for more
     * information.
     */
-   bool IsSimplifierEnabled() const
+   bool SimplifiersEnabled() const
    {
-      return m_enableSimplifier;
-   }
-
-   /*!
-    * Returns the tolerance in pixels of the surface simplifier used for
-    * generation of surface splines. See the class constructor for more
-    * information.
-    */
-   float SimplifierTolerance() const
-   {
-      return m_simplifierTolerance;
+      return m_useSimplifiers;
    }
 
    /*!
@@ -658,22 +643,47 @@ public:
       return m_simplifierRejectFraction;
    }
 
+   /*!
+    * Returns the residual errors in pixels after surface simplification.
+    *
+    * \param[out] xWI   Simplification error for the world-to-image coordinate
+    *                   transformation on the native longitude direction.
+    *
+    * \param[out] yWI   Simplification error for the world-to-image coordinate
+    *                   transformation on the native latitude direction.
+    *
+    * \param[out] xIW   Simplification error for image-to-world coordinate
+    *                   transformation on the X-axis direction.
+    *
+    * \param[out] yIW   Simplification error for image-to-world coordinate
+    *                   transformation on the Y-axis direction.
+    */
+   void GetSplineErrors( double& xWI, double& yWI, double& xIW, double& yIW ) const
+   {
+      xWI = m_splineWI.ErrorX();
+      yWI = m_splineWI.ErrorY();
+      xIW = m_splineIW.ErrorX();
+      yIW = m_splineIW.ErrorY();
+   }
+
 private:
 
-   Array<DPoint>              m_controlPointsW;
-   Array<DPoint>              m_controlPointsI;
-   int                        m_order = __PCL_WCS_DEFAULT_SPLINE_ORDER;
-   float                      m_smoothness = __PCL_WCS_DEFAULT_SPLINE_SMOOTHNESS;
-   FVector                    m_weights;
-   bool                       m_enableSimplifier = __PCL_WCS_SURFACE_SIMPLIFIER_DEFAULT_ENABLED;
-   float                      m_simplifierTolerance = __PCL_WCS_SURFACE_SIMPLIFIER_DEFAULT_TOLERANCE;
-   float                      m_simplifierRejectFraction = __PCL_WCS_SURFACE_SIMPLIFIER_DEFAULT_REJECT_FRACTION;
-   bool                       m_truncated = false;
-   PointSurfaceSpline<DPoint> m_splineWI;
-   PointSurfaceSpline<DPoint> m_splineIW;
-   PointGridInterpolation     m_gridWI;
-   PointGridInterpolation     m_gridIW;
-   LinearTransformation       m_linearIW;
+   Array<DPoint>          m_controlPointsW;
+   Array<DPoint>          m_controlPointsI;
+   int                    m_order = __PCL_WCS_DEFAULT_SPLINE_ORDER;
+   float                  m_smoothness = __PCL_WCS_DEFAULT_SPLINE_SMOOTHNESS;
+   FVector                m_weights;
+   bool                   m_useSimplifiers = __PCL_WCS_SURFACE_SIMPLIFIER_DEFAULT_ENABLED;
+   float                  m_simplifierRejectFraction = __PCL_WCS_SURFACE_SIMPLIFIER_DEFAULT_REJECT_FRACTION;
+   double                 m_resolution = 0;    // scaling factor for simplification of the I->W surfaces
+   bool                   m_truncated = false; // true => truncated control point vectors
+   Homography             m_projectiveWI;
+   Homography             m_projectiveIW;
+   PointSurfaceSpline     m_splineWI;
+   PointSurfaceSpline     m_splineIW;
+   PointGridInterpolation m_gridWI;
+   PointGridInterpolation m_gridIW;
+   LinearTransformation   m_linearIW;
 
    void Deserialize( const ByteArray& );
    void InitializeSplines();
@@ -687,4 +697,4 @@ private:
 #endif   // __PCL_WorldTransformation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/WorldTransformation.h - Released 2023-06-21T16:29:45Z
+// EOF pcl/WorldTransformation.h - Released 2023-07-06T16:53:21Z

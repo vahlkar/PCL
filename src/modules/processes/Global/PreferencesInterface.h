@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.5
+// /_/     \____//_____/   PCL 2.5.6
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.3.4
+// Standard Global Process Module Version 1.4.1
 // ----------------------------------------------------------------------------
-// PreferencesInterface.h - Released 2023-06-21T16:30:12Z
+// PreferencesInterface.h - Released 2023-07-06T16:53:46Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -285,17 +285,23 @@ public:
 
    void Synchronize() override;
 
+   void EnableOpacity();
+
    uint32*         item = nullptr;
    Label           label;
    HorizontalSizer colorSizer;
       ColorComboBox   colorComboBox;
+      NumericEdit     opacityEdit;
       Control         colorSample;
 
 private:
 
+   bool m_opacityEnabled = false;
+
    void __ColorSelected( ColorComboBox& sender, RGBA color );
    void __ColorSample_Paint( Control& sender, const Rect& updateRect );
    void __ColorSample_MouseRelease( Control& sender, const pcl::Point& pos, int button, unsigned buttons, unsigned modifiers );
+   void __ValueUpdated( NumericEdit& sender, double value );
 };
 
 // ----------------------------------------------------------------------------
@@ -606,6 +612,10 @@ public:
    GlobalFlagControl          AnimateCombo_Flag;
    GlobalFlagControl          AnimateToolTip_Flag;
    GlobalFlagControl          AnimateToolBox_Flag;
+   GlobalFlagControl          DropShadowChildWindows_Flag;
+   GlobalFlagControl          DropShadowIcons_Flag;
+   GlobalRealControl          DropShadowBlurRadius_Real;
+   GlobalColorControl         DropShadowColor_Color;
 };
 
 DEFINE_PREFERENCES_CATEGORY( GUIEffects, "Special GUI Effects" )
@@ -973,4 +983,4 @@ PCL_END_LOCAL
 #endif   // __PreferencesInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInterface.h - Released 2023-06-21T16:30:12Z
+// EOF PreferencesInterface.h - Released 2023-07-06T16:53:46Z

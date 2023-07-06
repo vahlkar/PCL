@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.5
+// /_/     \____//_____/   PCL 2.5.6
 // ----------------------------------------------------------------------------
-// pcl/PixelTraits.h - Released 2023-06-21T16:29:45Z
+// pcl/PixelTraits.h - Released 2023-07-06T16:53:21Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -6291,4 +6291,4 @@ public:
 #endif   // __PCL_PixelTraits_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PixelTraits.h - Released 2023-06-21T16:29:45Z
+// EOF pcl/PixelTraits.h - Released 2023-07-06T16:53:21Z
