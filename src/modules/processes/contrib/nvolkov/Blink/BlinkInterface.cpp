@@ -816,6 +816,9 @@ void BlinkInterface::Init()
 
    GUI->AutoHT_Button.Disable( noFiles );
    GUI->AutoSTF_Button.Disable( noFiles );
+   GUI->FileSelectAll_Button.Disable( noFiles );
+   GUI->FileSelectNone_Button.Disable( noFiles );
+   GUI->FileSelectInvert_Button.Disable( noFiles );
    GUI->FileSelectChecked_Button.Disable( noFiles );
    GUI->FileClose_Button.Disable( noFiles );
    GUI->FileCloseAll_Button.Disable( noFiles );
@@ -1317,6 +1320,48 @@ void BlinkInterface::FileCropTo()
 
 // ----------------------------------------------------------------------------
 
+void BlinkInterface::FileSelectAll()
+{
+   Pause();
+
+   GUI->Files_TreeBox.DisableUpdates();
+   for ( int i = int( m_blink.m_filesData.Length() ); --i >= 0; )
+      GUI->Files_TreeBox.Child( i )->Select(true);
+   GUI->Files_TreeBox.EnableUpdates();
+
+   Continue();
+}
+
+// ----------------------------------------------------------------------------
+
+void BlinkInterface::FileSelectNone()
+{
+   Pause();
+
+   GUI->Files_TreeBox.DisableUpdates();
+   for ( int i = int( m_blink.m_filesData.Length() ); --i >= 0; )
+      GUI->Files_TreeBox.Child( i )->Select(false);
+   GUI->Files_TreeBox.EnableUpdates();
+
+   Continue();
+}
+
+// ----------------------------------------------------------------------------
+
+void BlinkInterface::FileSelectInvert()
+{
+   Pause();
+
+   GUI->Files_TreeBox.DisableUpdates();
+   for ( int i = int( m_blink.m_filesData.Length() ); --i >= 0; )
+      GUI->Files_TreeBox.Child( i )->Select(!GUI->Files_TreeBox.Child( i )->IsSelected());
+   GUI->Files_TreeBox.EnableUpdates();
+
+   Continue();
+}
+
+// ----------------------------------------------------------------------------
+
 void BlinkInterface::FileSelectChecked()
 {
    Pause();
@@ -1387,6 +1432,9 @@ void BlinkInterface::DisableButtonsIfRunning()
    GUI->AutoSTF_Button.Disable( m_isRunning );
    GUI->RGBLinked_Button.Disable( m_isRunning );
    GUI->FileAdd_Button.Disable( m_isRunning );
+   GUI->FileSelectAll_Button.Disable( m_isRunning );
+   GUI->FileSelectNone_Button.Disable( m_isRunning );
+   GUI->FileSelectInvert_Button.Disable( m_isRunning );
    GUI->FileSelectChecked_Button.Disable( m_isRunning );
    GUI->FileClose_Button.Disable( m_isRunning );
    GUI->FileCloseAll_Button.Disable( m_isRunning );
@@ -1581,6 +1629,12 @@ void BlinkInterface::__FileButton_Click( Button& sender, bool /*checked*/ )
 {
    if ( sender == GUI->FileAdd_Button )
       FileAdd();
+   else if ( sender == GUI->FileSelectAll_Button )
+      FileSelectAll();
+   else if ( sender == GUI->FileSelectNone_Button )
+      FileSelectNone();
+   else if ( sender == GUI->FileSelectInvert_Button )
+      FileSelectInvert();
    else if ( sender == GUI->FileSelectChecked_Button )
       FileSelectChecked();
    else if ( sender == GUI->FileClose_Button )
@@ -2070,6 +2124,21 @@ BlinkInterface::GUIData::GUIData( BlinkInterface& w )
    FileAdd_Button.SetToolTip( "<p>Add image files.</p>" );
    FileAdd_Button.OnClick( (Button::click_event_handler)&BlinkInterface::__FileButton_Click, w );
 
+   FileSelectAll_Button.SetIcon( Bitmap( w.ScaledResource( ":/icons/select-all.png" ) ) );
+   FileSelectAll_Button.SetScaledFixedSize( 22, 22 );
+   FileSelectAll_Button.SetToolTip( String( "<p>Select all images.</p>" ) + selectionNoteToolTip );
+   FileSelectAll_Button.OnClick( (Button::click_event_handler)&BlinkInterface::__FileButton_Click, w );
+
+   FileSelectNone_Button.SetIcon( Bitmap( w.ScaledResource( ":/icons/select-none.png" ) ) );
+   FileSelectNone_Button.SetScaledFixedSize( 22, 22 );
+   FileSelectNone_Button.SetToolTip( String( "<p>Unselect all images.</p>" ) + selectionNoteToolTip );
+   FileSelectNone_Button.OnClick( (Button::click_event_handler)&BlinkInterface::__FileButton_Click, w );
+
+   FileSelectInvert_Button.SetIcon( Bitmap( w.ScaledResource( ":/icons/select-invert.png" ) ) );
+   FileSelectInvert_Button.SetScaledFixedSize( 22, 22 );
+   FileSelectInvert_Button.SetToolTip( String( "<p>Invert image selection.</p>" ) + selectionNoteToolTip );
+   FileSelectInvert_Button.OnClick( (Button::click_event_handler)&BlinkInterface::__FileButton_Click, w );
+
    FileSelectChecked_Button.SetIcon( Bitmap( w.ScaledResource( ":/icons/select.png" ) ) );
    FileSelectChecked_Button.SetScaledFixedSize( 22, 22 );
    FileSelectChecked_Button.SetToolTip( String( "<p>Select checked images.</p>" ) + selectionNoteToolTip );
@@ -2147,6 +2216,9 @@ BlinkInterface::GUIData::GUIData( BlinkInterface& w )
 
    FilesControl_Sizer.SetSpacing( 4 );
    FilesControl_Sizer.Add( FileAdd_Button );
+   FilesControl_Sizer.Add( FileSelectAll_Button );
+   FilesControl_Sizer.Add( FileSelectNone_Button );
+   FilesControl_Sizer.Add( FileSelectInvert_Button );
    FilesControl_Sizer.Add( FileSelectChecked_Button );
    FilesControl_Sizer.Add( FileClose_Button );
    FilesControl_Sizer.Add( FileCloseAll_Button );
