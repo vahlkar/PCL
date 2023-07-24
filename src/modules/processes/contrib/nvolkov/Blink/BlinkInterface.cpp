@@ -816,6 +816,7 @@ void BlinkInterface::Init()
 
    GUI->AutoHT_Button.Disable( noFiles );
    GUI->AutoSTF_Button.Disable( noFiles );
+   GUI->FileSelectChecked_Button.Disable( noFiles );
    GUI->FileClose_Button.Disable( noFiles );
    GUI->FileCloseAll_Button.Disable( noFiles );
    GUI->FileCopyTo_Button.Disable( noFiles );
@@ -1316,6 +1317,20 @@ void BlinkInterface::FileCropTo()
 
 // ----------------------------------------------------------------------------
 
+void BlinkInterface::FileSelectChecked()
+{
+   Pause();
+
+   GUI->Files_TreeBox.DisableUpdates();
+   for ( int i = int( m_blink.m_filesData.Length() ); --i >= 0; )
+      GUI->Files_TreeBox.Child( i )->Select(GUI->Files_TreeBox.Child( i )->IsChecked());
+   GUI->Files_TreeBox.EnableUpdates();
+
+   Continue();
+}
+
+// ----------------------------------------------------------------------------
+
 void BlinkInterface::FileCloseSelected()
 {
    Pause();
@@ -1372,6 +1387,7 @@ void BlinkInterface::DisableButtonsIfRunning()
    GUI->AutoSTF_Button.Disable( m_isRunning );
    GUI->RGBLinked_Button.Disable( m_isRunning );
    GUI->FileAdd_Button.Disable( m_isRunning );
+   GUI->FileSelectChecked_Button.Disable( m_isRunning );
    GUI->FileClose_Button.Disable( m_isRunning );
    GUI->FileCloseAll_Button.Disable( m_isRunning );
    GUI->FileCopyTo_Button.Disable( m_isRunning );
@@ -1565,6 +1581,8 @@ void BlinkInterface::__FileButton_Click( Button& sender, bool /*checked*/ )
 {
    if ( sender == GUI->FileAdd_Button )
       FileAdd();
+   else if ( sender == GUI->FileSelectChecked_Button )
+      FileSelectChecked();
    else if ( sender == GUI->FileClose_Button )
       FileCloseSelected();
    else if ( sender == GUI->FileCloseAll_Button )
@@ -2052,6 +2070,11 @@ BlinkInterface::GUIData::GUIData( BlinkInterface& w )
    FileAdd_Button.SetToolTip( "<p>Add image files.</p>" );
    FileAdd_Button.OnClick( (Button::click_event_handler)&BlinkInterface::__FileButton_Click, w );
 
+   FileSelectChecked_Button.SetIcon( Bitmap( w.ScaledResource( ":/icons/select.png" ) ) );
+   FileSelectChecked_Button.SetScaledFixedSize( 22, 22 );
+   FileSelectChecked_Button.SetToolTip( String( "<p>Select checked images.</p>" ) + selectionNoteToolTip );
+   FileSelectChecked_Button.OnClick( (Button::click_event_handler)&BlinkInterface::__FileButton_Click, w );
+
    FileClose_Button.SetIcon( Bitmap( w.ScaledResource( ":/icons/window-close.png" ) ) );
    FileClose_Button.SetScaledFixedSize( 22, 22 );
    FileClose_Button.SetToolTip( String( "<p>Close Selected images.</p>" ) + selectionNoteToolTip );
@@ -2124,6 +2147,7 @@ BlinkInterface::GUIData::GUIData( BlinkInterface& w )
 
    FilesControl_Sizer.SetSpacing( 4 );
    FilesControl_Sizer.Add( FileAdd_Button );
+   FilesControl_Sizer.Add( FileSelectChecked_Button );
    FilesControl_Sizer.Add( FileClose_Button );
    FilesControl_Sizer.Add( FileCloseAll_Button );
    FilesControl_Sizer.Add( FileCopyTo_Button );

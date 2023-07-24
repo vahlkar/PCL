@@ -259,6 +259,7 @@ private:
          TreeBox              Files_TreeBox;
          HorizontalSizer      FilesControl_Sizer;
             ToolButton           FileAdd_Button;
+            ToolButton           FileSelectChecked_Button;
             ToolButton           FileClose_Button;
             ToolButton           FileCloseAll_Button;
             ToolButton           FileCopyTo_Button;
@@ -314,6 +315,7 @@ private:
    void DisableButtonsIfRunning();
 
    void FileAdd();
+   void FileSelectChecked();
    void FileCloseSelected();
    void FileCloseAll();
    void FileCopyTo();
