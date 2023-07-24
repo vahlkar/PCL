@@ -89,7 +89,7 @@ const char* BlinkModule::Version() const
 
 IsoString BlinkModule::Name() const
 {
-   return "Blink";
+   return "Blink2";
 }
 
 // ----------------------------------------------------------------------------
