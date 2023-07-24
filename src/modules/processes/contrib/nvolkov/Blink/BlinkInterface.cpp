@@ -658,7 +658,7 @@ BlinkInterface::~BlinkInterface()
 
 IsoString BlinkInterface::Id() const
 {
-   return "Blink";
+   return "Blink2";
 }
 
 // ----------------------------------------------------------------------------

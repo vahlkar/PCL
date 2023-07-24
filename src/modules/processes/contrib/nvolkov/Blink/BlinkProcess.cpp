@@ -72,7 +72,7 @@ BlinkProcess::BlinkProcess()
 
 IsoString BlinkProcess::Id() const
 {
-   return "Blink";
+   return "Blink2";
 }
 
 // ----------------------------------------------------------------------------
@@ -100,7 +100,7 @@ String BlinkProcess::Description() const
 
 String BlinkProcess::IconImageSVGFile() const
 {
-   return "@module_icons_dir/Blink.svg";
+   return "@module_icons_dir/Blink2.svg";
 }
 
 // ----------------------------------------------------------------------------
