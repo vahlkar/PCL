@@ -1,2 +1,3 @@
-Copyright (c) 2011-2021 Nikolay Volkov
-Copyright (c) 2003-2021 Pleiades Astrophoto S.L.
+Copyright (c) 2023 Volodia Laniel
+Copyright (c) 2011-2023 Nikolay Volkov
+Copyright (c) 2003-2023 Pleiades Astrophoto S.L.
