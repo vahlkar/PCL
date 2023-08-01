@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.6
+// /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
 // Standard RAW File Format Module Version 1.6.2
 // ----------------------------------------------------------------------------
-// RawPreferencesDialog.cpp - Released 2023-07-06T16:53:37Z
+// RawPreferencesDialog.cpp - Released 2023-08-01T16:30:07Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RAW PixInsight module.
 //
@@ -707,4 +707,4 @@ void RawPreferencesDialog::Dialog_Return( Dialog& sender, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RawPreferencesDialog.cpp - Released 2023-07-06T16:53:37Z
+// EOF RawPreferencesDialog.cpp - Released 2023-08-01T16:30:07Z

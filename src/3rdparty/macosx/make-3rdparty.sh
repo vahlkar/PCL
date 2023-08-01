@@ -33,4 +33,7 @@ make -j $NPROC
 cd $BASEDIR/zlib/macosx/g++
 make -j $NPROC
 
+cd $BASEDIR/zstd/macosx/g++
+make -j $NPROC
+
 cd $BASEDIR

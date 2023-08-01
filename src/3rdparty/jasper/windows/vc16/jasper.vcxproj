@@ -4,7 +4,7 @@
 # PixInsight Makefile Generator Script v1.129
 # Copyright (C) 2009-2023 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2023-07-06T21:14:29.996Z
+# Generated on .... 2023-08-01T16:39:35.997Z
 # Project id ...... jasper
 # Project type .... StaticLibrary
 # Platform ........ Windows/vc16
@@ -25,7 +25,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{179C47F4-8058-4672-9C61-72C113E7E6A1}</ProjectGuid>
+    <ProjectGuid>{49745B5D-21F5-4EC1-8603-F697B5995076}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>

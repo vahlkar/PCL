@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.6
+// /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
-// pcl/Compression.cpp - Released 2023-07-06T16:53:28Z
+// pcl/Compression.cpp - Released 2023-08-01T16:29:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -60,6 +60,7 @@
 #include <lz4/lz4.h>
 #include <lz4/lz4hc.h>
 #include <zlib/zlib.h>
+#include <zstd/zstd.h>
 
 namespace pcl
 {
@@ -740,8 +741,110 @@ size_type LZ4HCCompression::UncompressBlock( void* outputData, size_type maxOutp
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+
+int ZstdCompression::MinCompressionLevel() const
+{
+   return ::ZSTD_minCLevel();
+}
+
+int ZstdCompression::MaxCompressionLevel() const
+{
+   return ::ZSTD_maxCLevel();
+}
+
+// ----------------------------------------------------------------------------
+
+int ZstdCompression::DefaultCompressionLevel() const
+{
+   return ::ZSTD_defaultCLevel();
+}
+
+// ----------------------------------------------------------------------------
+
+size_type ZstdCompression::MinBlockSize() const
+{
+   return 64u;
+}
+
+// ----------------------------------------------------------------------------
+
+size_type ZstdCompression::MaxBlockSize() const
+{
+   return ZSTD_MAX_INPUT_SIZE;
+}
+
+// ----------------------------------------------------------------------------
+
+size_type ZstdCompression::MaxCompressedBlockSize( size_type size ) const
+{
+   size = ::ZSTD_compressBound( size );
+   if ( ZSTD_isError( size ) )
+      throw Error( String( "ZstdCompression::MaxCompressedBlockSize(): " ) + ZSTD_getErrorName( size ) );
+   return size;
+}
+
+// ----------------------------------------------------------------------------
+
+size_type ZstdCompression::CompressBlock( void* outputData, size_type maxOutputSize,
+                                          const void* inputData, size_type inputSize, int level ) const
+{
+   try
+   {
+      if ( inputData == nullptr )
+         throw Error( "Null input buffer." );
+      if ( outputData == nullptr )
+         throw Error( "Null output buffer." );
+      if ( inputSize > ZSTD_MAX_INPUT_SIZE )
+         throw Error( "Invalid input size." );
+
+      size_type size = ZSTD_compress( outputData, maxOutputSize, inputData, inputSize, level );
+      if ( ZSTD_isError( size ) )
+         throw Error( ZSTD_getErrorName( size ) );
+      return size;
+   }
+   catch ( const Exception& x )
+   {
+      throw Error( "ZstdCompression::CompressBlock(): " + x.Message() );
+   }
+}
+
+// ----------------------------------------------------------------------------
+
+size_type ZstdCompression::UncompressBlock( void* outputData, size_type maxOutputSize,
+                                            const void* inputData, size_type inputSize ) const
+{
+   try
+   {
+      if ( inputData == nullptr )
+         throw Error( "Null input buffer." );
+      if ( outputData == nullptr )
+         throw Error( "Null output buffer." );
+      if ( maxOutputSize > ZSTD_MAX_INPUT_SIZE )
+         throw Error( "Invalid maximum output size." );
+
+      size_type outputSize = ZSTD_getFrameContentSize( inputData, inputSize );
+      if ( outputSize == ZSTD_CONTENTSIZE_ERROR || outputSize == ZSTD_CONTENTSIZE_UNKNOWN )
+         throw Error( "Invalid or corrupted block." );
+      if ( maxOutputSize < outputSize )
+         throw Error( "Invalid uncompressed block size." );
+
+      size_type result = ZSTD_decompress( outputData, outputSize, inputData, inputSize );
+      if ( ZSTD_isError( result ) )
+         throw Error( ZSTD_getErrorName( result ) );
+      if ( result != outputSize )
+         throw Error( "Internal error." );
+      return outputSize;
+   }
+   catch ( const Exception& x )
+   {
+      throw Error( "ZstdCompression::UncompressBlock(): " + x.Message() );
+   }
+}
+
+// ----------------------------------------------------------------------------
 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Compression.cpp - Released 2023-07-06T16:53:28Z
+// EOF pcl/Compression.cpp - Released 2023-08-01T16:29:57Z

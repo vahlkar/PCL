@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.6
+// /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
-// pcl/StarDetector.cpp - Released 2023-07-06T16:53:28Z
+// pcl/StarDetector.cpp - Released 2023-08-01T16:29:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -477,7 +477,9 @@ public:
          if ( fit )
             if ( DRect( rect ).DeflatedBy( rect.Width()*0.15 ).Includes( fit.psf.c0 ) )
                if ( fit.psf.c0.DistanceTo( d.pos + 0.5 ) < m_tolerance )
-                  stars << StarDetector::Star( fit.psf.c0 - 0.5, d.rect, rect, fit.psf.flux, fit.psf.signal, fit.psf.mad );
+                  stars << StarDetector::Star( fit.psf.c0 - 0.5, d.rect/*detection*/, rect/*sampling*/,
+                                               0.7854*fit.psf.FWTMx()*fit.psf.FWTMy()/*area*/,
+                                               fit.psf.flux, fit.psf.signal, fit.psf.mad );
 
          UPDATE_THREAD_MONITOR( 16 )
       }
@@ -686,7 +688,7 @@ StarDetector::star_list StarDetector::DetectStars( Image& image ) const
           */
          if ( r.Width() > 1 && r.Height() > 1 )
             if ( r.y0 > 0 && r.y1 <= y1 && r.x0 > 0 && r.x1 <= x1 )
-               if ( sp.Length() >= size_type( m_minStructureSize ) )
+               if ( int( sp.Length() ) >= m_minStructureSize )
                {
                   StarParameters params;
                   if ( GetStarParameters( params, image, r, sp, lmMap, m_noLocalMaximaDetection, m_allowClusteredSources ) )
@@ -707,7 +709,7 @@ StarDetector::star_list StarDetector::DetectStars( Image& image ) const
                                        if ( m_fitPSF )
                                           psfData << PSFFitData{ params.pos, params.rect };
                                        else
-                                          S << Star( params.pos, params.rect, params.srect, params.flux );
+                                          S << Star{ params.pos, params.rect, params.srect, float( sp.Length() ), params.flux };
                               }
                            }
                         }
@@ -745,18 +747,74 @@ StarDetector::star_list StarDetector::DetectStars( Image& image ) const
          S << thread.stars;
 
       threads.Destroy();
+   }
 
-      /*
-       * Remove highly uncertain sources.
-       */
-      QuadTree<Star> T( S );
-      Array<Star> S1;
+   /*
+    * Minimum star size rejection.
+    */
+   m_minStarSize = 0;
+   if ( m_minStructureSize == 0 ) // if automatic MSS mode
+   {
+      Array<int> sizes;
       for ( const Star& s : S )
+         sizes << RoundInt( s.area );
+      sizes.Sort();
+
+      Array<int> deltas;
+      for ( int i = 0, lastDelta = 0; ++i < int( sizes.Length() ); )
+      {
+         int delta = sizes[i] - sizes[i-1];
+         if ( delta > lastDelta )
+         {
+            deltas << delta;
+            lastDelta = delta;
+         }
+      }
+      if ( !deltas.IsEmpty() )
+      {
+         int bandwidth = RoundInt( Median( deltas.Begin(), deltas.End() ) );
+//          File::WriteTextFile( "/tmp/deltas.txt", IsoString().ToSeparated( deltas, ",\n" ) );
+
+         Array<Array<int>> clusters;
+         Array<int> currentCluster;
+         currentCluster << sizes[0];
+         for ( int i = 0; ++i < int( sizes.Length() ); )
+         {
+            if ( sizes[i] >= sizes[i-1] + bandwidth )
+            {
+               clusters << currentCluster;
+               currentCluster = Array<int>();
+            }
+            currentCluster << sizes[i];
+         }
+         clusters << currentCluster;
+
+//          IsoString text;
+//          text << IsoString().Format( "B = %d\n", bandwidth );
+//          for ( const Array<int>& cluster : clusters )
+//             text << "{\n   "
+//                << IsoString().ToSeparated( cluster,  ",\n   " )
+//                << "\n}\n";
+//          File::WriteTextFile( "/tmp/clusters.txt", text );
+
+         if ( clusters.Length() < 2 || clusters[0].Length() >= clusters[1].Length() )
+            m_minStarSize = Max( 1, clusters[0][0] );
+         else
+            m_minStarSize = clusters[1][0];
+      }
+   }
+
+   /*
+    * Remove too small and potentially conflicting sources.
+    */
+   QuadTree<Star> T( S );
+   Array<Star> S1;
+   for ( const Star& s : S )
+      if ( s.area >= m_minStarSize )
          if ( T.Search( QuadTree<Star>::rectangle( s.pos.x - 1, s.pos.y - 1,
                                                    s.pos.x + 1, s.pos.y + 1 ) ).Length() == 1 )
             S1 << s;
-      S = S1;
-   }
+   S = S1;
 
    if ( initializeStatus )
       image.Status().EnableInitialization();
@@ -869,4 +927,4 @@ Image StarDetector::Structures( const ImageVariant& image ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/StarDetector.cpp - Released 2023-07-06T16:53:28Z
+// EOF pcl/StarDetector.cpp - Released 2023-08-01T16:29:57Z

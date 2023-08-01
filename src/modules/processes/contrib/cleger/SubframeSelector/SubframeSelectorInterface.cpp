@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.6
+// /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.8.6
 // ----------------------------------------------------------------------------
-// SubframeSelectorInterface.cpp - Released 2023-07-06T16:53:46Z
+// SubframeSelectorInterface.cpp - Released 2023-08-01T16:30:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -1535,6 +1535,7 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
    StarDetectorParameters_MinStructureSize_Label.SetToolTip( TheSSMinStructureSizeParameter->Tooltip() );
 
    StarDetectorParameters_MinStructureSize_SpinBox.SetRange( int( TheSSMinStructureSizeParameter->MinimumValue() ), int( TheSSMinStructureSizeParameter->MaximumValue() ) );
+   StarDetectorParameters_MinStructureSize_SpinBox.SetMinimumValueText( "<Auto>" );
    StarDetectorParameters_MinStructureSize_SpinBox.SetToolTip( TheSSMinStructureSizeParameter->Tooltip() );
    StarDetectorParameters_MinStructureSize_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)
                                     &SubframeSelectorInterface::e_SpinValueUpdated, w );
@@ -1666,7 +1667,7 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
 
    StarDetectorParameters_MaxPSFFits_SpinBox.SetRange( TheSSMaxPSFFitsParameter->MinimumValue(),
                                                        TheSSMaxPSFFitsParameter->MaximumValue() );
-   StarDetectorParameters_MaxPSFFits_SpinBox.SetMinimumValueText( "<unlimited>" );
+   StarDetectorParameters_MaxPSFFits_SpinBox.SetMinimumValueText( "<Unlimited>" );
    StarDetectorParameters_MaxPSFFits_SpinBox.SetToolTip( TheSSMaxPSFFitsParameter->Tooltip() );
    StarDetectorParameters_MaxPSFFits_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)
                                     &SubframeSelectorInterface::e_SpinValueUpdated, w );
@@ -2001,4 +2002,4 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInterface.cpp - Released 2023-07-06T16:53:46Z
+// EOF SubframeSelectorInterface.cpp - Released 2023-08-01T16:30:17Z

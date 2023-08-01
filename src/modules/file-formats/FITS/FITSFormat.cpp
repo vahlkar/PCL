@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.6
+// /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// FITSFormat.cpp - Released 2023-07-06T16:53:37Z
+// FITSFormat.cpp - Released 2023-08-01T16:30:07Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -470,4 +470,4 @@ FITSFormat::FormatOptions* FITSFormat::FormatOptions::FromGenericDataBlock( cons
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITSFormat.cpp - Released 2023-07-06T16:53:37Z
+// EOF FITSFormat.cpp - Released 2023-08-01T16:30:07Z

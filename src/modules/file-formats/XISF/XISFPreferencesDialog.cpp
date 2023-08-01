@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.6
+// /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
 // Standard XISF File Format Module Version 1.0.13
 // ----------------------------------------------------------------------------
-// XISFPreferencesDialog.cpp - Released 2023-07-06T16:53:37Z
+// XISFPreferencesDialog.cpp - Released 2023-08-01T16:30:07Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard XISF PixInsight module.
 //
@@ -295,14 +295,15 @@ void XISFPreferencesDialog::Button_Click( Button& sender, bool checked )
       IgnoreFITSKeywords_CheckBox.SetChecked( defaultOptions.ignoreFITSKeywords );
       ImportFITSKeywords_CheckBox.SetChecked( defaultOptions.importFITSKeywords );
 
-      CompressionCodec_ComboBox.SetCurrentItem( CompressionCodecToComboBoxItem( defaultOptions.compressionCodec ) );
+      CompressionCodec_ComboBox.SetCurrentItem( CompressionCodecToComboBoxItem( // Zstandard compression selected by default
+         (defaultOptions.compressionCodec != XISFCompression::None) ? defaultOptions.compressionCodec : XISFCompression::Zstd ) );
       CompressionLevel_SpinBox.SetValue( defaultOptions.compressionLevel );
-      CompressionShuffle_CheckBox.SetChecked( options.compressionCodec == XISFCompression::None ||
-                                              XISF::CompressionUsesByteShuffle( options.compressionCodec ) );
-      DataCompression_GroupBox.SetChecked( options.compressionCodec != XISFCompression::None );
+      CompressionShuffle_CheckBox.SetChecked( // byte shuffling enabled by default
+         defaultOptions.compressionCodec == XISFCompression::None || XISF::CompressionUsesByteShuffle( defaultOptions.compressionCodec ) );
+      DataCompression_GroupBox.SetChecked( defaultOptions.compressionCodec != XISFCompression::None );
 
       Checksums_ComboBox.SetCurrentItem( ChecksumAlgorithmToComboBoxItem( defaultOptions.checksumAlgorithm ) );
-      Security_GroupBox.SetChecked( options.checksumAlgorithm != XISFChecksum::None );
+      Security_GroupBox.SetChecked( defaultOptions.checksumAlgorithm != XISFChecksum::None );
 
       AlignmentSize_SpinBox.SetValue( defaultOptions.blockAlignmentSize );
       MaxInlineSize_SpinBox.SetValue( defaultOptions.maxInlineBlockSize );
@@ -354,4 +355,4 @@ void XISFPreferencesDialog::Dialog_Return( Dialog& sender, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF XISFPreferencesDialog.cpp - Released 2023-07-06T16:53:37Z
+// EOF XISFPreferencesDialog.cpp - Released 2023-08-01T16:30:07Z

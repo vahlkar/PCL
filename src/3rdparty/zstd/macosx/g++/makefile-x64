@@ -1,0 +1,152 @@
+######################################################################
+# PixInsight Makefile Generator Script v1.129
+# Copyright (C) 2009-2023 Pleiades Astrophoto
+######################################################################
+# Generated on .... 2023-08-01T16:39:38.732Z
+# Project id ...... zstd
+# Project type .... StaticLibrary
+# Platform ........ MacOSX/g++
+# Configuration ... Release/x64
+# --------------------------------------------------------------------
+# Additional preprocessor definitions:
+# ZSTD_DISABLE_ASM=1
+######################################################################
+
+OBJ_DIR="$(PCLSRCDIR)/3rdparty/zstd/macosx/g++/x64/Release"
+
+.PHONY: all
+all: $(OBJ_DIR)/libzstd-pxi.a
+
+#
+# Source files
+#
+
+SRC_FILES= \
+../../common/debug.c \
+../../common/entropy_common.c \
+../../common/error_private.c \
+../../common/fse_decompress.c \
+../../common/pool.c \
+../../common/threading.c \
+../../common/xxhash.c \
+../../common/zstd_common.c \
+../../compress/fse_compress.c \
+../../compress/hist.c \
+../../compress/huf_compress.c \
+../../compress/zstd_compress.c \
+../../compress/zstd_compress_literals.c \
+../../compress/zstd_compress_sequences.c \
+../../compress/zstd_compress_superblock.c \
+../../compress/zstd_double_fast.c \
+../../compress/zstd_fast.c \
+../../compress/zstd_lazy.c \
+../../compress/zstd_ldm.c \
+../../compress/zstd_opt.c \
+../../compress/zstdmt_compress.c \
+../../decompress/huf_decompress.c \
+../../decompress/zstd_ddict.c \
+../../decompress/zstd_decompress.c \
+../../decompress/zstd_decompress_block.c \
+../../deprecated/zbuff_common.c \
+../../deprecated/zbuff_compress.c \
+../../deprecated/zbuff_decompress.c
+
+#
+# Object files
+#
+
+OBJ_FILES= \
+./x64/Release/common/debug.o \
+./x64/Release/common/entropy_common.o \
+./x64/Release/common/error_private.o \
+./x64/Release/common/fse_decompress.o \
+./x64/Release/common/pool.o \
+./x64/Release/common/threading.o \
+./x64/Release/common/xxhash.o \
+./x64/Release/common/zstd_common.o \
+./x64/Release/compress/fse_compress.o \
+./x64/Release/compress/hist.o \
+./x64/Release/compress/huf_compress.o \
+./x64/Release/compress/zstd_compress.o \
+./x64/Release/compress/zstd_compress_literals.o \
+./x64/Release/compress/zstd_compress_sequences.o \
+./x64/Release/compress/zstd_compress_superblock.o \
+./x64/Release/compress/zstd_double_fast.o \
+./x64/Release/compress/zstd_fast.o \
+./x64/Release/compress/zstd_lazy.o \
+./x64/Release/compress/zstd_ldm.o \
+./x64/Release/compress/zstd_opt.o \
+./x64/Release/compress/zstdmt_compress.o \
+./x64/Release/decompress/huf_decompress.o \
+./x64/Release/decompress/zstd_ddict.o \
+./x64/Release/decompress/zstd_decompress.o \
+./x64/Release/decompress/zstd_decompress_block.o \
+./x64/Release/deprecated/zbuff_common.o \
+./x64/Release/deprecated/zbuff_compress.o \
+./x64/Release/deprecated/zbuff_decompress.o
+
+#
+# Dependency files
+#
+
+DEP_FILES= \
+./x64/Release/common/debug.d \
+./x64/Release/common/entropy_common.d \
+./x64/Release/common/error_private.d \
+./x64/Release/common/fse_decompress.d \
+./x64/Release/common/pool.d \
+./x64/Release/common/threading.d \
+./x64/Release/common/xxhash.d \
+./x64/Release/common/zstd_common.d \
+./x64/Release/compress/fse_compress.d \
+./x64/Release/compress/hist.d \
+./x64/Release/compress/huf_compress.d \
+./x64/Release/compress/zstd_compress.d \
+./x64/Release/compress/zstd_compress_literals.d \
+./x64/Release/compress/zstd_compress_sequences.d \
+./x64/Release/compress/zstd_compress_superblock.d \
+./x64/Release/compress/zstd_double_fast.d \
+./x64/Release/compress/zstd_fast.d \
+./x64/Release/compress/zstd_lazy.d \
+./x64/Release/compress/zstd_ldm.d \
+./x64/Release/compress/zstd_opt.d \
+./x64/Release/compress/zstdmt_compress.d \
+./x64/Release/decompress/huf_decompress.d \
+./x64/Release/decompress/zstd_ddict.d \
+./x64/Release/decompress/zstd_decompress.d \
+./x64/Release/decompress/zstd_decompress_block.d \
+./x64/Release/deprecated/zbuff_common.d \
+./x64/Release/deprecated/zbuff_compress.d \
+./x64/Release/deprecated/zbuff_decompress.d
+
+#
+# Rules
+#
+
+-include $(DEP_FILES)
+
+$(OBJ_DIR)/libzstd-pxi.a: $(OBJ_FILES)
+	ar r $(OBJ_DIR)/libzstd-pxi.a $(OBJ_FILES)
+	$(MAKE) -f ./makefile-x64 --no-print-directory post-build
+
+.PHONY: clean
+clean:
+	rm -f $(OBJ_FILES) $(DEP_FILES) $(OBJ_DIR)/libzstd-pxi.a
+
+.PHONY: post-build
+post-build:
+	cp $(OBJ_DIR)/libzstd-pxi.a $(PCLLIBDIR64)
+
+./x64/Release/common/%.o: ../../common/%.c
+	clang -c -pipe -pthread -arch x86_64 -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk -mmacosx-version-min=11 -D_REENTRANT -D__PCL_MACOSX -D"ZSTD_DISABLE_ASM=1" -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mtune=skylake -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -std=c99 -Wall -Wno-parentheses -Wno-error=implicit-function-declaration -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	@echo ' '
+./x64/Release/compress/%.o: ../../compress/%.c
+	clang -c -pipe -pthread -arch x86_64 -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk -mmacosx-version-min=11 -D_REENTRANT -D__PCL_MACOSX -D"ZSTD_DISABLE_ASM=1" -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mtune=skylake -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -std=c99 -Wall -Wno-parentheses -Wno-error=implicit-function-declaration -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	@echo ' '
+./x64/Release/decompress/%.o: ../../decompress/%.c
+	clang -c -pipe -pthread -arch x86_64 -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk -mmacosx-version-min=11 -D_REENTRANT -D__PCL_MACOSX -D"ZSTD_DISABLE_ASM=1" -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mtune=skylake -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -std=c99 -Wall -Wno-parentheses -Wno-error=implicit-function-declaration -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	@echo ' '
+./x64/Release/deprecated/%.o: ../../deprecated/%.c
+	clang -c -pipe -pthread -arch x86_64 -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk -mmacosx-version-min=11 -D_REENTRANT -D__PCL_MACOSX -D"ZSTD_DISABLE_ASM=1" -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mtune=skylake -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -std=c99 -Wall -Wno-parentheses -Wno-error=implicit-function-declaration -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	@echo ' '
+

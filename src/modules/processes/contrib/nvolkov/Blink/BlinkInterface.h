@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.6
+// /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
-// Standard Blink Process Module Version 1.2.3
+// Standard Blink Process Module Version 1.2.4
 // ----------------------------------------------------------------------------
-// BlinkInterface.h - Released 2023-07-06T16:53:46Z
+// BlinkInterface.h - Released 2023-08-01T16:30:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Blink PixInsight module.
 //
@@ -241,7 +241,7 @@ private:
       Control              CentralPanel_Control;
       VerticalSizer        CentralPanel_Sizer;
          HorizontalSizer      Preview_Sizer;
-            ScrollBox            Preview_ScrollBox;
+            Control              Preview_Control;
             VerticalSizer        STF_Sizer;
                ToolButton           AutoSTF_Button;
                ToolButton           AutoHT_Button;
@@ -336,10 +336,10 @@ private:
    void __FileButton_Click( Button&, bool );
    void __Delay_ItemSelected( ComboBox&, int );
    void __ActionButton_Click( Button&, bool );
-   void __ScrollControl_Paint( Control&, const Rect& );
-   void __ScrollControl_MouseWheel( Control&, const Point&, int, unsigned, unsigned );
-   void __ScrollControl_MousePress( Control&, const Point&, int, unsigned, unsigned );
-   void __ScrollControl_MouseMove( Control&, const Point&, unsigned, unsigned );
+   void __Preview_Paint( Control&, const Rect& );
+   void __Preview_MouseWheel( Control&, const Point&, int, unsigned, unsigned );
+   void __Preview_MousePress( Control&, const Point&, int, unsigned, unsigned );
+   void __Preview_MouseMove( Control&, const Point&, unsigned, unsigned );
    void __FilePanelHideButton_Click( Button&, bool );
    void __FileDrag( Control& sender, const Point& pos, const StringList& files, unsigned modifiers, bool& wantsFiles );
    void __FileDrop( Control& sender, const Point& pos, const StringList& files, unsigned modifiers );
@@ -383,4 +383,4 @@ PCL_END_LOCAL
 #endif   // __BlinkInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF BlinkInterface.h - Released 2023-07-06T16:53:46Z
+// EOF BlinkInterface.h - Released 2023-08-01T16:30:17Z

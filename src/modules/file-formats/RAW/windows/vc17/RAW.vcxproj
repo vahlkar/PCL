@@ -4,7 +4,7 @@
 # PixInsight Makefile Generator Script v1.129
 # Copyright (C) 2009-2023 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2023-07-06T21:14:39.630Z
+# Generated on .... 2023-08-01T16:39:45.965Z
 # Project id ...... RAW
 # Project type .... Module
 # Platform ........ Windows/vc17
@@ -30,7 +30,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{0A42F766-B4F4-488F-99AC-0A91CC55CC54}</ProjectGuid>
+    <ProjectGuid>{B906AF5B-FBEA-4CF5-890C-56F81DB8F0CE}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -93,7 +93,7 @@
       <AdditionalOptions>/Zc:__cplusplus /permissive- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>PCL-pxi.lib;lz4-pxi.lib;zlib-pxi.lib;RFC6234-pxi.lib;lcms-pxi.lib;cminpack-pxi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;userenv.lib;imm32.lib;shlwapi.lib;ws2_32.lib;wldap32.lib;mscms.lib;winmm.lib;crypt32.lib;normaliz.lib;libraw_r-pxi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PCL-pxi.lib;lz4-pxi.lib;zstd-pxi.lib;zlib-pxi.lib;RFC6234-pxi.lib;lcms-pxi.lib;cminpack-pxi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;userenv.lib;imm32.lib;shlwapi.lib;ws2_32.lib;wldap32.lib;mscms.lib;winmm.lib;crypt32.lib;normaliz.lib;libraw_r-pxi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(PCLBINDIR64)\RAW-pxm.dll</OutputFile>
       <AdditionalLibraryDirectories>$(PCLLIBDIR64);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile></ModuleDefinitionFile>
@@ -128,7 +128,7 @@
       <AdditionalOptions>/Zc:__cplusplus /permissive- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>PCL-pxi.lib;lz4-pxi.lib;zlib-pxi.lib;RFC6234-pxi.lib;lcms-pxi.lib;cminpack-pxi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;userenv.lib;imm32.lib;shlwapi.lib;ws2_32.lib;wldap32.lib;mscms.lib;winmm.lib;crypt32.lib;normaliz.lib;libraw_r-pxi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PCL-pxi.lib;lz4-pxi.lib;zstd-pxi.lib;zlib-pxi.lib;RFC6234-pxi.lib;lcms-pxi.lib;cminpack-pxi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;userenv.lib;imm32.lib;shlwapi.lib;ws2_32.lib;wldap32.lib;mscms.lib;winmm.lib;crypt32.lib;normaliz.lib;libraw_r-pxi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(PCLBINDIR64)\RAW-pxm.dll</OutputFile>
       <AdditionalLibraryDirectories>$(PCLLIBDIR64);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile></ModuleDefinitionFile>

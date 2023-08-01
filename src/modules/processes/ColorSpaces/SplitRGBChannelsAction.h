@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.6
+// /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// SplitRGBChannelsAction.h - Released 2023-07-06T16:53:46Z
+// SplitRGBChannelsAction.h - Released 2023-08-01T16:30:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -113,4 +113,4 @@ public:
 #endif   // __SplitRGBChannelsAction_h
 
 // ----------------------------------------------------------------------------
-// EOF SplitRGBChannelsAction.h - Released 2023-07-06T16:53:46Z
+// EOF SplitRGBChannelsAction.h - Released 2023-08-01T16:30:17Z

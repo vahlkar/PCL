@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.6
+// /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
 // Standard XISF File Format Module Version 1.0.13
 // ----------------------------------------------------------------------------
-// XISFFormat.cpp - Released 2023-07-06T16:53:37Z
+// XISFFormat.cpp - Released 2023-08-01T16:30:07Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard XISF PixInsight module.
 //
@@ -177,7 +177,8 @@ String XISFFormat::Implementation() const
 "\n                              (default = 1)."
 "\n-------------------------------------------------------------------------------"
 "\ncompression-codec id    ( w)  id is the identifier of a compression codec, one"
-"\n                              of: zlib, zlib+sh, lz4, lz4+sh, lz4hc, lz4hc+sh."
+"\n                              of: zlib, zlib+sh, lz4, lz4+sh, lz4hc, lz4hc+sh,"
+"\n                              zstd, zstd+sh."
 "\n-------------------------------------------------------------------------------"
 "\ncompression-level n     ( w)  n is an abstract compression level in the range"
 "\n                              [0,100]. Higher levels compress more, lower"
@@ -562,4 +563,4 @@ XISFFormat::FormatOptions* XISFFormat::FormatOptions::FromGenericDataBlock( cons
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF XISFFormat.cpp - Released 2023-07-06T16:53:37Z
+// EOF XISFFormat.cpp - Released 2023-08-01T16:30:07Z

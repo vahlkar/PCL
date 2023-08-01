@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.6
+// /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationInterface.cpp - Released 2023-07-06T16:53:46Z
+// PhotometricColorCalibrationInterface.cpp - Released 2023-08-01T16:30:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -916,13 +916,16 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
    PSFNoiseLayers_Sizer.AddStretch();
 
    const char* psfMinStructureSizeToolTip =
-      "<p>Star detector: Minimum size of a detectable star structure in square pixels.</p>"
-      "<p>This parameter can be used to prevent detection of small and bright image artifacts as stars, when "
-      "such artifacts cannot be removed with a median filter (i.e., the <i>Hot pixel removal</i> parameter).</p>"
-      "<p>Changing the default zero value of this parameter should not be necessary with correctly acquired and "
-      "calibrated data. It may help, however, when working with poor quality data such as poorly tracked, poorly "
-      "focused, wrongly calibrated, low-SNR raw frames, for which our star detection algorithms have not been "
-      "designed specifically.</p>";
+      "<p>Minimum size of a detectable star structure in square pixels.</p>"
+      "<p>This parameter can be used to prevent the detection of small and bright image artifacts wrongly as stars, "
+      "when such artifacts cannot be removed with a median filter (i.e., the <i>Hot pixel removal</i> parameter), "
+      "or for rejection of cosmic rays.</p>"
+      "<p>This parameter can be used in three ways:</p>"
+      "<p><b>* Automatic mode.</b> A zero value enables an adaptive algorithm to find an optimal minimum structure "
+      "size using statistical analysis techniques. This is the default option.</p>"
+      "<p><b>* Disabled.</b> A value of one turns off minimum structure size rejection since no detectable star can "
+      "be represented by less than one pixel.</p>"
+      "<p><b>* Literal value.</b> A value &gt; 1 forces using the specified minimum structure size in square pixels.</p>";
 
    PSFMinStructureSize_Label.SetText( "Minimum structure size:" );
    PSFMinStructureSize_Label.SetFixedWidth( labelWidth1 );
@@ -930,6 +933,7 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
    PSFMinStructureSize_Label.SetToolTip( psfMinStructureSizeToolTip );
 
    PSFMinStructureSize_SpinBox.SetRange( int( ThePCCPSFMinStructureSizeParameter->MinimumValue() ), int( ThePCCPSFMinStructureSizeParameter->MaximumValue() ) );
+   PSFMinStructureSize_SpinBox.SetMinimumValueText( "<Auto>" );
    PSFMinStructureSize_SpinBox.SetToolTip( psfMinStructureSizeToolTip );
    PSFMinStructureSize_SpinBox.SetFixedWidth( editWidth1 );
    PSFMinStructureSize_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&PhotometricColorCalibrationInterface::e_SpinValueUpdated, w );
@@ -1319,4 +1323,4 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationInterface.cpp - Released 2023-07-06T16:53:46Z
+// EOF PhotometricColorCalibrationInterface.cpp - Released 2023-08-01T16:30:17Z

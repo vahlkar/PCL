@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.6
+// /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
 // Standard Debayer Process Module Version 1.11.0
 // ----------------------------------------------------------------------------
-// DebayerInterface.cpp - Released 2023-07-06T16:53:46Z
+// DebayerInterface.cpp - Released 2023-08-01T16:30:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -984,12 +984,15 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
 
    const char* minStructureSizeToolTip =
       "<p>Minimum size of a detectable star structure in square pixels.</p>"
-      "<p>This parameter can be used to prevent detection of small and bright image artifacts as stars, when "
-      "such artifacts cannot be removed with a median filter (i.e., the <i>Hot pixel removal</i> parameter).</p>"
-      "<p>Changing the default zero value of this parameter should not be necessary with correctly acquired and "
-      "calibrated data. It may help, however, when working with poor quality data such as poorly tracked, poorly "
-      "focused, wrongly calibrated, low-SNR raw frames, for which our star detection algorithms have not been "
-      "designed specifically.</p>";
+      "<p>This parameter can be used to prevent the detection of small and bright image artifacts wrongly as stars, "
+      "when such artifacts cannot be removed with a median filter (i.e., the <i>Hot pixel removal</i> parameter), "
+      "or for rejection of cosmic rays.</p>"
+      "<p>This parameter can be used in three ways:</p>"
+      "<p><b>* Automatic mode.</b> A zero value enables an adaptive algorithm to find an optimal minimum structure "
+      "size using statistical analysis techniques. This is the default option.</p>"
+      "<p><b>* Disabled.</b> A value of one turns off minimum structure size rejection since no detectable star can "
+      "be represented by less than one pixel.</p>"
+      "<p><b>* Literal value.</b> A value &gt; 1 forces using the specified minimum structure size in square pixels.</p>";
 
    MinStructureSize_Label.SetText( "Minimum structure size:" );
    MinStructureSize_Label.SetFixedWidth( labelWidth1 );
@@ -997,6 +1000,7 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
    MinStructureSize_Label.SetToolTip( minStructureSizeToolTip );
 
    MinStructureSize_SpinBox.SetRange( int( TheDebayerMinStructureSizeParameter->MinimumValue() ), int( TheDebayerMinStructureSizeParameter->MaximumValue() ) );
+   MinStructureSize_SpinBox.SetMinimumValueText( "<Auto>" );
    MinStructureSize_SpinBox.SetToolTip( minStructureSizeToolTip );
    MinStructureSize_SpinBox.SetFixedWidth( editWidth2 );
    MinStructureSize_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&DebayerInterface::e_SpinValueUpdated, w );
@@ -1219,4 +1223,4 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DebayerInterface.cpp - Released 2023-07-06T16:53:46Z
+// EOF DebayerInterface.cpp - Released 2023-08-01T16:30:18Z

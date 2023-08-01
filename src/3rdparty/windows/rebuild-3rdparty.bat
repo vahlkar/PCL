@@ -25,4 +25,7 @@ msbuild RFC6234.vcxproj /t:Clean,Build -m /p:Configuration=Release /p:Platform=x
 cd %PCLSRCDIR%\3rdparty\zlib\windows\vc17
 msbuild zlib.vcxproj /t:Clean,Build -m /p:Configuration=Release /p:Platform=x64
 
+cd %PCLSRCDIR%\3rdparty\zstd\windows\vc17
+msbuild zstd.vcxproj /t:Clean,Build -m /p:Configuration=Release /p:Platform=x64
+
 cd %PCLSRCDIR%

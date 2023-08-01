@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.6
+// /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
 // Standard XISF File Format Module Version 1.0.13
 // ----------------------------------------------------------------------------
-// XISFOptionsDialog.h - Released 2023-07-06T16:53:37Z
+// XISFOptionsDialog.h - Released 2023-08-01T16:30:07Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard XISF PixInsight module.
 //
@@ -181,4 +181,4 @@ private:
 #endif   // XISFOptionsDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF XISFOptionsDialog.h - Released 2023-07-06T16:53:37Z
+// EOF XISFOptionsDialog.h - Released 2023-08-01T16:30:07Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.6
+// /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
-// pcl/ImageVariant.h - Released 2023-07-06T16:53:21Z
+// pcl/ImageVariant.h - Released 2023-08-01T16:29:49Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -160,6 +160,8 @@ namespace pcl
  * <tr><td>SwapCompression::LZ4_Sh</td>   <td>LZ4 fast compression with byte shuffling.</td></tr>
  * <tr><td>SwapCompression::LZ4HC</td>    <td>LZ4-HC compression.</td></tr>
  * <tr><td>SwapCompression::LZ4HC_Sh</td> <td>LZ4-HC compression with byte shuffling.</td></tr>
+ * <tr><td>SwapCompression::Zstd</td>     <td>Zstandard compression.</td></tr>
+ * <tr><td>SwapCompression::Zstd_Sh</td>  <td>Zstandard compression with byte shuffling.</td></tr>
  * </table>
  */
 namespace SwapCompression
@@ -173,6 +175,8 @@ namespace SwapCompression
       LZ4_Sh,   // LZ4 fast compression with byte shuffling.
       LZ4HC,    // LZ4-HC compression.
       LZ4HC_Sh, // LZ4-HC compression with byte shuffling.
+      Zstd,     // Zstandard compression.
+      Zstd_Sh,  // Zstandard compression with byte shuffling.
 
       NumberOfAlgorithms
    };
@@ -7275,4 +7279,4 @@ GenericImage<P>& GenericImage<P>::SetLightness( const ImageVariant& L, const Poi
 #endif   // __PCL_ImageVariant_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ImageVariant.h - Released 2023-07-06T16:53:21Z
+// EOF pcl/ImageVariant.h - Released 2023-08-01T16:29:49Z

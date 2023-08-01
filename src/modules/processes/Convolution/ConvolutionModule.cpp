@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.6
+// /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// ConvolutionModule.cpp - Released 2023-07-06T16:53:46Z
+// ConvolutionModule.cpp - Released 2023-08-01T16:30:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -57,8 +57,8 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2023
-#define MODULE_RELEASE_MONTH     7
-#define MODULE_RELEASE_DAY       6
+#define MODULE_RELEASE_MONTH     8
+#define MODULE_RELEASE_DAY       1
 
 #include "ConvolutionInterface.h"
 #include "ConvolutionModule.h"
@@ -183,4 +183,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF ConvolutionModule.cpp - Released 2023-07-06T16:53:46Z
+// EOF ConvolutionModule.cpp - Released 2023-08-01T16:30:17Z

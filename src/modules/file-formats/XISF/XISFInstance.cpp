@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.6
+// /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
 // Standard XISF File Format Module Version 1.0.13
 // ----------------------------------------------------------------------------
-// XISFInstance.cpp - Released 2023-07-06T16:53:37Z
+// XISFInstance.cpp - Released 2023-08-01T16:30:07Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard XISF PixInsight module.
 //
@@ -210,10 +210,10 @@ public:
             int n;
             if ( i->TryToInt( n ) )
                if ( n >= 0 ) // 0=default
-                  compressionLevel = Range( n, XISF::DefaultCompressionLevel, /*XISF::MaxCompressionLevel*/100 );
+                  compressionLevel = Min( n, XISF::MaxCompressionLevel );
          }
-         else if ( *i == "compress-data" ) // (deprecated) = compression-codec zlib
-            compressionCodec = XISFCompression::Zlib;
+         else if ( *i == "compress-data" ) // (deprecated) = compression-codec zlib+sh
+            compressionCodec = XISFCompression::Zlib_Sh;
          else if ( *i == "no-compression" ||
                    *i == "no-compress-data" ) // (deprecated) = no-compression
             compressionCodec = XISFCompression::None;
@@ -1168,4 +1168,4 @@ void XISFInstance::CloseImage()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF XISFInstance.cpp - Released 2023-07-06T16:53:37Z
+// EOF XISFInstance.cpp - Released 2023-08-01T16:30:07Z

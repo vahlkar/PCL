@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.6
+// /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// FITSOptionsDialog.cpp - Released 2023-07-06T16:53:37Z
+// FITSOptionsDialog.cpp - Released 2023-08-01T16:30:07Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -61,11 +61,6 @@ FITSOptionsDialog::FITSOptionsDialog( const pcl::ImageOptions& o, const pcl::FIT
    : options( o )
    , fitsOptions( f )
 {
-   pcl::Font fnt = Font();
-   int labelWidth = fnt.Width( String( "64-bit IEEE 754 floating point" ) + String( 'M', 3 ) );
-
-   //
-
    UInt8_RadioButton.SetText( "8-bit unsigned integer" );
    UInt8_RadioButton.OnClick( (pcl::Button::click_event_handler)&FITSOptionsDialog::Button_Click, *this );
 
@@ -204,4 +199,4 @@ void FITSOptionsDialog::Dialog_Return( Dialog& /*sender*/, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITSOptionsDialog.cpp - Released 2023-07-06T16:53:37Z
+// EOF FITSOptionsDialog.cpp - Released 2023-08-01T16:30:07Z

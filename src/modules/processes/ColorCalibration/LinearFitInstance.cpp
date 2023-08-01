@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.6
+// /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// LinearFitInstance.cpp - Released 2023-07-06T16:53:46Z
+// LinearFitInstance.cpp - Released 2023-08-01T16:30:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -403,4 +403,4 @@ size_type LinearFitInstance::ParameterLength( const MetaParameter* p, size_type 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LinearFitInstance.cpp - Released 2023-07-06T16:53:46Z
+// EOF LinearFitInstance.cpp - Released 2023-08-01T16:30:17Z

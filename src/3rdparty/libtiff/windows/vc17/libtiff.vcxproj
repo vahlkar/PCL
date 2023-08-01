@@ -4,7 +4,7 @@
 # PixInsight Makefile Generator Script v1.129
 # Copyright (C) 2009-2023 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2023-07-06T21:14:31.266Z
+# Generated on .... 2023-08-01T16:39:37.130Z
 # Project id ...... libtiff
 # Project type .... StaticLibrary
 # Platform ........ Windows/vc17
@@ -29,7 +29,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{3147CB62-0173-4A26-A3BE-FA76DB9AE3FB}</ProjectGuid>
+    <ProjectGuid>{422B1C17-7525-4F99-9345-E0FDA112CB66}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.6
+// /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
-// pcl/ZenithalProjections.h - Released 2023-07-06T16:53:21Z
+// pcl/ZenithalProjections.h - Released 2023-08-01T16:29:49Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -299,4 +299,4 @@ private:
 #endif   // __PCL_ZenithalProjections_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ZenithalProjections.h - Released 2023-07-06T16:53:21Z
+// EOF pcl/ZenithalProjections.h - Released 2023-08-01T16:29:49Z

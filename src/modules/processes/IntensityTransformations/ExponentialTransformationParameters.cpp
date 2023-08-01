@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.6
+// /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ExponentialTransformationParameters.cpp - Released 2023-07-06T16:53:46Z
+// ExponentialTransformationParameters.cpp - Released 2023-08-01T16:30:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -191,4 +191,4 @@ bool ExponentialFunctionMask::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ExponentialTransformationParameters.cpp - Released 2023-07-06T16:53:46Z
+// EOF ExponentialTransformationParameters.cpp - Released 2023-08-01T16:30:17Z

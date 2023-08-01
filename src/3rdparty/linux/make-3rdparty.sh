@@ -33,4 +33,7 @@ make -j $NPROC
 cd $BASEDIR/zlib/linux/g++
 make -j $NPROC
 
+cd $BASEDIR/zstd/linux/g++
+make -j $NPROC
+
 cd $BASEDIR

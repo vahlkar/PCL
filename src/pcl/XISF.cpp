@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.6
+// /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
-// pcl/XISF.cpp - Released 2023-07-06T16:53:28Z
+// pcl/XISF.cpp - Released 2023-08-01T16:29:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -55,6 +55,8 @@
 #include <pcl/Cryptography.h>
 #include <pcl/PixelTraits.h> // PTLUT
 #include <pcl/XISF.h>
+
+#include <zstd/zstd.h> // ZSTD_*CLevel()
 
 namespace pcl
 {
@@ -392,6 +394,10 @@ const char* XISF::CompressionCodecId( XISF::block_compression codec )
       return "lz4+sh";
    case XISFCompression::LZ4HC_Sh:
       return "lz4hc+sh";
+   case XISFCompression::Zstd:
+      return "zstd";
+   case XISFCompression::Zstd_Sh:
+      return "zstd+sh";
    default:
    case XISFCompression::None:
       return "";
@@ -417,6 +423,10 @@ XISF::block_compression XISF::CompressionCodecFromId( const String& id )
       return XISFCompression::LZ4_Sh;
    if ( codec == "lz4hc+sh" )
       return XISFCompression::LZ4HC_Sh;
+   if ( codec == "zstd" )
+      return XISFCompression::Zstd;
+   if ( codec == "zstd+sh" )
+      return XISFCompression::Zstd_Sh;
    return XISFCompression::Unknown;
 }
 
@@ -439,6 +449,10 @@ Compression* XISF::NewCompression( XISF::block_compression codec, size_type item
    case XISFCompression::LZ4HC_Sh:
       compressor = new LZ4HCCompression;
       break;
+   case XISFCompression::Zstd:
+   case XISFCompression::Zstd_Sh:
+      compressor = new ZstdCompression;
+      break;
    default: // ?!
    case XISFCompression::None:
       throw Error( "XISF::NewCompression(): "
@@ -449,6 +463,7 @@ Compression* XISF::NewCompression( XISF::block_compression codec, size_type item
    case XISFCompression::Zlib_Sh:
    case XISFCompression::LZ4_Sh:
    case XISFCompression::LZ4HC_Sh:
+   case XISFCompression::Zstd_Sh:
       if ( itemSize > 1 )
       {
          compressor->EnableByteShuffling();
@@ -469,7 +484,7 @@ Compression* XISF::NewCompression( XISF::block_compression codec, size_type item
 int XISF::CompressionLevelForMethod( XISF::block_compression codec, int level )
 {
    level = Range( level, 0, MaxCompressionLevel );
-   int maxLevel;
+   int baseLevel = 1, minLevel = 0, maxLevel;
    switch ( codec )
    {
    default: // ?!
@@ -493,8 +508,15 @@ int XISF::CompressionLevelForMethod( XISF::block_compression codec, int level )
          return 9;
       maxLevel = 16;
       break;
+   case XISFCompression::Zstd:
+   case XISFCompression::Zstd_Sh:
+      if ( level == 0 )
+         return ::ZSTD_defaultCLevel();
+      minLevel = baseLevel = ::ZSTD_minCLevel();
+      maxLevel = ::ZSTD_maxCLevel();
+      break;
    }
-   return Max( 1, RoundInt( double( level )/MaxCompressionLevel * maxLevel ) );
+   return Max( baseLevel, minLevel + RoundInt( double( level )/MaxCompressionLevel * (maxLevel - minLevel) ) );
 }
 
 // ----------------------------------------------------------------------------
@@ -506,6 +528,7 @@ bool XISF::CompressionUsesByteShuffle( XISF::block_compression codec )
    case XISFCompression::Zlib_Sh:
    case XISFCompression::LZ4_Sh:
    case XISFCompression::LZ4HC_Sh:
+   case XISFCompression::Zstd_Sh:
       return true;
    default:
       return false;
@@ -524,6 +547,8 @@ XISF::block_compression XISF::CompressionCodecNoShuffle( XISF::block_compression
       return XISFCompression::LZ4;
    case XISFCompression::LZ4HC_Sh:
       return XISFCompression::LZ4HC;
+   case XISFCompression::Zstd_Sh:
+      return XISFCompression::Zstd;
    default:
       return codec;
    }
@@ -693,4 +718,4 @@ void XISF::EnsurePTLUTInitialized()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/XISF.cpp - Released 2023-07-06T16:53:28Z
+// EOF pcl/XISF.cpp - Released 2023-08-01T16:29:57Z

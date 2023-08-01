@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.6
+// /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
-// pcl/XISF.h - Released 2023-07-06T16:53:21Z
+// pcl/XISF.h - Released 2023-08-01T16:29:49Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -147,9 +147,11 @@ namespace XISFChecksum
  * <tr><td>XISFCompression::Zlib</td>     <td>Zlib compression.</td></tr>
  * <tr><td>XISFCompression::LZ4</td>      <td>LZ4 compression.</td></tr>
  * <tr><td>XISFCompression::LZ4HC</td>    <td>LZ4-HC compression.</td></tr>
+ * <tr><td>XISFCompression::Zstd</td>     <td>Zstandard compression (unofficial).</td></tr>
  * <tr><td>XISFCompression::Zlib_Sh</td>  <td>Zlib compression with byte shuffling.</td></tr>
  * <tr><td>XISFCompression::LZ4_Sh</td>   <td>LZ4 compression with byte shuffling.</td></tr>
  * <tr><td>XISFCompression::LZ4HC_Sh</td> <td>Lz4-HC compression with byte shuffling.</td></tr>
+ * <tr><td>XISFCompression::Zstd_Sh</td>  <td>Zstandard compression with byte shuffling (unofficial).</td></tr>
  * </table>
  *
  * \ingroup xisf_support
@@ -163,9 +165,11 @@ namespace XISFCompression
       Zlib,
       LZ4,
       LZ4HC,
+      Zstd,
       Zlib_Sh,
       LZ4_Sh,
       LZ4HC_Sh,
+      Zstd_Sh,
       NumberOfSupportedCodecs
    };
 }
@@ -642,7 +646,7 @@ public:
    bool                    noWarnings         : 1;  //!< Suppress all warning and diagnostics messages.
    bool                    warningsAreErrors  : 1;  //!< Treat warnings as fatal errors.
    XISF::block_checksum    checksumAlgorithm  : 4;  //!< The algorithm used for block checksum calculations.
-   XISF::block_compression compressionCodec   : 4;  //!< The codec used for compression of %XISF blocks.
+   XISF::block_compression compressionCodec   : 5;  //!< The codec used for compression of %XISF blocks.
    uint8                   compressionLevel   : 7;  //!< Codec-independent compression level: 0 = auto, 1 = fast, 100 = maximum compression.
    uint8                   verbosity          : 3;  //!< Verbosity level: 0 = quiet, > 0 = write console state messages.
    bool                    fixNonFinite       : 1;  //!< Replace NaNs, infinities and negative zeros with lower bound values in floating point images (reading only).
@@ -1626,4 +1630,4 @@ private:
 #endif   // __PCL_XISF_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/XISF.h - Released 2023-07-06T16:53:21Z
+// EOF pcl/XISF.h - Released 2023-08-01T16:29:49Z

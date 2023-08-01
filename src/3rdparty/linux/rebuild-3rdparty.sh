@@ -43,4 +43,8 @@ cd $BASEDIR/zlib/linux/g++
 make clean
 make -j $NPROC
 
+cd $BASEDIR/zstd/linux/g++
+make clean
+make -j $NPROC
+
 cd $BASEDIR

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.6
+// /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
-// Standard Blink Process Module Version 1.2.3
+// Standard Blink Process Module Version 1.2.4
 // ----------------------------------------------------------------------------
-// BlinkInterface.cpp - Released 2023-07-06T16:53:46Z
+// BlinkInterface.cpp - Released 2023-08-01T16:30:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Blink PixInsight module.
 //
@@ -704,7 +704,7 @@ bool BlinkInterface::Launch( const MetaProcess&, const ProcessImplementation*, b
    {
       GUI = new GUIData( *this );
       SetWindowTitle( "Blink" );
-      PreviewSize = GUI->Preview_ScrollBox.Width(); // already scaled to logical units
+      PreviewSize = GUI->Preview_Control.Width(); // already scaled to logical units
    }
 
    Init();
@@ -830,7 +830,7 @@ void BlinkInterface::Init()
       GUI->AutoSTF_Button.SetChecked();
       GUI->RGBLinked_Button.Hide();
       GUI->RGBLinked_Button.SetChecked();
-      GUI->Preview_ScrollBox.Update();
+      GUI->Preview_Control.Update();
    }
    else
    {
@@ -965,7 +965,7 @@ void BlinkInterface::GeneratePreview()
    else
       Image2Preview();
 
-   GUI->Preview_ScrollBox.SetFixedSize( m_previewBmp.Width(), m_previewBmp.Height() );
+   GUI->Preview_Control.SetFixedSize( m_previewBmp.Width(), m_previewBmp.Height() );
 }
 
 // ----------------------------------------------------------------------------
@@ -1611,7 +1611,7 @@ void BlinkInterface::__ActionButton_Click( Button& sender, bool /*checked*/ )
 
 // ----------------------------------------------------------------------------
 
-void BlinkInterface::__ScrollControl_Paint( Control& sender, const Rect& r )
+void BlinkInterface::__Preview_Paint( Control& sender, const Rect& r )
 {
    if ( m_previewBmp.IsNull() )
       return;
@@ -1620,7 +1620,6 @@ void BlinkInterface::__ScrollControl_Paint( Control& sender, const Rect& r )
    g.DisableAntialiasing();
 
    g.DrawBitmapRect( r.LeftTop(), m_previewBmp, r );
-
    if ( m_blink.m_screen.IsNull() || m_blink.m_filesData.IsEmpty() )
       return;
 
@@ -1628,35 +1627,29 @@ void BlinkInterface::__ScrollControl_Paint( Control& sender, const Rect& r )
    if ( m_blink.m_screen.CurrentView().IsPreview() )
       destRect += m_blink.m_screen.PreviewRect( m_blink.m_screen.CurrentView().Id() ).LeftTop();
 
-   if ( m_blink.m_screen.SelectedPreview().IsNull() )
-      g.SetPen( 0xFF00FF00 ); // green
-   else
-      g.SetPen( 0xFFFFFFFF ); // white
-
    double k = (m_blink.m_info.width > m_blink.m_info.height) ?
                               double( sender.Width() )/m_blink.m_info.width :
                               double( sender.Height() )/m_blink.m_info.height;
-   g.DrawRect( (k * destRect).RoundedToInt() );
+   g.StrokeRect( (k * destRect).RoundedToInt(),
+                 m_blink.m_screen.SelectedPreview().IsNull() ? 0xFF00FF00/*green*/ : 0xFFFFFFFF/*white*/ );
 
    if ( m_blink.m_screen.HasPreviews() )
    {
       Array<View> previews = m_blink.m_screen.Previews();
       for ( size_type i = 0; i < previews.Length(); i++ )
       {
-         if ( m_blink.m_screen.SelectedPreview() == previews[i] )
-            g.SetPen( 0xFF00FF00 ); // green
-         else
-            g.SetPen( 0xFFFFFFFF ); // white
-
-         Point p = m_blink.m_screen.PreviewRect( previews[i].Id() ).LeftTop();
-         g.DrawRect( (k * DRect( previews[i].Bounds().MovedTo( p ) )).RoundedToInt() );
+         Point previewPos = m_blink.m_screen.PreviewRect( previews[i].Id() ).LeftTop();
+         g.StrokeRect( (k * DRect( previews[i].Bounds().MovedTo( previewPos ) )).RoundedToInt(),
+                       m_blink.m_screen.SelectedPreview() == previews[i] ? 0xFF00FF00/*green*/ : 0xFFFFFFFF/*white*/ );
       }
    }
+
+   g.StrokeRect( sender.BoundsRect(), 0xFF000000 );
 }
 
 // ----------------------------------------------------------------------------
 
-void BlinkInterface::__ScrollControl_MouseWheel( Control& sender, const Point& pos, int delta, unsigned buttons, unsigned modifiers )
+void BlinkInterface::__Preview_MouseWheel( Control& sender, const Point& pos, int delta, unsigned buttons, unsigned modifiers )
 {
    if ( m_blink.m_screen.IsNull() || m_blink.m_filesData.IsEmpty() )
       return;
@@ -1680,7 +1673,7 @@ void BlinkInterface::__ScrollControl_MouseWheel( Control& sender, const Point& p
 
 // ----------------------------------------------------------------------------
 
-void BlinkInterface::__ScrollControl_MousePress( Control& sender, const Point& pos, int button, unsigned buttons, unsigned modifiers )
+void BlinkInterface::__Preview_MousePress( Control& sender, const Point& pos, int button, unsigned buttons, unsigned modifiers )
 {
    if ( m_blink.m_filesData.IsEmpty() )
    {
@@ -1704,7 +1697,7 @@ void BlinkInterface::__ScrollControl_MousePress( Control& sender, const Point& p
 
 // ----------------------------------------------------------------------------
 
-void BlinkInterface::__ScrollControl_MouseMove( Control& sender, const Point& pos, unsigned buttons, unsigned modifiers )
+void BlinkInterface::__Preview_MouseMove( Control& sender, const Point& pos, unsigned buttons, unsigned modifiers )
 {
    if ( m_blink.m_screen.IsNull() || m_blink.m_filesData.IsEmpty() )
       return;
@@ -1816,7 +1809,7 @@ void BlinkInterface::__UpdatePreview_Timer( Timer& timer )
     */
    if ( IsVisible() )
    {
-      GUI->Preview_ScrollBox.Viewport().Update();
+      GUI->Preview_Control.Update();
       if ( !m_blink.m_filesData.IsEmpty() )
          timer.Start();
    }
@@ -1962,14 +1955,13 @@ BlinkInterface::GUIData::GUIData( BlinkInterface& w )
       "2. Click or click & drag to move the viewing region to a new position.</p>"
    "<p>Note: you can get the same result via direct manipulation (zoom/resize/scroll) on the BilnkScreen image window.</p>";
 
-   Preview_ScrollBox.SetToolTip( scrollControlToolTip );
-   Preview_ScrollBox.SetStyle( FrameStyle::Flat ); // no frame
-   Preview_ScrollBox.SetScaledFixedSize( PreviewSize, PreviewSize );
-   Preview_ScrollBox.Viewport().SetCursor( StdCursor::CirclePlus );
-   Preview_ScrollBox.Viewport().OnPaint( (Control::paint_event_handler)&BlinkInterface::__ScrollControl_Paint, w );
-   Preview_ScrollBox.Viewport().OnMouseWheel( (Control::mouse_wheel_event_handler)&BlinkInterface::__ScrollControl_MouseWheel, w );
-   Preview_ScrollBox.Viewport().OnMousePress( (Control::mouse_button_event_handler)&BlinkInterface::__ScrollControl_MousePress, w );
-   Preview_ScrollBox.Viewport().OnMouseMove( (Control::mouse_event_handler)&BlinkInterface::__ScrollControl_MouseMove, w );
+   Preview_Control.SetToolTip( scrollControlToolTip );
+   Preview_Control.SetScaledFixedSize( PreviewSize, PreviewSize );
+   Preview_Control.SetCursor( StdCursor::CirclePlus );
+   Preview_Control.OnPaint( (Control::paint_event_handler)&BlinkInterface::__Preview_Paint, w );
+   Preview_Control.OnMouseWheel( (Control::mouse_wheel_event_handler)&BlinkInterface::__Preview_MouseWheel, w );
+   Preview_Control.OnMousePress( (Control::mouse_button_event_handler)&BlinkInterface::__Preview_MousePress, w );
+   Preview_Control.OnMouseMove( (Control::mouse_event_handler)&BlinkInterface::__Preview_MouseMove, w );
 
    AutoSTF_Button.SetCheckable();
    AutoSTF_Button.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/../IntensityTransformations/ScreenTransferFunction.svg", ri22, ri22 ) );
@@ -2004,8 +1996,8 @@ BlinkInterface::GUIData::GUIData( BlinkInterface& w )
    NextImage_Button.SetToolTip( "Next image" );
    NextImage_Button.OnClick( (Button::click_event_handler)&BlinkInterface::__ActionButton_Click, w );
 
-   for ( float d : g_delaySecs )
-      BlinkingDelay_ComboBox.AddItem( String().Format( "%.2f sec", d ) );
+   for ( float delaySecs : g_delaySecs )
+      BlinkingDelay_ComboBox.AddItem( String().Format( "%.2f sec", delaySecs ) );
    BlinkingDelay_ComboBox.SetToolTip( "<p>Minimum delay between successive blinking images.</p>" );
    BlinkingDelay_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&BlinkInterface::__Delay_ItemSelected, w );
 
@@ -2100,7 +2092,7 @@ BlinkInterface::GUIData::GUIData( BlinkInterface& w )
 
    Preview_Sizer.SetSpacing( 4 );
    Preview_Sizer.AddStretch();
-   Preview_Sizer.Add( Preview_ScrollBox );
+   Preview_Sizer.Add( Preview_Control );
    Preview_Sizer.Add( STF_Sizer );
 
    ActionControl_Sizer.AddStretch();
@@ -2177,4 +2169,4 @@ BlinkInterface::GUIData::GUIData( BlinkInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BlinkInterface.cpp - Released 2023-07-06T16:53:46Z
+// EOF BlinkInterface.cpp - Released 2023-08-01T16:30:17Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.6
+// /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
-// pcl/PSFScaleEstimator.cpp - Released 2023-07-06T16:53:28Z
+// pcl/PSFScaleEstimator.cpp - Released 2023-08-01T16:29:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -318,4 +318,4 @@ __rcr_end:
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFScaleEstimator.cpp - Released 2023-07-06T16:53:28Z
+// EOF pcl/PSFScaleEstimator.cpp - Released 2023-08-01T16:29:57Z

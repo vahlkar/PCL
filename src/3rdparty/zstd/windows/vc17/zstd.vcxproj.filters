@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+######################################################################
+# PixInsight Makefile Generator Script v1.129
+# Copyright (C) 2009-2023 Pleiades Astrophoto
+######################################################################
+# Generated on .... 2023-08-01T16:39:38.868Z
+# Project id ...... zstd
+# Project type .... StaticLibrary
+# Platform ........ Windows/vc17
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# Additional preprocessor definitions:
+# ZSTD_DISABLE_ASM=1
+# _CRT_SECURE_NO_WARNINGS
+######################################################################
+-->
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>1d6c287a-c0c2-4717-bd94-707cc3b9af96</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>b071c58d-bf01-4e74-8657-2ecbdae4bd90</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\common\debug.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\entropy_common.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\error_private.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\fse_decompress.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\pool.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\threading.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\xxhash.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\zstd_common.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\compress\fse_compress.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\compress\hist.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\compress\huf_compress.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\compress\zstd_compress.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\compress\zstd_compress_literals.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\compress\zstd_compress_sequences.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\compress\zstd_compress_superblock.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\compress\zstd_double_fast.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\compress\zstd_fast.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\compress\zstd_lazy.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\compress\zstd_ldm.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\compress\zstd_opt.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\compress\zstdmt_compress.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\decompress\huf_decompress.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\decompress\zstd_ddict.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\decompress\zstd_decompress.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\decompress\zstd_decompress_block.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\deprecated\zbuff_common.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\deprecated\zbuff_compress.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\deprecated\zbuff_decompress.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\common\allocations.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\bits.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\bitstream.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\compiler.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\cpu.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\debug.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\error_private.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\fse.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\huf.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\mem.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\pool.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\portability_macros.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\threading.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\xxhash.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\zstd_deps.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\zstd_internal.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\zstd_trace.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\compress\clevels.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\compress\hist.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\compress\zstd_compress_internal.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\compress\zstd_compress_literals.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\compress\zstd_compress_sequences.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\compress\zstd_compress_superblock.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\compress\zstd_cwksp.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\compress\zstd_double_fast.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\compress\zstd_fast.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\compress\zstd_lazy.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\compress\zstd_ldm.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\compress\zstd_ldm_geartab.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\compress\zstd_opt.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\compress\zstdmt_compress.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\decompress\zstd_ddict.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\decompress\zstd_decompress_block.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\decompress\zstd_decompress_internal.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\deprecated\zbuff.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\zstd.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\zstd_errors.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+######################################################################
+# PixInsight Makefile Generator Script v1.129
+# Copyright (C) 2009-2023 Pleiades Astrophoto
+######################################################################
+# Generated on .... 2023-08-01T16:39:38.868Z
+# Project id ...... zstd
+# Project type .... StaticLibrary
+# Platform ........ Windows/vc17
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# Additional preprocessor definitions:
+# ZSTD_DISABLE_ASM=1
+# _CRT_SECURE_NO_WARNINGS
+######################################################################
+-->
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{0D6F9D82-748B-4A4C-9FF1-1240AD2E54ED}</ProjectGuid>
+    <RootNamespace>PixInsight</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(PCLLIBDIR64)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(PCLLIBDIR64)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">zstd-pxi</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">zstd-pxi</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>$(PCLINCDIR);$(PCLSRCDIR)\3rdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;WIN64;_WINDOWS;UNICODE;__PCL_WINDOWS;__PCL_NO_WIN32_MINIMUM_VERSIONS;ZSTD_DISABLE_ASM=1;_CRT_SECURE_NO_WARNINGS;_NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <PrecompiledHeader></PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat></DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/Zc:__cplusplus /permissive- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(PCLLIBDIR64)\zstd-pxi.lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(PCLINCDIR);$(PCLSRCDIR)\3rdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;WIN64;_WINDOWS;UNICODE;__PCL_WINDOWS;__PCL_NO_WIN32_MINIMUM_VERSIONS;ZSTD_DISABLE_ASM=1;_CRT_SECURE_NO_WARNINGS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader></PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/Zc:__cplusplus /permissive- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(PCLLIBDIR64)\zstd-pxi.lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\common\debug.c"/>
+    <ClCompile Include="..\..\common\entropy_common.c"/>
+    <ClCompile Include="..\..\common\error_private.c"/>
+    <ClCompile Include="..\..\common\fse_decompress.c"/>
+    <ClCompile Include="..\..\common\pool.c"/>
+    <ClCompile Include="..\..\common\threading.c"/>
+    <ClCompile Include="..\..\common\xxhash.c"/>
+    <ClCompile Include="..\..\common\zstd_common.c"/>
+    <ClCompile Include="..\..\compress\fse_compress.c"/>
+    <ClCompile Include="..\..\compress\hist.c"/>
+    <ClCompile Include="..\..\compress\huf_compress.c"/>
+    <ClCompile Include="..\..\compress\zstd_compress.c"/>
+    <ClCompile Include="..\..\compress\zstd_compress_literals.c"/>
+    <ClCompile Include="..\..\compress\zstd_compress_sequences.c"/>
+    <ClCompile Include="..\..\compress\zstd_compress_superblock.c"/>
+    <ClCompile Include="..\..\compress\zstd_double_fast.c"/>
+    <ClCompile Include="..\..\compress\zstd_fast.c"/>
+    <ClCompile Include="..\..\compress\zstd_lazy.c"/>
+    <ClCompile Include="..\..\compress\zstd_ldm.c"/>
+    <ClCompile Include="..\..\compress\zstd_opt.c"/>
+    <ClCompile Include="..\..\compress\zstdmt_compress.c"/>
+    <ClCompile Include="..\..\decompress\huf_decompress.c"/>
+    <ClCompile Include="..\..\decompress\zstd_ddict.c"/>
+    <ClCompile Include="..\..\decompress\zstd_decompress.c"/>
+    <ClCompile Include="..\..\decompress\zstd_decompress_block.c"/>
+    <ClCompile Include="..\..\deprecated\zbuff_common.c"/>
+    <ClCompile Include="..\..\deprecated\zbuff_compress.c"/>
+    <ClCompile Include="..\..\deprecated\zbuff_decompress.c"/>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\common\allocations.h"/>
+    <ClInclude Include="..\..\common\bits.h"/>
+    <ClInclude Include="..\..\common\bitstream.h"/>
+    <ClInclude Include="..\..\common\compiler.h"/>
+    <ClInclude Include="..\..\common\cpu.h"/>
+    <ClInclude Include="..\..\common\debug.h"/>
+    <ClInclude Include="..\..\common\error_private.h"/>
+    <ClInclude Include="..\..\common\fse.h"/>
+    <ClInclude Include="..\..\common\huf.h"/>
+    <ClInclude Include="..\..\common\mem.h"/>
+    <ClInclude Include="..\..\common\pool.h"/>
+    <ClInclude Include="..\..\common\portability_macros.h"/>
+    <ClInclude Include="..\..\common\threading.h"/>
+    <ClInclude Include="..\..\common\xxhash.h"/>
+    <ClInclude Include="..\..\common\zstd_deps.h"/>
+    <ClInclude Include="..\..\common\zstd_internal.h"/>
+    <ClInclude Include="..\..\common\zstd_trace.h"/>
+    <ClInclude Include="..\..\compress\clevels.h"/>
+    <ClInclude Include="..\..\compress\hist.h"/>
+    <ClInclude Include="..\..\compress\zstd_compress_internal.h"/>
+    <ClInclude Include="..\..\compress\zstd_compress_literals.h"/>
+    <ClInclude Include="..\..\compress\zstd_compress_sequences.h"/>
+    <ClInclude Include="..\..\compress\zstd_compress_superblock.h"/>
+    <ClInclude Include="..\..\compress\zstd_cwksp.h"/>
+    <ClInclude Include="..\..\compress\zstd_double_fast.h"/>
+    <ClInclude Include="..\..\compress\zstd_fast.h"/>
+    <ClInclude Include="..\..\compress\zstd_lazy.h"/>
+    <ClInclude Include="..\..\compress\zstd_ldm.h"/>
+    <ClInclude Include="..\..\compress\zstd_ldm_geartab.h"/>
+    <ClInclude Include="..\..\compress\zstd_opt.h"/>
+    <ClInclude Include="..\..\compress\zstdmt_compress.h"/>
+    <ClInclude Include="..\..\decompress\zstd_ddict.h"/>
+    <ClInclude Include="..\..\decompress\zstd_decompress_block.h"/>
+    <ClInclude Include="..\..\decompress\zstd_decompress_internal.h"/>
+    <ClInclude Include="..\..\deprecated\zbuff.h"/>
+    <ClInclude Include="..\..\zstd.h"/>
+    <ClInclude Include="..\..\zstd_errors.h"/>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets"/>
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

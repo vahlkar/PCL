@@ -2,7 +2,7 @@
 # PixInsight Makefile Generator Script v1.129
 # Copyright (C) 2009-2023 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2023-07-06T21:14:42.680Z
+# Generated on .... 2023-08-01T16:39:49.081Z
 # Project id ...... ColorSpaces
 # Project type .... Module
 # Platform ........ FreeBSD/g++
@@ -111,7 +111,7 @@ DEP_FILES= \
 -include $(DEP_FILES)
 
 $(OBJ_DIR)/ColorSpaces-pxm.so: $(OBJ_FILES)
-	clang++ -m64 -fPIC -Wl,-z,noexecstack -Wl,-O1 -Wl,--gc-sections -rdynamic -shared -L"$(PCLLIBDIR64)" -L"$(PCLBINDIR64)/lib" -o $(OBJ_DIR)/ColorSpaces-pxm.so $(OBJ_FILES) -lpthread -lPCL-pxi -llz4-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi
+	clang++ -m64 -fPIC -Wl,-z,noexecstack -Wl,-O1 -Wl,--gc-sections -rdynamic -shared -L"$(PCLLIBDIR64)" -L"$(PCLBINDIR64)/lib" -o $(OBJ_DIR)/ColorSpaces-pxm.so $(OBJ_FILES) -lpthread -lPCL-pxi -llz4-pxi -lzstd-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi
 	$(MAKE) -f ./makefile-x64 --no-print-directory post-build
 
 .PHONY: clean

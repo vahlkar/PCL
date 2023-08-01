@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.6
+// /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// RescaleParameters.cpp - Released 2023-07-06T16:53:46Z
+// RescaleParameters.cpp - Released 2023-08-01T16:30:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -103,4 +103,4 @@ size_type RescalingMode::DefaultValueIndex() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RescaleParameters.cpp - Released 2023-07-06T16:53:46Z
+// EOF RescaleParameters.cpp - Released 2023-08-01T16:30:17Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.6
+// /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
 // Standard XISF File Format Module Version 1.0.13
 // ----------------------------------------------------------------------------
-// XISFOptionsDialog.cpp - Released 2023-07-06T16:53:37Z
+// XISFOptionsDialog.cpp - Released 2023-08-01T16:30:07Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard XISF PixInsight module.
 //
@@ -73,6 +73,8 @@ XISFOptionsDialogBase::XISFOptionsDialogBase( const XISFOptions& xisfOptions, co
       "compression ratios than zlib.</p>"
       "<p>LZ4-HC is the high-compression variant of LZ4. It achieves somewhat smaller compression ratios than zlib, "
       "but is faster for compression and extremely fast for decompression.</p>"
+      "<p>Zstandard (or \"zstd\") is a fast lossless compression algorithm targeting real-time compression at "
+      "zlib-level and better compression ratios.</p>"
       "<p>You can use the compression level parameter to tune compression speed versus compression ratio, or leave "
       "the <i>auto</i> option checked to select the best tradeoff setting for each compression codec automatically. "
       "See also the <i>byte shuffling</i> option.</p>";
@@ -85,8 +87,10 @@ XISFOptionsDialogBase::XISFOptionsDialogBase( const XISFOptions& xisfOptions, co
    CompressionCodec_ComboBox.AddItem( "ZLib (deflate)" );
    CompressionCodec_ComboBox.AddItem( "LZ4" );
    CompressionCodec_ComboBox.AddItem( "LZ4-HC" );
+   CompressionCodec_ComboBox.AddItem( "Zstandard" );
    CompressionCodec_ComboBox.SetToolTip( compressionCodecToolTip );
-   CompressionCodec_ComboBox.SetCurrentItem( CompressionCodecToComboBoxItem( options.compressionCodec ) );
+   CompressionCodec_ComboBox.SetCurrentItem( CompressionCodecToComboBoxItem( // Zstandard compression selected by default
+      (options.compressionCodec != XISFCompression::None) ? options.compressionCodec : XISFCompression::Zstd ) );
 
    CompressionCodec_Sizer.SetSpacing( 4 );
    CompressionCodec_Sizer.Add( CompressionCodec_Label );
@@ -121,7 +125,7 @@ XISFOptionsDialogBase::XISFOptionsDialogBase( const XISFOptions& xisfOptions, co
       "compression of data structured as contiguous sequences of 16-bit, 32-bit and 64-bit numbers, such as most images "
       "processed with PixInsight. For 8-bit data, byte shuffling has obviously no effect on the compression ratio and "
       "hence is ignored.</p>" );
-   CompressionShuffle_CheckBox.SetChecked( options.compressionCodec == XISFCompression::None ||
+   CompressionShuffle_CheckBox.SetChecked( options.compressionCodec == XISFCompression::None || // byte shuffling enabled by default
                                            XISF::CompressionUsesByteShuffle( options.compressionCodec ) );
 
    CompressionShuffle_Sizer.AddUnscaledSpacing( m_labelWidth + ui4 );
@@ -207,6 +211,9 @@ int XISFOptionsDialogBase::CompressionCodecToComboBoxItem( XISF::block_compressi
    case XISFCompression::LZ4HC:
    case XISFCompression::LZ4HC_Sh:
       return 2;
+   case XISFCompression::Zstd:
+   case XISFCompression::Zstd_Sh:
+      return 3;
    }
 }
 
@@ -223,6 +230,8 @@ XISF::block_compression XISFOptionsDialogBase::ComboBoxItemToCompressionCodec( i
       return withByteShuffle ? XISFCompression::LZ4_Sh : XISFCompression::LZ4;
    case 2:
       return withByteShuffle ? XISFCompression::LZ4HC_Sh : XISFCompression::LZ4HC;
+   case 3:
+      return withByteShuffle ? XISFCompression::Zstd_Sh : XISFCompression::Zstd;
    default: // !?
       return XISFCompression::Unknown;
    }
@@ -559,4 +568,4 @@ void XISFOptionsDialog::Dialog_Return( Dialog&/*sender*/, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF XISFOptionsDialog.cpp - Released 2023-07-06T16:53:37Z
+// EOF XISFOptionsDialog.cpp - Released 2023-08-01T16:30:07Z

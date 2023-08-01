@@ -2,7 +2,7 @@
 # PixInsight Makefile Generator Script v1.129
 # Copyright (C) 2009-2023 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2023-07-06T21:14:39.113Z
+# Generated on .... 2023-08-01T16:39:45.447Z
 # Project id ...... JPEG2000
 # Project type .... Module
 # Platform ........ Linux/g++
@@ -57,7 +57,7 @@ DEP_FILES= \
 -include $(DEP_FILES)
 
 $(OBJ_DIR)/JPEG2000-pxm.so: $(OBJ_FILES)
-	g++ -m64 -fPIC -pthread -Wl,-fuse-ld=gold -Wl,--enable-new-dtags -Wl,-z,noexecstack -Wl,-O1 -Wl,--gc-sections -rdynamic -shared -L"$(PCLLIBDIR64)" -L"$(PCLBINDIR64)/lib" -o $(OBJ_DIR)/JPEG2000-pxm.so $(OBJ_FILES) -lpthread -lPCL-pxi -llz4-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi -ljasper-pxi
+	g++ -m64 -fPIC -pthread -Wl,-fuse-ld=gold -Wl,--enable-new-dtags -Wl,-z,noexecstack -Wl,-O1 -Wl,--gc-sections -rdynamic -shared -L"$(PCLLIBDIR64)" -L"$(PCLBINDIR64)/lib" -o $(OBJ_DIR)/JPEG2000-pxm.so $(OBJ_FILES) -lpthread -lPCL-pxi -llz4-pxi -lzstd-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi -ljasper-pxi
 	$(MAKE) -f ./makefile-x64 --no-print-directory post-build
 
 .PHONY: clean

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.6
+// /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
-// pcl/Compression.h - Released 2023-07-06T16:53:21Z
+// pcl/Compression.h - Released 2023-08-01T16:29:49Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -78,7 +78,7 @@ namespace pcl
  * Zlib/deflate, LZ4, LZMA, etc.
  *
  * \ingroup compression_classes
- * \sa ZLibCompression, LZ4Compression, LZ4HCCompression, BloscLZCompression
+ * \sa ZLibCompression, LZ4Compression, LZ4HCCompression, ZstdCompression
  */
 class PCL_CLASS Compression : public ParallelProcess
 {
@@ -153,6 +153,15 @@ public:
     * Returns the name of this data compression algorithm.
     */
    virtual String AlgorithmName() const = 0;
+
+   /*!
+    * Returns the minimum compression optimization level supported by this
+    * algorithm. The default implementation returns zero.
+    */
+   virtual int MinCompressionLevel() const
+   {
+      return 0;
+   }
 
    /*!
     * Returns the maximum compression optimization level supported by this
@@ -610,7 +619,7 @@ protected:
  * \li Greg Roelofs, Mark Adler, Zlib Home Site: http://www.zlib.net/
  *
  * \ingroup compression_classes
- * \sa Compression, LZ4Compression, LZ4HCCompression, BloscLZCompression
+ * \sa Compression, LZ4Compression, LZ4HCCompression, ZstdCompression
  */
 class PCL_CLASS ZLibCompression : public Compression
 {
@@ -680,7 +689,7 @@ private:
  * \li LZ4 website: http://cyan4973.github.io/lz4/
  *
  * \ingroup compression_classes
- * \sa Compression, LZ4HCCompression, ZLibCompression, BloscLZCompression
+ * \sa Compression, LZ4HCCompression, ZLibCompression, ZstdCompression
  */
 class PCL_CLASS LZ4Compression : public Compression
 {
@@ -751,7 +760,7 @@ private:
  * \li LZ4 website: http://cyan4973.github.io/lz4/
  *
  * \ingroup compression_classes
- * \sa Compression, LZ4Compression, ZLibCompression, BloscLZCompression
+ * \sa Compression, LZ4Compression, ZLibCompression, ZstdCompression
  */
 class PCL_CLASS LZ4HCCompression : public Compression
 {
@@ -801,9 +810,86 @@ private:
 
 // ----------------------------------------------------------------------------
 
+/*!
+ * \class ZstdCompression
+ * \brief Implementation of the Zstandard compression algorithm.
+ *
+ * This class implements the Zstandard (or "zstd") compression algorithm
+ * developed by Yann Collet at Facebook.
+ *
+ * Zstandard is a fast lossless compression algorithm, targeting real-time
+ * compression scenarios at zlib-level and better compression ratios.
+ *
+ * The underlying implementation in PixInsight is the zstd reference
+ * implementation, which has been released under a BSD + GPLv2 dual license.
+ *
+ * \b References
+ *
+ * \li RFC8878: https://datatracker.ietf.org/doc/html/rfc8878
+ *
+ * \li Zstd reference implementation: https://github.com/facebook/zstd
+ *
+ * \li Zstd website: https://facebook.github.io/zstd/
+ *
+ * \ingroup compression_classes
+ * \sa Compression, LZ4Compression, LZ4HCCompression, ZLibCompression
+ */
+class PCL_CLASS ZstdCompression : public Compression
+{
+public:
+
+   /*!
+    * Returns the name of this data compression algorithm (Zstd-HC).
+    */
+   String AlgorithmName() const override
+   {
+      return "Zstd";
+   }
+
+   /*!
+    * Returns the minimum compression level supported. The zstd reference
+    * implementation supports negative compression levels.
+    */
+   int MinCompressionLevel() const override;
+
+   /*!
+    */
+   int MaxCompressionLevel() const override;
+
+   /*!
+    */
+   int DefaultCompressionLevel() const override;
+
+private:
+
+   /*!
+    */
+   size_type MinBlockSize() const override;
+
+   /*!
+    */
+   size_type MaxBlockSize() const override;
+
+   /*!
+    */
+   size_type MaxCompressedBlockSize( size_type size ) const override;
+
+   /*!
+    */
+   size_type CompressBlock( void* outputData, size_type outputSize,
+                            const void* inputData, size_type inputSize, int level ) const override;
+
+   /*!
+    */
+   size_type UncompressBlock( void* outputData, size_type outputSize,
+                              const void* inputData, size_type inputSize ) const override;
+};
+
+// ----------------------------------------------------------------------------
+
 } // pcl
 
 #endif   // __PCL_Compression_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Compression.h - Released 2023-07-06T16:53:21Z
+// EOF pcl/Compression.h - Released 2023-08-01T16:29:49Z

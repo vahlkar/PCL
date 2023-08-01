@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.6
+// /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// AdaptiveStretchInstance.cpp - Released 2023-07-06T16:53:46Z
+// AdaptiveStretchInstance.cpp - Released 2023-08-01T16:30:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -722,4 +722,4 @@ StretchCurve AdaptiveStretchInstance::Preview( UInt16Image& image, const View& v
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF AdaptiveStretchInstance.cpp - Released 2023-07-06T16:53:46Z
+// EOF AdaptiveStretchInstance.cpp - Released 2023-08-01T16:30:17Z

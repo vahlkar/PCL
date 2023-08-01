@@ -43,4 +43,8 @@ cd $BASEDIR/zlib/macosx/g++
 make clean
 make -j $NPROC
 
+cd $BASEDIR/zstd/macosx/g++
+make clean
+make -j $NPROC
+
 cd $BASEDIR

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.6
+// /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
-// pcl/LocalNormalizationData.cpp - Released 2023-07-06T16:53:28Z
+// pcl/LocalNormalizationData.cpp - Released 2023-08-01T16:29:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -522,6 +522,8 @@ void LocalNormalizationData::ParseNormalizationMatrices( normalization_matrices&
                compression = new LZ4HCCompression;
             else if ( compressionName == "zlib" || compressionName == "zlib+sh" )
                compression = new ZLibCompression;
+            else if ( compressionName == "zstd" || compressionName == "zstd+sh" )
+               compression = new ZstdCompression;
             else
                throw Error( "Unknown or unsupported compression codec '" + compressionName + '\'' );
 
@@ -638,4 +640,4 @@ void LocalNormalizationData::SerializeNormalizationMatrices( XMLElement* root, c
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/LocalNormalizationData.cpp - Released 2023-07-06T16:53:28Z
+// EOF pcl/LocalNormalizationData.cpp - Released 2023-08-01T16:29:57Z

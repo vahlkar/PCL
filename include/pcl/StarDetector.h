@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.6
+// /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
-// pcl/StarDetector.h - Released 2023-07-06T16:53:21Z
+// pcl/StarDetector.h - Released 2023-08-01T16:29:49Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -96,6 +96,7 @@ public:
                                  calculated by the star detection algorithm otherwise. */
       Rect   rect = 0;      //!< Bounding rectangle of the detection region in pixels, image coordinates.
       Rect   srect = 0;     //!< Sampling region in pixels, image coordinates.
+      float  area = 0;      //!< Area of the detected source structure in square pixels.
       float  flux = 0;      //!< Total flux above local background.
       float  signal = 0;    /*!< Estimated mean signal over the local background within the PSF
                                  fitting region. Nonzero only when PSF fitting is enabled. */
@@ -110,11 +111,11 @@ public:
 
       /*!
        * Constructs a new %Star object with the specified position \a p,
-       * detection region \a r, sampling region \a sr, total flux \a f, mean
-       * signal \a s and PSF average deviation \a m.
+       * detection region \a r, sampling region \a sr, area \a a, total flux
+       * \a f, mean signal \a s, and PSF average deviation \a m.
        */
-      Star( const DPoint& p, const Rect& r, const Rect& sr = 0, float f = 0, float s = 0, float m = 0 )
-         : pos( p ), rect( r ), srect( sr ), flux( f ), signal( s ), mad( m )
+      Star( const DPoint& p, const Rect& r, const Rect& sr = 0, float a = 0, float f = 0, float s = 0, float m = 0 )
+         : pos( p ), rect( r ), srect( sr ), area( a ), flux( f ), signal( s ), mad( m )
       {
       }
 
@@ -316,13 +317,24 @@ public:
    /*!
     * Minimum size of a detectable star structure in square pixels.
     *
-    * This parameter can be used to prevent detection of small and bright image
-    * artifacts as stars. This can be useful to work with uncalibrated or
-    * wrongly calibrated data, especially demosaiced CFA frames where hot
-    * pixels have generated large bright artifacts that cannot be removed with
-    * a median filter, poorly focused images, and images with poor tracking.
+    * This parameter can be used to prevent the detection of small and bright
+    * image artifacts wrongly as stars. This can be useful to work with
+    * uncalibrated or poorly calibrated data, especially demosaiced CFA frames
+    * where uncorrected hot pixels have generated large bright artifacts that
+    * cannot be removed with a median filter, or for rejection of cosmic rays.
     *
-    * The default value is zero, which effectively disables this feature.
+    * This parameter can be used in three ways:
+    *
+    * \li <b>Automatic mode.</b> A zero value enables an adaptive algorithm
+    * to find an optimal minimum structure size using statistical analysis
+    * techniques. This is the default option.
+    *
+    * \li <b>Disabled.</b> A value of one turns off minimum structure size
+    * rejection since no detectable star can be represented by less than one
+    * pixel.
+    *
+    * \li <b>Literal value.</b> A value &gt; 1 forces using the specified
+    * minimum structure size in square pixels.
     */
    int MinStructureSize() const
    {
@@ -330,13 +342,27 @@ public:
    }
 
    /*!
-    * Sets the minimum size of a detectable star structure in square pixels.
-    * See MinStructureSize() for a description of this parameter.
+    * Sets the minimum size \a n &ge; 0 of a detectable star structure in
+    * square pixels. See MinStructureSize() for a detailed description of this
+    * parameter and its possible values.
     */
    void SetMinStructureSize( int n )
    {
       PCL_PRECONDITION( n >= 0 )
       m_minStructureSize = Max( 0, n );
+   }
+
+   /*!
+    * Returns the automatically calculated minimum star size in square pixels.
+    *
+    * The value returned by this function is only valid after a successful
+    * execution of the DetectStars() function (or, equivalently, operator()())
+    * with a zero minimum structure size parameter value. See the
+    * MinStructureSize() member function for more information.
+    */
+   int MinStarSize() const
+   {
+      return m_minStarSize;
    }
 
    /*!
@@ -851,7 +877,8 @@ protected:
          int          m_noiseLayers = 0;
          int          m_hotPixelFilterRadius = 1;
          int          m_noiseReductionFilterRadius = 0;
-         int          m_minStructureSize = 1;
+         int          m_minStructureSize = 0; // automatic mode by default
+ mutable int          m_minStarSize = 0; // when minStructureSize=0
          float        m_sensitivity = 0.5F;
          float        m_peakResponse = 0.5F;
          float        m_minSNR = 0.0F;
@@ -881,4 +908,4 @@ private:
 #endif   // __PCL_StarDetector_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/StarDetector.h - Released 2023-07-06T16:53:21Z
+// EOF pcl/StarDetector.h - Released 2023-08-01T16:29:49Z

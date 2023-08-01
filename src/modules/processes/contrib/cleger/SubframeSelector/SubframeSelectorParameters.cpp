@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.6
+// /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.8.6
 // ----------------------------------------------------------------------------
-// SubframeSelectorParameters.cpp - Released 2023-07-06T16:53:46Z
+// SubframeSelectorParameters.cpp - Released 2023-08-01T16:30:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -817,13 +817,15 @@ double SSMinStructureSize::MaximumValue() const
 IsoString SSMinStructureSize::Tooltip() const
 {
    return "<p>Minimum size of a detectable star structure in square pixels.</p>"
-      "<p>This parameter can be used to prevent detection of small and bright image artifacts as stars. "
-      "This can be useful to work with uncalibrated or wrongly calibrated data, especially demosaiced CFA frames "
-      "where hot pixels have generated large bright artifacts that cannot be removed with a median filter "
-      "(i.e., the <i>Hot pixel removal</i> parameter).</p>"
-      "<p>Changing the default zero value of this parameter should not be necessary with correctly acquired and "
-      "calibrated data. It may help, however, when working with poor quality data such as poorly tracked, poorly focused, "
-      "wrongly calibrated, low-SNR raw frames, for which our algorithms and tools have not been designed specifically.</p>";
+      "<p>This parameter can be used to prevent the detection of small and bright image artifacts wrongly as stars, "
+      "when such artifacts cannot be removed with a median filter (i.e., the <i>Hot pixel removal</i> parameter), "
+      "or for rejection of cosmic rays.</p>"
+      "<p>This parameter can be used in three ways:</p>"
+      "<p><b>* Automatic mode.</b> A zero value enables an adaptive algorithm to find an optimal minimum structure "
+      "size using statistical analysis techniques. This is the default option.</p>"
+      "<p><b>* Disabled.</b> A value of one turns off minimum structure size rejection since no detectable star can "
+      "be represented by less than one pixel.</p>"
+      "<p><b>* Literal value.</b> A value &gt; 1 forces using the specified minimum structure size in square pixels.</p>";
 }
 
 // ----------------------------------------------------------------------------
@@ -3074,4 +3076,4 @@ bool SSMeasurementUnused01::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorParameters.cpp - Released 2023-07-06T16:53:46Z
+// EOF SubframeSelectorParameters.cpp - Released 2023-08-01T16:30:17Z

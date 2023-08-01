@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.6
+// /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationGraphInterface.h - Released 2023-07-06T16:53:46Z
+// PhotometricColorCalibrationGraphInterface.h - Released 2023-08-01T16:30:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -88,4 +88,4 @@ extern PhotometricColorCalibrationGraphInterface* ThePhotometricColorCalibration
 #endif   // __PhotometricColorCalibrationGraphInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationGraphInterface.h - Released 2023-07-06T16:53:46Z
+// EOF PhotometricColorCalibrationGraphInterface.h - Released 2023-08-01T16:30:17Z
