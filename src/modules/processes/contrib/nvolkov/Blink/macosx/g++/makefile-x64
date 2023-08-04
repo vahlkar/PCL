@@ -3,7 +3,7 @@
 # Copyright (C) 2009-2024 Pleiades Astrophoto
 ######################################################################
 # Generated on .... 2024-12-23T20:44:53.743Z
-# Project id ...... Blink
+# Project id ...... Blink2
 # Project type .... Module
 # Platform ........ MacOSX/g++
 # Configuration ... Release/x64
@@ -12,7 +12,7 @@
 OBJ_DIR="$(PCLSRCDIR)/modules/processes/contrib/nvolkov/Blink/macosx/g++/x64/Release"
 
 .PHONY: all
-all: $(OBJ_DIR)/Blink-pxm.dylib
+all: $(OBJ_DIR)/Blink2-pxm.dylib
 
 #
 # Source files
@@ -59,12 +59,12 @@ $(OBJ_DIR)/Blink-pxm.dylib: $(OBJ_FILES)
 
 .PHONY: clean
 clean:
-	rm -f $(OBJ_FILES) $(DEP_FILES) $(OBJ_DIR)/Blink-pxm.dylib
+	rm -f $(OBJ_FILES) $(DEP_FILES) $(OBJ_DIR)/Blink2-pxm.dylib
 
 .PHONY: post-build
 post-build:
-	cp $(OBJ_DIR)/Blink-pxm.dylib $(PCLBINDIR64)
-	codesign --deep --options=runtime -s pleiades -f -v --timestamp $(PCLBINDIR64)/Blink-pxm.dylib
+	cp $(OBJ_DIR)/Blink2-pxm.dylib $(PCLBINDIR64)
+	codesign --deep --options=runtime -s pleiades -f -v --timestamp $(PCLBINDIR64)/Blink2-pxm.dylib
 
 ./x64/Release/%.o: ../../%.cpp
 	clang++ -c -pipe -pthread -arch x86_64 -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12 -D_REENTRANT -D__PCL_MACOSX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -std=c++17 -stdlib=libc++ -Wall -Wno-parentheses -Wno-extern-c-compat -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
