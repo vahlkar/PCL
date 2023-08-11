@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard CometAlignment Process Module Version 1.3.7
 // ----------------------------------------------------------------------------
-// CentroidDetector.h - Released 2023-08-01T16:30:17Z
+// CentroidDetector.h - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CometAlignment PixInsight module.
 //
@@ -115,4 +115,4 @@ public:
 #endif // __CentroidDetector_h
 
 // ----------------------------------------------------------------------------
-// EOF CentroidDetector.h - Released 2023-08-01T16:30:17Z
+// EOF CentroidDetector.h - Released 2023-08-10T11:44:14Z

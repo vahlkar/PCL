@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard CosmeticCorrection Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// CosmeticCorrectionInterface.cpp - Released 2023-08-01T16:30:17Z
+// CosmeticCorrectionInterface.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CosmeticCorrection PixInsight module.
 //
@@ -2623,4 +2623,4 @@ CosmeticCorrectionInterface::GUIData::GUIData( CosmeticCorrectionInterface& w )
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF CosmeticCorrectionInterface.cpp - Released 2023-08-01T16:30:17Z
+// EOF CosmeticCorrectionInterface.cpp - Released 2023-08-10T11:44:14Z

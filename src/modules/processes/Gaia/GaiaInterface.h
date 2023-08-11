@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Gaia Process Module Version 1.2.5
 // ----------------------------------------------------------------------------
-// GaiaInterface.h - Released 2023-08-01T16:30:17Z
+// GaiaInterface.h - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Gaia PixInsight module.
 //
@@ -202,4 +202,4 @@ PCL_END_LOCAL
 #endif   // __GaiaInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF GaiaInterface.h - Released 2023-08-01T16:30:17Z
+// EOF GaiaInterface.h - Released 2023-08-10T11:44:14Z

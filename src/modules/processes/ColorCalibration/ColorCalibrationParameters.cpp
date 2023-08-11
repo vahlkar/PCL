@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// ColorCalibrationParameters.cpp - Released 2023-08-01T16:30:17Z
+// ColorCalibrationParameters.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -708,4 +708,4 @@ bool CCOutputBackgroundReferenceMask::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ColorCalibrationParameters.cpp - Released 2023-08-01T16:30:17Z
+// EOF ColorCalibrationParameters.cpp - Released 2023-08-10T11:44:14Z

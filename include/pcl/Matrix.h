@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
-// pcl/Matrix.h - Released 2023-08-01T16:29:49Z
+// pcl/Matrix.h - Released 2023-08-10T11:43:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -3864,4 +3864,4 @@ using LDMatrix = F80Matrix;
 #endif   // __PCL_Matrix_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Matrix.h - Released 2023-08-01T16:29:49Z
+// EOF pcl/Matrix.h - Released 2023-08-10T11:43:48Z

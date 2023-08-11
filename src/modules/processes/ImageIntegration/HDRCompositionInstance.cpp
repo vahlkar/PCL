@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// HDRCompositionInstance.cpp - Released 2023-08-01T16:30:17Z
+// HDRCompositionInstance.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -1003,4 +1003,4 @@ size_type HDRCompositionInstance::ParameterLength( const MetaParameter* p, size_
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF HDRCompositionInstance.cpp - Released 2023-08-01T16:30:17Z
+// EOF HDRCompositionInstance.cpp - Released 2023-08-10T11:44:14Z

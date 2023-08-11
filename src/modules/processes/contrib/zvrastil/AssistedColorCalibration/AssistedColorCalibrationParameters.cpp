@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard AssistedColorCalibration Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// AssistedColorCalibrationParameters.cpp - Released 2023-08-01T16:30:18Z
+// AssistedColorCalibrationParameters.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard AssistedColorCalibration PixInsight module.
 //
@@ -326,4 +326,4 @@ double ACCSaturationBoost::MaximumValue() const
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF AssistedColorCalibrationParameters.cpp - Released 2023-08-01T16:30:18Z
+// EOF AssistedColorCalibrationParameters.cpp - Released 2023-08-10T11:44:14Z

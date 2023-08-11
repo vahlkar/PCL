@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.4
 // ----------------------------------------------------------------------------
-// DynamicPSFInstance.cpp - Released 2023-08-01T16:30:17Z
+// DynamicPSFInstance.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -437,4 +437,4 @@ size_type DynamicPSFInstance::ParameterLength( const MetaParameter* p, size_type
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DynamicPSFInstance.cpp - Released 2023-08-01T16:30:17Z
+// EOF DynamicPSFInstance.cpp - Released 2023-08-10T11:44:14Z

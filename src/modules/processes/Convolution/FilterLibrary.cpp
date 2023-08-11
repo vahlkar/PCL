@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// FilterLibrary.cpp - Released 2023-08-01T16:30:17Z
+// FilterLibrary.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -580,4 +580,4 @@ void FilterParser::CaptureParameterValueTokens( token_list::const_iterator& i, t
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FilterLibrary.cpp - Released 2023-08-01T16:30:17Z
+// EOF FilterLibrary.cpp - Released 2023-08-10T11:44:14Z

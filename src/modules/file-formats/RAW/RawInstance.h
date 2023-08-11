@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard RAW File Format Module Version 1.6.2
 // ----------------------------------------------------------------------------
-// RawInstance.h - Released 2023-08-01T16:30:07Z
+// RawInstance.h - Released 2023-08-10T11:44:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RAW PixInsight module.
 //
@@ -147,4 +147,4 @@ private:
 #endif   // __RawInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF RawInstance.h - Released 2023-08-01T16:30:07Z
+// EOF RawInstance.h - Released 2023-08-10T11:44:05Z

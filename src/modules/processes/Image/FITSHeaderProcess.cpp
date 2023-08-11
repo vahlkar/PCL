@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.4
 // ----------------------------------------------------------------------------
-// FITSHeaderProcess.cpp - Released 2023-08-01T16:30:17Z
+// FITSHeaderProcess.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -225,4 +225,4 @@ int FITSHeaderProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITSHeaderProcess.cpp - Released 2023-08-01T16:30:17Z
+// EOF FITSHeaderProcess.cpp - Released 2023-08-10T11:44:14Z

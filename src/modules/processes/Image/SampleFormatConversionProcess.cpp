@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.4
 // ----------------------------------------------------------------------------
-// SampleFormatConversionProcess.cpp - Released 2023-08-01T16:30:17Z
+// SampleFormatConversionProcess.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -277,4 +277,4 @@ int SampleFormatConversionProcess::ProcessCommandLine( const StringList& argv ) 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SampleFormatConversionProcess.cpp - Released 2023-08-01T16:30:17Z
+// EOF SampleFormatConversionProcess.cpp - Released 2023-08-10T11:44:14Z

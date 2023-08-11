@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// IndigoDefs.h - Released 2023-08-01T16:30:17Z
+// IndigoDefs.h - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -74,4 +74,4 @@
 #endif // __IndigoDefs_h
 
 // ----------------------------------------------------------------------------
-// EOF IndigoDefs.h - Released 2023-08-01T16:30:17Z
+// EOF IndigoDefs.h - Released 2023-08-10T11:44:14Z

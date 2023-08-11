@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
-// pcl/StatusMonitor.cpp - Released 2023-08-01T16:29:57Z
+// pcl/StatusMonitor.cpp - Released 2023-08-10T11:43:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -159,13 +159,19 @@ static MonitorDispatcherThread* s_thread = nullptr;
  */
 void StatusMonitor::Initialize( const String& s, size_type n )
 {
+   // Fetch the current thread. Monitors initialized from a running thread are
+   // excluded for real-time updates.
+   m_thread = (*API->Thread->GetCurrentThread)();
+
    if ( !IsInitializationEnabled() )
       return;
 
    // If we are reinitializing, remove this monitor from the active queue.
-   s_mutex.Lock();
-   s_activeMonitors.Remove( this );
-   s_mutex.Unlock();
+   if ( m_thread == nullptr )
+   {
+      volatile AutoLock lock( s_mutex );
+      s_activeMonitors.Remove( this );
+   }
 
    // Initialize monitor control data.
    m_initialized = m_completed = m_aborted = m_needsUpdate = false;
@@ -191,36 +197,45 @@ void StatusMonitor::Initialize( const String& s, size_type n )
 
    m_initialized = true;
 
-   // Add this monitor to the active monitor queue.
-   s_mutex.Lock();
-   s_activeMonitors.Add( this );
-   s_mutex.Unlock();
+   if ( m_thread == nullptr )
+   {
+      // Add this monitor to the active monitor queue.
+      {
+         volatile AutoLock lock( s_mutex );
+         s_activeMonitors.Add( this );
+      }
 
-   // Initialize the monitor thread.
-   if ( s_thread == nullptr )
-      s_thread = new MonitorDispatcherThread;
-   if ( !s_thread->IsActive() )
-      s_thread->Start( ThreadPriority::Lowest );
+      // Initialize the monitor thread.
+      if ( s_thread == nullptr )
+         s_thread = new MonitorDispatcherThread;
+      if ( !s_thread->IsActive() )
+         s_thread->Start( ThreadPriority::Lowest );
+   }
 }
 
 // ----------------------------------------------------------------------------
 
 void StatusMonitor::SetRefreshRate( unsigned ms )
 {
-   volatile AutoLock lock( s_mutex );
-   s_msRefreshRate = Range( ms, 25U, 999U );
+   if ( (*API->Thread->GetCurrentThread)() == nullptr )
+   {
+      volatile AutoLock lock( s_mutex );
+      s_msRefreshRate = Range( ms, 25U, 999U );
 #ifndef __PCL_WINDOWS
-   s_nsRefreshRate = s_msRefreshRate * 1000000L;
+      s_nsRefreshRate = s_msRefreshRate * 1000000L;
 #endif
+   }
 }
 
 // ----------------------------------------------------------------------------
 
 void StatusMonitor::Reset()
 {
-   volatile AutoLock lock( s_mutex );
-
-   s_activeMonitors.Remove( this );
+   if ( m_thread == nullptr )
+   {
+      volatile AutoLock lock( s_mutex );
+      s_activeMonitors.Remove( this );
+   }
 
    m_callback = nullptr;
    m_initialized = m_completed = m_aborted = m_needsUpdate = false;
@@ -233,9 +248,11 @@ void StatusMonitor::Reset()
 
 void StatusMonitor::Assign( const StatusMonitor& x )
 {
-   volatile AutoLock lock( s_mutex );
-
-   s_activeMonitors.Remove( this );
+   if ( m_thread == nullptr )
+   {
+      volatile AutoLock lock( s_mutex );
+      s_activeMonitors.Remove( this );
+   }
 
    m_callback         = x.m_callback;
    m_initialized      = x.m_initialized;
@@ -248,8 +265,12 @@ void StatusMonitor::Assign( const StatusMonitor& x )
    m_total            = x.m_total;
    m_count            = x.m_count;
 
-   if ( s_activeMonitors.Contains( &x ) )
-      s_activeMonitors.Add( this );
+   if ( m_thread == nullptr )
+   {
+      volatile AutoLock lock( s_mutex );
+      if ( s_activeMonitors.Contains( &x ) )
+         s_activeMonitors.Add( this );
+   }
 }
 
 // ----------------------------------------------------------------------------
@@ -281,4 +302,4 @@ void StatusMonitor::Update()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/StatusMonitor.cpp - Released 2023-08-01T16:29:57Z
+// EOF pcl/StatusMonitor.cpp - Released 2023-08-10T11:43:55Z

@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
-// pcl/SurfaceSpline.h - Released 2023-08-01T16:29:49Z
+// pcl/SurfaceSpline.h - Released 2023-08-10T11:43:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -1595,7 +1595,7 @@ private:
     * Surface simplification.
     */
    bool        m_useSimplifiers = false;
-   float       m_simplifierRejectFraction = 0.1;
+   float       m_simplifierRejectFraction = 0.1F;
    double      m_epsX = 0;             // simplification error on the X axis
    double      m_epsY = 0;             // simplification error on the Y axis
    bool        m_truncatedX = false;   // true => truncated vectors in the X axis
@@ -2319,4 +2319,4 @@ private:
 #endif   // __PCL_SurfaceSpline_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SurfaceSpline.h - Released 2023-08-01T16:29:49Z
+// EOF pcl/SurfaceSpline.h - Released 2023-08-10T11:43:48Z

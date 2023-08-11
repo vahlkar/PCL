@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard NetworkService Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// NetworkServiceTask.cpp - Released 2023-08-01T16:30:17Z
+// NetworkServiceTask.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NetworkService PixInsight module.
 //
@@ -176,4 +176,4 @@ void NetworkServiceTask::RegisterTask( NetworkServiceTask* task )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF NetworkServiceTask.cpp - Released 2023-08-01T16:30:17Z
+// EOF NetworkServiceTask.cpp - Released 2023-08-10T11:44:14Z

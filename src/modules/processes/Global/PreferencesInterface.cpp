@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.4.1
+// Standard Global Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// PreferencesInterface.cpp - Released 2023-08-01T16:30:17Z
+// PreferencesInterface.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -1761,7 +1761,7 @@ GUIEffectsPreferencesPage::GUIEffectsPreferencesPage( PreferencesInstance& insta
    DropShadowBlurRadius_Real.numericEdit.SetPrecision( 1 );
    DropShadowBlurRadius_Real.item = &instance.mainWindow.dropShadowBlurRadius;
    DropShadowBlurRadius_Real.SetToolTip(
-      "<p>Radius in pixels of a Gaussian filter applied to drop shadow decorations.</p>" );
+      "<p>Radius in logical pixels of a Gaussian convolution filter applied to drop shadow decorations.</p>" );
 
    DropShadowColor_Color.label.SetText( "Drop shadow color" );
    DropShadowColor_Color.item = &instance.mainWindow.dropShadowColor;
@@ -3011,4 +3011,4 @@ void PreferencesInterface::GUIData::InitializeCategories()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInterface.cpp - Released 2023-08-01T16:30:17Z
+// EOF PreferencesInterface.cpp - Released 2023-08-10T11:44:14Z

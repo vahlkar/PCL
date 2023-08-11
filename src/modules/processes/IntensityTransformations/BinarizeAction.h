@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// BinarizeAction.h - Released 2023-08-01T16:30:17Z
+// BinarizeAction.h - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -77,4 +77,4 @@ public:
 #endif   // __BinarizeAction_h
 
 // ----------------------------------------------------------------------------
-// EOF BinarizeAction.h - Released 2023-08-01T16:30:17Z
+// EOF BinarizeAction.h - Released 2023-08-10T11:44:14Z

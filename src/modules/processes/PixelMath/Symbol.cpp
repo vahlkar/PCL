@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// Symbol.cpp - Released 2023-08-01T16:30:17Z
+// Symbol.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -956,4 +956,4 @@ Expression* Constant::FunctionValue( const DVector& data, int tokenPos ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Symbol.cpp - Released 2023-08-01T16:30:17Z
+// EOF Symbol.cpp - Released 2023-08-10T11:44:14Z

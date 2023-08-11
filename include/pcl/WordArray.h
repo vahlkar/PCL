@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
-// pcl/WordArray.h - Released 2023-08-01T16:29:49Z
+// pcl/WordArray.h - Released 2023-08-10T11:43:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -118,4 +118,4 @@ using SortedShortArray = SortedArray<int16>;
 #endif   // __PCL_WordArray_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/WordArray.h - Released 2023-08-01T16:29:49Z
+// EOF pcl/WordArray.h - Released 2023-08-10T11:43:48Z

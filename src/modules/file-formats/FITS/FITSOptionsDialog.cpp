@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// FITSOptionsDialog.cpp - Released 2023-08-01T16:30:07Z
+// FITSOptionsDialog.cpp - Released 2023-08-10T11:44:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -199,4 +199,4 @@ void FITSOptionsDialog::Dialog_Return( Dialog& /*sender*/, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITSOptionsDialog.cpp - Released 2023-08-01T16:30:07Z
+// EOF FITSOptionsDialog.cpp - Released 2023-08-10T11:44:05Z

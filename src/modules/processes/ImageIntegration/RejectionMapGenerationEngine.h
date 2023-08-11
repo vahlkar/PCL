@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// RejectionMapGenerationEngine.h - Released 2023-08-01T16:30:17Z
+// RejectionMapGenerationEngine.h - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -108,4 +108,4 @@ private:
 #endif   // __RejectionMapGenerationEngine_h
 
 // ----------------------------------------------------------------------------
-// EOF RejectionMapGenerationEngine.h - Released 2023-08-01T16:30:17Z
+// EOF RejectionMapGenerationEngine.h - Released 2023-08-10T11:44:14Z

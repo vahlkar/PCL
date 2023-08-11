@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard APASS Process Module Version 1.1.4
 // ----------------------------------------------------------------------------
-// APASSInstance.h - Released 2023-08-01T16:30:17Z
+// APASSInstance.h - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard APASS PixInsight module.
 //
@@ -128,4 +128,4 @@ struct APASSBinaryHeader
 #endif   // __APASSInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF APASSInstance.h - Released 2023-08-01T16:30:17Z
+// EOF APASSInstance.h - Released 2023-08-10T11:44:14Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Sandbox Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// SandboxProcess.cpp - Released 2023-08-01T16:30:17Z
+// SandboxProcess.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Sandbox PixInsight module.
 //
@@ -248,4 +248,4 @@ int SandboxProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SandboxProcess.cpp - Released 2023-08-01T16:30:17Z
+// EOF SandboxProcess.cpp - Released 2023-08-10T11:44:14Z

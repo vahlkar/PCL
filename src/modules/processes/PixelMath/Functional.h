@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// Functional.h - Released 2023-08-01T16:30:17Z
+// Functional.h - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -174,4 +174,4 @@ private:
 #endif   // __Functional_h
 
 // ----------------------------------------------------------------------------
-// EOF Functional.h - Released 2023-08-01T16:30:17Z
+// EOF Functional.h - Released 2023-08-10T11:44:14Z

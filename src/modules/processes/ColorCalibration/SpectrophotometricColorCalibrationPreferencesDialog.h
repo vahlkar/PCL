@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// SpectrophotometricColorCalibrationPreferencesDialog.h - Released 2023-08-01T16:30:17Z
+// SpectrophotometricColorCalibrationPreferencesDialog.h - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -104,4 +104,4 @@ private:
 #endif   // __SpectrophotometricColorCalibrationPreferencesDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF SpectrophotometricColorCalibrationPreferencesDialog.h - Released 2023-08-01T16:30:17Z
+// EOF SpectrophotometricColorCalibrationPreferencesDialog.h - Released 2023-08-10T11:44:14Z

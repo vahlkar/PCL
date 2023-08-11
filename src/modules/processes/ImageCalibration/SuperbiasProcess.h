@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.9.8
 // ----------------------------------------------------------------------------
-// SuperbiasProcess.h - Released 2023-08-01T16:30:17Z
+// SuperbiasProcess.h - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -88,4 +88,4 @@ PCL_END_LOCAL
 #endif   // __SuperbiasProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF SuperbiasProcess.h - Released 2023-08-01T16:30:17Z
+// EOF SuperbiasProcess.h - Released 2023-08-10T11:44:14Z

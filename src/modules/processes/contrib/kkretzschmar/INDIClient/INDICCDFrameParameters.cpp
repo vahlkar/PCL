@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// INDICCDFrameParameters.cpp - Released 2023-08-01T16:30:17Z
+// INDICCDFrameParameters.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -819,4 +819,4 @@ DEFINE_ENUM_PARAMETER_CLASS(ICFSolverProjection, "solverProjection", ENUM_ITEM(G
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDICCDFrameParameters.cpp - Released 2023-08-01T16:30:17Z
+// EOF INDICCDFrameParameters.cpp - Released 2023-08-10T11:44:14Z

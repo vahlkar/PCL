@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.9.8
 // ----------------------------------------------------------------------------
-// DefectMapInterface.h - Released 2023-08-01T16:30:17Z
+// DefectMapInterface.h - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -138,4 +138,4 @@ PCL_END_LOCAL
 #endif   // __DefectMapInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF DefectMapInterface.h - Released 2023-08-01T16:30:17Z
+// EOF DefectMapInterface.h - Released 2023-08-10T11:44:14Z

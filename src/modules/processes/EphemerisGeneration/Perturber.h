@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard EphemerisGeneration Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// Perturber.h - Released 2023-08-01T16:30:17Z
+// Perturber.h - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -937,4 +937,4 @@ private:
 #endif   // __Perturber_h
 
 // ----------------------------------------------------------------------------
-// EOF Perturber.h - Released 2023-08-01T16:30:17Z
+// EOF Perturber.h - Released 2023-08-10T11:44:14Z

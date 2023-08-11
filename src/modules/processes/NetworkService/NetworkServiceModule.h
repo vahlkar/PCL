@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard NetworkService Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// NetworkServiceModule.h - Released 2023-08-01T16:30:17Z
+// NetworkServiceModule.h - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NetworkService PixInsight module.
 //
@@ -85,4 +85,4 @@ public:
 #endif   // __NetworkServiceModule_h
 
 // ----------------------------------------------------------------------------
-// EOF NetworkServiceModule.h - Released 2023-08-01T16:30:17Z
+// EOF NetworkServiceModule.h - Released 2023-08-10T11:44:14Z

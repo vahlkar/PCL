@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
-// pcl/ElapsedTime.h - Released 2023-08-01T16:29:49Z
+// pcl/ElapsedTime.h - Released 2023-08-10T11:43:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -425,4 +425,4 @@ private:
 #endif   // __PCL_ElapsedTime_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ElapsedTime.h - Released 2023-08-01T16:29:49Z
+// EOF pcl/ElapsedTime.h - Released 2023-08-10T11:43:48Z

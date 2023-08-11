@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// LinearFitParameters.cpp - Released 2023-08-01T16:30:17Z
+// LinearFitParameters.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -142,4 +142,4 @@ double LFRejectHigh::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LinearFitParameters.cpp - Released 2023-08-01T16:30:17Z
+// EOF LinearFitParameters.cpp - Released 2023-08-10T11:44:14Z

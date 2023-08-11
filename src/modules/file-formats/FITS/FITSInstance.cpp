@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// FITSInstance.cpp - Released 2023-08-01T16:30:07Z
+// FITSInstance.cpp - Released 2023-08-10T11:44:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -848,4 +848,4 @@ void FITSInstance::CloseImage()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITSInstance.cpp - Released 2023-08-01T16:30:07Z
+// EOF FITSInstance.cpp - Released 2023-08-10T11:44:05Z

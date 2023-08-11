@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// IntegrationEngine.cpp - Released 2023-08-01T16:30:17Z
+// IntegrationEngine.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -288,4 +288,4 @@ void IntegrationEngine::IntegrationThread::Run()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationEngine.cpp - Released 2023-08-01T16:30:17Z
+// EOF IntegrationEngine.cpp - Released 2023-08-10T11:44:14Z

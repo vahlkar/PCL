@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.4.1
+// Standard Global Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// ReadoutOptionsInstance.cpp - Released 2023-08-01T16:30:17Z
+// ReadoutOptionsInstance.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -289,4 +289,4 @@ void ReadoutOptionsInstance::LoadCurrentOptions()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ReadoutOptionsInstance.cpp - Released 2023-08-01T16:30:17Z
+// EOF ReadoutOptionsInstance.cpp - Released 2023-08-10T11:44:14Z

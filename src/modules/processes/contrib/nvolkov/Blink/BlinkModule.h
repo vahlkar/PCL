@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Blink Process Module Version 1.2.4
 // ----------------------------------------------------------------------------
-// BlinkModule.h - Released 2023-08-01T16:30:17Z
+// BlinkModule.h - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Blink PixInsight module.
 //
@@ -85,4 +85,4 @@ public:
 #endif   // __BlinkModule_h
 
 // ----------------------------------------------------------------------------
-// EOF BlinkModule.h - Released 2023-08-01T16:30:17Z
+// EOF BlinkModule.h - Released 2023-08-10T11:44:14Z

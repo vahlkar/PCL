@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// ImageCache.cpp - Released 2023-08-01T16:30:17Z
+// ImageCache.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -106,4 +106,4 @@ void ImageCache::InvalidateImage( const IsoString& imageId )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCache.cpp - Released 2023-08-01T16:30:17Z
+// EOF ImageCache.cpp - Released 2023-08-10T11:44:14Z

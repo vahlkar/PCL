@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// IntegrationEngineBase.h - Released 2023-08-01T16:30:17Z
+// IntegrationEngineBase.h - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -118,4 +118,4 @@ protected:
 #endif   // __IntegrationEngineBase_h
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationEngineBase.h - Released 2023-08-01T16:30:17Z
+// EOF IntegrationEngineBase.h - Released 2023-08-10T11:44:14Z

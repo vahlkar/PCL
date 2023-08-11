@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// FilterManagementDialog.cpp - Released 2023-08-01T16:30:17Z
+// FilterManagementDialog.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -447,4 +447,4 @@ void FilterManagementDialog::e_EditCompleted( Edit& sender )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FilterManagementDialog.cpp - Released 2023-08-01T16:30:17Z
+// EOF FilterManagementDialog.cpp - Released 2023-08-10T11:44:14Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard CloneStamp Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// CloneStampInstance.h - Released 2023-08-01T16:30:17Z
+// CloneStampInstance.h - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CloneStamp PixInsight module.
 //
@@ -166,4 +166,4 @@ private:
 #endif   // __CloneStampInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF CloneStampInstance.h - Released 2023-08-01T16:30:17Z
+// EOF CloneStampInstance.h - Released 2023-08-10T11:44:14Z

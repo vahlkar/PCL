@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// SampledSpectrumData.h - Released 2023-08-01T16:30:17Z
+// SampledSpectrumData.h - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -271,4 +271,4 @@ private:
 #endif   // __SampledSpectrumData_h
 
 // ----------------------------------------------------------------------------
-// EOF SampledSpectrumData.h - Released 2023-08-01T16:30:17Z
+// EOF SampledSpectrumData.h - Released 2023-08-10T11:44:14Z

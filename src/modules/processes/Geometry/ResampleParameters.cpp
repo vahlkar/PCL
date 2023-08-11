@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// ResampleParameters.cpp - Released 2023-08-01T16:30:17Z
+// ResampleParameters.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -198,4 +198,4 @@ size_type RSAbsoluteMode::DefaultValueIndex() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ResampleParameters.cpp - Released 2023-08-01T16:30:17Z
+// EOF ResampleParameters.cpp - Released 2023-08-10T11:44:14Z

@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
-// pcl/StatusMonitor.h - Released 2023-08-01T16:29:49Z
+// pcl/StatusMonitor.h - Released 2023-08-10T11:43:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -582,12 +582,16 @@ public:
     * The default refresh rate is 250 milliseconds, or 4 monitoring events per
     * second. The new refresh rate does take effect immediately, even if there
     * are active status monitors.
+    *
+    * \note This function can only be called from the main thread (aka <em>GUI
+    * thread</em>). Calling it from a running thread has no effect.
     */
    static void SetRefreshRate( unsigned ms );
 
 private:
 
    StatusCallback* m_callback = nullptr;
+   void*           m_thread = nullptr; // current thread when Initialize() was called
    bool            m_initialized = false;
    bool            m_completed = false;
    bool            m_aborted = false;
@@ -615,4 +619,4 @@ private:
 #endif   // __PCL_StatusMonitor_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/StatusMonitor.h - Released 2023-08-01T16:29:49Z
+// EOF pcl/StatusMonitor.h - Released 2023-08-10T11:43:48Z

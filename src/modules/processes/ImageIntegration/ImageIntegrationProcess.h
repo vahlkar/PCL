@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// ImageIntegrationProcess.h - Released 2023-08-01T16:30:17Z
+// ImageIntegrationProcess.h - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -87,4 +87,4 @@ PCL_END_LOCAL
 #endif   // __ImageIntegrationProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationProcess.h - Released 2023-08-01T16:30:17Z
+// EOF ImageIntegrationProcess.h - Released 2023-08-10T11:44:14Z

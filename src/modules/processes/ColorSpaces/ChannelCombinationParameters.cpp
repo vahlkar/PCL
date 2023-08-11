@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// ChannelCombinationParameters.cpp - Released 2023-08-01T16:30:17Z
+// ChannelCombinationParameters.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -68,4 +68,4 @@ CSInheritAstrometricSolution* TheCCInheritAstrometricSolutionParameter = nullptr
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ChannelCombinationParameters.cpp - Released 2023-08-01T16:30:17Z
+// EOF ChannelCombinationParameters.cpp - Released 2023-08-10T11:44:14Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// UnsharpMaskProcess.cpp - Released 2023-08-01T16:30:17Z
+// UnsharpMaskProcess.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -355,4 +355,4 @@ int UnsharpMaskProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF UnsharpMaskProcess.cpp - Released 2023-08-01T16:30:17Z
+// EOF UnsharpMaskProcess.cpp - Released 2023-08-10T11:44:14Z

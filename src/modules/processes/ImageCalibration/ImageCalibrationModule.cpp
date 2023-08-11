@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.9.8
 // ----------------------------------------------------------------------------
-// ImageCalibrationModule.cpp - Released 2023-08-01T16:30:17Z
+// ImageCalibrationModule.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -58,7 +58,7 @@
 
 #define MODULE_RELEASE_YEAR      2023
 #define MODULE_RELEASE_MONTH     8
-#define MODULE_RELEASE_DAY       1
+#define MODULE_RELEASE_DAY       10
 
 #include "DefectMapInterface.h"
 #include "DefectMapProcess.h"
@@ -185,4 +185,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationModule.cpp - Released 2023-08-01T16:30:17Z
+// EOF ImageCalibrationModule.cpp - Released 2023-08-10T11:44:14Z

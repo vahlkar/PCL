@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// DrizzleIntegrationInterface.h - Released 2023-08-01T16:30:17Z
+// DrizzleIntegrationInterface.h - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -224,4 +224,4 @@ PCL_END_LOCAL
 #endif   // __DrizzleIntegrationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF DrizzleIntegrationInterface.h - Released 2023-08-01T16:30:17Z
+// EOF DrizzleIntegrationInterface.h - Released 2023-08-10T11:44:14Z

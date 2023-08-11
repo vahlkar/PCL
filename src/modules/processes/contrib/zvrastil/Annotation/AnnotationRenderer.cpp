@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Annotation Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// AnnotationRenderer.cpp - Released 2023-08-01T16:30:18Z
+// AnnotationRenderer.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Annotation PixInsight module.
 //
@@ -351,4 +351,4 @@ void AnnotationRenderer::RenderTextAndLeader( const AnnotationInstance& instance
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF AnnotationRenderer.cpp - Released 2023-08-01T16:30:18Z
+// EOF AnnotationRenderer.cpp - Released 2023-08-10T11:44:14Z

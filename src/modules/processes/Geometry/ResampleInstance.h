@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// ResampleInstance.h - Released 2023-08-01T16:30:17Z
+// ResampleInstance.h - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -107,4 +107,4 @@ private:
 #endif   // __ResampleInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ResampleInstance.h - Released 2023-08-01T16:30:17Z
+// EOF ResampleInstance.h - Released 2023-08-10T11:44:14Z

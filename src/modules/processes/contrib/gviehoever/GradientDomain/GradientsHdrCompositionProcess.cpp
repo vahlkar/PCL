@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsHdrCompositionProcess.cpp - Released 2023-08-01T16:30:17Z
+// GradientsHdrCompositionProcess.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
@@ -127,4 +127,4 @@ ProcessImplementation* GradientsHdrCompositionProcess::Clone( const ProcessImple
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF GradientsHdrCompositionProcess.cpp - Released 2023-08-01T16:30:17Z
+// EOF GradientsHdrCompositionProcess.cpp - Released 2023-08-10T11:44:14Z

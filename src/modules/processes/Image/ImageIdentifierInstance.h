@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.4
 // ----------------------------------------------------------------------------
-// ImageIdentifierInstance.h - Released 2023-08-01T16:30:17Z
+// ImageIdentifierInstance.h - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -101,4 +101,4 @@ private:
 #endif   // __ImageIdentifierInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageIdentifierInstance.h - Released 2023-08-01T16:30:17Z
+// EOF ImageIdentifierInstance.h - Released 2023-08-10T11:44:14Z

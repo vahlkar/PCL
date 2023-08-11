@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// ExclusiveAccess.h - Released 2023-08-01T16:30:17Z
+// ExclusiveAccess.h - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -117,4 +117,4 @@ private:
 #endif // EXCLUSIVEACCESS_H
 
 // ----------------------------------------------------------------------------
-// EOF ExclusiveAccess.h - Released 2023-08-01T16:30:17Z
+// EOF ExclusiveAccess.h - Released 2023-08-10T11:44:14Z

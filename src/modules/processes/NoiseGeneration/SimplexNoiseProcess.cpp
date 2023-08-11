@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard NoiseGeneration Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// SimplexNoiseProcess.cpp - Released 2023-08-01T16:30:17Z
+// SimplexNoiseProcess.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NoiseGeneration PixInsight module.
 //
@@ -137,4 +137,4 @@ ProcessImplementation* SimplexNoiseProcess::Clone( const ProcessImplementation& 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SimplexNoiseProcess.cpp - Released 2023-08-01T16:30:17Z
+// EOF SimplexNoiseProcess.cpp - Released 2023-08-10T11:44:14Z

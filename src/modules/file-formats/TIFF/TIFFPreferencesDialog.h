@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard TIFF File Format Module Version 1.0.9
 // ----------------------------------------------------------------------------
-// TIFFPreferencesDialog.h - Released 2023-08-01T16:30:07Z
+// TIFFPreferencesDialog.h - Released 2023-08-10T11:44:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard TIFF PixInsight module.
 //
@@ -136,4 +136,4 @@ private:
 #endif   // __TIFFPreferencesDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF TIFFPreferencesDialog.h - Released 2023-08-01T16:30:07Z
+// EOF TIFFPreferencesDialog.h - Released 2023-08-10T11:44:06Z

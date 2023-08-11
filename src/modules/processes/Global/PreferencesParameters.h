@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.4.1
+// Standard Global Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// PreferencesParameters.h - Released 2023-08-01T16:30:17Z
+// PreferencesParameters.h - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -283,9 +283,9 @@ DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  fadeMenu,                          
 DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  fadeToolTip,                         true )
 DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  explodeIcons,                        true )
 DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  implodeIcons,                        true )
-DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  dropShadowChildWindows,              false )
-DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  dropShadowIcons,                     false )
-DECLARE_DOUBLE_METAPARAMETER  ( MainWindow,  dropShadowBlurRadius,                20.0, 0.0, 100.0 )
+DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  dropShadowChildWindows,              true )
+DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  dropShadowIcons,                     true )
+DECLARE_DOUBLE_METAPARAMETER  ( MainWindow,  dropShadowBlurRadius,                30.0, 0.0, 100.0 )
 DECLARE_COLOR_METAPARAMETER   ( MainWindow,  dropShadowColor,                     RGBAColor( 0, 0, 0, 128 ) )
 DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  animateWindows,                      true )
 DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  animateMenu,                         true )
@@ -428,4 +428,4 @@ PCL_END_LOCAL
 #endif   // __PreferencesParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesParameters.h - Released 2023-08-01T16:30:17Z
+// EOF PreferencesParameters.h - Released 2023-08-10T11:44:14Z

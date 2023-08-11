@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard XISF File Format Module Version 1.0.13
 // ----------------------------------------------------------------------------
-// XISFPreferencesDialog.h - Released 2023-08-01T16:30:07Z
+// XISFPreferencesDialog.h - Released 2023-08-10T11:44:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard XISF PixInsight module.
 //
@@ -122,4 +122,4 @@ private:
 #endif   // XISFPreferencesDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF XISFPreferencesDialog.h - Released 2023-08-01T16:30:07Z
+// EOF XISFPreferencesDialog.h - Released 2023-08-10T11:44:06Z

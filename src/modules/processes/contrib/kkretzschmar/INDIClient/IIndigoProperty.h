@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// IIndigoProperty.h - Released 2023-08-01T16:30:17Z
+// IIndigoProperty.h - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -344,4 +344,4 @@ public:
 #endif // __IIndigoProperty_h
 
 // ----------------------------------------------------------------------------
-// EOF IIndigoProperty.h - Released 2023-08-01T16:30:17Z
+// EOF IIndigoProperty.h - Released 2023-08-10T11:44:14Z

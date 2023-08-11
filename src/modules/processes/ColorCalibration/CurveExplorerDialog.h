@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// CurveExplorerDialog.h - Released 2023-08-01T16:30:17Z
+// CurveExplorerDialog.h - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -129,4 +129,4 @@ private:
 #endif   // __CurveExplorerDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF CurveExplorerDialog.h - Released 2023-08-01T16:30:17Z
+// EOF CurveExplorerDialog.h - Released 2023-08-10T11:44:14Z

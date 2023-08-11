@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// ImageIntegrationParameters.cpp - Released 2023-08-01T16:30:17Z
+// ImageIntegrationParameters.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -3904,4 +3904,4 @@ bool IIImageRejectedHighB::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationParameters.cpp - Released 2023-08-01T16:30:17Z
+// EOF ImageIntegrationParameters.cpp - Released 2023-08-10T11:44:14Z

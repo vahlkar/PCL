@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.8.6
 // ----------------------------------------------------------------------------
-// SubframeSelectorMeasureData.cpp - Released 2023-08-01T16:30:17Z
+// SubframeSelectorMeasureData.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -516,4 +516,4 @@ void MeasureUtils::MeasureProperties( const MeasureItemList& measures, double su
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorMeasureData.cpp - Released 2023-08-01T16:30:17Z
+// EOF SubframeSelectorMeasureData.cpp - Released 2023-08-10T11:44:14Z

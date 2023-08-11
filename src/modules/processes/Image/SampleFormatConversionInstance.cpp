@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.4
 // ----------------------------------------------------------------------------
-// SampleFormatConversionInstance.cpp - Released 2023-08-01T16:30:17Z
+// SampleFormatConversionInstance.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -162,4 +162,4 @@ void* SampleFormatConversionInstance::LockParameter( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SampleFormatConversionInstance.cpp - Released 2023-08-01T16:30:17Z
+// EOF SampleFormatConversionInstance.cpp - Released 2023-08-10T11:44:14Z

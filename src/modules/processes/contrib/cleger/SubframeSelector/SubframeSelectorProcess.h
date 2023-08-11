@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.8.6
 // ----------------------------------------------------------------------------
-// SubframeSelectorProcess.h - Released 2023-08-01T16:30:17Z
+// SubframeSelectorProcess.h - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -89,4 +89,4 @@ PCL_END_LOCAL
 #endif   // __SubframeSelectorProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorProcess.h - Released 2023-08-01T16:30:17Z
+// EOF SubframeSelectorProcess.h - Released 2023-08-10T11:44:14Z

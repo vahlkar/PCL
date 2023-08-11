@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Flux Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// B3EInterface.h - Released 2023-08-01T16:30:17Z
+// B3EInterface.h - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Flux PixInsight module.
 //
@@ -208,4 +208,4 @@ PCL_END_LOCAL
 #endif   // __B3EInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF B3EInterface.h - Released 2023-08-01T16:30:17Z
+// EOF B3EInterface.h - Released 2023-08-10T11:44:14Z

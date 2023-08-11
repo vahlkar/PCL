@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// HistogramAutoClipSetupDialog.cpp - Released 2023-08-01T16:30:17Z
+// HistogramAutoClipSetupDialog.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -167,4 +167,4 @@ void HistogramAutoClipSetupDialog::__Dialog_Return( Dialog& sender, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF HistogramAutoClipSetupDialog.cpp - Released 2023-08-01T16:30:17Z
+// EOF HistogramAutoClipSetupDialog.cpp - Released 2023-08-10T11:44:14Z

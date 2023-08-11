@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsMergeMosaicParameters.cpp - Released 2023-08-01T16:30:17Z
+// GradientsMergeMosaicParameters.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
@@ -242,4 +242,4 @@ bool GradientsMergeMosaicGenerateMask::DefaultValue() const
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF GradientsMergeMosaicParameters.cpp - Released 2023-08-01T16:30:17Z
+// EOF GradientsMergeMosaicParameters.cpp - Released 2023-08-10T11:44:14Z

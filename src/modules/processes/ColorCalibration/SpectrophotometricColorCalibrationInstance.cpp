@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// SpectrophotometricColorCalibrationInstance.cpp - Released 2023-08-01T16:30:17Z
+// SpectrophotometricColorCalibrationInstance.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -1505,4 +1505,4 @@ void SpectrophotometricColorCalibrationInstance::SetDefaultSpectrumData()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SpectrophotometricColorCalibrationInstance.cpp - Released 2023-08-01T16:30:17Z
+// EOF SpectrophotometricColorCalibrationInstance.cpp - Released 2023-08-10T11:44:14Z

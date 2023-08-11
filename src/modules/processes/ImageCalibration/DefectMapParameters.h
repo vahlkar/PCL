@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.9.8
 // ----------------------------------------------------------------------------
-// DefectMapParameters.h - Released 2023-08-01T16:30:17Z
+// DefectMapParameters.h - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -142,4 +142,4 @@ extern DMPIsCFA* TheDMPIsCFAParameter;
 #endif   // __DefectMapParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF DefectMapParameters.h - Released 2023-08-01T16:30:17Z
+// EOF DefectMapParameters.h - Released 2023-08-10T11:44:14Z

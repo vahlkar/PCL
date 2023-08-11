@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.4
 // ----------------------------------------------------------------------------
-// DynamicPSFProcess.cpp - Released 2023-08-01T16:30:17Z
+// DynamicPSFProcess.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -204,4 +204,4 @@ ProcessImplementation* DynamicPSFProcess::Clone( const ProcessImplementation& p 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DynamicPSFProcess.cpp - Released 2023-08-01T16:30:17Z
+// EOF DynamicPSFProcess.cpp - Released 2023-08-10T11:44:14Z

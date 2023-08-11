@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard EphemerisGeneration Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// TextDatabase.h - Released 2023-08-01T16:30:17Z
+// TextDatabase.h - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -230,4 +230,4 @@ private:
 #endif   // __TextBatabase_h
 
 // ----------------------------------------------------------------------------
-// EOF TextDatabase.h - Released 2023-08-01T16:30:17Z
+// EOF TextDatabase.h - Released 2023-08-10T11:44:14Z

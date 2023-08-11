@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard NetworkService Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// NetworkServiceProcess.cpp - Released 2023-08-01T16:30:17Z
+// NetworkServiceProcess.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NetworkService PixInsight module.
 //
@@ -588,4 +588,4 @@ void NetworkServiceProcess::Worker::Wait()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF NetworkServiceProcess.cpp - Released 2023-08-01T16:30:17Z
+// EOF NetworkServiceProcess.cpp - Released 2023-08-10T11:44:14Z

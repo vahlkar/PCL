@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// CropProcess.cpp - Released 2023-08-01T16:30:17Z
+// CropProcess.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -146,4 +146,4 @@ ProcessImplementation* CropProcess::Clone( const ProcessImplementation& p ) cons
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CropProcess.cpp - Released 2023-08-01T16:30:17Z
+// EOF CropProcess.cpp - Released 2023-08-10T11:44:14Z

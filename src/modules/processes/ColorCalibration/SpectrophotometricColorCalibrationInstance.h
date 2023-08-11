@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// SpectrophotometricColorCalibrationInstance.h - Released 2023-08-01T16:30:17Z
+// SpectrophotometricColorCalibrationInstance.h - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -178,4 +178,4 @@ private:
 #endif   // __SpectrophotometricColorCalibrationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF SpectrophotometricColorCalibrationInstance.h - Released 2023-08-01T16:30:17Z
+// EOF SpectrophotometricColorCalibrationInstance.h - Released 2023-08-10T11:44:14Z

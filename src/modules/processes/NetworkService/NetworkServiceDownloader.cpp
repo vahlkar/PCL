@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard NetworkService Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// NetworkServiceDownloader.cpp - Released 2023-08-01T16:30:17Z
+// NetworkServiceDownloader.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NetworkService PixInsight module.
 //
@@ -85,4 +85,4 @@ bool NetworkServiceDownloader::e_DataAvailable( NetworkTransfer& sender, const v
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF NetworkServiceDownloader.cpp - Released 2023-08-01T16:30:17Z
+// EOF NetworkServiceDownloader.cpp - Released 2023-08-10T11:44:14Z

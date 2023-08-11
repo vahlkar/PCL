@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// LRGBCombinationParameters.h - Released 2023-08-01T16:30:17Z
+// LRGBCombinationParameters.h - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -220,4 +220,4 @@ PCL_END_LOCAL
 #endif   // __LRGBCombinationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF LRGBCombinationParameters.h - Released 2023-08-01T16:30:17Z
+// EOF LRGBCombinationParameters.h - Released 2023-08-10T11:44:14Z

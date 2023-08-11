@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard FindingChart Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// FindingChartInterface.cpp - Released 2023-08-01T16:30:17Z
+// FindingChartInterface.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FindingChart PixInsight module.
 //
@@ -1008,4 +1008,4 @@ FindingChartInterface::GUIData::GUIData( FindingChartInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FindingChartInterface.cpp - Released 2023-08-01T16:30:17Z
+// EOF FindingChartInterface.cpp - Released 2023-08-10T11:44:14Z

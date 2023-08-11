@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard FindingChart Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// FindingChartProcess.cpp - Released 2023-08-01T16:30:17Z
+// FindingChartProcess.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FindingChart PixInsight module.
 //
@@ -256,4 +256,4 @@ int FindingChartProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FindingChartProcess.cpp - Released 2023-08-01T16:30:17Z
+// EOF FindingChartProcess.cpp - Released 2023-08-10T11:44:14Z

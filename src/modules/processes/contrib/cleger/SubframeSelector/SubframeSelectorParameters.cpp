@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.8.6
 // ----------------------------------------------------------------------------
-// SubframeSelectorParameters.cpp - Released 2023-08-01T16:30:17Z
+// SubframeSelectorParameters.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -3076,4 +3076,4 @@ bool SSMeasurementUnused01::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorParameters.cpp - Released 2023-08-01T16:30:17Z
+// EOF SubframeSelectorParameters.cpp - Released 2023-08-10T11:44:14Z

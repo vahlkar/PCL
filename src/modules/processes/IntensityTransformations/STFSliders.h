@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// STFSliders.h - Released 2023-08-01T16:30:17Z
+// STFSliders.h - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -171,4 +171,4 @@ private:
 #endif   // __STFSliders_h
 
 // ----------------------------------------------------------------------------
-// EOF STFSliders.h - Released 2023-08-01T16:30:17Z
+// EOF STFSliders.h - Released 2023-08-10T11:44:14Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.9.8
 // ----------------------------------------------------------------------------
-// LocalNormalizationParameters.cpp - Released 2023-08-01T16:30:17Z
+// LocalNormalizationParameters.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -1726,4 +1726,4 @@ bool LNValid::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationParameters.cpp - Released 2023-08-01T16:30:17Z
+// EOF LocalNormalizationParameters.cpp - Released 2023-08-10T11:44:14Z

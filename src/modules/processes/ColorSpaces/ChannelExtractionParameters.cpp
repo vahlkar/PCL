@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// ChannelExtractionParameters.cpp - Released 2023-08-01T16:30:17Z
+// ChannelExtractionParameters.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -69,4 +69,4 @@ CSInheritAstrometricSolution* TheCEInheritAstrometricSolutionParameter = nullptr
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ChannelExtractionParameters.cpp - Released 2023-08-01T16:30:17Z
+// EOF ChannelExtractionParameters.cpp - Released 2023-08-10T11:44:14Z

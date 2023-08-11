@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.4
 // ----------------------------------------------------------------------------
-// FITSHeaderParameters.cpp - Released 2023-08-01T16:30:17Z
+// FITSHeaderParameters.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -115,4 +115,4 @@ IsoString FITSKeywordComment::Id() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITSHeaderParameters.cpp - Released 2023-08-01T16:30:17Z
+// EOF FITSHeaderParameters.cpp - Released 2023-08-10T11:44:14Z

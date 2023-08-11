@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard EphemerisGeneration Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// EphemerisGeneratorParameters.h - Released 2023-08-01T16:30:17Z
+// EphemerisGeneratorParameters.h - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -804,4 +804,4 @@ PCL_END_LOCAL
 #endif   // __EphemerisGeneratorParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF EphemerisGeneratorParameters.h - Released 2023-08-01T16:30:17Z
+// EOF EphemerisGeneratorParameters.h - Released 2023-08-10T11:44:14Z

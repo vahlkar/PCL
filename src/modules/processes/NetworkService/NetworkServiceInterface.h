@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard NetworkService Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// NetworkServiceInterface.h - Released 2023-08-01T16:30:17Z
+// NetworkServiceInterface.h - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NetworkService PixInsight module.
 //
@@ -142,4 +142,4 @@ PCL_END_LOCAL
 #endif   // __NetworkServiceInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF NetworkServiceInterface.h - Released 2023-08-01T16:30:17Z
+// EOF NetworkServiceInterface.h - Released 2023-08-10T11:44:14Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.4
 // ----------------------------------------------------------------------------
-// CreateAlphaChannelsProcess.cpp - Released 2023-08-01T16:30:17Z
+// CreateAlphaChannelsProcess.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -295,4 +295,4 @@ int CreateAlphaChannelsProcess::ProcessCommandLine( const StringList& argv ) con
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CreateAlphaChannelsProcess.cpp - Released 2023-08-01T16:30:17Z
+// EOF CreateAlphaChannelsProcess.cpp - Released 2023-08-10T11:44:14Z

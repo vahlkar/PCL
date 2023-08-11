@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// RGBWorkingSpaceInstance.h - Released 2023-08-01T16:30:17Z
+// RGBWorkingSpaceInstance.h - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -134,4 +134,4 @@ private:
 #endif   // __RGBWorkingSpaceInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF RGBWorkingSpaceInstance.h - Released 2023-08-01T16:30:17Z
+// EOF RGBWorkingSpaceInstance.h - Released 2023-08-10T11:44:14Z

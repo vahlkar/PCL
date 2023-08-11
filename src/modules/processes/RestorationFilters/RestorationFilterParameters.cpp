@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard RestorationFilters Process Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// RestorationFilterParameters.cpp - Released 2023-08-01T16:30:17Z
+// RestorationFilterParameters.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RestorationFilters PixInsight module.
 //
@@ -684,4 +684,4 @@ double RFRangeHigh::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RestorationFilterParameters.cpp - Released 2023-08-01T16:30:17Z
+// EOF RestorationFilterParameters.cpp - Released 2023-08-10T11:44:14Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ExponentialNumericControl.cpp - Released 2023-08-01T16:30:17Z
+// ExponentialNumericControl.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -127,4 +127,4 @@ void ExponentialNumericControl::UpdateControls()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ExponentialNumericControl.cpp - Released 2023-08-01T16:30:17Z
+// EOF ExponentialNumericControl.cpp - Released 2023-08-10T11:44:14Z

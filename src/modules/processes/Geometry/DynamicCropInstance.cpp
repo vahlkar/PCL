@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// DynamicCropInstance.cpp - Released 2023-08-01T16:30:17Z
+// DynamicCropInstance.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -655,4 +655,4 @@ void DynamicCropInstance::EnsureCompatibleWithV1Instance()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DynamicCropInstance.cpp - Released 2023-08-01T16:30:17Z
+// EOF DynamicCropInstance.cpp - Released 2023-08-10T11:44:14Z

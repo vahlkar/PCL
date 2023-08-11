@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard NetworkService Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// NetworkServiceLogger.h - Released 2023-08-01T16:30:17Z
+// NetworkServiceLogger.h - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NetworkService PixInsight module.
 //
@@ -90,4 +90,4 @@ struct NetworkServiceLogger
 #endif   // __NetworkServiceLogger_h
 
 // ----------------------------------------------------------------------------
-// EOF NetworkServiceLogger.h - Released 2023-08-01T16:30:17Z
+// EOF NetworkServiceLogger.h - Released 2023-08-10T11:44:14Z

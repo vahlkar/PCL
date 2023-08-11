@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// IntegrationRejectionEngine.cpp - Released 2023-08-01T16:30:17Z
+// IntegrationRejectionEngine.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -1177,4 +1177,4 @@ void IntegrationRejectionEngine::CCDClipRejectionThread::PostRun()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationRejectionEngine.cpp - Released 2023-08-01T16:30:17Z
+// EOF IntegrationRejectionEngine.cpp - Released 2023-08-10T11:44:14Z

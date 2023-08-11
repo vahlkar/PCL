@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
-// pcl/ColorSpace.cpp - Released 2023-08-01T16:29:57Z
+// pcl/ColorSpace.cpp - Released 2023-08-10T11:43:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -86,4 +86,4 @@ namespace pcl
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ColorSpace.cpp - Released 2023-08-01T16:29:57Z
+// EOF pcl/ColorSpace.cpp - Released 2023-08-10T11:43:55Z

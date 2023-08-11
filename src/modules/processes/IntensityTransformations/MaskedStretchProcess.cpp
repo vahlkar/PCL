@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// MaskedStretchProcess.cpp - Released 2023-08-01T16:30:17Z
+// MaskedStretchProcess.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -286,4 +286,4 @@ int MaskedStretchProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF MaskedStretchProcess.cpp - Released 2023-08-01T16:30:17Z
+// EOF MaskedStretchProcess.cpp - Released 2023-08-10T11:44:14Z

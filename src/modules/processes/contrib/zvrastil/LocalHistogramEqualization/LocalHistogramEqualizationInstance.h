@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard LocalHistogramEqualization Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// LocalHistogramEqualizationInstance.h - Released 2023-08-01T16:30:18Z
+// LocalHistogramEqualizationInstance.h - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard LocalHistogramEqualization PixInsight module.
 //
@@ -118,4 +118,4 @@ private:
 #endif // __LocalHistogramEqualizationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF LocalHistogramEqualizationInstance.h - Released 2023-08-01T16:30:18Z
+// EOF LocalHistogramEqualizationInstance.h - Released 2023-08-10T11:44:14Z

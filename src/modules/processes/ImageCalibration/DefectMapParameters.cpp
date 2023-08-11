@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.9.8
 // ----------------------------------------------------------------------------
-// DefectMapParameters.cpp - Released 2023-08-01T16:30:17Z
+// DefectMapParameters.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -180,4 +180,4 @@ bool DMPIsCFA::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DefectMapParameters.cpp - Released 2023-08-01T16:30:17Z
+// EOF DefectMapParameters.cpp - Released 2023-08-10T11:44:14Z

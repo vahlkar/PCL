@@ -2,7 +2,7 @@
 # PixInsight Makefile Generator Script v1.129
 # Copyright (C) 2009-2023 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2023-08-01T16:39:49.931Z
+# Generated on .... 2023-08-10T14:43:37.588Z
 # Project id ...... Convolution
 # Project type .... Module
 # Platform ........ MacOSX/g++

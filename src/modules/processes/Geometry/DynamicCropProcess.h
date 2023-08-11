@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// DynamicCropProcess.h - Released 2023-08-01T16:30:17Z
+// DynamicCropProcess.h - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -89,4 +89,4 @@ PCL_END_LOCAL
 #endif   // __DynamicCropProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF DynamicCropProcess.h - Released 2023-08-01T16:30:17Z
+// EOF DynamicCropProcess.h - Released 2023-08-10T11:44:14Z

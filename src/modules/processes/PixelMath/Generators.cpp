@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// Generators.cpp - Released 2023-08-01T16:30:17Z
+// Generators.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -2289,4 +2289,4 @@ void OpExclusionFunction::operator()( Pixel& r, ExpressionList::const_iterator, 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Generators.cpp - Released 2023-08-01T16:30:17Z
+// EOF Generators.cpp - Released 2023-08-10T11:44:14Z

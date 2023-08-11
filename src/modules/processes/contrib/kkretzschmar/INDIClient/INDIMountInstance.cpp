@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// INDIMountInstance.cpp - Released 2023-08-01T16:30:17Z
+// INDIMountInstance.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -1247,4 +1247,4 @@ void AbstractINDIMountExecution::Abort()
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDIMountInstance.cpp - Released 2023-08-01T16:30:17Z
+// EOF INDIMountInstance.cpp - Released 2023-08-10T11:44:14Z

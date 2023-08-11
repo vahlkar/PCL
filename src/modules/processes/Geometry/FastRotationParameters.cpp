@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// FastRotationParameters.cpp - Released 2023-08-01T16:30:17Z
+// FastRotationParameters.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -105,4 +105,4 @@ size_type FRMode::DefaultValueIndex() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FastRotationParameters.cpp - Released 2023-08-01T16:30:17Z
+// EOF FastRotationParameters.cpp - Released 2023-08-10T11:44:14Z

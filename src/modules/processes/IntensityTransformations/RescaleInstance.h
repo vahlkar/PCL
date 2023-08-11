@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// RescaleInstance.h - Released 2023-08-01T16:30:17Z
+// RescaleInstance.h - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -90,4 +90,4 @@ private:
 #endif   // __RescaleInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF RescaleInstance.h - Released 2023-08-01T16:30:17Z
+// EOF RescaleInstance.h - Released 2023-08-10T11:44:14Z

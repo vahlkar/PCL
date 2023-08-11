@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// INDIMountInstance.h - Released 2023-08-01T16:30:17Z
+// INDIMountInstance.h - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -192,4 +192,4 @@ private:
 #endif // __INDIMountInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF INDIMountInstance.h - Released 2023-08-01T16:30:17Z
+// EOF INDIMountInstance.h - Released 2023-08-10T11:44:14Z

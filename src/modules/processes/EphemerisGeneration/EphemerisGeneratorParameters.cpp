@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard EphemerisGeneration Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// EphemerisGeneratorParameters.cpp - Released 2023-08-01T16:30:17Z
+// EphemerisGeneratorParameters.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -1247,4 +1247,4 @@ double EGEphemerisMaxTruncationError::MaximumValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF EphemerisGeneratorParameters.cpp - Released 2023-08-01T16:30:17Z
+// EOF EphemerisGeneratorParameters.cpp - Released 2023-08-10T11:44:14Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Sandbox Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// SandboxInstance.h - Released 2023-08-01T16:30:17Z
+// SandboxInstance.h - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Sandbox PixInsight module.
 //
@@ -97,4 +97,4 @@ private:
 #endif   // __SandboxInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF SandboxInstance.h - Released 2023-08-01T16:30:17Z
+// EOF SandboxInstance.h - Released 2023-08-10T11:44:14Z

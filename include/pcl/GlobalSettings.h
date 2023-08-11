@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
-// pcl/GlobalSettings.h - Released 2023-08-01T16:29:49Z
+// pcl/GlobalSettings.h - Released 2023-08-10T11:43:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -157,7 +157,7 @@ namespace GlobalVariableType
  * <tr><td>ImageWindow/SwapCompression</td><td></td></tr>
  * <tr><td>ImageWindow/TouchEvents</td><td></td></tr>
  * <tr><td>ImageWindow/UseFileNamesAsImageIdentifiers</td><td></td></tr>
- * <tr><td>ImageWindow/VerboseNetworkOperations</td><td>Not available on Windows.</td></tr>
+ * <tr><td>ImageWindow/VerboseNetworkOperations</td><td>Ignored on Windows.</td></tr>
  * <tr><td>ImageWindow/ZoomAtCursor</td><td></td></tr>
  * <tr><td>MainWindow/AcceptDroppedFiles</td><td></td></tr>
  * <tr><td>MainWindow/AnimateCombo</td><td></td></tr>
@@ -237,7 +237,7 @@ namespace GlobalVariableType
  * <tr><td>ImageWindow/ImageThumbnailSize</td><td>In image pixels.</td></tr>
  * <tr><td>ImageWindow/ProjectThumbnailSize</td><td>In image pixels.</td></tr>
  * <tr><td>ImageWindow/WheelStepAngle</td><td>In degrees, unsigned.</td></tr>
- * <tr><td>ImageWindow/WheelDirection</td><td>When >= 0, rotating forward zooms out. When < 0, rotating forward zooms in.</td></tr>
+ * <tr><td>ImageWindow/WheelDirection</td><td>When &ge; 0, rotating forward zooms out. When &lt; 0, rotating forward zooms in.</td></tr>
  * <tr><td>MainWindow/MaxRecentFiles</td><td>Maximum length of recent file menu lists.</td></tr>
  * <tr><td>Process/AutoSavePSMPeriod</td><td>In seconds.</td></tr>
  * <tr><td>Process/ConsoleDelay</td><td>In milliseconds.</td></tr>
@@ -247,6 +247,7 @@ namespace GlobalVariableType
  * <tr><td>Process/MaxFileReadThreads</td><td>Maximum number of concurrent file reading threads.</td></tr>
  * <tr><td>Process/MaxFileWriteThreads</td><td>Maximum number of concurrent file writing threads.</td></tr>
  * <tr><td>Process/MaxUsageListLength</td><td>Maximum length of the <em>Recently Used</em> and <em>Most Used</em> lists on %Process %Explorer.</td></tr>
+ * <tr><td>Process/PerformMallocTrimCalls</td><td>When &gt; 0, call malloc_trim() to release free memory. Only available on Linux; ignored on macOS and Windows.</td></tr>
  * <tr><td>System/NumberOfProcessors</td><td>Total number of processor cores available. Read-only.</td></tr>
  * <tr><td>TransparencyBrush/Brush</td><td>See the pcl::BackgroundBrush namespace.</td></tr>
  * <tr><td>Workspace/PrimaryScreenCenterX</td><td>Read-only. In physical device pixels.</td></tr>
@@ -529,4 +530,4 @@ public:
 #endif   // __PCL_GlobalSettings_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/GlobalSettings.h - Released 2023-08-01T16:29:49Z
+// EOF pcl/GlobalSettings.h - Released 2023-08-10T11:43:48Z

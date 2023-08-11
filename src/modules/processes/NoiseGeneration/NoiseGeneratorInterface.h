@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard NoiseGeneration Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// NoiseGeneratorInterface.h - Released 2023-08-01T16:30:17Z
+// NoiseGeneratorInterface.h - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NoiseGeneration PixInsight module.
 //
@@ -128,4 +128,4 @@ PCL_END_LOCAL
 #endif   // __NoiseGeneratorInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF NoiseGeneratorInterface.h - Released 2023-08-01T16:30:17Z
+// EOF NoiseGeneratorInterface.h - Released 2023-08-10T11:44:14Z

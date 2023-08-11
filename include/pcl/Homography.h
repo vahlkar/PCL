@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
-// pcl/Homography.h - Released 2023-08-01T16:29:49Z
+// pcl/Homography.h - Released 2023-08-10T11:43:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -324,7 +324,7 @@ private:
    template <class point_list1, class point_list2>
    static Matrix DLT( const point_list1& P1, const point_list2& P2 )
    {
-      int n = Min( P1.Length(), P2.Length() );
+      int n = int( Min( P1.Length(), P2.Length() ) );
       if ( n < 4 )
          throw Error( "Homography::DLT(): Less than four points specified." );
 
@@ -423,4 +423,4 @@ private:
 #endif   // __PCL_Homography_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Homography.h - Released 2023-08-01T16:29:49Z
+// EOF pcl/Homography.h - Released 2023-08-10T11:43:48Z

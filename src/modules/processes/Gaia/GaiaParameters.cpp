@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Gaia Process Module Version 1.2.5
 // ----------------------------------------------------------------------------
-// GaiaParameters.cpp - Released 2023-08-01T16:30:17Z
+// GaiaParameters.cpp - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Gaia PixInsight module.
 //
@@ -1182,4 +1182,4 @@ bool GDatabaseSpectrumBits::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GaiaParameters.cpp - Released 2023-08-01T16:30:17Z
+// EOF GaiaParameters.cpp - Released 2023-08-10T11:44:14Z

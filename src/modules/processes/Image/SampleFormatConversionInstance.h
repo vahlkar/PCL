@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.4
 // ----------------------------------------------------------------------------
-// SampleFormatConversionInstance.h - Released 2023-08-01T16:30:17Z
+// SampleFormatConversionInstance.h - Released 2023-08-10T11:44:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -91,4 +91,4 @@ private:
 #endif   // __SampleFormatConversionInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF SampleFormatConversionInstance.h - Released 2023-08-01T16:30:17Z
+// EOF SampleFormatConversionInstance.h - Released 2023-08-10T11:44:14Z

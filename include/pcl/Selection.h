@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.5.7
 // ----------------------------------------------------------------------------
-// pcl/Selection.h - Released 2023-08-01T16:29:49Z
+// pcl/Selection.h - Released 2023-08-10T11:43:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -247,4 +247,4 @@ RI Select( RI i, RI j, distance_type k, BP p )
 #endif  // __PCL_Selection_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Selection.h - Released 2023-08-01T16:29:49Z
+// EOF pcl/Selection.h - Released 2023-08-10T11:43:48Z
