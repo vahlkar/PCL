@@ -38,9 +38,13 @@
 CMakeLists.txt
 PCL.*
 .vscode
+*.vcxproj.user
 # Folders
 host
 __private
 Debug
 .gitignore
 bin
+.vs
+lib
+x64
