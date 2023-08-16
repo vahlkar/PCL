@@ -33,6 +33,13 @@
     <ProjectGuid>{F1565262-E886-4F40-9BE0-047AACC49764}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
+	<PCLDIR>C:\Users\archi\Documents\PixInsight\PCL</PCLDIR>
+	<PCLBINDIR64>$(PCLDIR)\bin</PCLBINDIR64>
+	<PCLBINDIR>$(PCLBINDIR64)</PCLBINDIR>
+	<PCLLIBDIR64>$(PCLDIR)\lib\windows\x64</PCLLIBDIR64>
+	<PCLLIBDIR>$(PCLLIBDIR64)</PCLLIBDIR>
+	<PCLINCDIR>$(PCLDIR)\include</PCLINCDIR>
+	<PCLSRCDIR>$(PCLDIR)\src</PCLSRCDIR>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
