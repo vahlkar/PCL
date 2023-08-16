@@ -64,7 +64,7 @@ clean:
 .PHONY: post-build
 post-build:
 	cp $(OBJ_DIR)/Blink2-pxm.dylib $(PCLBINDIR64)
-	codesign --deep --options=runtime -s pleiades -f -v --timestamp $(PCLBINDIR64)/Blink2-pxm.dylib
+	#codesign --deep --options=runtime -s pleiades -f -v --timestamp $(PCLBINDIR64)/Blink2-pxm.dylib
 
 ./x64/Release/%.o: ../../%.cpp
 	clang++ -c -pipe -pthread -arch x86_64 -fPIC -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -mmacosx-version-min=11 -D_REENTRANT -D__PCL_MACOSX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mtune=skylake -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -std=c++17 -stdlib=libc++ -Wall -Wno-parentheses -Wno-extern-c-compat -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
