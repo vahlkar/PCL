@@ -5,7 +5,7 @@
 # Copyright (C) 2009-2024 Pleiades Astrophoto
 ######################################################################
 # Generated on .... 2024-12-23T20:44:53.810Z
-# Project id ...... Blink
+# Project id ...... Blink2
 # Project type .... Module
 # Platform ........ Windows/vc16
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -57,8 +57,8 @@
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\</IntDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(PCLBINDIR64)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Blink-pxm</TargetName>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Blink-pxm</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Blink2-pxm</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Blink2-pxm</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Midl>
@@ -90,7 +90,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>PCL-pxi.lib;lz4-pxi.lib;zstd-pxi.lib;zlib-pxi.lib;RFC6234-pxi.lib;lcms-pxi.lib;cminpack-pxi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;userenv.lib;imm32.lib;shlwapi.lib;ws2_32.lib;wldap32.lib;mscms.lib;winmm.lib;crypt32.lib;normaliz.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(PCLBINDIR64)\Blink-pxm.dll</OutputFile>
+      <OutputFile>$(PCLBINDIR64)\Blink2-pxm.dll</OutputFile>
       <AdditionalLibraryDirectories>$(PCLLIBDIR64);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile></ModuleDefinitionFile>
       <DelayLoadDLLs>%(DelayLoadDLLs)</DelayLoadDLLs>
@@ -126,7 +126,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>PCL-pxi.lib;lz4-pxi.lib;zstd-pxi.lib;zlib-pxi.lib;RFC6234-pxi.lib;lcms-pxi.lib;cminpack-pxi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;userenv.lib;imm32.lib;shlwapi.lib;ws2_32.lib;wldap32.lib;mscms.lib;winmm.lib;crypt32.lib;normaliz.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(PCLBINDIR64)\Blink-pxm.dll</OutputFile>
+      <OutputFile>$(PCLBINDIR64)\Blink2-pxm.dll</OutputFile>
       <AdditionalLibraryDirectories>$(PCLLIBDIR64);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile></ModuleDefinitionFile>
       <SubSystem>Windows</SubSystem>
@@ -151,7 +151,7 @@
     <ClInclude Include="..\..\BlinkVideoDialog.h"/>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\icons\Blink.svg"/>
+    <None Include="..\..\icons\Blink2.svg"/>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets"/>
   <ImportGroup Label="ExtensionTargets">
