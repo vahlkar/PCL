@@ -28,6 +28,13 @@
     <ProjectGuid>{75980191-38B1-45C1-83E0-0BA0A2E9A46A}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
+	<PCLDIR>C:\Users\archi\Documents\PixInsight\PCL</PCLDIR>
+	<PCLBINDIR64>$(PCLDIR)\bin</PCLBINDIR64>
+	<PCLBINDIR>$(PCLBINDIR64)</PCLBINDIR>
+	<PCLLIBDIR64>$(PCLDIR)\lib\windows\x64</PCLLIBDIR64>
+	<PCLLIBDIR>$(PCLLIBDIR64)</PCLLIBDIR>
+	<PCLINCDIR>$(PCLDIR)\include</PCLINCDIR>
+	<PCLSRCDIR>$(PCLDIR)\src</PCLSRCDIR>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
