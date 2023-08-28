@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.7
+// /_/     \____//_____/   PCL 2.5.8
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.8.6
+// Standard SubframeSelector Process Module Version 1.8.8
 // ----------------------------------------------------------------------------
-// SubframeSelectorCache.h - Released 2023-08-10T11:44:14Z
+// SubframeSelectorCache.h - Released 2023-08-28T15:23:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -89,22 +89,17 @@ public:
    double    starResidualMeanDev;
    double    azimuth;
    double    altitude;
-   IsoString instanceParameters;
 
-   SubframeSelectorCacheItem( const String& path = String() )
-      : FileDataCacheItem( path )
-   {
-   }
-
-   virtual ~SubframeSelectorCacheItem()
+   SubframeSelectorCacheItem( const String& path = String(), const IsoString& key = IsoString() )
+      : FileDataCacheItem( path, key )
    {
    }
 
 private:
 
-   void AssignData( const FileDataCacheItem& item ) override;
-   String DataToString() const override;
-   bool GetDataFromTokens( const StringList& tokens ) override;
+   void AssignData( const FileDataCacheItem& ) override;
+   IsoStringList SerializedData() const override;
+   bool DeserializeData( const IsoStringList& ) override;
 };
 
 // ----------------------------------------------------------------------------
@@ -131,7 +126,18 @@ public:
       return 21;
    }
 
+   bool IsPersistent() const
+   {
+      return m_persistent;
+   }
+
+   void SetPersistent( bool );
+
+   void SetMaxItemDuration( int days ) override;
+
 private:
+
+   bool m_persistent = true;
 
    FileDataCacheItem* NewItem() const override
    {
@@ -148,4 +154,4 @@ extern SubframeSelectorCache* TheSubframeSelectorCache;
 #endif   // __SubframeSelectorCache_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorCache.h - Released 2023-08-10T11:44:14Z
+// EOF SubframeSelectorCache.h - Released 2023-08-28T15:23:41Z

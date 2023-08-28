@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.7
+// /_/     \____//_____/   PCL 2.5.8
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.5.1
+// Standard ImageIntegration Process Module Version 1.5.2
 // ----------------------------------------------------------------------------
-// IntegrationCache.cpp - Released 2023-08-10T11:44:14Z
+// IntegrationCache.cpp - Released 2023-08-28T15:23:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -52,6 +52,8 @@
 
 #include "IntegrationCache.h"
 
+#include <pcl/Settings.h>
+
 namespace pcl
 {
 
@@ -61,8 +63,17 @@ IntegrationCache* TheIntegrationCache = nullptr;
 
 // ----------------------------------------------------------------------------
 
-static bool GetTwoSidedEstimates( IntegrationFile::scale_estimates& v,
-                                  StringList::const_iterator& i, const StringList& s )
+static IsoStringList SerializedTwoSidedEstimates( const IntegrationFile::scale_estimates& v )
+{
+   IsoStringList tokens;
+   tokens << IsoString( v.Length() );
+   for ( int i = 0; i < v.Length(); ++i )
+      tokens << IsoString().Format( "%.8e,%.8e", v[i].low, v[i].high );
+   return tokens;
+}
+
+static bool DeserializeTwoSidedEstimates( IntegrationFile::scale_estimates& v,
+                                          IsoStringList::const_iterator& i, const IsoStringList& s )
 {
    if ( i == s.End() )
       return false;
@@ -73,7 +84,7 @@ static bool GetTwoSidedEstimates( IntegrationFile::scale_estimates& v,
    v = IntegrationFile::scale_estimates( n );
    for ( int j = 0; j < n; ++j, ++i )
    {
-      StringList tokens;
+      IsoStringList tokens;
       i->Break( tokens, ',' );
       if ( tokens.Length() != 2 )
          throw ParseError( "Parsing two-sided scale estimate: wrong number of components" );
@@ -83,18 +94,22 @@ static bool GetTwoSidedEstimates( IntegrationFile::scale_estimates& v,
    return true;
 }
 
-static String TwoSidedEstimatesToString( const IntegrationFile::scale_estimates& v )
-{
-   String s = String().Format( "\n%d", v.Length() );
-   for ( int i = 0; i < v.Length(); ++i )
-      s.AppendFormat( "\n%.8e,%.8e", v[i].low, v[i].high );
-   return s;
-}
-
 // ----------------------------------------------------------------------------
 
-static bool GetSignalEstimates( IntegrationFile::signal_estimates& v,
-                                StringList::const_iterator& i, const StringList& s )
+static IsoStringList SerializedSignalEstimates( const IntegrationFile::signal_estimates& v )
+{
+   IsoStringList tokens;
+   tokens << IsoString( v.Length() );
+   for ( int i = 0; i < v.Length(); ++i )
+      tokens << IsoString().Format( "%.8e,%.8e,%.8e,%.8e,%.8e,%.8e,%d",
+                                    v[i].totalFlux, v[i].totalPowerFlux,
+                                    v[i].totalMeanFlux, v[i].totalMeanPowerFlux,
+                                    v[i].MStar, v[i].NStar, v[i].count );
+   return tokens;
+}
+
+static bool DeserializeSignalEstimates( IntegrationFile::signal_estimates& v,
+                                        IsoStringList::const_iterator& i, const IsoStringList& s )
 {
    if ( i == s.End() )
       return false;
@@ -105,7 +120,7 @@ static bool GetSignalEstimates( IntegrationFile::signal_estimates& v,
    v = IntegrationFile::signal_estimates( n );
    for ( int j = 0; j < n; ++j, ++i )
    {
-      StringList tokens;
+      IsoStringList tokens;
       i->Break( tokens, ',' );
       if ( tokens.Length() != 7 )
          throw ParseError( "Parsing signal estimate: wrong number of components" );
@@ -118,17 +133,6 @@ static bool GetSignalEstimates( IntegrationFile::signal_estimates& v,
       v[j].count = Max( 0, int( tokens[6].ToInt() ) );
    }
    return true;
-}
-
-static String SignalEstimatesToString( const IntegrationFile::signal_estimates& v )
-{
-   String s = String().Format( "\n%d", v.Length() );
-   for ( int i = 0; i < v.Length(); ++i )
-      s.AppendFormat( "\n%.8e,%.8e,%.8e,%.8e,%.8e,%.8e,%d",
-                      v[i].totalFlux, v[i].totalPowerFlux,
-                      v[i].totalMeanFlux, v[i].totalMeanPowerFlux,
-                      v[i].MStar, v[i].NStar, v[i].count );
-   return s;
 }
 
 // ----------------------------------------------------------------------------
@@ -159,146 +163,145 @@ void IntegrationCacheItem::AssignData( const FileDataCacheItem& item )
 
 // ----------------------------------------------------------------------------
 
-String IntegrationCacheItem::DataToString() const
+IsoStringList IntegrationCacheItem::SerializedData() const
 {
-   StringList tokens;
+   IsoStringList tokens;
    if ( !mean.IsEmpty() )
-      tokens.Append( "mean" + VectorToString( mean ) );
+      tokens << "mean" << SerializedVector( mean );
    if ( !median.IsEmpty() )
-      tokens.Append( "median" + VectorToString( median ) );
+      tokens << "median" << SerializedVector( median );
    if ( !avgDev.IsEmpty() )
-      tokens.Append( "avgDev" + TwoSidedEstimatesToString( avgDev ) );
+      tokens << "avgDev" << SerializedTwoSidedEstimates( avgDev );
    if ( !mad.IsEmpty() )
-      tokens.Append( "mad" + TwoSidedEstimatesToString( mad ) );
+      tokens << "mad" << SerializedTwoSidedEstimates( mad );
    if ( !bwmv.IsEmpty() )
-      tokens.Append( "bwmv" + TwoSidedEstimatesToString( bwmv ) );
+      tokens << "bwmv" << SerializedTwoSidedEstimates( bwmv );
    if ( !psfSignal.IsEmpty() )
-      tokens.Append( "psfSignal" + SignalEstimatesToString( psfSignal ) );
+      tokens << "psfSignal" << SerializedSignalEstimates( psfSignal );
    if ( !noise.IsEmpty() )
-      tokens.Append( "noise" + VectorToString( noise ) );
+      tokens << "noise" << SerializedVector( noise );
    if ( !noiseScale.IsEmpty() )
-      tokens.Append( "noiseScale" + TwoSidedEstimatesToString( noiseScale ) );
+      tokens << "noiseScale" << SerializedTwoSidedEstimates( noiseScale );
    if ( !ax.IsEmpty() )
-      tokens.Append( "ax" + VectorToString( ax ) );
+      tokens << "ax" << SerializedVector( ax );
    if ( !ay.IsEmpty() )
-      tokens.Append( "ay" + VectorToString( ay ) );
+      tokens << "ay" << SerializedVector( ay );
    if ( !am.IsEmpty() )
-      tokens.Append( "am" + MultiVectorToString( am ) );
+      tokens << "am" << SerializedMultiVector( am );
    if ( !as0_avgDev.IsEmpty() )
-      tokens.Append( "as0_avgDev" + MultiVectorToString( as0_avgDev ) );
+      tokens << "as0_avgDev" << SerializedMultiVector( as0_avgDev );
    if ( !as1_avgDev.IsEmpty() )
-      tokens.Append( "as1_avgDev" + MultiVectorToString( as1_avgDev ) );
+      tokens << "as1_avgDev" << SerializedMultiVector( as1_avgDev );
    if ( !as0_mad.IsEmpty() )
-      tokens.Append( "as0_mad" + MultiVectorToString( as0_mad ) );
+      tokens << "as0_mad" << SerializedMultiVector( as0_mad );
    if ( !as1_mad.IsEmpty() )
-      tokens.Append( "as1_mad" + MultiVectorToString( as1_mad ) );
+      tokens << "as1_mad" << SerializedMultiVector( as1_mad );
    if ( !as0_bwmv.IsEmpty() )
-      tokens.Append( "as0_bwmv" + MultiVectorToString( as0_bwmv ) );
+      tokens << "as0_bwmv" << SerializedMultiVector( as0_bwmv );
    if ( !as1_bwmv.IsEmpty() )
-      tokens.Append( "as1_bwmv" + MultiVectorToString( as1_bwmv ) );
+      tokens << "as1_bwmv" << SerializedMultiVector( as1_bwmv );
    if ( !metadata.IsEmpty() )
-      tokens.Append( "metadata\n" + metadata );
-
-   return String().ToNewLineSeparated( tokens );
+      tokens << "metadata" << metadata.ToUTF8();
+   return tokens;
 }
 
 // ----------------------------------------------------------------------------
 
-bool IntegrationCacheItem::GetDataFromTokens( const StringList& tokens )
+bool IntegrationCacheItem::DeserializeData( const IsoStringList& tokens )
 {
    AssignData( IntegrationCacheItem() );
 
-   for ( StringList::const_iterator i = tokens.Begin(); i != tokens.End(); )
+   for ( IsoStringList::const_iterator i = tokens.Begin(); i != tokens.End(); )
       if ( *i == "mean" )
       {
-         if ( !GetVector( mean, ++i, tokens ) )
+         if ( !DeserializeVector( mean, ++i, tokens ) )
             return false;
       }
       else if ( *i == "median" )
       {
-         if ( !GetVector( median, ++i, tokens ) )
+         if ( !DeserializeVector( median, ++i, tokens ) )
             return false;
       }
       else if ( *i == "avgDev" )
       {
-         if ( !GetTwoSidedEstimates( avgDev, ++i, tokens ) )
+         if ( !DeserializeTwoSidedEstimates( avgDev, ++i, tokens ) )
             return false;
       }
       else if ( *i == "mad" )
       {
-         if ( !GetTwoSidedEstimates( mad, ++i, tokens ) )
+         if ( !DeserializeTwoSidedEstimates( mad, ++i, tokens ) )
             return false;
       }
       else if ( *i == "bwmv" )
       {
-         if ( !GetTwoSidedEstimates( bwmv, ++i, tokens ) )
+         if ( !DeserializeTwoSidedEstimates( bwmv, ++i, tokens ) )
             return false;
       }
       else if ( *i == "psfSignal" )
       {
-         if ( !GetSignalEstimates( psfSignal, ++i, tokens ) )
+         if ( !DeserializeSignalEstimates( psfSignal, ++i, tokens ) )
             return false;
       }
       else if ( *i == "noise" )
       {
-         if ( !GetVector( noise, ++i, tokens ) )
+         if ( !DeserializeVector( noise, ++i, tokens ) )
             return false;
       }
       else if ( *i == "noiseScale" )
       {
-         if ( !GetTwoSidedEstimates( noiseScale, ++i, tokens ) )
+         if ( !DeserializeTwoSidedEstimates( noiseScale, ++i, tokens ) )
             return false;
       }
       else if ( *i == "ax" )
       {
-         if ( !GetVector( ax, ++i, tokens ) )
+         if ( !DeserializeVector( ax, ++i, tokens ) )
             return false;
       }
       else if ( *i == "ay" )
       {
-         if ( !GetVector( ay, ++i, tokens ) )
+         if ( !DeserializeVector( ay, ++i, tokens ) )
             return false;
       }
       else if ( *i == "am" )
       {
-         if ( !GetMultiVector( am, ++i, tokens ) )
+         if ( !DeserializeMultiVector( am, ++i, tokens ) )
             return false;
       }
       else if ( *i == "as0_avgDev" )
       {
-         if ( !GetMultiVector( as0_avgDev, ++i, tokens ) )
+         if ( !DeserializeMultiVector( as0_avgDev, ++i, tokens ) )
             return false;
       }
       else if ( *i == "as1_avgDev" )
       {
-         if ( !GetMultiVector( as1_avgDev, ++i, tokens ) )
+         if ( !DeserializeMultiVector( as1_avgDev, ++i, tokens ) )
             return false;
       }
       else if ( *i == "as0_mad" )
       {
-         if ( !GetMultiVector( as0_mad, ++i, tokens ) )
+         if ( !DeserializeMultiVector( as0_mad, ++i, tokens ) )
             return false;
       }
       else if ( *i == "as1_mad" )
       {
-         if ( !GetMultiVector( as1_mad, ++i, tokens ) )
+         if ( !DeserializeMultiVector( as1_mad, ++i, tokens ) )
             return false;
       }
       else if ( *i == "as0_bwmv" )
       {
-         if ( !GetMultiVector( as0_bwmv, ++i, tokens ) )
+         if ( !DeserializeMultiVector( as0_bwmv, ++i, tokens ) )
             return false;
       }
       else if ( *i == "as1_bwmv" )
       {
-         if ( !GetMultiVector( as1_bwmv, ++i, tokens ) )
+         if ( !DeserializeMultiVector( as1_bwmv, ++i, tokens ) )
             return false;
       }
       else if ( *i == "metadata" )
       {
          if ( ++i == tokens.End() )
             return false;
-         metadata = *i;
+         metadata = i->UTF8ToUTF16();
       }
       else
       {
@@ -311,10 +314,15 @@ bool IntegrationCacheItem::GetDataFromTokens( const StringList& tokens )
 // ----------------------------------------------------------------------------
 
 IntegrationCache::IntegrationCache()
-   : FileDataCache( "/ImageIntegration/Cache" )
+   : FileDataCache( "ImageIntegration" )
 {
    if ( TheIntegrationCache == nullptr )
       TheIntegrationCache = this;
+
+   int maxItemDuration = 30;
+   Settings::Read( "/Cache/MaxItemDuration", maxItemDuration );
+   SetMaxItemDuration( maxItemDuration );
+   Settings::Read( "/Cache/Persistent", m_persistent );
 }
 
 // ----------------------------------------------------------------------------
@@ -327,7 +335,33 @@ IntegrationCache::~IntegrationCache()
 
 // ----------------------------------------------------------------------------
 
+void IntegrationCache::SetPersistent( bool persistent )
+{
+   if ( persistent != m_persistent )
+   {
+      if ( persistent )
+         if ( IsEmpty() )
+            Load();
+
+      m_persistent = persistent;
+      Settings::Write( "/Cache/Persistent", m_persistent );
+   }
+}
+
+// ----------------------------------------------------------------------------
+
+void IntegrationCache::SetMaxItemDuration( int days )
+{
+   if ( days != MaxItemDuration() )
+   {
+      FileDataCache::SetMaxItemDuration( days );
+      Settings::Write( "/Cache/MaxItemDuration", MaxItemDuration() );
+   }
+}
+
+// ----------------------------------------------------------------------------
+
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationCache.cpp - Released 2023-08-10T11:44:14Z
+// EOF IntegrationCache.cpp - Released 2023-08-28T15:23:41Z

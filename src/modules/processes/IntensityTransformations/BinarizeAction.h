@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.7
+// /_/     \____//_____/   PCL 2.5.8
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// BinarizeAction.h - Released 2023-08-10T11:44:14Z
+// BinarizeAction.h - Released 2023-08-28T15:23:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -77,4 +77,4 @@ public:
 #endif   // __BinarizeAction_h
 
 // ----------------------------------------------------------------------------
-// EOF BinarizeAction.h - Released 2023-08-10T11:44:14Z
+// EOF BinarizeAction.h - Released 2023-08-28T15:23:41Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.7
+// /_/     \____//_____/   PCL 2.5.8
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.5.1
+// Standard ImageIntegration Process Module Version 1.5.2
 // ----------------------------------------------------------------------------
-// IntegrationCache.h - Released 2023-08-10T11:44:14Z
+// IntegrationCache.h - Released 2023-08-28T15:23:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -93,15 +93,11 @@ public:
    {
    }
 
-   virtual ~IntegrationCacheItem()
-   {
-   }
-
 private:
 
-   void AssignData( const FileDataCacheItem& item ) override;
-   String DataToString() const override;
-   bool GetDataFromTokens( const StringList& tokens ) override;
+   void AssignData( const FileDataCacheItem& ) override;
+   IsoStringList SerializedData() const override;
+   bool DeserializeData( const IsoStringList& ) override;
 };
 
 // ----------------------------------------------------------------------------
@@ -128,7 +124,18 @@ public:
       return 5;
    }
 
+   bool IsPersistent() const
+   {
+      return m_persistent;
+   }
+
+   void SetPersistent( bool );
+
+   void SetMaxItemDuration( int days ) override;
+
 private:
+
+   bool m_persistent = true;
 
    FileDataCacheItem* NewItem() const override
    {
@@ -145,4 +152,4 @@ extern IntegrationCache* TheIntegrationCache;
 #endif   // __IntegrationCache_h
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationCache.h - Released 2023-08-10T11:44:14Z
+// EOF IntegrationCache.h - Released 2023-08-28T15:23:41Z

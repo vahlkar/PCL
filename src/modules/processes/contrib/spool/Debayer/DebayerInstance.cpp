@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.7
+// /_/     \____//_____/   PCL 2.5.8
 // ----------------------------------------------------------------------------
-// Standard Debayer Process Module Version 1.11.0
+// Standard Debayer Process Module Version 1.11.2
 // ----------------------------------------------------------------------------
-// DebayerInstance.cpp - Released 2023-08-10T11:44:14Z
+// DebayerInstance.cpp - Released 2023-08-28T15:23:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -3728,8 +3728,9 @@ pcl_enum DebayerInstance::BayerPatternFromTarget( FileFormatInstance& file ) con
 {
    if ( p_bayerPattern == DebayerBayerPatternParameter::Auto )
    {
-      if ( file.HasImageProperty( "PCL:CFASourcePattern" ) )
-         return BayerPatternFromTargetProperty( file.ReadImageProperty( "PCL:CFASourcePattern" ) );
+      if ( file.Format().CanStoreImageProperties() )
+         if ( file.HasImageProperty( "PCL:CFASourcePattern" ) )
+            return BayerPatternFromTargetProperty( file.ReadImageProperty( "PCL:CFASourcePattern" ) );
 
       if ( file.Format().CanStoreKeywords() )
       {
@@ -3867,8 +3868,9 @@ IsoString DebayerInstance::CFAPatternIdFromTarget( FileFormatInstance& file, boo
 {
    if ( xtrans || p_bayerPattern == DebayerBayerPatternParameter::Auto )
    {
-      if ( file.HasImageProperty( "PCL:CFASourcePattern" ) )
-         return CFAPatternIdFromTargetProperty( file.ReadImageProperty( "PCL:CFASourcePattern" ) );
+      if ( file.Format().CanStoreImageProperties() )
+         if ( file.HasImageProperty( "PCL:CFASourcePattern" ) )
+            return CFAPatternIdFromTargetProperty( file.ReadImageProperty( "PCL:CFASourcePattern" ) );
 
       if ( !xtrans )
          if ( file.Format().CanStoreKeywords() )
@@ -3948,7 +3950,8 @@ bool DebayerInstance::IsXTransCFAFromTarget( const View& view )
 
 bool DebayerInstance::IsXTransCFAFromTarget( FileFormatInstance& file )
 {
-   return IsXTransCFAFromTargetProperty( file.ReadImageProperty( "PCL:CFASourcePatternName" ) );
+   return file.Format().CanStoreImageProperties()
+            && IsXTransCFAFromTargetProperty( file.ReadImageProperty( "PCL:CFASourcePatternName" ) );
 }
 
 bool DebayerInstance::IsXTransCFAFromTargetProperty( const Variant& cfaSourcePatternName )
@@ -4091,28 +4094,32 @@ void DebayerInstance::EvaluateSignalAndNoise( Vector& psfTotalFluxEstimates, Vec
 
    Console console;
 
-   if ( psfCounts.Sum() > 0 )
-   {
-      console.WriteLn( "<end><cbr>PSF signal estimates:" );
-      for ( int i = 0; i < 3; ++i )
-         if ( psfCounts[i] > 0 )
-            console.WriteLn( String().Format( "ch %d : TFlux = %.4e, TMeanFlux = %.4e, M* = %.4e, N* = %.4e, %d PSF fits",
-                                              i,
-                                              psfTotalFluxEstimates[i], psfTotalMeanFluxEstimates[i],
-                                              psfMStarEstimates[i], psfNStarEstimates[i], psfCounts[i] ) );
-         else
-            console.WarningLn( String().Format( "** Warning: No valid PSF signal samples (channel %d).", i ) );
-   }
-   else
-      console.WarningLn( "** Warning: No valid PSF signal samples." );
+   if ( p_evaluateSignal )
+      if ( psfCounts.Sum() > 0 )
+      {
+         console.WriteLn( "<end><cbr>PSF signal estimates:" );
+         for ( int i = 0; i < 3; ++i )
+            if ( psfCounts[i] > 0 )
+               console.WriteLn( String().Format( "ch %d : TFlux = %.4e, TMeanFlux = %.4e, M* = %.4e, N* = %.4e, %d PSF fits",
+                                                i,
+                                                psfTotalFluxEstimates[i], psfTotalMeanFluxEstimates[i],
+                                                psfMStarEstimates[i], psfNStarEstimates[i], psfCounts[i] ) );
+            else
+               console.WarningLn( String().Format( "** Warning: No valid PSF signal samples (channel %d).", i ) );
+      }
+      else
+         console.WarningLn( "** Warning: No valid PSF signal samples." );
 
-   console.WriteLn( "Noise estimates:" );
-   for ( int i = 0; i < 3; ++i )
-      console.WriteLn( String().Format( "ch %d : sigma_n = %.4e, %.2f%% pixels ", i, noiseEstimates[i], noiseFractions[i]*100 )
-                        + '(' + noiseAlgorithms[i] + ')' );
-   console.WriteLn( "Noise scaling factors:" );
-   for ( int i = 0; i < 3; ++i )
-      console.WriteLn( String().Format( "ch %d : sigma_low = %.6e, sigma_high = %.6e", i, noiseScaleLow[i], noiseScaleHigh[i] ) );
+   if ( p_evaluateNoise )
+   {
+      console.WriteLn( "Noise estimates:" );
+      for ( int i = 0; i < 3; ++i )
+         console.WriteLn( String().Format( "ch %d : sigma_n = %.4e, %.2f%% pixels ", i, noiseEstimates[i], noiseFractions[i]*100 )
+                           + '(' + noiseAlgorithms[i] + ')' );
+      console.WriteLn( "Noise scaling factors:" );
+      for ( int i = 0; i < 3; ++i )
+         console.WriteLn( String().Format( "ch %d : sigma_low = %.6e, sigma_high = %.6e", i, noiseScaleLow[i], noiseScaleHigh[i] ) );
+   }
 }
 
 // ----------------------------------------------------------------------------
@@ -4606,4 +4613,4 @@ size_type DebayerInstance::ParameterLength( const MetaParameter* p, size_type ta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DebayerInstance.cpp - Released 2023-08-10T11:44:14Z
+// EOF DebayerInstance.cpp - Released 2023-08-28T15:23:41Z

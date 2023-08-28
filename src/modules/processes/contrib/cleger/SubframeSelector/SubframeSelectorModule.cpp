@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.7
+// /_/     \____//_____/   PCL 2.5.8
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.8.6
+// Standard SubframeSelector Process Module Version 1.8.8
 // ----------------------------------------------------------------------------
-// SubframeSelectorModule.cpp - Released 2023-08-10T11:44:14Z
+// SubframeSelectorModule.cpp - Released 2023-08-28T15:23:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -57,13 +57,13 @@
 
 #define MODULE_VERSION_MAJOR     1
 #define MODULE_VERSION_MINOR     8
-#define MODULE_VERSION_REVISION  6
+#define MODULE_VERSION_REVISION  8
 #define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2023
 #define MODULE_RELEASE_MONTH     8
-#define MODULE_RELEASE_DAY       10
+#define MODULE_RELEASE_DAY       28
 
 namespace pcl
 {
@@ -159,7 +159,10 @@ void SubframeSelectorModule::GetReleaseDate( int& year, int& month, int& day ) c
 void SubframeSelectorModule::OnUnload()
 {
    if ( TheSubframeSelectorCache != nullptr )
-      TheSubframeSelectorCache->Save();
+      if ( TheSubframeSelectorCache->IsPersistent() )
+         if ( TheSubframeSelectorCache->IsModified() )
+            TheSubframeSelectorCache->Save();
+
    if ( TheSubframeSelectorMeasurementsInterface != nullptr )
       TheSubframeSelectorMeasurementsInterface->Cleanup();
 }
@@ -184,4 +187,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorModule.cpp - Released 2023-08-10T11:44:14Z
+// EOF SubframeSelectorModule.cpp - Released 2023-08-28T15:23:41Z

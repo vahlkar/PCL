@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.7
+// /_/     \____//_____/   PCL 2.5.8
 // ----------------------------------------------------------------------------
-// pcl/GlobalSettings.h - Released 2023-08-10T11:43:48Z
+// pcl/GlobalSettings.h - Released 2023-08-28T15:23:15Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -226,6 +226,7 @@ namespace GlobalVariableType
  *
  * <table border="1" cellpadding="4" cellspacing="0">
  * <tr><td>Application/FontResolution</td><td>In dots per inch.</td></tr>
+ * <tr><td>Application/Instance</td><td>The running application's instance number (&ge; 1).</td></tr>
  * <tr><td>ColorManagement/DefaultRenderingIntent</td><td>See the pcl::ICCRenderingIntent namespace.</td></tr>
  * <tr><td>ColorManagement/OnMissingProfile</td><td>Core application policies. See the documentation for ColorManagementSetup.</td></tr>
  * <tr><td>ColorManagement/OnProfileMismatch</td><td>Core application policies. See the documentation for ColorManagementSetup.</td></tr>
@@ -303,6 +304,8 @@ namespace GlobalVariableType
  * <tr><td>Application/BinDirectory</td><td>Full path to the distribution's bin directory. Read-only.</td></tr>
  * <tr><td>Application/CIP_ITRSDataFile</td><td>File name or path of the distribution's data file of CIP coordinates in the ITRS (plain text).</td></tr>
  * <tr><td>Application/CIP_ITRSDataFilePath</td><td>Full path to the current distribution's data file of CIP coordinates in the ITRS (plain text). Read-only</td></tr>
+ * <tr><td>Application/ColorDirectory</td><td>Full path to the distribution's color directory. Read-only.</td></tr>
+ * <tr><td>Application/ConfigDirectory</td><td>Full path to the application's configuration directory. Platform-dependent. Read-only.</td></tr>
  * <tr><td>Application/CoreDirectory</td><td>Full directory of the core executable file. Read-only.</td></tr>
  * <tr><td>Application/CoreFilePath</td><td>Full file path of the core executable. Read-only.</td></tr>
  * <tr><td>Application/DeltaATDataFile</td><td>File name or path of the distribution's Delta AT (TAI-UTC) data file (plain text).</td></tr>
@@ -530,4 +533,4 @@ public:
 #endif   // __PCL_GlobalSettings_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/GlobalSettings.h - Released 2023-08-10T11:43:48Z
+// EOF pcl/GlobalSettings.h - Released 2023-08-28T15:23:15Z

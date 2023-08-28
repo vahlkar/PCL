@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.7
+// /_/     \____//_____/   PCL 2.5.8
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.5.1
+// Standard ImageIntegration Process Module Version 1.5.2
 // ----------------------------------------------------------------------------
-// ImageIntegrationInstance.cpp - Released 2023-08-10T11:44:14Z
+// ImageIntegrationInstance.cpp - Released 2023-08-28T15:23:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -68,7 +68,6 @@
 #include <pcl/GlobalSettings.h>
 #include <pcl/ImageWindow.h>
 #include <pcl/MetaModule.h>
-#include <pcl/Settings.h>
 #include <pcl/SpinStatus.h>
 #include <pcl/Version.h>
 #include <pcl/View.h>
@@ -319,13 +318,15 @@ bool ImageIntegrationInstance::ExecuteGlobal()
 
          try
          {
-            TheIntegrationCache->Load();
+            if ( TheIntegrationCache->IsPersistent() )
+            {
+               TheIntegrationCache->Load();
 
-            if ( TheIntegrationCache->IsEnabled() )
                if ( TheIntegrationCache->IsEmpty() )
                   console.NoteLn( "<end><cbr><br>* Empty file cache" );
                else
                   console.NoteLn( "<end><cbr><br>* Loaded cache: " + String( TheIntegrationCache->NumberOfItems() ) + " item(s)" );
+            }
          }
          catch ( ... )
          {
@@ -2070,4 +2071,4 @@ ImageWindow ImageIntegrationInstance::CreateImageWindow( const IsoString& id, in
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationInstance.cpp - Released 2023-08-10T11:44:14Z
+// EOF ImageIntegrationInstance.cpp - Released 2023-08-28T15:23:41Z

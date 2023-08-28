@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.7
+// /_/     \____//_____/   PCL 2.5.8
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.4
 // ----------------------------------------------------------------------------
-// DynamicPSFParameters.h - Released 2023-08-10T11:44:14Z
+// DynamicPSFParameters.h - Released 2023-08-28T15:23:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -1029,4 +1029,4 @@ PCL_END_LOCAL
 #endif   // __DynamicPSFParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF DynamicPSFParameters.h - Released 2023-08-10T11:44:14Z
+// EOF DynamicPSFParameters.h - Released 2023-08-28T15:23:41Z

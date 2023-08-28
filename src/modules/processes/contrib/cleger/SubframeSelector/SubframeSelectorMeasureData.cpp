@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.7
+// /_/     \____//_____/   PCL 2.5.8
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.8.6
+// Standard SubframeSelector Process Module Version 1.8.8
 // ----------------------------------------------------------------------------
-// SubframeSelectorMeasureData.cpp - Released 2023-08-10T11:44:14Z
+// SubframeSelectorMeasureData.cpp - Released 2023-08-28T15:23:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -93,7 +93,7 @@ void MeasureData::AddToCache( const SubframeSelectorInstance& instance ) const
 {
    if ( TheSubframeSelectorCache != nullptr )
    {
-      SubframeSelectorCacheItem item( path );
+      SubframeSelectorCacheItem item( path, instance.CacheKey() );
       item.fwhm                  = fwhm;
       item.fwhmMeanDev           = fwhmMeanDev;
       item.eccentricity          = eccentricity;
@@ -119,7 +119,6 @@ void MeasureData::AddToCache( const SubframeSelectorInstance& instance ) const
       item.starResidualMeanDev   = starResidualMeanDev;
       item.azimuth               = azimuth;
       item.altitude              = altitude;
-      item.instanceParameters    = instance.EncodedCacheSensitiveParameters();
       TheSubframeSelectorCache->Add( item );
    }
 }
@@ -133,7 +132,7 @@ bool MeasureData::GetFromCache( const SubframeSelectorInstance& instance )
    if ( TheSubframeSelectorCache != nullptr )
    {
       SubframeSelectorCacheItem item;
-      if ( TheSubframeSelectorCache->Get( item, path ) )
+      if ( TheSubframeSelectorCache->Get( item, path, instance.CacheKey() ) )
       {
          fwhm                  = item.fwhm;
          fwhmMeanDev           = item.fwhmMeanDev;
@@ -161,7 +160,7 @@ bool MeasureData::GetFromCache( const SubframeSelectorInstance& instance )
          azimuth               = item.azimuth;
          altitude              = item.altitude;
 
-         return item.instanceParameters == instance.EncodedCacheSensitiveParameters();
+         return true;
       }
    }
 
@@ -516,4 +515,4 @@ void MeasureUtils::MeasureProperties( const MeasureItemList& measures, double su
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorMeasureData.cpp - Released 2023-08-10T11:44:14Z
+// EOF SubframeSelectorMeasureData.cpp - Released 2023-08-28T15:23:41Z
