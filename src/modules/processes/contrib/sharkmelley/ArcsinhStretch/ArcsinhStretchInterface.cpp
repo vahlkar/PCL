@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.7
+// /_/     \____//_____/   PCL 2.5.8
 // ----------------------------------------------------------------------------
 // Standard ArcsinhStretch Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// ArcsinhStretchInterface.cpp - Released 2023-08-10T11:44:14Z
+// ArcsinhStretchInterface.cpp - Released 2023-08-28T15:23:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ArcsinhStretch PixInsight module.
 //
@@ -553,4 +553,4 @@ ArcsinhStretchInterface::GUIData::GUIData( ArcsinhStretchInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ArcsinhStretchInterface.cpp - Released 2023-08-10T11:44:14Z
+// EOF ArcsinhStretchInterface.cpp - Released 2023-08-28T15:23:41Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.7
+// /_/     \____//_____/   PCL 2.5.8
 // ----------------------------------------------------------------------------
-// pcl/UnixSignalException.h - Released 2023-08-10T11:43:48Z
+// pcl/UnixSignalException.h - Released 2023-08-28T15:23:15Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -237,4 +237,4 @@ DECLARE_UNIX_SIGNAL_EXCEPTION( EUnixIBrokenPipeException, SIGPIPE,
 #endif   // __PCL_UnixSignalException_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/UnixSignalException.h - Released 2023-08-10T11:43:48Z
+// EOF pcl/UnixSignalException.h - Released 2023-08-28T15:23:15Z

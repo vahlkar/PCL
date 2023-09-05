@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.7
+// /_/     \____//_____/   PCL 2.5.8
 // ----------------------------------------------------------------------------
-// pcl/RGBColorSystem.cpp - Released 2023-08-10T11:43:55Z
+// pcl/RGBColorSystem.cpp - Released 2023-08-28T15:23:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -470,4 +470,4 @@ void RGBColorSystem::Data::Initialize()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/RGBColorSystem.cpp - Released 2023-08-10T11:43:55Z
+// EOF pcl/RGBColorSystem.cpp - Released 2023-08-28T15:23:22Z

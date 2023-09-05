@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.7
+// /_/     \____//_____/   PCL 2.5.8
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.8.6
+// Standard SubframeSelector Process Module Version 1.8.8
 // ----------------------------------------------------------------------------
-// SubframeSelectorInterface.cpp - Released 2023-08-10T11:44:14Z
+// SubframeSelectorInterface.cpp - Released 2023-08-28T15:23:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -142,9 +142,12 @@ InterfaceFeatures SubframeSelectorInterface::Features() const
 void SubframeSelectorInterface::EditPreferences()
 {
    if ( TheSubframeSelectorCache == nullptr )
-      new SubframeSelectorCache; // loads upon construction
-   FileDataCachePreferencesDialog dlg( TheSubframeSelectorCache );
-   dlg.Execute();
+      new SubframeSelectorCache;
+
+   bool persistent = TheSubframeSelectorCache->IsPersistent();
+   FileDataCachePreferencesDialog dlg( *TheSubframeSelectorCache, persistent );
+   if ( dlg.Execute() == StdDialogCode::Ok )
+      TheSubframeSelectorCache->SetPersistent( persistent );
 }
 
 // ----------------------------------------------------------------------------
@@ -2002,4 +2005,4 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInterface.cpp - Released 2023-08-10T11:44:14Z
+// EOF SubframeSelectorInterface.cpp - Released 2023-08-28T15:23:41Z

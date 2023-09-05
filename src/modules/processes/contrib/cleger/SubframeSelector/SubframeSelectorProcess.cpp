@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.7
+// /_/     \____//_____/   PCL 2.5.8
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.8.6
+// Standard SubframeSelector Process Module Version 1.8.8
 // ----------------------------------------------------------------------------
-// SubframeSelectorProcess.cpp - Released 2023-08-10T11:44:14Z
+// SubframeSelectorProcess.cpp - Released 2023-08-28T15:23:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -243,4 +243,4 @@ ProcessImplementation* SubframeSelectorProcess::Clone( const ProcessImplementati
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorProcess.cpp - Released 2023-08-10T11:44:14Z
+// EOF SubframeSelectorProcess.cpp - Released 2023-08-28T15:23:41Z

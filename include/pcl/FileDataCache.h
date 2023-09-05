@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.7
+// /_/     \____//_____/   PCL 2.5.8
 // ----------------------------------------------------------------------------
-// pcl/FileDataCache.h - Released 2023-08-10T11:43:48Z
+// pcl/FileDataCache.h - Released 2023-08-28T15:23:15Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -74,12 +74,18 @@ namespace pcl
  * This class represents a file in a FileDataCache object. This is a basic
  * cache item structure to transport a file's full path, known time of last
  * modification, and the time of last cache access.
+ *
+ * Reimplementing this class is normally necessary to store additional data
+ * associated with cached files.
+ *
+ * \sa FileDataCache
  */
 class PCL_CLASS FileDataCacheItem
 {
 public:
 
    String    path;     //!< Full path to the file represented by this item.
+   IsoString key;      //!< Cache key. Allows different cache entries for the same file.
    TimePoint time;     //!< Cached file time.
    TimePoint lastUsed; //!< Time this cache item was last used.
 
@@ -96,6 +102,7 @@ public:
    void Assign( const FileDataCacheItem& item )
    {
       path     = item.path;
+      key      = item.key;
       time     = item.time;
       lastUsed = item.lastUsed;
    }
@@ -115,7 +122,9 @@ public:
     */
    bool operator <( const FileDataCacheItem& item ) const
    {
-      return path < item.path;
+      if ( path != item.path )
+         return path < item.path;
+      return key < item.key;
    }
 
    /*!
@@ -145,48 +154,48 @@ public:
 protected:
 
    /*!
-    * Assigns additional data stored in another file cache item.
+    * Assigns additional data stored in another file cache \a item.
     *
     * The default implementation does nothing. This virtual member function
-    * should be reimplemented by derived classes to ensure persistence of
-    * reimplementation-specific data.
+    * should be reimplemented by derived classes, when necessary, to ensure
+    * persistence of reimplementation-specific data.
     */
-   virtual void AssignData( const FileDataCacheItem& )
+   virtual void AssignData( const FileDataCacheItem& item )
    {
    }
 
    /*!
-    * Returns a string representation of additional data stored in this cache
-    * item.
+    * Returns an ordered list of UTF-8 strings representing the additional data
+    * stored in this cache item.
     *
-    * The default implementation returns an empty string. This virtual member
-    * function should be reimplemented by derived classes to allow access to
-    * reimplementation-specific data.
+    * The default implementation returns an empty string list. This virtual
+    * member function should be reimplemented by derived classes when necessary
+    * to allow this root base class to access reimplementation-specific data.
     */
-   virtual String DataToString() const
+   virtual IsoStringList SerializedData() const
    {
-      return String();
+      return IsoStringList();
    }
 
    /*!
-    * Retrieves additional data from a list of string tokens. Returns true iff
-    * the data were successfully retrieved.
+    * Retrieves additional data from an ordered list of UTF-8 string \a tokens.
+    * Returns true iff the data were successfully retrieved.
     *
     * The default implementation returns true. This virtual member function
-    * should be reimplemented by derived classes for retrieval of
-    * reimplementation-specific data.
+    * should be reimplemented by derived classes when necessary for retrieval
+    * of reimplementation-specific data.
     */
-   virtual bool GetDataFromTokens( const StringList& )
+   virtual bool DeserializeData( const IsoStringList& tokens )
    {
       return true;
    }
 
    /*!
-    * Returns true iff the additional data stored in this cache item are valid.
+    * Returns true iff the additional data stored in this cache item is valid.
     *
     * The default implementation returns true. This virtual member function
-    * should be reimplemented by derived classes for validation of
-    * reimplementation-specific data.
+    * should be reimplemented by derived classes, when necessary, for the
+    * validation of reimplementation-specific data.
     */
    virtual bool ValidateData() const
    {
@@ -194,78 +203,67 @@ protected:
    }
 
    /*!
-    * Returns a string serialization of a floating-point vector. The returned
-    * string can be deserialized with the GetVector() static member function.
+    * Returns a string list serialization of a floating-point \a vector.
     */
-   static String VectorToString( const DVector& );
+   static IsoStringList SerializedVector( const DVector& vector );
 
    /*!
-    * Deserializes a floating-point vector from the specified list of
-    * \a tokens, parsing the necessary tokens starting from the specified
-    * \a start iterator.
-    */
-   static bool GetVector( DVector&, StringList::const_iterator& start, const StringList& tokens );
-
-   /*!
-    * Returns a string serialization of a floating-point matrix. The returned
-    * string can be deserialized with the GetMatrix() static member function.
-    */
-   static String MatrixToString( const DMatrix& );
-
-   /*!
-    * Deserializes a floating-point matrix from the specified list of
-    * \a tokens, parsing the necessary tokens starting from the specified
-    * \a start iterator.
-    */
-   static bool GetMatrix( DMatrix&, StringList::const_iterator& start, const StringList& tokens );
-
-   /*!
-    * Returns a string serialization of a floating-point multivector. The
-    * returned string can be deserialized with the GetMultiVector() static
-    * member function.
-    */
-   static String MultiVectorToString( const DMultiVector& );
-
-   /*!
-    * Deserializes a floating-point vector from the specified list of
-    * \a tokens, parsing the necessary tokens starting from the specified
-    * \a start iterator.
-    */
-   static bool GetMultiVector( DMultiVector&, StringList::const_iterator& start, const StringList& tokens );
-
-   /*!
-    * Returns a string serialization of an array of floating-point matrices.
-    * The returned string can be deserialized with the GetMatrices() static
-    * member function.
-    */
-   static String MatricesToString( const Array<DMatrix>& );
-
-   /*!
-    * Deserializes an array of floating-point matrices from the specified list
+    * Deserializes a floating-point \a vector from the specified ordered list
     * of \a tokens, parsing the necessary tokens starting from the specified
     * \a start iterator.
     */
-   static bool GetMatrices( Array<DMatrix>&, StringList::const_iterator& start, const StringList& tokens );
+   static bool DeserializeVector( DVector& vector, IsoStringList::const_iterator& start, const IsoStringList& tokens );
 
-   /*
-    * Special constructor used for cache search operations.
+   /*!
+    * Returns a string list serialization of a floating-point \a matrix.
     */
-   FileDataCacheItem( const String& p = String() ) : path( p )
-   {
-   }
+   static IsoStringList SerializedMatrix( const DMatrix& matrix );
 
-   /*
+   /*!
+    * Deserializes a floating-point \a matrix from the specified ordered list
+    * of \a tokens, parsing the necessary tokens starting from the specified
+    * \a start iterator.
+    */
+   static bool DeserializeMatrix( DMatrix& matrix, IsoStringList::const_iterator& start, const IsoStringList& tokens );
+
+   /*!
+    * Returns a string list serialization of a floating-point \a multivector.
+    */
+   static IsoStringList SerializedMultiVector( const DMultiVector& multivector );
+
+   /*!
+    * Deserializes a floating-point \a multivector from the specified ordered
+    * list of \a tokens, parsing the necessary tokens starting from the
+    * specified \a start iterator.
+    */
+   static bool DeserializeMultiVector( DMultiVector& multivector, IsoStringList::const_iterator& start, const IsoStringList& tokens );
+
+   /*!
+    * Returns a string list serialization of an array of floating-point \a matrices.
+    */
+   static IsoStringList SerializedMatrices( const Array<DMatrix>& matrices );
+
+   /*!
+    * Deserializes an array of floating-point \a matrices from the specified
+    * ordered list of \a tokens, parsing the necessary tokens starting from the
+    * specified \a start iterator.
+    */
+   static bool DeserializeMatrices( Array<DMatrix>& matrices, IsoStringList::const_iterator& start, const IsoStringList& tokens );
+
+   /*!
     * Copy constructor.
     */
    FileDataCacheItem( const FileDataCacheItem& ) = default;
 
-private:
-
-   String ToString() const;
-   bool FromString( const String& s );
-
-   bool Load( const IsoString& keyPrefix, int index );
-   void Save( const IsoString& keyPrefix, int index ) const;
+   /*!
+    * \internal
+    * Special constructor used for cache search operations.
+    */
+   FileDataCacheItem( const String& p = String(), const IsoString& k = IsoString() )
+      : path( p )
+      , key( k )
+   {
+   }
 
    friend class FileDataCache;
 };
@@ -276,44 +274,55 @@ private:
  * \class FileDataCache
  * \brief Abstract base class of file data cache implementations.
  *
- * This class provides the necessary infrastructure to implement a file cache
- * with persistent storage in module settings data. The main cache access
- * functions provided by this class (to add, get and find cache items, as well
- * as to clear the cache and query cache properties) are implemented as
- * thread-safe routines. This supports applications performing parallel disk
- * I/O operations.
+ * This class provides the necessary infrastructure to implement a specialized
+ * file cache with persistent storage in special cache files.
+ *
+ * The main cache access functions provided by this class to add, get and find
+ * cache items, as well as to clear the cache and query cache properties, are
+ * implemented as thread-safe routines. This supports applications performing
+ * parallel disk I/O operations and multiple application instances running
+ * concurrently, with separate per-instance cache data files.
+ *
+ * Cache files are generated and managed transparently on platform-dependent
+ * configuration directories.
  *
  * You'll find examples of use for this class in standard PixInsight modules
  * such as ImageIntegration and SubframeSelector.
  *
- * \sa FileDataCacheItem, Settings
+ * \sa FileDataCacheItem
  */
 class PCL_CLASS FileDataCache
 {
 public:
 
    /*!
-    * Constructs a new file data cache with the specified settings \a key and
-    * maximum cache item duration in \a days.
+    * Constructs a new file data cache structure.
     *
-    * The specified \a key will be used to store all cache data structures
-    * associated with this object persistently in module settings data. See the
-    * Settings class for more information on module settings and settings keys.
+    * \param identifier A valid identifier (see IsoString::IsValidIdentifier())
+    *                   that will be used to construct the unique name of a
+    *                   special cache data file where all cache data structures
+    *                   associated with this object will be stored persistently
+    *                   for the running core application instance.
     *
-    * \warning If the specified number of \a days is &le; 0, existing cache
-    * items will never expire. This is <em>not recommended</em> and can cause
-    * problems by increasing the size of stored core application settings
-    * indiscriminately. In general, the default maximum duration of 30 days is
-    * quite appropriate for most applications.
+    * \param maxItemDuration  The maximum duration in days for valid cache
+    *                   items. The supported range is from zero (meaning that
+    *                   cache items never expire) to 120 days. The default
+    *                   value is 30 days.
+    *
+    * \warning If the specified value of \a maxItemDuration is &le; 0, existing
+    * cache items will never expire. This is <em>not recommended</em> and can
+    * cause problems by increasing the size of cache files indiscriminately. In
+    * general, the default maximum duration of 30 days is quite appropriate for
+    * most applications.
     */
-   FileDataCache( const IsoString& key, int days = 30 );
+   FileDataCache( const IsoString& identifier, int maxItemDuration = 30 );
 
    /*!
     * Virtual destructor.
     *
     * Destroys and deallocates all file data cache items and internal
     * structures associated with this object. Note that this refers to data
-    * currently stored in memory, not to persistent storage in module settings.
+    * currently stored in memory, not to persistent storage in a cache file.
     * To destroy data stored persistently, the Purge() member function must be
     * called explicitly.
     */
@@ -325,7 +334,7 @@ public:
    /*!
     * Returns an identifying name for this cache object. The default
     * implementation returns "File Cache". Derived classes should reimplement
-    * this function to return more specific identifiers.
+    * this function to return more specific names.
     */
    virtual String CacheName() const
    {
@@ -346,10 +355,10 @@ public:
     * Returns the minimum supported cache version. The default implementation
     * returns 1.
     *
-    * No items will be loaded from existing module settings data if their
-    * version is either less than the value returned by this function, or
-    * greater than the current cache version. This allows for a basic version
-    * control system with a range of valid cache versions.
+    * Items with a version that is either less than the value returned by this
+    * function or greater than the current cache version will not be loaded
+    * from existing cache files. This allows for a basic version control system
+    * with a range of valid cache versions.
     *
     * \sa Version()
     */
@@ -359,67 +368,113 @@ public:
    }
 
    /*!
-    * Returns true iff this cache is currently enabled. A disabled cache does
-    * not load existing cache items when the Load() member function is invoked.
-    */
-   bool IsEnabled() const
-   {
-      return m_enabled;
-   }
-
-   /*!
-    * Enables this file data cache.
-    *
-    * Note that enabling a cache does not force a reload of existing cache
-    * items; the Load() member function must be called to perform that action.
-    * In the same way, disabling a cache does not remove any cache item,
-    * neither from existing internal data structures, nor from persistent
-    * settings storage.
-    */
-   void Enable( bool enable )
-   {
-      m_enabled = enable;
-   }
-
-   /*!
     * Returns the maximum duration in days of a valid cache item.
     *
-    * Existing cache items that have not been accessed during a period larger
+    * Existing cache items that have not been accessed during a period longer
     * than the value returned by this function will not be loaded from
-    * persistent settings data.
+    * persistent data.
     *
-    * \sa SetDuration(), NeverExpires()
+    * \sa SetMaxItemDuration(), ItemsNeverExpire()
     */
-   int Duration() const
+   int MaxItemDuration() const
    {
-      return m_durationDays;
+      return m_maxItemDuration;
    }
 
    /*!
-    * Sets a new maximum duration in days for valid cache items.
+    * Sets the maximum duration in days for valid cache items. The supported
+    * range is from zero (meaning that cache items never expire) to 120 days.
     *
     * \warning If the specified number of \a days is &le; 0, existing cache
     * items will never expire. This is <em>not recommended</em> and can cause
-    * problems by increasing the size of stored core application settings
-    * indiscriminately. In general, the default maximum duration of 30 days is
-    * quite appropriate for most applications.
+    * problems by increasing the size of cache files indiscriminately. In
+    * general, the default maximum duration of 30 days is quite appropriate for
+    * most applications.
     *
-    * \sa Duration(), NeverExpires()
+    * \sa MaxItemDuration(), ItemsNeverExpire()
     */
-   void SetDuration( int days )
+   virtual void SetMaxItemDuration( int days )
    {
-      m_durationDays = Max( 0, days );
+      m_maxItemDuration = Range( days, 0, 120 );
    }
 
    /*!
     * Returns true iff existing cache items associated with this object will
-    * never expire.
+    * never expire. This is achieved when the maximum item duration has been
+    * set to a value &le; 0.
     *
-    * \sa Duration(), SetDuration()
+    * \sa MaxItemDuration(), SetMaxItemDuration()
     */
-   bool NeverExpires() const
+   bool ItemsNeverExpire() const
    {
-      return m_durationDays <= 0;
+      return m_maxItemDuration <= 0;
+   }
+
+   /*!
+    * Returns the token separator used by this cache file.
+    *
+    * Reimplementation-specific cache item data is serialized as ordered lists
+    * of string tokens in XML cache files. This member function returns an
+    * UTF-8 string (usually consisting of a single character) used to separate
+    * adjacent tokens in these data serializations.
+    *
+    * The default token separator is a newline character.
+    *
+    * \sa SetTokenSeparator()
+    */
+   IsoString TokenSeparator() const
+   {
+      return m_separator;
+   }
+
+   /*!
+    * Sets the token separator for this cache file.
+    *
+    * The specified \a separator UTF-8 string will be used to separate items in
+    * cache item data serialized as ordered lists of string tokens. If an empty
+    * string is specified, the default token separator (a single newline
+    * character) will be used.
+    *
+    * \sa TokenSeparator()
+    */
+   void SetTokenSeparator( const IsoString& separator )
+   {
+      m_separator = separator.IsEmpty() ? IsoString( '\n' ) : separator;
+   }
+
+   /*!
+    * Returns true if data compression is enabled for serializations of cache
+    * item data performed with this object.
+    *
+    * Data compression is enabled by default for newly constructed
+    * %FileDataCache objects. Currently the Zstandard compression codec is
+    * applied for serialization of cache item data.
+    *
+    * \sa EnableCompression(), DisableCompression()
+    */
+   bool IsCompressionEnabled() const
+   {
+      return m_compressionEnabled;
+   }
+
+   /*!
+    * Enables compression of serialized cache item data.
+    *
+    * \sa IsCompressionEnabled(), DisableCompression()
+    */
+   void EnableCompression( bool enable = true )
+   {
+      m_compressionEnabled = enable;
+   }
+
+   /*!
+    * Disables compression of serialized cache item data.
+    *
+    * \sa IsCompressionEnabled(), EnableCompression()
+    */
+   void DisableCompression( bool disable = true )
+   {
+      EnableCompression( !disable );
    }
 
    /*!
@@ -427,8 +482,8 @@ public:
     *
     * The returned value corresponds to the number of cache items currently
     * stored in internal data structures. This includes cache items loaded from
-    * existing module settings data as well as items newly created and possibly
-    * still not copied to persistent storage.
+    * existing cache files as well as items newly created and possibly still
+    * not copied to persistent storage.
     *
     * \note This function is thread-safe.
     */
@@ -438,30 +493,39 @@ public:
     * Returns true iff this cache is empty, i.e. if there are no cache items
     * associated with this object.
     *
-    * The returned value is the number of items currently stored in internal
+    * The returned value corresponds to the items currently stored in internal
     * memory data structures. This does not necessarily equals the total number
-    * of items currently stored in persistent module settings.
+    * of items currently stored in persistent cache files.
     *
     * \note This function is thread-safe.
     */
    bool IsEmpty() const;
 
    /*!
+    * Returns the current size in bytes of the cache file generated by this
+    * object. Returns zero if no cache file has been generated yet.
+    */
+   fsize_type FileSize() const;
+
+   /*!
     * Returns the address of a file cache item corresponding to the specified
-    * file \a path, or nullptr if no such cache item could be found.
+    * file \a path and \a key, or nullptr if no such cache item could befound.
+    *
+    * This function does not modify the cache or the time of last access of the
+    * item found.
     *
     * \note This function is thread-safe.
     *
     * \sa Get()
     */
-   const FileDataCacheItem* Find( const String& path ) const;
+   const FileDataCacheItem* Find( const String& path, const IsoString& key = IsoString() ) const;
 
    /*!
     * Destroys and removes all cache items currently associated with this
     * object.
     *
     * Only items stored in internal memory data structures are removed by this
-    * function. Persistent storage in module settings data is not altered.
+    * function. Persistent storage is not altered.
     *
     * \note This function is thread-safe.
     */
@@ -471,8 +535,8 @@ public:
     * Adds the specified \a item to this cache.
     *
     * The item will be stored in internal memory data structures, \e not in
-    * persistent module settings data. To store cache items persistently, the
-    * Save() member function must be called for this object.
+    * persistent cache files. To store cache items persistently, the Save()
+    * member function must be called for this object.
     *
     * \note This function is thread-safe.
     */
@@ -480,36 +544,73 @@ public:
 
    /*!
     * Retrieves a copy of the existing cache data corresponding to the
-    * specified file \a path in the specified \a item.
+    * specified file \a path and \a key in the specified \a item.
     *
-    * Returns true iff a cache item for the specified \a path was found in
-    * internal memory data structures, and its data were copied. If false is
-    * returned, the specified \a item will not be modified in any way.
+    * Returns true iff a cache item for the specified \a path was found with
+    * the specified \a key in internal memory data structures, and its data
+    * were copied. If false is returned, the specified \a item will not be
+    * modified in any way.
     *
     * \note This function is thread-safe.
     *
     * \sa Find()
     */
-   bool Get( FileDataCacheItem& item, const String& path );
+   bool Get( FileDataCacheItem& item, const String& path, const IsoString& key = IsoString() );
 
    /*!
-    * Loads existing cache items from persistent module settings data.
+    * Returns the number of cache modifications performed since the last cache
+    * file load operation.
+    *
+    * Cache modifications happen each time a new cache item is added or an
+    * existing cache item is accessed. The modification count is reset to zero
+    * when the cache is cleared, when a cache file is loaded, and when the
+    * cache is saved to a disk file.
+    *
+    * \sa IsModified()
+    */
+   int ModifiedCount() const
+   {
+      return m_modifiedCount;
+   }
+
+   /*!
+    * Returns true iff this cache object has been modified.
+    *
+    * \sa ModifiedCount()
+    */
+   bool IsModified() const
+   {
+      return m_modifiedCount > 0;
+   }
+
+   /*!
+    * Loads existing valid cache items from persistent storage.
     *
     * All previously existing cache items stored in internal memory structures
     * will be destroyed and deallocated before loading new data.
+    *
+    * \note Overriding implementations of this function must call the base
+    * class implementation.
     */
    virtual void Load();
 
    /*!
-    * Writes all cache items associated with this object to persistent module
-    * settings data.
+    * Writes all cache items associated with this object to persistent cache
+    * file storage.
+    *
+    * \note Overriding implementations of this function must call the base
+    * class implementation.
     */
    virtual void Save() const;
 
    /*!
     * Destroys and deallocates all existing cache items, including all items
     * currently in internal memory data structures as well as all items stored
-    * in persistent module settings data.
+    * in persistent storage. This yields an empty cache file associated with
+    * this object.
+    *
+    * \note Overriding implementations of this function must call the base
+    * class implementation.
     */
    virtual void Purge() const;
 
@@ -524,7 +625,7 @@ protected:
     *
     * This is a pure virtual member function that must be reimplemented by all
     * derived classes. This is because the data transported by a cache item is
-    * application-specific and cannot be known in advance by this class.
+    * application-specific and cannot be known in advance by this base class.
     */
    virtual FileDataCacheItem* NewItem() const = 0;
 
@@ -534,9 +635,12 @@ private:
 
    mutable Mutex       m_mutex;
            cache_index m_cache;
-           IsoString   m_keyPrefix;
-           int         m_durationDays = 30; // <= 0 -> never expires
-           bool        m_enabled = true;
+           IsoString   m_identifier;
+           String      m_filePath;
+           IsoString   m_separator = '\n';
+           int         m_maxItemDuration = 30; // in days
+           bool        m_compressionEnabled = true;
+   mutable int         m_modifiedCount = 0;
 };
 
 // ----------------------------------------------------------------------------
@@ -546,4 +650,4 @@ private:
 #endif   // __PCL_FileDataCache_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FileDataCache.h - Released 2023-08-10T11:43:48Z
+// EOF pcl/FileDataCache.h - Released 2023-08-28T15:23:15Z

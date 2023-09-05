@@ -2,7 +2,7 @@
 # PixInsight Makefile Generator Script v1.129
 # Copyright (C) 2009-2023 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2023-08-10T14:43:51.022Z
+# Generated on .... 2023-08-28T15:27:46.642Z
 # Project id ...... ArcsinhStretch
 # Project type .... Module
 # Platform ........ MacOSX/g++

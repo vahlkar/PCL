@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.7
+// /_/     \____//_____/   PCL 2.5.8
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// GrayscaleRGBProcesses.cpp - Released 2023-08-10T11:44:14Z
+// GrayscaleRGBProcesses.cpp - Released 2023-08-28T15:23:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -204,4 +204,4 @@ bool ConvertToRGBColorProcess::IsAssignable() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GrayscaleRGBProcesses.cpp - Released 2023-08-10T11:44:14Z
+// EOF GrayscaleRGBProcesses.cpp - Released 2023-08-28T15:23:41Z

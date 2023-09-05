@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.7
+// /_/     \____//_____/   PCL 2.5.8
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.5.1
+// Standard ImageIntegration Process Module Version 1.5.2
 // ----------------------------------------------------------------------------
-// ImageIntegrationModule.cpp - Released 2023-08-10T11:44:14Z
+// ImageIntegrationModule.cpp - Released 2023-08-28T15:23:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -52,13 +52,13 @@
 
 #define MODULE_VERSION_MAJOR     1
 #define MODULE_VERSION_MINOR     5
-#define MODULE_VERSION_REVISION  1
+#define MODULE_VERSION_REVISION  2
 #define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2023
 #define MODULE_RELEASE_MONTH     8
-#define MODULE_RELEASE_DAY       10
+#define MODULE_RELEASE_DAY       28
 
 #include "DrizzleIntegrationInstance.h"
 #include "DrizzleIntegrationInterface.h"
@@ -179,7 +179,9 @@ void ImageIntegrationModule::GetReleaseDate( int& year, int& month, int& day ) c
 void ImageIntegrationModule::OnUnload()
 {
    if ( TheIntegrationCache != nullptr )
-      TheIntegrationCache->Save();
+      if ( TheIntegrationCache->IsPersistent() )
+         if ( TheIntegrationCache->IsModified() )
+            TheIntegrationCache->Save();
 }
 
 // ----------------------------------------------------------------------------
@@ -206,4 +208,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationModule.cpp - Released 2023-08-10T11:44:14Z
+// EOF ImageIntegrationModule.cpp - Released 2023-08-28T15:23:41Z

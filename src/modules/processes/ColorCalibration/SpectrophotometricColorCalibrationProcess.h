@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.7
+// /_/     \____//_____/   PCL 2.5.8
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// SpectrophotometricColorCalibrationProcess.h - Released 2023-08-10T11:44:14Z
+// SpectrophotometricColorCalibrationProcess.h - Released 2023-08-28T15:23:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -140,4 +140,4 @@ PCL_END_LOCAL
 #endif   // __SpectrophotometricColorCalibrationProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF SpectrophotometricColorCalibrationProcess.h - Released 2023-08-10T11:44:14Z
+// EOF SpectrophotometricColorCalibrationProcess.h - Released 2023-08-28T15:23:41Z

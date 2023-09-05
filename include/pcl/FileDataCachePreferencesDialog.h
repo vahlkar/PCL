@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.7
+// /_/     \____//_____/   PCL 2.5.8
 // ----------------------------------------------------------------------------
-// pcl/FileDataCachePreferencesDialog.h - Released 2023-08-10T11:43:48Z
+// pcl/FileDataCachePreferencesDialog.h - Released 2023-08-28T15:23:15Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -74,23 +74,31 @@ class PCL_CLASS FileDataCache;
  *
  * This dialog allows to define persistence and maximum duration for file data
  * cache items associated with a given FileDataCache instance. The dialog also
- * allows to clear all cache items in memory and/or persistent storage.
+ * allows to save and clear all cache items in memory and persistent storage.
  */
 class PCL_CLASS FileDataCachePreferencesDialog : public Dialog
 {
 public:
 
    /*!
-    * Constructs a new dialog to edit preferences settings for the specified
-    * \a cache object.
+    * Constructs a dialog to edit preferences settings for a file data cache.
+    *
+    * \param cache         Reference to a file data cache object that will be
+    *                      managed by this cache preferences dialog.
+    *
+    * \param persistent    Reference to a variable storing a cache persistence
+    *                      state. Persistent caches should be written to
+    *                      permanent storage. Non-persistent caches are only
+    *                      kept in volatile memory. This variable will be
+    *                      updated with the user selection if the dialog is
+    *                      accepted.
     */
-   FileDataCachePreferencesDialog( FileDataCache* cache );
+   FileDataCachePreferencesDialog( FileDataCache& cache, bool& persistent );
 
 private:
 
-   FileDataCache* m_cache;
-   bool           m_cacheEnabled;
-   int            m_cacheDuration;
+   FileDataCache& m_cache;
+   bool&          m_persistent;
 
    VerticalSizer  Global_Sizer;
       HorizontalSizer   PersistentCache_Sizer;
@@ -102,15 +110,17 @@ private:
          PushButton        ClearCache_PushButton;
       HorizontalSizer   PurgeCache_Sizer;
          PushButton        PurgeCache_PushButton;
+      HorizontalSizer   SaveCache_Sizer;
+         PushButton        SaveCache_PushButton;
       HorizontalSizer   Buttons_Sizer;
+         Label             Info_Label;
          PushButton        OK_PushButton;
          PushButton        Cancel_PushButton;
 
-   void Update();
-
-   void e_ValueUpdated( SpinBox& sender, int value );
    void e_Click( Button& sender, bool checked );
    void e_Return( Dialog& sender, int retVal );
+
+   void UpdateInfo();
 };
 
 // ----------------------------------------------------------------------------
@@ -120,4 +130,4 @@ private:
 #endif   // __PCL_FileDataCachePreferencesDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FileDataCachePreferencesDialog.h - Released 2023-08-10T11:43:48Z
+// EOF pcl/FileDataCachePreferencesDialog.h - Released 2023-08-28T15:23:15Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.7
+// /_/     \____//_____/   PCL 2.5.8
 // ----------------------------------------------------------------------------
 // Standard Blink Process Module Version 1.2.4
 // ----------------------------------------------------------------------------
-// BlinkVideoDialog.cpp - Released 2023-08-10T11:44:14Z
+// BlinkVideoDialog.cpp - Released 2023-08-28T15:23:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Blink PixInsight module.
 //
@@ -291,7 +291,7 @@ bool BlinkVideoDialog::TerminateVideoEncoder()
    if ( !m_videoEncoder.IsRunning() )
       return true;
 
-   if ( pcl::MessageBox( "Terminate running video encoder program ?",
+   if ( pcl::MessageBox( "<p>Terminate running video encoder program?</p>",
                          "Blink", StdIcon::Question, StdButton::No, StdButton::Yes ).Execute() == StdButton::No )
       return false;
 
@@ -306,7 +306,7 @@ bool BlinkVideoDialog::TerminateVideoEncoder()
          if ( m_videoEncoder.WaitForFinished( 100 ) )
             return true;
 
-      int r = pcl::MessageBox( "The process is not responding. Do you want to force termination ?",
+      int r = pcl::MessageBox( "<p>The process is not responding. Do you want to force process termination?</p>",
                                "Blink", StdIcon::Question, StdButton::No, StdButton::Yes, StdButton::Cancel ).Execute();
 
       if ( !m_videoEncoder.IsRunning() )
@@ -646,4 +646,4 @@ BlinkVideoDialog::BlinkVideoDialog( BlinkInterface* parent )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BlinkVideoDialog.cpp - Released 2023-08-10T11:44:14Z
+// EOF BlinkVideoDialog.cpp - Released 2023-08-28T15:23:41Z

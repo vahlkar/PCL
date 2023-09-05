@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.7
+// /_/     \____//_____/   PCL 2.5.8
 // ----------------------------------------------------------------------------
-// pcl/MessageBox.h - Released 2023-08-10T11:43:48Z
+// pcl/MessageBox.h - Released 2023-08-28T15:23:15Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -176,7 +176,7 @@ public:
     * Constructs a %MessageBox object.
     *
     * \param text    The text that will be shown on the message box's client
-    *             area. Can be either plain text or include basic html tags
+    *             area. Can be either plain text or include basic HTML tags
     *             like \<br\>, \<p\>\</p\>, \<b\>\</b\>, \<i\>\</i\>,
     *             \<u\>\</u\>, etc.
     *
@@ -334,4 +334,4 @@ private:
 #endif   // __PCL_MessageBox_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MessageBox.h - Released 2023-08-10T11:43:48Z
+// EOF pcl/MessageBox.h - Released 2023-08-28T15:23:15Z

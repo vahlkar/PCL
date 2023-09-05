@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.7
+// /_/     \____//_____/   PCL 2.5.8
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.9.8
 // ----------------------------------------------------------------------------
-// OutputFileData.h - Released 2023-08-10T11:44:14Z
+// OutputFileData.h - Released 2023-08-28T15:23:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -137,4 +137,4 @@ struct OutputFileData
 #endif   // __OutputFileData_h
 
 // ----------------------------------------------------------------------------
-// EOF OutputFileData.h - Released 2023-08-10T11:44:14Z
+// EOF OutputFileData.h - Released 2023-08-28T15:23:41Z

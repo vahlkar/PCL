@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.7
+// /_/     \____//_____/   PCL 2.5.8
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// Function.cpp - Released 2023-08-10T11:44:14Z
+// Function.cpp - Released 2023-08-28T15:23:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -4425,4 +4425,4 @@ ExpressionList InlineSwitchFunction::Optimized() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Function.cpp - Released 2023-08-10T11:44:14Z
+// EOF Function.cpp - Released 2023-08-28T15:23:41Z

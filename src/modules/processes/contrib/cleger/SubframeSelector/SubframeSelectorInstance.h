@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.7
+// /_/     \____//_____/   PCL 2.5.8
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.8.6
+// Standard SubframeSelector Process Module Version 1.8.8
 // ----------------------------------------------------------------------------
-// SubframeSelectorInstance.h - Released 2023-08-10T11:44:14Z
+// SubframeSelectorInstance.h - Released 2023-08-28T15:23:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -88,6 +88,11 @@ public:
    void ApproveMeasurements();
    void WeightMeasurements();
 
+   const IsoString& CacheKey() const
+   {
+      return m_cacheKey;
+   }
+
 private:
 
    struct SubframeItem
@@ -138,7 +143,6 @@ private:
    float              p_brightThreshold;
    float              p_maxDistortion;
    pcl_bool           p_allowClusteredSources;
-   float              p_localMaximaDetectionLimit;
    float              p_upperLimit;
    pcl_enum           p_psfFit;
    pcl_bool           p_psfFitCircular;
@@ -183,6 +187,8 @@ private:
    int                m_maxFileReadThreads = 1;
    int                m_maxFileWriteThreads = 1;
 
+   IsoString          m_cacheKey;
+
    // The set of measured subframes.
    MeasureItemList    o_measures;
 
@@ -196,8 +202,6 @@ private:
    void Output();
 
    void ApplyErrorPolicy();
-
-   IsoString EncodedCacheSensitiveParameters() const;
 
    typedef IndirectArray<SubframeSelectorMeasureThread>  measure_thread_list;
    typedef IndirectArray<SubframeSelectorOutputThread>   output_thread_list;
@@ -218,4 +222,4 @@ private:
 #endif   // __SubframeSelectorInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInstance.h - Released 2023-08-10T11:44:14Z
+// EOF SubframeSelectorInstance.h - Released 2023-08-28T15:23:41Z

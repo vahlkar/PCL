@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.7
+// /_/     \____//_____/   PCL 2.5.8
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.5.1
+// Standard ImageIntegration Process Module Version 1.5.2
 // ----------------------------------------------------------------------------
-// ImageIntegrationInterface.cpp - Released 2023-08-10T11:44:14Z
+// ImageIntegrationInterface.cpp - Released 2023-08-28T15:23:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -176,9 +176,12 @@ InterfaceFeatures ImageIntegrationInterface::Features() const
 void ImageIntegrationInterface::EditPreferences()
 {
    if ( TheIntegrationCache == nullptr )
-      new IntegrationCache; // loads upon construction
-   FileDataCachePreferencesDialog dlg( TheIntegrationCache );
-   dlg.Execute();
+      new IntegrationCache;
+
+   bool persistent = TheIntegrationCache->IsPersistent();
+   FileDataCachePreferencesDialog dlg( *TheIntegrationCache, persistent );
+   if ( dlg.Execute() == StdDialogCode::Ok )
+      TheIntegrationCache->SetPersistent( persistent );
 }
 
 // ----------------------------------------------------------------------------
@@ -2749,4 +2752,4 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationInterface.cpp - Released 2023-08-10T11:44:14Z
+// EOF ImageIntegrationInterface.cpp - Released 2023-08-28T15:23:41Z

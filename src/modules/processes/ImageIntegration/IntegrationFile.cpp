@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.7
+// /_/     \____//_____/   PCL 2.5.8
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.5.1
+// Standard ImageIntegration Process Module Version 1.5.2
 // ----------------------------------------------------------------------------
-// IntegrationFile.cpp - Released 2023-08-10T11:44:14Z
+// IntegrationFile.cpp - Released 2023-08-28T15:23:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -1248,7 +1248,8 @@ void IntegrationFile::AddToCache( const String& path ) const
 
       item.metadata = m_metadata.Serialize();
 
-      TheIntegrationCache->Add( item );
+      if ( TheIntegrationCache != nullptr )
+         TheIntegrationCache->Add( item );
    }
 }
 
@@ -1372,4 +1373,4 @@ void IntegrationFile::OpenFileThread::Run()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationFile.cpp - Released 2023-08-10T11:44:14Z
+// EOF IntegrationFile.cpp - Released 2023-08-28T15:23:41Z

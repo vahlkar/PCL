@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.7
+// /_/     \____//_____/   PCL 2.5.8
 // ----------------------------------------------------------------------------
 // Standard TIFF File Format Module Version 1.0.9
 // ----------------------------------------------------------------------------
-// TIFF.cpp - Released 2023-08-10T11:44:06Z
+// TIFF.cpp - Released 2023-08-28T15:23:33Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard TIFF PixInsight module.
 //
@@ -129,7 +129,16 @@ struct TIFFFileData
    ~TIFFFileData()
    {
       if ( handle != nullptr )
-         ::TIFFClose( (::TIFF*)handle ), handle = nullptr;
+      {
+         try
+         {
+            ::TIFFClose( (::TIFF*)handle );
+         }
+         catch ( ... )
+         {
+         }
+         handle = nullptr;
+      }
    }
 };
 
@@ -1514,12 +1523,22 @@ static void WriteTIFFImage( const GenericImage<P>& image, TIFFWriter& writer,
          }
       }
 
-      ::TIFFClose( fileData->handle ), fileData->handle = nullptr;
+      ::TIFFClose( fileData->handle );
+      fileData->handle = nullptr;
    }
    catch ( ... )
    {
       if ( fileData->handle != nullptr )
-         ::TIFFClose( fileData->handle ), fileData->handle = nullptr;
+      {
+         try
+         {
+            ::TIFFClose( fileData->handle );
+         }
+         catch( ... )
+         {
+         }
+         fileData->handle = nullptr;
+      }
       throw;
    }
 }
@@ -1554,4 +1573,4 @@ void TIFFWriter::WriteImage( const UInt32Image& image )
 }  // pcl
 
 // ----------------------------------------------------------------------------
-// EOF TIFF.cpp - Released 2023-08-10T11:44:06Z
+// EOF TIFF.cpp - Released 2023-08-28T15:23:33Z

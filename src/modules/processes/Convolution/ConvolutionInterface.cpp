@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.7
+// /_/     \____//_____/   PCL 2.5.8
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// ConvolutionInterface.cpp - Released 2023-08-10T11:44:14Z
+// ConvolutionInterface.cpp - Released 2023-08-28T15:23:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -88,7 +88,7 @@ static bool CanAddFilter( const Filter& f )
                       "<p><b>Proceed?</b></p>",
                       "Convolution",
                       StdIcon::Warning,
-                      StdButton::Yes, StdButton::No ).Execute() == StdButton::Yes;
+                      StdButton::No, StdButton::Yes ).Execute() == StdButton::Yes;
 }
 
 static bool CanRemoveFilter( const Filter& f )
@@ -103,7 +103,7 @@ static bool CanRemoveFilter( const Filter& f )
                       "<p><b>Proceed?</b></p>",
                       "Convolution",
                       StdIcon::Warning,
-                      StdButton::Yes, StdButton::No ).Execute() == StdButton::Yes;
+                      StdButton::No, StdButton::Yes ).Execute() == StdButton::Yes;
 }
 
 static bool CanSaveTheLibrary()
@@ -1009,4 +1009,4 @@ ConvolutionInterface::GUIData::GUIData( ConvolutionInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ConvolutionInterface.cpp - Released 2023-08-10T11:44:14Z
+// EOF ConvolutionInterface.cpp - Released 2023-08-28T15:23:41Z

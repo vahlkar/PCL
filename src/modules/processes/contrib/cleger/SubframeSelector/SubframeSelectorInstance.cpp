@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.7
+// /_/     \____//_____/   PCL 2.5.8
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.8.6
+// Standard SubframeSelector Process Module Version 1.8.8
 // ----------------------------------------------------------------------------
-// SubframeSelectorInstance.cpp - Released 2023-08-10T11:44:14Z
+// SubframeSelectorInstance.cpp - Released 2023-08-28T15:23:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -274,6 +274,10 @@ public:
 
          ReadInputData();
          Perform();
+
+         if ( m_instance.p_routine == SSRoutine::MeasureSubframes )
+            if ( m_instance.p_fileCache )
+               m_outputData.AddToCache( m_instance );
 
          m_success = true;
       }
@@ -1008,7 +1012,6 @@ private:
       S.SetMaxDistortion( m_instance.p_maxDistortion );
       S.EnableClusteredSources( m_instance.p_allowClusteredSources );
       S.DisableLocalMaximaDetection( m_instance.p_allowClusteredSources );
-//       S.SetLocalMaximaDetectionLimit( m_instance.p_localMaximaDetectionLimit );
       S.SetUpperLimit( m_instance.p_upperLimit );
 
       StarDetector::star_list stars = S.DetectStars( m_subframe );
@@ -1272,6 +1275,33 @@ void SubframeSelectorInstance::Measure()
       m_maxFileWriteThreads = Max( 1, PixInsightSettings::GlobalInteger( "Process/MaxFileWriteThreads" ) );
 
    /*
+    * Generate a cache key with cache-sensitive parameters.
+    */
+   m_cacheKey = IsoString::ToHex( MD5().Hash(   IsoString().Format( "%.2f", p_trimmingFactor )
+                                             << IsoString( p_structureLayers )
+                                             << IsoString( p_noiseLayers )
+                                             << IsoString( p_hotPixelFilterRadius )
+                                             << IsoString( p_noiseReductionFilterRadius )
+                                             << IsoString( p_minStructureSize )
+                                             << IsoString().Format( "%.4f", p_sensitivity )
+                                             << IsoString().Format( "%.4f", p_peakResponse )
+                                             << IsoString().Format( "%.4f", p_brightThreshold )
+                                             << IsoString().Format( "%.4f", p_maxDistortion )
+                                             << IsoString( bool( p_allowClusteredSources ) )
+                                             << IsoString().Format( "%.4f", p_upperLimit )
+                                             << IsoString( p_psfFit )
+                                             << IsoString( bool( p_psfFitCircular ) )
+                                             << IsoString( p_maxPSFFits )
+                                             << IsoString( p_roi.x0 )
+                                             << IsoString( p_roi.y0 )
+                                             << IsoString( p_roi.x1 )
+                                             << IsoString( p_roi.y1 )
+                                             << IsoString( p_pedestal )
+                                             << IsoString( p_pedestalMode )
+                                             << IsoString( p_pedestalKeyword )
+                                             << IsoString( p_inputHints ) ) );
+
+   /*
     * Allow the user to abort the process.
     */
    Console console;
@@ -1286,13 +1316,15 @@ void SubframeSelectorInstance::Measure()
 
       try
       {
-         TheSubframeSelectorCache->Load();
+         if ( TheSubframeSelectorCache->IsPersistent() )
+         {
+            TheSubframeSelectorCache->Load();
 
-         if ( TheSubframeSelectorCache->IsEnabled() )
             if ( TheSubframeSelectorCache->IsEmpty() )
                console.NoteLn( "<end><cbr><br>* Empty file cache" );
             else
                console.NoteLn( "<end><cbr><br>* Loaded cache: " + String( TheSubframeSelectorCache->NumberOfItems() ) + " item(s)" );
+         }
       }
       catch ( ... )
       {
@@ -1388,8 +1420,6 @@ void SubframeSelectorInstance::Measure()
                         MeasureItem m( (*i)->Index() );
                         m.Input( (*i)->OutputData() );
                         o_measures << m;
-                        if ( p_fileCache )
-                           (*i)->OutputData().AddToCache( *this );
                      }
                      else
                         errorInfo = (*i)->ErrorInfo();
@@ -1478,8 +1508,6 @@ void SubframeSelectorInstance::Measure()
             MeasureItem m( itemIndex );
             m.Input( thread.OutputData() );
             o_measures << m;
-            if ( p_fileCache )
-               thread.OutputData().AddToCache( *this );
             ++succeeded;
          }
          catch ( ProcessAborted& )
@@ -1525,6 +1553,8 @@ void SubframeSelectorInstance::Measure()
          TheSubframeSelectorInterface->ShowExpressionsInterface();
          TheSubframeSelectorInterface->ShowMeasurementsInterface();
       }
+
+   m_cacheKey.Clear();
 }
 
 // ----------------------------------------------------------------------------
@@ -2289,33 +2319,6 @@ void SubframeSelectorInstance::ApplyErrorPolicy()
 
 // ----------------------------------------------------------------------------
 
-IsoString SubframeSelectorInstance::EncodedCacheSensitiveParameters() const
-{
-   return IsoString::ToHex( MD5().Hash(      String().Format( "%.2f", p_trimmingFactor )
-                                          << String( p_structureLayers )
-                                          << String( p_noiseLayers )
-                                          << String( p_hotPixelFilterRadius )
-                                          << String( p_noiseReductionFilterRadius )
-                                          << String( p_minStructureSize )
-                                          << String().Format( "%.4f", p_sensitivity )
-                                          << String().Format( "%.4f", p_peakResponse )
-                                          << String().Format( "%.4f", p_brightThreshold )
-                                          << String().Format( "%.4f", p_maxDistortion )
-                                          << String( bool( p_allowClusteredSources ) )
-                                          << String().Format( "%.4f", p_localMaximaDetectionLimit )
-                                          << String().Format( "%.4f", p_upperLimit )
-                                          << String( p_psfFit )
-                                          << String( bool( p_psfFitCircular ) )
-                                          << String( p_maxPSFFits )
-                                          << String().Format( "%d%d%d%d", p_roi.x0, p_roi.y0, p_roi.x1, p_roi.y1 )
-                                          << String( p_pedestal )
-                                          << String( p_pedestalMode )
-                                          << p_pedestalKeyword
-                                          << String( p_inputHints ) ) );
-}
-
-// ----------------------------------------------------------------------------
-
 bool SubframeSelectorInstance::CanExecuteGlobal( String &whyNot ) const
 {
    switch ( p_routine )
@@ -2739,4 +2742,4 @@ size_type SubframeSelectorInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInstance.cpp - Released 2023-08-10T11:44:14Z
+// EOF SubframeSelectorInstance.cpp - Released 2023-08-28T15:23:41Z
