@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.8
+// /_/     \____//_____/   PCL 2.6.0
 // ----------------------------------------------------------------------------
-// pcl/ScrollBox.cpp - Released 2023-08-28T15:23:22Z
+// pcl/ScrollBox.cpp - Released 2023-09-15T14:49:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -347,4 +347,4 @@ void ScrollBox::OnVerticalScrollRangeUpdated( range_event_handler f, Control& re
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ScrollBox.cpp - Released 2023-08-28T15:23:22Z
+// EOF pcl/ScrollBox.cpp - Released 2023-09-15T14:49:17Z

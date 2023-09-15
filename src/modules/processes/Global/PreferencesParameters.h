@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.8
+// /_/     \____//_____/   PCL 2.6.0
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.4.2
+// Standard Global Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// PreferencesParameters.h - Released 2023-08-28T15:23:41Z
+// PreferencesParameters.h - Released 2023-09-14T17:02:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -243,6 +243,11 @@ DECLARE_STRING_METAPARAMETER  ( Application, lowResFont,                        
 DECLARE_STRING_METAPARAMETER  ( Application, highResFont,                         "DejaVu Sans" )
 DECLARE_STRING_METAPARAMETER  ( Application, lowResMonoFont,                      "Hack" )
 DECLARE_STRING_METAPARAMETER  ( Application, highResMonoFont,                     "Hack" )
+DECLARE_INT32_METAPARAMETER   ( Application, messageBoxYesNoButtonOrder,          0, 0, 2 )
+DECLARE_INT32_METAPARAMETER   ( Application, messageBoxOkCancelButtonOrder,       0, 0, 2 )
+DECLARE_INT32_METAPARAMETER   ( Application, autoSaveSettingsPeriod,              30, 0, 600 )
+DECLARE_BOOLEAN_METAPARAMETER ( Application, minifySettingsXML,                   true )
+DECLARE_BOOLEAN_METAPARAMETER ( Application, compressSettingsBlocks,              true )
 DECLARE_STRING_METAPARAMETER  ( Application, fundamentalEphemeridesFile,          "core-fundamental.xeph" )
 DECLARE_STRING_METAPARAMETER  ( Application, shortTermFundamentalEphemeridesFile, "core-fundamental-s.xeph" )
 DECLARE_STRING_METAPARAMETER  ( Application, asteroidEphemeridesFile,             "core-asteroids.xeph" )
@@ -428,4 +433,4 @@ PCL_END_LOCAL
 #endif   // __PreferencesParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesParameters.h - Released 2023-08-28T15:23:41Z
+// EOF PreferencesParameters.h - Released 2023-09-14T17:02:22Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.8
+// /_/     \____//_____/   PCL 2.6.0
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.4.2
+// Standard Global Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// PreferencesProcess.cpp - Released 2023-08-28T15:23:41Z
+// PreferencesProcess.cpp - Released 2023-09-14T17:02:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -91,6 +91,11 @@ PreferencesProcess::PreferencesProcess()
    new METAPARAMETER_ID( Application, highResFont )( this );
    new METAPARAMETER_ID( Application, lowResMonoFont )( this );
    new METAPARAMETER_ID( Application, highResMonoFont )( this );
+   new METAPARAMETER_ID( Application, messageBoxYesNoButtonOrder )( this );
+   new METAPARAMETER_ID( Application, messageBoxOkCancelButtonOrder )( this );
+   new METAPARAMETER_ID( Application, autoSaveSettingsPeriod )( this );
+   new METAPARAMETER_ID( Application, minifySettingsXML )( this );
+   new METAPARAMETER_ID( Application, compressSettingsBlocks )( this );
    new METAPARAMETER_ID( Application, fundamentalEphemeridesFile )( this );
    new METAPARAMETER_ID( Application, shortTermFundamentalEphemeridesFile )( this );
    new METAPARAMETER_ID( Application, asteroidEphemeridesFile )( this );
@@ -397,4 +402,4 @@ int PreferencesProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesProcess.cpp - Released 2023-08-28T15:23:41Z
+// EOF PreferencesProcess.cpp - Released 2023-09-14T17:02:22Z

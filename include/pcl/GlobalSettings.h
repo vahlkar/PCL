@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.8
+// /_/     \____//_____/   PCL 2.6.0
 // ----------------------------------------------------------------------------
-// pcl/GlobalSettings.h - Released 2023-08-28T15:23:15Z
+// pcl/GlobalSettings.h - Released 2023-09-15T14:49:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -120,7 +120,9 @@ namespace GlobalVariableType
  *
  * <table border="1" cellpadding="4" cellspacing="0">
  * <tr><td>Application/AutoUIScaling</td><td></td></tr>
+ * <tr><td>Application/CompressSettingsBlocks</td><td></td></tr>
  * <tr><td>Application/HealRegistryInformationOnUpdates</td><td></td></tr>
+ * <tr><td>Application/MinifySettingsXML</td><td></td></tr>
  * <tr><td>ColorManagement/DefaultEmbedProfilesInGrayscaleImages</td><td></td></tr>
  * <tr><td>ColorManagement/DefaultEmbedProfilesInRGBImages</td><td></td></tr>
  * <tr><td>ColorManagement/DefaultGamutCheckEnabled</td><td></td></tr>
@@ -225,8 +227,12 @@ namespace GlobalVariableType
  * <h4>Global Integers</h4>
  *
  * <table border="1" cellpadding="4" cellspacing="0">
+ * <tr><td>Application/AutoSaveSettingsPeriod</td><td>In seconds.</td></tr>
  * <tr><td>Application/FontResolution</td><td>In dots per inch.</td></tr>
  * <tr><td>Application/Instance</td><td>The running application's instance number (&ge; 1).</td></tr>
+ * <tr><td>Application/MessageBoxOkCancelButtonOrder</td><td>0 = default, 1 = Ok/Cancel, 2 = Cancel/Ok</td></tr>
+ * <tr><td>Application/MessageBoxYesNoButtonOrder</td><td>0 = default, 1 = Yes/No, 2 = No/Yes</td></tr>
+ * <tr><td>Application/SurfaceSwapInterval</td><td>The minimum number of video frames displayed before buffer swaps (vertical synchronization). Read-only.</td></tr>
  * <tr><td>ColorManagement/DefaultRenderingIntent</td><td>See the pcl::ICCRenderingIntent namespace.</td></tr>
  * <tr><td>ColorManagement/OnMissingProfile</td><td>Core application policies. See the documentation for ColorManagementSetup.</td></tr>
  * <tr><td>ColorManagement/OnProfileMismatch</td><td>Core application policies. See the documentation for ColorManagementSetup.</td></tr>
@@ -533,4 +539,4 @@ public:
 #endif   // __PCL_GlobalSettings_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/GlobalSettings.h - Released 2023-08-28T15:23:15Z
+// EOF pcl/GlobalSettings.h - Released 2023-09-15T14:49:04Z

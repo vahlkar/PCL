@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.8
+// /_/     \____//_____/   PCL 2.6.0
 // ----------------------------------------------------------------------------
 // Standard EphemerisGeneration Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// TextDatabase.cpp - Released 2023-08-28T15:23:41Z
+// TextDatabase.cpp - Released 2023-09-14T17:02:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -1055,4 +1055,4 @@ Array<TextDatabase::FormatDescription> TextDatabase::FormatDescription::Parse( c
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF TextDatabase.cpp - Released 2023-08-28T15:23:41Z
+// EOF TextDatabase.cpp - Released 2023-09-14T17:02:22Z

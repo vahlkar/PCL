@@ -2,7 +2,7 @@
 # PixInsight Makefile Generator Script v1.129
 # Copyright (C) 2009-2023 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2023-08-28T15:27:17.590Z
+# Generated on .... 2023-09-15T14:49:45.866Z
 # Project id ...... PCL
 # Project type .... StaticLibrary
 # Platform ........ FreeBSD/g++
@@ -161,6 +161,7 @@ SRC_FILES= \
 ../../SeparableConvolution.cpp \
 ../../SeparableMedianFilter.cpp \
 ../../Settings.cpp \
+../../SettingsData.cpp \
 ../../SharedPixelData.cpp \
 ../../Sizer.cpp \
 ../../Slider.cpp \
@@ -350,6 +351,7 @@ OBJ_FILES= \
 ./x64/Release/SeparableConvolution.o \
 ./x64/Release/SeparableMedianFilter.o \
 ./x64/Release/Settings.o \
+./x64/Release/SettingsData.o \
 ./x64/Release/SharedPixelData.o \
 ./x64/Release/Sizer.o \
 ./x64/Release/Slider.o \
@@ -539,6 +541,7 @@ DEP_FILES= \
 ./x64/Release/SeparableConvolution.d \
 ./x64/Release/SeparableMedianFilter.d \
 ./x64/Release/Settings.d \
+./x64/Release/SettingsData.d \
 ./x64/Release/SharedPixelData.d \
 ./x64/Release/Sizer.d \
 ./x64/Release/Slider.d \

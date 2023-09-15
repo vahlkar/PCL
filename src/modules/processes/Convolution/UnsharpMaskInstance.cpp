@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.8
+// /_/     \____//_____/   PCL 2.6.0
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// UnsharpMaskInstance.cpp - Released 2023-08-28T15:23:41Z
+// UnsharpMaskInstance.cpp - Released 2023-09-14T17:02:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -511,4 +511,4 @@ void* UnsharpMaskInstance::LockParameter( const MetaParameter* p, size_type /*ta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF UnsharpMaskInstance.cpp - Released 2023-08-28T15:23:41Z
+// EOF UnsharpMaskInstance.cpp - Released 2023-09-14T17:02:22Z

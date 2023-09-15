@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.8
+// /_/     \____//_____/   PCL 2.6.0
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.5.2
 // ----------------------------------------------------------------------------
-// ImageIntegrationProcess.cpp - Released 2023-08-28T15:23:41Z
+// ImageIntegrationProcess.cpp - Released 2023-09-14T17:02:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -297,4 +297,4 @@ ProcessImplementation* ImageIntegrationProcess::Clone( const ProcessImplementati
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationProcess.cpp - Released 2023-08-28T15:23:41Z
+// EOF ImageIntegrationProcess.cpp - Released 2023-09-14T17:02:22Z

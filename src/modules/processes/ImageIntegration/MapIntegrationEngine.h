@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.8
+// /_/     \____//_____/   PCL 2.6.0
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.5.2
 // ----------------------------------------------------------------------------
-// MapIntegrationEngine.h - Released 2023-08-28T15:23:41Z
+// MapIntegrationEngine.h - Released 2023-09-14T17:02:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -119,4 +119,4 @@ private:
 #endif   // __MapIntegrationEngine_h
 
 // ----------------------------------------------------------------------------
-// EOF MapIntegrationEngine.h - Released 2023-08-28T15:23:41Z
+// EOF MapIntegrationEngine.h - Released 2023-09-14T17:02:22Z

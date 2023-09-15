@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.8
+// /_/     \____//_____/   PCL 2.6.0
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.5.2
 // ----------------------------------------------------------------------------
-// DrizzleIntegrationProcess.cpp - Released 2023-08-28T15:23:41Z
+// DrizzleIntegrationProcess.cpp - Released 2023-09-14T17:02:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -197,4 +197,4 @@ ProcessImplementation* DrizzleIntegrationProcess::Clone( const ProcessImplementa
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DrizzleIntegrationProcess.cpp - Released 2023-08-28T15:23:41Z
+// EOF DrizzleIntegrationProcess.cpp - Released 2023-09-14T17:02:22Z

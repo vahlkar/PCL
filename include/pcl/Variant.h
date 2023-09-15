@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.8
+// /_/     \____//_____/   PCL 2.6.0
 // ----------------------------------------------------------------------------
-// pcl/Variant.h - Released 2023-08-28T15:23:15Z
+// pcl/Variant.h - Released 2023-09-15T14:49:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -1099,11 +1099,25 @@ public:
    bool ToBool() const;
 
    /*!
+    * Returns true iff the object stored in this %Variant can be converted to a
+    * Boolean value.
+    */
+   bool CanConvertToBool() const noexcept;
+
+   /*!
     * A convenience synonym for ToBool().
     */
    bool ToBoolean() const
    {
       return ToBool();
+   }
+
+   /*!
+    * A convenience synonym for CanConvertToBool().
+    */
+   bool CanConvertToBoolean() const noexcept
+   {
+      return CanConvertToBool();
    }
 
    /*!
@@ -1116,6 +1130,12 @@ public:
    int ToInt() const;
 
    /*!
+    * Returns true iff the object stored in this %Variant can be converted to a
+    * 32-bit integer value.
+    */
+   bool CanConvertToInt() const noexcept;
+
+   /*!
     * Converts the object stored in this %Variant to a 64-bit integer value,
     * and returns the result of the conversion.
     *
@@ -1123,6 +1143,12 @@ public:
     * possible for the object currently stored in this %Variant.
     */
    int64 ToInt64() const;
+
+   /*!
+    * Returns true iff the object stored in this %Variant can be converted to a
+    * 64-bit integer value.
+    */
+   bool CanConvertToInt64() const noexcept;
 
    /*!
     * Converts the object stored in this %Variant to an unsigned 32-bit integer
@@ -1134,6 +1160,12 @@ public:
    unsigned int ToUInt() const;
 
    /*!
+    * Returns true iff the object stored in this %Variant can be converted to
+    * an unsigned 32-bit integer value.
+    */
+   bool CanConvertToUInt() const noexcept;
+
+   /*!
     * Converts the object stored in this %Variant to an unsigned 64-bit integer
     * value, and returns the result of the conversion.
     *
@@ -1141,6 +1173,12 @@ public:
     * possible for the object currently stored in this %Variant.
     */
    uint64 ToUInt64() const;
+
+   /*!
+    * Returns true iff the object stored in this %Variant can be converted to
+    * an unsigned 64-bit integer value.
+    */
+   bool CanConvertToUInt64() const noexcept;
 
    /*!
     * Converts the object stored in this %Variant to a 32-bit floating point
@@ -1152,6 +1190,12 @@ public:
    float ToFloat() const;
 
    /*!
+    * Returns true iff the object stored in this %Variant can be converted to a
+    * 32-bit floating point value.
+    */
+   bool CanConvertToFloat() const noexcept;
+
+   /*!
     * Converts the object stored in this %Variant to a 64-bit floating point
     * value, and returns the result of the conversion.
     *
@@ -1159,6 +1203,12 @@ public:
     * possible for the object currently stored in this %Variant.
     */
    double ToDouble() const;
+
+   /*!
+    * Returns true iff the object stored in this %Variant can be converted to a
+    * 32-bit floating point value.
+    */
+   bool CanConvertToDouble() const noexcept;
 
    /*!
     * Converts the object stored in this %Variant to a complex value with
@@ -1170,6 +1220,12 @@ public:
    fcomplex ToFComplex() const;
 
    /*!
+    * Returns true iff the object stored in this %Variant can be converted to a
+    * complex value with \c float components
+    */
+   bool CanConvertToFComplex() const noexcept;
+
+   /*!
     * Converts the object stored in this %Variant to a complex value with
     * \c double components, and returns the result of the conversion.
     *
@@ -1179,11 +1235,25 @@ public:
    dcomplex ToDComplex() const;
 
    /*!
+    * Returns true iff the object stored in this %Variant can be converted to a
+    * complex value with \c double components
+    */
+   bool CanConvertToDComplex() const noexcept;
+
+   /*!
     * A convenience synonym for ToDComplex().
     */
    complex ToComplex() const
    {
       return ToDComplex();
+   }
+
+   /*!
+    * A convenience synonym for CanConvertToDComplex().
+    */
+   bool CanConvertToComplex() const noexcept
+   {
+      return CanConvertToDComplex();
    }
 
    /*!
@@ -1196,6 +1266,12 @@ public:
    TimePoint ToTimePoint() const;
 
    /*!
+    * Returns true iff the object stored in this %Variant can be converted to a
+    * TimePoint value.
+    */
+   bool CanConvertToTimePoint() const noexcept;
+
+   /*!
     * Converts the object stored in this %Variant to a two-dimensional point
     * with integer coordinates, and returns the result of the conversion.
     *
@@ -1203,6 +1279,12 @@ public:
     * possible for the object currently stored in this %Variant.
     */
    Point ToPoint() const;
+
+   /*!
+    * Returns true iff the object stored in this %Variant can be converted to a
+    * two-dimensional point with integer coordinates.
+    */
+   bool CanConvertToPoint() const noexcept;
 
    /*!
     * Converts the object stored in this %Variant to a two-dimensional point
@@ -1214,6 +1296,12 @@ public:
    FPoint ToFPoint() const;
 
    /*!
+    * Returns true iff the object stored in this %Variant can be converted to a
+    * two-dimensional point with \c float coordinates.
+    */
+   bool CanConvertToFPoint() const noexcept;
+
+   /*!
     * Converts the object stored in this %Variant to a two-dimensional point
     * with \c double coordinates, and returns the result of the conversion.
     *
@@ -1221,6 +1309,12 @@ public:
     * possible for the object currently stored in this %Variant.
     */
    DPoint ToDPoint() const;
+
+   /*!
+    * Returns true iff the object stored in this %Variant can be converted to a
+    * two-dimensional point with \c double coordinates.
+    */
+   bool CanConvertToDPoint() const noexcept;
 
    /*!
     * Converts the object stored in this %Variant to a two-dimensional
@@ -1233,6 +1327,12 @@ public:
    Rect ToRect() const;
 
    /*!
+    * Returns true iff the object stored in this %Variant can be converted to a
+    * two-dimensional rectangle with integer coordinates.
+    */
+   bool CanConvertToRect() const noexcept;
+
+   /*!
     * Converts the object stored in this %Variant to a two-dimensional
     * rectangle with \c float coordinates, and returns the result of the
     * conversion.
@@ -1241,6 +1341,12 @@ public:
     * possible for the object currently stored in this %Variant.
     */
    FRect ToFRect() const;
+
+   /*!
+    * Returns true iff the object stored in this %Variant can be converted to a
+    * two-dimensional rectangle with \c float coordinates.
+    */
+   bool CanConvertToFRect() const noexcept;
 
    /*!
     * Converts the object stored in this %Variant to a two-dimensional
@@ -1253,6 +1359,12 @@ public:
    DRect ToDRect() const;
 
    /*!
+    * Returns true iff the object stored in this %Variant can be converted to a
+    * two-dimensional rectangle with \c double coordinates.
+    */
+   bool CanConvertToDRect() const noexcept;
+
+   /*!
     * Converts the object stored in this %Variant to a vector of 8-bit signed
     * integer components, and returns the result of the conversion.
     *
@@ -1260,6 +1372,12 @@ public:
     * possible for the object currently stored in this %Variant.
     */
    CharVector ToCharVector() const;
+
+   /*!
+    * Returns true iff the object stored in this %Variant can be converted to a
+    * vector of 8-bit signed integer components.
+    */
+   bool CanConvertToCharVector() const noexcept;
 
    /*!
     * Converts the object stored in this %Variant to a vector of 8-bit unsigned
@@ -1271,6 +1389,12 @@ public:
    ByteVector ToByteVector() const;
 
    /*!
+    * Returns true iff the object stored in this %Variant can be converted to a
+    * vector of 8-bit unsigned integer components.
+    */
+   bool CanConvertToByteVector() const noexcept;
+
+   /*!
     * Converts the object stored in this %Variant to a vector of 16-bit signed
     * integer components, and returns the result of the conversion.
     *
@@ -1278,6 +1402,12 @@ public:
     * possible for the object currently stored in this %Variant.
     */
    I16Vector ToI16Vector() const;
+
+   /*!
+    * Returns true iff the object stored in this %Variant can be converted to a
+    * vector of 16-bit signed integer components.
+    */
+   bool CanConvertToI16Vector() const noexcept;
 
    /*!
     * Converts the object stored in this %Variant to a vector of 16-bit
@@ -1289,6 +1419,12 @@ public:
    UI16Vector ToUI16Vector() const;
 
    /*!
+    * Returns true iff the object stored in this %Variant can be converted to a
+    * vector of 16-bit unsigned integer components.
+    */
+   bool CanConvertToUI16Vector() const noexcept;
+
+   /*!
     * Converts the object stored in this %Variant to a vector of integer
     * components, and returns the result of the conversion.
     *
@@ -1296,6 +1432,12 @@ public:
     * possible for the object currently stored in this %Variant.
     */
    IVector ToIVector() const;
+
+   /*!
+    * Returns true iff the object stored in this %Variant can be converted to a
+    * vector of integer components.
+    */
+   bool CanConvertToIVector() const noexcept;
 
    /*!
     * Converts the object stored in this %Variant to a vector of unsigned
@@ -1307,6 +1449,12 @@ public:
    UIVector ToUIVector() const;
 
    /*!
+    * Returns true iff the object stored in this %Variant can be converted to a
+    * vector of unsigned integer components.
+    */
+   bool CanConvertToUIVector() const noexcept;
+
+   /*!
     * Converts the object stored in this %Variant to a vector of 64-bit integer
     * components, and returns the result of the conversion.
     *
@@ -1314,6 +1462,12 @@ public:
     * possible for the object currently stored in this %Variant.
     */
    I64Vector ToI64Vector() const;
+
+   /*!
+    * Returns true iff the object stored in this %Variant can be converted to a
+    * vector of 64-bit integer components.
+    */
+   bool CanConvertToI64Vector() const noexcept;
 
    /*!
     * Converts the object stored in this %Variant to a vector of 64-bit
@@ -1325,6 +1479,12 @@ public:
    UI64Vector ToUI64Vector() const;
 
    /*!
+    * Returns true iff the object stored in this %Variant can be converted to a
+    * vector of 64-bit unsigned integer components.
+    */
+   bool CanConvertToUI64Vector() const noexcept;
+
+   /*!
     * Converts the object stored in this %Variant to a vector of \c float
     * components, and returns the result of the conversion.
     *
@@ -1332,6 +1492,12 @@ public:
     * possible for the object currently stored in this %Variant.
     */
    FVector ToFVector() const;
+
+   /*!
+    * Returns true iff the object stored in this %Variant can be converted to a
+    * vector of \c float components.
+    */
+   bool CanConvertToFVector() const noexcept;
 
    /*!
     * Converts the object stored in this %Variant to a vector of \c double
@@ -1343,11 +1509,25 @@ public:
    DVector ToDVector() const;
 
    /*!
+    * Returns true iff the object stored in this %Variant can be converted to a
+    * vector of \c double components.
+    */
+   bool CanConvertToDVector() const noexcept;
+
+   /*!
     * A convenience synonym for ToDVector().
     */
    Vector ToVector() const
    {
       return ToDVector();
+   }
+
+   /*!
+    * A convenience synonym for CanConvertToDVector().
+    */
+   bool CanConvertToVector() const noexcept
+   {
+      return CanConvertToDVector();
    }
 
    /*!
@@ -1361,6 +1541,12 @@ public:
    C32Vector ToC32Vector() const;
 
    /*!
+    * Returns true iff the object stored in this %Variant can be converted to a
+    * vector of 32-bit floating point complex components.
+    */
+   bool CanConvertToC32Vector() const noexcept;
+
+   /*!
     * Converts the object stored in this %Variant to a vector of 64-bit
     * floating point complex components, and returns the result of the
     * conversion.
@@ -1369,6 +1555,12 @@ public:
     * possible for the object currently stored in this %Variant.
     */
    C64Vector ToC64Vector() const;
+
+   /*!
+    * Returns true iff the object stored in this %Variant can be converted to a
+    * vector of 64-bit floating point complex components.
+    */
+   bool CanConvertToC64Vector() const noexcept;
 
    /*!
     * Converts the object stored in this %Variant to a matrix of 8-bit signed
@@ -1380,6 +1572,12 @@ public:
    CharMatrix ToCharMatrix() const;
 
    /*!
+    * Returns true iff the object stored in this %Variant can be converted to a
+    * matrix of 8-bit signed integer elements.
+    */
+   bool CanConvertToCharMatrix() const noexcept;
+
+   /*!
     * Converts the object stored in this %Variant to a matrix of 8-bit unsigned
     * integer elements, and returns the result of the conversion.
     *
@@ -1387,6 +1585,12 @@ public:
     * possible for the object currently stored in this %Variant.
     */
    ByteMatrix ToByteMatrix() const;
+
+   /*!
+    * Returns true iff the object stored in this %Variant can be converted to a
+    * matrix of 8-bit unsigned integer elements.
+    */
+   bool CanConvertToByteMatrix() const noexcept;
 
    /*!
     * Converts the object stored in this %Variant to a matrix of 16-bit signed
@@ -1398,6 +1602,12 @@ public:
    I16Matrix ToI16Matrix() const;
 
    /*!
+    * Returns true iff the object stored in this %Variant can be converted to a
+    * matrix of 16-bit signed integer elements.
+    */
+   bool CanConvertToI16Matrix() const noexcept;
+
+   /*!
     * Converts the object stored in this %Variant to a matrix of 16-bit
     * unsigned integer elements, and returns the result of the conversion.
     *
@@ -1405,6 +1615,12 @@ public:
     * possible for the object currently stored in this %Variant.
     */
    UI16Matrix ToUI16Matrix() const;
+
+   /*!
+    * Returns true iff the object stored in this %Variant can be converted to a
+    * matrix of 16-bit unsigned integer elements.
+    */
+   bool CanConvertToUI16Matrix() const noexcept;
 
    /*!
     * Converts the object stored in this %Variant to a matrix of integer
@@ -1416,6 +1632,12 @@ public:
    IMatrix ToIMatrix() const;
 
    /*!
+    * Returns true iff the object stored in this %Variant can be converted to a
+    * matrix of integer elements.
+    */
+   bool CanConvertToIMatrix() const noexcept;
+
+   /*!
     * Converts the object stored in this %Variant to a matrix of unsigned
     * integer elements, and returns the result of the conversion.
     *
@@ -1423,6 +1645,12 @@ public:
     * possible for the object currently stored in this %Variant.
     */
    UIMatrix ToUIMatrix() const;
+
+   /*!
+    * Returns true iff the object stored in this %Variant can be converted to a
+    * matrix of unsigned integer elements.
+    */
+   bool CanConvertToUIMatrix() const noexcept;
 
    /*!
     * Converts the object stored in this %Variant to a matrix of 64-bit integer
@@ -1434,6 +1662,12 @@ public:
    I64Matrix ToI64Matrix() const;
 
    /*!
+    * Returns true iff the object stored in this %Variant can be converted to a
+    * matrix of 64-bit integer elements.
+    */
+   bool CanConvertToI64Matrix() const noexcept;
+
+   /*!
     * Converts the object stored in this %Variant to a matrix of 64-bit
     * unsigned integer elements, and returns the result of the conversion.
     *
@@ -1441,6 +1675,12 @@ public:
     * possible for the object currently stored in this %Variant.
     */
    UI64Matrix ToUI64Matrix() const;
+
+   /*!
+    * Returns true iff the object stored in this %Variant can be converted to a
+    * matrix of 64-bit unsigned integer elements.
+    */
+   bool CanConvertToUI64Matrix() const noexcept;
 
    /*!
     * Converts the object stored in this %Variant to a matrix of \c float
@@ -1452,6 +1692,12 @@ public:
    FMatrix ToFMatrix() const;
 
    /*!
+    * Returns true iff the object stored in this %Variant can be converted to a
+    * matrix of \c float elements.
+    */
+   bool CanConvertToFMatrix() const noexcept;
+
+   /*!
     * Converts the object stored in this %Variant to a matrix of \c double
     * elements, and returns the result of the conversion.
     *
@@ -1461,11 +1707,25 @@ public:
    DMatrix ToDMatrix() const;
 
    /*!
+    * Returns true iff the object stored in this %Variant can be converted to a
+    * matrix of \c double elements.
+    */
+   bool CanConvertToDMatrix() const noexcept;
+
+   /*!
     * A convenience synonym for ToDMatrix().
     */
    Matrix ToMatrix() const
    {
       return ToDMatrix();
+   }
+
+   /*!
+    * A convenience synonym for CanConvertToDMatrix().
+    */
+   bool CanConvertToMatrix() const noexcept
+   {
+      return CanConvertToDMatrix();
    }
 
    /*!
@@ -1479,6 +1739,12 @@ public:
    C32Matrix ToC32Matrix() const;
 
    /*!
+    * Returns true iff the object stored in this %Variant can be converted to a
+    * matrix of 32-bit floating point complex elements.
+    */
+   bool CanConvertToC32Matrix() const noexcept;
+
+   /*!
     * Converts the object stored in this %Variant to a matrix of 64-bit
     * floating point complex elements, and returns the result of the
     * conversion.
@@ -1487,6 +1753,12 @@ public:
     * possible for the object currently stored in this %Variant.
     */
    C64Matrix ToC64Matrix() const;
+
+   /*!
+    * Returns true iff the object stored in this %Variant can be converted to a
+    * matrix of 64-bit floating point complex elements.
+    */
+   bool CanConvertToC64Matrix() const noexcept;
 
    /*!
     * Converts the object stored in this %Variant to a dynamic array of
@@ -1498,6 +1770,12 @@ public:
    ByteArray ToByteArray() const;
 
    /*!
+    * Returns true iff the object stored in this %Variant can be converted to a
+    * dynamic array of unsigned 8-bit integers.
+    */
+   bool CanConvertToByteArray() const noexcept;
+
+   /*!
     * Converts the object stored in this %Variant to a UTF-16 Unicode string,
     * and returns the result of the conversion.
     *
@@ -1505,6 +1783,12 @@ public:
     * possible for the object currently stored in this %Variant.
     */
    String ToString() const;
+
+   /*!
+    * Returns true iff the object stored in this %Variant can be converted to a
+    * UTF-16 Unicode string.
+    */
+   bool CanConvertToString() const noexcept;
 
    /*!
     * Converts the object stored in this %Variant to an 8-bit ISO/IEC 8859-1 or
@@ -1516,6 +1800,12 @@ public:
    IsoString ToIsoString() const;
 
    /*!
+    * Returns true iff the object stored in this %Variant can be converted to
+    * an 8-bit ISO/IEC 8859-1 or UTF-8 Unicode string.
+    */
+   bool CanConvertToIsoString() const noexcept;
+
+   /*!
     * Converts the object stored in this %Variant to a dynamic list of UTF-16
     * Unicode strings, and returns the result of the conversion.
     *
@@ -1525,6 +1815,12 @@ public:
    StringList ToStringList() const;
 
    /*!
+    * Returns true iff the object stored in this %Variant can be converted to
+    * a dynamic list of UTF-16 Unicode strings.
+    */
+   bool CanConvertToStringList() const noexcept;
+
+   /*!
     * Converts the object stored in this %Variant to a dynamic list of 8-bit
     * strings, and returns the result of the conversion.
     *
@@ -1532,6 +1828,12 @@ public:
     * not possible for the object currently stored in this %Variant.
     */
    IsoStringList ToIsoStringList() const;
+
+   /*!
+    * Returns true iff the object stored in this %Variant can be converted to
+    * a dynamic list of 8-bit strings.
+    */
+   bool CanConvertToIsoStringList() const noexcept;
 
    /*!
     * Converts the object stored in this %Variant to a key/value pair of UTF-16
@@ -1897,4 +2199,4 @@ namespace pcl
 #endif   // __PCL_Variant_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Variant.h - Released 2023-08-28T15:23:15Z
+// EOF pcl/Variant.h - Released 2023-09-15T14:49:04Z

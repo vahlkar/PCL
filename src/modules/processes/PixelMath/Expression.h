@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.8
+// /_/     \____//_____/   PCL 2.6.0
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// Expression.h - Released 2023-08-28T15:23:41Z
+// Expression.h - Released 2023-09-14T17:02:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -220,4 +220,4 @@ typedef Expression::component_list  ExpressionList;
 #endif   // __Expression_h
 
 // ----------------------------------------------------------------------------
-// EOF Expression.h - Released 2023-08-28T15:23:41Z
+// EOF Expression.h - Released 2023-09-14T17:02:22Z

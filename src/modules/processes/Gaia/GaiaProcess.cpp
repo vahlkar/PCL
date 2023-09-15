@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.8
+// /_/     \____//_____/   PCL 2.6.0
 // ----------------------------------------------------------------------------
 // Standard Gaia Process Module Version 1.2.5
 // ----------------------------------------------------------------------------
-// GaiaProcess.cpp - Released 2023-08-28T15:23:41Z
+// GaiaProcess.cpp - Released 2023-09-14T17:02:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Gaia PixInsight module.
 //
@@ -761,4 +761,4 @@ void GaiaProcess::SavePreferences( int dr )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GaiaProcess.cpp - Released 2023-08-28T15:23:41Z
+// EOF GaiaProcess.cpp - Released 2023-09-14T17:02:22Z

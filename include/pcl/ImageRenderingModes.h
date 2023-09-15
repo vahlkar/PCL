@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.8
+// /_/     \____//_____/   PCL 2.6.0
 // ----------------------------------------------------------------------------
-// pcl/ImageRenderingModes.h - Released 2023-08-28T15:23:15Z
+// pcl/ImageRenderingModes.h - Released 2023-09-15T14:49:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -186,4 +186,4 @@ namespace MaskMode
 #endif   // __PCL_ImageRenderingModes_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ImageRenderingModes.h - Released 2023-08-28T15:23:15Z
+// EOF pcl/ImageRenderingModes.h - Released 2023-09-15T14:49:04Z

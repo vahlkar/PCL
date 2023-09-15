@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.8
+// /_/     \____//_____/   PCL 2.6.0
 // ----------------------------------------------------------------------------
-// pcl/SectionBar.h - Released 2023-08-28T15:23:15Z
+// pcl/SectionBar.h - Released 2023-09-15T14:49:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -220,7 +220,7 @@ public:
     *
     * \sa Enable()
     */
-   virtual bool IsEnabled() const
+   bool IsEnabled() const override
    {
       return Title_Label.IsEnabled();
    }
@@ -235,7 +235,7 @@ public:
     *
     * \sa IsEnabled()
     */
-   virtual void Enable( bool enabled = true );
+   void Enable( bool enabled = true ) override;
 
    /*!
     * Shows or hides the section control managed by this %SectionBar.
@@ -376,4 +376,4 @@ private:
 #endif   // __PCL_SectionBar_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SectionBar.h - Released 2023-08-28T15:23:15Z
+// EOF pcl/SectionBar.h - Released 2023-09-15T14:49:04Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.8
+// /_/     \____//_____/   PCL 2.6.0
 // ----------------------------------------------------------------------------
-// pcl/APIInterface.h - Released 2023-08-28T15:23:15Z
+// pcl/APIInterface.h - Released 2023-09-15T14:49:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -56,7 +56,7 @@
 
 // Global namespace
 
-#define PCL_API_Version 0x0177
+#define PCL_API_Version 0x0178
 
 extern "C"
 {
@@ -232,6 +232,16 @@ struct api_context GlobalContext
     * Fast module thread control (since core version 1.8.8-7)
     */
    int32       (api_func* MaxProcessorsAllowedForModule)( api_handle, uint32 flags/*unused*/ );
+
+   /*
+    * Instance slot of the running application in [1,256] (since core version 1.8.9-2 build 1581)
+    */
+   int32       (api_func* ApplicationInstanceSlot)( api_handle );
+
+   /*
+    * Application configuration directory (since core version 1.8.9-2 build 1581)
+    */
+   api_bool    (api_func* GetApplicationConfigurationDirectory)( char16_type*, size_type* );
 };
 
 // ----------------------------------------------------------------------------
@@ -3084,4 +3094,4 @@ extern "C" void* api_func APIFunctionResolver( const char* );
 #endif   // __PCL_API_APIInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/APIInterface.h - Released 2023-08-28T15:23:15Z
+// EOF pcl/APIInterface.h - Released 2023-09-15T14:49:04Z

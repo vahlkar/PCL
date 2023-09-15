@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.8
+// /_/     \____//_____/   PCL 2.6.0
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.4.2
+// Standard Global Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// PreferencesInterface.cpp - Released 2023-08-28T15:23:41Z
+// PreferencesInterface.cpp - Released 2023-09-14T17:02:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -1532,8 +1532,7 @@ EphemeridesPreferencesPage::EphemeridesPreferencesPage( PreferencesInstance& ins
    AsteroidEphemerides_File.SetToolTip(
       "<p>Path to the global asteroid ephemerides file (XEPH format).</p>"
       "<p>As of writing this documentation, the standard asteroid ephemerides file provides the complete "
-      "set of 343 asteroids used for the numerical integration of DE430 ephemerides, with barycentric "
-      "coordinates coherent with DE440.</p>" );
+      "set of 343 asteroids used for the numerical integration of JPL DE440 ephemerides.</p>" );
 
 //    ShortTermAsteroidEphemerides_File.label.SetText( "Short-Term Asteroid Ephemerides" );
 //    ShortTermAsteroidEphemerides_File.item = &instance.application.shortTermAsteroidEphemeridesFile;
@@ -1667,7 +1666,8 @@ GUIEffectsPreferencesPage::GUIEffectsPreferencesPage( PreferencesInstance& insta
    DesktopSettingsAware_Flag.checkBox.SetText( "Desktop settings aware" );
    DesktopSettingsAware_Flag.item = &instance.mainWindow.desktopSettingsAware;
    DesktopSettingsAware_Flag.SetToolTip(
-      "<p>When enabled, PixInsight will use some colors and fonts as per global system desktop settings.</p>" );
+      "<p>When enabled, PixInsight will use some colors, fonts and icons as per global system desktop settings.</p>"
+      "<p><b>* Note *</b> Currently this option is only available on Linux and macOS. It is ignored on Windows.</p>" );
 
    TranslucentWindows_Flag.checkBox.SetText( "Translucent workspace top-level windows" );
    TranslucentWindows_Flag.item = &instance.mainWindow.translucentWindows;
@@ -1821,6 +1821,50 @@ void GUIEffectsPreferencesPage::TransferSettings( PreferencesInstance& to, const
 
 // ----------------------------------------------------------------------------
 
+MessageBoxPreferencesPage::MessageBoxPreferencesPage( PreferencesInstance& instance )
+{
+   YesNoButtonOrder_Set.label.SetText( "Yes/No message box button order" );
+   YesNoButtonOrder_Set.comboBox.AddItem( "Default" );
+   YesNoButtonOrder_Set.comboBox.AddItem( "Yes / No" );
+   YesNoButtonOrder_Set.comboBox.AddItem( "No / Yes" );
+   YesNoButtonOrder_Set.item = &instance.application.messageBoxYesNoButtonOrder;
+   YesNoButtonOrder_Set.SetToolTip(
+      "<p>The order of Yes and No buttons represented on message boxes.</p>"
+      "<p>The <em>Default</em> option applies a logical order where the first button always corresponds "
+      "to the least potentially dangerous choice. For example, on a message box where the user "
+      "has to answer a question like <em>Do you really want to lose all changes?</em>, the order "
+      "of buttons would be No and Yes. The order would be Yes and No for a question such as "
+      "<em>Save the modified image?</em>. This is the default behavior of message boxes in "
+      "PixInsight since core version 1.8.9-2. This behavior assumes the user reads questions and "
+      "button labels before making decisions.</p>"
+      "<p>The Yes/No and No/Yes options force the specified button orders.</p>" );
+
+   OkCancelButtonOrder_Set.label.SetText( "Ok/Cancel message box button order" );
+   OkCancelButtonOrder_Set.comboBox.AddItem( "Default" );
+   OkCancelButtonOrder_Set.comboBox.AddItem( "Ok / Cancel" );
+   OkCancelButtonOrder_Set.comboBox.AddItem( "Cancel / Ok" );
+   OkCancelButtonOrder_Set.item = &instance.application.messageBoxOkCancelButtonOrder;
+   OkCancelButtonOrder_Set.SetToolTip(
+      "<p>The order of Ok and Cancel buttons represented on message boxes.</p>"
+      "<p>See the information given for the <em>Yes/No message box button order</em> option for a "
+      "description of our default policy regarding message box button positions.</p>" );
+
+   Page_Sizer.SetSpacing( 4 );
+   Page_Sizer.Add( YesNoButtonOrder_Set );
+   Page_Sizer.Add( OkCancelButtonOrder_Set );
+   Page_Sizer.AddStretch();
+
+   SetSizer( Page_Sizer );
+}
+
+void MessageBoxPreferencesPage::TransferSettings( PreferencesInstance& to, const PreferencesInstance& from )
+{
+   to.application.messageBoxYesNoButtonOrder    = from.application.messageBoxYesNoButtonOrder;
+   to.application.messageBoxOkCancelButtonOrder = from.application.messageBoxOkCancelButtonOrder;
+}
+
+// ----------------------------------------------------------------------------
+
 FileIOPreferencesPage::FileIOPreferencesPage( PreferencesInstance& instance )
 {
    BackupFiles_Flag.checkBox.SetText( "Backup image files" );
@@ -1909,6 +1953,52 @@ void FileIOPreferencesPage::TransferSettings( PreferencesInstance& to, const Pre
    to.imageWindow.fileFormatWarnings     = from.imageWindow.fileFormatWarnings;
    to.imageWindow.defaultEmbedThumbnails = from.imageWindow.defaultEmbedThumbnails;
    to.imageWindow.defaultEmbedProperties = from.imageWindow.defaultEmbedProperties;
+}
+
+// ----------------------------------------------------------------------------
+
+SettingsAndCacheDataPreferencesPage::SettingsAndCacheDataPreferencesPage( PreferencesInstance& instance )
+{
+   AutoSaveSettingsPeriod_Integer.label.SetText( "AutoSave settings period (s)" );
+   AutoSaveSettingsPeriod_Integer.spinBox.SetRange( 0, 600 );
+   AutoSaveSettingsPeriod_Integer.item = &instance.application.autoSaveSettingsPeriod;
+   AutoSaveSettingsPeriod_Integer.SetToolTip(
+      "<p>This is the time interval in seconds between settings auto-save events. Set it to zero to turn off "
+      "the settings auto-save feature.</p>"
+      "<p>The settings auto-save feature minimizes the risk of losing important changes to preferences, module "
+      "and script settings in case of a system or software crash. This feature only writes disk files when "
+      "settings properties are modified and has virtually zero impact on performance.</p>" );
+
+   MinifySettingsXML_Flag.checkBox.SetText( "Minify settings XML source code" );
+   MinifySettingsXML_Flag.item = &instance.application.minifySettingsXML;
+   MinifySettingsXML_Flag.SetToolTip(
+      "<p>When this option is enabled, XML settings files will be generated without superfluous "
+      "whitespace and newline characters, making the XML source code significantly smaller and "
+      "marginally more efficient for encoding/decoding operations. With minification disabled, "
+      "XML tags will be separated with newline characters and indented with spaces, making the "
+      "source code readable and easily editable for maintenance purposes.</p>" );
+
+   CompressSettingsBlocks_Flag.checkBox.SetText( "Compress block settings properties" );
+   CompressSettingsBlocks_Flag.item = &instance.application.compressSettingsBlocks;
+   CompressSettingsBlocks_Flag.SetToolTip(
+      "<p>When this option is enabled, large text and binary settings properties are serialized "
+      "with compression applied in XML settings files. The Zstandard compression codec is used "
+      "for these tasks in current versions of PixInsight.</p>" );
+
+   Page_Sizer.SetSpacing( 4 );
+   Page_Sizer.Add( AutoSaveSettingsPeriod_Integer );
+   Page_Sizer.Add( MinifySettingsXML_Flag );
+   Page_Sizer.Add( CompressSettingsBlocks_Flag );
+   Page_Sizer.AddStretch();
+
+   SetSizer( Page_Sizer );
+}
+
+void SettingsAndCacheDataPreferencesPage::TransferSettings( PreferencesInstance& to, const PreferencesInstance& from )
+{
+   to.application.autoSaveSettingsPeriod = from.application.autoSaveSettingsPeriod;
+   to.application.minifySettingsXML      = from.application.minifySettingsXML;
+   to.application.compressSettingsBlocks = from.application.compressSettingsBlocks;
 }
 
 // ----------------------------------------------------------------------------
@@ -2230,9 +2320,21 @@ DefaultTransparencySettingsPreferencesPage::DefaultTransparencySettingsPreferenc
    TransparencyBrush_Set.comboBox.AddItem( "Solid Brush" );
    TransparencyBrush_Set.item = &instance.imageWindow.transparencyBrush;
 
+   TransparencyBrushForegroundColor_Color.label.SetText( "Transparency brush foreground color" );
+   TransparencyBrushForegroundColor_Color.item = &instance.imageWindow.transparencyBrushForegroundColor;
+
+   TransparencyBrushBackgroundColor_Color.label.SetText( "Transparency brush background color" );
+   TransparencyBrushBackgroundColor_Color.item = &instance.imageWindow.transparencyBrushBackgroundColor;
+
+   DefaultTransparencyColor_Color.label.SetText( "Default color for solid transparency brush" );
+   DefaultTransparencyColor_Color.item = &instance.imageWindow.defaultTransparencyColor;
+
    Page_Sizer.SetSpacing( 4 );
    Page_Sizer.Add( DefaultTransparencyMode_Set );
    Page_Sizer.Add( TransparencyBrush_Set );
+   Page_Sizer.Add( TransparencyBrushForegroundColor_Color );
+   Page_Sizer.Add( TransparencyBrushBackgroundColor_Color );
+   Page_Sizer.Add( DefaultTransparencyColor_Color );
    Page_Sizer.AddStretch();
 
    SetSizer( Page_Sizer );
@@ -2240,8 +2342,11 @@ DefaultTransparencySettingsPreferencesPage::DefaultTransparencySettingsPreferenc
 
 void DefaultTransparencySettingsPreferencesPage::TransferSettings( PreferencesInstance& to, const PreferencesInstance& from )
 {
-   to.imageWindow.defaultTransparencyMode = from.imageWindow.defaultTransparencyMode;
-   to.imageWindow.transparencyBrush       = from.imageWindow.transparencyBrush;
+   to.imageWindow.defaultTransparencyMode          = from.imageWindow.defaultTransparencyMode;
+   to.imageWindow.transparencyBrush                = from.imageWindow.transparencyBrush;
+   to.imageWindow.transparencyBrushForegroundColor = from.imageWindow.transparencyBrushForegroundColor;
+   to.imageWindow.transparencyBrushBackgroundColor = from.imageWindow.transparencyBrushBackgroundColor;
+   to.imageWindow.defaultTransparencyColor         = from.imageWindow.defaultTransparencyColor;
 }
 
 // ----------------------------------------------------------------------------
@@ -2830,35 +2935,6 @@ void MiscProcessingPreferencesPage::TransferSettings( PreferencesInstance& to, c
 }
 
 // ----------------------------------------------------------------------------
-
-TransparencyColorsPreferencesPage::TransparencyColorsPreferencesPage( PreferencesInstance& instance )
-{
-   TransparencyBrushForegroundColor_Color.label.SetText( "Transparency brush foreground color" );
-   TransparencyBrushForegroundColor_Color.item = &instance.imageWindow.transparencyBrushForegroundColor;
-
-   TransparencyBrushBackgroundColor_Color.label.SetText( "Transparency brush background color" );
-   TransparencyBrushBackgroundColor_Color.item = &instance.imageWindow.transparencyBrushBackgroundColor;
-
-   DefaultTransparencyColor_Color.label.SetText( "Default color for solid transparency brush" );
-   DefaultTransparencyColor_Color.item = &instance.imageWindow.defaultTransparencyColor;
-
-   Page_Sizer.SetSpacing( 4 );
-   Page_Sizer.Add( TransparencyBrushForegroundColor_Color );
-   Page_Sizer.Add( TransparencyBrushBackgroundColor_Color );
-   Page_Sizer.Add( DefaultTransparencyColor_Color );
-   Page_Sizer.AddStretch();
-
-   SetSizer( Page_Sizer );
-}
-
-void TransparencyColorsPreferencesPage::TransferSettings( PreferencesInstance& to, const PreferencesInstance& from )
-{
-   to.imageWindow.transparencyBrushForegroundColor = from.imageWindow.transparencyBrushForegroundColor;
-   to.imageWindow.transparencyBrushBackgroundColor = from.imageWindow.transparencyBrushBackgroundColor;
-   to.imageWindow.defaultTransparencyColor         = from.imageWindow.defaultTransparencyColor;
-}
-
-// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 PreferencesInterface::GUIData::GUIData( PreferencesInterface& w ) : m_window( w )
@@ -2992,7 +3068,9 @@ void PreferencesInterface::GUIData::InitializeCategories()
    categories.Add( new WallpapersPreferencesCategory );
    categories.Add( new EphemeridesPreferencesCategory );
    categories.Add( new GUIEffectsPreferencesCategory );
+   categories.Add( new MessageBoxPreferencesCategory );
    categories.Add( new FileIOPreferencesCategory );
+   categories.Add( new SettingsAndCacheDataPreferencesCategory );
    categories.Add( new DirectoriesAndNetworkPreferencesCategory );
    categories.Add( new SecurityPreferencesCategory );
    categories.Add( new DefaultImageResolutionPreferencesCategory );
@@ -3003,7 +3081,6 @@ void PreferencesInterface::GUIData::InitializeCategories()
    categories.Add( new StringsPreferencesCategory );
    categories.Add( new ParallelProcessingPreferencesCategory );
    categories.Add( new MiscProcessingPreferencesCategory );
-   categories.Add( new TransparencyColorsPreferencesCategory );
 }
 
 // ----------------------------------------------------------------------------
@@ -3011,4 +3088,4 @@ void PreferencesInterface::GUIData::InitializeCategories()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInterface.cpp - Released 2023-08-28T15:23:41Z
+// EOF PreferencesInterface.cpp - Released 2023-09-14T17:02:22Z

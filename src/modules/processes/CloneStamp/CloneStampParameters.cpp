@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.8
+// /_/     \____//_____/   PCL 2.6.0
 // ----------------------------------------------------------------------------
 // Standard CloneStamp Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// CloneStampParameters.cpp - Released 2023-08-28T15:23:41Z
+// CloneStampParameters.cpp - Released 2023-09-14T17:02:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CloneStamp PixInsight module.
 //
@@ -359,4 +359,4 @@ double CSBoundsColor::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CloneStampParameters.cpp - Released 2023-08-28T15:23:41Z
+// EOF CloneStampParameters.cpp - Released 2023-09-14T17:02:22Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.8
+// /_/     \____//_____/   PCL 2.6.0
 // ----------------------------------------------------------------------------
 // Standard Gaia Process Module Version 1.2.5
 // ----------------------------------------------------------------------------
-// GaiaParameters.cpp - Released 2023-08-28T15:23:41Z
+// GaiaParameters.cpp - Released 2023-09-14T17:02:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Gaia PixInsight module.
 //
@@ -1182,4 +1182,4 @@ bool GDatabaseSpectrumBits::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GaiaParameters.cpp - Released 2023-08-28T15:23:41Z
+// EOF GaiaParameters.cpp - Released 2023-09-14T17:02:22Z

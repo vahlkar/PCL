@@ -9,6 +9,7 @@ namespace pcl
 /*
  * Get available storage space on volume, including purgeable space:
  * https://developer.apple.com/documentation/foundation/nsurlresourcekey/checking_volume_storage_capacity
+ * https://developer.apple.com/documentation/foundation/nsurl/1408874-getresourcevalue?language=objc
  */
 
 bool GetVolumeAvailableCapacity( const uint16_t* pathUTF16,

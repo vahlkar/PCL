@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.8
+// /_/     \____//_____/   PCL 2.6.0
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.4.2
+// Standard Global Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// ColorManagementSetupParameters.h - Released 2023-08-28T15:23:41Z
+// ColorManagementSetupParameters.h - Released 2023-09-14T17:02:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -348,4 +348,4 @@ PCL_END_LOCAL
 #endif   // __ColorManagementSetupParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF ColorManagementSetupParameters.h - Released 2023-08-28T15:23:41Z
+// EOF ColorManagementSetupParameters.h - Released 2023-09-14T17:02:22Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.8
+// /_/     \____//_____/   PCL 2.6.0
 // ----------------------------------------------------------------------------
-// pcl/FileDataCache.cpp - Released 2023-08-28T15:23:22Z
+// pcl/FileDataCache.cpp - Released 2023-09-15T14:49:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -68,9 +68,9 @@ FileDataCache::FileDataCache( const IsoString& identifier, int maxItemDuration )
 {
    PCL_PRECONDITION( !m_identifier.IsEmpty() )
    if ( m_identifier.IsEmpty() )
-      throw Error( "FileDataCache: Empty cache identifier" );
+      throw Error( "FileDataCache: Empty file identifier" );
    if ( !m_identifier.IsValidIdentifier() )
-      throw Error( "FileDataCache: Invalid cache identifier" );
+      throw Error( "FileDataCache: Invalid file identifier" );
 
    int instance = PixInsightSettings::GlobalInteger( "Application/Instance" );
    if ( instance <= 0 )
@@ -593,4 +593,4 @@ bool FileDataCacheItem::DeserializeMatrices( Array<DMatrix>& A, IsoStringList::c
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FileDataCache.cpp - Released 2023-08-28T15:23:22Z
+// EOF pcl/FileDataCache.cpp - Released 2023-09-15T14:49:17Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.8
+// /_/     \____//_____/   PCL 2.6.0
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.4.2
+// Standard Global Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// PreferencesInterface.h - Released 2023-08-28T15:23:41Z
+// PreferencesInterface.h - Released 2023-09-14T17:02:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -622,6 +622,22 @@ DEFINE_PREFERENCES_CATEGORY( GUIEffects, "Special GUI Effects" )
 
 // ----------------------------------------------------------------------------
 
+class MessageBoxPreferencesPage : public PreferencesCategoryPage
+{
+public:
+
+   MessageBoxPreferencesPage( PreferencesInstance& );
+
+   void TransferSettings( PreferencesInstance& to, const PreferencesInstance& from ) override;
+
+   GlobalSetControl           YesNoButtonOrder_Set;
+   GlobalSetControl           OkCancelButtonOrder_Set;
+};
+
+DEFINE_PREFERENCES_CATEGORY( MessageBox, "Message Box Settings" )
+
+// ----------------------------------------------------------------------------
+
 class FileIOPreferencesPage : public PreferencesCategoryPage
 {
 public:
@@ -642,6 +658,23 @@ public:
 };
 
 DEFINE_PREFERENCES_CATEGORY( FileIO, "File I/O Settings" )
+
+// ----------------------------------------------------------------------------
+
+class SettingsAndCacheDataPreferencesPage : public PreferencesCategoryPage
+{
+public:
+
+   SettingsAndCacheDataPreferencesPage( PreferencesInstance& );
+
+   void TransferSettings( PreferencesInstance& to, const PreferencesInstance& from ) override;
+
+   GlobalIntegerControl       AutoSaveSettingsPeriod_Integer;
+   GlobalFlagControl          MinifySettingsXML_Flag;
+   GlobalFlagControl          CompressSettingsBlocks_Flag;
+};
+
+DEFINE_PREFERENCES_CATEGORY( SettingsAndCacheData, "Settings and Cache Data" )
 
 // ----------------------------------------------------------------------------
 
@@ -731,6 +764,9 @@ public:
 
    GlobalSetControl           DefaultTransparencyMode_Set;
    GlobalSetControl           TransparencyBrush_Set;
+   GlobalColorControl         TransparencyBrushForegroundColor_Color;
+   GlobalColorControl         TransparencyBrushBackgroundColor_Color;
+   GlobalColorControl         DefaultTransparencyColor_Color;
 };
 
 DEFINE_PREFERENCES_CATEGORY( DefaultTransparencySettings, "Default Transparency Settings" )
@@ -861,23 +897,6 @@ DEFINE_PREFERENCES_CATEGORY( MiscProcessing, "Miscellaneous Process Settings" )
 
 // ----------------------------------------------------------------------------
 
-class TransparencyColorsPreferencesPage : public PreferencesCategoryPage
-{
-public:
-
-   TransparencyColorsPreferencesPage( PreferencesInstance& );
-
-   void TransferSettings( PreferencesInstance& to, const PreferencesInstance& from ) override;
-
-   GlobalColorControl         TransparencyBrushForegroundColor_Color;
-   GlobalColorControl         TransparencyBrushBackgroundColor_Color;
-   GlobalColorControl         DefaultTransparencyColor_Color;
-};
-
-DEFINE_PREFERENCES_CATEGORY( TransparencyColors, "Transparency Colors" )
-
-// ----------------------------------------------------------------------------
-
 class PreferencesInterface : public ProcessInterface
 {
 public:
@@ -983,4 +1002,4 @@ PCL_END_LOCAL
 #endif   // __PreferencesInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInterface.h - Released 2023-08-28T15:23:41Z
+// EOF PreferencesInterface.h - Released 2023-09-14T17:02:22Z

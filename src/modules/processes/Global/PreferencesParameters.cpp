@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.8
+// /_/     \____//_____/   PCL 2.6.0
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.4.2
+// Standard Global Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// PreferencesParameters.cpp - Released 2023-08-28T15:23:41Z
+// PreferencesParameters.cpp - Released 2023-09-14T17:02:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -78,6 +78,11 @@ IMPLEMENT_STRING_METAPARAMETER    ( Application, lowResFont )
 IMPLEMENT_STRING_METAPARAMETER    ( Application, highResFont )
 IMPLEMENT_STRING_METAPARAMETER    ( Application, lowResMonoFont )
 IMPLEMENT_STRING_METAPARAMETER    ( Application, highResMonoFont )
+IMPLEMENT_INT32_METAPARAMETER     ( Application, messageBoxYesNoButtonOrder )
+IMPLEMENT_INT32_METAPARAMETER     ( Application, messageBoxOkCancelButtonOrder )
+IMPLEMENT_INT32_METAPARAMETER     ( Application, autoSaveSettingsPeriod )
+IMPLEMENT_BOOLEAN_METAPARAMETER   ( Application, minifySettingsXML )
+IMPLEMENT_BOOLEAN_METAPARAMETER   ( Application, compressSettingsBlocks )
 IMPLEMENT_STRING_METAPARAMETER    ( Application, fundamentalEphemeridesFile )
 IMPLEMENT_STRING_METAPARAMETER    ( Application, shortTermFundamentalEphemeridesFile )
 IMPLEMENT_STRING_METAPARAMETER    ( Application, asteroidEphemeridesFile )
@@ -247,4 +252,4 @@ IMPLEMENT_BOOLEAN_METAPARAMETER   ( Security, enableLocalSigningIdentity )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesParameters.cpp - Released 2023-08-28T15:23:41Z
+// EOF PreferencesParameters.cpp - Released 2023-09-14T17:02:22Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.8
+// /_/     \____//_____/   PCL 2.6.0
 // ----------------------------------------------------------------------------
 // Standard Flux Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// FluxCalibrationInstance.cpp - Released 2023-08-28T15:23:41Z
+// FluxCalibrationInstance.cpp - Released 2023-09-14T17:02:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Flux PixInsight module.
 //
@@ -500,4 +500,4 @@ size_type FluxCalibrationInstance::ParameterLength( const MetaParameter* p, size
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FluxCalibrationInstance.cpp - Released 2023-08-28T15:23:41Z
+// EOF FluxCalibrationInstance.cpp - Released 2023-09-14T17:02:22Z

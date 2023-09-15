@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.8
+// /_/     \____//_____/   PCL 2.6.0
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.4.2
+// Standard Global Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// PreferencesInstance.cpp - Released 2023-08-28T15:23:41Z
+// PreferencesInstance.cpp - Released 2023-09-14T17:02:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -132,6 +132,11 @@ bool PreferencesInstance::ExecuteGlobal()
       PixInsightSettings::SetGlobalString  ( "Application/HighResFont",                         application.highResFont );
       PixInsightSettings::SetGlobalString  ( "Application/LowResMonoFont",                      application.lowResMonoFont );
       PixInsightSettings::SetGlobalString  ( "Application/HighResMonoFont",                     application.highResMonoFont );
+      PixInsightSettings::SetGlobalInteger ( "Application/MessageBoxYesNoButtonOrder",          application.messageBoxYesNoButtonOrder );
+      PixInsightSettings::SetGlobalInteger ( "Application/MessageBoxOkCancelButtonOrder",       application.messageBoxOkCancelButtonOrder );
+      PixInsightSettings::SetGlobalInteger ( "Application/AutoSaveSettingsPeriod",              application.autoSaveSettingsPeriod );
+      PixInsightSettings::SetGlobalFlag    ( "Application/MinifySettingsXML",                   application.minifySettingsXML );
+      PixInsightSettings::SetGlobalFlag    ( "Application/CompressSettingsBlocks",              application.compressSettingsBlocks );
       PixInsightSettings::SetGlobalString  ( "Application/FundamentalEphemeridesFile",          application.fundamentalEphemeridesFile );
       PixInsightSettings::SetGlobalString  ( "Application/ShortTermFundamentalEphemeridesFile", application.shortTermFundamentalEphemeridesFile );
       PixInsightSettings::SetGlobalString  ( "Application/AsteroidEphemeridesFile",             application.asteroidEphemeridesFile );
@@ -343,6 +348,16 @@ void* PreferencesInstance::LockParameter( const MetaParameter* p, size_type tabl
       return application.lowResMonoFont.Begin();
    if ( p == METAPARAMETER_INSTANCE_ID( Application, highResMonoFont ) )
       return application.highResMonoFont.Begin();
+   if ( p == METAPARAMETER_INSTANCE_ID( Application, messageBoxYesNoButtonOrder ) )
+      return &application.messageBoxYesNoButtonOrder;
+   if ( p == METAPARAMETER_INSTANCE_ID( Application, messageBoxOkCancelButtonOrder ) )
+      return &application.messageBoxOkCancelButtonOrder;
+   if ( p == METAPARAMETER_INSTANCE_ID( Application, autoSaveSettingsPeriod ) )
+      return &application.autoSaveSettingsPeriod;
+   if ( p == METAPARAMETER_INSTANCE_ID( Application, minifySettingsXML ) )
+      return &application.minifySettingsXML;
+   if ( p == METAPARAMETER_INSTANCE_ID( Application, compressSettingsBlocks ) )
+      return &application.compressSettingsBlocks;
    if ( p == METAPARAMETER_INSTANCE_ID( Application, fundamentalEphemeridesFile ) )
       return application.fundamentalEphemeridesFile.Begin();
    if ( p == METAPARAMETER_INSTANCE_ID( Application, shortTermFundamentalEphemeridesFile ) )
@@ -717,6 +732,11 @@ void PreferencesInstance::LoadDefaultSettings()
    application.highResFont                      =         METAPARAMETER_INSTANCE_ID( Application, highResFont                      )->DefaultValue();
    application.lowResMonoFont                   =         METAPARAMETER_INSTANCE_ID( Application, lowResMonoFont                   )->DefaultValue();
    application.highResMonoFont                  =         METAPARAMETER_INSTANCE_ID( Application, highResMonoFont                  )->DefaultValue();
+   application.messageBoxYesNoButtonOrder       =  int32( METAPARAMETER_INSTANCE_ID( Application, messageBoxYesNoButtonOrder       )->DefaultValue() );
+   application.messageBoxOkCancelButtonOrder    =  int32( METAPARAMETER_INSTANCE_ID( Application, messageBoxOkCancelButtonOrder    )->DefaultValue() );
+   application.autoSaveSettingsPeriod           =  int32( METAPARAMETER_INSTANCE_ID( Application, autoSaveSettingsPeriod           )->DefaultValue() );
+   application.minifySettingsXML                =         METAPARAMETER_INSTANCE_ID( Application, minifySettingsXML                )->DefaultValue();
+   application.compressSettingsBlocks           =         METAPARAMETER_INSTANCE_ID( Application, compressSettingsBlocks           )->DefaultValue();
    application.fundamentalEphemeridesFile       =         METAPARAMETER_INSTANCE_ID( Application, fundamentalEphemeridesFile       )->DefaultValue();
    application.shortTermFundamentalEphemeridesFile =      METAPARAMETER_INSTANCE_ID( Application, shortTermFundamentalEphemeridesFile )->DefaultValue();
    application.asteroidEphemeridesFile          =         METAPARAMETER_INSTANCE_ID( Application, asteroidEphemeridesFile          )->DefaultValue();
@@ -895,6 +915,11 @@ void PreferencesInstance::LoadCurrentSettings()
    application.highResFont                      = PixInsightSettings::GlobalString  ( "Application/HighResFont" );
    application.lowResMonoFont                   = PixInsightSettings::GlobalString  ( "Application/LowResMonoFont" );
    application.highResMonoFont                  = PixInsightSettings::GlobalString  ( "Application/HighResMonoFont" );
+   application.messageBoxYesNoButtonOrder       = PixInsightSettings::GlobalInteger ( "Application/MessageBoxYesNoButtonOrder" );
+   application.messageBoxOkCancelButtonOrder    = PixInsightSettings::GlobalInteger ( "Application/MessageBoxOkCancelButtonOrder" );
+   application.autoSaveSettingsPeriod           = PixInsightSettings::GlobalInteger ( "Application/AutoSaveSettingsPeriod" );
+   application.minifySettingsXML                = PixInsightSettings::GlobalFlag    ( "Application/MinifySettingsXML" );
+   application.compressSettingsBlocks           = PixInsightSettings::GlobalFlag    ( "Application/CompressSettingsBlocks" );
    application.fundamentalEphemeridesFile       = PixInsightSettings::GlobalString  ( "Application/FundamentalEphemeridesFile" );
    application.shortTermFundamentalEphemeridesFile = PixInsightSettings::GlobalString( "Application/ShortTermFundamentalEphemeridesFile" );
    application.asteroidEphemeridesFile          = PixInsightSettings::GlobalString  ( "Application/AsteroidEphemeridesFile" );
@@ -1169,4 +1194,4 @@ String* PreferencesInstance::StringParameterFromMetaParameter( const MetaParamet
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInstance.cpp - Released 2023-08-28T15:23:41Z
+// EOF PreferencesInstance.cpp - Released 2023-09-14T17:02:22Z

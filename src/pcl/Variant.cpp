@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.8
+// /_/     \____//_____/   PCL 2.6.0
 // ----------------------------------------------------------------------------
-// pcl/Variant.cpp - Released 2023-08-28T15:23:22Z
+// pcl/Variant.cpp - Released 2023-09-15T14:49:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -184,6 +184,69 @@ bool Variant::ToBool() const
    }
 }
 
+bool Variant::CanConvertToBool() const noexcept
+{
+   switch ( m_type )
+   {
+   case VariantType::Invalid:
+   case VariantType::Bool:
+   case VariantType::Int8:
+   case VariantType::Int16:
+   case VariantType::Int32:
+   case VariantType::Int64:
+   case VariantType::UInt8:
+   case VariantType::UInt16:
+   case VariantType::UInt32:
+   case VariantType::UInt64:
+   case VariantType::Float32:
+   case VariantType::Float64:
+   case VariantType::Complex32:
+   case VariantType::Complex64:
+   case VariantType::I32Point:
+   case VariantType::F32Point:
+   case VariantType::F64Point:
+   case VariantType::I32Rect:
+   case VariantType::F32Rect:
+   case VariantType::F64Rect:
+   case VariantType::I8Vector:
+   case VariantType::UI8Vector:
+   case VariantType::I16Vector:
+   case VariantType::UI16Vector:
+   case VariantType::I32Vector:
+   case VariantType::UI32Vector:
+   case VariantType::I64Vector:
+   case VariantType::UI64Vector:
+   case VariantType::F32Vector:
+   case VariantType::F64Vector:
+   case VariantType::C32Vector:
+   case VariantType::C64Vector:
+   case VariantType::I8Matrix:
+   case VariantType::UI8Matrix:
+   case VariantType::I16Matrix:
+   case VariantType::UI16Matrix:
+   case VariantType::I32Matrix:
+   case VariantType::UI32Matrix:
+   case VariantType::I64Matrix:
+   case VariantType::UI64Matrix:
+   case VariantType::F32Matrix:
+   case VariantType::F64Matrix:
+   case VariantType::C32Matrix:
+   case VariantType::C64Matrix:
+   case VariantType::ByteArray:
+   case VariantType::String:
+   case VariantType::IsoString:
+   case VariantType::StringList:
+   case VariantType::IsoStringList:
+   case VariantType::StringKeyValue:
+   case VariantType::IsoStringKeyValue:
+   case VariantType::StringKeyValueList:
+   case VariantType::IsoStringKeyValueList:
+      return true;
+   default:
+      return false;
+   }
+}
+
 int Variant::ToInt() const
 {
    switch ( m_type )
@@ -209,6 +272,34 @@ int Variant::ToInt() const
          return *reinterpret_cast<const int32*>( m_data.byteArrayValue->Begin() );
    default:
       throw Error( "Variant::ToInt(): Invalid conversion from " + String( TypeAsString( m_type ) ) + " type" );
+   }
+}
+
+bool Variant::CanConvertToInt() const noexcept
+{
+   switch ( m_type )
+   {
+   case VariantType::Bool:
+   case VariantType::Int8:
+   case VariantType::Int16:
+   case VariantType::Int32:
+   case VariantType::Int64:
+   case VariantType::UInt8:
+   case VariantType::UInt16:
+   case VariantType::UInt32:
+   case VariantType::UInt64:
+   case VariantType::Float32:
+   case VariantType::Float64:
+   case VariantType::Complex32:
+   case VariantType::Complex64:
+   case VariantType::TimePoint:
+   case VariantType::String:
+   case VariantType::IsoString:
+      return true;
+   case VariantType::ByteArray:
+      return m_data.byteArrayValue->Length() == sizeof( int32 );
+   default:
+      return false;
    }
 }
 
@@ -240,6 +331,34 @@ int64 Variant::ToInt64() const
    }
 }
 
+bool Variant::CanConvertToInt64() const noexcept
+{
+   switch ( m_type )
+   {
+   case VariantType::Bool:
+   case VariantType::Int8:
+   case VariantType::Int16:
+   case VariantType::Int32:
+   case VariantType::Int64:
+   case VariantType::UInt8:
+   case VariantType::UInt16:
+   case VariantType::UInt32:
+   case VariantType::UInt64:
+   case VariantType::Float32:
+   case VariantType::Float64:
+   case VariantType::Complex32:
+   case VariantType::Complex64:
+   case VariantType::TimePoint:
+   case VariantType::String:
+   case VariantType::IsoString:
+      return true;
+   case VariantType::ByteArray:
+      return m_data.byteArrayValue->Length() == sizeof( int64 );
+   default:
+      return false;
+   }
+}
+
 unsigned int Variant::ToUInt() const
 {
    switch ( m_type )
@@ -265,6 +384,34 @@ unsigned int Variant::ToUInt() const
          return *reinterpret_cast<const uint32*>( m_data.byteArrayValue->Begin() );
    default:
       throw Error( "Variant::ToUInt(): Invalid conversion from " + String( TypeAsString( m_type ) ) + " type" );
+   }
+}
+
+bool Variant::CanConvertToUInt() const noexcept
+{
+   switch ( m_type )
+   {
+   case VariantType::Bool:
+   case VariantType::Int8:
+   case VariantType::Int16:
+   case VariantType::Int32:
+   case VariantType::Int64:
+   case VariantType::UInt8:
+   case VariantType::UInt16:
+   case VariantType::UInt32:
+   case VariantType::UInt64:
+   case VariantType::Float32:
+   case VariantType::Float64:
+   case VariantType::Complex32:
+   case VariantType::Complex64:
+   case VariantType::TimePoint:
+   case VariantType::String:
+   case VariantType::IsoString:
+      return true;
+   case VariantType::ByteArray:
+      return m_data.byteArrayValue->Length() == sizeof( uint32 );
+   default:
+      return false;
    }
 }
 
@@ -296,6 +443,34 @@ uint64 Variant::ToUInt64() const
    }
 }
 
+bool Variant::CanConvertToUInt64() const noexcept
+{
+   switch ( m_type )
+   {
+   case VariantType::Bool:
+   case VariantType::Int8:
+   case VariantType::Int16:
+   case VariantType::Int32:
+   case VariantType::Int64:
+   case VariantType::UInt8:
+   case VariantType::UInt16:
+   case VariantType::UInt32:
+   case VariantType::UInt64:
+   case VariantType::Float32:
+   case VariantType::Float64:
+   case VariantType::Complex32:
+   case VariantType::Complex64:
+   case VariantType::TimePoint:
+   case VariantType::String:
+   case VariantType::IsoString:
+      return true;
+   case VariantType::ByteArray:
+      return m_data.byteArrayValue->Length() == sizeof( uint64 );
+   default:
+      return false;
+   }
+}
+
 float Variant::ToFloat() const
 {
    switch ( m_type )
@@ -324,6 +499,34 @@ float Variant::ToFloat() const
    }
 }
 
+bool Variant::CanConvertToFloat() const noexcept
+{
+   switch ( m_type )
+   {
+   case VariantType::Bool:
+   case VariantType::Int8:
+   case VariantType::Int16:
+   case VariantType::Int32:
+   case VariantType::Int64:
+   case VariantType::UInt8:
+   case VariantType::UInt16:
+   case VariantType::UInt32:
+   case VariantType::UInt64:
+   case VariantType::Float32:
+   case VariantType::Float64:
+   case VariantType::Complex32:
+   case VariantType::Complex64:
+   case VariantType::TimePoint:
+   case VariantType::String:
+   case VariantType::IsoString:
+      return true;
+   case VariantType::ByteArray:
+      return m_data.byteArrayValue->Length() == sizeof( float );
+   default:
+      return false;
+   }
+}
+
 double Variant::ToDouble() const
 {
    switch ( m_type )
@@ -349,6 +552,34 @@ double Variant::ToDouble() const
          return *reinterpret_cast<const double*>( m_data.byteArrayValue->Begin() );
    default:
       throw Error( "Variant::ToDouble(): Invalid conversion from " + String( TypeAsString( m_type ) ) + " type" );
+   }
+}
+
+bool Variant::CanConvertToDouble() const noexcept
+{
+   switch ( m_type )
+   {
+   case VariantType::Bool:      return double( m_data.boolValue );
+   case VariantType::Int8:      return double( m_data.int8Value );
+   case VariantType::Int16:     return double( m_data.int16Value );
+   case VariantType::Int32:     return double( m_data.int32Value );
+   case VariantType::Int64:     return double( m_data.int64Value );
+   case VariantType::UInt8:     return double( m_data.uint8Value );
+   case VariantType::UInt16:    return double( m_data.uint16Value );
+   case VariantType::UInt32:    return double( m_data.uint32Value );
+   case VariantType::UInt64:    return double( m_data.uint64Value );
+   case VariantType::Float32:   return double( m_data.float32Value );
+   case VariantType::Float64:   return m_data.float64Value;
+   case VariantType::Complex32: return double( m_data.complex32Value->Mag() );
+   case VariantType::Complex64: return double( m_data.complex64Value->Mag() );
+   case VariantType::TimePoint: return double( m_data.timePointValue->JD() );
+   case VariantType::String:    return m_data.stringValue->ToDouble();
+   case VariantType::IsoString: return m_data.isoStringValue->ToDouble();
+      return true;
+   case VariantType::ByteArray:
+      return m_data.byteArrayValue->Length() == sizeof( double );
+   default:
+      return false;
    }
 }
 
@@ -381,6 +612,36 @@ fcomplex Variant::ToFComplex() const
    }
 }
 
+bool Variant::CanConvertToFComplex() const noexcept
+{
+   switch ( m_type )
+   {
+   case VariantType::Bool:
+   case VariantType::Int8:
+   case VariantType::Int16:
+   case VariantType::Int32:
+   case VariantType::Int64:
+   case VariantType::UInt8:
+   case VariantType::UInt16:
+   case VariantType::UInt32:
+   case VariantType::UInt64:
+   case VariantType::Float32:
+   case VariantType::Float64:
+   case VariantType::Complex32:
+   case VariantType::Complex64:
+   case VariantType::TimePoint:
+   case VariantType::I32Point:
+   case VariantType::F32Point:
+   case VariantType::F64Point:
+   case VariantType::I32Rect:
+   case VariantType::F32Rect:
+   case VariantType::F64Rect:
+      return true;
+   default:
+      return false;
+   }
+}
+
 dcomplex Variant::ToDComplex() const
 {
    switch ( m_type )
@@ -410,6 +671,11 @@ dcomplex Variant::ToDComplex() const
    }
 }
 
+bool Variant::CanConvertToDComplex() const noexcept
+{
+   return CanConvertToFComplex();
+}
+
 TimePoint Variant::ToTimePoint() const
 {
    switch ( m_type )
@@ -425,10 +691,33 @@ TimePoint Variant::ToTimePoint() const
    case VariantType::Float32:   return TimePoint( double( m_data.float32Value ) );
    case VariantType::Float64:   return TimePoint( m_data.float64Value );
    case VariantType::TimePoint: return *m_data.timePointValue;
-   case VariantType::String:    return TimePoint( *m_data.stringValue );
-   case VariantType::IsoString: return TimePoint( *m_data.isoStringValue );
+   case VariantType::String:    return m_data.stringValue->IsEmpty() ? TimePoint() : TimePoint( *m_data.stringValue );
+   case VariantType::IsoString: return m_data.isoStringValue->IsEmpty() ? TimePoint() : TimePoint( *m_data.isoStringValue );
    default:
       throw Error( "Variant::ToTimePoint(): Invalid conversion from " + String( TypeAsString( m_type ) ) + " type" );
+   }
+}
+
+bool Variant::CanConvertToTimePoint() const noexcept
+{
+   switch ( m_type )
+   {
+   case VariantType::Int8:
+   case VariantType::Int16:
+   case VariantType::Int32:
+   case VariantType::Int64:
+   case VariantType::UInt8:
+   case VariantType::UInt16:
+   case VariantType::UInt32:
+   case VariantType::UInt64:
+   case VariantType::Float32:
+   case VariantType::Float64:
+   case VariantType::TimePoint:
+   case VariantType::String:
+   case VariantType::IsoString:
+      return true;
+   default:
+      return false;
    }
 }
 
@@ -459,6 +748,34 @@ Point Variant::ToPoint() const
    }
 }
 
+bool Variant::CanConvertToPoint() const noexcept
+{
+   switch ( m_type )
+   {
+   case VariantType::Int8:
+   case VariantType::Int16:
+   case VariantType::Int32:
+   case VariantType::Int64:
+   case VariantType::UInt8:
+   case VariantType::UInt16:
+   case VariantType::UInt32:
+   case VariantType::UInt64:
+   case VariantType::Float32:
+   case VariantType::Float64:
+   case VariantType::Complex32:
+   case VariantType::Complex64:
+   case VariantType::I32Point:
+   case VariantType::F32Point:
+   case VariantType::F64Point:
+   case VariantType::I32Rect:
+   case VariantType::F32Rect:
+   case VariantType::F64Rect:
+      return true;
+   default:
+      return false;
+   }
+}
+
 FPoint Variant::ToFPoint() const
 {
    switch ( m_type )
@@ -484,6 +801,11 @@ FPoint Variant::ToFPoint() const
    default:
       throw Error( "Variant::ToFPoint(): Invalid conversion from " + String( TypeAsString( m_type ) ) + " type" );
    }
+}
+
+bool Variant::CanConvertToFPoint() const noexcept
+{
+   return CanConvertToPoint();
 }
 
 DPoint Variant::ToDPoint() const
@@ -513,6 +835,11 @@ DPoint Variant::ToDPoint() const
    }
 }
 
+bool Variant::CanConvertToDPoint() const noexcept
+{
+   return CanConvertToPoint();
+}
+
 Rect Variant::ToRect() const
 {
    switch ( m_type )
@@ -538,6 +865,35 @@ Rect Variant::ToRect() const
    case VariantType::F64Rect:   return Rect( *m_data.f64RectValue );
    default:
       throw Error( "Variant::ToRect(): Invalid conversion from " + String( TypeAsString( m_type ) ) + " type" );
+   }
+}
+
+bool Variant::CanConvertToRect() const noexcept
+{
+   switch ( m_type )
+   {
+   case VariantType::Bool:
+   case VariantType::Int8:
+   case VariantType::Int16:
+   case VariantType::Int32:
+   case VariantType::Int64:
+   case VariantType::UInt8:
+   case VariantType::UInt16:
+   case VariantType::UInt32:
+   case VariantType::UInt64:
+   case VariantType::Float32:
+   case VariantType::Float64:
+   case VariantType::Complex32:
+   case VariantType::Complex64:
+   case VariantType::I32Point:
+   case VariantType::F32Point:
+   case VariantType::F64Point:
+   case VariantType::I32Rect:
+   case VariantType::F32Rect:
+   case VariantType::F64Rect:
+      return true;
+   default:
+      return false;
    }
 }
 
@@ -569,6 +925,11 @@ FRect Variant::ToFRect() const
    }
 }
 
+bool Variant::CanConvertToFRect() const noexcept
+{
+   return CanConvertToRect();
+}
+
 DRect Variant::ToDRect() const
 {
    switch ( m_type )
@@ -595,6 +956,11 @@ DRect Variant::ToDRect() const
    default:
       throw Error( "Variant::ToDRect(): Invalid conversion from " + String( TypeAsString( m_type ) ) + " type" );
    }
+}
+
+bool Variant::CanConvertToDRect() const noexcept
+{
+   return CanConvertToRect();
 }
 
 CharVector Variant::ToCharVector() const
@@ -773,6 +1139,62 @@ CharVector Variant::ToCharVector() const
 
    default:
       throw Error( "Variant::ToCharVector(): Invalid conversion from " + String( TypeAsString( m_type ) ) + " type" );
+   }
+}
+
+bool Variant::CanConvertToCharVector() const noexcept
+{
+   switch ( m_type )
+   {
+   case VariantType::Bool:
+   case VariantType::Int8:
+   case VariantType::Int16:
+   case VariantType::Int32:
+   case VariantType::Int64:
+   case VariantType::UInt8:
+   case VariantType::UInt16:
+   case VariantType::UInt32:
+   case VariantType::UInt64:
+   case VariantType::Float32:
+   case VariantType::Float64:
+   case VariantType::Complex32:
+   case VariantType::Complex64:
+   case VariantType::I32Point:
+   case VariantType::F32Point:
+   case VariantType::F64Point:
+   case VariantType::I32Rect:
+   case VariantType::F32Rect:
+   case VariantType::F64Rect:
+   case VariantType::I8Vector:
+   case VariantType::UI8Vector:
+   case VariantType::I16Vector:
+   case VariantType::UI16Vector:
+   case VariantType::I32Vector:
+   case VariantType::UI32Vector:
+   case VariantType::I64Vector:
+   case VariantType::UI64Vector:
+   case VariantType::F32Vector:
+   case VariantType::F64Vector:
+   case VariantType::C32Vector:
+   case VariantType::C64Vector:
+   case VariantType::I8Matrix:
+   case VariantType::UI8Matrix:
+   case VariantType::I16Matrix:
+   case VariantType::UI16Matrix:
+   case VariantType::I32Matrix:
+   case VariantType::UI32Matrix:
+   case VariantType::I64Matrix:
+   case VariantType::UI64Matrix:
+   case VariantType::F32Matrix:
+   case VariantType::F64Matrix:
+   case VariantType::C32Matrix:
+   case VariantType::C64Matrix:
+   case VariantType::ByteArray:
+   case VariantType::String:
+   case VariantType::IsoString:
+      return true;
+   default:
+      return false;
    }
 }
 
@@ -955,6 +1377,11 @@ ByteVector Variant::ToByteVector() const
    }
 }
 
+bool Variant::CanConvertToByteVector() const noexcept
+{
+   return CanConvertToCharVector();
+}
+
 I16Vector Variant::ToI16Vector() const
 {
    switch ( m_type )
@@ -1132,6 +1559,11 @@ I16Vector Variant::ToI16Vector() const
    default:
       throw Error( "Variant::ToI16Vector(): Invalid conversion from " + String( TypeAsString( m_type ) ) + " type" );
    }
+}
+
+bool Variant::CanConvertToI16Vector() const noexcept
+{
+   return CanConvertToCharVector();
 }
 
 UI16Vector Variant::ToUI16Vector() const
@@ -1492,6 +1924,11 @@ IVector Variant::ToIVector() const
    }
 }
 
+bool Variant::CanConvertToIVector() const noexcept
+{
+   return CanConvertToCharVector();
+}
+
 UIVector Variant::ToUIVector() const
 {
    switch ( m_type )
@@ -1669,6 +2106,11 @@ UIVector Variant::ToUIVector() const
    default:
       throw Error( "Variant::ToUIVector(): Invalid conversion from " + String( TypeAsString( m_type ) ) + " type" );
    }
+}
+
+bool Variant::CanConvertToUIVector() const noexcept
+{
+   return CanConvertToCharVector();
 }
 
 I64Vector Variant::ToI64Vector() const
@@ -1850,6 +2292,11 @@ I64Vector Variant::ToI64Vector() const
    }
 }
 
+bool Variant::CanConvertToI64Vector() const noexcept
+{
+   return CanConvertToCharVector();
+}
+
 UI64Vector Variant::ToUI64Vector() const
 {
    switch ( m_type )
@@ -2027,6 +2474,11 @@ UI64Vector Variant::ToUI64Vector() const
    default:
       throw Error( "Variant::ToUI64Vector(): Invalid conversion from " + String( TypeAsString( m_type ) ) + " type" );
    }
+}
+
+bool Variant::CanConvertToUI64Vector() const noexcept
+{
+   return CanConvertToCharVector();
 }
 
 FVector Variant::ToFVector() const
@@ -2216,6 +2668,11 @@ FVector Variant::ToFVector() const
    }
 }
 
+bool Variant::CanConvertToFVector() const noexcept
+{
+   return CanConvertToCharVector();
+}
+
 DVector Variant::ToDVector() const
 {
    switch ( m_type )
@@ -2401,6 +2858,11 @@ DVector Variant::ToDVector() const
    default:
       throw Error( "Variant::ToDVector(): Invalid conversion from " + String( TypeAsString( m_type ) ) + " type" );
    }
+}
+
+bool Variant::CanConvertToDVector() const noexcept
+{
+   return CanConvertToCharVector();
 }
 
 C32Vector Variant::ToC32Vector() const
@@ -2733,6 +3195,61 @@ C32Vector Variant::ToC32Vector() const
 
    default:
       throw Error( "Variant::ToC32Vector(): Invalid conversion from " + String( TypeAsString( m_type ) ) + " type" );
+   }
+}
+
+bool Variant::CanConvertToC32Vector() const noexcept
+{
+   switch ( m_type )
+   {
+   case VariantType::Bool:
+   case VariantType::Int8:
+   case VariantType::Int16:
+   case VariantType::Int32:
+   case VariantType::Int64:
+   case VariantType::UInt8:
+   case VariantType::UInt16:
+   case VariantType::UInt32:
+   case VariantType::UInt64:
+   case VariantType::Float32:
+   case VariantType::Float64:
+   case VariantType::Complex32:
+   case VariantType::Complex64:
+   case VariantType::TimePoint:
+   case VariantType::I32Point:
+   case VariantType::F32Point:
+   case VariantType::F64Point:
+   case VariantType::I32Rect:
+   case VariantType::F32Rect:
+   case VariantType::F64Rect:
+   case VariantType::I8Vector:
+   case VariantType::UI8Vector:
+   case VariantType::I16Vector:
+   case VariantType::UI16Vector:
+   case VariantType::I32Vector:
+   case VariantType::UI32Vector:
+   case VariantType::I64Vector:
+   case VariantType::UI64Vector:
+   case VariantType::F32Vector:
+   case VariantType::F64Vector:
+   case VariantType::C32Vector:
+   case VariantType::C64Vector:
+   case VariantType::I8Matrix:
+   case VariantType::UI8Matrix:
+   case VariantType::I16Matrix:
+   case VariantType::UI16Matrix:
+   case VariantType::I32Matrix:
+   case VariantType::UI32Matrix:
+   case VariantType::I64Matrix:
+   case VariantType::UI64Matrix:
+   case VariantType::F32Matrix:
+   case VariantType::F64Matrix:
+   case VariantType::C32Matrix:
+   case VariantType::C64Matrix:
+   case VariantType::ByteArray:
+      return true;
+   default:
+      return false;
    }
 }
 
@@ -3069,6 +3586,11 @@ C64Vector Variant::ToC64Vector() const
    }
 }
 
+bool Variant::CanConvertToC64Vector() const noexcept
+{
+   return CanConvertToC32Vector();
+}
+
 CharMatrix Variant::ToCharMatrix() const
 {
    switch ( m_type )
@@ -3251,6 +3773,62 @@ CharMatrix Variant::ToCharMatrix() const
 
    default:
       throw Error( "Variant::ToCharMatrix(): Invalid conversion from " + String( TypeAsString( m_type ) ) + " type" );
+   }
+}
+
+bool Variant::CanConvertToCharMatrix() const noexcept
+{
+   switch ( m_type )
+   {
+   case VariantType::Bool:
+   case VariantType::Int8:
+   case VariantType::Int16:
+   case VariantType::Int32:
+   case VariantType::Int64:
+   case VariantType::UInt8:
+   case VariantType::UInt16:
+   case VariantType::UInt32:
+   case VariantType::UInt64:
+   case VariantType::Float32:
+   case VariantType::Float64:
+   case VariantType::Complex32:
+   case VariantType::Complex64:
+   case VariantType::I32Point:
+   case VariantType::F32Point:
+   case VariantType::F64Point:
+   case VariantType::I32Rect:
+   case VariantType::F32Rect:
+   case VariantType::F64Rect:
+   case VariantType::I8Vector:
+   case VariantType::UI8Vector:
+   case VariantType::I16Vector:
+   case VariantType::UI16Vector:
+   case VariantType::I32Vector:
+   case VariantType::UI32Vector:
+   case VariantType::I64Vector:
+   case VariantType::UI64Vector:
+   case VariantType::F32Vector:
+   case VariantType::F64Vector:
+   case VariantType::C32Vector:
+   case VariantType::C64Vector:
+   case VariantType::I8Matrix:
+   case VariantType::UI8Matrix:
+   case VariantType::I16Matrix:
+   case VariantType::UI16Matrix:
+   case VariantType::I32Matrix:
+   case VariantType::UI32Matrix:
+   case VariantType::I64Matrix:
+   case VariantType::UI64Matrix:
+   case VariantType::F32Matrix:
+   case VariantType::F64Matrix:
+   case VariantType::C32Matrix:
+   case VariantType::C64Matrix:
+   case VariantType::ByteArray:
+   case VariantType::String:
+   case VariantType::IsoString:
+      return true;
+   default:
+      return false;
    }
 }
 
@@ -3439,6 +4017,11 @@ ByteMatrix Variant::ToByteMatrix() const
    }
 }
 
+bool Variant::CanConvertToByteMatrix() const noexcept
+{
+   return CanConvertToCharMatrix();
+}
+
 I16Matrix Variant::ToI16Matrix() const
 {
    switch ( m_type )
@@ -3622,6 +4205,11 @@ I16Matrix Variant::ToI16Matrix() const
    default:
       throw Error( "Variant::ToI16Matrix(): Invalid conversion from " + String( TypeAsString( m_type ) ) + " type" );
    }
+}
+
+bool Variant::CanConvertToI16Matrix() const noexcept
+{
+   return CanConvertToCharMatrix();
 }
 
 UI16Matrix Variant::ToUI16Matrix() const
@@ -3809,6 +4397,11 @@ UI16Matrix Variant::ToUI16Matrix() const
    }
 }
 
+bool Variant::CanConvertToUI16Matrix() const noexcept
+{
+   return CanConvertToCharMatrix();
+}
+
 IMatrix Variant::ToIMatrix() const
 {
    switch ( m_type )
@@ -3992,6 +4585,11 @@ IMatrix Variant::ToIMatrix() const
    default:
       throw Error( "Variant::ToIMatrix(): Invalid conversion from " + String( TypeAsString( m_type ) ) + " type" );
    }
+}
+
+bool Variant::CanConvertToIMatrix() const noexcept
+{
+   return CanConvertToCharMatrix();
 }
 
 UIMatrix Variant::ToUIMatrix() const
@@ -4179,6 +4777,11 @@ UIMatrix Variant::ToUIMatrix() const
    }
 }
 
+bool Variant::CanConvertToUIMatrix() const noexcept
+{
+   return CanConvertToCharMatrix();
+}
+
 I64Matrix Variant::ToI64Matrix() const
 {
    switch ( m_type )
@@ -4364,6 +4967,11 @@ I64Matrix Variant::ToI64Matrix() const
    }
 }
 
+bool Variant::CanConvertToI64Matrix() const noexcept
+{
+   return CanConvertToCharMatrix();
+}
+
 UI64Matrix Variant::ToUI64Matrix() const
 {
    switch ( m_type )
@@ -4547,6 +5155,11 @@ UI64Matrix Variant::ToUI64Matrix() const
    default:
       throw Error( "Variant::ToUI64Matrix(): Invalid conversion from " + String( TypeAsString( m_type ) ) + " type" );
    }
+}
+
+bool Variant::CanConvertToUI64Matrix() const noexcept
+{
+   return CanConvertToCharMatrix();
 }
 
 FMatrix Variant::ToFMatrix() const
@@ -4742,6 +5355,11 @@ FMatrix Variant::ToFMatrix() const
    }
 }
 
+bool Variant::CanConvertToFMatrix() const noexcept
+{
+   return CanConvertToCharMatrix();
+}
+
 DMatrix Variant::ToDMatrix() const
 {
    switch ( m_type )
@@ -4933,6 +5551,11 @@ DMatrix Variant::ToDMatrix() const
    default:
       throw Error( "Variant::ToDMatrix(): Invalid conversion from " + String( TypeAsString( m_type ) ) + " type" );
    }
+}
+
+bool Variant::CanConvertToDMatrix() const noexcept
+{
+   return CanConvertToCharMatrix();
 }
 
 C32Matrix Variant::ToC32Matrix() const
@@ -5260,6 +5883,61 @@ C32Matrix Variant::ToC32Matrix() const
    }
 }
 
+bool Variant::CanConvertToC32Matrix() const noexcept
+{
+   switch ( m_type )
+   {
+   case VariantType::Bool:
+   case VariantType::Int8:
+   case VariantType::Int16:
+   case VariantType::Int32:
+   case VariantType::Int64:
+   case VariantType::UInt8:
+   case VariantType::UInt16:
+   case VariantType::UInt32:
+   case VariantType::UInt64:
+   case VariantType::Float32:
+   case VariantType::Float64:
+   case VariantType::Complex32:
+   case VariantType::Complex64:
+   case VariantType::TimePoint:
+   case VariantType::I32Point:
+   case VariantType::F32Point:
+   case VariantType::F64Point:
+   case VariantType::I32Rect:
+   case VariantType::F32Rect:
+   case VariantType::F64Rect:
+   case VariantType::I8Vector:
+   case VariantType::UI8Vector:
+   case VariantType::I16Vector:
+   case VariantType::UI16Vector:
+   case VariantType::I32Vector:
+   case VariantType::UI32Vector:
+   case VariantType::I64Vector:
+   case VariantType::UI64Vector:
+   case VariantType::F32Vector:
+   case VariantType::F64Vector:
+   case VariantType::C32Vector:
+   case VariantType::C64Vector:
+   case VariantType::I8Matrix:
+   case VariantType::UI8Matrix:
+   case VariantType::I16Matrix:
+   case VariantType::UI16Matrix:
+   case VariantType::I32Matrix:
+   case VariantType::UI32Matrix:
+   case VariantType::I64Matrix:
+   case VariantType::UI64Matrix:
+   case VariantType::F32Matrix:
+   case VariantType::F64Matrix:
+   case VariantType::C32Matrix:
+   case VariantType::C64Matrix:
+   case VariantType::ByteArray:
+      return true;
+   default:
+      return false;
+   }
+}
+
 C64Matrix Variant::ToC64Matrix() const
 {
    switch ( m_type )
@@ -5583,6 +6261,11 @@ C64Matrix Variant::ToC64Matrix() const
    default:
       throw Error( "Variant::ToC64Matrix(): Invalid conversion from " + String( TypeAsString( m_type ) ) + " type" );
    }
+}
+
+bool Variant::CanConvertToC64Matrix() const noexcept
+{
+   return CanConvertToC32Matrix();
 }
 
 ByteArray Variant::ToByteArray() const
@@ -5931,6 +6614,63 @@ ByteArray Variant::ToByteArray() const
 
    default:
       throw Error( "Variant::ToByteArray(): Invalid conversion from " + String( TypeAsString( m_type ) ) + " type" );
+   }
+}
+
+bool Variant::CanConvertToByteArray() const noexcept
+{
+   switch ( m_type )
+   {
+   case VariantType::Bool:
+   case VariantType::Int8:
+   case VariantType::Int16:
+   case VariantType::Int32:
+   case VariantType::Int64:
+   case VariantType::UInt8:
+   case VariantType::UInt16:
+   case VariantType::UInt32:
+   case VariantType::UInt64:
+   case VariantType::Float32:
+   case VariantType::Float64:
+   case VariantType::Complex32:
+   case VariantType::Complex64:
+   case VariantType::TimePoint:
+   case VariantType::I32Point:
+   case VariantType::F32Point:
+   case VariantType::F64Point:
+   case VariantType::I32Rect:
+   case VariantType::F32Rect:
+   case VariantType::F64Rect:
+   case VariantType::I8Vector:
+   case VariantType::UI8Vector:
+   case VariantType::I16Vector:
+   case VariantType::UI16Vector:
+   case VariantType::I32Vector:
+   case VariantType::UI32Vector:
+   case VariantType::I64Vector:
+   case VariantType::UI64Vector:
+   case VariantType::F32Vector:
+   case VariantType::F64Vector:
+   case VariantType::C32Vector:
+   case VariantType::C64Vector:
+   case VariantType::I8Matrix:
+   case VariantType::UI8Matrix:
+   case VariantType::I16Matrix:
+   case VariantType::UI16Matrix:
+   case VariantType::I32Matrix:
+   case VariantType::UI32Matrix:
+   case VariantType::I64Matrix:
+   case VariantType::UI64Matrix:
+   case VariantType::F32Matrix:
+   case VariantType::F64Matrix:
+   case VariantType::C32Matrix:
+   case VariantType::C64Matrix:
+   case VariantType::ByteArray:
+   case VariantType::String:
+   case VariantType::IsoString:
+      return true;
+   default:
+      return false;
    }
 }
 
@@ -6499,6 +7239,11 @@ String Variant::ToString() const
    }
 }
 
+bool Variant::CanConvertToString() const noexcept
+{
+   return IsValid();
+}
+
 IsoString Variant::ToIsoString() const
 {
    switch ( m_type )
@@ -7064,6 +7809,11 @@ IsoString Variant::ToIsoString() const
    }
 }
 
+bool Variant::CanConvertToIsoString() const noexcept
+{
+   return IsValid();
+}
+
 StringList Variant::ToStringList() const
 {
    switch ( m_type )
@@ -7426,6 +8176,11 @@ StringList Variant::ToStringList() const
    }
 }
 
+bool Variant::CanConvertToStringList() const noexcept
+{
+   return IsValid();
+}
+
 IsoStringList Variant::ToIsoStringList() const
 {
    switch ( m_type )
@@ -7786,6 +8541,11 @@ IsoStringList Variant::ToIsoStringList() const
    default:
       throw Error( "Variant::ToIsoStringList(): Invalid conversion from " + String( TypeAsString( m_type ) ) + " type" );
    }
+}
+
+bool Variant::CanConvertToIsoStringList() const noexcept
+{
+   return IsValid();
 }
 
 StringKeyValue Variant::ToStringKeyValue() const
@@ -9323,4 +10083,4 @@ uint64 APIPropertyTypeFromVariantType( Variant::data_type type )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Variant.cpp - Released 2023-08-28T15:23:22Z
+// EOF pcl/Variant.cpp - Released 2023-09-15T14:49:17Z

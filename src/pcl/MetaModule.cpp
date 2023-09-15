@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.8
+// /_/     \____//_____/   PCL 2.6.0
 // ----------------------------------------------------------------------------
-// pcl/MetaModule.cpp - Released 2023-08-28T15:23:22Z
+// pcl/MetaModule.cpp - Released 2023-09-15T14:49:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -287,26 +287,32 @@ bool MetaModule::GetPhysicalMemoryStatus( size_type& totalBytes, size_type& avai
 #ifdef __PCL_MACOSX
 
    // https://unix.stackexchange.com/questions/175806/accounting-for-missing-memory-from-sysctl
-   totalBytes = 0;
+   totalBytes = availableBytes = 0;
    size_t size = sizeof( totalBytes );
    if ( sysctlbyname( "hw.memsize", &totalBytes, &size, NULL, 0 ) == 0 )
    {
       mach_port_t host = mach_host_self();
-      kern_return_t kret;
+      vm_size_t pageSize;
+      if ( host_page_size( host, &pageSize ) == KERN_SUCCESS )
+      {
 # ifdef HOST_VM_INFO64
-      struct vm_statistics64 vm_stat;
-      natural_t count = HOST_VM_INFO64_COUNT;
-      kret = host_statistics64( host, HOST_VM_INFO64, (host_info64_t)&vm_stat, &count );
+         struct vm_statistics64 vm_stat;
+         natural_t count = HOST_VM_INFO64_COUNT;
+         if ( host_statistics64( host, HOST_VM_INFO64, (host_info64_t)&vm_stat, &count ) == KERN_SUCCESS )
 # else
-      struct vm_statistics vm_stat;
-      natural_t count = HOST_VM_INFO_COUNT;
-      kret = host_statistics( host, HOST_VM_INFO, (host_info_t)&vm_stat, &count );
+         struct vm_statistics vm_stat;
+         natural_t count = HOST_VM_INFO_COUNT;
+         if ( host_statistics( host, HOST_VM_INFO, (host_info_t)&vm_stat, &count ) == KERN_SUCCESS )
 # endif
-      if ( kret != KERN_SUCCESS )
-         return false;
-      availableBytes = size_type( vm_stat.free_count + vm_stat.active_count + vm_stat.inactive_count )
-                     * size_type( sysconf( _SC_PAGESIZE ) );
+         {
+            availableBytes = size_type( vm_stat.free_count + vm_stat.active_count + vm_stat.inactive_count )
+                           * size_type( pageSize );
+         }
+      }
+
+      // https://codereview.chromium.org/279293002/
       mach_port_deallocate( mach_task_self(), host );
+
       return totalBytes > 0 && availableBytes > 0;
    }
 
@@ -446,4 +452,4 @@ void MetaModule::PerformAPIDefinitions() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MetaModule.cpp - Released 2023-08-28T15:23:22Z
+// EOF pcl/MetaModule.cpp - Released 2023-09-15T14:49:17Z

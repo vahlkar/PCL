@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.8
+// /_/     \____//_____/   PCL 2.6.0
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// SpectrophotometricColorCalibrationPreferencesDialog.h - Released 2023-08-28T15:23:41Z
+// SpectrophotometricColorCalibrationPreferencesDialog.h - Released 2023-09-14T17:02:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -104,4 +104,4 @@ private:
 #endif   // __SpectrophotometricColorCalibrationPreferencesDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF SpectrophotometricColorCalibrationPreferencesDialog.h - Released 2023-08-28T15:23:41Z
+// EOF SpectrophotometricColorCalibrationPreferencesDialog.h - Released 2023-09-14T17:02:22Z

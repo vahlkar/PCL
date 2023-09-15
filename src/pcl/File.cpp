@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.8
+// /_/     \____//_____/   PCL 2.6.0
 // ----------------------------------------------------------------------------
-// pcl/File.cpp - Released 2023-08-28T15:23:22Z
+// pcl/File.cpp - Released 2023-09-15T14:49:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -59,9 +59,7 @@
 #else
 #  include <sys/types.h>
 #  include <sys/stat.h>
-#  ifndef __PCL_MACOSX
-#    include <sys/statfs.h>
-#  endif
+#  include <sys/statvfs.h>
 #  include <limits.h>
 #  include <unistd.h>
 #  include <dirent.h>
@@ -115,7 +113,6 @@ const File::handle File::s_invalidHandle =
 static String WinErrorMessage()
 {
    DWORD errCode = ::GetLastError();
-
    LPVOID lpMsgBuf;
 
    ::FormatMessageW( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
@@ -127,7 +124,6 @@ static String WinErrorMessage()
                      0 );
 
    String msg( reinterpret_cast<char16_type*>( lpMsgBuf ) );
-
    ::LocalFree( lpMsgBuf );
 
    return String().Format( "Win32 error (%u): ", errCode ) + msg;
@@ -2416,32 +2412,50 @@ uint64 File::GetAvailableSpace( const String& dirPath, uint64* argTotalBytes, ui
 
    throw File::Error( dirPath, "Unable to get file system information: " + WinErrorMessage() );
 
-#endif
-
-#ifdef __PCL_MACOSX
+#else
 
    String dir = File::FullPath( TrailingSlashStripped( dirPath.Trimmed() ) );
-   uint64 availableBytes = 0;
-   if ( GetVolumeAvailableCapacity( dir.c_str(), dir.Length(), argTotalBytes, argFreeBytes, &availableBytes ) )
+
+#  ifdef __PCL_MACOSX
+
+   uint64 freeBytes = 0, availableBytes = 0;
+
+   if ( !GetVolumeAvailableCapacity( dir.c_str(), dir.Length(), argTotalBytes, &freeBytes, &availableBytes ) )
+      throw File::Error( dir, "Unable to get capacity information" );
+
+   if ( argFreeBytes != nullptr )
+      *argFreeBytes = freeBytes;
+
+   /*
+    * See the GetVolumeAvailableCapacity objective-c routine. Reference:
+    * https://developer.apple.com/documentation/foundation/nsurl/
+    *    1408874-getresourcevalue?language=objc
+    *
+    * In case getResourceValue() is unable to provide the value of
+    * NSURLVolumeAvailableCapacityForImportantUsageKey, use the value of
+    * NSURLVolumeAvailableCapacityKey instead. If both keys provide zero or nil
+    * values, fallback to statvfs64() for robustness.
+    */
+   if ( availableBytes > 0 )
       return availableBytes;
+   if ( freeBytes > 0 )
+      return freeBytes;
 
-   throw File::Error( dir, "Unable to get capacity information" );
+#  define statvfs64 statvfs
 
-#endif
+#  endif
 
-#if defined( __PCL_LINUX ) || defined( __PCL_FREEBSD )
-
-   String dir = File::FullPath( TrailingSlashStripped( dirPath.Trimmed() ) );
    IsoString utf8 = dir.ToUTF8();
    errno = 0;
-   struct statfs64 buf;
-   if ( ::statfs64( utf8.c_str(), &buf ) == 0 )
+   struct statvfs64 buf;
+   if ( ::statvfs64( utf8.c_str(), &buf ) == 0 )
    {
+      uint64 blockSize = buf.f_frsize ? buf.f_frsize : buf.f_bsize;
       if ( argTotalBytes != nullptr )
-         *argTotalBytes = buf.f_blocks * buf.f_bsize;
+         *argTotalBytes = buf.f_blocks * blockSize;
       if ( argFreeBytes != nullptr )
-         *argFreeBytes = buf.f_bfree * buf.f_bsize;
-      return buf.f_bavail * buf.f_bsize;
+         *argFreeBytes = buf.f_bfree * blockSize;
+      return buf.f_bavail * blockSize;
    }
 
    if ( errno != 0 )
@@ -2628,4 +2642,4 @@ bool File::IsValidHandle( handle h ) const
 }  // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/File.cpp - Released 2023-08-28T15:23:22Z
+// EOF pcl/File.cpp - Released 2023-09-15T14:49:17Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.8
+// /_/     \____//_____/   PCL 2.6.0
 // ----------------------------------------------------------------------------
 // Standard Gaia Process Module Version 1.2.5
 // ----------------------------------------------------------------------------
-// GaiaParameters.h - Released 2023-08-28T15:23:41Z
+// GaiaParameters.h - Released 2023-09-14T17:02:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Gaia PixInsight module.
 //
@@ -835,4 +835,4 @@ PCL_END_LOCAL
 #endif   // __GaiaParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF GaiaParameters.h - Released 2023-08-28T15:23:41Z
+// EOF GaiaParameters.h - Released 2023-09-14T17:02:22Z

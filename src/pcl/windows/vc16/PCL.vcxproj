@@ -4,7 +4,7 @@
 # PixInsight Makefile Generator Script v1.129
 # Copyright (C) 2009-2023 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2023-08-28T15:27:17.757Z
+# Generated on .... 2023-09-15T14:49:46.030Z
 # Project id ...... PCL
 # Project type .... StaticLibrary
 # Platform ........ Windows/vc16
@@ -22,7 +22,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{8917E5B8-80F5-4B14-8676-043B7142BC78}</ProjectGuid>
+    <ProjectGuid>{1F69DF83-45D6-47D4-B4F1-FFE18DC195CF}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -255,6 +255,7 @@
     <ClCompile Include="..\..\SeparableConvolution.cpp"/>
     <ClCompile Include="..\..\SeparableMedianFilter.cpp"/>
     <ClCompile Include="..\..\Settings.cpp"/>
+    <ClCompile Include="..\..\SettingsData.cpp"/>
     <ClCompile Include="..\..\SharedPixelData.cpp"/>
     <ClCompile Include="..\..\Sizer.cpp"/>
     <ClCompile Include="..\..\Slider.cpp"/>

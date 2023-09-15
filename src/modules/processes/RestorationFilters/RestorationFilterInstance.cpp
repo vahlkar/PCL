@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.8
+// /_/     \____//_____/   PCL 2.6.0
 // ----------------------------------------------------------------------------
 // Standard RestorationFilters Process Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// RestorationFilterInstance.cpp - Released 2023-08-28T15:23:41Z
+// RestorationFilterInstance.cpp - Released 2023-09-14T17:02:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RestorationFilters PixInsight module.
 //
@@ -750,4 +750,4 @@ bool RestorationFilterInstance::CreatePSF( Image& psf ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RestorationFilterInstance.cpp - Released 2023-08-28T15:23:41Z
+// EOF RestorationFilterInstance.cpp - Released 2023-09-14T17:02:22Z

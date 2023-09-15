@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.8
+// /_/     \____//_____/   PCL 2.6.0
 // ----------------------------------------------------------------------------
-// pcl/ReferenceArray.h - Released 2023-08-28T15:23:15Z
+// pcl/ReferenceArray.h - Released 2023-09-15T14:49:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -149,6 +149,14 @@ public:
        * Copy assignment operator. Returns a reference to this object.
        */
       iterator& operator =( const iterator& ) = default;
+
+      /*!
+       * Returns a pointer to the object pointed to by this iterator.
+       */
+      T* Pointer() const
+      {
+         return *it;
+      }
 
       /*!
        * Pointer-to-object conversion operator. Returns a pointer to the object
@@ -361,6 +369,14 @@ public:
       {
          it = i.it;
          return *this;
+      }
+
+      /*!
+       * Returns a pointer to the immutable object pointed to by this iterator.
+       */
+      const T* Pointer() const
+      {
+         return *it;
       }
 
       /*!
@@ -2238,4 +2254,4 @@ ReferenceArray<T,A>& operator <<( ReferenceArray<T,A>&& x1, const ReferenceArray
 #endif   // __PCL_ReferenceArray_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ReferenceArray.h - Released 2023-08-28T15:23:15Z
+// EOF pcl/ReferenceArray.h - Released 2023-09-15T14:49:04Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.8
+// /_/     \____//_____/   PCL 2.6.0
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.8.8
+// Standard SubframeSelector Process Module Version 1.8.9
 // ----------------------------------------------------------------------------
-// SubframeSelectorInstance.cpp - Released 2023-08-28T15:23:41Z
+// SubframeSelectorInstance.cpp - Released 2023-09-14T17:02:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -1919,11 +1919,12 @@ private:
       /*
        * Set image properties.
        */
-      if ( !inputFile.ReadImageProperties().IsEmpty() )
-         if ( outputFormat.CanStoreImageProperties() && outputFormat.SupportsViewProperties() )
-            outputFile.WriteImageProperties( inputFile.ReadImageProperties() );
-         else
-            console.WarningLn( "** Warning: The output format cannot store image properties; existing properties will be lost." );
+      if ( inputFormat.CanStoreImageProperties() )
+         if ( !inputFile.ReadImageProperties().IsEmpty() )
+            if ( outputFormat.CanStoreImageProperties() && outputFormat.SupportsViewProperties() )
+               outputFile.WriteImageProperties( inputFile.ReadImageProperties() );
+            else
+               console.WarningLn( "** Warning: The output format cannot store image properties; existing properties will be lost." );
 
       /*
        * Add FITS header keywords and preserve existing ones, if possible.
@@ -2742,4 +2743,4 @@ size_type SubframeSelectorInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInstance.cpp - Released 2023-08-28T15:23:41Z
+// EOF SubframeSelectorInstance.cpp - Released 2023-09-14T17:02:22Z

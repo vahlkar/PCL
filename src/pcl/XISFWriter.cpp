@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.8
+// /_/     \____//_____/   PCL 2.6.0
 // ----------------------------------------------------------------------------
-// pcl/XISFWriter.cpp - Released 2023-08-28T15:23:22Z
+// pcl/XISFWriter.cpp - Released 2023-09-15T14:49:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -1202,9 +1202,32 @@ private:
    void WriteImageElements( XMLElement* element )
    {
       if ( m_xisfOptions.storeFITSKeywords )
-         if ( !m_keywords.IsEmpty() )
+      {
+         m_lastKeywords.Clear();
+         for ( FITSHeaderKeyword& keyword : m_keywords )
          {
-            m_lastKeywords = m_keywords;
+            /*
+             * Do not propagate structural and other mandatory FITS keywords
+             * that may conflict with actual image properties.
+             */
+            IsoString kname = keyword.name.Trimmed().Substring( 0, 8 ).Uppercase();
+            if ( !kname.IsEmpty() &&
+                  kname          != "SIMPLE"    &&
+                  kname          != "BITPIX"    &&
+                 !kname.StartsWith( "NAXIS" )   && // All NAXISxxx keywords must be caught here
+                  kname          != "EXTEND"    &&
+                  kname          != "NEXTEND"   &&
+                  kname          != "BSCALE"    &&
+                  kname          != "BZERO"     &&
+                  kname          != "XTENSION"  &&
+                  kname          != "PCOUNT"    &&
+                  kname          != "GCOUNT" )
+            {
+               m_lastKeywords << keyword;
+            }
+         }
+         if ( !m_lastKeywords.IsEmpty() )
+         {
             for ( FITSHeaderKeyword& keyword : m_lastKeywords )
             {
                XMLElement* keywordElement = NewElement( element, "FITSKeyword" );
@@ -1217,6 +1240,7 @@ private:
             if ( m_xisfOptions.verbosity > 0 )
                LogLn( String( m_lastKeywords.Length() ) + " FITS keyword(s) embedded" );
          }
+      }
 
       if ( m_options.embedColorFilterArray )
          if ( !m_cfa.IsEmpty() )
@@ -1239,15 +1263,18 @@ private:
          {
             XMLElement* rgbwsElement = NewElement( element, "RGBWorkingSpace" );
             rgbwsElement->SetAttribute( "gamma", m_rgbws.IsSRGB() ? String( "sRGB" ) : String( m_rgbws.Gamma() ) );
-            rgbwsElement->SetAttribute( "xr", String( m_rgbws.ChromaticityXCoordinates()[0] ) );
-            rgbwsElement->SetAttribute( "xg", String( m_rgbws.ChromaticityXCoordinates()[1] ) );
-            rgbwsElement->SetAttribute( "xb", String( m_rgbws.ChromaticityXCoordinates()[2] ) );
-            rgbwsElement->SetAttribute( "yr", String( m_rgbws.ChromaticityYCoordinates()[0] ) );
-            rgbwsElement->SetAttribute( "yg", String( m_rgbws.ChromaticityYCoordinates()[1] ) );
-            rgbwsElement->SetAttribute( "yb", String( m_rgbws.ChromaticityYCoordinates()[2] ) );
-            rgbwsElement->SetAttribute( "Yr", String( m_rgbws.LuminanceCoefficients()[0] ) );
-            rgbwsElement->SetAttribute( "Yg", String( m_rgbws.LuminanceCoefficients()[1] ) );
-            rgbwsElement->SetAttribute( "Yb", String( m_rgbws.LuminanceCoefficients()[2] ) );
+            rgbwsElement->SetAttribute( "x", String().Format( "%.16g:%.16g:%.16g",
+                                                              m_rgbws.ChromaticityXCoordinates()[0],
+                                                              m_rgbws.ChromaticityXCoordinates()[1],
+                                                              m_rgbws.ChromaticityXCoordinates()[2] ) );
+            rgbwsElement->SetAttribute( "y", String().Format( "%.16g:%.16g:%.16g",
+                                                              m_rgbws.ChromaticityYCoordinates()[0],
+                                                              m_rgbws.ChromaticityYCoordinates()[1],
+                                                              m_rgbws.ChromaticityYCoordinates()[2] ) );
+            rgbwsElement->SetAttribute( "Y", String().Format( "%.16g:%.16g:%.16g",
+                                                              m_rgbws.LuminanceCoefficients()[0],
+                                                              m_rgbws.LuminanceCoefficients()[1],
+                                                              m_rgbws.LuminanceCoefficients()[2] ) );
             if ( m_xisfOptions.verbosity > 0 )
                LogLn( "RGBWS parameters embedded" );
          }
@@ -1815,4 +1842,4 @@ void XISFWriter::CheckClosedStream( const char* memberFunction ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/XISFWriter.cpp - Released 2023-08-28T15:23:22Z
+// EOF pcl/XISFWriter.cpp - Released 2023-09-15T14:49:17Z

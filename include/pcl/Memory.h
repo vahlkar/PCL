@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.8
+// /_/     \____//_____/   PCL 2.6.0
 // ----------------------------------------------------------------------------
-// pcl/Memory.h - Released 2023-08-28T15:23:15Z
+// pcl/Memory.h - Released 2023-09-15T14:49:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -238,4 +238,4 @@ void Replace( FI i, FI j, const T1& v1, const T2& v2, BP p )
 #endif  // __PCL_Memory_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Memory.h - Released 2023-08-28T15:23:15Z
+// EOF pcl/Memory.h - Released 2023-09-15T14:49:04Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.8
+// /_/     \____//_____/   PCL 2.6.0
 // ----------------------------------------------------------------------------
-// pcl/XISFReader.cpp - Released 2023-08-28T15:23:22Z
+// pcl/XISFReader.cpp - Released 2023-09-15T14:49:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -2013,25 +2013,11 @@ private:
 
    void GetRGBWS( RGBColorSystem& rgbws, const XMLElement& element )
    {
-      float gamma, x[ 3 ], y[ 3 ], Y[ 3 ];
+      float gamma;
       bool sRGB;
       String sgamma = element.AttributeValue( "gamma" );
-      String sxr    = element.AttributeValue( "xr" );
-      String sxg    = element.AttributeValue( "xg" );
-      String sxb    = element.AttributeValue( "xb" );
-      String syr    = element.AttributeValue( "yr" );
-      String syg    = element.AttributeValue( "yg" );
-      String syb    = element.AttributeValue( "yb" );
-      String sYr    = element.AttributeValue( "Yr" );
-      String sYg    = element.AttributeValue( "Yg" );
-      String sYb    = element.AttributeValue( "Yb" );
-
-      if ( sgamma.IsEmpty() ||
-              sxr.IsEmpty() || sxg.IsEmpty() || sxb.IsEmpty() ||
-              syr.IsEmpty() || syg.IsEmpty() || syb.IsEmpty() ||
-              sYr.IsEmpty() || sYg.IsEmpty() || sYb.IsEmpty() )
-         HeaderError( element, "Missing required RGBWS parameter(s)." );
-
+      if ( sgamma.IsEmpty() )
+         HeaderError( element, "Missing required RGBWS 'gamma' attribute." );
       if ( sgamma.CaseFolded() == "srgb" )
       {
          gamma = 2.2F;
@@ -2042,15 +2028,84 @@ private:
          gamma = sgamma.ToFloat();
          sRGB = false;
       }
-      x[0] = sxr.ToFloat();
-      x[1] = sxg.ToFloat();
-      x[2] = sxb.ToFloat();
-      y[0] = syr.ToFloat();
-      y[1] = syg.ToFloat();
-      y[2] = syb.ToFloat();
-      Y[0] = sYr.ToFloat();
-      Y[1] = sYg.ToFloat();
-      Y[2] = sYb.ToFloat();
+
+      float x[ 3 ];
+      String sx = element.AttributeValue( "x" );
+      if ( sx.IsEmpty() )
+      {
+         // Support nonstandard attributes for backwards compatibility.
+         String sxr = element.AttributeValue( "xr" );
+         String sxg = element.AttributeValue( "xg" );
+         String sxb = element.AttributeValue( "xb" );
+         if ( sxr.IsEmpty() || sxg.IsEmpty() || sxb.IsEmpty() )
+            HeaderError( element, "Missing required RGBWorkingSpace 'x' attribute(s)." );
+         x[0] = sxr.ToFloat();
+         x[1] = sxg.ToFloat();
+         x[2] = sxb.ToFloat();
+      }
+      else
+      {
+         // x="x_R:x_G:x_B"
+         StringList tokens;
+         sx.Break( tokens, ':', true/*trim*/ );
+         if ( tokens.Length() != 3 )
+            HeaderError( element, "Malformed RGBWorkingSpace 'x' attribute." );
+         x[0] = tokens[0].ToFloat();
+         x[1] = tokens[1].ToFloat();
+         x[2] = tokens[2].ToFloat();
+      }
+
+      float y[ 3 ];
+      String sy = element.AttributeValue( "y" );
+      if ( sy.IsEmpty() )
+      {
+         // Support nonstandard attributes for backwards compatibility.
+         String syr = element.AttributeValue( "yr" );
+         String syg = element.AttributeValue( "yg" );
+         String syb = element.AttributeValue( "yb" );
+         if ( syr.IsEmpty() || syg.IsEmpty() || syb.IsEmpty() )
+            HeaderError( element, "Missing required RGBWorkingSpace 'y' attribute(s)." );
+         y[0] = syr.ToFloat();
+         y[1] = syg.ToFloat();
+         y[2] = syb.ToFloat();
+      }
+      else
+      {
+         // y="y_R:y_G:y_B"
+         StringList tokens;
+         sy.Break( tokens, ':', true/*trim*/ );
+         if ( tokens.Length() != 3 )
+            HeaderError( element, "Malformed RGBWorkingSpace 'y' attribute." );
+         y[0] = tokens[0].ToFloat();
+         y[1] = tokens[1].ToFloat();
+         y[2] = tokens[2].ToFloat();
+      }
+
+      float Y[ 3 ];
+      String sY = element.AttributeValue( "Y" );
+      if ( sY.IsEmpty() )
+      {
+         // Support nonstandard attributes for backwards compatibility.
+         String sYr = element.AttributeValue( "Yr" );
+         String sYg = element.AttributeValue( "Yg" );
+         String sYb = element.AttributeValue( "Yb" );
+         if ( sYr.IsEmpty() || sYg.IsEmpty() || sYb.IsEmpty() )
+            HeaderError( element, "Missing required RGBWorkingSpace 'Y' attribute(s)." );
+         Y[0] = sYr.ToFloat();
+         Y[1] = sYg.ToFloat();
+         Y[2] = sYb.ToFloat();
+      }
+      else
+      {
+         // Y="Y_R:Y_G:Y_B"
+         StringList tokens;
+         sY.Break( tokens, ':', true/*trim*/ );
+         if ( tokens.Length() != 3 )
+            HeaderError( element, "Malformed RGBWorkingSpace 'Y' attribute." );
+         Y[0] = tokens[0].ToFloat();
+         Y[1] = tokens[1].ToFloat();
+         Y[2] = tokens[2].ToFloat();
+      }
 
       rgbws = RGBColorSystem( gamma, sRGB, x, y, Y );
    }
@@ -3043,4 +3098,4 @@ XMLDocument* XISFReader::ExtractHeader( const String& path, XMLParserOptions opt
 } //pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/XISFReader.cpp - Released 2023-08-28T15:23:22Z
+// EOF pcl/XISFReader.cpp - Released 2023-09-15T14:49:17Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.8
+// /_/     \____//_____/   PCL 2.6.0
 // ----------------------------------------------------------------------------
-// pcl/FileInfo.h - Released 2023-08-28T15:23:15Z
+// pcl/FileInfo.h - Released 2023-09-15T14:49:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -605,4 +605,4 @@ using FileInfoList = Array<FileInfo>;
 #endif  // __PCL_FileInfo_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FileInfo.h - Released 2023-08-28T15:23:15Z
+// EOF pcl/FileInfo.h - Released 2023-09-15T14:49:04Z

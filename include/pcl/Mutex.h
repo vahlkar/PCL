@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.8
+// /_/     \____//_____/   PCL 2.6.0
 // ----------------------------------------------------------------------------
-// pcl/Mutex.h - Released 2023-08-28T15:23:15Z
+// pcl/Mutex.h - Released 2023-09-15T14:49:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -192,10 +192,10 @@ namespace pcl
  * Mutex::Lock() when the calling threads don't depend on gaining exclusive
  * access to the shared data being protected by the mutex object.
  *
- * %Mutex implements <em>spinning locking</em>, a technique that can also
- * improve performance by avoiding expensive semaphore wait operations under
- * high levels of contention. See the documentation for Mutex::Mutex( int ) and
- * Mutex::Lock() for more information.
+ * %Mutex implements <em>adaptive spinning</em>, a technique that can improve
+ * performance by avoiding expensive semaphore wait operations under high
+ * levels of thread contention. See the documentation for the class constructor
+ * for more information.
  *
  * %Mutex has been implemented as a low-level PCL class that does not depend on
  * the PixInsight core application. On Windows platforms, %Mutex has been
@@ -212,15 +212,37 @@ public:
    /*!
     * Constructs a %Mutex object.
     *
-    * \param spin Maximum number of <em>spinning loops</em> to do before
-    *             performing a semaphore wait operation when a thread attempts
-    *             to lock this mutex and it has already been locked by another
-    *             thread. If this mutex becomes unlocked during the spinning
-    *             loops, the expensive wait operation can be avoided. The spin
-    *             count must be >= 0. The default value is 512.
+    * \param spinCount        Maximum number of <em>spinning loops</em> to do
+    *             before performing a mutex semaphore wait operation when a
+    *             thread attempts to lock this mutex and it has already been
+    *             locked by another thread. The expensive wait operation can be
+    *             avoided if this object becomes unlocked during the spinning
+    *             loops. The spin count must be &ge; 0. When this parameter is
+    *             zero, a regular non-spinning mutex is constructed. The
+    *             default value is 4000.
+    *
+    * \param spinCountDelta   When \a spinCount &gt; 0, this is an increment
+    *             applied to the maximum number of spinning loops when the
+    *             spinning process fails and an expensive mutex lock operation
+    *             is performed because not enough loops were executed. This
+    *             parameter allows for an adaptive spin lock mutex operation by
+    *             increasing the number of loops when necessary. The default
+    *             value is 1000.
+    *
+    * \param spinCountMax     When both \a spinCount and \a spinCountDelta
+    *             are greater than zero, this is the upper bound of spinning
+    *             loops allowed by adaptively increasing them when the loops
+    *             are insufficient to avoid an expensive mutex lock operation.
+    *             The default value is 12000.
+    *
+    * \note The \a spinCountDelta and \a spinCountMax parameters are only used
+    * on Linux and macOS. Adaptive mutex spinning is currently unavailable on
+    * Windows.
     */
-   Mutex( int spin = 512 )
-      : m_spinCount( Max( 0, spin ) )
+   Mutex( int spinCount = 4000, int spinCountDelta = 1000, int spinCountMax = 12000 )
+      : m_spinCount( Max( 0, spinCount ) )
+      , m_spinCountDelta( Max( 0, spinCountDelta ) )
+      , m_spinCountMax( Max( 0, spinCountMax ) )
    {
 #ifdef __PCL_WINDOWS
       (void)InitializeCriticalSectionAndSpinCount( &criticalSection, DWORD( m_spinCount ) );
@@ -232,9 +254,8 @@ public:
    /*!
     * Virtual destructor.
     *
-    * \warning Destroying a locked %Mutex object invokes undefined (mostly
-    * catastrophic) behavior. Always make sure that a mutex has been unlocked
-    * before destroying it.
+    * \warning Destroying a locked %Mutex object invokes undefined behavior.
+    * Always make sure that a mutex has been unlocked before destroying it.
     */
    virtual ~Mutex()
    {
@@ -273,15 +294,16 @@ public:
     * improve efficiency of multithreaded code under high levels of contention
     * (e.g. several running threads that depend on frequent concurrent accesses
     * to shared data). For fine control and performance tuning, the maximum
-    * number of spinning loops performed can be specified as a parameter to the
-    * Mutex::Mutex( int ) constructor.
+    * number of spinning loops can be specified in the class constructor, as
+    * well as an increment for adaptive spinning and the maximum spinning loops
+    * allowed by increasing them adaptively.
     */
    void Lock()
    {
 #ifdef __PCL_WINDOWS
       EnterCriticalSection( &criticalSection );
 #else
-      for ( int spin = m_spinCount; ; )
+      for ( int spin = m_spinCount;; )
       {
          // Is the mutex free? If so, get it now and don't look back!
          if ( m_lockState.TestAndSet( 0, 1 ) )
@@ -292,10 +314,15 @@ public:
 
          if ( --spin < 0 )
          {
-            // Either no spinning, or spinned to no avail...
+            // Either no spinning, or spinned to no avail.
             // Block thread until we can get this mutex. This is expensive.
             (void)PThreadLockMutex();
             m_lockState.Store( 1 );
+            // If we are spinning, the spin count was too low. We can increase
+            // it to make the spinning mutex adaptive.
+            if ( m_spinCount > 0 )
+               if ( m_spinCount < m_spinCountMax )
+                  m_spinCount += m_spinCountDelta;
             break;
          }
       }
@@ -354,7 +381,7 @@ public:
 
    /*!
     * Attempts locking this %Mutex object. Returns true iff this mutex has been
-    * successfully locked.
+    * successfully locked because no other thread had already acquired it.
     *
     * Unlike Lock(), this function does not block execution of the calling
     * thread if this mutex cannot be locked.
@@ -371,11 +398,12 @@ public:
    }
 
    /*!
-    * Returns the spin count of this %Mutex object.
+    * Returns the current spin count of this %Mutex object.
     *
     * The spin count is a read-only property that can only be set upon object
-    * construction. For information on mutex spin counts, refer to %Mutex's
-    * constructor: Mutex::Mutex( int ).
+    * construction. It can grow adaptively after successive mutex lock
+    * operations. For information on mutex spin counts, refer to the class
+    * constructor.
     */
    int SpinCount() const
    {
@@ -423,7 +451,9 @@ private:
 
 #endif   // __PCL_WINDOWS
 
-   int m_spinCount = 512;
+   int m_spinCount = 4000;
+   int m_spinCountDelta = 1000;
+   int m_spinCountMax = 12000;
 };
 
 // ----------------------------------------------------------------------------
@@ -433,4 +463,4 @@ private:
 #endif   // __PCL_Mutex_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Mutex.h - Released 2023-08-28T15:23:15Z
+// EOF pcl/Mutex.h - Released 2023-09-15T14:49:04Z

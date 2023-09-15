@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.8
+// /_/     \____//_____/   PCL 2.6.0
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// FastRotationProcess.cpp - Released 2023-08-28T15:23:41Z
+// FastRotationProcess.cpp - Released 2023-09-14T17:02:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -287,4 +287,4 @@ int FastRotationProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FastRotationProcess.cpp - Released 2023-08-28T15:23:41Z
+// EOF FastRotationProcess.cpp - Released 2023-09-14T17:02:22Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.8
+// /_/     \____//_____/   PCL 2.6.0
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.4.2
+// Standard Global Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// PreferencesInstance.h - Released 2023-08-28T15:23:41Z
+// PreferencesInstance.h - Released 2023-09-14T17:02:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -81,6 +81,11 @@ struct ApplicationPreferences
    String      highResFont;
    String      lowResMonoFont;
    String      highResMonoFont;
+   int32       messageBoxYesNoButtonOrder;    // 0 = default, 1 = Yes/No, 2 = No/Yes
+   int32       messageBoxOkCancelButtonOrder; // 0 = default, 1 = OK/Cancel, 2 = Cancel/OK
+   int32       autoSaveSettingsPeriod; // seconds, <= 0 : disabled, >= 30 otherwise
+   pcl_bool    minifySettingsXML;
+   pcl_bool    compressSettingsBlocks;
    String      fundamentalEphemeridesFile;
    String      shortTermFundamentalEphemeridesFile;
    String      asteroidEphemeridesFile;
@@ -294,23 +299,24 @@ private:
    friend class PreferencesProcess;
    friend class PreferencesInterface;
 
-   friend class MainWindowPreferencesPage;
-   friend class ResourcesPreferencesPage;
-   friend class WallpapersPreferencesPage;
-   friend class EphemeridesPreferencesPage;
-   friend class GUIEffectsPreferencesPage;
-   friend class FileIOPreferencesPage;
-   friend class DirectoriesAndNetworkPreferencesPage;
    friend class DefaultImageResolutionPreferencesPage;
    friend class DefaultMaskSettingsPreferencesPage;
    friend class DefaultTransparencySettingsPreferencesPage;
-   friend class MiscImageWindowSettingsPreferencesPage;
+   friend class DirectoriesAndNetworkPreferencesPage;
+   friend class EphemeridesPreferencesPage;
+   friend class FileIOPreferencesPage;
+   friend class GUIEffectsPreferencesPage;
+   friend class MessageBoxPreferencesPage;
    friend class IdentifiersPreferencesPage;
-   friend class StringsPreferencesPage;
-   friend class ParallelProcessingPreferencesPage;
+   friend class MainWindowPreferencesPage;
+   friend class MiscImageWindowSettingsPreferencesPage;
    friend class MiscProcessingPreferencesPage;
-   friend class TransparencyColorsPreferencesPage;
+   friend class ParallelProcessingPreferencesPage;
+   friend class ResourcesPreferencesPage;
    friend class SecurityPreferencesPage;
+   friend class SettingsAndCacheDataPreferencesPage;
+   friend class StringsPreferencesPage;
+   friend class WallpapersPreferencesPage;
 };
 
 // ----------------------------------------------------------------------------
@@ -320,4 +326,4 @@ private:
 #endif   // __PreferencesInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInstance.h - Released 2023-08-28T15:23:41Z
+// EOF PreferencesInstance.h - Released 2023-09-14T17:02:22Z

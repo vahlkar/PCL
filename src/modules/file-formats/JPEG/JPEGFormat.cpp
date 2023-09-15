@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.5.8
+// /_/     \____//_____/   PCL 2.6.0
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// JPEGFormat.cpp - Released 2023-08-28T15:23:33Z
+// JPEGFormat.cpp - Released 2023-09-14T17:02:13Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -329,4 +329,4 @@ JPEGFormat::FormatOptions* JPEGFormat::FormatOptions::FromGenericDataBlock( cons
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF JPEGFormat.cpp - Released 2023-08-28T15:23:33Z
+// EOF JPEGFormat.cpp - Released 2023-09-14T17:02:13Z

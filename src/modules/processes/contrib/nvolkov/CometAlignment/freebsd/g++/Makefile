@@ -2,7 +2,7 @@
 # PixInsight Makefile Generator Script v1.129
 # Copyright (C) 2009-2023 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2023-08-28T15:27:45.442Z
+# Generated on .... 2023-09-15T14:50:13.648Z
 # Project id ...... CometAlignment
 # Project type .... Module
 # Platform ........ FreeBSD/g++
