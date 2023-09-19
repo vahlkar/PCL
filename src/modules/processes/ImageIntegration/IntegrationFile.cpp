@@ -312,7 +312,7 @@ void IntegrationFile::OpenFiles( const ImageIntegrationInstance& instance )
             s_files.Destroy( IntegrationFile(),
                [&instance]( const IntegrationFile& f, const IntegrationFile& )
                {
-                  return f.m_weights.L1Norm() < instance.p_minWeight;
+                  return f.m_weights.MinComponent() < instance.p_minWeight;
                } );
             size_type excluded = count - s_files.Length();
             if ( excluded )
