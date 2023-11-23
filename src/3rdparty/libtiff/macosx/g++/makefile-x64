@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.129
+# PixInsight Makefile Generator Script v1.131
 # Copyright (C) 2009-2023 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2023-09-15T14:49:48.380Z
+# Generated on .... 2023-11-23T19:41:03.037Z
 # Project id ...... libtiff
 # Project type .... StaticLibrary
 # Platform ........ MacOSX/g++
@@ -184,9 +184,9 @@ post-build:
 	cp $(OBJ_DIR)/liblibtiff-pxi.a $(PCLLIBDIR64)
 
 ./x64/Release/%.o: ../../%.cxx
-	clang++ -c -pipe -pthread -arch x86_64 -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk -mmacosx-version-min=11 -D_REENTRANT -D__PCL_MACOSX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"$(PCLSRCDIR)/3rdparty/jpeg" -I"$(PCLSRCDIR)/3rdparty/zlib" -mtune=skylake -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -std=c++17 -stdlib=libc++ -Wall -Wno-parentheses -Wno-extern-c-compat -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	clang++ -c -pipe -pthread -arch x86_64 -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -mmacosx-version-min=12 -D_REENTRANT -D__PCL_MACOSX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"$(PCLSRCDIR)/3rdparty/jpeg" -I"$(PCLSRCDIR)/3rdparty/zlib" -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -std=c++17 -stdlib=libc++ -Wall -Wno-parentheses -Wno-extern-c-compat -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 ./x64/Release/%.o: ../../%.c
-	clang -c -pipe -pthread -arch x86_64 -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk -mmacosx-version-min=11 -D_REENTRANT -D__PCL_MACOSX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"$(PCLSRCDIR)/3rdparty/jpeg" -I"$(PCLSRCDIR)/3rdparty/zlib" -mtune=skylake -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -std=c99 -Wall -Wno-parentheses -Wno-error=implicit-function-declaration -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	clang -c -pipe -pthread -arch x86_64 -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -mmacosx-version-min=12 -D_REENTRANT -D__PCL_MACOSX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"$(PCLSRCDIR)/3rdparty/jpeg" -I"$(PCLSRCDIR)/3rdparty/zlib" -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -std=c99 -Wall -Wno-parentheses -Wno-error=implicit-function-declaration -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 

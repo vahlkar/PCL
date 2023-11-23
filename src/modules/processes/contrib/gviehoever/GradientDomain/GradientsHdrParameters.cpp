@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.0
+// /_/     \____//_____/   PCL 2.6.3
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsHdrParameters.cpp - Released 2023-09-14T17:02:22Z
+// GradientsHdrParameters.cpp - Released 2023-11-23T18:45:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
@@ -181,4 +181,4 @@ bool GradientsHdrParameterPreserveColor::DefaultValue() const
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF GradientsHdrParameters.cpp - Released 2023-09-14T17:02:22Z
+// EOF GradientsHdrParameters.cpp - Released 2023-11-23T18:45:26Z

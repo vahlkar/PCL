@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.0
+// /_/     \____//_____/   PCL 2.6.3
 // ----------------------------------------------------------------------------
-// pcl/GridInterpolation.h - Released 2023-09-15T14:49:04Z
+// pcl/GridInterpolation.h - Released 2023-11-23T18:44:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -127,7 +127,7 @@ public:
     *                \a delta coordinate intervals.
     *
     * \param delta   Grid distance for calculation of discrete function values.
-    *                Must be > 0.
+    *                Must be &gt; 0.
     *
     * \param S       Reference to a surface interpolation/approximation object
     *                that will be used to evaluate function values at discrete
@@ -155,25 +155,24 @@ public:
     * initialization process using multiple concurrent threads. See
     * EnableParallelProcessing() for additional information.
     */
-   template <class SI>
-   void Initialize( const Rect& rect, int delta, const SI& S, bool verbose = true )
+   template <class R, class SI>
+   void Initialize( const R& rect, int delta, const SI& S, bool verbose = true )
    {
       PCL_PRECONDITION( rect.IsRect() )
       PCL_PRECONDITION( delta > 0 )
 
       m_rect = rect.Ordered();
-      if ( !m_rect.IsRect() )
+      double width = m_rect.Width();
+      double height = m_rect.Height();
+      if ( !m_rect.IsRect() || 1 + width == 1 || 1 + height == 1 )
          throw Error( "GridInterpolation::Initialize(): Empty interpolation space." );
 
       m_delta = Abs( delta );
-      if ( m_delta == 0 )
-         throw Error( "GridInterpolation::Initialize(): Zero grid distance." );
+      if ( 1 + m_delta == 1 )
+         throw Error( "GridInterpolation::Initialize(): Zero or insignificant grid distance." );
 
-      int w = rect.Width();
-      int h = rect.Height();
-      int rows = 1 + h/m_delta + ((h%m_delta) ? 1 : 0);
-      int cols = 1 + w/m_delta + ((w%m_delta) ? 1 : 0);
-
+      int rows = 1 + int( Ceil( height/m_delta ) );
+      int cols = 1 + int( Ceil( width/m_delta ) );
       m_G = DMatrix( rows, cols );
 
       StatusMonitor monitor;
@@ -208,7 +207,7 @@ public:
     *                \a delta coordinate intervals.
     *
     * \param delta   Grid distance for calculation of discrete function values.
-    *                Must be > 0.
+    *                Must be &gt; 0.
     *
     * \param G       interpolation matrix.
     *
@@ -229,23 +228,24 @@ public:
     * x = rect.x0 + c*delta\n
     * y = rect.y0 + r*delta
     */
-   void Initialize( const Rect& rect, int delta, const DMatrix& G )
+   template <class R>
+   void Initialize( const R& rect, double delta, const DMatrix& G )
    {
       PCL_PRECONDITION( rect.IsRect() )
       PCL_PRECONDITION( delta > 0 )
 
-      m_rect = rect.Ordered();
-      if ( !m_rect.IsRect() )
+      m_rect = DRect( rect.Ordered() );
+      double width = m_rect.Width();
+      double height = m_rect.Height();
+      if ( !m_rect.IsRect() || 1 + width == 1 || 1 + height == 1 )
          throw Error( "GridInterpolation::Initialize(): Empty interpolation space." );
 
       m_delta = Abs( delta );
-      if ( m_delta == 0 )
-         throw Error( "GridInterpolation::Initialize(): Zero grid distance." );
+      if ( 1 + m_delta == 1 )
+         throw Error( "GridInterpolation::Initialize(): Zero or insignificant grid distance." );
 
-      int w = rect.Width();
-      int h = rect.Height();
-      int rows = 1 + h/m_delta + ((h%m_delta) ? 1 : 0);
-      int cols = 1 + w/m_delta + ((w%m_delta) ? 1 : 0);
+      int rows = 1 + int( Ceil( height/m_delta ) );
+      int cols = 1 + int( Ceil( width/m_delta ) );
       if ( G.Rows() != rows || G.Cols() != cols )
          throw Error( "GridInterpolation::Initialize(): Invalid matrix dimensions." );
 
@@ -276,7 +276,7 @@ public:
     * Returns the current interpolation reference rectangle. See Initialize()
     * for more information.
     */
-   const Rect& ReferenceRect() const
+   const DRect& ReferenceRect() const
    {
       return m_rect;
    }
@@ -285,7 +285,7 @@ public:
     * Returns the current grid distance for calculation of discrete function
     * values. See Initialize() for more information.
     */
-   int Delta() const
+   double Delta() const
    {
       return m_delta;
    }
@@ -331,8 +331,8 @@ private:
     */
    using grid_interpolation = BicubicBSplineInterpolation<double>;
 
-   Rect               m_rect;
-   int                m_delta;
+   DRect              m_rect;
+   double             m_delta;
    DMatrix            m_G;
    grid_interpolation m_I;
 
@@ -355,9 +355,11 @@ private:
       {
          INIT_THREAD_MONITOR()
 
-         for ( int i = m_startRow, y = m_grid.m_rect.y0 + i*m_grid.m_delta; i < m_endRow; ++i, y += m_grid.m_delta )
+         double y = m_grid.m_rect.y0 + m_startRow*m_grid.m_delta;
+         for ( int i = m_startRow; i < m_endRow; ++i, y += m_grid.m_delta )
          {
-            for ( int j = 0, x = m_grid.m_rect.x0; j < m_grid.m_G.Cols(); ++j, x += m_grid.m_delta )
+            double x = m_grid.m_rect.x0;
+            for ( int j = 0; j < m_grid.m_G.Cols(); ++j, x += m_grid.m_delta )
                m_grid.m_G[i][j] = m_surface( x, y );
 
             UPDATE_THREAD_MONITOR( 32 )
@@ -427,7 +429,7 @@ public:
     *                \a delta coordinate intervals.
     *
     * \param delta   Grid distance for calculation of discrete function values.
-    *                Must be > 0.
+    *                Must be &gt; 0.
     *
     * \param PS      Reference to a point surface interpolation/approximation
     *                object that will be used to evaluate function values at
@@ -455,25 +457,24 @@ public:
     * initialization process using multiple concurrent threads. See
     * EnableParallelProcessing() for additional information.
     */
-   template <class PSI>
-   void Initialize( const Rect& rect, int delta, const PSI& PS, bool verbose = true )
+   template <class R, class PSI>
+   void Initialize( const R& rect, double delta, const PSI& PS, bool verbose = true )
    {
       PCL_PRECONDITION( rect.IsRect() )
       PCL_PRECONDITION( delta > 0 )
 
-      m_rect = rect.Ordered();
-      if ( !m_rect.IsRect() )
+      m_rect = DRect( rect.Ordered() );
+      double width = m_rect.Width();
+      double height = m_rect.Height();
+      if ( !m_rect.IsRect() || 1 + width == 1 || 1 + height == 1 )
          throw Error( "PointGridInterpolation::Initialize(): Empty interpolation space." );
 
       m_delta = Abs( delta );
-      if ( m_delta == 0 )
-         throw Error( "PointGridInterpolation::Initialize(): Zero grid distance." );
+      if ( 1 + m_delta == 1 )
+         throw Error( "PointGridInterpolation::Initialize(): Zero or insignificant grid distance." );
 
-      int w = rect.Width();
-      int h = rect.Height();
-      int rows = 1 + h/m_delta + ((h%m_delta) ? 1 : 0);
-      int cols = 1 + w/m_delta + ((w%m_delta) ? 1 : 0);
-
+      int rows = 1 + int( Ceil( height/m_delta ) );
+      int cols = 1 + int( Ceil( width/m_delta ) );
       m_Gx = DMatrix( rows, cols );
       m_Gy = DMatrix( rows, cols );
 
@@ -510,7 +511,7 @@ public:
     *                \a delta coordinate intervals.
     *
     * \param delta   Grid distance for calculation of discrete function values.
-    *                Must be > 0.
+    *                Must be &gt; 0.
     *
     * \param Sx      Reference to a surface interpolation/approximation object
     *                that will be used to evaluate function values at discrete
@@ -544,25 +545,24 @@ public:
     * initialization process using multiple concurrent threads. See
     * EnableParallelProcessing() for additional information.
     */
-   template <class SI>
-   void Initialize( const Rect& rect, int delta, const SI& Sx, const SI& Sy, bool verbose = true )
+   template <class R, class SI>
+   void Initialize( const R& rect, double delta, const SI& Sx, const SI& Sy, bool verbose = true )
    {
       PCL_PRECONDITION( rect.IsRect() )
       PCL_PRECONDITION( delta > 0 )
 
-      m_rect = rect.Ordered();
-      if ( !m_rect.IsRect() )
+      m_rect = DRect( rect.Ordered() );
+      double width = m_rect.Width();
+      double height = m_rect.Height();
+      if ( !m_rect.IsRect() || 1 + width == 1 || 1 + height == 1 )
          throw Error( "PointGridInterpolation::Initialize(): Empty interpolation space." );
 
       m_delta = Abs( delta );
-      if ( m_delta == 0 )
-         throw Error( "PointGridInterpolation::Initialize(): Zero grid distance." );
+      if ( 1 + m_delta == 1 )
+         throw Error( "PointGridInterpolation::Initialize(): Zero or insignificant grid distance." );
 
-      int w = rect.Width();
-      int h = rect.Height();
-      int rows = 1 + h/m_delta + ((h%m_delta) ? 1 : 0);
-      int cols = 1 + w/m_delta + ((w%m_delta) ? 1 : 0);
-
+      int rows = 1 + int( Ceil( height/m_delta ) );
+      int cols = 1 + int( Ceil( width/m_delta ) );
       m_Gx = DMatrix( rows, cols );
       m_Gy = DMatrix( rows, cols );
 
@@ -622,23 +622,24 @@ public:
     * x = rect.x0 + c*delta\n
     * y = rect.y0 + r*delta
     */
-   void Initialize( const Rect& rect, int delta, const DMatrix& Gx, const DMatrix& Gy )
+   template <class R>
+   void Initialize( const R& rect, int delta, const DMatrix& Gx, const DMatrix& Gy )
    {
       PCL_PRECONDITION( rect.IsRect() )
       PCL_PRECONDITION( delta > 0 )
 
-      m_rect = rect.Ordered();
-      if ( !m_rect.IsRect() )
+      m_rect = DRect( rect.Ordered() );
+      double width = m_rect.Width();
+      double height = m_rect.Height();
+      if ( !m_rect.IsRect() || 1 + width == 1 || 1 + height == 1 )
          throw Error( "PointGridInterpolation::Initialize(): Empty interpolation space." );
 
       m_delta = Abs( delta );
-      if ( m_delta == 0 )
-         throw Error( "PointGridInterpolation::Initialize(): Zero grid distance." );
+      if ( 1 + m_delta == 1 )
+         throw Error( "PointGridInterpolation::Initialize(): Zero or insignificant grid distance." );
 
-      int w = rect.Width();
-      int h = rect.Height();
-      int rows = 1 + h/m_delta + ((h%m_delta) ? 1 : 0);
-      int cols = 1 + w/m_delta + ((w%m_delta) ? 1 : 0);
+      int rows = 1 + int( Ceil( height/m_delta ) );
+      int cols = 1 + int( Ceil( width/m_delta ) );
       if ( Gx.Rows() != rows || Gx.Cols() != cols || Gy.Rows() != rows || Gy.Cols() != cols )
          throw Error( "PointGridInterpolation::Initialize(): Invalid matrix dimensions." );
 
@@ -741,7 +742,7 @@ public:
     *
     * The returned rectangle is ordered (see pcl::IsOrderedRect()).
     */
-   const Rect& ReferenceRect() const
+   const DRect& ReferenceRect() const
    {
       return m_rect;
    }
@@ -750,7 +751,7 @@ public:
     * Returns the current grid distance for calculation of discrete function
     * values. See Initialize() for more information.
     */
-   int Delta() const
+   double Delta() const
    {
       return m_delta;
    }
@@ -809,8 +810,8 @@ private:
     */
    using grid_interpolation = BicubicBSplineInterpolation<double> ;
 
-   Rect               m_rect;
-   int                m_delta;
+   DRect              m_rect;
+   double             m_delta;
    DMatrix            m_Gx, m_Gy;
    grid_interpolation m_Ix, m_Iy;
 
@@ -833,9 +834,11 @@ private:
       {
          INIT_THREAD_MONITOR()
 
-         for ( int i = m_startRow, y = m_grid.m_rect.y0 + i*m_grid.m_delta; i < m_endRow; ++i, y += m_grid.m_delta )
+         double y = m_grid.m_rect.y0 + m_startRow*m_grid.m_delta;
+         for ( int i = m_startRow; i < m_endRow; ++i, y += m_grid.m_delta )
          {
-            for ( int j = 0, x = m_grid.m_rect.x0; j < m_grid.m_Gx.Cols(); ++j, x += m_grid.m_delta )
+            double x = m_grid.m_rect.x0;
+            for ( int j = 0; j < m_grid.m_Gx.Cols(); ++j, x += m_grid.m_delta )
             {
                DPoint p = m_surface( x, y );
                m_grid.m_Gx[i][j] = p.x;
@@ -875,9 +878,11 @@ private:
       {
          INIT_THREAD_MONITOR()
 
-         for ( int i = m_startRow, y = m_grid.m_rect.y0 + i*m_grid.m_delta; i < m_endRow; ++i, y += m_grid.m_delta )
+         double y = m_grid.m_rect.y0 + m_startRow*m_grid.m_delta;
+         for ( int i = m_startRow; i < m_endRow; ++i, y += m_grid.m_delta )
          {
-            for ( int j = 0, x = m_grid.m_rect.x0; j < m_grid.m_Gx.Cols(); ++j, x += m_grid.m_delta )
+            double x = m_grid.m_rect.x0;
+            for ( int j = 0; j < m_grid.m_Gx.Cols(); ++j, x += m_grid.m_delta )
             {
                m_grid.m_Gx[i][j] = m_surfaceX( x, y );
                m_grid.m_Gy[i][j] = m_surfaceY( x, y );
@@ -915,9 +920,11 @@ private:
       {
          INIT_THREAD_MONITOR()
 
-         for ( int i = m_startRow, y = m_grid.m_rect.y0 + i*m_grid.m_delta; i < m_endRow; ++i, y += m_grid.m_delta )
+         double y = m_grid.m_rect.y0 + m_startRow*m_grid.m_delta;
+         for ( int i = m_startRow; i < m_endRow; ++i, y += m_grid.m_delta )
          {
-            for ( int j = 0, x = m_grid.m_rect.x0; j < m_grid.m_Gx.Cols(); ++j, x += m_grid.m_delta )
+            double x = m_grid.m_rect.x0;
+            for ( int j = 0; j < m_grid.m_Gx.Cols(); ++j, x += m_grid.m_delta )
             {
                DPoint d = m_model( x, y );
                m_grid.m_Gx[i][j] += d.x;
@@ -956,9 +963,11 @@ private:
       {
          INIT_THREAD_MONITOR()
 
-         for ( int i = m_startRow, y = m_grid.m_rect.y0 + i*m_grid.m_delta; i < m_endRow; ++i, y += m_grid.m_delta )
+         double y = m_grid.m_rect.y0 + m_startRow*m_grid.m_delta;
+         for ( int i = m_startRow; i < m_endRow; ++i, y += m_grid.m_delta )
          {
-            for ( int j = 0, x = m_grid.m_rect.x0; j < m_grid.m_Gx.Cols(); ++j, x += m_grid.m_delta )
+            double x = m_grid.m_rect.x0;
+            for ( int j = 0; j < m_grid.m_Gx.Cols(); ++j, x += m_grid.m_delta )
             {
                m_grid.m_Gx[i][j] += m_modelX( x, y );
                m_grid.m_Gy[i][j] += m_modelY( x, y );
@@ -984,4 +993,4 @@ private:
 #endif   // __PCL_GridInterpolation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/GridInterpolation.h - Released 2023-09-15T14:49:04Z
+// EOF pcl/GridInterpolation.h - Released 2023-11-23T18:44:57Z

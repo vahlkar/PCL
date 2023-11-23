@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.0
+// /_/     \____//_____/   PCL 2.6.3
 // ----------------------------------------------------------------------------
 // Standard CloneStamp Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// CloneStampInterface.cpp - Released 2023-09-14T17:02:22Z
+// CloneStampInterface.cpp - Released 2023-11-23T18:45:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CloneStamp PixInsight module.
 //
@@ -1915,4 +1915,4 @@ CloneStampInterface::GUIData::GUIData( CloneStampInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CloneStampInterface.cpp - Released 2023-09-14T17:02:22Z
+// EOF CloneStampInterface.cpp - Released 2023-11-23T18:45:25Z

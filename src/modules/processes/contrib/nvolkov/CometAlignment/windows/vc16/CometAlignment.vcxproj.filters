@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.129
+# PixInsight Makefile Generator Script v1.131
 # Copyright (C) 2009-2023 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2023-09-15T14:50:13.799Z
+# Generated on .... 2023-11-23T19:41:30.106Z
 # Project id ...... CometAlignment
 # Project type .... Module
 # Platform ........ Windows/vc16
@@ -16,13 +16,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>8f0f6f18-d858-4abc-854a-e56b896732fa</UniqueIdentifier>
+      <UniqueIdentifier>fc2f342c-e539-4589-bc2a-f115268d730c</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>ae91e34f-6b74-45df-bbba-ba2a13b4d06e</UniqueIdentifier>
+      <UniqueIdentifier>f91411f0-766c-4cc3-9261-e2d554febdb3</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>a189a316-495c-4d9e-adb0-8c219197c9a2</UniqueIdentifier>
+      <UniqueIdentifier>a68f179d-6883-4dbc-ac3b-9c7d06d61fe7</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

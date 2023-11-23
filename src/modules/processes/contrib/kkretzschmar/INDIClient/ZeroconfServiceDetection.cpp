@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.0
+// /_/     \____//_____/   PCL 2.6.3
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// ZeroconfServiceDetection.cpp - Released 2023-09-14T17:02:22Z
+// ZeroconfServiceDetection.cpp - Released 2023-11-23T18:45:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -341,4 +341,4 @@ void ZeroConfServiceResolver::Start()
 }
 
 // ----------------------------------------------------------------------------
-// EOF ZeroconfServiceDetection.cpp - Released 2023-09-14T17:02:22Z
+// EOF ZeroconfServiceDetection.cpp - Released 2023-11-23T18:45:26Z

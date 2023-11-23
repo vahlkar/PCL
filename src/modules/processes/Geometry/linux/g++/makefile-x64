@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.129
+# PixInsight Makefile Generator Script v1.131
 # Copyright (C) 2009-2023 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2023-09-15T14:50:04.564Z
+# Generated on .... 2023-11-23T19:41:20.137Z
 # Project id ...... Geometry
 # Project type .... Module
 # Platform ........ Linux/g++
@@ -147,6 +147,6 @@ post-build:
 	cp $(OBJ_DIR)/Geometry-pxm.so $(PCLBINDIR64)
 
 ./x64/Release/%.o: ../../%.cpp
-	g++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"$(CUDA_HOME)/include" -mtune=znver3 -mfpmath=sse -msse4.2 -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -fnon-call-exceptions -std=c++17 -Wall -Wno-parentheses -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	g++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -D__PCL_AVX2 -D__PCL_FMA -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"$(CUDA_HOME)/include" -march=haswell -mfpmath=sse -msse4.2 -mavx2 -mfma -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -fnon-call-exceptions -std=c++17 -Wall -Wno-parentheses -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 

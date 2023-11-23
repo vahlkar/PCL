@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.0
+// /_/     \____//_____/   PCL 2.6.3
 // ----------------------------------------------------------------------------
 // Standard RAW File Format Module Version 1.6.2
 // ----------------------------------------------------------------------------
-// RawFormat.cpp - Released 2023-09-14T17:02:13Z
+// RawFormat.cpp - Released 2023-11-23T18:45:15Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RAW PixInsight module.
 //
@@ -396,4 +396,4 @@ bool RawFormat::EditPreferences() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RawFormat.cpp - Released 2023-09-14T17:02:13Z
+// EOF RawFormat.cpp - Released 2023-11-23T18:45:15Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.0
+// /_/     \____//_____/   PCL 2.6.3
 // ----------------------------------------------------------------------------
-// pcl/Iterator.h - Released 2023-09-15T14:49:04Z
+// pcl/Iterator.h - Released 2023-11-23T18:44:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -731,4 +731,4 @@ private:
 #endif  // __PCL_Iterator_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Iterator.h - Released 2023-09-15T14:49:04Z
+// EOF pcl/Iterator.h - Released 2023-11-23T18:44:57Z

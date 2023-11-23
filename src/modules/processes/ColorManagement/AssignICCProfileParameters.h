@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.0
+// /_/     \____//_____/   PCL 2.6.3
 // ----------------------------------------------------------------------------
 // Standard ColorManagement Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// AssignICCProfileParameters.h - Released 2023-09-14T17:02:22Z
+// AssignICCProfileParameters.h - Released 2023-11-23T18:45:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorManagement PixInsight module.
 //
@@ -105,4 +105,4 @@ PCL_END_LOCAL
 #endif   // __AssignICCProfileParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF AssignICCProfileParameters.h - Released 2023-09-14T17:02:22Z
+// EOF AssignICCProfileParameters.h - Released 2023-11-23T18:45:25Z

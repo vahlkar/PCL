@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.0
+// /_/     \____//_____/   PCL 2.6.3
 // ----------------------------------------------------------------------------
-// pcl/ImageVariant.h - Released 2023-09-15T14:49:04Z
+// pcl/ImageVariant.h - Released 2023-11-23T18:44:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -7156,6 +7156,11 @@ public:
       return m_shared != nullptr;
    }
 
+   const pi::SharedImage* SharedImage() const
+   {
+      return m_shared;
+   }
+
    // Implemented in SharedImage.cpp
    pi::SharedImage* GetSharedImage( bool rdOnly = false ) const;
    pi::SharedImage* NewSharedImage( void* owner, bool rdOnly = false );
@@ -7279,4 +7284,4 @@ GenericImage<P>& GenericImage<P>::SetLightness( const ImageVariant& L, const Poi
 #endif   // __PCL_ImageVariant_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ImageVariant.h - Released 2023-09-15T14:49:04Z
+// EOF pcl/ImageVariant.h - Released 2023-11-23T18:44:57Z

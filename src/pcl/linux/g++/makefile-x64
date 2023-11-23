@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.129
+# PixInsight Makefile Generator Script v1.131
 # Copyright (C) 2009-2023 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2023-09-15T14:49:45.913Z
+# Generated on .... 2023-11-23T19:41:00.370Z
 # Project id ...... PCL
 # Project type .... StaticLibrary
 # Platform ........ Linux/g++
@@ -28,6 +28,7 @@ SRC_FILES= \
 ../../Algebra.cpp \
 ../../Arguments.cpp \
 ../../AstrometricMetadata.cpp \
+../../AstrometricReprojection.cpp \
 ../../Base64.cpp \
 ../../Bitmap.cpp \
 ../../BitmapBox.cpp \
@@ -218,6 +219,7 @@ OBJ_FILES= \
 ./x64/Release/Algebra.o \
 ./x64/Release/Arguments.o \
 ./x64/Release/AstrometricMetadata.o \
+./x64/Release/AstrometricReprojection.o \
 ./x64/Release/Base64.o \
 ./x64/Release/Bitmap.o \
 ./x64/Release/BitmapBox.o \
@@ -408,6 +410,7 @@ DEP_FILES= \
 ./x64/Release/Algebra.d \
 ./x64/Release/Arguments.d \
 ./x64/Release/AstrometricMetadata.d \
+./x64/Release/AstrometricReprojection.d \
 ./x64/Release/Base64.d \
 ./x64/Release/Bitmap.d \
 ./x64/Release/BitmapBox.d \
@@ -603,9 +606,9 @@ post-build:
 	cp $(OBJ_DIR)/libPCL-pxi.a $(PCLLIBDIR64)
 
 ./x64/Release/%.o: ../../%.cpp
-	g++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"$(CUDA_HOME)/include" -mtune=znver3 -mfpmath=sse -msse4.2 -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -fnon-call-exceptions -std=c++17 -Wall -Wno-parentheses -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	g++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -D__PCL_AVX2 -D__PCL_FMA -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"$(CUDA_HOME)/include" -march=haswell -mfpmath=sse -msse4.2 -mavx2 -mfma -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -fnon-call-exceptions -std=c++17 -Wall -Wno-parentheses -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 ./x64/Release/%.o: ../../%.mm
-	g++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"$(CUDA_HOME)/include" -mtune=znver3 -mfpmath=sse -msse4.2 -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -fnon-call-exceptions -std=c++17 -Wall -Wno-parentheses -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	g++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -D__PCL_AVX2 -D__PCL_FMA -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"$(CUDA_HOME)/include" -march=haswell -mfpmath=sse -msse4.2 -mavx2 -mfma -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -fnon-call-exceptions -std=c++17 -Wall -Wno-parentheses -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 

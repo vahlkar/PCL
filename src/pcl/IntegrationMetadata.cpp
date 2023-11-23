@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.0
+// /_/     \____//_____/   PCL 2.6.3
 // ----------------------------------------------------------------------------
-// pcl/IntegrationMetadata.cpp - Released 2023-09-15T14:49:17Z
+// pcl/IntegrationMetadata.cpp - Released 2023-11-23T18:45:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -920,4 +920,4 @@ IntegrationMetadata IntegrationMetadata::Summary( const Array<IntegrationMetadat
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/IntegrationMetadata.cpp - Released 2023-09-15T14:49:17Z
+// EOF pcl/IntegrationMetadata.cpp - Released 2023-11-23T18:45:05Z

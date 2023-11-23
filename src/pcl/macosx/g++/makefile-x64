@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.129
+# PixInsight Makefile Generator Script v1.131
 # Copyright (C) 2009-2023 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2023-09-15T14:49:45.963Z
+# Generated on .... 2023-11-23T19:41:00.420Z
 # Project id ...... PCL
 # Project type .... StaticLibrary
 # Platform ........ MacOSX/g++
@@ -28,6 +28,7 @@ SRC_FILES= \
 ../../Algebra.cpp \
 ../../Arguments.cpp \
 ../../AstrometricMetadata.cpp \
+../../AstrometricReprojection.cpp \
 ../../Base64.cpp \
 ../../Bitmap.cpp \
 ../../BitmapBox.cpp \
@@ -219,6 +220,7 @@ OBJ_FILES= \
 ./x64/Release/Algebra.o \
 ./x64/Release/Arguments.o \
 ./x64/Release/AstrometricMetadata.o \
+./x64/Release/AstrometricReprojection.o \
 ./x64/Release/Base64.o \
 ./x64/Release/Bitmap.o \
 ./x64/Release/BitmapBox.o \
@@ -410,6 +412,7 @@ DEP_FILES= \
 ./x64/Release/Algebra.d \
 ./x64/Release/Arguments.d \
 ./x64/Release/AstrometricMetadata.d \
+./x64/Release/AstrometricReprojection.d \
 ./x64/Release/Base64.d \
 ./x64/Release/Bitmap.d \
 ./x64/Release/BitmapBox.d \
@@ -606,9 +609,9 @@ post-build:
 	cp $(OBJ_DIR)/libPCL-pxi.a $(PCLLIBDIR64)
 
 ./x64/Release/%.o: ../../%.cpp
-	clang++ -c -pipe -pthread -arch x86_64 -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk -mmacosx-version-min=11 -D_REENTRANT -D__PCL_MACOSX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mtune=skylake -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -std=c++17 -stdlib=libc++ -Wall -Wno-parentheses -Wno-extern-c-compat -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	clang++ -c -pipe -pthread -arch x86_64 -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -mmacosx-version-min=12 -D_REENTRANT -D__PCL_MACOSX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -std=c++17 -stdlib=libc++ -Wall -Wno-parentheses -Wno-extern-c-compat -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 ./x64/Release/%.o: ../../%.mm
-	clang++ -c -pipe -pthread -arch x86_64 -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk -mmacosx-version-min=11 -D_REENTRANT -D__PCL_MACOSX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mtune=skylake -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -std=c++17 -stdlib=libc++ -Wall -Wno-parentheses -Wno-extern-c-compat -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	clang++ -c -pipe -pthread -arch x86_64 -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk -mmacosx-version-min=12 -D_REENTRANT -D__PCL_MACOSX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -std=c++17 -stdlib=libc++ -Wall -Wno-parentheses -Wno-extern-c-compat -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 

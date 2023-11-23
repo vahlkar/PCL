@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.0
+// /_/     \____//_____/   PCL 2.6.3
 // ----------------------------------------------------------------------------
-// pcl/RGBColorSystem.h - Released 2023-09-15T14:49:04Z
+// pcl/RGBColorSystem.h - Released 2023-11-23T18:44:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -67,6 +67,10 @@
 #define CIEEpsilon      8.856451679035631e-03 // 216/24389
 #define CIEKappa        9.032962962962963e+02 // 24389/27
 #define CIEKappa116     7.787037037037037e+00 // CIEKappa/116
+#define CIED501931XR    0.96422 // D50 (1931) mX reference white (ASTM E308-01)
+#define CIED501931ZR    0.82521 // D50 (1931) mZ reference white (ASTM E308-01)
+#define CIED501964XR    0.96720 // D50 (1964) mX reference white (ASTM E308-01)
+#define CIED501964ZR    0.81427 // D50 (1964) mZ reference white (ASTM E308-01)
 
 namespace pcl
 {
@@ -75,25 +79,22 @@ namespace pcl
 
 /*!
  * \class RGBColorSystem
- * \brief A colorimetrically defined RGB working color space.
+ * \brief Colorimetrically defined RGB working color space
  *
- * %RGBColorSystem is a rigorous and efficient implementation of a RGB working
- * space (RGBWS). This class provides all conversions between the supported
+ * %RGBColorSystem is a rigorous and efficient RGB working space (RGBWS)
+ * implementation. This class provides all conversions between the supported
  * color spaces: RGB, CIE XYZ, CIE L*a*b*, CIE L*c*h* and grayscale, plus the
  * HSV and HSI color ordering systems, which are also supported for
- * convenience, although obviously not linked to any particular RGBWS.
+ * convenience, although not linked to any particular RGBWS.
  *
- * Color components and channel values are represented as reals by means of
- * \c double floating point variables. Normalization of components and channel
+ * Color components and channel values are represented as real scalars using
+ * 64-bit floating point variables. Normalization of components and channel
  * values to the standard real range [0,1] is ensured for all supported color
- * spaces and color ordering systems.
+ * spaces and color ordering systems. All internal transformations to and from
+ * native color space component ranges are performed transparently.
  *
- * Chrominance coordinates and luminance coefficients are always considered
- * relative to the D50 reference white, in conformance to the ICC standard.
- *
- * Finally, our implementation maximizes dynamic range usage (coding
- * efficiency) by ensuring that all components and channel values make use of
- * the entire [0,1] normalized real range to the maximum possible extent.
+ * Chrominance coordinates and luminance coefficients are always relative to
+ * the D50 reference white in conformance with the ICC standard.
  *
  * \sa ImageColor, AbstractImage, GenericImage, ImageVariant
  */
@@ -109,26 +110,20 @@ public:
 
    /*!
     * Constructs a %RGBColorSystem object as a new instance of the default RGB
-    * working space. The default RGBWS is sRGB in current versions of the
-    * PixInsight platform.
-    *
-    * This constructor increments the reference counter of the source RGB
-    * working space data.
+    * working space. The default RGBWS is sRGB (adapted to D50) in current
+    * versions of the PixInsight platform.
     */
    RGBColorSystem()
       : m_data( RGBColorSystem::sRGB.m_data )
    {
       if ( m_data != nullptr )
          m_data->Attach();
-      else
+      else // should not happen!
          m_data = new Data( 2.2F/*gamma*/, true/*issRGB*/, sRGB_x, sRGB_y, sRGB_Y );
    }
 
    /*!
     * Constructs a %RGBColorSystem object as a copy of an existing instance.
-    *
-    * This constructor increments the reference counter of the source RGB
-    * working space data.
     */
    RGBColorSystem( const RGBColorSystem& s )
       : m_data( s.m_data )
@@ -140,22 +135,23 @@ public:
     * Constructs a new %RGBColorSystem instance by its RGB working space
     * parameters.
     *
-    * \param gamma   Gamma value of the RGB working space.
+    * \param gamma   Gamma parameter of the RGB working space. Ignored if
+    *                \a issRGB is true.
     *
     * \param issRGB  If true, this space uses the sRGB gamma function. If this
     *                parameter is false, the space uses a standard raise gamma
-    *                function.
+    *                function with the specified \a gamma exponent.
     *
-    * \param x,y     Vectors of chromaticity coordinates of the RGB working
-    *                space, relative to the D50 reference white.
+    * \param x,y     Vectors of chromaticity coordinates relative to the D50
+    *                reference white.
     *
-    * \param Y       Vector of luminance coefficients of the RGB working space,
-    *                with respect to the D50 reference white.
-    *
-    * This constructor creates a new RGB working space data object with a
-    * reference count value of one.
+    * \param Y       Vector of luminance coefficients relative to D50. If not
+    *                specified, or if an empty vector is specified, luminance
+    *                coefficients will be calculated internally from the
+    *                specified color primaries and the D50 reference white
+    *                components.
     */
-   RGBColorSystem( float gamma, bool issRGB, const FVector& x, const FVector& y, const FVector& Y )
+   RGBColorSystem( float gamma, bool issRGB, const FVector& x, const FVector& y, const FVector& Y = FVector() )
    {
       m_data = new Data( gamma, issRGB, x, y, Y );
    }
@@ -164,32 +160,29 @@ public:
     * Constructs a new %RGBColorSystem instance by its RGB working space
     * parameters.
     *
-    * \param gamma   Gamma value of the RGB working space.
+    * \param gamma   Gamma parameter of the RGB working space. Ignored if
+    *                \a issRGB is true.
     *
     * \param issRGB  If true, this space uses the sRGB gamma function. If this
     *                parameter is false, the space uses a standard raise gamma
-    *                function.
+    *                function with the specified \a gamma exponent.
     *
-    * \param x,y     Arrays of chromaticity coordinates of the RGB working
-    *                space, relative to the D50 reference white.
+    * \param x,y     Arrays of chromaticity coordinates relative to the D50
+    *                reference white.
     *
-    * \param Y       Arrays of luminance coefficients of the RGB working space,
-    *                with respect to the D50 reference white.
-    *
-    * This constructor creates a new RGB working space data object with a
-    * reference count value of one.
+    * \param Y       Array of luminance coefficients relative to D50. If not
+    *                specified, or if a null pointer is specified, luminance
+    *                coefficients will be calculated internally from the
+    *                specified color primaries and the D50 reference white
+    *                components.
     */
-   RGBColorSystem( float gamma, bool issRGB, const float* x, const float* y, const float* Y )
+   RGBColorSystem( float gamma, bool issRGB, const float* x, const float* y, const float* Y = nullptr )
    {
-      m_data = new Data( gamma, issRGB, FVector( x, 3 ), FVector( y, 3 ), FVector( Y, 3 ) );
+      m_data = new Data( gamma, issRGB, FVector( x, 3 ), FVector( y, 3 ), (Y != nullptr) ? FVector( Y, 3 ) : FVector() );
    }
 
    /*!
     * Virtual destructor.
-    *
-    * Decrements the reference count of the RGB working space data object. If
-    * the data object becomes \e garbage, i.e. if its reference count becomes
-    * zero, it is destroyed and its allocated space is disposed.
     */
    virtual ~RGBColorSystem()
    {
@@ -226,8 +219,8 @@ public:
     * working space data.
     *
     * If necessary, this member function generates a duplicate of the RGB
-    * working space data, references it, and then decrements the reference
-    * counter of the original data.
+    * working space data, references it, and decrements the reference counter
+    * of the original data.
     */
    void EnsureUnique()
    {
@@ -244,7 +237,8 @@ public:
     *
     * \note If this space uses a sRGB gamma function, the returned value is
     * 2.2, but the space doesn't use that value as the exponent of a standard
-    * power-law gamma function.
+    * power-law gamma function. sRGB defines a special, piecewise component
+    * delinearization function; see the references for detailed information.
     */
    float Gamma() const
    {
@@ -270,12 +264,12 @@ public:
    }
 
    /*!
-    * Returns a reference to a vector with the elements of the immutable 3x3
-    * RGB to CIE XYZ conversion matrix used in this RGB working space.
+    * Returns a reference to a vector with the elements of the 3x3 matrix for
+    * conversion from RGB to CIE XYZ color spaces.
     *
-    * The RGB->XYZ conversion matrix is a function of the luminance
-    * coefficients and chromaticity coordinates that define this RGB color
-    * space.
+    * The RGB-to-XYZ conversion matrix is a function of the reference white
+    * (always D50 in this implementation) and the chromaticity coordinates that
+    * define this RGB working color space.
     *
     * The nine matrix elements are stored contiguously in row order in the
     * returned vector: M[0][0], M[0][1], ..., M[2][2].
@@ -286,12 +280,12 @@ public:
    }
 
    /*!
-    * Returns a reference to a vector with the elements of the immutable 3x3
-    * CIE XYZ to RGB inverse conversion matrix used in this RGB working space.
+    * Returns a reference to a vector with the elements of the 3x3 inverse
+    * matrix for conversion from CIE XYZ to RGB color spaces.
     *
-    * The XYZ->RGB inverse conversion matrix is a function of the luminance
-    * coefficients and chromaticity coordinates that define this RGB color
-    * space.
+    * The XYZ-to-RGB inverse conversion matrix is a function of the reference
+    * white (always D50 in this implementation) and the chromaticity
+    * coordinates that define this RGB working color space.
     *
     * The nine inverse matrix elements are stored contiguously in row order in
     * the returned vector: M_[0][0], M_[0][1], ..., M_[2][2].
@@ -302,10 +296,86 @@ public:
    }
 
    /*!
-    * Returns a reference to the immutable vector of X chromaticity coordinates
-    * in this RGB working space.
+    * Returns the scaling factor applied for normalization of CIE X components.
     *
-    * In PCL, chromaticity coordinates are relative to the D50 reference white.
+    * This normalization factor is the sum of the elements in the first row of
+    * the XYZ-to-RGB conversion matrix: M[0][0] + M[0][1] + M[0][2].
+    *
+    * Normalization applies linear transformations to ensure that the values of
+    * all color space components are always represented in the [0,1] range,
+    * irrespective of RGBWS parameters.
+    */
+   double CIEXNormalizationFactor() const
+   {
+      return m_data->mX;
+   }
+
+   /*!
+    * Returns the scaling factor applied for normalization of CIE Z components.
+    *
+    * This normalization factor is the sum of the elements in the third row of
+    * the XYZ-to-RGB conversion matrix: M[2][0] + M[2][1] + M[2][2].
+    *
+    * Normalization applies linear transformations to ensure that the values of
+    * all color space components are always represented in the [0,1] range,
+    * irrespective of RGBWS parameters.
+    */
+   double CIEZNormalizationFactor() const
+   {
+      return m_data->mZ;
+   }
+
+   /*!
+    * Returns the additive constant applied for normalization of CIE a*
+    * components.
+    */
+   double CIEaNormalizationOffset() const
+   {
+      return m_data->zA;
+   }
+
+   /*!
+    * Returns the scaling factor applied for normalization of CIE a*
+    * components.
+    */
+   double CIEaNormalizationFactor() const
+   {
+      return m_data->mA;
+   }
+
+   /*!
+    * Returns the additive constant applied for normalization of CIE b*
+    * components.
+    */
+   double CIEbNormalizationOffset() const
+   {
+      return m_data->zB;
+   }
+
+   /*!
+    * Returns the scaling factor applied for normalization of CIE b*
+    * components.
+    */
+   double CIEbNormalizationFactor() const
+   {
+      return m_data->mB;
+   }
+
+   /*!
+    * Returns the scaling factor applied for normalization of CIE c*
+    * components.
+    */
+   double CIEcNormalizationFactor() const
+   {
+      return m_data->mC;
+   }
+
+   /*!
+    * Returns a reference to the vector of X chromaticity coordinates in this
+    * RGB working space.
+    *
+    * In the current PixInsight platform, chromaticity coordinates are always
+    * relative to the D50 reference white.
     */
    const FVector& ChromaticityXCoordinates() const
    {
@@ -313,10 +383,11 @@ public:
    }
 
    /*!
-    * Returns a reference to the immutable vector of Y chromaticity coordinates
-    * in this RGB working space.
+    * Returns a reference to the vector of Y chromaticity coordinates in this
+    * RGB working space.
     *
-    * In PCL, chromaticity coordinates are relative to the D50 reference white.
+    * In the current PixInsight platform, chromaticity coordinates are always
+    * relative to the D50 reference white.
     */
    const FVector& ChromaticityYCoordinates() const
    {
@@ -324,10 +395,11 @@ public:
    }
 
    /*!
-    * Returns a reference to the immutable vector of luminance coefficients in
-    * this RGB working space.
+    * Returns a reference to the vector of luminance coefficients in this RGB
+    * working space.
     *
-    * In PCL, luminance coefficients are relative to the D50 reference white.
+    * In the current PixInsight platform, luminance coefficients are always
+    * relative to the D50 reference white.
     */
    const FVector& LuminanceCoefficients() const
    {
@@ -335,9 +407,9 @@ public:
    }
 
    /*!
-    * Returns true iff two %RGBColorSystem instances define the same RGB working
-    * space. This happens when either both instances are aliases, or if they
-    * define exactly the same RGB space parameters.
+    * Returns true iff two %RGBColorSystem instances define the same RGB
+    * working space. This happens when either both instances are aliases, or if
+    * they define exactly the same RGB space parameters.
     */
    friend bool operator ==( const RGBColorSystem& S1, const RGBColorSystem& S2 )
    {
@@ -352,27 +424,27 @@ public:
     * and the previous space is deleted if it becomes unreferenced. The
     * reference count of the new space is then incremented.
     */
-   void Assign( const RGBColorSystem& s )
+   void Assign( const RGBColorSystem& rgbws )
    {
-      s.m_data->Attach();
+      rgbws.m_data->Attach();
       DetachFromData();
-      m_data = s.m_data;
+      m_data = rgbws.m_data;
    }
 
    /*!
     * Assignment iterator. Returns a reference to this object.
     *
-    * This operator calls Assign() with the specified source space \a s.
+    * This operator calls Assign() with the specified source space \a rgbws.
     */
-   RGBColorSystem& operator =( const RGBColorSystem& s )
+   RGBColorSystem& operator =( const RGBColorSystem& rgbws )
    {
-      Assign( s );
+      Assign( rgbws );
       return *this;
    }
 
    /*!
     * Returns the lightness component in the CIE L*a*b* space corresponding to
-    * a set of specified RGB components.
+    * a set of RGB components.
     *
     * \param R,G,B   RGB components from which lightness will be calculated.
     *
@@ -400,12 +472,14 @@ public:
 
    /*!
     * Calculates the lightness component in the CIE L*a*b* space corresponding
-    * to a set of RGB components, and copies it to a specified variable \a K.
+    * to a set of RGB components and copies it to a variable.
     *
     * \param[out] K  Reference to an output variable for the calculated
     *                lightness component.
     *
     * \param R,G,B   Input RGB components.
+    *
+    * \sa Lightness(), CIEL()
     */
    void RGBToGray( sample& K, sample R, sample G, sample B ) const
    {
@@ -418,8 +492,8 @@ public:
     *
     * \param R,G,B   Input RGB components.
     *
-    * \note This is an utility function provided for convenience; HSV is not a
-    * color space, but a color ordering system not based on a RGBWS.
+    * \note This utility function is provided for convenience; HSV is not a
+    * color space, but a color ordering system not based on an RGBWS.
     */
    sample Value( sample R, sample G, sample B ) const
    {
@@ -432,11 +506,11 @@ public:
     *
     * \param R,G,B   Input RGB components.
     *
-    * \note HSI is more often known as HSL; however we reserve the L channel
+    * \note HSI is more often known as HSL. However, we reserve the L channel
     * identifier exclusively for the CIE L* component (lightness) in PCL.
     *
-    * \note This is an utility function provided for convenience; HSI is not a
-    * color space, but a color ordering system not based on a RGBWS.
+    * \note This utility function is provided for convenience; HSI is not a
+    * color space, but a color ordering system not based on an RGBWS.
     */
    sample Intensity( sample R, sample G, sample B ) const
    {
@@ -451,11 +525,11 @@ public:
     * \param R,G,B   Input RGB components.
     *
     * The returned value is a <em>normalized hue</em>, which is the hue angle
-    * rescaled to the normalized [0,1[ range. A normalized hue value of 1
+    * rescaled to the normalized [0,1) range. A normalized hue value of 1
     * corresponds to a hue angle of 2*pi radians, or 360 degrees.
     *
-    * \note This is an utility function, provided for convenience. HSV and HSI
-    * are not color spaces, but color ordering systems not based on any RGBWS.
+    * \note This utility function is provided for convenience; HSV and HSI are
+    * not color spaces, but color ordering systems not based on an RGBWS.
     */
    sample Hue( sample R, sample G, sample B ) const
    {
@@ -488,8 +562,8 @@ public:
     *
     * \param R,G,B   Input RGB components.
     *
-    * \note This is an utility function provided for convenience; HSV is not a
-    * color space, but a color ordering system not based on a RGBWS.
+    * \note This utility function is provided for convenience; HSV is not a
+    * color space but a color ordering system not based on an RGBWS.
     */
    sample HSVSaturation( sample R, sample G, sample B ) const
    {
@@ -504,11 +578,11 @@ public:
     *
     * \param R,G,B   Input RGB components.
     *
-    * \note HSI is more often known as HSL; however we reserve the L channel
+    * \note HSI is more often known as HSL. However, we reserve the L channel
     * identifier exclusively for the CIE L* component (lightness) in PCL.
     *
-    * \note This is an utility function provided for convenience; HSI is not a
-    * color space, but a color ordering system not based on a RGBWS.
+    * \note This utility function is provided for convenience; HSI is not a
+    * color space, but a color ordering system not based on an RGBWS.
     */
    sample HSISaturation( sample R, sample G, sample B ) const
    {
@@ -541,16 +615,16 @@ public:
     * the HSV (Hue, Saturation, Value) color ordering system.
     *
     * \param[out] H,S,V    References to the variables where output HSV channel
-    *             values will be copied.
+    *                      values will be stored.
     *
-    * \param R,G,B   Input RGB components.
+    * \param R,G,B         Input RGB components.
     *
     * The output \a H value is a <em>normalized hue</em>, which is the hue
-    * angle rescaled to the normalized [0,1] range. A normalized hue value of
+    * angle rescaled to the normalized [0,1) range. A normalized hue value of
     * one corresponds to a hue angle of 2*pi radians, or 360 degrees.
     *
-    * \note This is a static function provided for convenience; HSV is not a
-    * color space, but a color ordering system not based on a RGBWS.
+    * \note This utility function is provided for convenience; HSV is not a
+    * color space, but a color ordering system not based on an RGBWS.
     */
    static void RGBToHSV( sample& H, sample& S, sample& V, sample R, sample G, sample B )
    {
@@ -585,19 +659,19 @@ public:
     * the HSI (Hue, Saturation, Intensity) color ordering system.
     *
     * \param[out] H,S,I    References to the variables where output HSI channel
-    *             values will be copied.
+    *                      values will be stored.
     *
-    * \param R,G,B   Input RGB components.
+    * \param R,G,B         Input RGB components.
     *
     * The output \a H value is a <em>normalized hue</em>, which is the hue
-    * angle rescaled to the normalized [0,1] range. A normalized hue value of
+    * angle rescaled to the normalized [0,1) range. A normalized hue value of
     * one corresponds to a hue angle of 2*pi radians, or 360 degrees.
     *
-    * \note HSI is more often known as HSL; however we reserve the L channel
+    * \note HSI is more often known as HSL. However, we reserve the L
     * identifier exclusively for the CIE L* component (lightness) in PCL.
     *
-    * \note This is a static function provided for convenience; HSV is not a
-    * color space, but a color ordering system not based on a RGBWS.
+    * \note This utility function is provided for convenience; HSV is not a
+    * color space, but a color ordering system not based on an RGBWS.
     */
    static void RGBToHSI( sample& H, sample& S, sample& I, sample R, sample G, sample B )
    {
@@ -633,19 +707,19 @@ public:
 
    /*!
     * Converts a set of RGB components to the corresponding channel values in
-    * the HSV (Hue, Saturation, Value) color ordering system, plus the
-    * L* component (lightness) in the CIE L*a*b* space.
+    * the HSV (Hue, Saturation, Value) color ordering system, plus the L*
+    * component (lightness) in the CIE L*a*b* space.
     *
     * \param[out] H,S,V    References to the variables where output HSV channel
-    *                      values will be copied.
+    *                      values will be stored.
     *
     * \param[out] L        Reference to a variable where the output CIE L*
-    *                      component will be copied.
+    *                      component will be stored.
     *
     * \param R,G,B   Input RGB components.
     *
     * The output \a H value is a <em>normalized hue</em>, which is the hue
-    * angle rescaled to the normalized [0,1] range. A normalized hue value of
+    * angle rescaled to the normalized [0,1) range. A normalized hue value of
     * one corresponds to a hue angle of 2*pi radians, or 360 degrees.
     */
    void RGBToHSVL( sample& H, sample& S, sample& V, sample& L, sample R, sample G, sample B ) const
@@ -656,22 +730,22 @@ public:
 
    /*!
     * Converts a set of RGB components to the corresponding channel values in
-    * the HSI (Hue, Saturation, Intensity) color ordering system, plus the
-    * L* component (lightness) in the CIE L*a*b* space.
+    * the HSI (Hue, Saturation, Intensity) color ordering system, plus the L*
+    * component (lightness) in the CIE L*a*b* space.
     *
     * \param[out] H,S,I    References to the variables where output HSI channel
-    *                      values will be copied.
+    *                      values will be stored.
     *
     * \param[out] L        Reference to a variable where the output CIE L*
-    *                      component will be copied.
+    *                      component will be stored.
     *
     * \param R,G,B   Input RGB components.
     *
     * The output \a H value is a <em>normalized hue</em>, which is the hue
-    * angle rescaled to the normalized [0,1] range. A normalized hue value of
+    * angle rescaled to the normalized [0,1) range. A normalized hue value of
     * one corresponds to a hue angle of 2*pi radians, or 360 degrees.
     *
-    * \note HSI is more often known as HSL; however we reserve the L channel
+    * \note HSI is more often known as HSL. However, we reserve the L
     * identifier exclusively for the CIE L* component (lightness) in PCL.
     */
    void RGBToHSIL( sample& H, sample& S, sample& I, sample& L, sample R, sample G, sample B ) const
@@ -684,7 +758,7 @@ public:
     * Conversion from the RGB color space to the CIE XYZ color space.
     *
     * \param[out] X,Y,Z    References to the variables where output CIE XYZ
-    *                      components will be copied.
+    *                      components will be stored.
     *
     * \param R,G,B         Input RGB components.
     */
@@ -694,16 +768,16 @@ public:
    }
 
    /*!
-    * Calculates the chrominance components in the CIE XYZ color space
+    * Calculates the chrominance X, Z components in the CIE XYZ color space
     * corresponding to a specified set of RGB components.
     *
     * \param[out] X,Z   References to the variables where output CIE X and Z
-    *                   components will be copied.
+    *                   components will be stored.
     *
     * \param R,G,B      Input RGB components.
     *
     * This function avoids the calculation of the CIE Y component, which saves
-    * computing time when only the chrominance components are required.
+    * time when only the chrominance components are required.
     */
    void RGBToCIEXZ( sample& X, sample& Z, sample R, sample G, sample B ) const
    {
@@ -743,28 +817,31 @@ public:
    /*!
     * CIE L* component from CIE Y.
     *
-    * \param Y    Source CIE Y component.
+    * \param Y    Input CIE Y component.
     */
    sample CIEYToCIEL( sample Y ) const
    {
-      XYZLab( Y ); return 1.16*Y - 0.16;
+      XYZLab( Y );
+      return 1.16*Y - 0.16;
    }
 
    /*!
     * CIE Y component from CIE L*.
     *
-    * \param L    Source CIE L* component.
+    * \param L    Input CIE L* component.
     */
    sample CIELToCIEY( sample L ) const
    {
-      LabXYZ( L = (L + 0.16)/1.16 ); return L;
+      L = (L + 0.16)/1.16;
+      LabXYZ( L );
+      return L;
    }
 
    /*!
-    * Conversion from the RGB color space to the CIE L*a*b* color space.
+    * Conversion from RGB to the CIE L*a*b* color space.
     *
-    * \param[out] L,a,b    References to the variables where output CIE L*a*b*
-    *                      components will be copied.
+    * \param[out] L,a,b    References to the variables where output normalized
+    *                      CIE L*a*b* components will be stored.
     *
     * \param R,G,B         Input RGB components.
     */
@@ -772,72 +849,69 @@ public:
    {
       sample X, Y, Z;
       m_data->RGBToCIEXYZ( X, Y, Z, R, G, B );
-      CIEXYZToCIELab( L, a, b, X, Y, Z );
+      XYZLab( X ); XYZLab( Y ); XYZLab( Z );
+      L = m_data->Range( sample( (1.16 * Y) - 0.16 ) );
+      a = m_data->Range( (5*(X - Y) + m_data->zA)/m_data->mA );
+      b = m_data->Range( (2*(Y - Z) + m_data->zB)/m_data->mB );
    }
 
    /*!
-    * Calculates the chrominance components in the CIE L*a*b* color space
-    * corresponding to a specified set of RGB components.
+    * Calculates the normalized chrominance components of the CIE L*a*b* color
+    * space corresponding to a specified set of RGB components.
     *
-    * \param[out] a,b   References to the variables where output CIE a* and b*
-    *                   components will be copied.
+    * \param[out] a,b   References to the variables where output normalized CIE
+    *                   a* and CIE b* components will be stored.
     *
     * \param R,G,B      Input RGB components.
-    *
-    * This function avoids the calculation of the CIE L* component, which saves
-    * computing time when only the chrominance components are required.
     */
    void RGBToCIEab( sample& a, sample& b, sample R, sample G, sample B ) const
    {
       sample X, Y, Z;
       m_data->RGBToCIEXYZ( X, Y, Z, R, G, B );
       XYZLab( X ); XYZLab( Y ); XYZLab( Z );
-      a = (5*(X - Y) + m_data->abOffset)/m_data->abDelta;
-      b = (2*(Y - Z) + m_data->abOffset)/m_data->abDelta;
+      a = m_data->Range( (5*(X - Y) + m_data->zA)/m_data->mA );
+      b = m_data->Range( (2*(Y - Z) + m_data->zB)/m_data->mB );
    }
 
    /*!
-    * Returns the a* chrominance component in the CIE L*a*b* color space,
-    * corresponding to a specified set of RGB components.
+    * Returns the normalized a* chrominance component of the CIE L*a*b* color
+    * space corresponding to a specified set of RGB components.
     *
     * \param R,G,B   Input RGB components.
-    *
-    * This function avoids calculation of the L* and b* components, which
-    * saves computing time when only the a* component is required.
     */
    sample CIEa( sample R, sample G, sample B ) const
    {
       sample X, Y;
       m_data->RGBToCIEXY( X, Y, R, G, B );
-      XYZLab( X ); XYZLab( Y );
-      return (5*(X - Y) + m_data->abOffset)/m_data->abDelta;
+      XYZLab( X );
+      return m_data->Range( (5*(X - Y) + m_data->zA)/m_data->mA );
    }
 
    /*!
-    * Returns the b* chrominance component in the CIE L*a*b* color space,
-    * corresponding to a specified set of RGB components.
+    * Returns the normalized b* chrominance component of the CIE L*a*b* color
+    * space corresponding to a specified set of RGB components.
     *
     * \param R,G,B   Input RGB components.
     *
-    * This function avoids the calculation of the L* and a* channels, which
-    * saves computing time when only the b* chrominance component is required.
+    * This function avoids the calculation of the L* and a* components, which
+    * saves time when only the b* chrominance component is required.
     */
    sample CIEb( sample R, sample G, sample B ) const
    {
       sample Y, Z;
       m_data->RGBToCIEYZ( Y, Z, R, G, B );
       XYZLab( Y ); XYZLab( Z );
-      return (2*(Y - Z) + m_data->abOffset)/m_data->abDelta;
+      return m_data->Range( (2*(Y - Z) + m_data->zB)/m_data->mB );
    }
 
    /*!
-    * Returns the c* chrominance component in the CIE L*c*h* color space,
-    * corresponding to a specified set of RGB components.
+    * Returns the normalized c* chrominance component of the CIE L*c*h* color
+    * space corresponding to a specified set of RGB components.
     *
     * \param R,G,B   Input RGB components.
     *
-    * This function avoids the calculation of the L* and h* channels, which
-    * saves computing time when only the c* chrominance component is required.
+    * This function avoids the calculation of the L* and h* components, which
+    * saves time when only the c* chrominance component is required.
     */
    sample CIEc( sample R, sample G, sample B ) const
    {
@@ -846,19 +920,19 @@ public:
       XYZLab( X ); XYZLab( Y ); XYZLab( Z );
       sample a = 5*(X - Y);
       sample b = 2*(Y - Z);
-      return pcl::Sqrt( a*a + b*b )/m_data->cDelta;
+      return m_data->Range( pcl::Sqrt( a*a + b*b )/m_data->mC );
    }
 
    /*!
-    * Returns the normalized h* chrominance component in the CIE L*c*h* color
-    * space, corresponding to a specified set of RGB components.
+    * Returns the normalized h* chrominance component of the CIE L*c*h* color
+    * space corresponding to a specified set of RGB components.
     *
     * \param R,G,B   Input RGB components.
     *
-    * This function avoids the calculation of the L* and c* channels, which
-    * saves computing time when only the h* chrominance component is required.
+    * This function avoids the calculation of the L* and c* components, which
+    * saves time when only the h* chrominance component is required.
     *
-    * The returned value is the hue angle normalized to the range [0,1[, where
+    * The returned value is the hue angle normalized to the range [0,1), where
     * 0 corresponds to a hue angle of zero degrees, and 1 to an angle of 360
     * degrees (2*pi radians).
     */
@@ -868,15 +942,16 @@ public:
    }
 
    /*!
-    * Returns the h* chrominance component in the CIE L*c*h* color space,
-    * expressed in radians, corresponding to a specified set of RGB components.
+    * Returns the normalized h* chrominance component of the CIE L*c*h* color
+    * space, expressed in radians, corresponding to a specified set of RGB
+    * components.
     *
     * \param R,G,B   Input RGB components.
     *
     * This function avoids the calculation of the L* and c* channels, which
-    * saves computing time when only the h* chrominance component is required.
+    * saves time when only the h* chrominance component is required.
     *
-    * The returned value is the hue angle in radians, in the range [0,2pi[.
+    * The returned value is the hue angle in radians, in the range [0,2pi).
     */
    sample CIEhr( sample R, sample G, sample B ) const
    {
@@ -892,8 +967,8 @@ public:
    /*!
     * Conversion from the RGB color space to the CIE L*c*h* color space.
     *
-    * \param[out] L,c,h    References to the variables where output CIE L*c*h*
-    *                      components will be copied.
+    * \param[out] L,c,h    References to the variables where output normalized
+    *                      CIE L*c*h* components will be stored.
     *
     * \param R,G,B         Input RGB components.
     */
@@ -902,10 +977,10 @@ public:
       sample X, Y, Z;
       m_data->RGBToCIEXYZ( X, Y, Z, R, G, B );
       XYZLab( X ); XYZLab( Y ); XYZLab( Z );
-      L = sample( (1.16 * Y) - 0.16 );
+      L = m_data->Range( sample( (1.16 * Y) - 0.16 ) );
       sample a = 5*(X - Y);
       sample b = 2*(Y - Z);
-      c = pcl::Sqrt( a*a + b*b )/m_data->cDelta;
+      c = m_data->Range( pcl::Sqrt( a*a + b*b )/m_data->mC );
       h = ArcTan( b, a );
       if ( h < 0 )
          h += Const<sample>::_2pi();
@@ -913,14 +988,14 @@ public:
    }
 
    /*!
-    * Conversion from the RGB color space to the CIE L*a*b* color space, with
+    * Conversion from the RGB color space to the CIE L*a*b* color space with
     * optimized, on-the-fly calculation of the CIE c* component.
     *
-    * \param[out] L,a,b    References to the variables where output CIE L*a*b*
-    *                      components will be copied.
+    * \param[out] L,a,b    References to the variables where output normalized
+    *                      CIE L*a*b* components will be stored.
     *
-    * \param[out] c        Reference to a variable where the output CIE c*
-    *                      component will be copied.
+    * \param[out] c        Reference to a variable where the output normalized
+    *                      CIE c* component will be stored.
     *
     * \param R,G,B         Input RGB components.
     *
@@ -933,26 +1008,26 @@ public:
       sample X, Y, Z;
       m_data->RGBToCIEXYZ( X, Y, Z, R, G, B );
       XYZLab( X ); XYZLab( Y ); XYZLab( Z );
-      L = sample( (1.16 * Y) - 0.16 );
-      a = ((X = 5*(X - Y)) + m_data->abOffset)/m_data->abDelta;
-      b = ((Z = 2*(Y - Z)) + m_data->abOffset)/m_data->abDelta;
-      c = pcl::Sqrt( X*X + Z*Z )/m_data->cDelta;
+      L = m_data->Range( sample( (1.16 * Y) - 0.16 ) );
+      a = m_data->Range( ((X = 5*(X - Y)) + m_data->zA)/m_data->mA );
+      b = m_data->Range( ((Z = 2*(Y - Z)) + m_data->zB)/m_data->mB );
+      c = m_data->Range( pcl::Sqrt( X*X + Z*Z )/m_data->mC );
    }
 
    /*!
     * Conversion from the HSV color ordering system to the RGB color space.
     *
-    * \param[out] R,G,B    References to the variables where output RGB
-    *                      components will be copied.
+    * \param[out] R,G,B    References to the variables where output normalized
+    *                      RGB components will be stored.
     *
     * \param H,S,V         Input HSV channel values.
     *
     * The input \a H value must be a <em>normalized hue</em>, which is the hue
-    * angle rescaled to the normalized [0,1] range. A normalized hue value of
+    * angle rescaled to the normalized [0,1) range. A normalized hue value of
     * one corresponds to a hue angle of 2*pi radians, or 360 degrees.
     *
-    * \note This is a static function provided for convenience; HSV is not a
-    * color space, but a color ordering system not based on a RGBWS.
+    * \note This utility function is provided for convenience; HSV is not a
+    * color space, but a color ordering system not based on an RGBWS.
     */
    static void HSVToRGB( sample& R, sample& G, sample& B, sample H, sample S, sample V )
    {
@@ -961,7 +1036,7 @@ public:
          H *= 6;  // degrees -> quadrant index
 
          int i = TruncInt( Floor( H ) ); // i = sector 0 to 5
-         sample f = H - i;             // f = fractional part of H
+         sample f = H - i;               // f = fractional part of H
          sample p = V*(1 - S);
          sample q = V*(1 - S*f);
          sample t = V*(1 - S*(1 - f));
@@ -982,31 +1057,32 @@ public:
    }
 
    /*!
-    * Transformation from separate HSV chrominance and CIE L* components to the
-    * RGB color space.
+    * Conversion from separate HSV chrominance and CIE L* components to the RGB
+    * color space.
     *
-    * \param[out] R,G,B    References to the variables where output RGB
-    *                      components will be copied.
+    * \param[out] R,G,B    References to the variables where output normalized
+    *                      RGB components will be stored.
     *
     * \param H,S,V         Input HSV channel values for chrominance.
     *
-    * \param L             Input CIE L* (lightness) component.
+    * \param L             Input normalized CIE L* (lightness) component.
     *
-    * The lightness implicitly defined by the input HSV values is discarded
-    * and replaced with the specified CIE L* component.
+    * The lightness implicitly defined by the input HSV values is discarded and
+    * replaced with the specified CIE L* component.
     *
     * Strictly speaking, the resulting chrominance is not colorimetrically
-    * defined, since it derives from HSV channel values. However, the
-    * chrominance is supposed to be expressed in the RGB working space
-    * referenced by this %RGBColorSystem instance.
+    * defined, since it derives from HSV channel values and hence is not
+    * defined in an RGB working space. However, the chrominance is supposed to
+    * be expressed in the RGB working space referenced by this %RGBColorSystem
+    * object.
     *
     * The input \a H value must be a <em>normalized hue</em>, which is the hue
-    * angle rescaled to the normalized [0,1] range. A normalized hue value of
+    * angle rescaled to the normalized [0,1) range. A normalized hue value of
     * one corresponds to a hue angle of 2*pi radians, or 360 degrees.
     *
     * The primary usefulness of this function is implementing accurate
-    * hue/saturation image transformations in the HSV system with full
-    * preservation of the CIE lightness component.
+    * hue/saturation image transformations in the HSV system with complete
+    * preservation of the colorimetrically defined lightness component.
     */
    void HSVLToRGB( sample& R, sample& G, sample& B, sample H, sample S, sample V, sample L ) const
    {
@@ -1022,20 +1098,20 @@ public:
    /*!
     * Conversion from the HSI color ordering system to the RGB color space.
     *
-    * \param[out] R,G,B    References to the variables where output RGB
-    *                      components will be copied.
+    * \param[out] R,G,B    References to the variables where output normalized
+    *                      RGB components will be stored.
     *
     * \param H,S,I         Input HSI channel values.
     *
     * The input \a H value must be a <em>normalized hue</em>, which is the hue
-    * angle rescaled to the normalized [0,1] range. A normalized hue value of
+    * angle rescaled to the normalized [0,1) range. A normalized hue value of
     * one corresponds to a hue angle of 2*pi radians, or 360 degrees.
     *
-    * \note HSI is more often known as HSL; however we reserve the L channel
+    * \note HSI is more often known as HSL. However, we reserve the L
     * identifier exclusively for the CIE L* component (lightness) in PCL.
     *
-    * \note This is a static function provided for convenience; HSI is not a
-    * color space, but a color ordering system not based on a RGBWS.
+    * \note This utility function is provided for convenience; HSI is not a
+    * color space, but a color ordering system not based on an RGBWS.
     */
    static void HSIToRGB( sample& R, sample& G, sample& B, sample H, sample S, sample I )
    {
@@ -1052,33 +1128,34 @@ public:
    }
 
    /*!
-    * Transformation from separate HSI chrominance and CIE L* components to the
-    * RGB color space.
+    * Transformation from separate HSI chrominance and normalized CIE L*
+    * components to the RGB color space.
     *
-    * \param[out] R,G,B    References to the variables where output RGB
-    *                      components will be copied.
+    * \param[out] R,G,B    References to the variables where output normalized
+    *                      RGB components will be stored.
     *
     * \param H,S,I         Input HSI channel values for chrominance.
     *
-    * \param L             Input CIE L* component (lightness).
+    * \param L             Input normalized CIE L* component (lightness).
     *
     * The lightness implicitly defined by the input HSI values is discarded
     * and replaced with the specified CIE L* component.
     *
     * Strictly speaking, the resulting chrominance is not colorimetrically
-    * defined, since it derives from HSI channel values. However, the
-    * chrominance is supposed to be expressed in the RGB working space
-    * referenced by this %RGBColorSystem instance.
+    * defined, since it derives from HSI channel values and hence is not
+    * defined in an RGB working space. However, the chrominance is supposed to
+    * be expressed in the RGB working space referenced by this %RGBColorSystem
+    * object.
     *
     * The input \a H value must be a <em>normalized hue</em>, which is the hue
-    * angle rescaled to the normalized [0,1] range. A normalized hue value of
+    * angle rescaled to the normalized [0,1) range. A normalized hue value of
     * one corresponds to a hue angle of 2*pi radians, or 360 degrees.
     *
     * The primary usefulness of this function is implementing accurate
-    * hue/saturation image transformations in the HSI system with full
-    * preservation of the CIE lightness component.
+    * hue/saturation image transformations in the HSI system with complete
+    * preservation of the colorimetrically defined lightness component.
     *
-    * \note HSI is more often known as HSL; however we reserve the L channel
+    * \note HSI is more often known as HSL. However, we reserve the L
     * identifier exclusively for the CIE L* component (lightness) in PCL.
     */
    void HSILToRGB( sample& R, sample& G, sample& B, sample H, sample S, sample I, sample L ) const
@@ -1093,12 +1170,12 @@ public:
    }
 
    /*!
-    * Conversion from the CIE XYZ color space to the RGB color space.
+    * Conversion from CIE XYZ to RGB.
     *
-    * \param[out] R,G,B    References to the variables where output RGB
-    *                      components will be copied.
+    * \param[out] R,G,B    References to the variables where output normalized
+    *                      RGB components will be stored.
     *
-    * \param X,Y,Z         Input CIE XYZ components.
+    * \param X,Y,Z         Input normalized CIE XYZ components.
     */
    void CIEXYZToRGB( sample& R, sample& G, sample& B, sample X, sample Y, sample Z ) const
    {
@@ -1106,88 +1183,93 @@ public:
    }
 
    /*!
-    * Conversion from the CIE XYZ color space to the CIE L*a*b* color space.
+    * Conversion from CIE XYZ to CIE L*a*b*.
     *
-    * \param[out] L,a,b    References to the variables where output CIE L*a*b*
-    *                      components will be copied.
+    * \param[out] L,a,b    References to the variables where output normalized
+    *                      CIE L*a*b* components will be stored.
     *
-    * \param X,Y,Z         Input CIE XYZ components.
+    * \param X,Y,Z         Input normalized CIE XYZ components.
     */
    void CIEXYZToCIELab( sample& L, sample& a, sample& b, sample X, sample Y, sample Z ) const
    {
       XYZLab( X ); XYZLab( Y ); XYZLab( Z );
-      L = sample( (1.16 * Y) - 0.16 );
-      a = (5*(X - Y) + m_data->abOffset)/m_data->abDelta;
-      b = (2*(Y - Z) + m_data->abOffset)/m_data->abDelta;
+      L = m_data->Range( sample( (1.16 * Y) - 0.16 ) );
+      a = m_data->Range( (5*(X - Y) + m_data->zA)/m_data->mA );
+      b = m_data->Range( (2*(Y - Z) + m_data->zB)/m_data->mB );
    }
 
    /*!
-    * Conversion from the CIE L*a*b* color space to the RGB color space.
+    * Conversion from CIE L*a*b* to RGB.
     *
-    * \param[out] R,G,B    References to the variables where output RGB
-    *                      components will be copied.
+    * \param[out] R,G,B    References to the variables where output normalized
+    *                      RGB components will be stored.
     *
-    * \param L,a,b         Input CIE L*a*b* components.
+    * \param L,a,b         Input normalized CIE L*a*b* components.
     */
    void CIELabToRGB( sample& R, sample& G, sample& B, sample L, sample a, sample b ) const
    {
-      sample X, Y, Z;
-      CIELabToCIEXYZ( X, Y, Z, L, a, b );
+      sample Y = sample( (L + 0.16)/1.16 );
+      sample X = (m_data->mA*a - m_data->zA)/5 + Y;
+      sample Z = Y - (m_data->mB*b - m_data->zB)/2;
+      LabXYZ( X ); LabXYZ( Y ); LabXYZ( Z );
       m_data->CIEXYZToRGB( R, G, B, X, Y, Z );
    }
 
    /*!
-    * Conversion from the CIE L*a*b* color space to the CIE XYZ color space.
+    * Conversion from CIE L*a*b* to CIE XYZ.
     *
-    * \param[out] X,Y,Z    References to the variables where output CIE XYZ
-    *                      components will be copied.
+    * \param[out] X,Y,Z    References to the variables where output normalized
+    *                      CIE XYZ components will be stored.
     *
-    * \param L,a,b         Input CIE L*a*b* components.
+    * \param L,a,b         Input normalized CIE L*a*b* components.
     */
    void CIELabToCIEXYZ( sample& X, sample& Y, sample& Z, sample L, sample a, sample b ) const
    {
       Y = sample( (L + 0.16)/1.16 );
-      X = (m_data->abDelta*a - m_data->abOffset)/5 + Y;
-      Z = Y - (m_data->abDelta*b - m_data->abOffset)/2;
+      X = (m_data->mA*a - m_data->zA)/5 + Y;
+      Z = Y - (m_data->mB*b - m_data->zB)/2;
       LabXYZ( X ); LabXYZ( Y ); LabXYZ( Z );
+      X = m_data->Range( X );
+      Y = m_data->Range( Y );
+      Z = m_data->Range( Z );
    }
 
    /*!
-    * Conversion from the CIE L*a*b* color space to the CIE L*c*h* color space.
+    * Conversion from CIE L*a*b* to CIE L*c*h*.
     *
-    * \param[out] L,c,h    References to the variables where output CIE L*c*h*
-    *                      components will be copied.
+    * \param[out] L,c,h    References to the variables where output normalized
+    *                      CIE L*c*h* components will be stored.
     *
-    * \param L0,a,b        Input CIE L*a*b* components.
+    * \param L0,a,b        Input normalized CIE L*a*b* components.
     *
-    * \note The output L component is always identical to the input L0
-    * component; the L parameter of this function has been included for the
+    * \note The output \a L component is always identical to the input \a L0
+    * component. The \a L parameter of this function has been included for the
     * sake of coherence in function signatures.
     */
    void CIELabToCIELch( sample& L, sample& c, sample& h, sample L0, sample a, sample b ) const
    {
-      L = L0;
-      a = m_data->abDelta*a - m_data->abOffset;
-      b = m_data->abDelta*b - m_data->abOffset;
-      c = Sqrt( a*a + b*b )/m_data->cDelta;
+      L = m_data->Range( L0 );
+      a = m_data->mA*a - m_data->zA;
+      b = m_data->mB*b - m_data->zB;
+      c = m_data->Range( Sqrt( a*a + b*b )/m_data->mC );
       h = ArcTan( b, a )/Const<sample>::pi();
       if ( h < 0 )
          h += 1;
    }
 
    /*!
-    * Conversion from the CIE L*c*h* color space to the RGB color space.
+    * Conversion from CIE L*c*h* to RGB.
     *
-    * \param[out] R,G,B    References to the variables where output RGB
-    *                      components will be copied.
+    * \param[out] R,G,B    References to the variables where output normalized
+    *                      RGB components will be stored.
     *
-    * \param L,c,h         Input CIE L*c*h* components.
+    * \param L,c,h         Input normalized CIE L*c*h* components.
     */
    void CIELchToRGB( sample& R, sample& G, sample& B, sample L, sample c, sample h ) const
    {
       sample a, b;
       SinCos( h*Const<sample>::_2pi(), b, a );
-      c *= m_data->cDelta;
+      c *= m_data->mC;
       a *= c;
       b *= c;
       sample Y = sample( (L + 0.16)/1.16 );
@@ -1198,24 +1280,24 @@ public:
    }
 
    /*!
-    * Conversion from the CIE L*c*h* color space to the CIE L*a*b* color space.
+    * Conversion from CIE L*c*h* to CIE L*a*b*.
     *
-    * \param[out] L,a,b    References to the variables where output CIE L*a*b*
-    *                      components will be copied.
+    * \param[out] L,a,b    References to the variables where output normalized
+    *                      CIE L*a*b* components will be stored.
     *
-    * \param L0,c,h        Input CIE L*c*h* components.
+    * \param L0,c,h        Input normalized CIE L*c*h* components.
     *
-    * \note The output L component is always identical to the input L0
-    * component; the L parameter of this function has been included for the
+    * \note The output \a L component is always identical to the input \a L0
+    * component. The \a L parameter of this function has been included for the
     * sake of coherence in function signatures.
     */
    void CIELchToCIELab( sample& L, sample& a, sample& b, sample L0, sample c, sample h ) const
    {
-      L = L0;
+      L = m_data->Range( L0 );
       SinCos( h*Const<sample>::_2pi(), b, a );
-      c *= m_data->cDelta;
-      a = (c*a + m_data->abOffset)/m_data->abDelta;
-      b = (c*b + m_data->abOffset)/m_data->abDelta;
+      c *= m_data->mC;
+      a = m_data->Range( (c*a + m_data->zA)/m_data->mA );
+      b = m_data->Range( (c*b + m_data->zB)/m_data->mB );
    }
 
    /*!
@@ -1244,37 +1326,36 @@ protected:
 
    struct Data : public ReferenceCounter
    {
-      float gamma, gammaInv;  // gamma, 1/gamma
+      float gamma, gammaInv;  // gamma, 1/gamma; ignored if issRGB=true
       bool issRGB;   // true if sRGB gamma function is being used
-      bool isLinear; // true if gamma=1.0 and is not sRGB, for optimization
+      bool isLinear; // true if gamma=1.0 and issRGB=false, for optimization
 
       /*
-       * Chromaticity coordinates w.r.t. the D50 reference white
+       * Chromaticity coordinates w.r.t. the D50 reference white.
        */
       FVector x, y;
 
       /*
-       * Luminance coefficients w.r.t. the D50 reference white
+       * Luminance coefficients w.r.t. the D50 reference white.
        */
       FVector Y;
 
       /*
-       * RGB <-> CIE XYZ transformation matrices
+       * RGB <-> CIE XYZ transformation matrices.
        */
       Vector M;  // RGB -> CIE XYZ
       Vector M_; // CIE XYZ -> RGB
 
       /*
-       * Normalization coefficients for X and Z coordinates
+       * Normalization of CIE X and Z components.
        */
-      sample mX, mZ;
+      double mX, mZ; // scale factors
 
       /*
-       * Normalization of CIE a*, b* and c* components
+       * Normalization of CIE L*, a*, b* and c* components.
        */
-      sample abOffset;
-      sample abDelta;
-      sample cDelta;
+      double mA, mB, mC; // scale factors
+      double zA, zB;     // zero offsets
 
       Data( float, bool, const FVector&, const FVector&, const FVector& );
       Data( float, bool, const float*, const float*, const float* );
@@ -1291,7 +1372,7 @@ protected:
       }
 
       /*
-       * Primary gamma functions
+       * Primary gamma functions.
        */
 
       void LinearRGB( sample& x ) const
@@ -1305,7 +1386,7 @@ protected:
       }
 
       /*
-       * Primary linear transformations
+       * Primary linear transformations.
        */
 
       void RGBToCIEXYZ( sample& X, sample& Y, sample& Z, sample R, sample G, sample B ) const
@@ -1339,7 +1420,7 @@ protected:
       }
 
       /*
-       * Utility functions for fast partial luminance/chrominance calculations
+       * Partial transformations for fast luminance/chrominance calculations.
        */
 
       sample CIEX( sample R, sample G, sample B ) const
@@ -1419,7 +1500,8 @@ protected:
 
       static bool ValidateParameters( const FVector& x, const FVector& y, const FVector& Y );
 
-      static sample Range( const sample& x ) // Ensure nominal [0,1] range
+      // Ensure output values stay within the nominal [0,1] range.
+      static sample Range( const sample& x )
       {
          return pcl::Range( x, sample( 0 ), sample( 1 ) );
       }
@@ -1433,17 +1515,26 @@ protected:
          delete m_data;
    }
 
+   /*
+    * CIE XYZ -> Lab component transformation function.
+    */
    static void XYZLab( sample& x )
    {
       x = (x > CIEEpsilon) ? Pow( x, sample( _1_3 ) ) : sample( CIEKappa116*x + _16_116 );
    }
 
+   /*
+    * CIE Lab -> XYZ component transformation function.
+    */
    static void LabXYZ( sample& x )
    {
       sample x3 = x*x*x;
       x = (x3 > CIEEpsilon) ? x3 : sample( (x - _16_116)/CIEKappa116 );
    }
 
+   /*
+    * HSI hue angle to RGB component conversion function.
+    */
    static sample HSIH2RGB( sample v1, sample v2, sample H )
    {
       if ( H < 0 )
@@ -1574,7 +1665,6 @@ public:
    static const float WideGamutRGB_Y[ 3 ];
 
 #endif   // __PCL_WITH_STANDARD_RGB_WORKING_SPACES
-
 };
 
 // ----------------------------------------------------------------------------
@@ -1592,4 +1682,4 @@ public:
 #endif   // __PCL_RGBColorSystem_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/RGBColorSystem.h - Released 2023-09-15T14:49:04Z
+// EOF pcl/RGBColorSystem.h - Released 2023-11-23T18:44:57Z

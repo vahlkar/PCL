@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.0
+// /_/     \____//_____/   PCL 2.6.3
 // ----------------------------------------------------------------------------
-// pcl/WorldTransformation.h - Released 2023-09-15T14:49:04Z
+// pcl/WorldTransformation.h - Released 2023-11-23T18:44:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -55,6 +55,7 @@
 /// \file pcl/WorldTransformation.h
 
 #include <pcl/Defs.h>
+#include <pcl/Diagnostics.h>
 
 #include <pcl/GridInterpolation.h>
 #include <pcl/LinearTransformation.h>
@@ -484,12 +485,12 @@ public:
 
    /*!
     * Initializes the internal grid interpolation devices for the specified
-    * reference rectangular region \a rect and grid distance \a delta in
+    * reference rectangular region \a rectI and grid distance \a deltaI in
     * pixels.
     *
     * A grid distance of 16 pixels is applied by default. This is normally more
     * than sufficient to yield accurate coordinate readouts, even for strongly
-    * distorted images.
+    * distorted images. The accepted range is from 1 to 64 pixels.
     *
     * See GridInterpolation::Initialize() for detailed information on spline
     * grid interpolation and its working parameters.
@@ -498,10 +499,48 @@ public:
     * feedback must be provided to the user during the potentially long
     * operation, it must be given before calling this function.
     */
-   void InitializeGridInterpolations( const Rect& rect, int delta = 16 )
+   void InitializeGridInterpolations( const Rect& rectI, int deltaI = 16 )
    {
-      m_gridWI.Initialize( rect, delta, m_splineWI, false/*verbose*/ );
-      m_gridIW.Initialize( rect, delta, m_splineIW, false/*verbose*/ );
+      PCL_PRECONDITION( deltaI >= 1 && deltaI <= 64 )
+      deltaI = Range( deltaI, 1, 64 );
+
+      /*
+       * Compute reference region and grid distance in native spherical
+       * coordinates.
+       */
+      DRect rectW( std::numeric_limits<double>::max(), std::numeric_limits<double>::max(),
+                   std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest() );
+      for ( int x = 0; x < rectI.Width(); ++x )
+         for ( int p = 0; p < 2; ++p )
+         {
+            DPoint pW = m_splineIW( DPoint( double( x ), p*(rectI.Height() - 1) ) );
+            if ( pW.x < rectW.x0 )
+               rectW.x0 = pW.x;
+            if ( pW.x > rectW.x1 )
+               rectW.x1 = pW.x;
+            if ( pW.y < rectW.y0 )
+               rectW.y0 = pW.y;
+            if ( pW.y > rectW.y1 )
+               rectW.y1 = pW.y;
+         }
+      for ( int y = 0; y < rectI.Height(); ++y )
+         for ( int p = 0; p < 2; ++p )
+         {
+            DPoint pW = m_splineIW( DPoint( p*(rectI.Width() - 1), double( y ) ) );
+            if ( pW.x < rectW.x0 )
+               rectW.x0 = pW.x;
+            if ( pW.x > rectW.x1 )
+               rectW.x1 = pW.x;
+            if ( pW.y < rectW.y0 )
+               rectW.y0 = pW.y;
+            if ( pW.y > rectW.y1 )
+               rectW.y1 = pW.y;
+         }
+      double deltaW = m_splineIW( DPoint( -deltaI/2, -deltaI/2 ) ).DistanceTo(
+                      m_splineIW( DPoint( +deltaI/2, +deltaI/2 ) ) )/1.4142;
+
+      m_gridWI.Initialize( rectW, deltaW, m_splineWI, false/*verbose*/ );
+      m_gridIW.Initialize( rectI, deltaI, m_splineIW, false/*verbose*/ );
    }
 
    /*!
@@ -697,4 +736,4 @@ private:
 #endif   // __PCL_WorldTransformation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/WorldTransformation.h - Released 2023-09-15T14:49:04Z
+// EOF pcl/WorldTransformation.h - Released 2023-11-23T18:44:57Z

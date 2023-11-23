@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.0
+// /_/     \____//_____/   PCL 2.6.3
 // ----------------------------------------------------------------------------
-// pcl/Homography.h - Released 2023-09-15T14:49:04Z
+// pcl/Homography.h - Released 2023-11-23T18:44:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -69,7 +69,7 @@ namespace pcl
 
 /*!
  * \class Homography
- * \brief Homography geometric transformation.
+ * \brief Homography geometric transformation
  *
  * A two-dimensional projective transformation, or \e homography, is a
  * line-preserving geometric transformation between two sets of points in the
@@ -105,9 +105,9 @@ public:
    /*!
     * Constructor from two 2D point lists.
     *
-    * Computes a homography transformation to generate a list \a P2 of
-    * transformed points from a list \a P1 of original points. In other words,
-    * the computed homography H works as follows:
+    * Computes a homography to generate a list \a P2 of transformed points from
+    * a list \a P1 of original points. In other words, the computed homography
+    * H works as follows:
     *
     * P2 = H( P1 )
     *
@@ -153,8 +153,8 @@ public:
    Homography& operator =( Homography&& ) = default;
 
    /*!
-    * Coordinate transformation. Applies the homography matrix to the
-    * specified \a x and \a y coordinates.
+    * Coordinate transformation. Applies the homography to the specified \a x
+    * and \a y coordinates.
     *
     * The types T1 and T2 must be constructible from and convertible to
     * \c double.
@@ -171,8 +171,8 @@ public:
    }
 
    /*!
-    * Coordinate transformation. Applies the homography matrix to the
-    * specified point \a p. Returns a reference to \a p;
+    * Coordinate transformation. Applies the homography to the specified point
+    * \a p. Returns a reference to \a p;
     *
     * The type T must be constructible from and convertible to \c double.
     */
@@ -184,7 +184,7 @@ public:
    }
 
    /*!
-    * Coordinate transformation operator. Applies the homography matrix to the
+    * Coordinate transformation operator. Applies the homography to the
     * specified \a x and \a y coordinates. Returns the transformed point as a
     * two-dimensional point with real coordinates.
     */
@@ -196,9 +196,9 @@ public:
    }
 
    /*!
-    * Point transformation operator. Applies the homography matrix to the
-    * coordinates of the specified point \a p. Returns the transformed point as
-    * a two-dimensional point with real coordinates.
+    * Point transformation operator. Applies the homography to the coordinates
+    * of the specified point \a p. Returns the transformed point as a
+    * two-dimensional point with real coordinates.
     */
    template <typename T>
    DPoint operator ()( const GenericPoint<T>& p ) const
@@ -207,7 +207,7 @@ public:
    }
 
    /*!
-    * Returns the inverse of this homography transformation.
+    * Returns the inverse of this homography.
     *
     * If this transformation has been computed from two point lists \a P1 and
     * \a P2:
@@ -226,9 +226,17 @@ public:
    /*!
     * Returns the homography transformation matrix.
     */
-   operator const Matrix&() const
+   const Matrix& TransformationMatrix() const
    {
       return m_H;
+   }
+
+   /*!
+    * Returns the homography transformation matrix.
+    */
+   operator const Matrix&() const
+   {
+      return TransformationMatrix();
    }
 
    /*!
@@ -257,8 +265,7 @@ public:
    }
 
    /*!
-    * Ensures that the transformation uniquely references its internal matrix
-    * data.
+    * Ensures that this object uniquely references its internal matrix data.
     */
    void EnsureUnique()
    {
@@ -423,4 +430,4 @@ private:
 #endif   // __PCL_Homography_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Homography.h - Released 2023-09-15T14:49:04Z
+// EOF pcl/Homography.h - Released 2023-11-23T18:44:57Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.0
+// /_/     \____//_____/   PCL 2.6.3
 // ----------------------------------------------------------------------------
-// pcl/Matrix.h - Released 2023-09-15T14:49:04Z
+// pcl/Matrix.h - Released 2023-11-23T18:44:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -212,6 +212,26 @@ public:
          for ( ; i < j; ++i, ++k )
             *i = element( *k );
       }
+   }
+
+   /*!
+    * Constructs a 2x2 matrix initialized with the specified element values.
+    *
+    * The resulting square matrix will be initialized as follows:
+    *
+    * <pre>
+    * a00, a01
+    * a10, a11
+    * </pre>
+    */
+   template <typename T1>
+   GenericMatrix( const T1& a00, const T1& a01,
+                  const T1& a10, const T1& a11 )
+   {
+      m_data = new Data( 2, 2 );
+      block_iterator __restrict__ v = m_data->Begin();
+      v[0] = element( a00 ); v[1] = element( a01 );
+      v[2] = element( a10 ); v[3] = element( a11 );
    }
 
    /*!
@@ -3864,4 +3884,4 @@ using LDMatrix = F80Matrix;
 #endif   // __PCL_Matrix_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Matrix.h - Released 2023-09-15T14:49:04Z
+// EOF pcl/Matrix.h - Released 2023-11-23T18:44:57Z

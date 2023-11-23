@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.0
+// /_/     \____//_____/   PCL 2.6.3
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.4
 // ----------------------------------------------------------------------------
-// SampleFormatConversionInterface.h - Released 2023-09-14T17:02:22Z
+// SampleFormatConversionInterface.h - Released 2023-11-23T18:45:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -144,4 +144,4 @@ PCL_END_LOCAL
 #endif   // __SampleFormatConversionInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF SampleFormatConversionInterface.h - Released 2023-09-14T17:02:22Z
+// EOF SampleFormatConversionInterface.h - Released 2023-11-23T18:45:25Z

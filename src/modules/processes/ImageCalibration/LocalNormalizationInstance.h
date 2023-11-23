@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.0
+// /_/     \____//_____/   PCL 2.6.3
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.9.8
 // ----------------------------------------------------------------------------
-// LocalNormalizationInstance.h - Released 2023-09-14T17:02:22Z
+// LocalNormalizationInstance.h - Released 2023-11-23T18:45:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -113,7 +113,6 @@ private:
    float       p_highClippingLevel;
    float       p_referenceRejectionThreshold;
    float       p_targetRejectionThreshold;
-
    int32       p_hotPixelFilterRadius;
    int32       p_noiseReductionFilterRadius;
    float       p_modelScalingFactor;
@@ -205,4 +204,4 @@ private:
 #endif   // __LocalNormalizationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationInstance.h - Released 2023-09-14T17:02:22Z
+// EOF LocalNormalizationInstance.h - Released 2023-11-23T18:45:25Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.0
+// /_/     \____//_____/   PCL 2.6.3
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// ColorManagementSetupInstance.cpp - Released 2023-09-14T17:02:22Z
+// ColorManagementSetupInstance.cpp - Released 2023-11-23T18:45:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -364,4 +364,4 @@ void ColorManagementSetupInstance::LoadCurrentSettings()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ColorManagementSetupInstance.cpp - Released 2023-09-14T17:02:22Z
+// EOF ColorManagementSetupInstance.cpp - Released 2023-11-23T18:45:25Z

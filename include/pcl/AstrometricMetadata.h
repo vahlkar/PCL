@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.0
+// /_/     \____//_____/   PCL 2.6.3
 // ----------------------------------------------------------------------------
-// pcl/AstrometricMetadata.h - Released 2023-09-15T14:49:04Z
+// pcl/AstrometricMetadata.h - Released 2023-11-23T18:44:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -486,6 +486,13 @@ public:
    {
       return m_transformWI.Pointer();
    }
+
+#ifdef __PCL_BUILDING_PIXINSIGHT_APPLICATION
+   WorldTransformation* WorldTransform()
+   {
+      return m_transformWI.Pointer();
+   }
+#endif
 
    /*!
     * Returns the image resolution in seconds of arc per pixel, calculated from
@@ -1289,4 +1296,4 @@ private:
 #endif // __AstrometricMetadata_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AstrometricMetadata.h - Released 2023-09-15T14:49:04Z
+// EOF pcl/AstrometricMetadata.h - Released 2023-11-23T18:44:57Z

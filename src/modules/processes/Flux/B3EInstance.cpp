@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.0
+// /_/     \____//_____/   PCL 2.6.3
 // ----------------------------------------------------------------------------
 // Standard Flux Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// B3EInstance.cpp - Released 2023-09-14T17:02:22Z
+// B3EInstance.cpp - Released 2023-11-23T18:45:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Flux PixInsight module.
 //
@@ -971,4 +971,4 @@ size_type B3EInstance::ParameterLength( const MetaParameter* p, size_type tableR
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF B3EInstance.cpp - Released 2023-09-14T17:02:22Z
+// EOF B3EInstance.cpp - Released 2023-11-23T18:45:25Z

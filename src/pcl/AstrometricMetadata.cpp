@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.0
+// /_/     \____//_____/   PCL 2.6.3
 // ----------------------------------------------------------------------------
-// pcl/AstrometricMetadata.cpp - Released 2023-09-15T14:49:17Z
+// pcl/AstrometricMetadata.cpp - Released 2023-11-23T18:45:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -515,7 +515,7 @@ String AstrometricMetadata::Summary() const
    if ( !m_description->splineLengths.IsEmpty() )
       summary << "Spline lengths ........... " << m_description->splineLengths << '\n';
    if ( !m_description->splineErrors.IsEmpty() )
-      summary << "Spline residuals ......... " << m_description->splineErrors << '\n';
+      summary << "Surface residuals ........ " << m_description->splineErrors << '\n';
 
    summary    << "Projection ............... " << m_description->projectionName << '\n'
               << "Projection origin ........ " << m_description->projectionOrigin << '\n'
@@ -1143,7 +1143,10 @@ void AstrometricMetadata::UpdateDescription() const
             m_description->splineLengths = String().Format( "l:%d b:%d X:%d Y:%d", nxWI, nyWI, nxIW, nyIW );
             double exWI, eyWI, exIW, eyIW;
             S->GetSplineErrors( exWI, eyWI, exIW, eyIW );
-            m_description->splineErrors = String().Format( "l:%.3f px b:%.3f px X:%.3f as Y:%.3f as", exWI, eyWI, exIW*3600, eyIW*3600 );
+            exIW *= 3600;
+            eyIW *= 3600;
+            if ( exWI >= 0.0005 || eyWI >= 0.0005 || exIW >= 0.0005 || eyIW >= 0.0005 )
+               m_description->splineErrors = String().Format( "l:%.3f px b:%.3f px X:%.3f as Y:%.3f as", exWI, eyWI, exIW, eyIW );
          }
          else
             m_description->wcsTransformationType = "Linear";
@@ -1232,4 +1235,4 @@ void AstrometricMetadata::UpdateDescription() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AstrometricMetadata.cpp - Released 2023-09-15T14:49:17Z
+// EOF pcl/AstrometricMetadata.cpp - Released 2023-11-23T18:45:05Z

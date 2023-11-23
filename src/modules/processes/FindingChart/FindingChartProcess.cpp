@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.0
+// /_/     \____//_____/   PCL 2.6.3
 // ----------------------------------------------------------------------------
 // Standard FindingChart Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// FindingChartProcess.cpp - Released 2023-09-14T17:02:22Z
+// FindingChartProcess.cpp - Released 2023-11-23T18:45:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FindingChart PixInsight module.
 //
@@ -256,4 +256,4 @@ int FindingChartProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FindingChartProcess.cpp - Released 2023-09-14T17:02:22Z
+// EOF FindingChartProcess.cpp - Released 2023-11-23T18:45:25Z

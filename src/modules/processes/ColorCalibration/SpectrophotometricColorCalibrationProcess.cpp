@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.0
+// /_/     \____//_____/   PCL 2.6.3
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// SpectrophotometricColorCalibrationProcess.cpp - Released 2023-09-14T17:02:22Z
+// SpectrophotometricColorCalibrationProcess.cpp - Released 2023-11-23T18:45:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -921,4 +921,4 @@ bool SpectrophotometricColorCalibrationProcess::UsingDefaultFiltersDatabase()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SpectrophotometricColorCalibrationProcess.cpp - Released 2023-09-14T17:02:22Z
+// EOF SpectrophotometricColorCalibrationProcess.cpp - Released 2023-11-23T18:45:25Z

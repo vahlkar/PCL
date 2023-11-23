@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.0
+// /_/     \____//_____/   PCL 2.6.3
 // ----------------------------------------------------------------------------
-// pcl/RGBColorSystem.cpp - Released 2023-09-15T14:49:17Z
+// pcl/RGBColorSystem.cpp - Released 2023-11-23T18:45:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -77,8 +77,7 @@ const float RGBColorSystem::sRGB_Y[ 3 ] = { 0.222491F, 0.716888F, 0.060621F };
 /*
  * The default sRGB (D50) working space.
  */
-const RGBColorSystem RGBColorSystem::sRGB = RGBColorSystem( 2.2F, true, sRGB_x, sRGB_y, sRGB_Y );
-
+const RGBColorSystem RGBColorSystem::sRGB = RGBColorSystem( 2.2F, true/*sRGB*/, sRGB_x, sRGB_y, sRGB_Y );
 
 #ifdef __PCL_WITH_STANDARD_RGB_WORKING_SPACES
 
@@ -190,33 +189,6 @@ const float RGBColorSystem::WideGamutRGB_Y[ 3 ] = { 0.258187F, 0.724938F, 0.0168
 #define M32_   M_[7]
 #define M33_   M_[8]
 
-static Vector SetupMatrix( const FVector& x, const FVector& y, const FVector& Y )
-{
-   if ( x.Length() != 3 || y.Length() != 3 || Y.Length() != 3 )
-      throw Error( "Invalid vector length in RGB working color space initialization." );
-
-   if ( 1 + x[0] == 1 || 1 + x[1] == 1 || 1 + x[2] == 1 ||
-        1 + y[0] == 1 || 1 + y[1] == 1 || 1 + y[2] == 1 )
-      throw Error( "Invalid chromaticity coordinates in RGB working color space initialization." );
-
-   if ( 1 + Y.Sum() == 1 )
-      throw Error( "Invalid luminance coefficients in RGB working color space initialization." );
-
-   Vector M( 9 );
-
-   M11 = Y[0]*x[0]/y[0];
-   M12 = Y[1]*x[1]/y[1];
-   M13 = Y[2]*x[2]/y[2];
-   M21 = Y[0];
-   M22 = Y[1];
-   M23 = Y[2];
-   M31 = Y[0]*(1 - x[0] - y[0])/y[0];
-   M32 = Y[1]*(1 - x[1] - y[1])/y[1];
-   M33 = Y[2]*(1 - x[2] - y[2])/y[2];
-
-   return M;
-}
-
 static Vector InverseMatrix( const Vector& M )
 {
    // Determinant
@@ -240,6 +212,80 @@ static Vector InverseMatrix( const Vector& M )
    M33_ = (M11*M22 - M12*M21)/d;
 
    return M_;
+}
+
+static Vector SetupMatrix( const FVector& x, const FVector& y, const FVector& Y )
+{
+   if ( x.Length() != 3 || y.Length() != 3 || Y.Length() != 3 )
+      throw Error( "Invalid vector lengths in RGB working color space initialization." );
+
+   if ( 1 + x[0] == 1 || 1 + x[1] == 1 || 1 + x[2] == 1 ||
+        1 + y[0] == 1 || 1 + y[1] == 1 || 1 + y[2] == 1 )
+      throw Error( "Invalid chromaticity coordinates in RGB working color space initialization." );
+
+   if ( 1 + Y.Sum() == 1 )
+      throw Error( "Invalid luminance coefficients in RGB working color space initialization." );
+
+   Vector M( 9 );
+
+   M11 = Y[0]*x[0]/y[0];
+   M12 = Y[1]*x[1]/y[1];
+   M13 = Y[2]*x[2]/y[2];
+   M21 = Y[0];
+   M22 = Y[1];
+   M23 = Y[2];
+   M31 = Y[0]*(1 - x[0] - y[0])/y[0];
+   M32 = Y[1]*(1 - x[1] - y[1])/y[1];
+   M33 = Y[2]*(1 - x[2] - y[2])/y[2];
+
+   return M;
+}
+
+static Vector SetupMatrix( const FVector& x, const FVector& y )
+{
+   if ( x.Length() != 3 || y.Length() != 3 )
+      throw Error( "Invalid vector lengths in RGB working color space initialization." );
+
+   if ( 1 + x[0] == 1 || 1 + x[1] == 1 || 1 + x[2] == 1 ||
+        1 + y[0] == 1 || 1 + y[1] == 1 || 1 + y[2] == 1 )
+      throw Error( "Invalid chromaticity coordinates in RGB working color space initialization." );
+
+   Vector M( 9 );
+
+   M11 = x[0]/y[0];
+   M12 = x[1]/y[1];
+   M13 = x[2]/y[2];
+   M21 = 1;
+   M22 = 1;
+   M23 = 1;
+   M31 = (1 - x[0] - y[0])/y[0];
+   M32 = (1 - x[1] - y[1])/y[1];
+   M33 = (1 - x[2] - y[2])/y[2];
+
+   Vector M_ = InverseMatrix( M );
+   double Sr = CIED501931XR*M11_ + M12_ + CIED501931ZR*M13_;
+   double Sg = CIED501931XR*M21_ + M22_ + CIED501931ZR*M23_;
+   double Sb = CIED501931XR*M31_ + M32_ + CIED501931ZR*M33_;
+
+   double S = Sr + Sg + Sb;
+   if ( 1 + S == 1 )
+      throw Error( "Invalid luminance coefficients in RGB working color space initialization." );
+
+   Sr /= S;
+   Sg /= S;
+   Sb /= S;
+
+   M11 *= Sr;
+   M12 *= Sg;
+   M13 *= Sb;
+   M21  = Sr;
+   M22  = Sg;
+   M23  = Sb;
+   M31 *= Sr;
+   M32 *= Sg;
+   M33 *= Sb;
+
+   return M;
 }
 
 // ----------------------------------------------------------------------------
@@ -283,186 +329,74 @@ bool RGBColorSystem::Data::ValidateParameters( const FVector& x, const FVector& 
 void RGBColorSystem::Data::Initialize()
 {
    /*
-    * Normalize luminance coefficients
+    * RGB -> XYZ transformation matrix.
     */
-   double s = Y.Sum();
-   if ( 1 + s == 1 )
-      throw Error( "Invalid luminance coefficients in RGB working color space initialization." );
-   Y /= s;
+   if ( Y.IsEmpty() )
+   {
+      M = SetupMatrix( x, y );
+      Y = FVector( M21, M22, M23 );
+   }
+   else
+   {
+      // Normalize luminance coefficients.
+      double s = Y.Sum();
+      if ( 1 + s == 1 )
+         throw Error( "Invalid luminance coefficients in RGB working color space initialization." );
+      Y /= s;
+      M = SetupMatrix( x, y, Y );
+   }
 
    /*
-    * RGB -> XYZ transformation matrix M
-    */
-   M = SetupMatrix( x, y, Y );
-
-   /*
-    * CIE X and CIE Z normalization coefficients
-    */
-   mX = M11 + M12 + M13;
-   mZ = M31 + M32 + M33;
-
-   /*
-    * XYZ -> RGB inverse matrix M_
+    * XYZ -> RGB inverse transformation matrix.
     */
    M_ = InverseMatrix( M );
 
    /*
-    * Inverse gamma
+    * Inverse gamma exponent. We require a valid one even for sRGB.
     */
    if ( 1 + gamma == 1 || gamma < 0 )
       throw Error( "Invalid gamma value in RGB working color space initialization." );
    gammaInv = 1/gamma;
 
    /*
-    * Find normalization coefficients for CIE a, b, c channels
-    *
-    * The idea here is to maximize dynamic range usage for each channel
-    * (coding efficiency) while ensuring that they will be constrained to the
-    * nominal range [0,1].
+    * CIE X, Z normalization coefficients.
     */
+   mX = M11 + M12 + M13;
+   mZ = M31 + M32 + M33;
 
-   sample minab = 100, maxab = -100, maxc = -100;
+   /*
+    * Normalization of CIE a*, b*, c* components.
+    */
+   double X, Y, Z;
+   X = 0;
+   Y = 1;
+   RGBColorSystem::XYZLab( X );
+   RGBColorSystem::XYZLab( Y );
+   double a_min = 5*(X - Y);
+   X = 1;
+   Y = 0;
+   RGBColorSystem::XYZLab( X );
+   RGBColorSystem::XYZLab( Y );
+   double a_max = 5*(X - Y);
+   Y = 0;
+   Z = 1;
+   RGBColorSystem::XYZLab( Y );
+   RGBColorSystem::XYZLab( Z );
+   double b_min = 2*(Y - Z);
+   Y = 1;
+   Z = 0;
+   RGBColorSystem::XYZLab( Y );
+   RGBColorSystem::XYZLab( Z );
+   double b_max = 2*(Y - Z);
 
-   int minabR = 0, minabG = 0, minabB = 0;
-   int maxabR = 0, maxabG = 0, maxabB = 0;
-   int maxcR = 0, maxcG = 0, maxcB = 0;
+   zA = -a_min;
+   zB = -b_min;
+   mA = a_max - a_min;
+   mB = b_max - b_min;
 
-   for ( int ri = 0; ri < 10; ++ri )
-   {
-      sample R = sample( ri/9.0 );
-
-      for ( int gi = 0; gi < 10; ++gi )
-      {
-         sample G = sample( gi/9.0 );
-
-         for ( int bi = 0; bi < 10; ++bi )
-         {
-            sample B = sample( bi/9.0 );
-
-            sample X, Y, Z;
-            RGBToCIEXYZ( X, Y, Z, R, G, B );
-
-            RGBColorSystem::XYZLab( X );
-            RGBColorSystem::XYZLab( Y );
-            RGBColorSystem::XYZLab( Z );
-
-            sample a = 5*(X - Y);
-            sample b = 2*(Y - Z);
-            sample c = Sqrt( a*a + b*b );
-
-            sample mn = Min( a, b );
-            sample mx = Max( a, b );
-
-            if ( mn < minab )
-            {
-               minab = mn;
-               minabR = ri;
-               minabG = gi;
-               minabB = bi;
-            }
-
-            if ( mx > maxab )
-            {
-               maxab = mx;
-               maxabR = ri;
-               maxabG = gi;
-               maxabB = bi;
-            }
-
-            if ( c > maxc )
-            {
-               maxc = c;
-               maxcR = ri;
-               maxcG = gi;
-               maxcB = bi;
-            }
-         }
-      }
-   }
-
-   sample R0, R1, G0, G1, B0, B1;
-
-   R0 = Max( 0, minabR-1 )/9.0;
-   R1 = Min( 9, minabR+1 )/9.0;
-
-   G0 = Max( 0, minabG-1 )/9.0;
-   G1 = Min( 9, minabG+1 )/9.0;
-
-   B0 = Max( 0, minabB-1 )/9.0;
-   B1 = Min( 9, minabB+1 )/9.0;
-
-   for ( sample R = R0; R < R1; R += 0.01 )
-      for ( sample G = G0; G < G1; G += 0.01 )
-         for ( sample B = B0; B < B1; B += 0.01 )
-         {
-            sample X, Y, Z;
-            RGBToCIEXYZ( X, Y, Z, R, G, B );
-
-            RGBColorSystem::XYZLab( X );
-            RGBColorSystem::XYZLab( Y );
-            RGBColorSystem::XYZLab( Z );
-
-            sample mn = Min( 5*(X - Y), 2*(Y - Z) );
-            if ( mn < minab )
-               minab = mn;
-         }
-
-   R0 = Max( 0, maxabR-1 )/9.0;
-   R1 = Min( 9, maxabR+1 )/9.0;
-
-   G0 = Max( 0, maxabG-1 )/9.0;
-   G1 = Min( 9, maxabG+1 )/9.0;
-
-   B0 = Max( 0, maxabB-1 )/9.0;
-   B1 = Min( 9, maxabB+1 )/9.0;
-
-   for ( sample R = R0; R < R1; R += 0.01 )
-      for ( sample G = G0; G < G1; G += 0.01 )
-         for ( sample B = B0; B < B1; B += 0.01 )
-         {
-            sample X, Y, Z;
-            RGBToCIEXYZ( X, Y, Z, R, G, B );
-
-            RGBColorSystem::XYZLab( X );
-            RGBColorSystem::XYZLab( Y );
-            RGBColorSystem::XYZLab( Z );
-
-            sample mx = Max( 5*(X - Y), 2*(Y - Z) );
-            if ( mx > maxab )
-               maxab = mx;
-         }
-
-   R0 = Max( 0, maxcR-1 )/9.0;
-   R1 = Min( 9, maxcR+1 )/9.0;
-
-   G0 = Max( 0, maxcG-1 )/9.0;
-   G1 = Min( 9, maxcG+1 )/9.0;
-
-   B0 = Max( 0, maxcB-1 )/9.0;
-   B1 = Min( 9, maxcB+1 )/9.0;
-
-   for ( sample R = R0; R < R1; R += 0.01 )
-      for ( sample G = G0; G < G1; G += 0.01 )
-         for ( sample B = B0; B < B1; B += 0.01 )
-         {
-            sample X, Y, Z;
-            RGBToCIEXYZ( X, Y, Z, R, G, B );
-
-            RGBColorSystem::XYZLab( X );
-            RGBColorSystem::XYZLab( Y );
-            RGBColorSystem::XYZLab( Z );
-
-            sample a = 5*(X - Y);
-            sample b = 2*(Y - Z);
-            sample c = Sqrt( a*a + b*b );
-
-            if ( c > maxc )
-               maxc = c;
-         }
-
-   abOffset = -minab + 0.05;
-   abDelta  =  maxab - minab + 0.1;
-   cDelta   =  maxc + 0.05;
+   a_max = Max( a_max, Abs( a_min ) );
+   b_max = Max( b_max, Abs( b_min ) );
+   mC = Sqrt( a_max*a_max + b_max*b_max );
 }
 
 // ----------------------------------------------------------------------------
@@ -470,4 +404,4 @@ void RGBColorSystem::Data::Initialize()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/RGBColorSystem.cpp - Released 2023-09-15T14:49:17Z
+// EOF pcl/RGBColorSystem.cpp - Released 2023-11-23T18:45:05Z

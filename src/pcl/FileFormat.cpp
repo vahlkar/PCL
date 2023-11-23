@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.0
+// /_/     \____//_____/   PCL 2.6.3
 // ----------------------------------------------------------------------------
-// pcl/FileFormat.cpp - Released 2023-09-15T14:49:17Z
+// pcl/FileFormat.cpp - Released 2023-11-23T18:45:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -665,4 +665,4 @@ StringList FileFormat::EphemerisFiles( const String& dirPath, bool recursive, bo
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FileFormat.cpp - Released 2023-09-15T14:49:17Z
+// EOF pcl/FileFormat.cpp - Released 2023-11-23T18:45:05Z

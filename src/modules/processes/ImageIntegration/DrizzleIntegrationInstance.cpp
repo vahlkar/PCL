@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.0
+// /_/     \____//_____/   PCL 2.6.3
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.5.2
+// Standard ImageIntegration Process Module Version 1.5.3
 // ----------------------------------------------------------------------------
-// DrizzleIntegrationInstance.cpp - Released 2023-09-14T17:02:22Z
+// DrizzleIntegrationInstance.cpp - Released 2023-11-23T18:45:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -608,7 +608,7 @@ private:
             Image&                    weight;     // output drizzle weights map
             DPoint                    origin;     // alignment origin
             Homography                H, Hinv;    // projective transformation
-            PointGridInterpolation        G, Ginv;    // discretized thin plate splines
+            PointGridInterpolation    G, Ginv;    // discretized thin plate splines
             double                    dropDelta0; // drop reduction, top-left
             double                    dropDelta1; // drop reduction, bottom-right
             bool                      splines;    // have alignment splines?
@@ -2282,4 +2282,4 @@ size_type DrizzleIntegrationInstance::ParameterLength( const MetaParameter* p, s
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DrizzleIntegrationInstance.cpp - Released 2023-09-14T17:02:22Z
+// EOF DrizzleIntegrationInstance.cpp - Released 2023-11-23T18:45:25Z

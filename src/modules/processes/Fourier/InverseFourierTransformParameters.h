@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.0
+// /_/     \____//_____/   PCL 2.6.3
 // ----------------------------------------------------------------------------
 // Standard Fourier Process Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// InverseFourierTransformParameters.h - Released 2023-09-14T17:02:22Z
+// InverseFourierTransformParameters.h - Released 2023-11-23T18:45:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Fourier PixInsight module.
 //
@@ -118,4 +118,4 @@ extern IFTOnOutOfRangeResult* TheIFTOnOutOfRangeResultParameter;
 #endif   // __InverseFourierTransformParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF InverseFourierTransformParameters.h - Released 2023-09-14T17:02:22Z
+// EOF InverseFourierTransformParameters.h - Released 2023-11-23T18:45:25Z

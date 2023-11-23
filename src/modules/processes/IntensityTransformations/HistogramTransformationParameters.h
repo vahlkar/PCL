@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.0
+// /_/     \____//_____/   PCL 2.6.3
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// HistogramTransformationParameters.h - Released 2023-09-14T17:02:22Z
+// HistogramTransformationParameters.h - Released 2023-11-23T18:45:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -169,4 +169,4 @@ PCL_END_LOCAL
 #endif   // __HistogramTransformationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF HistogramTransformationParameters.h - Released 2023-09-14T17:02:22Z
+// EOF HistogramTransformationParameters.h - Released 2023-11-23T18:45:25Z
