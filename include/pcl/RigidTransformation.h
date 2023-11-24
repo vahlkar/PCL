@@ -282,53 +282,25 @@ private:
       /*
        * Covariance matrix
        */
-      double xx = 0, xy = 0, yy = 0;
+      Matrix M1( 2, n );
       for ( int i = 0; i < n; ++i )
       {
-         double dx = P1[i].x - p10.x;
-         double dy = P1[i].y - p10.y;
-         xx += dx*dx;
-         xy += dx*dy;
-         yy += dy*dy;
+         M1[0][i] = P1[i].x - p10.x;
+         M1[1][i] = P1[i].y - p10.y;
       }
-      int n1 = n - 1;
-      xx /= n1;
-      xy /= n1;
-      yy /= n1;
-      Matrix M1( xx, xy,
-                 xy, yy );
-      xx = 0, xy = 0, yy = 0;
+      Matrix M2( 2, n );
       for ( int i = 0; i < n; ++i )
       {
-         double dx = P2[i].x - p20.x;
-         double dy = P2[i].y - p20.y;
-         xx += dx*dx;
-         xy += dx*dy;
-         yy += dy*dy;
+         M2[0][i] = P2[i].x - p20.x;
+         M2[1][i] = P2[i].y - p20.y;
       }
-      xx /= n1;
-      xy /= n1;
-      yy /= n1;
-      Matrix M2( xx, xy,
-                 xy, yy );
+      Matrix H = M1 * M2.Transpose();
 
       /*
        * Rotation matrix R
        */
-      Matrix H = M1 * M2.Transpose();
       InPlaceSVD svd( H );
       Matrix R = svd.V * H.Transpose();
-
-      /*
-       * Orientation rectification (reflection case)
-       */
-      if ( R[0][0]*R[1][1] - R[0][1]*R[1][0] < 0 ) // if determinant < 0
-      {
-         InPlaceSVD svd( R );
-         svd.V[0][1] *= -1;
-         svd.V[1][1] *= -1;
-         R = svd.V * R.Transpose();
-      }
 
       /*
        * Rotation + translation matrix
