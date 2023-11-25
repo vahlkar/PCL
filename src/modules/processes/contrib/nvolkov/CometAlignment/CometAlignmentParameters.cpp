@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.3
+// /_/     \____//_____/   PCL 2.6.4
 // ----------------------------------------------------------------------------
 // Standard CometAlignment Process Module Version 1.3.7
 // ----------------------------------------------------------------------------
-// CometAlignmentParameters.cpp - Released 2023-11-23T18:45:26Z
+// CometAlignmentParameters.cpp - Released 2023-11-25T17:12:54Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CometAlignment PixInsight module.
 //
@@ -894,4 +894,4 @@ double CAMaxFileWriteThreads::MaximumValue() const
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF CometAlignmentParameters.cpp - Released 2023-11-23T18:45:26Z
+// EOF CometAlignmentParameters.cpp - Released 2023-11-25T17:12:54Z

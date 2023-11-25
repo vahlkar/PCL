@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.3
+// /_/     \____//_____/   PCL 2.6.4
 // ----------------------------------------------------------------------------
-// pcl/ProcessInterface.h - Released 2023-11-23T18:44:57Z
+// pcl/ProcessInterface.h - Released 2023-11-25T17:26:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -197,6 +197,36 @@ namespace InterfaceFeature
  * \brief A collection of interface feature flags.
  */
 using InterfaceFeatures = Flags<InterfaceFeature::mask_type>;
+
+// ----------------------------------------------------------------------------
+
+/*!
+ * \namespace pcl::RealTimePreviewGenerationFlag
+ * \brief     Real-time preview generation flags.
+ *
+ * Use %RealTimePreviewGenerationFlag constants to define rendering and control
+ * parameters for real-time preview generation. These flags must be provided by
+ * a reimplementation of ProcessInterface::RealTimePreviewGenerationFlags().
+ *
+ * <table border="1" cellpadding="4" cellspacing="0">
+ * <tr><td>RealTimePreviewGenerationFlag::None</td>        <td>No real-time preview generation flags.</td></tr>
+ * <tr><td>RealTimePreviewGenerationFlag::DisableMask</td> <td>Do not render a masked real-time preview. Ignore an active mask in the view currently selected in the Real-Time Preview window.</td></tr>
+ * </table>
+ */
+namespace RealTimePreviewGenerationFlag
+{
+   enum mask_type
+   {
+      None        = 0x00000000,  // No real-time preview generation flags
+      DisableMask = 0x00000010,  // Do not render a masked real-time preview
+   };
+}
+
+/*!
+ * \class pcl::RealTimePreviewGenerationFlags
+ * \brief A collection of real-time preview generation flags.
+ */
+using RealTimePreviewGenerationFlags = Flags<RealTimePreviewGenerationFlag::mask_type>;
 
 // ----------------------------------------------------------------------------
 
@@ -1082,8 +1112,7 @@ public:
    }
 
    /*!
-    * Function called when the real-time preview image needs an update, and
-    * this interface is the owner of the Real-Time Preview system.
+    * Function called when the real-time preview image needs an update.
     *
     * \param[in,out] image  Reference to a shared image where the real-time
     *                   rendition would be generated. This image contains pixel
@@ -1117,11 +1146,13 @@ public:
     *                   other words, real-time preview images can be scaled
     *                   down, but are never magnified or scaled up.
     *
-    * Returns true if the real-time preview requires an update for the
-    * specified image; false if no update is required.
+    * This function will only be invoked when this interface is the owner of
+    * the Real-Time Preview system.
     *
-    * If this function returns true, a subsequent call to
-    * GenerateRealTimePreview() will occur when appropriate.
+    * Returns true if the real-time preview requires an update for the
+    * specified image; false if no update is required. If this function returns
+    * true, subsequent calls to RealTimePreviewGenerationFlags() and
+    * GenerateRealTimePreview() will occur in that order when appropriate.
     *
     * The passed \a image, \a view and \a rect objects <em>cannot be
     * modified</em> in any way by this function.
@@ -1180,25 +1211,61 @@ public:
     *                   does not allow a reasonably accurate representation of
     *                   some process features.
     *
+    * This function will only be invoked when this interface is the owner of
+    * the Real-Time Preview system.
+    *
     * Returns true to signal that the passed \a image has been modified and can
     * now be used to update the current real-time preview. Returns false to
     * indicate that the \a image has not been altered by this function, and
-    * hence that the current real-time preview update should be aborted.
+    * hence that the current real-time preview update can be aborted or
+    * simplified as appropriate.
     *
-    * The passed \a view and \a rect objects <em>cannot be modified</em> in any
-    * way by this function. A reimplementation of this function <em>cannot be
-    * used to modify a view indirectly</em> - we mean it!
+    * The passed \a view and \a rect objects cannot be modified in any way by
+    * this function. A reimplementation of this function <em>cannot be used to
+    * modify a view indirectly</em> --- we mean it!
     *
     * \note The default implementation of this function returns false without
     * modifying the passed \a image.
     *
-    * \sa RequiresRealTimePreviewUpdate(), CancelRealTimePreview(),
+    * \sa RequiresRealTimePreviewUpdate(), RealTimePreviewGenerationFlags(),
+    * CancelRealTimePreview(), RealTimePreview::ShowProgressDialog(),
     * RealTimePreview
     */
    virtual bool GenerateRealTimePreview( UInt16Image& image, const View& view,
                                          const Rect& rect, int zoomLevel, String& info ) const
    {
       return false;
+   }
+
+   /*!
+    * Function called to retrieve real-time preview generation flags.
+    *
+    * This function will only be invoked when this interface is the owner of
+    * the Real-Time Preview system.
+    *
+    * This function is called by the core application at the beginning of a
+    * real-time preview update, just before calling GenerateRealTimePreview(),
+    * with the same parameters that will be passed to that function. Use the
+    * constants defined in the RealTimePreviewGenerationFlag namespace in a
+    * reimplementation of this function if you need to specify real-time
+    * preview generation flags.
+    *
+    * For information on the parameters of this function, see
+    * RequiresRealTimePreviewUpdate(). All the parameters of this function have
+    * the same meaning and values.
+    *
+    * The passed \a image, \a view and \a rect objects <em>cannot be
+    * modified</em> in any way by this function.
+    *
+    * \note The default implementation of this function returns
+    * RealTimePreviewGenerationFlag::None.
+    *
+    * \sa GenerateRealTimePreview()
+    */
+   virtual pcl::RealTimePreviewGenerationFlags RealTimePreviewGenerationFlags( UInt16Image& image, const View& view,
+                                                                               const Rect& rect, int zoomLevel ) const
+   {
+      return RealTimePreviewGenerationFlag::None;
    }
 
    /*!
@@ -1212,9 +1279,7 @@ public:
     *
     * The core application can make such a request at its own discretion---and
     * your interface should be ready to honor it during a real-time generation
-    * task---, but currently (as of PixInsight core version 1.8.0) this only
-    * happens if the real-time progress dialog has been made visible and the
-    * user has closed it prematurely (e.g., by clicking its Cancel button).
+    * task.
     *
     * \note The default implementation of this function simulates a manual
     * deactivation of the Real-Time Preview button of this interface by calling
@@ -1222,8 +1287,7 @@ public:
     * is coherent with the current state of your interface, you normally should
     * not need to reimplement this member function.
     *
-    * \sa RequiresRealTimePreviewUpdate(), GenerateRealTimePreview(),
-    * RealTimePreview::ShowProgressDialog(), RealTimePreview
+    * \sa GenerateRealTimePreview()
     */
    virtual void CancelRealTimePreview()
    {
@@ -2615,4 +2679,4 @@ private:
 #endif   // __PCL_ProcessInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ProcessInterface.h - Released 2023-11-23T18:44:57Z
+// EOF pcl/ProcessInterface.h - Released 2023-11-25T17:26:48Z

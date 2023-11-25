@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.3
+// /_/     \____//_____/   PCL 2.6.4
 // ----------------------------------------------------------------------------
-// pcl/ProcessInterface.cpp - Released 2023-11-23T18:45:05Z
+// pcl/ProcessInterface.cpp - Released 2023-11-25T17:26:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -436,6 +436,21 @@ public:
       }
       ERROR_HANDLER
       return api_false;
+   }
+
+   static uint32 api_func RealTimePreviewGenerationFlags( const_interface_handle hi,
+                                                          const_image_handle himg, const_view_handle hv,
+                                                          int32 x0, int32 y0, int32 x1, int32 y1, int32 z )
+   {
+      try
+      {
+         UInt16Image image( const_cast<image_handle>( himg ) );
+         View view( hv );
+         return reinterpret_cast<const ProcessInterface*>( hi )->RealTimePreviewGenerationFlags( image, view,
+                                                                              Rect( x0, y0, x1, y1 ), z );
+      }
+      ERROR_HANDLER
+      return ~uint32( 0 );
    }
 
    static api_bool api_func GenerateRealTimePreview( const_interface_handle hi,
@@ -1139,6 +1154,7 @@ void ProcessInterface::PerformAPIDefinitions() const
    (*API->InterfaceDefinition->SetInterfaceResetRoutine)( InterfaceDispatcher::ResetInstance );
 
    (*API->InterfaceDefinition->SetInterfaceRealTimeUpdateQueryRoutine)( InterfaceDispatcher::RequiresRealTimePreviewUpdate );
+   (*API->InterfaceDefinition->SetInterfaceRealTimeGenerationFlagsRoutine)( InterfaceDispatcher::RealTimePreviewGenerationFlags );
    (*API->InterfaceDefinition->SetInterfaceRealTimeGenerationRoutine)( InterfaceDispatcher::GenerateRealTimePreview );
    (*API->InterfaceDefinition->SetInterfaceRealTimeCancelRoutine)( InterfaceDispatcher::CancelRealTimePreview );
 
@@ -1242,4 +1258,4 @@ void ProcessInterface::PerformAPIDefinitions() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ProcessInterface.cpp - Released 2023-11-23T18:45:05Z
+// EOF pcl/ProcessInterface.cpp - Released 2023-11-25T17:26:56Z

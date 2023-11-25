@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.3
+// /_/     \____//_____/   PCL 2.6.4
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// JPEGPreferencesDialog.h - Released 2023-11-23T18:45:15Z
+// JPEGPreferencesDialog.h - Released 2023-11-25T17:12:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -81,4 +81,4 @@ private:
 #endif   // __JPEGPreferencesDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF JPEGPreferencesDialog.h - Released 2023-11-23T18:45:15Z
+// EOF JPEGPreferencesDialog.h - Released 2023-11-25T17:12:44Z

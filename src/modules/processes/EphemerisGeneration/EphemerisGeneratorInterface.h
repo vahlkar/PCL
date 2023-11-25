@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.3
+// /_/     \____//_____/   PCL 2.6.4
 // ----------------------------------------------------------------------------
 // Standard EphemerisGeneration Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// EphemerisGeneratorInterface.h - Released 2023-11-23T18:45:25Z
+// EphemerisGeneratorInterface.h - Released 2023-11-25T17:12:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -265,4 +265,4 @@ PCL_END_LOCAL
 #endif   // __EphemerisGeneratorInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF EphemerisGeneratorInterface.h - Released 2023-11-23T18:45:25Z
+// EOF EphemerisGeneratorInterface.h - Released 2023-11-25T17:12:53Z

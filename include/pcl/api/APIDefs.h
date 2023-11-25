@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.3
+// /_/     \____//_____/   PCL 2.6.4
 // ----------------------------------------------------------------------------
-// pcl/APIDefs.h - Released 2023-11-23T18:44:57Z
+// pcl/APIDefs.h - Released 2023-11-25T17:26:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -772,6 +772,7 @@ typedef api_bool              (api_func* interface_dynamic_wheel_routine)       
 typedef api_bool              (api_func* interface_dynamic_update_query_routine)      ( const_interface_handle, const_view_handle, double, double, double, double );
 typedef void                  (api_func* interface_dynamic_paint_routine)             ( const_interface_handle, const_view_handle, graphics_handle, double, double, double, double );
 typedef api_bool              (api_func* interface_real_time_update_query_routine)    ( const_interface_handle, const_image_handle, const_view_handle, int32, int32, int32, int32, int32 );
+typedef uint32                (api_func* interface_real_time_generation_flags_routine)( const_interface_handle, const_image_handle, const_view_handle, int32, int32, int32, int32, int32 );
 typedef api_bool              (api_func* interface_real_time_generation_routine)      ( const_interface_handle, image_handle, const_view_handle, int32, int32, int32, int32, int32, char16_type*, uint32 );
 typedef void                  (api_func* interface_real_time_cancel_routine)          ( interface_handle );
 
@@ -958,4 +959,4 @@ void PCL_FUNC PCLImageOptionsToAPI( api_image_options&, const ImageOptions& );
 #endif   // __PCL_API_APIDefs_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/APIDefs.h - Released 2023-11-23T18:44:57Z
+// EOF pcl/APIDefs.h - Released 2023-11-25T17:26:48Z

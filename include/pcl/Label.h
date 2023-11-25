@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.3
+// /_/     \____//_____/   PCL 2.6.4
 // ----------------------------------------------------------------------------
-// pcl/Label.h - Released 2023-11-23T18:44:57Z
+// pcl/Label.h - Released 2023-11-25T17:26:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -167,4 +167,4 @@ public:
 #endif   // __PCL_Label_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Label.h - Released 2023-11-23T18:44:57Z
+// EOF pcl/Label.h - Released 2023-11-25T17:26:48Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.3
+// /_/     \____//_____/   PCL 2.6.4
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// INDICCDFrameProcess.cpp - Released 2023-11-23T18:45:26Z
+// INDICCDFrameProcess.cpp - Released 2023-11-25T17:12:54Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -218,4 +218,4 @@ int INDICCDFrameProcess::ProcessCommandLine( const StringList& argv ) const
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDICCDFrameProcess.cpp - Released 2023-11-23T18:45:26Z
+// EOF INDICCDFrameProcess.cpp - Released 2023-11-25T17:12:54Z

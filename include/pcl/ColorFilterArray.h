@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.3
+// /_/     \____//_____/   PCL 2.6.4
 // ----------------------------------------------------------------------------
-// pcl/ColorFilterArray.h - Released 2023-11-23T18:44:57Z
+// pcl/ColorFilterArray.h - Released 2023-11-25T17:26:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -345,4 +345,4 @@ public:
 #endif   // __PCL_ColorFilterArray_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ColorFilterArray.h - Released 2023-11-23T18:44:57Z
+// EOF pcl/ColorFilterArray.h - Released 2023-11-25T17:26:48Z

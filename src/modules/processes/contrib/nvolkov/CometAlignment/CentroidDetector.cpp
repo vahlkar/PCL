@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.3
+// /_/     \____//_____/   PCL 2.6.4
 // ----------------------------------------------------------------------------
 // Standard CometAlignment Process Module Version 1.3.7
 // ----------------------------------------------------------------------------
-// CentroidDetector.cpp - Released 2023-11-23T18:45:26Z
+// CentroidDetector.cpp - Released 2023-11-25T17:12:54Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CometAlignment PixInsight module.
 //
@@ -381,4 +381,4 @@ CentroidDetector::CentroidDetector( const ImageVariant& image, int channel, cons
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF CentroidDetector.cpp - Released 2023-11-23T18:45:26Z
+// EOF CentroidDetector.cpp - Released 2023-11-25T17:12:54Z

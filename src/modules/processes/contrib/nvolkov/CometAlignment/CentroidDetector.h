@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.3
+// /_/     \____//_____/   PCL 2.6.4
 // ----------------------------------------------------------------------------
 // Standard CometAlignment Process Module Version 1.3.7
 // ----------------------------------------------------------------------------
-// CentroidDetector.h - Released 2023-11-23T18:45:26Z
+// CentroidDetector.h - Released 2023-11-25T17:12:54Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CometAlignment PixInsight module.
 //
@@ -115,4 +115,4 @@ public:
 #endif // __CentroidDetector_h
 
 // ----------------------------------------------------------------------------
-// EOF CentroidDetector.h - Released 2023-11-23T18:45:26Z
+// EOF CentroidDetector.h - Released 2023-11-25T17:12:54Z

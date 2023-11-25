@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.3
+// /_/     \____//_____/   PCL 2.6.4
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// SpectrophotometricColorCalibrationInstance.cpp - Released 2023-11-23T18:45:25Z
+// SpectrophotometricColorCalibrationInstance.cpp - Released 2023-11-25T17:12:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -1505,4 +1505,4 @@ void SpectrophotometricColorCalibrationInstance::SetDefaultSpectrumData()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SpectrophotometricColorCalibrationInstance.cpp - Released 2023-11-23T18:45:25Z
+// EOF SpectrophotometricColorCalibrationInstance.cpp - Released 2023-11-25T17:12:53Z

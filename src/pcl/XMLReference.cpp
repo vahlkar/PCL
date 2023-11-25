@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.3
+// /_/     \____//_____/   PCL 2.6.4
 // ----------------------------------------------------------------------------
-// pcl/XMLReference.cpp - Released 2023-11-23T18:45:05Z
+// pcl/XMLReference.cpp - Released 2023-11-25T17:26:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -2459,4 +2459,4 @@ String XML::ReferenceValue( String::const_iterator i, String::const_iterator j )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/XMLReference.cpp - Released 2023-11-23T18:45:05Z
+// EOF pcl/XMLReference.cpp - Released 2023-11-25T17:26:56Z

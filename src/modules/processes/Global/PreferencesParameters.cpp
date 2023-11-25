@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.3
+// /_/     \____//_____/   PCL 2.6.4
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// PreferencesParameters.cpp - Released 2023-11-23T18:45:25Z
+// PreferencesParameters.cpp - Released 2023-11-25T17:12:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -252,4 +252,4 @@ IMPLEMENT_BOOLEAN_METAPARAMETER   ( Security, enableLocalSigningIdentity )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesParameters.cpp - Released 2023-11-23T18:45:25Z
+// EOF PreferencesParameters.cpp - Released 2023-11-25T17:12:53Z

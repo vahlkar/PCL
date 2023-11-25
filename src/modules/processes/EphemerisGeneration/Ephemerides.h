@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.3
+// /_/     \____//_____/   PCL 2.6.4
 // ----------------------------------------------------------------------------
 // Standard EphemerisGeneration Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// Ephemerides.h - Released 2023-11-23T18:45:25Z
+// Ephemerides.h - Released 2023-11-25T17:12:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -122,4 +122,4 @@ private:
 #endif   // __Ephemerides_h
 
 // ----------------------------------------------------------------------------
-// EOF Ephemerides.h - Released 2023-11-23T18:45:25Z
+// EOF Ephemerides.h - Released 2023-11-25T17:12:53Z

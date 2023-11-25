@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.3
+// /_/     \____//_____/   PCL 2.6.4
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// InvertInstance.cpp - Released 2023-11-23T18:45:25Z
+// InvertInstance.cpp - Released 2023-11-25T17:12:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -129,4 +129,4 @@ bool InvertInstance::ExecuteOn( View& view )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF InvertInstance.cpp - Released 2023-11-23T18:45:25Z
+// EOF InvertInstance.cpp - Released 2023-11-25T17:12:53Z

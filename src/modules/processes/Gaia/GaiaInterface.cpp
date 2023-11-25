@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.3
+// /_/     \____//_____/   PCL 2.6.4
 // ----------------------------------------------------------------------------
 // Standard Gaia Process Module Version 1.2.5
 // ----------------------------------------------------------------------------
-// GaiaInterface.cpp - Released 2023-11-23T18:45:25Z
+// GaiaInterface.cpp - Released 2023-11-25T17:12:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Gaia PixInsight module.
 //
@@ -1725,4 +1725,4 @@ GaiaInterface::GUIData::GUIData( GaiaInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GaiaInterface.cpp - Released 2023-11-23T18:45:25Z
+// EOF GaiaInterface.cpp - Released 2023-11-25T17:12:53Z

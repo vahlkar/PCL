@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.3
+// /_/     \____//_____/   PCL 2.6.4
 // ----------------------------------------------------------------------------
-// pcl/Win32Exception.cpp - Released 2023-11-23T18:45:05Z
+// pcl/Win32Exception.cpp - Released 2023-11-25T17:26:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -322,4 +322,4 @@ String Win32AccessViolationException::Message() const
 #endif   // __PCL_WINDOWS
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Win32Exception.cpp - Released 2023-11-23T18:45:05Z
+// EOF pcl/Win32Exception.cpp - Released 2023-11-25T17:26:56Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.3
+// /_/     \____//_____/   PCL 2.6.4
 // ----------------------------------------------------------------------------
-// pcl/PSFEstimator.cpp - Released 2023-11-23T18:45:05Z
+// pcl/PSFEstimator.cpp - Released 2023-11-25T17:26:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -272,4 +272,4 @@ Array<PSFData> PSFEstimator::FitStars( const ImageVariant& image ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFEstimator.cpp - Released 2023-11-23T18:45:05Z
+// EOF pcl/PSFEstimator.cpp - Released 2023-11-25T17:26:56Z

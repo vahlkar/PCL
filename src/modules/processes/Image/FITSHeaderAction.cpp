@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.3
+// /_/     \____//_____/   PCL 2.6.4
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.4
 // ----------------------------------------------------------------------------
-// FITSHeaderAction.cpp - Released 2023-11-23T18:45:25Z
+// FITSHeaderAction.cpp - Released 2023-11-25T17:12:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -93,4 +93,4 @@ bool FITSHeaderAction::IsEnabled( ActionInfo info ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITSHeaderAction.cpp - Released 2023-11-23T18:45:25Z
+// EOF FITSHeaderAction.cpp - Released 2023-11-25T17:12:53Z

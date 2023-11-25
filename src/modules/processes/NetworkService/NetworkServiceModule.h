@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.3
+// /_/     \____//_____/   PCL 2.6.4
 // ----------------------------------------------------------------------------
 // Standard NetworkService Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// NetworkServiceModule.h - Released 2023-11-23T18:45:25Z
+// NetworkServiceModule.h - Released 2023-11-25T17:12:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NetworkService PixInsight module.
 //
@@ -85,4 +85,4 @@ public:
 #endif   // __NetworkServiceModule_h
 
 // ----------------------------------------------------------------------------
-// EOF NetworkServiceModule.h - Released 2023-11-23T18:45:25Z
+// EOF NetworkServiceModule.h - Released 2023-11-25T17:12:53Z

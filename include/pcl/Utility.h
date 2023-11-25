@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.3
+// /_/     \____//_____/   PCL 2.6.4
 // ----------------------------------------------------------------------------
-// pcl/Utility.h - Released 2023-11-23T18:44:57Z
+// pcl/Utility.h - Released 2023-11-25T17:26:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -702,4 +702,4 @@ int Compare( FI1 i1, FI1 j1, FI2 i2, FI2 j2, BP p ) noexcept( noexcept( p ) )
 #endif  // __PCL_Utility_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Utility.h - Released 2023-11-23T18:44:57Z
+// EOF pcl/Utility.h - Released 2023-11-25T17:26:48Z

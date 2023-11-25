@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.3
+// /_/     \____//_____/   PCL 2.6.4
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// ConvolutionDialog.cpp - Released 2023-11-23T18:45:25Z
+// ConvolutionDialog.cpp - Released 2023-11-25T17:12:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -268,4 +268,4 @@ void ConvolutionFilterCodeDialog::__TextBox_CaretPosition( TextBox& sender, int 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ConvolutionDialog.cpp - Released 2023-11-23T18:45:25Z
+// EOF ConvolutionDialog.cpp - Released 2023-11-25T17:12:53Z

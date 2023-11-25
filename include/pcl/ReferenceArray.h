@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.3
+// /_/     \____//_____/   PCL 2.6.4
 // ----------------------------------------------------------------------------
-// pcl/ReferenceArray.h - Released 2023-11-23T18:44:57Z
+// pcl/ReferenceArray.h - Released 2023-11-25T17:26:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -2254,4 +2254,4 @@ ReferenceArray<T,A>& operator <<( ReferenceArray<T,A>&& x1, const ReferenceArray
 #endif   // __PCL_ReferenceArray_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ReferenceArray.h - Released 2023-11-23T18:44:57Z
+// EOF pcl/ReferenceArray.h - Released 2023-11-25T17:26:48Z
