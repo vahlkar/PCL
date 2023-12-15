@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard TIFF File Format Module Version 1.0.9
 // ----------------------------------------------------------------------------
-// TIFFModule.cpp - Released 2023-11-25T17:12:44Z
+// TIFFModule.cpp - Released 2023-12-01T19:16:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard TIFF PixInsight module.
 //
@@ -57,8 +57,8 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2023
-#define MODULE_RELEASE_MONTH     11
-#define MODULE_RELEASE_DAY       25
+#define MODULE_RELEASE_MONTH     12
+#define MODULE_RELEASE_DAY       1
 
 #include "TIFFModule.h"
 #include "TIFFFormat.h"
@@ -167,4 +167,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF TIFFModule.cpp - Released 2023-11-25T17:12:44Z
+// EOF TIFFModule.cpp - Released 2023-12-01T19:16:09Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// ExtractCIELAction.h - Released 2023-11-25T17:12:53Z
+// ExtractCIELAction.h - Released 2023-12-01T19:16:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -77,4 +77,4 @@ public:
 #endif   // __ExtractCIELAction_h
 
 // ----------------------------------------------------------------------------
-// EOF ExtractCIELAction.h - Released 2023-11-25T17:12:53Z
+// EOF ExtractCIELAction.h - Released 2023-12-01T19:16:17Z

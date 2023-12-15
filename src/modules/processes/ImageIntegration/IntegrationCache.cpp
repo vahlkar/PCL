@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.5.3
 // ----------------------------------------------------------------------------
-// IntegrationCache.cpp - Released 2023-11-25T17:12:53Z
+// IntegrationCache.cpp - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -364,4 +364,4 @@ void IntegrationCache::SetMaxItemDuration( int days )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationCache.cpp - Released 2023-11-25T17:12:53Z
+// EOF IntegrationCache.cpp - Released 2023-12-01T19:16:18Z

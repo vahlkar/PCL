@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard EphemerisGeneration Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// Elements.h - Released 2023-11-25T17:12:53Z
+// Elements.h - Released 2023-12-01T19:16:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -185,4 +185,4 @@ void OrbitalElementsFromStateVectors( Vector& el, const Vector& r, const Vector&
 #endif   // __Elements_h
 
 // ----------------------------------------------------------------------------
-// EOF Elements.h - Released 2023-11-25T17:12:53Z
+// EOF Elements.h - Released 2023-12-01T19:16:17Z

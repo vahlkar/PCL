@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard APASS Process Module Version 1.1.4
 // ----------------------------------------------------------------------------
-// APASSParameters.h - Released 2023-11-25T17:12:53Z
+// APASSParameters.h - Released 2023-12-01T19:16:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard APASS PixInsight module.
 //
@@ -803,4 +803,4 @@ PCL_END_LOCAL
 #endif   // __APASSParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF APASSParameters.h - Released 2023-11-25T17:12:53Z
+// EOF APASSParameters.h - Released 2023-12-01T19:16:17Z

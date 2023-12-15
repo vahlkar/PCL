@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Fourier Process Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// FourierTransformParameters.h - Released 2023-11-25T17:12:53Z
+// FourierTransformParameters.h - Released 2023-12-01T19:16:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Fourier PixInsight module.
 //
@@ -93,4 +93,4 @@ extern FTCentered* TheFTCenteredParameter;
 #endif   // __FourierTransformParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF FourierTransformParameters.h - Released 2023-11-25T17:12:53Z
+// EOF FourierTransformParameters.h - Released 2023-12-01T19:16:17Z

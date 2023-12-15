@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationProcess.cpp - Released 2023-11-25T17:12:53Z
+// PhotometricColorCalibrationProcess.cpp - Released 2023-12-01T19:16:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -344,4 +344,4 @@ int PhotometricColorCalibrationProcess::FindWhiteReferenceById( const String& id
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationProcess.cpp - Released 2023-11-25T17:12:53Z
+// EOF PhotometricColorCalibrationProcess.cpp - Released 2023-12-01T19:16:17Z

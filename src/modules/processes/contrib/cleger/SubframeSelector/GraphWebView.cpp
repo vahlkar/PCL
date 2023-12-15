@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.8.9
 // ----------------------------------------------------------------------------
-// GraphWebView.cpp - Released 2023-11-25T17:12:54Z
+// GraphWebView.cpp - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -876,4 +876,4 @@ void GraphWebView::Cleanup()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GraphWebView.cpp - Released 2023-11-25T17:12:54Z
+// EOF GraphWebView.cpp - Released 2023-12-01T19:16:18Z

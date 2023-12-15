@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.6.4
 // ----------------------------------------------------------------------------
-// pcl/ProcessInterface.h - Released 2023-11-25T17:26:48Z
+// pcl/ProcessInterface.h - Released 2023-12-01T19:15:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -219,6 +219,7 @@ namespace RealTimePreviewGenerationFlag
    {
       None        = 0x00000000,  // No real-time preview generation flags
       DisableMask = 0x00000010,  // Do not render a masked real-time preview
+      Invalid     = 0xFFFFFFFF
    };
 }
 
@@ -1168,6 +1169,37 @@ public:
    }
 
    /*!
+    * Function called to retrieve real-time preview generation flags.
+    *
+    * This function will only be invoked when this interface is the owner of
+    * the Real-Time Preview system.
+    *
+    * This function is called by the core application at the beginning of a
+    * real-time preview update, just before calling GenerateRealTimePreview(),
+    * with the same parameters that will be passed to that function. Use the
+    * constants defined in the RealTimePreviewGenerationFlag namespace in a
+    * reimplementation of this function if you need to specify real-time
+    * preview generation flags.
+    *
+    * For information on the parameters of this function, see
+    * RequiresRealTimePreviewUpdate(). All the parameters of this function have
+    * the same meaning and values.
+    *
+    * The passed \a image, \a view and \a rect objects <em>cannot be
+    * modified</em> in any way by this function.
+    *
+    * \note The default implementation of this function returns
+    * RealTimePreviewGenerationFlag::None.
+    *
+    * \sa GenerateRealTimePreview()
+    */
+   virtual pcl::RealTimePreviewGenerationFlags RealTimePreviewGenerationFlags( UInt16Image& image, const View& view,
+                                                                               const Rect& rect, int zoomLevel ) const
+   {
+      return RealTimePreviewGenerationFlag::None;
+   }
+
+   /*!
     * Function called to generate a new real-time preview rendition.
     *
     * \param[in,out] image Reference to a shared image where the real-time
@@ -1235,37 +1267,6 @@ public:
                                          const Rect& rect, int zoomLevel, String& info ) const
    {
       return false;
-   }
-
-   /*!
-    * Function called to retrieve real-time preview generation flags.
-    *
-    * This function will only be invoked when this interface is the owner of
-    * the Real-Time Preview system.
-    *
-    * This function is called by the core application at the beginning of a
-    * real-time preview update, just before calling GenerateRealTimePreview(),
-    * with the same parameters that will be passed to that function. Use the
-    * constants defined in the RealTimePreviewGenerationFlag namespace in a
-    * reimplementation of this function if you need to specify real-time
-    * preview generation flags.
-    *
-    * For information on the parameters of this function, see
-    * RequiresRealTimePreviewUpdate(). All the parameters of this function have
-    * the same meaning and values.
-    *
-    * The passed \a image, \a view and \a rect objects <em>cannot be
-    * modified</em> in any way by this function.
-    *
-    * \note The default implementation of this function returns
-    * RealTimePreviewGenerationFlag::None.
-    *
-    * \sa GenerateRealTimePreview()
-    */
-   virtual pcl::RealTimePreviewGenerationFlags RealTimePreviewGenerationFlags( UInt16Image& image, const View& view,
-                                                                               const Rect& rect, int zoomLevel ) const
-   {
-      return RealTimePreviewGenerationFlag::None;
    }
 
    /*!
@@ -2679,4 +2680,4 @@ private:
 #endif   // __PCL_ProcessInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ProcessInterface.h - Released 2023-11-25T17:26:48Z
+// EOF pcl/ProcessInterface.h - Released 2023-12-01T19:15:45Z

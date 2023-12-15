@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard CosmeticCorrection Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// CosmeticCorrectionInterface.h - Released 2023-11-25T17:12:54Z
+// CosmeticCorrectionInterface.h - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CosmeticCorrection PixInsight module.
 //
@@ -313,4 +313,4 @@ PCL_END_LOCAL
 #endif // __CosmeticCorrectionInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF CosmeticCorrectionInterface.h - Released 2023-11-25T17:12:54Z
+// EOF CosmeticCorrectionInterface.h - Released 2023-12-01T19:16:18Z

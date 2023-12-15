@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.6.4
 // ----------------------------------------------------------------------------
-// pcl/ProcessInterface.cpp - Released 2023-11-25T17:26:56Z
+// pcl/ProcessInterface.cpp - Released 2023-12-01T19:15:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -446,11 +446,11 @@ public:
       {
          UInt16Image image( const_cast<image_handle>( himg ) );
          View view( hv );
-         return reinterpret_cast<const ProcessInterface*>( hi )->RealTimePreviewGenerationFlags( image, view,
-                                                                              Rect( x0, y0, x1, y1 ), z );
+         return unsigned( reinterpret_cast<const ProcessInterface*>( hi )->RealTimePreviewGenerationFlags( image, view,
+                                                                              Rect( x0, y0, x1, y1 ), z ) );
       }
       ERROR_HANDLER
-      return ~uint32( 0 );
+      return RealTimePreviewGenerationFlag::Invalid;
    }
 
    static api_bool api_func GenerateRealTimePreview( const_interface_handle hi,
@@ -1122,7 +1122,7 @@ void ProcessInterface::PerformAPIDefinitions() const
       }
    }
 
-   (*API->InterfaceDefinition->SetInterfaceFeatures)( Features(), 0 );
+   (*API->InterfaceDefinition->SetInterfaceFeatures)( unsigned( Features() ), 0 );
 
    (*API->InterfaceDefinition->SetInterfaceInitializationRoutine)( InterfaceDispatcher::Initialize );
    (*API->InterfaceDefinition->SetInterfaceLaunchRoutine)( InterfaceDispatcher::Launch );
@@ -1258,4 +1258,4 @@ void ProcessInterface::PerformAPIDefinitions() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ProcessInterface.cpp - Released 2023-11-25T17:26:56Z
+// EOF pcl/ProcessInterface.cpp - Released 2023-12-01T19:15:53Z

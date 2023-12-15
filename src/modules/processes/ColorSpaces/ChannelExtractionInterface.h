@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// ChannelExtractionInterface.h - Released 2023-11-25T17:12:53Z
+// ChannelExtractionInterface.h - Released 2023-12-01T19:16:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -151,4 +151,4 @@ PCL_END_LOCAL
 #endif   // __ChannelExtractionInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF ChannelExtractionInterface.h - Released 2023-11-25T17:12:53Z
+// EOF ChannelExtractionInterface.h - Released 2023-12-01T19:16:17Z

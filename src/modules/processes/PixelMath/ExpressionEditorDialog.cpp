@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// ExpressionEditorDialog.cpp - Released 2023-11-25T17:12:54Z
+// ExpressionEditorDialog.cpp - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -1194,4 +1194,4 @@ void ExpressionEditorDialog::e_MouseMove( Control& sender, const pcl::Point& pos
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ExpressionEditorDialog.cpp - Released 2023-11-25T17:12:54Z
+// EOF ExpressionEditorDialog.cpp - Released 2023-12-01T19:16:18Z

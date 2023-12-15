@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Flux Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// FluxCalibrationInstance.h - Released 2023-11-25T17:12:53Z
+// FluxCalibrationInstance.h - Released 2023-12-01T19:16:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Flux PixInsight module.
 //
@@ -144,4 +144,4 @@ private:
 #endif   // __FluxCalibrationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF FluxCalibrationInstance.h - Released 2023-11-25T17:12:53Z
+// EOF FluxCalibrationInstance.h - Released 2023-12-01T19:16:17Z

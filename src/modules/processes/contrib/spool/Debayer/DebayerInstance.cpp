@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Debayer Process Module Version 1.11.2
 // ----------------------------------------------------------------------------
-// DebayerInstance.cpp - Released 2023-11-25T17:12:54Z
+// DebayerInstance.cpp - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -4613,4 +4613,4 @@ size_type DebayerInstance::ParameterLength( const MetaParameter* p, size_type ta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DebayerInstance.cpp - Released 2023-11-25T17:12:54Z
+// EOF DebayerInstance.cpp - Released 2023-12-01T19:16:18Z

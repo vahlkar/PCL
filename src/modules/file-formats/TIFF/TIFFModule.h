@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard TIFF File Format Module Version 1.0.9
 // ----------------------------------------------------------------------------
-// TIFFModule.h - Released 2023-11-25T17:12:44Z
+// TIFFModule.h - Released 2023-12-01T19:16:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard TIFF PixInsight module.
 //
@@ -84,4 +84,4 @@ public:
 #endif   // __TIFFModule_h
 
 // ----------------------------------------------------------------------------
-// EOF TIFFModule.h - Released 2023-11-25T17:12:44Z
+// EOF TIFFModule.h - Released 2023-12-01T19:16:09Z

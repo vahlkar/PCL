@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.4
 // ----------------------------------------------------------------------------
-// ExtractAlphaChannelsInstance.h - Released 2023-11-25T17:12:53Z
+// ExtractAlphaChannelsInstance.h - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -100,4 +100,4 @@ private:
 #endif   // __ExtractAlphaChannelsInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ExtractAlphaChannelsInstance.h - Released 2023-11-25T17:12:53Z
+// EOF ExtractAlphaChannelsInstance.h - Released 2023-12-01T19:16:18Z

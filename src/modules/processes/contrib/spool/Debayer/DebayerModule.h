@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Debayer Process Module Version 1.11.2
 // ----------------------------------------------------------------------------
-// DebayerModule.h - Released 2023-11-25T17:12:54Z
+// DebayerModule.h - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -84,4 +84,4 @@ public:
 #endif   // __DebayerModule_h
 
 // ----------------------------------------------------------------------------
-// EOF DebayerModule.h - Released 2023-11-25T17:12:54Z
+// EOF DebayerModule.h - Released 2023-12-01T19:16:18Z

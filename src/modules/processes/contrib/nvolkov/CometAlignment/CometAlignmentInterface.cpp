@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard CometAlignment Process Module Version 1.3.7
 // ----------------------------------------------------------------------------
-// CometAlignmentInterface.cpp - Released 2023-11-25T17:12:54Z
+// CometAlignmentInterface.cpp - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CometAlignment PixInsight module.
 //
@@ -1937,4 +1937,4 @@ CometAlignmentInterface::GUIData::GUIData( CometAlignmentInterface& w )
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF CometAlignmentInterface.cpp - Released 2023-11-25T17:12:54Z
+// EOF CometAlignmentInterface.cpp - Released 2023-12-01T19:16:18Z

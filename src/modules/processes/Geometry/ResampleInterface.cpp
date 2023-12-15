@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// ResampleInterface.cpp - Released 2023-11-25T17:12:53Z
+// ResampleInterface.cpp - Released 2023-12-01T19:16:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -988,4 +988,4 @@ ResampleInterface::GUIData::GUIData( ResampleInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ResampleInterface.cpp - Released 2023-11-25T17:12:53Z
+// EOF ResampleInterface.cpp - Released 2023-12-01T19:16:17Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.4
 // ----------------------------------------------------------------------------
-// CreateAlphaChannelsParameters.cpp - Released 2023-11-25T17:12:53Z
+// CreateAlphaChannelsParameters.cpp - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -214,4 +214,4 @@ double CAChannelCount::MinimumValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CreateAlphaChannelsParameters.cpp - Released 2023-11-25T17:12:53Z
+// EOF CreateAlphaChannelsParameters.cpp - Released 2023-12-01T19:16:18Z

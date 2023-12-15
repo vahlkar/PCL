@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard EphemerisGeneration Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// Ephemerides.cpp - Released 2023-11-25T17:12:53Z
+// Ephemerides.cpp - Released 2023-12-01T19:16:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -197,4 +197,4 @@ double Ephemerides::KBOMass( const EphemerisObject& obj )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Ephemerides.cpp - Released 2023-11-25T17:12:53Z
+// EOF Ephemerides.cpp - Released 2023-12-01T19:16:17Z

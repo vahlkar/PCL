@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard EphemerisGeneration Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// EphemerisGeneratorInterface.cpp - Released 2023-11-25T17:12:53Z
+// EphemerisGeneratorInterface.cpp - Released 2023-12-01T19:16:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -1907,4 +1907,4 @@ EphemerisGeneratorInterface::GUIData::GUIData( EphemerisGeneratorInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF EphemerisGeneratorInterface.cpp - Released 2023-11-25T17:12:53Z
+// EOF EphemerisGeneratorInterface.cpp - Released 2023-12-01T19:16:17Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// ColorSpacesModule.cpp - Released 2023-11-25T17:12:53Z
+// ColorSpacesModule.cpp - Released 2023-12-01T19:16:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -57,8 +57,8 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2023
-#define MODULE_RELEASE_MONTH     11
-#define MODULE_RELEASE_DAY       25
+#define MODULE_RELEASE_MONTH     12
+#define MODULE_RELEASE_DAY       1
 
 #include "ColorSpacesModule.h"
 #include "GrayscaleRGBProcesses.h"
@@ -204,4 +204,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF ColorSpacesModule.cpp - Released 2023-11-25T17:12:53Z
+// EOF ColorSpacesModule.cpp - Released 2023-12-01T19:16:17Z

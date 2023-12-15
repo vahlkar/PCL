@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// BinarizeProcess.cpp - Released 2023-11-25T17:12:53Z
+// BinarizeProcess.cpp - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -294,4 +294,4 @@ int BinarizeProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BinarizeProcess.cpp - Released 2023-11-25T17:12:53Z
+// EOF BinarizeProcess.cpp - Released 2023-12-01T19:16:18Z

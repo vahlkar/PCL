@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// PreferencesParameters.cpp - Released 2023-11-25T17:12:53Z
+// PreferencesParameters.cpp - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -252,4 +252,4 @@ IMPLEMENT_BOOLEAN_METAPARAMETER   ( Security, enableLocalSigningIdentity )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesParameters.cpp - Released 2023-11-25T17:12:53Z
+// EOF PreferencesParameters.cpp - Released 2023-12-01T19:16:18Z

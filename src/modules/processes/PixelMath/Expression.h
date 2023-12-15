@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// Expression.h - Released 2023-11-25T17:12:54Z
+// Expression.h - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -220,4 +220,4 @@ typedef Expression::component_list  ExpressionList;
 #endif   // __Expression_h
 
 // ----------------------------------------------------------------------------
-// EOF Expression.h - Released 2023-11-25T17:12:54Z
+// EOF Expression.h - Released 2023-12-01T19:16:18Z

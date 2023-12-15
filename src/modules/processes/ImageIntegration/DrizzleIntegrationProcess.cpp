@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.5.3
 // ----------------------------------------------------------------------------
-// DrizzleIntegrationProcess.cpp - Released 2023-11-25T17:12:53Z
+// DrizzleIntegrationProcess.cpp - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -197,4 +197,4 @@ ProcessImplementation* DrizzleIntegrationProcess::Clone( const ProcessImplementa
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DrizzleIntegrationProcess.cpp - Released 2023-11-25T17:12:53Z
+// EOF DrizzleIntegrationProcess.cpp - Released 2023-12-01T19:16:18Z

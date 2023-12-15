@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// FastRotationInterface.h - Released 2023-11-25T17:12:53Z
+// FastRotationInterface.h - Released 2023-12-01T19:16:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -125,4 +125,4 @@ PCL_END_LOCAL
 #endif   // __FastRotationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF FastRotationInterface.h - Released 2023-11-25T17:12:53Z
+// EOF FastRotationInterface.h - Released 2023-12-01T19:16:17Z

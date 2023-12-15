@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard CosmeticCorrection Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// CosmeticCorrectionParameters.cpp - Released 2023-11-25T17:12:54Z
+// CosmeticCorrectionParameters.cpp - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CosmeticCorrection PixInsight module.
 //
@@ -640,4 +640,4 @@ IsoString CCDefectEnd::Id() const
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF CosmeticCorrectionParameters.cpp - Released 2023-11-25T17:12:54Z
+// EOF CosmeticCorrectionParameters.cpp - Released 2023-12-01T19:16:18Z

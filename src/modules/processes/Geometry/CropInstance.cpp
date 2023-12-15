@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// CropInstance.cpp - Released 2023-11-25T17:12:53Z
+// CropInstance.cpp - Released 2023-12-01T19:16:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -259,4 +259,4 @@ void* CropInstance::LockParameter( const MetaParameter* p, size_type /*tableRow*
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CropInstance.cpp - Released 2023-11-25T17:12:53Z
+// EOF CropInstance.cpp - Released 2023-12-01T19:16:17Z

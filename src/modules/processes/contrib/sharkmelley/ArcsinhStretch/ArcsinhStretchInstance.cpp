@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ArcsinhStretch Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// ArcsinhStretchInstance.cpp - Released 2023-11-25T17:12:54Z
+// ArcsinhStretchInstance.cpp - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ArcsinhStretch PixInsight module.
 //
@@ -319,4 +319,4 @@ void* ArcsinhStretchInstance::LockParameter( const MetaParameter* p, size_type /
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ArcsinhStretchInstance.cpp - Released 2023-11-25T17:12:54Z
+// EOF ArcsinhStretchInstance.cpp - Released 2023-12-01T19:16:18Z

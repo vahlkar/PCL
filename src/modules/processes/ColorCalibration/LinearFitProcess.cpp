@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// LinearFitProcess.cpp - Released 2023-11-25T17:12:53Z
+// LinearFitProcess.cpp - Released 2023-12-01T19:16:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -271,4 +271,4 @@ int LinearFitProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LinearFitProcess.cpp - Released 2023-11-25T17:12:53Z
+// EOF LinearFitProcess.cpp - Released 2023-12-01T19:16:17Z

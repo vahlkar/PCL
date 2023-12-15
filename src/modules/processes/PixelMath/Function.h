@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// Function.h - Released 2023-11-25T17:12:54Z
+// Function.h - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -4147,7 +4147,7 @@ public:
                                                     "<p>Given two images <i>a</i> and <i>b</i> with pixel sample values in the [0,1] range, "
                                                     "the color dodge operation is defined by the following expression:</p>"
                                                     "<p style=\"white-space: pre;\">"
-                                                    "   1 - min( (1 - a)/b, 1 )"
+                                                    "   min( a/(1 - b), 1 )"
                                                     "</p>"
                                                     "<p>Invariant subexpression: always.</p>"; }
    String Token() const override           { return "op_color_dodge"; }
@@ -4376,4 +4376,4 @@ public:
 #endif   // __Function_h
 
 // ----------------------------------------------------------------------------
-// EOF Function.h - Released 2023-11-25T17:12:54Z
+// EOF Function.h - Released 2023-12-01T19:16:18Z

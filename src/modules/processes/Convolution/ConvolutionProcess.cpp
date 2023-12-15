@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// ConvolutionProcess.cpp - Released 2023-11-25T17:12:53Z
+// ConvolutionProcess.cpp - Released 2023-12-01T19:16:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -242,4 +242,4 @@ int ConvolutionProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ConvolutionProcess.cpp - Released 2023-11-25T17:12:53Z
+// EOF ConvolutionProcess.cpp - Released 2023-12-01T19:16:17Z

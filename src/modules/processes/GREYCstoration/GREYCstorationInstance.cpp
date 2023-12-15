@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard GREYCstoration Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// GREYCstorationInstance.cpp - Released 2023-11-25T17:12:53Z
+// GREYCstorationInstance.cpp - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GREYCstoration PixInsight module.
 //
@@ -637,4 +637,4 @@ void* GREYCstorationInstance::LockParameter( const MetaParameter* p, size_type/*
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GREYCstorationInstance.cpp - Released 2023-11-25T17:12:53Z
+// EOF GREYCstorationInstance.cpp - Released 2023-12-01T19:16:18Z

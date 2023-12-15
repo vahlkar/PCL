@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.6.4
 // ----------------------------------------------------------------------------
-// pcl/Button.cpp - Released 2023-11-25T17:26:56Z
+// pcl/Button.cpp - Released 2023-12-01T19:15:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -241,4 +241,4 @@ void Button::OnCheck( check_event_handler f, Control& receiver )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Button.cpp - Released 2023-11-25T17:26:56Z
+// EOF pcl/Button.cpp - Released 2023-12-01T19:15:53Z

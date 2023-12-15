@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.5.3
 // ----------------------------------------------------------------------------
-// ImageIntegrationInterface.cpp - Released 2023-11-25T17:12:53Z
+// ImageIntegrationInterface.cpp - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -2752,4 +2752,4 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationInterface.cpp - Released 2023-11-25T17:12:53Z
+// EOF ImageIntegrationInterface.cpp - Released 2023-12-01T19:16:18Z

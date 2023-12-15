@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard NoOperation Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// NoOperationInstance.h - Released 2023-11-25T17:12:54Z
+// NoOperationInstance.h - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NoOperation PixInsight module.
 //
@@ -81,4 +81,4 @@ public:
 #endif   // __NoOperationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF NoOperationInstance.h - Released 2023-11-25T17:12:54Z
+// EOF NoOperationInstance.h - Released 2023-12-01T19:16:18Z

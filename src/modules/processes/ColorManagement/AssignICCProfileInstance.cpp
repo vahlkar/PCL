@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorManagement Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// AssignICCProfileInstance.cpp - Released 2023-11-25T17:12:53Z
+// AssignICCProfileInstance.cpp - Released 2023-12-01T19:16:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorManagement PixInsight module.
 //
@@ -261,4 +261,4 @@ size_type AssignICCProfileInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF AssignICCProfileInstance.cpp - Released 2023-11-25T17:12:53Z
+// EOF AssignICCProfileInstance.cpp - Released 2023-12-01T19:16:17Z

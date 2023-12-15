@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ExponentialNumericControl.h - Released 2023-11-25T17:12:53Z
+// ExponentialNumericControl.h - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -100,4 +100,4 @@ private:
 #endif   // __PCL_ExponentialNumericControl_h
 
 // ----------------------------------------------------------------------------
-// EOF ExponentialNumericControl.h - Released 2023-11-25T17:12:53Z
+// EOF ExponentialNumericControl.h - Released 2023-12-01T19:16:18Z

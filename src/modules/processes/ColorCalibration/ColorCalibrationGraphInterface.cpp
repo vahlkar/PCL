@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// ColorCalibrationGraphInterface.cpp - Released 2023-11-25T17:12:53Z
+// ColorCalibrationGraphInterface.cpp - Released 2023-12-01T19:16:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -528,4 +528,4 @@ ColorCalibrationGraphInterface::GUIData::GUIData( ColorCalibrationGraphInterface
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ColorCalibrationGraphInterface.cpp - Released 2023-11-25T17:12:53Z
+// EOF ColorCalibrationGraphInterface.cpp - Released 2023-12-01T19:16:17Z

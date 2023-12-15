@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard NetworkService Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// NetworkServiceDownloader.h - Released 2023-11-25T17:12:53Z
+// NetworkServiceDownloader.h - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NetworkService PixInsight module.
 //
@@ -82,4 +82,4 @@ private:
 #endif   // __NetworkServiceDownloader_h
 
 // ----------------------------------------------------------------------------
-// EOF NetworkServiceDownloader.h - Released 2023-11-25T17:12:53Z
+// EOF NetworkServiceDownloader.h - Released 2023-12-01T19:16:18Z

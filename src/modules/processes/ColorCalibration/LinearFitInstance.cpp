@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// LinearFitInstance.cpp - Released 2023-11-25T17:12:53Z
+// LinearFitInstance.cpp - Released 2023-12-01T19:16:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -403,4 +403,4 @@ size_type LinearFitInstance::ParameterLength( const MetaParameter* p, size_type 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LinearFitInstance.cpp - Released 2023-11-25T17:12:53Z
+// EOF LinearFitInstance.cpp - Released 2023-12-01T19:16:17Z

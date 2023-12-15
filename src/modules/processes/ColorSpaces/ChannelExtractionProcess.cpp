@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// ChannelExtractionProcess.cpp - Released 2023-11-25T17:12:53Z
+// ChannelExtractionProcess.cpp - Released 2023-12-01T19:16:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -138,4 +138,4 @@ bool ChannelExtractionProcess::NeedsValidation() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ChannelExtractionProcess.cpp - Released 2023-11-25T17:12:53Z
+// EOF ChannelExtractionProcess.cpp - Released 2023-12-01T19:16:17Z

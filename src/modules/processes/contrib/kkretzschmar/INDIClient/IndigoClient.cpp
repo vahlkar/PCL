@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// IndigoClient.cpp - Released 2023-11-25T17:12:54Z
+// IndigoClient.cpp - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -327,4 +327,4 @@ bool IndigoClient::disconnectDevice( const std::string& deviceName )
 }
 
 // ----------------------------------------------------------------------------
-// EOF IndigoClient.cpp - Released 2023-11-25T17:12:54Z
+// EOF IndigoClient.cpp - Released 2023-12-01T19:16:18Z

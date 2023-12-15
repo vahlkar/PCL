@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Flux Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// FluxCalibrationInterface.h - Released 2023-11-25T17:12:53Z
+// FluxCalibrationInterface.h - Released 2023-12-01T19:16:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Flux PixInsight module.
 //
@@ -243,4 +243,4 @@ PCL_END_LOCAL
 #endif   // __FluxCalibrationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF FluxCalibrationInterface.h - Released 2023-11-25T17:12:53Z
+// EOF FluxCalibrationInterface.h - Released 2023-12-01T19:16:17Z

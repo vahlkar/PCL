@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard EphemerisGeneration Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// TextDatabase.cpp - Released 2023-11-25T17:12:53Z
+// TextDatabase.cpp - Released 2023-12-01T19:16:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -1055,4 +1055,4 @@ Array<TextDatabase::FormatDescription> TextDatabase::FormatDescription::Parse( c
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF TextDatabase.cpp - Released 2023-11-25T17:12:53Z
+// EOF TextDatabase.cpp - Released 2023-12-01T19:16:17Z

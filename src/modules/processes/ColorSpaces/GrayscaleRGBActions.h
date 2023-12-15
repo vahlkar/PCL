@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// GrayscaleRGBActions.h - Released 2023-11-25T17:12:53Z
+// GrayscaleRGBActions.h - Released 2023-12-01T19:16:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -89,4 +89,4 @@ public:
 #endif   // __GrayscaleRGBActions_h
 
 // ----------------------------------------------------------------------------
-// EOF GrayscaleRGBActions.h - Released 2023-11-25T17:12:53Z
+// EOF GrayscaleRGBActions.h - Released 2023-12-01T19:16:17Z

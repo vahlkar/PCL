@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// SpectrophotometricColorCalibrationParameters.h - Released 2023-11-25T17:12:53Z
+// SpectrophotometricColorCalibrationParameters.h - Released 2023-12-01T19:16:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -901,4 +901,4 @@ PCL_END_LOCAL
 #endif   // __SpectrophotometricColorCalibrationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF SpectrophotometricColorCalibrationParameters.h - Released 2023-11-25T17:12:53Z
+// EOF SpectrophotometricColorCalibrationParameters.h - Released 2023-12-01T19:16:17Z

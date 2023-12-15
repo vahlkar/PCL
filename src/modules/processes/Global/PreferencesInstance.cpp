@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// PreferencesInstance.cpp - Released 2023-11-25T17:12:53Z
+// PreferencesInstance.cpp - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -1194,4 +1194,4 @@ String* PreferencesInstance::StringParameterFromMetaParameter( const MetaParamet
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInstance.cpp - Released 2023-11-25T17:12:53Z
+// EOF PreferencesInstance.cpp - Released 2023-12-01T19:16:18Z

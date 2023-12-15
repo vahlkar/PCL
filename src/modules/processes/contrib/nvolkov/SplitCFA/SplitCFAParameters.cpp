@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard SplitCFA Process Module Version 1.0.6
 // ----------------------------------------------------------------------------
-// SplitCFAParameters.cpp - Released 2023-11-25T17:12:54Z
+// SplitCFAParameters.cpp - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SplitCFA PixInsight module.
 //
@@ -317,4 +317,4 @@ bool SplitCFAOutputViewId3::IsReadOnly() const
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF SplitCFAParameters.cpp - Released 2023-11-25T17:12:54Z
+// EOF SplitCFAParameters.cpp - Released 2023-12-01T19:16:18Z

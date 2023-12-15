@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard FindingChart Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// FindingChartInstance.cpp - Released 2023-11-25T17:12:53Z
+// FindingChartInstance.cpp - Released 2023-12-01T19:16:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FindingChart PixInsight module.
 //
@@ -691,4 +691,4 @@ size_type FindingChartInstance::ParameterLength( const MetaParameter* p, size_ty
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FindingChartInstance.cpp - Released 2023-11-25T17:12:53Z
+// EOF FindingChartInstance.cpp - Released 2023-12-01T19:16:17Z

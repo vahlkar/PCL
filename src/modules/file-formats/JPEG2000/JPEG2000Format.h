@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG2000 File Format Module Version 1.0.3
 // ----------------------------------------------------------------------------
-// JPEG2000Format.h - Released 2023-11-25T17:12:44Z
+// JPEG2000Format.h - Released 2023-12-01T19:16:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG2000 PixInsight module.
 //
@@ -157,4 +157,4 @@ struct JPEG2000FormatOptions
 #endif   // __JPEG2000Format_h
 
 // ----------------------------------------------------------------------------
-// EOF JPEG2000Format.h - Released 2023-11-25T17:12:44Z
+// EOF JPEG2000Format.h - Released 2023-12-01T19:16:09Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard CometAlignment Process Module Version 1.3.7
 // ----------------------------------------------------------------------------
-// CentroidDetector.cpp - Released 2023-11-25T17:12:54Z
+// CentroidDetector.cpp - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CometAlignment PixInsight module.
 //
@@ -381,4 +381,4 @@ CentroidDetector::CentroidDetector( const ImageVariant& image, int channel, cons
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF CentroidDetector.cpp - Released 2023-11-25T17:12:54Z
+// EOF CentroidDetector.cpp - Released 2023-12-01T19:16:18Z

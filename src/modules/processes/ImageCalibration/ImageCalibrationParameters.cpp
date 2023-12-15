@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.9.8
 // ----------------------------------------------------------------------------
-// ImageCalibrationParameters.cpp - Released 2023-11-25T17:12:53Z
+// ImageCalibrationParameters.cpp - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -2818,4 +2818,4 @@ bool ICNoiseAlgorithmB::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationParameters.cpp - Released 2023-11-25T17:12:53Z
+// EOF ImageCalibrationParameters.cpp - Released 2023-12-01T19:16:18Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// INDIMountInterface.h - Released 2023-11-25T17:12:54Z
+// INDIMountInterface.h - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -642,4 +642,4 @@ PCL_END_LOCAL
 #endif // __INDIMountInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF INDIMountInterface.h - Released 2023-11-25T17:12:54Z
+// EOF INDIMountInterface.h - Released 2023-12-01T19:16:18Z

@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.6.4
 // ----------------------------------------------------------------------------
-// pcl/Cryptography.h - Released 2023-11-25T17:26:48Z
+// pcl/Cryptography.h - Released 2023-12-01T19:15:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -1100,4 +1100,4 @@ private:
 #endif   // __PCL_Cryptography_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Cryptography.h - Released 2023-11-25T17:26:48Z
+// EOF pcl/Cryptography.h - Released 2023-12-01T19:15:45Z

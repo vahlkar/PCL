@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// PreferencesInterface.h - Released 2023-11-25T17:12:53Z
+// PreferencesInterface.h - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -1002,4 +1002,4 @@ PCL_END_LOCAL
 #endif   // __PreferencesInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInterface.h - Released 2023-11-25T17:12:53Z
+// EOF PreferencesInterface.h - Released 2023-12-01T19:16:18Z

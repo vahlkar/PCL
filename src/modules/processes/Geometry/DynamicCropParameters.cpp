@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// DynamicCropParameters.cpp - Released 2023-11-25T17:12:53Z
+// DynamicCropParameters.cpp - Released 2023-12-01T19:16:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -310,4 +310,4 @@ double DCScaleY::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DynamicCropParameters.cpp - Released 2023-11-25T17:12:53Z
+// EOF DynamicCropParameters.cpp - Released 2023-12-01T19:16:17Z

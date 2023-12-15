@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsHdrCompositionParameters.h - Released 2023-11-25T17:12:54Z
+// GradientsHdrCompositionParameters.h - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
@@ -146,4 +146,4 @@ PCL_END_LOCAL
 #endif
 
 // ----------------------------------------------------------------------------
-// EOF GradientsHdrCompositionParameters.h - Released 2023-11-25T17:12:54Z
+// EOF GradientsHdrCompositionParameters.h - Released 2023-12-01T19:16:18Z

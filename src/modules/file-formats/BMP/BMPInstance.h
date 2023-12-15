@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard BMP File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// BMPInstance.h - Released 2023-11-25T17:12:44Z
+// BMPInstance.h - Released 2023-12-01T19:16:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard BMP PixInsight module.
 //
@@ -265,4 +265,4 @@ public:
 #endif   // __BMPInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF BMPInstance.h - Released 2023-11-25T17:12:44Z
+// EOF BMPInstance.h - Released 2023-12-01T19:16:09Z

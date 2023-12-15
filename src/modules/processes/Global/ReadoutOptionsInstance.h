@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// ReadoutOptionsInstance.h - Released 2023-11-25T17:12:53Z
+// ReadoutOptionsInstance.h - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -154,4 +154,4 @@ private:
 #endif   // __ReadoutOptionsInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ReadoutOptionsInstance.h - Released 2023-11-25T17:12:53Z
+// EOF ReadoutOptionsInstance.h - Released 2023-12-01T19:16:18Z

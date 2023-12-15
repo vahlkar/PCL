@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Morphology Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// MorphologicalTransformationInterface.cpp - Released 2023-11-25T17:12:53Z
+// MorphologicalTransformationInterface.cpp - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Morphology PixInsight module.
 //
@@ -1068,4 +1068,4 @@ MorphologicalTransformationInterface::GUIData::GUIData( MorphologicalTransformat
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF MorphologicalTransformationInterface.cpp - Released 2023-11-25T17:12:53Z
+// EOF MorphologicalTransformationInterface.cpp - Released 2023-12-01T19:16:18Z

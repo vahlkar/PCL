@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// PreferencesInstance.h - Released 2023-11-25T17:12:53Z
+// PreferencesInstance.h - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -326,4 +326,4 @@ private:
 #endif   // __PreferencesInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInstance.h - Released 2023-11-25T17:12:53Z
+// EOF PreferencesInstance.h - Released 2023-12-01T19:16:18Z

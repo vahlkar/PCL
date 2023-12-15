@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard XISF File Format Module Version 1.0.13
 // ----------------------------------------------------------------------------
-// XISFInstance.h - Released 2023-11-25T17:12:44Z
+// XISFInstance.h - Released 2023-12-01T19:16:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard XISF PixInsight module.
 //
@@ -170,4 +170,4 @@ private:
 #endif   // __XISFInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF XISFInstance.h - Released 2023-11-25T17:12:44Z
+// EOF XISFInstance.h - Released 2023-12-01T19:16:09Z

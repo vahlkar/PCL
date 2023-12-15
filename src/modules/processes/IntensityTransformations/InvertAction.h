@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// InvertAction.h - Released 2023-11-25T17:12:53Z
+// InvertAction.h - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -77,4 +77,4 @@ public:
 #endif   // __InvertAction_h
 
 // ----------------------------------------------------------------------------
-// EOF InvertAction.h - Released 2023-11-25T17:12:53Z
+// EOF InvertAction.h - Released 2023-12-01T19:16:18Z

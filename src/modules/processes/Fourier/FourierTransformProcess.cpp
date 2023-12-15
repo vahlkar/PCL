@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Fourier Process Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// FourierTransformProcess.cpp - Released 2023-11-25T17:12:53Z
+// FourierTransformProcess.cpp - Released 2023-12-01T19:16:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Fourier PixInsight module.
 //
@@ -140,4 +140,4 @@ ProcessImplementation* FourierTransformProcess::Clone( const ProcessImplementati
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FourierTransformProcess.cpp - Released 2023-11-25T17:12:53Z
+// EOF FourierTransformProcess.cpp - Released 2023-12-01T19:16:17Z

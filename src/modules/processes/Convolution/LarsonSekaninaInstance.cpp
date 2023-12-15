@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// LarsonSekaninaInstance.cpp - Released 2023-11-25T17:12:53Z
+// LarsonSekaninaInstance.cpp - Released 2023-12-01T19:16:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -453,4 +453,4 @@ void* LarsonSekaninaInstance::LockParameter( const MetaParameter* p, size_type /
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LarsonSekaninaInstance.cpp - Released 2023-11-25T17:12:53Z
+// EOF LarsonSekaninaInstance.cpp - Released 2023-12-01T19:16:17Z

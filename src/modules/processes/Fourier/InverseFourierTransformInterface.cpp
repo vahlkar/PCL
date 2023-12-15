@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Fourier Process Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// InverseFourierTransformInterface.cpp - Released 2023-11-25T17:12:53Z
+// InverseFourierTransformInterface.cpp - Released 2023-12-01T19:16:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Fourier PixInsight module.
 //
@@ -350,4 +350,4 @@ InverseFourierTransformInterface::GUIData::GUIData( InverseFourierTransformInter
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF InverseFourierTransformInterface.cpp - Released 2023-11-25T17:12:53Z
+// EOF InverseFourierTransformInterface.cpp - Released 2023-12-01T19:16:17Z

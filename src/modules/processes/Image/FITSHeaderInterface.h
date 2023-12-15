@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.4
 // ----------------------------------------------------------------------------
-// FITSHeaderInterface.h - Released 2023-11-25T17:12:53Z
+// FITSHeaderInterface.h - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -156,4 +156,4 @@ PCL_END_LOCAL
 #endif   // __FITSHeaderInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF FITSHeaderInterface.h - Released 2023-11-25T17:12:53Z
+// EOF FITSHeaderInterface.h - Released 2023-12-01T19:16:18Z

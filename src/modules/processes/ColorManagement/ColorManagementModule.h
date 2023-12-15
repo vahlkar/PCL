@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorManagement Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// ColorManagementModule.h - Released 2023-11-25T17:12:53Z
+// ColorManagementModule.h - Released 2023-12-01T19:16:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorManagement PixInsight module.
 //
@@ -84,4 +84,4 @@ public:
 #endif   // __ColorManagementModule_h
 
 // ----------------------------------------------------------------------------
-// EOF ColorManagementModule.h - Released 2023-11-25T17:12:53Z
+// EOF ColorManagementModule.h - Released 2023-12-01T19:16:17Z

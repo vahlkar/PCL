@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Annotation Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// AnnotationInstance.cpp - Released 2023-11-25T17:12:54Z
+// AnnotationInstance.cpp - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Annotation PixInsight module.
 //
@@ -263,4 +263,4 @@ size_type AnnotationInstance::ParameterLength( const MetaParameter* p, size_type
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF AnnotationInstance.cpp - Released 2023-11-25T17:12:54Z
+// EOF AnnotationInstance.cpp - Released 2023-12-01T19:16:18Z

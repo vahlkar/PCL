@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard RestorationFilters Process Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// RestorationFilterProcess.cpp - Released 2023-11-25T17:12:54Z
+// RestorationFilterProcess.cpp - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RestorationFilters PixInsight module.
 //
@@ -159,4 +159,4 @@ ProcessImplementation* RestorationFilterProcess::Clone( const ProcessImplementat
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RestorationFilterProcess.cpp - Released 2023-11-25T17:12:54Z
+// EOF RestorationFilterProcess.cpp - Released 2023-12-01T19:16:18Z

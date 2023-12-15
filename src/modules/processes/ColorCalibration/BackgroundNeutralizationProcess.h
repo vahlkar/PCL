@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// BackgroundNeutralizationProcess.h - Released 2023-11-25T17:12:53Z
+// BackgroundNeutralizationProcess.h - Released 2023-12-01T19:16:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -92,4 +92,4 @@ PCL_END_LOCAL
 #endif   // __BackgroundNeutralizationProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF BackgroundNeutralizationProcess.h - Released 2023-11-25T17:12:53Z
+// EOF BackgroundNeutralizationProcess.h - Released 2023-12-01T19:16:17Z

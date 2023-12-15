@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsHdrInterface.cpp - Released 2023-11-25T17:12:54Z
+// GradientsHdrInterface.cpp - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
@@ -422,4 +422,4 @@ GradientsHdrInterface::GUIData::GUIData( GradientsHdrInterface& w )
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF GradientsHdrInterface.cpp - Released 2023-11-25T17:12:54Z
+// EOF GradientsHdrInterface.cpp - Released 2023-12-01T19:16:18Z

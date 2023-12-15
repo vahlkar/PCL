@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard FindingChart Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// FindingChartParameters.cpp - Released 2023-11-25T17:12:53Z
+// FindingChartParameters.cpp - Released 2023-12-01T19:16:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FindingChart PixInsight module.
 //
@@ -601,4 +601,4 @@ double FCNGCTextColor::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FindingChartParameters.cpp - Released 2023-11-25T17:12:53Z
+// EOF FindingChartParameters.cpp - Released 2023-12-01T19:16:17Z

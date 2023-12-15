@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// LarsonSekaninaInstance.h - Released 2023-11-25T17:12:53Z
+// LarsonSekaninaInstance.h - Released 2023-12-01T19:16:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -102,4 +102,4 @@ private:
 #endif   // __LarsonSekaninaInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF LarsonSekaninaInstance.h - Released 2023-11-25T17:12:53Z
+// EOF LarsonSekaninaInstance.h - Released 2023-12-01T19:16:17Z

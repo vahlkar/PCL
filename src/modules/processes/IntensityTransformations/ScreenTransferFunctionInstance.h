@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ScreenTransferFunctionInstance.h - Released 2023-11-25T17:12:53Z
+// ScreenTransferFunctionInstance.h - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -149,4 +149,4 @@ private:
 #endif   // __ScreenTransferFunctionInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ScreenTransferFunctionInstance.h - Released 2023-11-25T17:12:53Z
+// EOF ScreenTransferFunctionInstance.h - Released 2023-12-01T19:16:18Z

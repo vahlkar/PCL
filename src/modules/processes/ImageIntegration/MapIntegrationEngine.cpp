@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.5.3
 // ----------------------------------------------------------------------------
-// MapIntegrationEngine.cpp - Released 2023-11-25T17:12:53Z
+// MapIntegrationEngine.cpp - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -298,4 +298,4 @@ void MapIntegrationEngine::IntegrationThread::Run()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF MapIntegrationEngine.cpp - Released 2023-11-25T17:12:53Z
+// EOF MapIntegrationEngine.cpp - Released 2023-12-01T19:16:18Z

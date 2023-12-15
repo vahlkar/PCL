@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard NoiseGeneration Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// SimplexNoiseInterface.h - Released 2023-11-25T17:12:54Z
+// SimplexNoiseInterface.h - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NoiseGeneration PixInsight module.
 //
@@ -147,4 +147,4 @@ PCL_END_LOCAL
 #endif   // __SimplexNoiseInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF SimplexNoiseInterface.h - Released 2023-11-25T17:12:54Z
+// EOF SimplexNoiseInterface.h - Released 2023-12-01T19:16:18Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard EphemerisGeneration Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// EphemerisGenerationModule.h - Released 2023-11-25T17:12:53Z
+// EphemerisGenerationModule.h - Released 2023-12-01T19:16:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -84,4 +84,4 @@ public:
 #endif   // __EphemerisGenerationModule_h
 
 // ----------------------------------------------------------------------------
-// EOF EphemerisGenerationModule.h - Released 2023-11-25T17:12:53Z
+// EOF EphemerisGenerationModule.h - Released 2023-12-01T19:16:17Z

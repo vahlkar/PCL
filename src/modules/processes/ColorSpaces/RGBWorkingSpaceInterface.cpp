@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// RGBWorkingSpaceInterface.cpp - Released 2023-11-25T17:12:53Z
+// RGBWorkingSpaceInterface.cpp - Released 2023-12-01T19:16:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -753,4 +753,4 @@ RGBWorkingSpaceInterface::GUIData::GUIData( RGBWorkingSpaceInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RGBWorkingSpaceInterface.cpp - Released 2023-11-25T17:12:53Z
+// EOF RGBWorkingSpaceInterface.cpp - Released 2023-12-01T19:16:17Z

@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.6.4
 // ----------------------------------------------------------------------------
-// pcl/UIScaling.h - Released 2023-11-25T17:26:48Z
+// pcl/UIScaling.h - Released 2023-12-01T19:15:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -359,4 +359,4 @@ String UIScaledStyleSheet( double displayScalingFactor, double resourceScalingFa
 #endif   // __PCL_UIScaling_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/UIScaling.h - Released 2023-11-25T17:26:48Z
+// EOF pcl/UIScaling.h - Released 2023-12-01T19:15:45Z

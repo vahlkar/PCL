@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.9.8
 // ----------------------------------------------------------------------------
-// LocalNormalizationProcess.h - Released 2023-11-25T17:12:53Z
+// LocalNormalizationProcess.h - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -92,4 +92,4 @@ PCL_END_LOCAL
 #endif   // __LocalNormalizationProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationProcess.h - Released 2023-11-25T17:12:53Z
+// EOF LocalNormalizationProcess.h - Released 2023-12-01T19:16:18Z

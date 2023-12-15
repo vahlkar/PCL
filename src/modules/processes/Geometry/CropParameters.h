@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// CropParameters.h - Released 2023-11-25T17:12:53Z
+// CropParameters.h - Released 2023-12-01T19:16:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -163,4 +163,4 @@ PCL_END_LOCAL
 #endif   // __CropParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF CropParameters.h - Released 2023-11-25T17:12:53Z
+// EOF CropParameters.h - Released 2023-12-01T19:16:17Z

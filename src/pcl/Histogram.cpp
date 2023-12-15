@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.6.4
 // ----------------------------------------------------------------------------
-// pcl/Histogram.cpp - Released 2023-11-25T17:26:56Z
+// pcl/Histogram.cpp - Released 2023-12-01T19:15:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -355,4 +355,4 @@ const pcl::ImageVariant& Histogram::operator <<( const pcl::ImageVariant& v )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Histogram.cpp - Released 2023-11-25T17:26:56Z
+// EOF pcl/Histogram.cpp - Released 2023-12-01T19:15:53Z

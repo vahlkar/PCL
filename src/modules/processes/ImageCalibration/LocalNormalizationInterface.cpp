@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.9.8
 // ----------------------------------------------------------------------------
-// LocalNormalizationInterface.cpp - Released 2023-11-25T17:12:53Z
+// LocalNormalizationInterface.cpp - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -1776,4 +1776,4 @@ LocalNormalizationInterface::GUIData::GUIData( LocalNormalizationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationInterface.cpp - Released 2023-11-25T17:12:53Z
+// EOF LocalNormalizationInterface.cpp - Released 2023-12-01T19:16:18Z

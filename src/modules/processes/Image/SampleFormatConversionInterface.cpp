@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.4
 // ----------------------------------------------------------------------------
-// SampleFormatConversionInterface.cpp - Released 2023-11-25T17:12:53Z
+// SampleFormatConversionInterface.cpp - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -472,4 +472,4 @@ void SampleFormatConversionInterface::GUIData::SetupTrackViewControls( SampleFor
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SampleFormatConversionInterface.cpp - Released 2023-11-25T17:12:53Z
+// EOF SampleFormatConversionInterface.cpp - Released 2023-12-01T19:16:18Z

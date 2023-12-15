@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard EphemerisGeneration Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// EphemerisGeneratorInstance.cpp - Released 2023-11-25T17:12:53Z
+// EphemerisGeneratorInstance.cpp - Released 2023-12-01T19:16:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -1143,4 +1143,4 @@ size_type EphemerisGeneratorInstance::ParameterLength( const MetaParameter* p, s
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF EphemerisGeneratorInstance.cpp - Released 2023-11-25T17:12:53Z
+// EOF EphemerisGeneratorInstance.cpp - Released 2023-12-01T19:16:17Z

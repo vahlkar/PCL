@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard APASS Process Module Version 1.1.4
 // ----------------------------------------------------------------------------
-// APASSParameters.cpp - Released 2023-11-25T17:12:53Z
+// APASSParameters.cpp - Released 2023-12-01T19:16:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard APASS PixInsight module.
 //
@@ -1159,4 +1159,4 @@ bool ADatabaseMagnitudeHigh::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF APASSParameters.cpp - Released 2023-11-25T17:12:53Z
+// EOF APASSParameters.cpp - Released 2023-12-01T19:16:17Z

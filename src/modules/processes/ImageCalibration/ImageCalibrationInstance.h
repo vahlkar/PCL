@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.9.8
 // ----------------------------------------------------------------------------
-// ImageCalibrationInstance.h - Released 2023-11-25T17:12:53Z
+// ImageCalibrationInstance.h - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -303,4 +303,4 @@ private:
 #endif   // __ImageCalibrationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInstance.h - Released 2023-11-25T17:12:53Z
+// EOF ImageCalibrationInstance.h - Released 2023-12-01T19:16:18Z

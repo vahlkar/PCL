@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.9.8
 // ----------------------------------------------------------------------------
-// ImageCalibrationParameters.h - Released 2023-11-25T17:12:53Z
+// ImageCalibrationParameters.h - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -1825,4 +1825,4 @@ PCL_END_LOCAL
 #endif   // __ImageCalibrationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationParameters.h - Released 2023-11-25T17:12:53Z
+// EOF ImageCalibrationParameters.h - Released 2023-12-01T19:16:18Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// INDIDeviceControllerProcess.cpp - Released 2023-11-25T17:12:54Z
+// INDIDeviceControllerProcess.cpp - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -195,4 +195,4 @@ int INDIDeviceControllerProcess::ProcessCommandLine( const StringList& argv ) co
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDIDeviceControllerProcess.cpp - Released 2023-11-25T17:12:54Z
+// EOF INDIDeviceControllerProcess.cpp - Released 2023-12-01T19:16:18Z

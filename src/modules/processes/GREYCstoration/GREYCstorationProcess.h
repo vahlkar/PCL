@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard GREYCstoration Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// GREYCstorationProcess.h - Released 2023-11-25T17:12:53Z
+// GREYCstorationProcess.h - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GREYCstoration PixInsight module.
 //
@@ -106,4 +106,4 @@ PCL_END_LOCAL
 #endif   // __GREYCstorationProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF GREYCstorationProcess.h - Released 2023-11-25T17:12:53Z
+// EOF GREYCstorationProcess.h - Released 2023-12-01T19:16:18Z

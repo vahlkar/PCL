@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// RgbPreserve.cpp - Released 2023-11-25T17:12:54Z
+// RgbPreserve.cpp - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
@@ -89,4 +89,4 @@ void RgbPreserve::rgbTransformation( imageType_t const& rOrigLuminance_p,
 }; // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF RgbPreserve.cpp - Released 2023-11-25T17:12:54Z
+// EOF RgbPreserve.cpp - Released 2023-12-01T19:16:18Z

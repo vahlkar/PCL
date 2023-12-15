@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// ReadoutOptionsProcess.cpp - Released 2023-11-25T17:12:53Z
+// ReadoutOptionsProcess.cpp - Released 2023-12-01T19:16:18Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -575,4 +575,4 @@ int ReadoutOptionsProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ReadoutOptionsProcess.cpp - Released 2023-11-25T17:12:53Z
+// EOF ReadoutOptionsProcess.cpp - Released 2023-12-01T19:16:18Z
