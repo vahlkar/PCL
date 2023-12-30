@@ -120,6 +120,7 @@ INDICCDFrameProcess::INDICCDFrameProcess()
    new ICFSolverDistortionCorrection( this );
    new ICFSolverSplineSmoothing( this );
    new ICFSolverProjection( this );
+   new ICFCCDMode( this );
 }
 
 // ----------------------------------------------------------------------------

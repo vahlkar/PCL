@@ -86,6 +86,7 @@ INDICCDFrameInstance::INDICCDFrameInstance( const MetaProcess* m )
    , p_frameType( ICFFrameType::Default )
    , p_binningX( int32( TheICFBinningXParameter->DefaultValue() ) )
    , p_binningY( int32( TheICFBinningYParameter->DefaultValue() ) )
+   , p_ccdMode(TheICFCCDModeParameter->DefaultValue() )
    , p_filterSlot( int32( TheICFFilterSlotParameter->DefaultValue() ) )
    , p_exposureTime( TheICFExposureTimeParameter->DefaultValue() )
    , p_exposureDelay( TheICFExposureDelayParameter->DefaultValue() )
@@ -146,6 +147,7 @@ void INDICCDFrameInstance::Assign( const ProcessImplementation& p )
       p_frameType = x->p_frameType;
       p_binningX = x->p_binningX;
       p_binningY = x->p_binningY;
+      p_ccdMode = x->p_ccdMode;
       p_filterSlot = x->p_filterSlot;
       p_exposureTime = x->p_exposureTime;
       p_exposureDelay = x->p_exposureDelay;
@@ -359,7 +361,11 @@ void INDICCDFrameInstance::SendDeviceProperties( bool async ) const
 
    indi->MaybeSendNewPropertyItem( p_deviceName, CCD_FRAME_TYPE_PROPERTY_NAME, "INDI_SWITCH", CCDFrameTypePropertyString( p_frameType ), "ON", async );
 
-   if ( p_binningX > 0 && p_binningY > 0 )
+
+
+   if ( !p_ccdMode.IsEmpty() )
+      indi->MaybeSendNewPropertyItem( p_deviceName, CCD_MODE_PROPERTY_NAME, "INDI_SWITCH", p_ccdMode, "ON", async );
+   else if ( p_binningX > 0 && p_binningY > 0 )
       indi->MaybeSendNewPropertyItem( p_deviceName, CCD_BIN_PROPERTY_NAME, "INDI_NUMBER", CCD_BIN_HORIZONTAL_ITEM_NAME, p_binningX, CCD_BIN_VERTICAL_ITEM_NAME, p_binningY, async );
 
    if ( p_filterSlot > 0 )
@@ -386,6 +392,10 @@ String INDICCDFrameInstance::FileNameFromTemplate( const String& fileNameTemplat
                break;
             case 'b':
                fileName << String().Format( "%dx%d", p_binningX, p_binningY );
+               break;
+            case 'm':
+               // GetPropertyItem
+               fileName << p_ccdMode;
                break;
             case 'e':
                fileName << String().Format( "%.3lf", p_exposureTime );
@@ -757,6 +767,8 @@ void* INDICCDFrameInstance::LockParameter( const MetaParameter* p, size_type tab
       return &p_binningX;
    if ( p == TheICFBinningYParameter )
       return &p_binningY;
+   if ( p == TheICFCCDModeParameter )
+      return p_ccdMode.Begin();
    if ( p == TheICFFilterSlotParameter )
       return &p_filterSlot;
    if ( p == TheICFExposureTimeParameter )
@@ -914,6 +926,12 @@ bool INDICCDFrameInstance::AllocateParameter( size_type sizeOrLength, const Meta
       if ( sizeOrLength > 0 )
          p_solverCatalogName.SetLength( sizeOrLength );
    }
+   else if ( p == TheICFCCDModeParameter )
+   {
+      p_ccdMode.Clear();
+      if ( sizeOrLength > 0 )
+         p_ccdMode.SetLength( sizeOrLength );
+   }
    else if ( p == TheICFClientFramesParameter )
    {
       o_clientViewIds.Clear();
@@ -986,6 +1004,8 @@ size_type INDICCDFrameInstance::ParameterLength( const MetaParameter* p, size_ty
       return p_serverURL.Length();
    if ( p == TheICFSolverCatalogNameParameter )
       return p_solverCatalogName.Length();
+   if ( p == TheICFCCDModeParameter )
+      return p_ccdMode.Length();
 
    if ( p == TheICFClientFramesParameter )
       return o_clientViewIds.Length();
