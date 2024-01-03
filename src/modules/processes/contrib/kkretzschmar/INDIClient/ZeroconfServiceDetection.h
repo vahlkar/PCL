@@ -200,8 +200,6 @@ public:
   virtual void Run();
   void Stop()
   {
-    int socket_fd = DNSServiceRefSockFD(m_serviceRef);
-    shutdown(socket_fd, 2);
     m_stop = true;
   }
 
@@ -214,7 +212,8 @@ protected:
 public:
   ZeroConfServiceBrowser(){}
   virtual ~ZeroConfServiceBrowser(){
-
+    int socket_fd = DNSServiceRefSockFD(m_serviceRef);
+    shutdown(socket_fd, 2);
   }
 
   void setClient(std::unique_ptr<ZeroConfClient> client)
