@@ -346,6 +346,7 @@ ProcessImplementation* INDICCDFrameInterface::NewProcess() const
    instance->p_frameType = GUI->CCDFrameType_Combo.CurrentItem();
    instance->p_binningX = GUI->CCDBinX_Combo.CurrentItem() + 1;
    instance->p_binningY = GUI->CCDBinY_Combo.CurrentItem() + 1;
+   instance->p_ccdMode = GUI->CCDMode_Combo.ItemText( GUI->CCDMode_Combo.CurrentItem() );
    instance->p_filterSlot = GUI->CCDFilter_Combo.CurrentItem() + 1;
    instance->p_exposureTime = GUI->ExposureTime_NumericEdit.Value();
    instance->p_exposureDelay = GUI->ExposureDelay_NumericEdit.Value();
@@ -505,6 +506,25 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
    CCDTemp_HSizer.AddSpacing( 4 );
    CCDTemp_HSizer.Add( CCDTargetTemp_ToolButton );
 
+   const char* ccdModeToolTipText =
+      "<p>CCD mode selection.</p>";
+
+   CCDMode_Label.SetText( "CCD mode:" );
+   CCDMode_Label.SetFixedWidth( labelWidth1 );
+   CCDMode_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
+   CCDMode_Label.SetToolTip( ccdModeToolTipText );
+   CCDMode_Label.SetVisible(false);
+
+   CCDMode_Combo.SetFixedWidth( w.Font().Width("BIN_128x128") + emWidth );
+   CCDMode_Combo.SetToolTip( ccdModeToolTipText );
+   CCDMode_Combo.OnItemSelected( (ComboBox::item_event_handler)&INDICCDFrameInterface::e_ItemSelected, w );
+   CCDMode_Combo.SetVisible(false);
+
+   CCDMode_HSizer.SetSpacing( 4 );
+   CCDMode_HSizer.Add( CCDMode_Label );
+   CCDMode_HSizer.Add( CCDMode_Combo );
+   CCDMode_HSizer.AddStretch();
+
    const char* ccdBinXToolTipText =
       "<p>Horizontal (X-axis) pixel binning factor.</p>";
 
@@ -512,7 +532,7 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
    CCDBinX_Label.SetFixedWidth( labelWidth1 );
    CCDBinX_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
    CCDBinX_Label.SetToolTip( ccdBinXToolTipText );
-   CCDBinX_Label.Disable();
+   CCDBinX_Label.SetVisible(false);
 
    CCDBinX_Combo.AddItem( "1" );
    CCDBinX_Combo.AddItem( "2" );
@@ -525,7 +545,7 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
    CCDBinX_Combo.SetFixedWidth( editWidth1 );
    CCDBinX_Combo.SetToolTip( ccdBinXToolTipText );
    //CCDBinX_Combo.OnItemSelected( (ComboBox::item_event_handler)&INDICCDFrameInterface::e_ItemSelected, w );
-   CCDBinX_Combo.Disable();
+   CCDBinX_Combo.SetVisible(false);
 
    CCDBinX_HSizer.SetSpacing( 4 );
    CCDBinX_HSizer.Add( CCDBinX_Label );
@@ -539,7 +559,7 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
    CCDBinY_Label.SetFixedWidth( labelWidth1 );
    CCDBinY_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
    CCDBinY_Label.SetToolTip( ccdBinYToolTipText );
-   CCDBinY_Label.Disable();
+   CCDBinY_Label.SetVisible(false);
 
    CCDBinY_Combo.AddItem( "1" );
    CCDBinY_Combo.AddItem( "2" );
@@ -552,7 +572,7 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
    CCDBinY_Combo.SetFixedWidth( editWidth1 );
    CCDBinY_Combo.SetToolTip( ccdBinYToolTipText );
    CCDBinY_Combo.OnItemSelected( (ComboBox::item_event_handler)&INDICCDFrameInterface::e_ItemSelected, w );
-   CCDBinY_Combo.Disable();
+   CCDBinY_Combo.SetVisible(false);
 
    CCDBinY_HSizer.SetSpacing( 4 );
    CCDBinY_HSizer.Add( CCDBinY_Label );
@@ -722,6 +742,7 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
    CCDProperties_Sizer.Add( CCDTemp_HSizer );
    CCDProperties_Sizer.Add( CCDBinX_HSizer );
    CCDProperties_Sizer.Add( CCDBinY_HSizer );
+   CCDProperties_Sizer.Add( CCDMode_HSizer );   
    CCDProperties_Sizer.Add( CCDFilter_HSizer );
    CCDProperties_Sizer.Add( CCDFrameType_HSizer );
    CCDProperties_Sizer.Add( UploadMode_HSizer );
@@ -926,6 +947,7 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
    ExposureParametersLeft_Sizer.Add( ExposureTime_NumericEdit );
    ExposureParametersLeft_Sizer.Add( ExposureDelay_NumericEdit );
    ExposureParametersLeft_Sizer.Add( ExposureCount_Sizer );
+   ExposureParametersLeft_Sizer.AddStretch();
 
    StartExposure_PushButton.SetText( "Start" );
    StartExposure_PushButton.SetIcon( w.ScaledResource( ":/icons/play.png" ) );
@@ -948,6 +970,7 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
    ExposureParametersRight_Sizer.Add( StartExposure_Sizer );
    ExposureParametersRight_Sizer.Add( CancelExposure_Sizer );
    ExposureParametersRight_Sizer.Add( ExposureInfo_Label, 100 );
+   ExposureParametersRight_Sizer.AddStretch();
 
    ExposureParameters_Sizer.SetSpacing( 16 );
    ExposureParameters_Sizer.Add( ExposureParametersLeft_Sizer );
@@ -1322,7 +1345,6 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
 
    w.EnsureLayoutUpdated();
    w.AdjustToContents();
-   w.SetFixedHeight();
 
    w.OnShow( (Control::event_handler)&INDICCDFrameInterface::e_Show, w );
    w.OnHide( (Control::event_handler)&INDICCDFrameInterface::e_Hide, w );
@@ -1450,29 +1472,61 @@ void INDICCDFrameInterface::e_Timer( Timer& sender )
          GUI->CCDTargetTemp_ToolButton.Disable();
       }
 
-      if ( indi->GetPropertyItem( m_device, CCD_BIN_PROPERTY_NAME, CCD_BIN_HORIZONTAL_ITEM_NAME, item ) )
+      // Use CCD Mode if available
+      INDIPropertyListItemArray itemElements;
+      if ( indi->GetPropertyItemElements( m_device, CCD_MODE_PROPERTY_NAME, itemElements ) )
       {
-         GUI->CCDBinX_Combo.Enable();
-         GUI->CCDBinX_Label.Enable();
+         u_int32_t indexOfON=0;
+         u_int32_t index=0;
+         for ( auto item : itemElements )
+         {
+            if ( m_firstUpdate )
+            {
+               GUI->CCDMode_Combo.AddItem(item.Element);
+            }
+            if ( item.PropertyValue == "ON" )
+            {
+               indexOfON = index;
+            }
+            index++;
+         }
+         m_firstUpdate = false;
+         m_hasCcdMode = true;
+         GUI->CCDMode_Combo.SetCurrentItem( indexOfON );
+         GUI->CCDMode_Combo.SetVisible(true);
+         GUI->CCDMode_Label.SetVisible(true);
+         GUI->CCDBinX_Combo.SetVisible(false);
+         GUI->CCDBinX_Label.SetVisible(false);
+         GUI->CCDBinY_Combo.SetVisible(false);
+         GUI->CCDBinY_Label.SetVisible(false);
+         String fileTemplate = CreateFileTemplate();
+         GUI->ServerFileNameTemplate_Edit.SetText(fileTemplate);
+         GUI->ClientFileNameTemplate_Edit.SetText(fileTemplate);
+      } 
+      else if  (indi->GetPropertyItem( m_device, CCD_BIN_PROPERTY_NAME, CCD_BIN_HORIZONTAL_ITEM_NAME, item )  && indi->GetPropertyItem( m_device, CCD_BIN_PROPERTY_NAME, CCD_BIN_VERTICAL_ITEM_NAME, item ) )     
+      {
+         SetVariableSize();
+         GUI->CCDBinX_Combo.SetVisible(true);
+         GUI->CCDBinX_Label.SetVisible(true);
+         GUI->CCDBinY_Combo.SetVisible(true);
+         GUI->CCDBinY_Label.SetVisible(true);
+         GUI->CCDMode_Combo.SetVisible(false);
+         GUI->CCDMode_Label.SetVisible(false);
+         m_hasCcdMode = false;
+         String fileTemplate = CreateFileTemplate();
+         GUI->ServerFileNameTemplate_Edit.SetText(fileTemplate);
+         GUI->ClientFileNameTemplate_Edit.SetText(fileTemplate);
          GUI->CCDBinX_Combo.SetCurrentItem( item.PropertyValue.ToInt() - 1 );
       }
-      else
+      else 
       {
-         GUI->CCDBinX_Combo.Disable();
-         GUI->CCDBinX_Label.Disable();
-      }
-
-      if ( indi->GetPropertyItem( m_device, CCD_BIN_PROPERTY_NAME, CCD_BIN_VERTICAL_ITEM_NAME, item ) )
-      {
-         GUI->CCDBinY_Combo.Enable();
-         GUI->CCDBinY_Label.Enable();
-         GUI->CCDBinY_Combo.SetCurrentItem( item.PropertyValue.ToInt() - 1 );
-      }
-      else
-      {
-         GUI->CCDBinY_Combo.Disable();
-         GUI->CCDBinY_Label.Disable();
-      }
+         GUI->CCDBinX_Combo.SetVisible(false);
+         GUI->CCDBinX_Label.SetVisible(false);
+         GUI->CCDBinY_Combo.SetVisible(false);
+         GUI->CCDBinY_Label.SetVisible(false);
+         GUI->CCDMode_Combo.SetVisible(false);
+         GUI->CCDMode_Label.SetVisible(false);
+      } 
 
       String externalFilterWheelDeviceName = GUI->ExternalFilterDevice_Combo.ItemText( GUI->ExternalFilterDevice_Combo.CurrentItem() );
       if ( indi->GetPropertyItem( externalFilterWheelDeviceName != String( "<No filter wheel>" ) ? externalFilterWheelDeviceName : m_device, WHEEL_SLOT_PROPERTY_NAME, WHEEL_SLOT_ITEM_NAME, item ) )
@@ -1490,12 +1544,20 @@ void INDICCDFrameInterface::e_Timer( Timer& sender )
          GUI->CCDFilter_Label.Enable();
          GUI->FilterConfig_ToolButton.Enable();
          GUI->CCDFilter_Combo.SetCurrentItem( currentFilterIndex );
+         m_hasFilter = true;
+         String fileTemplate = CreateFileTemplate();
+         GUI->ServerFileNameTemplate_Edit.SetText(fileTemplate);
+         GUI->ClientFileNameTemplate_Edit.SetText(fileTemplate);
       }
       else
       {
+         m_hasFilter = false;
          GUI->CCDFilter_Combo.Clear();
          GUI->CCDFilter_Combo.Disable();
          GUI->CCDFilter_Label.Disable();
+         String fileTemplate = CreateFileTemplate();
+         GUI->ServerFileNameTemplate_Edit.SetText(fileTemplate);
+         GUI->ClientFileNameTemplate_Edit.SetText(fileTemplate);
       }
 
       int uploadModeIndex = -1;
@@ -1663,6 +1725,11 @@ void INDICCDFrameInterface::e_ItemSelected( ComboBox& sender, int itemIndex )
          // load configuration on server
          indi->SendNewPropertyItem( m_device, CONFIG_PROPERTY_NAME, "INDI_SWITCH", CONFIG_LOAD_ITEM_NAME, "ON" );
       }
+   }
+   else if ( sender == GUI->CCDMode_Combo )
+   {
+      indi->MaybeSendNewPropertyItem( m_device, CCD_MODE_PROPERTY_NAME, "INDI_SWITCH",
+         GUI->CCDMode_Combo.ItemText( itemIndex ).Trimmed(), "ON", true /*async*/ );
    }
    else if ( sender == GUI->CCDBinX_Combo )
    {
@@ -1930,6 +1997,19 @@ void INDICCDFrameInterface::e_Click( Button& sender, bool checked )
          // ??
       }
    }
+}
+
+String INDICCDFrameInterface::CreateFileTemplate() const
+{
+   String templateStr = String("%f");
+   if (m_hasFilter)
+      templateStr.Append("_%F");
+   if (m_hasCcdMode)
+      templateStr.Append("_%m");
+   else
+      templateStr.Append("_B%b");
+   templateStr.Append("_E%e_%n");
+   return templateStr;
 }
 
 // ----------------------------------------------------------------------------

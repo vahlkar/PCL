@@ -535,7 +535,7 @@ extern ICFServerFrame* TheICFServerFrameParameter;
 
 // ----------------------------------------------------------------------------
 
-DECLARE_STRING_PARAMETER_CLASS( ICFExternalFilterWheelDeviceName );
+DECLARE_STRING_PARAMETER_WITH_DEFAULT_CLASS( ICFExternalFilterWheelDeviceName );
 
 // ----------------------------------------------------------------------------
 
@@ -561,6 +561,8 @@ DECLARE_ENUM_PARAMETER(ICFSolverAlignmentDevice, ENUM_ITEM(TriangleSimilarity) E
 DECLARE_BOOLEAN_PARAMETER_CLASS( ICFSolverDistortionCorrection );
 DECLARE_FLOAT_PARAMETER_CLASS(ICFSolverSplineSmoothing);
 DECLARE_ENUM_PARAMETER(ICFSolverProjection, ENUM_ITEM(Gnomonic) ENUM_ITEM(Stereographic) ENUM_ITEM(PlateCarree) ENUM_ITEM(Mercator) ENUM_ITEM(HammerAitoff) ENUM_ITEM(ZenithalEqualArea) ENUM_ITEM(Orthographic), Gnomonic);
+DECLARE_STRING_PARAMETER_CLASS( ICFCCDMode );
+
 
 PCL_END_LOCAL
 

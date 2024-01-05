@@ -170,6 +170,37 @@ bool INDIClient::GetPropertyItem( const String& device, const String& property, 
    return false;
 }
 
+bool INDIClient::GetPropertyItemElements( const String& device, const String& property,
+                                 INDIPropertyListItemArray& result,
+                                 bool formatted) const
+{
+   ExclConstPropertyList y = PropertyList();
+   const INDIPropertyListItemArray& properties( y );
+   bool propertyFound=false;
+   for ( auto item : properties )
+   {
+      INDIPropertyListItem resultItem;
+      if ( item.Device == device && item.Property == property)
+      {
+         resultItem.Device = device;
+         resultItem.Property = property;
+         resultItem.Element = item.Element;
+         if ( formatted && item.PropertyType == INDIGO_NUMBER_VECTOR )
+            resultItem.PropertyValue = PropertyUtils::FormattedNumber( item.PropertyValue, IsoString( item.PropertyNumberFormat ) );
+         else
+            resultItem.PropertyValue = item.PropertyValue;
+         if ( resultItem.PropertyValue.IsEmpty() ) // invalid property value?
+            return false;
+         resultItem.PropertyState = item.PropertyState;
+         result.Add(resultItem);
+         propertyFound=true;
+      }
+   }
+
+   return propertyFound;
+}
+
+
 bool INDIClient::GetPropertyTargetItem( const String& device, const String& property, const String& element,
                                         INDIPropertyListItem& result,
                                         bool formatted ) const

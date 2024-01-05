@@ -100,6 +100,7 @@ private:
    pcl_enum p_frameType;
    int32 p_binningX;
    int32 p_binningY;
+   String p_ccdMode;
    int32 p_filterSlot;
    double p_exposureTime;
    double p_exposureDelay;

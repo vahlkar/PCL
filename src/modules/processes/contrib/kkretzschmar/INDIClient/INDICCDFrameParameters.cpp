@@ -104,6 +104,7 @@ REGISTER_MODULE_PARAMETER( ICFSolverAlignmentDevice );
 REGISTER_MODULE_PARAMETER( ICFSolverDistortionCorrection );
 REGISTER_MODULE_PARAMETER( ICFSolverSplineSmoothing );
 REGISTER_MODULE_PARAMETER( ICFSolverProjection );
+REGISTER_MODULE_PARAMETER( ICFCCDMode );
 
 // ----------------------------------------------------------------------------
 
@@ -188,7 +189,7 @@ IsoString ICFServerFileNameTemplate::Id() const
 
 String ICFServerFileNameTemplate::DefaultValue() const
 {
-   return "%f_B%b_E%e_%n";
+   return "%f_%m_E%e_%n";
 }
 
 // ----------------------------------------------------------------------------
@@ -781,7 +782,7 @@ bool ICFServerFrame::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-DEFINE_STRING_PARAMETER_CLASS( ICFExternalFilterWheelDeviceName, "externalFilterWheelDeviceName" );
+DEFINE_STRING_PARAMETER_WITH_DEFAULT_CLASS( ICFExternalFilterWheelDeviceName, "externalFilterWheelDeviceName", "<No filter wheel>" );
 
 // ----------------------------------------------------------------------------
 
@@ -815,6 +816,8 @@ DEFINE_FLOAT_PARAMETER_CLASS(ICFSolverSplineSmoothing, "solverSplineSmoothing", 
    case X:             \
       return "Projection_" #X;
 DEFINE_ENUM_PARAMETER_CLASS(ICFSolverProjection, "solverProjection", ENUM_ITEM(Gnomonic) ENUM_ITEM(Stereographic) ENUM_ITEM(PlateCarree) ENUM_ITEM(Mercator) ENUM_ITEM(HammerAitoff) ENUM_ITEM(ZenithalEqualArea) ENUM_ITEM(Orthographic), Gnomonic);
+
+DEFINE_STRING_PARAMETER_CLASS( ICFCCDMode, "ccdMode" );
 
 } // namespace pcl
 

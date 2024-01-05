@@ -251,6 +251,10 @@ public:
                                INDIPropertyListItem& result,
                                bool formatted = true ) const;
 
+   bool GetPropertyItemElements( const String& device, const String& property,
+                                 INDIPropertyListItemArray& result,
+                                 bool formatted = true ) const;
+
    bool HasPropertyItem( const String& device, const String& property, const String& element ) const
    {
       INDIPropertyListItem dum;
