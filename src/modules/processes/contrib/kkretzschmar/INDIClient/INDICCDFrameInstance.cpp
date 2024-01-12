@@ -391,11 +391,11 @@ String INDICCDFrameInstance::FileNameFromTemplate( const String& fileNameTemplat
                fileName << CCDFrameTypePrefix( p_frameType );
                break;
             case 'b':
-               fileName << String().Format( "%dx%d", p_binningX, p_binningY );
-               break;
-            case 'm':
-               // GetPropertyItem
-               fileName << p_ccdMode;
+               if (p_ccdMode.IsEmpty()) {
+                  fileName << String().Format( "BIN-%dx%d", p_binningX, p_binningY );
+               } else {
+                  fileName << p_ccdMode;   
+               }
                break;
             case 'e':
                fileName << String().Format( "%.3lf", p_exposureTime );

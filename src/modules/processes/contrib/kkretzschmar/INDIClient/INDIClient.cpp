@@ -586,15 +586,16 @@ void INDIClient::registerNewBlobCallback()
          String dir = PixInsightSettings::GlobalString( "ImageWindow/DownloadsDirectory" );
          if ( dir.IsEmpty() ) // this cannot happen
             dir = File::SystemTempDirectory();
-         if (*property->items[0].blob.url)
+         if (*property->items[0].blob.url && indigo_populate_http_blob_item(&property->items[0]))
          {
-            indigo_populate_http_blob_item(&property->items[0]);
+            if (blobProperty->getBlob( 0 )) {
+               String filePath = dir + '/' + blobProperty->getElementLabel( 0 ) + blobProperty->getBlobFormat( 0 );
+               File myfile = File::CreateFileForWriting( filePath );
+               myfile.Write( blobProperty->getBlob( 0 ), blobProperty->getBlobSize( 0 ) );
+               myfile.Close();
+               m_downloadedImagePath = filePath;
+            }
          }
-         String filePath = dir + '/' + blobProperty->getElementLabel( 0 ) + blobProperty->getBlobFormat( 0 );
-         File myfile = File::CreateFileForWriting( filePath );
-         myfile.Write( blobProperty->getBlob( 0 ), blobProperty->getBlobSize( 0 ) );
-         myfile.Close();
-         m_downloadedImagePath = filePath;
       };
 }
 

@@ -1457,6 +1457,7 @@ void INDICCDFrameInterface::e_Timer( Timer& sender )
 
       INDIClient* indi = INDIClient::TheClient();
       INDIPropertyListItem item;
+      INDIPropertyListItem item2;
 
       if ( indi->GetPropertyItem( m_device, CCD_TEMPERATURE_PROPERTY_NAME, CCD_TEMPERATURE_ITEM_NAME, item ) )
       {
@@ -1491,7 +1492,6 @@ void INDICCDFrameInterface::e_Timer( Timer& sender )
             index++;
          }
          m_firstUpdate = false;
-         m_hasCcdMode = true;
          GUI->CCDMode_Combo.SetCurrentItem( indexOfON );
          GUI->CCDMode_Combo.SetVisible(true);
          GUI->CCDMode_Label.SetVisible(true);
@@ -1499,11 +1499,8 @@ void INDICCDFrameInterface::e_Timer( Timer& sender )
          GUI->CCDBinX_Label.SetVisible(false);
          GUI->CCDBinY_Combo.SetVisible(false);
          GUI->CCDBinY_Label.SetVisible(false);
-         String fileTemplate = CreateFileTemplate();
-         GUI->ServerFileNameTemplate_Edit.SetText(fileTemplate);
-         GUI->ClientFileNameTemplate_Edit.SetText(fileTemplate);
       } 
-      else if  (indi->GetPropertyItem( m_device, CCD_BIN_PROPERTY_NAME, CCD_BIN_HORIZONTAL_ITEM_NAME, item )  && indi->GetPropertyItem( m_device, CCD_BIN_PROPERTY_NAME, CCD_BIN_VERTICAL_ITEM_NAME, item ) )     
+      else if  (indi->GetPropertyItem( m_device, CCD_BIN_PROPERTY_NAME, CCD_BIN_HORIZONTAL_ITEM_NAME, item )  && indi->GetPropertyItem( m_device, CCD_BIN_PROPERTY_NAME, CCD_BIN_VERTICAL_ITEM_NAME, item2 ) )     
       {
          SetVariableSize();
          GUI->CCDBinX_Combo.SetVisible(true);
@@ -1512,11 +1509,8 @@ void INDICCDFrameInterface::e_Timer( Timer& sender )
          GUI->CCDBinY_Label.SetVisible(true);
          GUI->CCDMode_Combo.SetVisible(false);
          GUI->CCDMode_Label.SetVisible(false);
-         m_hasCcdMode = false;
-         String fileTemplate = CreateFileTemplate();
-         GUI->ServerFileNameTemplate_Edit.SetText(fileTemplate);
-         GUI->ClientFileNameTemplate_Edit.SetText(fileTemplate);
          GUI->CCDBinX_Combo.SetCurrentItem( item.PropertyValue.ToInt() - 1 );
+         GUI->CCDBinY_Combo.SetCurrentItem( item2.PropertyValue.ToInt() - 1 );
       }
       else 
       {
@@ -1544,20 +1538,12 @@ void INDICCDFrameInterface::e_Timer( Timer& sender )
          GUI->CCDFilter_Label.Enable();
          GUI->FilterConfig_ToolButton.Enable();
          GUI->CCDFilter_Combo.SetCurrentItem( currentFilterIndex );
-         m_hasFilter = true;
-         String fileTemplate = CreateFileTemplate();
-         GUI->ServerFileNameTemplate_Edit.SetText(fileTemplate);
-         GUI->ClientFileNameTemplate_Edit.SetText(fileTemplate);
       }
       else
       {
-         m_hasFilter = false;
          GUI->CCDFilter_Combo.Clear();
          GUI->CCDFilter_Combo.Disable();
          GUI->CCDFilter_Label.Disable();
-         String fileTemplate = CreateFileTemplate();
-         GUI->ServerFileNameTemplate_Edit.SetText(fileTemplate);
-         GUI->ClientFileNameTemplate_Edit.SetText(fileTemplate);
       }
 
       int uploadModeIndex = -1;
@@ -1999,18 +1985,6 @@ void INDICCDFrameInterface::e_Click( Button& sender, bool checked )
    }
 }
 
-String INDICCDFrameInterface::CreateFileTemplate() const
-{
-   String templateStr = String("%f");
-   if (m_hasFilter)
-      templateStr.Append("_%F");
-   if (m_hasCcdMode)
-      templateStr.Append("_%m");
-   else
-      templateStr.Append("_B%b");
-   templateStr.Append("_E%e_%n");
-   return templateStr;
-}
 
 // ----------------------------------------------------------------------------
 

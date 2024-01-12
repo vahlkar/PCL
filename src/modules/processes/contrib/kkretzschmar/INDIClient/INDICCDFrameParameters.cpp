@@ -189,7 +189,7 @@ IsoString ICFServerFileNameTemplate::Id() const
 
 String ICFServerFileNameTemplate::DefaultValue() const
 {
-   return "%f_%m_E%e_%n";
+   return "%f_%b_E%e_%n";
 }
 
 // ----------------------------------------------------------------------------
@@ -568,7 +568,7 @@ IsoString ICFClientFileNameTemplate::Id() const
 
 String ICFClientFileNameTemplate::DefaultValue() const
 {
-   return "%f_B%b_E%e_%n";
+   return "%f_%b_E%e_%n";
 }
 
 // ----------------------------------------------------------------------------
