@@ -283,8 +283,6 @@ private:
 
    int32_t m_telescopeFocalLength = 0;
    bool m_firstUpdate = true;
-   bool m_hasCcdMode = true;
-   bool m_hasFilter = false;
 
    void UpdateControls();
 
@@ -297,8 +295,6 @@ private:
    void e_SpinValueUpdated( SpinBox& sender, int value );
    void e_FileDrag( Control& sender, const Point& pos, const StringList& files, unsigned modifiers, bool& wantsFiles );
    void e_FileDrop( Control& sender, const Point& pos, const StringList& files, unsigned modifiers );
-
-   String CreateFileTemplate() const; 
 
    friend class INDICCDFrameInterfaceExecution;
 };
