@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.4
+// /_/     \____//_____/   PCL 2.6.5
 // ----------------------------------------------------------------------------
-// pcl/AstrometricMetadata.cpp - Released 2023-12-01T19:15:53Z
+// pcl/AstrometricMetadata.cpp - Released 2024-01-13T15:48:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2024 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -71,9 +71,9 @@ AstrometricMetadata::AstrometricMetadata( ProjectionBase* projection,
    , m_width( width )
    , m_height( height )
 {
-   LinearTransformation linearTransIW = m_transformWI->ApproximateLinearTransform();
-   double resx = Sqrt( linearTransIW.A00() * linearTransIW.A00() + linearTransIW.A01() * linearTransIW.A01() );
-   double resy = Sqrt( linearTransIW.A10() * linearTransIW.A10() + linearTransIW.A11() * linearTransIW.A11() );
+   LinearTransformation linearIW = m_transformWI->ApproximateLinearTransform();
+   double resx = Sqrt( linearIW.A00() * linearIW.A00() + linearIW.A01() * linearIW.A01() );
+   double resy = Sqrt( linearIW.A10() * linearIW.A10() + linearIW.A11() * linearIW.A11() );
    m_resolution = (resx + resy)/2;
 }
 
@@ -114,11 +114,14 @@ void AstrometricMetadata::Build( const PropertyArray& properties, const FITSKeyw
    m_creatorModule.Clear();
    m_creatorOS.Clear();
 
-   ByteArray splineWT;
+   const IsoString splineWTPrefix = SplineWorldTransformation::PropertyPrefix();
+   bool hasSplineWT = false;
    for ( const Property& property : properties )
-      if ( property.Id() == "PCL:AstrometricSolution:SplineWorldTransformation"
-        || property.Id() == "Transformation_ImageToProjection" ) // core < 1.8.9-2
-         splineWT = property.Value().ToByteArray();
+      if ( !hasSplineWT &&
+           (property.Id().StartsWith( splineWTPrefix )
+         || property.Id() == "PCL:AstrometricSolution:SplineWorldTransformation" // core 1.8.9-2
+         || property.Id() == "Transformation_ImageToProjection") )               // core < 1.8.9-2
+         hasSplineWT = true;
       else if ( property.Id() == "PCL:AstrometricSolution:CreationTime" )
          m_creationTime = property.Value().ToTimePoint();
       else if ( property.Id() == "PCL:AstrometricSolution:Catalog" )
@@ -137,16 +140,16 @@ void AstrometricMetadata::Build( const PropertyArray& properties, const FITSKeyw
    {
       m_projection = ProjectionFactory::Create( wcs );
 
-      LinearTransformation linearTransIW;
-      if ( wcs.ExtractWorldTransformation( linearTransIW, m_height ) )
+      LinearTransformation linearIW;
+      if ( wcs.ExtractWorldTransformation( linearIW, m_height ) )
       {
-         if ( splineWT.IsEmpty() )
-            m_transformWI = new LinearWorldTransformation( linearTransIW );
+         if ( hasSplineWT )
+            m_transformWI = new SplineWorldTransformation( properties, linearIW );
          else
-            m_transformWI = new SplineWorldTransformation( splineWT, linearTransIW );
+            m_transformWI = new LinearWorldTransformation( linearIW );
 
-         double resx = Sqrt( linearTransIW.A00()*linearTransIW.A00() + linearTransIW.A01()*linearTransIW.A01() );
-         double resy = Sqrt( linearTransIW.A10()*linearTransIW.A10() + linearTransIW.A11()*linearTransIW.A11() );
+         double resx = Sqrt( linearIW.A00()*linearIW.A00() + linearIW.A01()*linearIW.A01() );
+         double resy = Sqrt( linearIW.A10()*linearIW.A10() + linearIW.A11()*linearIW.A11() );
          m_resolution = (resx + resy)/2;
          if ( m_pixelSize.IsDefined() )
             if ( m_pixelSize() > 0 )
@@ -206,13 +209,15 @@ void AstrometricMetadata::Write( ImageWindow& window, bool notify ) const
       throw Error( "AstrometricMetadata::Write(): Invalid or uninitialized metadata." );
 
    View view = window.MainView();
-   if( view.Width() != m_width || view.Height() != m_height )
+   if ( view.Width() != m_width || view.Height() != m_height )
       throw Error( "AstrometricMetadata::Write(): Metadata not compatible with the dimensions of the image." );
 
    FITSKeywordArray keywords = window.Keywords();
    UpdateBasicKeywords( keywords );
    UpdateWCSKeywords( keywords );
    window.SetKeywords( keywords );
+
+   RemoveSplineWorldTransformationProperties( window );
 
    if ( m_focalLength.IsDefined() && m_focalLength() > 0 )
       view.SetStorablePermanentPropertyValue( "Instrument:Telescope:FocalLength", Round( m_focalLength()/1000, 6 ), notify );
@@ -257,26 +262,12 @@ void AstrometricMetadata::Write( ImageWindow& window, bool notify ) const
    LT[1][1] = trans_I_W.A11();
 
    DPoint p0 = trans_I_W.TransformInverse( DPoint( 0 ) );
-
    view.SetStorablePermanentPropertyValue( "PCL:AstrometricSolution:ProjectionSystem", m_projection->Identifier(), notify );
    view.SetStorablePermanentPropertyValue( "PCL:AstrometricSolution:ReferenceCelestialCoordinates", m_projection->ReferenceCelestialCoordinates(), notify );
    view.SetStorablePermanentPropertyValue( "PCL:AstrometricSolution:ReferenceImageCoordinates", Vector{ p0.x, p0.y }, notify );
    view.SetStorablePermanentPropertyValue( "PCL:AstrometricSolution:ReferenceNativeCoordinates", m_projection->ReferenceNativeCoordinates(), notify );
    view.SetStorablePermanentPropertyValue( "PCL:AstrometricSolution:CelestialPoleNativeCoordinates", m_projection->CelestialPoleNativeCoordinates(), notify );
    view.SetStorablePermanentPropertyValue( "PCL:AstrometricSolution:LinearTransformationMatrix", LT, notify );
-
-   const SplineWorldTransformation* S = dynamic_cast<const SplineWorldTransformation*>( m_transformWI.Pointer() );
-   if ( S != nullptr )
-   {
-      ByteArray data;
-      S->Serialize( data );
-      view.SetStorablePermanentPropertyValue( "PCL:AstrometricSolution:SplineWorldTransformation", data, notify );
-   }
-   else
-      view.DeletePropertyIfExists( "PCL:AstrometricSolution:SplineWorldTransformation", notify );
-
-   // Remove old properties used in core versions < 1.8.9-2.
-   view.DeletePropertyIfExists( "Transformation_ImageToProjection", notify );
 
    if ( m_creationTime.IsDefined() )
       view.SetStorablePermanentPropertyValue( "PCL:AstrometricSolution:CreationTime", m_creationTime(), notify );
@@ -302,6 +293,14 @@ void AstrometricMetadata::Write( ImageWindow& window, bool notify ) const
       view.SetStorablePermanentPropertyValue( "PCL:AstrometricSolution:CreatorModule", m_creatorModule, notify );
    else
       view.DeletePropertyIfExists( "PCL:AstrometricSolution:CreatorModule", notify );
+
+   const SplineWorldTransformation* S = dynamic_cast<const SplineWorldTransformation*>( m_transformWI.Pointer() );
+   if ( S != nullptr )
+   {
+      PropertyArray properties = S->ToProperties();
+      for ( const Property& property : properties )
+         view.SetStorablePermanentPropertyValue( property.Id(), property.Value(), notify );
+   }
 }
 
 // ----------------------------------------------------------------------------
@@ -359,7 +358,6 @@ void AstrometricMetadata::Write( XISFWriter& writer ) const
    LT[1][1] = trans_I_W.A11();
 
    DPoint p0 = trans_I_W.TransformInverse( DPoint( 0 ) );
-
    writer.WriteImageProperty( "PCL:AstrometricSolution:ProjectionSystem", m_projection->Identifier() );
    writer.WriteImageProperty( "PCL:AstrometricSolution:ReferenceCelestialCoordinates", m_projection->ReferenceCelestialCoordinates() );
    writer.WriteImageProperty( "PCL:AstrometricSolution:ReferenceImageCoordinates", Vector{ p0.x, p0.y } );
@@ -367,43 +365,28 @@ void AstrometricMetadata::Write( XISFWriter& writer ) const
    writer.WriteImageProperty( "PCL:AstrometricSolution:CelestialPoleNativeCoordinates", m_projection->CelestialPoleNativeCoordinates() );
    writer.WriteImageProperty( "PCL:AstrometricSolution:LinearTransformationMatrix", LT );
 
-   const SplineWorldTransformation* S = dynamic_cast<const SplineWorldTransformation*>( m_transformWI.Pointer() );
-   if ( S != nullptr )
-   {
-      ByteArray data;
-      S->Serialize( data );
-      writer.WriteImageProperty( "PCL:AstrometricSolution:SplineWorldTransformation", data );
-   }
-   else
-      writer.RemoveImageProperty( "PCL:AstrometricSolution:SplineWorldTransformation" );
-
-   // Remove old properties used in core versions < 1.8.9-2.
-   writer.RemoveImageProperty( "Transformation_ImageToProjection" );
-
    if ( m_creationTime.IsDefined() )
       writer.WriteImageProperty( "PCL:AstrometricSolution:CreationTime", m_creationTime() );
-   else
-      writer.RemoveImageProperty( "PCL:AstrometricSolution:CreationTime" );
 
    if ( !m_catalog.IsEmpty() )
       writer.WriteImageProperty( "PCL:AstrometricSolution:Catalog", m_catalog );
-   else
-      writer.RemoveImageProperty( "PCL:AstrometricSolution:Catalog" );
 
    if ( !m_creatorOS.IsEmpty() )
       writer.WriteImageProperty( "PCL:AstrometricSolution:CreatorOS", m_creatorOS );
-   else
-      writer.RemoveImageProperty( "PCL:AstrometricSolution:CreatorOS" );
 
    if ( !m_creatorApp.IsEmpty() )
       writer.WriteImageProperty( "PCL:AstrometricSolution:CreatorApplication", m_creatorApp );
-   else
-      writer.RemoveImageProperty( "PCL:AstrometricSolution:CreatorApplication" );
 
    if ( !m_creatorModule.IsEmpty() )
       writer.WriteImageProperty( "PCL:AstrometricSolution:CreatorModule", m_creatorModule );
-   else
-      writer.RemoveImageProperty( "PCL:AstrometricSolution:CreatorModule" );
+
+   const SplineWorldTransformation* S = dynamic_cast<const SplineWorldTransformation*>( m_transformWI.Pointer() );
+   if ( S != nullptr )
+   {
+      PropertyArray properties = S->ToProperties();
+      for ( const Property& property : properties )
+         writer.WriteImageProperty( property.Id(), property.Value() );
+   }
 }
 
 // ----------------------------------------------------------------------------
@@ -423,10 +406,10 @@ void AstrometricMetadata::Verify( DPoint& centerErrors,
        */
       Array<DPoint> pI;
       pI << DPoint( m_width/2.0, m_height/2.0 )
-         << DPoint( 0,           0 )
-         << DPoint( m_width,     0 )
-         << DPoint( 0,           m_height )
-         << DPoint( m_width,     m_height );
+         << DPoint( 0.5,         0.5 )
+         << DPoint( m_width-0.5, 0.5 )
+         << DPoint( 0.5,         m_height-0.5 )
+         << DPoint( m_width-0.5, m_height-0.5 );
       Array<DPoint> pIr;
       for ( int i = 0; i < 5; ++i )
       {
@@ -473,16 +456,15 @@ double AstrometricMetadata::Rotation( bool& flipped ) const
    if ( m_transformWI.IsNull() )
       throw Error( "Invalid call to AstrometricMetadata::Rotation(): No world transformation defined." );
 
-   LinearTransformation linearTransIW = m_transformWI->ApproximateLinearTransform();
-   double det = linearTransIW.A01() * linearTransIW.A10() - linearTransIW.A00() * linearTransIW.A11();
-   double rotation = Deg( ArcTan( linearTransIW.A00() + linearTransIW.A01(), linearTransIW.A10() + linearTransIW.A11() ) ) + 135;
-   if ( det > 0 )
+   LinearTransformation linearIW = m_transformWI->ApproximateLinearTransform();
+   flipped = linearIW.Determinant() > 0;
+   double rotation = Deg( ArcTan( linearIW.A00() + linearIW.A01(), linearIW.A10() + linearIW.A11() ) ) + 135;
+   if ( flipped )
       rotation = -90 - rotation;
    if ( rotation <= -180 )
       rotation += 360;
    if ( rotation > 180 )
       rotation -= 360;
-   flipped = det > 0;
    return rotation;
 }
 
@@ -805,6 +787,8 @@ static void RemoveProperty( PropertyArray& properties, const IsoString& id )
 
 void AstrometricMetadata::UpdateProperties( PropertyArray& properties ) const
 {
+   RemoveSplineWorldTransformationProperties( properties );
+
    if ( IsValid() )
    {
       if ( m_focalLength.IsDefined() && m_focalLength() > 0 )
@@ -860,16 +844,6 @@ void AstrometricMetadata::UpdateProperties( PropertyArray& properties ) const
       ModifyProperty( properties, "PCL:AstrometricSolution:CelestialPoleNativeCoordinates", m_projection->CelestialPoleNativeCoordinates() );
       ModifyProperty( properties, "PCL:AstrometricSolution:LinearTransformationMatrix", LT );
 
-      const SplineWorldTransformation* S = dynamic_cast<const SplineWorldTransformation*>( m_transformWI.Pointer() );
-      if ( S != nullptr )
-      {
-         ByteArray data;
-         S->Serialize( data );
-         ModifyProperty( properties, "PCL:AstrometricSolution:SplineWorldTransformation", data );
-      }
-      else
-         RemoveProperty( properties, "PCL:AstrometricSolution:SplineWorldTransformation" );
-
       if ( m_creationTime.IsDefined() )
          ModifyProperty( properties, "PCL:AstrometricSolution:CreationTime", m_creationTime() );
       else
@@ -894,6 +868,10 @@ void AstrometricMetadata::UpdateProperties( PropertyArray& properties ) const
          ModifyProperty( properties, "PCL:AstrometricSolution:CreatorModule", m_creatorModule );
       else
          RemoveProperty( properties, "PCL:AstrometricSolution:CreatorModule" );
+
+      const SplineWorldTransformation* S = dynamic_cast<const SplineWorldTransformation*>( m_transformWI.Pointer() );
+      if ( S != nullptr )
+         properties << S->ToProperties();
    }
    else
    {
@@ -903,16 +881,12 @@ void AstrometricMetadata::UpdateProperties( PropertyArray& properties ) const
       RemoveProperty( properties, "PCL:AstrometricSolution:ReferenceNativeCoordinates" );
       RemoveProperty( properties, "PCL:AstrometricSolution:CelestialPoleNativeCoordinates" );
       RemoveProperty( properties, "PCL:AstrometricSolution:LinearTransformationMatrix" );
-      RemoveProperty( properties, "PCL:AstrometricSolution:SplineWorldTransformation" );
       RemoveProperty( properties, "PCL:AstrometricSolution:CreationTime" );
       RemoveProperty( properties, "PCL:AstrometricSolution:Catalog" );
       RemoveProperty( properties, "PCL:AstrometricSolution:CreatorOS" );
       RemoveProperty( properties, "PCL:AstrometricSolution:CreatorApplication" );
       RemoveProperty( properties, "PCL:AstrometricSolution:CreatorModule" );
    }
-
-   // Remove old properties used in core versions < 1.8.9-2.
-   RemoveProperty( properties, "Transformation_ImageToProjection" );
 }
 
 // ----------------------------------------------------------------------------
@@ -942,13 +916,13 @@ void AstrometricMetadata::RemoveProperties( PropertyArray& properties, bool remo
    RemoveProperty( properties, "PCL:AstrometricSolution:ReferenceNativeCoordinates" );
    RemoveProperty( properties, "PCL:AstrometricSolution:CelestialPoleNativeCoordinates" );
    RemoveProperty( properties, "PCL:AstrometricSolution:LinearTransformationMatrix" );
-   RemoveProperty( properties, "PCL:AstrometricSolution:SplineWorldTransformation" );
    RemoveProperty( properties, "PCL:AstrometricSolution:CreationTime" );
    RemoveProperty( properties, "PCL:AstrometricSolution:Catalog" );
    RemoveProperty( properties, "PCL:AstrometricSolution:CreatorOS" );
    RemoveProperty( properties, "PCL:AstrometricSolution:CreatorApplication" );
    RemoveProperty( properties, "PCL:AstrometricSolution:CreatorModule" );
-   RemoveProperty( properties, "Transformation_ImageToProjection" );
+
+   RemoveSplineWorldTransformationProperties( properties );
 }
 
 void AstrometricMetadata::RemoveProperties( ImageWindow& window, bool removeCenterProperties, bool removeScaleProperties )
@@ -978,13 +952,39 @@ void AstrometricMetadata::RemoveProperties( ImageWindow& window, bool removeCent
    view.DeletePropertyIfExists( "PCL:AstrometricSolution:ReferenceNativeCoordinates" );
    view.DeletePropertyIfExists( "PCL:AstrometricSolution:CelestialPoleNativeCoordinates" );
    view.DeletePropertyIfExists( "PCL:AstrometricSolution:LinearTransformationMatrix" );
-   view.DeletePropertyIfExists( "PCL:AstrometricSolution:SplineWorldTransformation" );
    view.DeletePropertyIfExists( "PCL:AstrometricSolution:CreationTime" );
    view.DeletePropertyIfExists( "PCL:AstrometricSolution:Catalog" );
    view.DeletePropertyIfExists( "PCL:AstrometricSolution:CreatorOS" );
    view.DeletePropertyIfExists( "PCL:AstrometricSolution:CreatorApplication" );
    view.DeletePropertyIfExists( "PCL:AstrometricSolution:CreatorModule" );
-   view.DeletePropertyIfExists( "Transformation_ImageToProjection" );
+
+   RemoveSplineWorldTransformationProperties( window );
+}
+
+void AstrometricMetadata::RemoveSplineWorldTransformationProperties( PropertyArray& properties )
+{
+   const IsoString prefix = SplineWorldTransformation::PropertyPrefix();
+   PropertyArray keepProperties;
+   for ( const Property& property : properties )
+      if ( !property.Id().StartsWith( prefix )
+         && property.Id() != "PCL:AstrometricSolution:SplineWorldTransformation" // core <= 1.8.9-2
+         && property.Id() != "Transformation_ImageToProjection" )                // core < 1.8.9-2
+      {
+         keepProperties << property;
+      }
+   properties = keepProperties;
+}
+
+void AstrometricMetadata::RemoveSplineWorldTransformationProperties( ImageWindow& window )
+{
+   const IsoString prefix = SplineWorldTransformation::PropertyPrefix();
+   View view = window.MainView();
+   PropertyDescriptionArray properties = view.PropertyDescriptions();
+   for ( const PropertyDescription& property : properties )
+      if ( property.id.StartsWith( prefix ) )
+         view.DeletePropertyIfExists( property.id );
+   view.DeletePropertyIfExists( "PCL:AstrometricSolution:SplineWorldTransformation" ); // core <= 1.8.9-2
+   view.DeletePropertyIfExists( "Transformation_ImageToProjection" );                  // core < 1.8.9-2
 }
 
 // ----------------------------------------------------------------------------
@@ -1118,8 +1118,8 @@ void AstrometricMetadata::UpdateDescription() const
    if ( m_description.IsNull() )
       if ( IsValid() )
       {
-         LinearTransformation linearTransIW = m_transformWI->ApproximateLinearTransform();
-         DPoint projOrgPx = linearTransIW.TransformInverse( DPoint( 0 ) );
+         LinearTransformation linearIW = m_transformWI->ApproximateLinearTransform();
+         DPoint projOrgPx = linearIW.TransformInverse( DPoint( 0 ) );
          DPoint projOrgRD = m_projection->ProjectionOrigin();
          bool flipped;
          double rotation = Rotation( flipped );
@@ -1128,7 +1128,7 @@ void AstrometricMetadata::UpdateDescription() const
 
          m_description = new DescriptionItems;
 
-         m_description->referenceMatrix = linearTransIW.ToString();
+         m_description->referenceMatrix = linearIW.ToString();
          if ( S != nullptr )
          {
             if ( S->SplineOrder() == 2 )
@@ -1235,4 +1235,4 @@ void AstrometricMetadata::UpdateDescription() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AstrometricMetadata.cpp - Released 2023-12-01T19:15:53Z
+// EOF pcl/AstrometricMetadata.cpp - Released 2024-01-13T15:48:04Z

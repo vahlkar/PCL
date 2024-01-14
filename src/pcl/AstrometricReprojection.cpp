@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.4
+// /_/     \____//_____/   PCL 2.6.5
 // ----------------------------------------------------------------------------
-// pcl/AstrometricReprojection.cpp - Released 2023-12-01T19:15:53Z
+// pcl/AstrometricReprojection.cpp - Released 2024-01-13T15:48:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2024 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -217,7 +217,7 @@ private:
                            && pI.y < m_data.sourceImage.Height() )
                         {
                            for ( int c = 0; c < m_data.sourceImage.NumberOfChannels(); ++c )
-                              it[c] = interpolators[c]( pI );
+                              it[c] = P2::ToSample( interpolators[c]( pI ) );
                         }
 
                   UPDATE_THREAD_MONITOR( 65536 )
@@ -267,4 +267,4 @@ void AstrometricReprojection::Apply( pcl::UInt32Image& image ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AstrometricReprojection.cpp - Released 2023-12-01T19:15:53Z
+// EOF pcl/AstrometricReprojection.cpp - Released 2024-01-13T15:48:04Z

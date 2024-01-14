@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.4
+// /_/     \____//_____/   PCL 2.6.5
 // ----------------------------------------------------------------------------
-// pcl/SurfaceSpline.h - Released 2023-12-01T19:15:45Z
+// pcl/SurfaceSpline.h - Released 2024-01-13T15:47:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2024 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -376,6 +376,27 @@ public:
    }
 
    /*!
+    * Returns a vector with the node function values (Z-axis values) used to
+    * initialize this surface spline. If this object has not been initialized,
+    * this function returns an empty vector.
+    */
+   const vector& Z() const
+   {
+      return m_z;
+   }
+
+   /*!
+    * Returns the vector of node weights used to initialize this surface
+    * spline. If this object has not been initialized, or if no node weights
+    * were specified or used for initialization, this function returns an empty
+    * vector.
+    */
+   const weight_vector& Weights() const
+   {
+      return m_weights;
+   }
+
+   /*!
     * Returns the type of radial basis function (RBF) used by this surface
     * spline. See the RadialBasisFunction namespace for the list of supported
     * RBFs in the current implementation.
@@ -686,7 +707,7 @@ public:
             throw Error( "SurfaceSpline::Initialize(): Less than three input nodes left after sanitization." );
          m_x = vector( N );
          m_y = vector( N );
-         vector fz( N );
+         m_z = vector( N );
          if ( w != nullptr )
             m_weights = weight_vector( N );
          int i = 0, k = 0;
@@ -696,7 +717,7 @@ public:
             {
                m_x[k] = P[i].x;
                m_y[k] = P[i].y;
-               fz[k] = P[i].z;
+               m_z[k] = P[i].z;
                if ( w != nullptr )
                   m_weights[k] = P[i].w;
             }
@@ -706,7 +727,7 @@ public:
          {
             m_x[k] = P[i].x;
             m_y[k] = P[i].y;
-            fz[k] = P[i].z;
+            m_z[k] = P[i].z;
             if ( w != nullptr )
                m_weights[k] = P[i].w;
          }
@@ -714,7 +735,7 @@ public:
          m_spline = vector( scalar( 0 ), N + (m_havePolynomial ? ((m_order*(m_order + 1)) >> 1) : 0) );
 
          Generate( m_spline.Begin(), m_rbf, m_eps2, m_havePolynomial,
-                   m_x.Begin(), m_y.Begin(), fz.Begin(), N, m_order,
+                   m_x.Begin(), m_y.Begin(), m_z.Begin(), N, m_order,
                    m_smoothing, m_weights.Begin() );
       }
       catch ( ... )
@@ -732,6 +753,7 @@ public:
    {
       m_x.Clear();
       m_y.Clear();
+      m_z.Clear();
       m_weights.Clear();
       m_spline.Clear();
    }
@@ -879,6 +901,7 @@ protected:
    double        m_eps2 = 0;      // squared shape parameter
    vector        m_x;             // vector of normalized X node coordinates
    vector        m_y;             // vector of normalized Y node coordinates
+   vector        m_z;             // vector of function values - for reference only
    double        m_r0 = 1;        // scaling factor for normalization of node coordinates
    double        m_x0 = 0;        // zero offset for normalization of X node coordinates
    double        m_y0 = 0;        // zero offset for normalization of Y node coordinates
@@ -915,6 +938,7 @@ protected:
 
    friend class DrizzleData;
    friend class DrizzleDataDecoder;
+   friend class SplineWorldTransformation;
 };
 
 // ----------------------------------------------------------------------------
@@ -1265,70 +1289,6 @@ public:
    }
 
    /*!
-    * Returns an approximation to the inverse surface spline of this object.
-    *
-    * The returned object can be used to perform an inverse interpolation:
-    * Given an interpolation point P2, the returned spline will interpolate the
-    * corresponding node point P1. See Initialize() for more information on
-    * spline initialization.
-    *
-    * In general, the returned object can only provide an approximation to the
-    * inverse of the underlying coordinate transformation. In particular, if
-    * this object has been initialized as an approximating surface spline, its
-    * inverse spline will compute node point coordinates from approximate
-    * (smoothed) interpolated coordinates, instead of the original ones.
-    *
-    * If two or more interpolation points were identical when this object was
-    * initialized, calling this member function may lead to an ill-conditioned
-    * linear system. In such case, an Error exception will be thrown.
-    *
-    * If this object has not been initialized, this function returns an
-    * uninitialized %PointSurfaceSpline object.
-    */
-   PointSurfaceSpline Inverse() const
-   {
-      PointSurfaceSpline inverse;
-      if ( IsValid() )
-      {
-         Array<DPoint> P1, P2;
-         P1.Reserve( m_Sx.X().Length() );
-         P2.Reserve( m_Sx.X().Length() );
-         if ( m_incremental )
-         {
-            for ( int i = 0; i < m_Sx.X().Length(); ++i )
-            {
-               DPoint p1( m_Sx.X()[i], m_Sx.Y()[i] );
-               DPoint p2 = m_H( p1 );
-               p2.x += m_Sx( p1 );
-               p2.y += m_Sy( p1 );
-               P1 << p1;
-               P2 << p2;
-            }
-            inverse.SetLinearFunction( m_H.Inverse() );
-            inverse.EnableIncrementalFunction();
-         }
-         else
-         {
-            for ( int i = 0; i < m_Sx.X().Length(); ++i )
-            {
-               DPoint p1( m_Sx.X()[i], m_Sx.Y()[i] );
-               DPoint p2( m_Sx( p1 ), m_Sy( p1 ) );
-               P1 << p1;
-               P2 << p2;
-            }
-         }
-
-         inverse.Initialize( P2, P1,
-                             0/*smoothness*/, FVector(),
-                             m_Sx.Order(),
-                             m_Sx.RBFType(),
-                             m_Sx.ShapeParameter(),
-                             m_Sx.IsPolynomialEnabled() );
-      }
-      return inverse;
-   }
-
-   /*!
     * Deallocates internal structures, yielding an empty spline that cannot be
     * used before a new call to Initialize().
     */
@@ -1648,6 +1608,7 @@ private:
 
    friend class DrizzleData;
    friend class DrizzleDataDecoder;
+   friend class SplineWorldTransformation;
 };
 
 // ----------------------------------------------------------------------------
@@ -2319,4 +2280,4 @@ private:
 #endif   // __PCL_SurfaceSpline_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SurfaceSpline.h - Released 2023-12-01T19:15:45Z
+// EOF pcl/SurfaceSpline.h - Released 2024-01-13T15:47:58Z

@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.4
+// /_/     \____//_____/   PCL 2.6.5
 // ----------------------------------------------------------------------------
 // Standard ColorManagement Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// ColorManagementModule.cpp - Released 2023-12-01T19:16:17Z
+// ColorManagementModule.cpp - Released 2024-01-13T15:48:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorManagement PixInsight module.
 //
-// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2024 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -56,9 +56,9 @@
 #define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
-#define MODULE_RELEASE_YEAR      2023
-#define MODULE_RELEASE_MONTH     12
-#define MODULE_RELEASE_DAY       1
+#define MODULE_RELEASE_YEAR      2024
+#define MODULE_RELEASE_MONTH     1
+#define MODULE_RELEASE_DAY       13
 
 #include "AssignICCProfileInterface.h"
 #include "AssignICCProfileProcess.h"
@@ -118,7 +118,7 @@ String ColorManagementModule::Author() const
 
 String ColorManagementModule::Copyright() const
 {
-   return "Copyright (c) 2005-2023 Pleiades Astrophoto";
+   return "Copyright (c) 2005-2024 Pleiades Astrophoto";
 }
 
 // ----------------------------------------------------------------------------
@@ -177,4 +177,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF ColorManagementModule.cpp - Released 2023-12-01T19:16:17Z
+// EOF ColorManagementModule.cpp - Released 2024-01-13T15:48:22Z

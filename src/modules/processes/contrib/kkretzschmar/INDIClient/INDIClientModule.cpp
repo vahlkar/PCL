@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.4
+// /_/     \____//_____/   PCL 2.6.5
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// INDIClientModule.cpp - Released 2023-12-01T19:16:18Z
+// INDIClientModule.cpp - Released 2024-01-13T15:48:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
-// Copyright (c) 2014-2023 Klaus Kretzschmar
+// Copyright (c) 2014-2024 Klaus Kretzschmar
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -56,9 +56,9 @@
 #define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
-#define MODULE_RELEASE_YEAR      2023
-#define MODULE_RELEASE_MONTH     12
-#define MODULE_RELEASE_DAY       1
+#define MODULE_RELEASE_YEAR      2024
+#define MODULE_RELEASE_MONTH     1
+#define MODULE_RELEASE_DAY       13
 
 #include "INDICCDFrameInterface.h"
 #include "INDICCDFrameProcess.h"
@@ -120,7 +120,7 @@ String INDIClientModule::Author() const
 
 String INDIClientModule::Copyright() const
 {
-   return "Copyright (c) 2014-2023 Klaus Kretzschmar";
+   return "Copyright (c) 2014-2024 Klaus Kretzschmar";
 }
 
 // ----------------------------------------------------------------------------
@@ -181,4 +181,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF INDIClientModule.cpp - Released 2023-12-01T19:16:18Z
+// EOF INDIClientModule.cpp - Released 2024-01-13T15:48:23Z

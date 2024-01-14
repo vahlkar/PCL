@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.4
+// /_/     \____//_____/   PCL 2.6.5
 // ----------------------------------------------------------------------------
-// pcl/WorldTransformation.cpp - Released 2023-12-01T19:15:53Z
+// pcl/WorldTransformation.cpp - Released 2024-01-13T15:48:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2024 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -67,6 +67,435 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
+SplineWorldTransformation::SplineWorldTransformation( const PropertyArray& properties, const LinearTransformation& linearIW )
+{
+   try
+   {
+      /*
+       * Compatibility with core <= 1.8.9-2
+       */
+      for ( const Property& property : properties )
+         if ( property.Id() == "PCL:AstrometricSolution:SplineWorldTransformation" // core <= 1.8.9-2
+           || property.Id() == "Transformation_ImageToProjection" )                // core < 1.8.9-2
+         {
+            Deserialize( property.Value().ToByteArray() );
+            InitializeSplines();
+            if ( linearIW.IsSingularMatrix() )
+               CalculateLinearApproximation();
+            else
+               m_linearIW = linearIW;
+            return;
+         }
+
+      const IsoString prefix = PropertyPrefix();
+      const IsoString splinePrefixWI = "PointSurfaceSpline:NativeToImage:";
+      const IsoString splinePrefixIW = "PointSurfaceSpline:ImageToNative:";
+      const IsoString gridPrefixWI = "PointGridInterpolation:NativeToImage:";
+      const IsoString gridPrefixIW = "PointGridInterpolation:ImageToNative:";
+
+      PropertyArray splineWIProperties, splineIWProperties, gridWIProperties, gridIWProperties;
+      m_linearIW = linearIW;
+
+      for ( const Property& property : properties )
+      {
+         IsoString id;
+         if ( property.Id().StartsWith( prefix ) )
+            id = property.Id().Substring( prefix.Length() );
+         else
+            continue;
+
+         if ( id == "Version" )
+         {
+            m_version = property.Value().ToIsoString();
+            if ( m_version != "1.3" )
+               throw Error( "Unsupported/unknown serialization version '" + m_version + "'" );
+         }
+         else if ( id == "SplineOrder" )
+         {
+            m_order = property.Value().ToInt();
+            if ( m_order < 2 )
+               throw Error( "Invalid surface spline order parameter" );
+         }
+         else if ( id == "SplineSmoothness" )
+         {
+            m_smoothness = property.Value().ToFloat();
+            if ( m_smoothness < 0 )
+               throw Error( "Invalid surface spline smoothness parameter" );
+         }
+         else if ( id == "UseSimplifiers" )
+            m_useSimplifiers = property.Value().ToBoolean();
+         else if ( id == "SimplifierRejectFraction" )
+         {
+            m_simplifierRejectFraction = property.Value().ToFloat();
+            if ( m_simplifierRejectFraction < 0 || m_simplifierRejectFraction >= 1 )
+               throw Error( "Invalid simplifier reject fraction parameter" );
+         }
+         else if ( id == "Truncated" )
+            m_truncated = property.Value().ToBoolean();
+         else if ( id == "ControlPoints:World" )
+         {
+            Vector coordinates = property.Value().ToVector();
+            if ( (coordinates.Length() & 1) == 0 )
+               for ( int i = 0; i < coordinates.Length(); i += 2 )
+                  m_controlPointsW << DPoint( coordinates[i], coordinates[i+1] );
+         }
+         else if ( id == "ControlPoints:Image" )
+         {
+            Vector coordinates = property.Value().ToVector();
+            if ( (coordinates.Length() & 1) == 0 )
+               for ( int i = 0; i < coordinates.Length(); i += 2 )
+                  m_controlPointsI << DPoint( coordinates[i], coordinates[i+1] );
+         }
+         else if ( id == "Weights" )
+            m_weights = property.Value().ToFVector();
+         else if ( id == "Projective:NativeToImage" )
+         {
+            Matrix H = property.Value().ToMatrix();
+            if ( !H.IsEmpty() )
+            {
+               if ( H.Rows() != 3 || H.Cols() != 3 )
+                  throw Error( "Invalid Projective:NativeToImage matrix dimensions" );
+               m_projectiveWI = Homography( H );
+            }
+         }
+         else if ( id == "Projective:ImageToNative" )
+         {
+            Matrix H = property.Value().ToMatrix();
+            if ( !H.IsEmpty() )
+            {
+               if ( H.Rows() != 3 || H.Cols() != 3 )
+                  throw Error( "Invalid Projective:ImageToNative matrix dimensions" );
+               m_projectiveIW = H;
+            }
+         }
+         else if ( id.StartsWith( splinePrefixWI ) )
+            splineWIProperties << Property( id.Substring( splinePrefixWI.Length() ), property.Value() );
+         else if ( id.StartsWith( splinePrefixIW ) )
+            splineIWProperties << Property( id.Substring( splinePrefixIW.Length() ), property.Value() );
+         else if ( id.StartsWith( gridPrefixWI ) )
+            gridWIProperties << Property( id.Substring( gridPrefixWI.Length() ), property.Value() );
+         else if ( id.StartsWith( gridPrefixIW ) )
+            gridIWProperties << Property( id.Substring( gridPrefixIW.Length() ), property.Value() );
+         else if ( id == "LinearApproximation" )
+         {
+            // Ignore the LinearApproximation property if a linear
+            // transformation has been prescribed.
+            if ( m_linearIW.IsSingularMatrix() )
+            {
+               Matrix H = property.Value().ToMatrix();
+               if ( !H.IsEmpty() )
+               {
+                  if ( H.Rows() != 2 || H.Cols() != 3 )
+                     throw Error( "Invalid LinearApproximation matrix dimensions" );
+                  m_linearIW = LinearTransformation( H[0][0], H[0][1], H[0][2], H[1][0], H[1][1], H[1][2] );
+               }
+            }
+         }
+      }
+
+      if ( m_controlPointsW.IsEmpty() || m_controlPointsI.IsEmpty() )
+         throw Error( "Missing control point vector(s)" );
+      if ( m_controlPointsW.Length() < 3 )
+         throw Error( "Insufficient control points" );
+      if ( m_controlPointsI.Length() != m_controlPointsW.Length() )
+         throw Error( "Mismatched control point vector lengths" );
+      if ( !m_weights.IsEmpty() && size_type( m_weights.Length() ) != m_controlPointsW.Length() )
+         throw Error( "Mismatched weights vector length" );
+
+      if ( !splineWIProperties.IsEmpty() )
+      {
+         if ( splineIWProperties.IsEmpty() )
+            throw Error( "Missing image-to-native surface spline definition properties" );
+
+         m_splineWI = PointSurfaceSplineFromProperties( splineWIProperties );
+         m_splineIW = PointSurfaceSplineFromProperties( splineIWProperties );
+
+         if ( !gridWIProperties.IsEmpty() )
+         {
+            if ( gridIWProperties.IsEmpty() )
+               throw Error( "Missing image-to-native grid interpolation definition properties" );
+
+            m_gridWI = PointGridInterpolationFromProperties( gridWIProperties );
+            m_gridIW = PointGridInterpolationFromProperties( gridIWProperties );
+         }
+         else
+         {
+            if ( !gridIWProperties.IsEmpty() )
+               throw Error( "Missing native-to-image grid interpolation definition properties" );
+         }
+      }
+      else
+      {
+         if ( !splineIWProperties.IsEmpty() )
+            throw Error( "Missing native-to-image surface spline definition properties" );
+
+         InitializeSplines();
+      }
+
+      if ( m_linearIW.IsSingularMatrix() )
+         CalculateLinearApproximation();
+   }
+   catch ( const Exception& x )
+   {
+      throw Error( "SplineWorldTransformation: " + x.Message() );
+   }
+   catch ( std::bad_alloc& )
+   {
+      throw Error( "SplineWorldTransformation: " + String( "Out of memory" ) );
+   }
+   catch ( ... )
+   {
+      throw;
+   }
+}
+
+PointSurfaceSpline SplineWorldTransformation::PointSurfaceSplineFromProperties( const PropertyArray& properties )
+{
+   const IsoString splineXPrefix = "SurfaceSplineX:";
+   const IsoString splineYPrefix = "SurfaceSplineY:";
+
+   PointSurfaceSpline S;
+   PropertyArray splineXProperties, splineYProperties;
+   for ( const Property& property : properties )
+      if ( property.Id() == "MaxSplinePoints" )
+         S.m_maxSplinePoints = property.Value().ToInt();
+      else if ( property.Id() == "SimplificationErrorX" )
+         S.m_epsX = property.Value().ToDouble();
+      else if ( property.Id() == "SimplificationErrorY" )
+         S.m_epsY = property.Value().ToDouble();
+      else if ( property.Id() == "TruncatedX" )
+         S.m_truncatedX = property.Value().ToBoolean();
+      else if ( property.Id() == "TruncatedY" )
+         S.m_truncatedY = property.Value().ToBoolean();
+      else if ( property.Id() == "LinearFunction" )
+      {
+         Matrix H = property.Value().ToMatrix();
+         if ( !H.IsEmpty() )
+         {
+            if ( H.Rows() != 3 || H.Cols() != 3 )
+               throw Error( "Invalid linear matrix dimensions in point surface spline definition" );
+            S.m_H = Homography( H );
+            S.m_incremental = true;
+         }
+      }
+      else if ( property.Id().StartsWith( splineXPrefix ) )
+         splineXProperties << Property( property.Id().Substring( splineXPrefix.Length() ), property.Value() );
+      else if ( property.Id().StartsWith( splineYPrefix ) )
+         splineYProperties << Property( property.Id().Substring( splineYPrefix.Length() ), property.Value() );
+
+   if ( splineXProperties.IsEmpty() || splineYProperties.IsEmpty() )
+      throw Error( "Missing surface spline definition properties" );
+
+   S.m_Sx = SurfaceSplineFromProperties( splineXProperties );
+   S.m_Sy = SurfaceSplineFromProperties( splineYProperties );
+
+   return S;
+}
+
+SurfaceSpline<double> SplineWorldTransformation::SurfaceSplineFromProperties( const PropertyArray& properties )
+{
+   SurfaceSpline<double> S;
+   for ( const Property& property : properties )
+      if ( property.Id() == "ScalingFactor" )
+      {
+         S.m_r0 = property.Value().ToDouble();
+         if ( S.m_r0 < 0 || 1 + S.m_r0 == 1 )
+            throw Error( "Invalid surface spline scaling factor parameter" );
+      }
+      else if ( property.Id() == "ZeroOffsetX" )
+         S.m_x0 = property.Value().ToDouble();
+      else if ( property.Id() == "ZeroOffsetY" )
+         S.m_y0 = property.Value().ToDouble();
+      else if ( property.Id() == "Order" )
+      {
+         S.m_order = property.Value().ToInt();
+         if ( S.m_order < 2 )
+            throw Error( "Invalid surface spline order parameter" );
+      }
+      else if ( property.Id() == "NodeXCoordinates" )
+         S.m_x = property.Value().ToVector();
+      else if ( property.Id() == "NodeYCoordinates" )
+         S.m_y = property.Value().ToVector();
+      else if ( property.Id() == "Coefficients" )
+         S.m_spline = property.Value().ToVector();
+      else if ( property.Id() == "Smoothness" )
+      {
+         S.m_smoothing = property.Value().ToDouble();
+         if ( S.m_smoothing < 0 )
+            throw Error( "Invalid surface spline smoothness parameter" );
+      }
+      else if ( property.Id() == "NodeWeights" )
+         S.m_weights = property.Value().ToFVector();
+
+   if ( S.m_x.IsEmpty() || S.m_y.IsEmpty() )
+      throw Error( "Missing surface spline node coordinates" );
+   if ( S.m_x.Length() < 3 )
+      throw Error( "Insufficient surface spline node coordinates" );
+   if ( S.m_y.Length() != S.m_x.Length() )
+      throw Error( "Mismatched surface spline node vector lengths" );
+   if ( S.m_spline.IsEmpty() )
+      throw Error( "Missing surface spline coefficients" );
+   if ( S.m_spline.Length() != S.m_x.Length() + ((S.m_order*(S.m_order + 1)) >> 1) )
+      throw Error( "Invalid surface spline coefficient vector length" );
+   if ( !S.m_weights.IsEmpty() && S.m_weights.Length() != S.m_x.Length() )
+      throw Error( "Mismatched surface spline weights vector length" );
+
+   S.m_rbf = (S.m_order > 2) ? RadialBasisFunction::VariableOrder : RadialBasisFunction::ThinPlateSpline;
+   S.m_havePolynomial = true;
+
+   return S;
+}
+
+PointGridInterpolation SplineWorldTransformation::PointGridInterpolationFromProperties( const PropertyArray& properties )
+{
+   DRect rect = 0;
+   double delta = 0;
+   DMatrix Gx, Gy;
+   for ( const Property& property : properties )
+      if ( property.Id() == "Rect" )
+      {
+         Vector v = property.Value().ToVector();
+         if ( v.Length() != 4 )
+            throw Error( "Invalid point grid interpolation: Invalid interpolation region coordinates" );
+         rect = DRect( v[0], v[1], v[2], v[3] ).Ordered();
+      }
+      else if ( property.Id() == "Delta" )
+         delta = property.Value().ToDouble();
+      else if ( property.Id() == "GridX" )
+         Gx = property.Value().ToMatrix();
+      else if ( property.Id() == "GridY" )
+         Gy = property.Value().ToMatrix();
+
+   if ( rect.IsPoint() && rect.x0 == 0 )
+      throw Error( "Invalid point grid interpolation: Missing interpolation region parameter" );
+   if ( !rect.IsRect() || 1 + rect.Width() == 1 || 1 + rect.Height() == 1 )
+      throw Error( "Invalid point grid interpolation: Empty interpolation region" );
+
+   if ( delta == 0 )
+      throw Error( "Invalid point grid interpolation: Missing grid distance parameter" );
+   if ( delta < 0 || 1 + delta == 1 )
+      throw Error( "Invalid point grid interpolation: Invalid grid distance" );
+
+   if ( Gx.IsEmpty() || Gy.IsEmpty() )
+      throw Error( "Invalid point grid interpolation: Missing interpolation matrices" );
+   int rows = 1 + int( Ceil( rect.Height()/delta ) );
+   int cols = 1 + int( Ceil( rect.Width()/delta ) );
+   if ( Gx.Rows() != rows || Gx.Cols() != cols || Gy.Rows() != rows || Gy.Cols() != cols )
+      throw Error( "Invalid point grid interpolation: Invalid matrix dimensions" );
+
+   PointGridInterpolation G;
+   G.m_rect = rect;
+   G.m_delta = delta;
+   G.m_Gx = Gx;
+   G.m_Gy = Gy;
+   G.m_Ix.Initialize( G.m_Gx.Begin(), cols, rows );
+   G.m_Iy.Initialize( G.m_Gy.Begin(), cols, rows );
+   return G;
+}
+
+// ----------------------------------------------------------------------------
+
+static Vector PointsToCoordinateVector( const Array<DPoint>& points )
+{
+   Vector coordinates( int( points.Length() << 1 ) );
+   int i = 0;
+   for ( const DPoint& point : points )
+   {
+      coordinates[i++] = point.x;
+      coordinates[i++] = point.y;
+   }
+   return coordinates;
+}
+
+PropertyArray SplineWorldTransformation::ToProperties() const
+{
+   const IsoString prefix = PropertyPrefix();
+
+   PropertyArray properties = PropertyArray()
+      << Property( prefix + "Version", m_version )
+      << Property( prefix + "SplineOrder", m_order )
+      << Property( prefix + "SplineSmoothness", m_smoothness )
+      << Property( prefix + "UseSimplifiers", m_useSimplifiers )
+      << Property( prefix + "SimplifierRejectFraction", m_simplifierRejectFraction )
+      << Property( prefix + "Truncated", m_truncated )
+      << Property( prefix + "ControlPoints:World", PointsToCoordinateVector( m_controlPointsW ) )
+      << Property( prefix + "ControlPoints:Image", PointsToCoordinateVector( m_controlPointsI ) )
+      << Property( prefix + "LinearApproximation", m_linearIW.To2x3Matrix() );
+
+   if ( !m_weights.IsEmpty() )
+      properties << Property( prefix + "Weights", m_weights );
+
+   if ( m_projectiveWI.IsValid() )
+      properties << Property( prefix + "Projective:NativeToImage", Matrix( m_projectiveWI ) );
+   if ( m_projectiveIW.IsValid() )
+      properties << Property( prefix + "Projective:ImageToNative", Matrix( m_projectiveIW ) );
+
+   if ( m_splineWI.IsValid() && m_splineIW.IsValid() )
+   {
+      properties << PointSurfaceSplineToProperties( m_splineWI, prefix + "PointSurfaceSpline:NativeToImage:" );
+      properties << PointSurfaceSplineToProperties( m_splineIW, prefix + "PointSurfaceSpline:ImageToNative:" );
+
+      if ( m_gridWI.IsValid() && m_gridIW.IsValid() )
+      {
+         properties << PointGridInterpolationToProperties( m_gridWI, prefix + "PointGridInterpolation:NativeToImage:" );
+         properties << PointGridInterpolationToProperties( m_gridIW, prefix + "PointGridInterpolation:ImageToNative:" );
+      }
+   }
+
+   return properties;
+}
+
+PropertyArray SplineWorldTransformation::PointSurfaceSplineToProperties( const PointSurfaceSpline& S, const IsoString& prefix )
+{
+   PropertyArray properties = PropertyArray()
+      << Property( prefix + "MaxSplinePoints", S.m_maxSplinePoints )
+      << Property( prefix + "SimplificationErrorX", S.m_epsX )
+      << Property( prefix + "SimplificationErrorY", S.m_epsY )
+      << Property( prefix + "TruncatedX", S.m_truncatedX )
+      << Property( prefix + "TruncatedY", S.m_truncatedY );
+
+   if ( S.m_incremental )
+      properties << Property( prefix + "LinearFunction", Matrix( S.m_H ) );
+
+   properties << SurfaceSplineToProperties( S.m_Sx, prefix + "SurfaceSplineX:" )
+              << SurfaceSplineToProperties( S.m_Sy, prefix + "SurfaceSplineY:" );
+
+   return properties;
+}
+
+PropertyArray SplineWorldTransformation::SurfaceSplineToProperties( const SurfaceSpline<double>& S, const IsoString& prefix )
+{
+   PropertyArray properties = PropertyArray()
+      << Property( prefix + "ScalingFactor", S.m_r0 )
+      << Property( prefix + "ZeroOffsetX", S.m_x0 )
+      << Property( prefix + "ZeroOffsetY", S.m_y0 )
+      << Property( prefix + "Order", S.m_order )
+      << Property( prefix + "NodeXCoordinates", S.m_x )
+      << Property( prefix + "NodeYCoordinates", S.m_y )
+      << Property( prefix + "Coefficients", S.m_spline );
+
+   if ( S.m_smoothing > 0 )
+      properties << Property( prefix + "Smoothness", S.m_smoothing );
+   if ( !S.m_weights.IsEmpty() )
+      properties << Property( prefix + "NodeWeights", S.m_weights );
+
+   return properties;
+}
+
+PropertyArray SplineWorldTransformation::PointGridInterpolationToProperties( const PointGridInterpolation& G, const IsoString& prefix )
+{
+   return PropertyArray()
+      << Property( prefix + "Rect", Vector( { G.m_rect.x0, G.m_rect.y0, G.m_rect.x1, G.m_rect.y1 } ) )
+      << Property( prefix + "Delta", G.m_delta )
+      << Property( prefix + "GridX", G.m_Gx )
+      << Property( prefix + "GridY", G.m_Gy );
+}
+
+// ----------------------------------------------------------------------------
+
+/*
+ * ### DEPRECATED
+ */
 void SplineWorldTransformation::Serialize( ByteArray& data ) const
 {
    IsoString text;
@@ -95,6 +524,9 @@ void SplineWorldTransformation::Serialize( ByteArray& data ) const
 
 // ----------------------------------------------------------------------------
 
+/*
+ * ### DEPRECATED
+ */
 void SplineWorldTransformation::Deserialize( const ByteArray& data )
 {
    try
@@ -240,45 +672,6 @@ void SplineWorldTransformation::InitializeSplines()
             if ( m_weights.Length() != n )
                throw Error( "Invalid length of point weights vector." );
 
-      double xmin = m_controlPointsI[0].x, xmax = xmin;
-      double ymin = m_controlPointsI[0].y, ymax = ymin;
-      double lmin = m_controlPointsW[0].x, lmax = lmin;
-      double bmin = m_controlPointsW[0].y, bmax = bmin;
-      for ( int i = 0; i < n; ++i )
-      {
-         if ( m_controlPointsI[i].x < xmin )
-            xmin = m_controlPointsI[i].x;
-         if ( m_controlPointsI[i].x > xmax )
-            xmax = m_controlPointsI[i].x;
-
-         if ( m_controlPointsI[i].y < ymin )
-            ymin = m_controlPointsI[i].y;
-         if ( m_controlPointsI[i].y > ymax )
-            ymax = m_controlPointsI[i].y;
-
-         if ( m_controlPointsW[i].x < lmin )
-            lmin = m_controlPointsW[i].x;
-         if ( m_controlPointsW[i].x > lmax )
-            lmax = m_controlPointsW[i].x;
-
-         if ( m_controlPointsW[i].y < bmin )
-            bmin = m_controlPointsW[i].y;
-         if ( m_controlPointsW[i].y > bmax )
-            bmax = m_controlPointsW[i].y;
-      }
-
-      /*
-       * Image resolution in degrees/pixel with respect to native projection
-       * coordinates. We use this value to scale the tolerance of the surface
-       * simplifier and the spline smoothness factor for the image-to-world
-       * transformation.
-       */
-      double dx = xmax - xmin;
-      double dy = ymax - ymin;
-      double dl = lmax - lmin;
-      double db = bmax - bmin;
-      m_resolution = Sqrt( dl*dl + db*db )/Sqrt( dx*dx + dy*dy );
-
       m_projectiveWI = Homography( m_controlPointsW, m_controlPointsI );
       m_splineWI.SetLinearFunction( m_projectiveWI );
       m_splineWI.EnableIncrementalFunction();
@@ -304,8 +697,8 @@ void SplineWorldTransformation::InitializeSplines()
          m_splineIW.SetSimplifierRejectFraction( m_simplifierRejectFraction );
          m_splineIW.SetMaxSplinePoints( __PCL_WCS_MAX_SPLINE_POINTS );
 
-         pcl_SWT::SplineGenerationThread TWI( m_splineWI, m_controlPointsW, m_controlPointsI, m_smoothness/*pixels*/, m_order );
-         pcl_SWT::SplineGenerationThread TIW( m_splineIW, m_controlPointsI, m_controlPointsW, m_smoothness*m_resolution/*degrees*/, m_order );
+         pcl_SWT::SplineGenerationThread TWI( m_splineWI, m_controlPointsW, m_controlPointsI, m_smoothness, m_order );
+         pcl_SWT::SplineGenerationThread TIW( m_splineIW, m_controlPointsI, m_controlPointsW, m_smoothness, m_order );
          TWI.Start( ThreadPriority::DefaultMax );
          TIW.Start( ThreadPriority::DefaultMax );
          TWI.Wait();
@@ -320,7 +713,7 @@ void SplineWorldTransformation::InitializeSplines()
          /*
           * When no surface simplification is used, build surface splines with
           * the specified metadata: The (possibly truncated) sets of control
-          * points and weights, spline smoothness and order.
+          * points and weights, spline smoothness, and order.
           */
          if ( n > __PCL_WCS_MAX_SPLINE_POINTS )
          {
@@ -329,8 +722,8 @@ void SplineWorldTransformation::InitializeSplines()
             Array<DPoint> PI( m_controlPointsI.Begin(), m_controlPointsI.At( __PCL_WCS_MAX_SPLINE_POINTS ) );
             FVector W = m_weights.IsEmpty() ? FVector() : FVector( m_weights.Begin(), __PCL_WCS_MAX_SPLINE_POINTS );
 
-            pcl_SWT::SplineGenerationThread TWI( m_splineWI, PW, PI, m_smoothness/*pixels*/, m_order, W );
-            pcl_SWT::SplineGenerationThread TIW( m_splineIW, PI, PW, m_smoothness*m_resolution/*degrees*/, m_order, W );
+            pcl_SWT::SplineGenerationThread TWI( m_splineWI, PW, PI, m_smoothness, m_order, W );
+            pcl_SWT::SplineGenerationThread TIW( m_splineIW, PI, PW, m_smoothness, m_order, W );
             TWI.Start( ThreadPriority::DefaultMax );
             TIW.Start( ThreadPriority::DefaultMax );
             TWI.Wait();
@@ -340,8 +733,8 @@ void SplineWorldTransformation::InitializeSplines()
          }
          else
          {
-            pcl_SWT::SplineGenerationThread TWI( m_splineWI, m_controlPointsW, m_controlPointsI, m_smoothness/*pixels*/, m_order, m_weights );
-            pcl_SWT::SplineGenerationThread TIW( m_splineIW, m_controlPointsI, m_controlPointsW, m_smoothness*m_resolution/*degrees*/, m_order, m_weights );
+            pcl_SWT::SplineGenerationThread TWI( m_splineWI, m_controlPointsW, m_controlPointsI, m_smoothness, m_order, m_weights );
+            pcl_SWT::SplineGenerationThread TIW( m_splineIW, m_controlPointsI, m_controlPointsW, m_smoothness, m_order, m_weights );
             TWI.Start( ThreadPriority::DefaultMax );
             TIW.Start( ThreadPriority::DefaultMax );
             TWI.Wait();
@@ -372,23 +765,22 @@ void SplineWorldTransformation::InitializeSplines()
 
 void SplineWorldTransformation::CalculateLinearApproximation()
 {
-   int N = int( m_controlPointsI.Length() );
-
    /*
     * Use independent multiple linear regression for x and y. The model is:
     *
-    *   Y = X * B + err
+    *   Y = X * B + error
     *
     * - The regressand Y contains the x (or y) of the predicted coordinates
-    * (m_controlPointsW).
+    *   (m_controlPointsW).
     *
-    * - The regressor X contains the vectors (x,y,1) with the source
-    * coordinates (m_controlPointsI).
+    * - The regressor X contains the vectors (x, y, 1) with the source
+    *   coordinates (m_controlPointsI).
     *
     * - The parameters vector B contains the factors of the expression:
     *
     *   xc = xi*B0 + yi*B1 + B2
     */
+   int N = int( m_controlPointsI.Length() );
    DMatrix Y1( N, 1 );
    DMatrix Y2( N, 1 );
    DMatrix X( N, 3 );
@@ -414,4 +806,4 @@ void SplineWorldTransformation::CalculateLinearApproximation()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/WorldTransformation.cpp - Released 2023-12-01T19:15:53Z
+// EOF pcl/WorldTransformation.cpp - Released 2024-01-13T15:48:04Z

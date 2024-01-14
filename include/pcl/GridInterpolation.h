@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.4
+// /_/     \____//_____/   PCL 2.6.5
 // ----------------------------------------------------------------------------
-// pcl/GridInterpolation.h - Released 2023-12-01T19:15:45Z
+// pcl/GridInterpolation.h - Released 2024-01-13T15:47:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2024 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -632,7 +632,7 @@ public:
       double width = m_rect.Width();
       double height = m_rect.Height();
       if ( !m_rect.IsRect() || 1 + width == 1 || 1 + height == 1 )
-         throw Error( "PointGridInterpolation::Initialize(): Empty interpolation space." );
+         throw Error( "PointGridInterpolation::Initialize(): Empty interpolation region." );
 
       m_delta = Abs( delta );
       if ( 1 + m_delta == 1 )
@@ -808,7 +808,7 @@ private:
     * lobes, in order to prevent small-scale oscillations. Other options are
     * BilinearInterpolation and CubicBSplineFilter.
     */
-   using grid_interpolation = BicubicBSplineInterpolation<double> ;
+   using grid_interpolation = BicubicBSplineInterpolation<double>;
 
    DRect              m_rect;
    double             m_delta;
@@ -984,6 +984,8 @@ private:
       const SI&                        m_modelX, m_modelY;
             int                        m_startRow, m_endRow;
    };
+
+   friend class SplineWorldTransformation;
 };
 
 // ----------------------------------------------------------------------------
@@ -993,4 +995,4 @@ private:
 #endif   // __PCL_GridInterpolation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/GridInterpolation.h - Released 2023-12-01T19:15:45Z
+// EOF pcl/GridInterpolation.h - Released 2024-01-13T15:47:58Z

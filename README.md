@@ -118,8 +118,8 @@ For each [module_name] module and third-party or PCL [library_name], makefiles a
 
 The current version of PCL has been built with:
 
-   * Ubuntu 20.04 LTS: GCC C/C++ compiler 10.3.0.
-   * macOS 13.3.1: Clang C/C++ compiler with Xcode 14.3, as provided by Apple.
+   * Ubuntu 20.04 LTS: GCC C/C++ compiler 10.5.0.
+   * macOS 13.5.2: Clang C/C++ compiler with Xcode 15.2, as provided by Apple.
    * Windows 11: Microsoft Visual C++ 2022 Community Edition.
 
 This version of PCL requires a compiler with C++17 language support.
@@ -214,4 +214,4 @@ With the following environment variables correctly defined, you can generate mak
 
 
 ******
-###### Copyright (C) 2003-2023 Pleiades Astrophoto
+###### Copyright (C) 2003-2024 Pleiades Astrophoto

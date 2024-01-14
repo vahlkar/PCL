@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.4
+// /_/     \____//_____/   PCL 2.6.5
 // ----------------------------------------------------------------------------
-// pcl/WorldTransformation.h - Released 2023-12-01T19:15:45Z
+// pcl/WorldTransformation.h - Released 2024-01-13T15:47:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2024 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -72,7 +72,7 @@ namespace pcl
 // ----------------------------------------------------------------------------
 
 #define __PCL_WCS_DEFAULT_SPLINE_ORDER                       2
-#define __PCL_WCS_DEFAULT_SPLINE_SMOOTHNESS                  0.01F
+#define __PCL_WCS_DEFAULT_SPLINE_SMOOTHNESS                  0.005F
 #define __PCL_WCS_SURFACE_SIMPLIFIER_DEFAULT_ENABLED         true
 #define __PCL_WCS_SURFACE_SIMPLIFIER_DEFAULT_REJECT_FRACTION 0.10F
 #define __PCL_WCS_MAX_SPLINE_POINTS                          2100
@@ -230,6 +230,8 @@ private:
 
 // ----------------------------------------------------------------------------
 
+class PCL_CLASS XMLElement;
+
 /*!
  * \class SplineWorldTransformation
  * \brief Surface spline world coordinate transformation
@@ -266,19 +268,19 @@ public:
     *                         words, there must be a one-to-one correspondence
     *                         between world and image control points.
     *
-    * \param smoothness       Spline regularization factor in pixels. When this
-    *                         parameter is greater than zero, approximating
-    *                         splines will be generated instead of
-    *                         interpolating splines. The higher this value, the
-    *                         closest will be the 2-D approximating surface to
-    *                         the reference plane of the image. Approximating
-    *                         surface splines are more robust to noise in the
-    *                         sets of control points and hence recommended in
-    *                         virtually all cases. The value of this parameter
-    *                         should be relatively small if \a enableSimplifier
-    *                         is true, since the surface simplification
-    *                         algorithm already performs robust rejection of
-    *                         outliers. The default value is 0.01 pixels.
+    * \param smoothness       Spline regularization factor. When this parameter
+    *                         is greater than zero, approximating splines will
+    *                         be generated instead of interpolating splines.
+    *                         The higher this value, the closer the 2-D
+    *                         approximating surface will be to the reference
+    *                         plane of the image. Approximating surface splines
+    *                         are more robust to noise in the sets of control
+    *                         points and hence recommended in virtually all
+    *                         cases. The value of this parameter should be
+    *                         relatively small if \a enableSimplifier is true,
+    *                         since the surface simplification algorithm
+    *                         already performs robust rejection of outliers.
+    *                         The default value is 0.005.
     *
     * \param weights          When the \a smoothness parameter is greater than
     *                         zero and this vector is not empty, it must define
@@ -293,11 +295,10 @@ public:
     *                         value of this parameter will be ignored.
     *
     * \param order            Derivative order of continuity. The default value
-    *                         is 2, which is also the recommended value. Higher
-    *                         orders may improve adaptability to complex field
-    *                         distortions only in some special cases, but at
-    *                         the risk of leading to ill-conditioned linear
-    *                         systems, and hence to errors while building the
+    *                         is 2. Higher orders, such as 3 or 4, can improve
+    *                         adaptability to model complex field distortions.
+    *                         Orders above 4 can lead to ill-conditioned linear
+    *                         systems, causing errors while building the
     *                         surface splines.
     *
     * \param enableSimplifier If true, a surface simplification algorithm will
@@ -356,28 +357,37 @@ public:
    }
 
    /*!
-    * Constructs a %SplineWorldTransformation instance by deserializing the
-    * specified raw \a data.
+    * Constructs a %SplineWorldTransformation object from a list of XISF image
+    * \a properties and optional linear approximation \a linearIW.
     *
-    * An approximate linear transformation will be calculated automatically.
+    * This constructor will acquire structural parameters and data from
+    * properties with the PCL:AstrometricSolution:SplineWorldTransformation:
+    * identifier prefix.
+    *
+    * If a valid linear transformation is specified, the
+    * PCL:AstrometricSolution:SplineWorldTransformation:LinearApproximation
+    * property will be ignored and the specified linear transformation will be
+    * used instead.
     */
-   SplineWorldTransformation( const ByteArray& data )
-   {
-      Deserialize( data );
-      InitializeSplines();
-      CalculateLinearApproximation();
-   }
+   SplineWorldTransformation( const PropertyArray& properties,
+                              const LinearTransformation& linearIW = LinearTransformation::Null() );
 
    /*!
     * Constructs a %SplineWorldTransformation instance by deserializing the
-    * specified raw \a data, with a prescribed approximate linear
-    * transformation \a linearTransIW.
+    * specified raw \a data, with an optional approximate linear transformation
+    * \a linearIW.
+    *
+    * If no valid linear transformation is specified, an approximate one will
+    * be calculated automatically.
     */
-   SplineWorldTransformation( const ByteArray& data, const LinearTransformation& linearTransIW )
+   SplineWorldTransformation( const ByteArray& data, const LinearTransformation& linearIW = LinearTransformation::Null() )
    {
       Deserialize( data );
       InitializeSplines();
-      m_linearIW = linearTransIW;
+      if ( linearIW.IsSingularMatrix() )
+         CalculateLinearApproximation();
+      else
+         m_linearIW = linearIW;
    }
 
    /*!
@@ -429,49 +439,49 @@ public:
    /*!
     * Transforms from native spherical coordinates to image coordinates.
     *
-    * The point \a p contains native spherical coordinates: \a p.x is the
-    * native longitude and \a p.y is the native latitude, both expressed in
-    * degrees. Returns image coordinates in pixels corresponding to \a p.
+    * The point \a pW contains native spherical coordinates: \a pW.x is the
+    * native longitude and \a pW.y is the native latitude, both expressed in
+    * degrees. Returns image coordinates in pixels corresponding to \a pW.
     *
     * If grid interpolations have been initialized for this object, and the
-    * specified point \a p is included in the reference rectangle used for grid
-    * initialization, they will be used transparently by this member function.
-    * Otherwise the surface splines will be evaluated directly, which can be
-    * much slower, depending on the number of control points defined by the
-    * astrometric solution.
+    * specified point \a pW is included in the reference rectangle used for
+    * grid initialization, they will be used transparently by this member
+    * function. Otherwise, the surface splines will be evaluated directly,
+    * which can be much slower, depending on the number of control points
+    * defined by the astrometric solution.
     *
     * \sa Inverse(), InitializeGridInterpolations()
     */
-   DPoint Direct( const DPoint& p ) const override
+   DPoint Direct( const DPoint& pW ) const override
    {
       if ( m_gridWI.IsValid() )
-         if ( m_gridWI.ReferenceRect().IncludesFast( p ) )
-            return m_gridWI( p );
-      return m_splineWI( p );
+         if ( m_gridWI.ReferenceRect().IncludesFast( pW ) )
+            return m_gridWI( pW );
+      return m_splineWI( pW );
    }
 
    /*!
     * Transforms from image coordinates to native spherical coordinates.
     *
-    * The specified point \a p contains image coordinates in pixels. Returns a
-    * point \a q where \a q.x is the native longitude and \a q.y is the native
-    * latitude, both expressed in degrees, corresponding to \a p.
+    * The specified point \a pI contains image coordinates in pixels. Returns a
+    * point \a pW where \a pW.x is the native longitude and \a pW.y is the
+    * native latitude, both expressed in degrees, corresponding to \a pI.
     *
     * If grid interpolations have been initialized for this object, and the
-    * specified point \a p is included in the reference rectangle used for grid
-    * initialization, they will be used transparently by this member function.
-    * Otherwise the surface splines will be evaluated directly, which can be
-    * much slower, depending on the number of control points defined by the
-    * astrometric solution.
+    * specified point \a pI is included in the reference rectangle used for
+    * grid initialization, they will be used transparently by this member
+    * function. Otherwise, the surface splines will be evaluated directly,
+    * which can be much slower, depending on the number of control points
+    * defined by the astrometric solution.
     *
     * \sa Direct(), InitializeGridInterpolations()
     */
-   DPoint Inverse( const DPoint& p ) const override
+   DPoint Inverse( const DPoint& pI ) const override
    {
       if ( m_gridIW.IsValid() )
-         if ( m_gridIW.ReferenceRect().IncludesFast( p ) )
-            return m_gridIW( p );
-      return m_splineIW( p );
+         if ( m_gridIW.ReferenceRect().IncludesFast( pI ) )
+            return m_gridIW( pI );
+      return m_splineIW( pI );
    }
 
    /*!
@@ -481,6 +491,15 @@ public:
    const LinearTransformation& ApproximateLinearTransform() const override
    {
       return m_linearIW;
+   }
+
+   /*!
+    * Returns the serialization version of this %SplineWorldTransformation
+    * object. Currently this member function returns "1.3".
+    */
+   const IsoString& Version() const
+   {
+      return m_version;
    }
 
    /*!
@@ -552,6 +571,21 @@ public:
    {
       return m_gridWI.IsValid() && m_gridIW.IsValid();
    }
+
+   /*!
+    * Returns the identifier prefix of all XISF properties used to serialize a
+    * %SplineWorldTransformation object.
+    */
+   static IsoString PropertyPrefix()
+   {
+      return "PCL:AstrometricSolution:SplineWorldTransformation:";
+   }
+
+   /*!
+    * Returns a list of XISF image properties serializing this
+    * %SplineWorldTransformation object.
+    */
+   PropertyArray ToProperties() const;
 
    /*!
     * Serializes this %SplineWorldTransformation instance in raw binary format
@@ -707,6 +741,7 @@ public:
 
 private:
 
+   IsoString              m_version = "1.3";
    Array<DPoint>          m_controlPointsW;
    Array<DPoint>          m_controlPointsI;
    int                    m_order = __PCL_WCS_DEFAULT_SPLINE_ORDER;
@@ -714,7 +749,6 @@ private:
    FVector                m_weights;
    bool                   m_useSimplifiers = __PCL_WCS_SURFACE_SIMPLIFIER_DEFAULT_ENABLED;
    float                  m_simplifierRejectFraction = __PCL_WCS_SURFACE_SIMPLIFIER_DEFAULT_REJECT_FRACTION;
-   double                 m_resolution = 0;    // scaling factor for simplification of the I->W surfaces
    bool                   m_truncated = false; // true => truncated control point vectors
    Homography             m_projectiveWI;
    Homography             m_projectiveIW;
@@ -723,6 +757,15 @@ private:
    PointGridInterpolation m_gridWI;
    PointGridInterpolation m_gridIW;
    LinearTransformation   m_linearIW;
+
+   static PointSurfaceSpline PointSurfaceSplineFromProperties( const PropertyArray& );
+   static PropertyArray PointSurfaceSplineToProperties( const PointSurfaceSpline&, const IsoString& );
+
+   static SurfaceSpline<double> SurfaceSplineFromProperties( const PropertyArray& );
+   static PropertyArray SurfaceSplineToProperties( const SurfaceSpline<double>&, const IsoString& );
+
+   static PointGridInterpolation PointGridInterpolationFromProperties( const PropertyArray& );
+   static PropertyArray PointGridInterpolationToProperties( const PointGridInterpolation&, const IsoString& );
 
    void Deserialize( const ByteArray& );
    void InitializeSplines();
@@ -736,4 +779,4 @@ private:
 #endif   // __PCL_WorldTransformation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/WorldTransformation.h - Released 2023-12-01T19:15:45Z
+// EOF pcl/WorldTransformation.h - Released 2024-01-13T15:47:58Z

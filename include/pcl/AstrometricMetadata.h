@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.4
+// /_/     \____//_____/   PCL 2.6.5
 // ----------------------------------------------------------------------------
-// pcl/AstrometricMetadata.h - Released 2023-12-01T19:15:45Z
+// pcl/AstrometricMetadata.h - Released 2024-01-13T15:47:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2024 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -887,36 +887,40 @@ public:
     * specified \a properties array, if available:
     *
     * <pre>
-    * Observation:CelestialReferenceSystem
-    * Observation:Center:RA
-    * Observation:Center:Dec
-    * Observation:Equinox
-    * Observation:Time:Start
-    * Observation:Time:End
-    * Observation:Location:Longitude
-    * Observation:Location:Latitude
-    * Observation:Location:Elevation
-    * Instrument:Telescope:FocalLength
     * Instrument:Sensor:XPixelSize
+    * Instrument:Telescope:FocalLength
+    * Observation:CelestialReferenceSystem
+    * Observation:Center:Dec
+    * Observation:Center:RA
+    * Observation:Equinox
+    * Observation:Location:Elevation
+    * Observation:Location:Latitude
+    * Observation:Location:Longitude
+    * Observation:Time:End
+    * Observation:Time:Start
     * </pre>
     *
     * The following nonstandard %XISF properties support our native astrometric
     * solutions since core version 1.8.9-2:
     *
     * <pre>
+    * PCL:AstrometricSolution:Catalog
+    * PCL:AstrometricSolution:CelestialPoleNativeCoordinates
+    * PCL:AstrometricSolution:CreationTime
+    * PCL:AstrometricSolution:CreatorApplication
+    * PCL:AstrometricSolution:CreatorModule
+    * PCL:AstrometricSolution:CreatorOS
+    * PCL:AstrometricSolution:Information
+    * PCL:AstrometricSolution:LinearTransformationMatrix
     * PCL:AstrometricSolution:ProjectionSystem
     * PCL:AstrometricSolution:ReferenceCelestialCoordinates
     * PCL:AstrometricSolution:ReferenceImageCoordinates
     * PCL:AstrometricSolution:ReferenceNativeCoordinates
-    * PCL:AstrometricSolution:CelestialPoleNativeCoordinates
-    * PCL:AstrometricSolution:LinearTransformationMatrix
-    * PCL:AstrometricSolution:SplineWorldTransformation
-    * PCL:AstrometricSolution:Catalog
-    * PCL:AstrometricSolution:CreationTime
-    * PCL:AstrometricSolution:CreatorApplication
-    * PCL:AstrometricSolution:CreatorOS
-    * PCL:AstrometricSolution:CreatorModule
     * </pre>
+    *
+    * Spline-based astrometric solutions use an additional set of properties
+    * with the 'PCL:AstrometricSolution:SplineWorldTransformation:' identifier
+    * prefix.
     *
     * %XISF properties will always take precedence over existing equivalent
     * %FITS keywords.
@@ -924,9 +928,8 @@ public:
     * If the specified \a properties array contains a valid serialization of
     * spline parameters and control points, the astrometric solution will use a
     * high-precision world transformation based on two-dimensional surface
-    * splines, also knwon as <em>thin plate splines</em>, which is capable of
-    * modeling local image distortions that are intractable with WCS linear
-    * transformations.
+    * splines, which is capable of modeling local image distortions that are
+    * intractable with WCS linear transformations.
     *
     * If this object contains valid metadata before calling this function, it
     * will be disposed as appropriate, and a completely new astrometric
@@ -1020,12 +1023,12 @@ public:
     * The following standard XISF properties will be created or redefined:
     *
     * <pre>
-    * Instrument:Telescope:FocalLength
     * Instrument:Sensor:XPixelSize
     * Instrument:Sensor:YPixelSize
-    * Observation:Center:RA
-    * Observation:Center:Dec
+    * Instrument:Telescope:FocalLength
     * Observation:CelestialReferenceSystem
+    * Observation:Center:Dec
+    * Observation:Center:RA
     * Observation:Equinox
     * </pre>
     *
@@ -1043,31 +1046,35 @@ public:
     * corresponding metadata items are available, or removed otherwise:
     *
     * <pre>
-    * Observation:Time:Start
-    * Observation:Time:End
-    * Observation:Location:Longitude
-    * Observation:Location:Latitude
     * Observation:Location:Elevation
+    * Observation:Location:Latitude
+    * Observation:Location:Longitude
+    * Observation:Time:End
+    * Observation:Time:Start
     * </pre>
     *
     * The following nonstandard properties (which support our native
-    * astrometric solutions since core version 1.8.9-2) and will be created,
+    * astrometric solutions since core version 1.8.9-2) will be created,
     * redefined, or removed as necessary:
     *
     * <pre>
+    * PCL:AstrometricSolution:Catalog
+    * PCL:AstrometricSolution:CelestialPoleNativeCoordinates
+    * PCL:AstrometricSolution:CreationTime
+    * PCL:AstrometricSolution:CreatorApplication
+    * PCL:AstrometricSolution:CreatorModule
+    * PCL:AstrometricSolution:CreatorOS
+    * PCL:AstrometricSolution:Information
+    * PCL:AstrometricSolution:LinearTransformationMatrix
     * PCL:AstrometricSolution:ProjectionSystem
     * PCL:AstrometricSolution:ReferenceCelestialCoordinates
     * PCL:AstrometricSolution:ReferenceImageCoordinates
     * PCL:AstrometricSolution:ReferenceNativeCoordinates
-    * PCL:AstrometricSolution:CelestialPoleNativeCoordinates
-    * PCL:AstrometricSolution:LinearTransformationMatrix
-    * PCL:AstrometricSolution:SplineWorldTransformation
-    * PCL:AstrometricSolution:Catalog
-    * PCL:AstrometricSolution:CreationTime
-    * PCL:AstrometricSolution:CreatorApplication
-    * PCL:AstrometricSolution:CreatorOS
-    * PCL:AstrometricSolution:CreatorModule
     * </pre>
+    *
+    * For spline-based astrometric solutions, an additional set of properties
+    * with the 'PCL:AstrometricSolution:SplineWorldTransformation:' identifier
+    * prefix will also be created, redefined or removed as necessary.
     */
    void UpdateProperties( PropertyArray& properties ) const;
 
@@ -1188,22 +1195,28 @@ public:
     * Instrument:Sensor:YPixelSize
     * </pre>
     *
-    * The following nonstandard properties will always be removed:
+    * The following properties will always be removed:
     *
     * <pre>
+    * Observation:CelestialReferenceSystem
+    * Observation:Equinox
+    * PCL:AstrometricSolution:Catalog
+    * PCL:AstrometricSolution:CelestialPoleNativeCoordinates
+    * PCL:AstrometricSolution:CreationTime
+    * PCL:AstrometricSolution:CreatorApplication
+    * PCL:AstrometricSolution:CreatorModule
+    * PCL:AstrometricSolution:CreatorOS
+    * PCL:AstrometricSolution:Information
+    * PCL:AstrometricSolution:LinearTransformationMatrix
     * PCL:AstrometricSolution:ProjectionSystem
     * PCL:AstrometricSolution:ReferenceCelestialCoordinates
     * PCL:AstrometricSolution:ReferenceImageCoordinates
     * PCL:AstrometricSolution:ReferenceNativeCoordinates
-    * PCL:AstrometricSolution:CelestialPoleNativeCoordinates
-    * PCL:AstrometricSolution:LinearTransformationMatrix
-    * PCL:AstrometricSolution:SplineWorldTransformation
-    * PCL:AstrometricSolution:Catalog
-    * PCL:AstrometricSolution:CreationTime
-    * PCL:AstrometricSolution:CreatorApplication
-    * PCL:AstrometricSolution:CreatorOS
-    * PCL:AstrometricSolution:CreatorModule
     * </pre>
+    *
+    * Finally, for spline-based astrometric solutions, all existing properties
+    * with the 'PCL:AstrometricSolution:SplineWorldTransformation:' identifier
+    * prefix will also be removed.
     */
    static void RemoveProperties( PropertyArray& properties, bool removeCenterProperties = true, bool removeScaleProperties = true );
 
@@ -1263,6 +1276,21 @@ public:
       return m_description.IsNull() ? DescriptionItems() : *m_description;
    }
 
+   /*!
+    * \internal
+    */
+   static void RemoveSplineWorldTransformationProperties( PropertyArray& );
+
+#ifdef __PCL_BUILDING_PIXINSIGHT_APPLICATION
+   // Implemented in /core/Components/ImageWindow/ImageWindow.cpp
+   static void RemoveSplineWorldTransformationProperties( pi::ImageWindow* );
+#else
+   /*!
+    * \internal
+    */
+   static void RemoveSplineWorldTransformationProperties( ImageWindow& );
+#endif
+
 private:
 
    AutoPointer<ProjectionBase>      m_projection;
@@ -1296,4 +1324,4 @@ private:
 #endif // __AstrometricMetadata_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AstrometricMetadata.h - Released 2023-12-01T19:15:45Z
+// EOF pcl/AstrometricMetadata.h - Released 2024-01-13T15:47:58Z

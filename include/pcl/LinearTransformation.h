@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.4
+// /_/     \____//_____/   PCL 2.6.5
 // ----------------------------------------------------------------------------
-// pcl/LinearTransformation.h - Released 2023-12-01T19:15:45Z
+// pcl/LinearTransformation.h - Released 2024-01-13T15:47:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2024 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -78,8 +78,9 @@ namespace pcl
  * %LinearTransformation is a simple structure where the six transformation
  * coefficients are stored directly as \c double scalars. Since the third row
  * of the transformation matrix is (0, 0, 1) implicitly, this class can only
- * represent translations, rotations and scale changes. This class is primarily
- * intended to support WCS coordinate transformations.
+ * represent an affine transformation consisting of translations, rotations and
+ * scale changes. This class is primarily intended to support WCS coordinate
+ * transformations.
  *
  * \ingroup astrometry_support
  */
@@ -110,6 +111,14 @@ public:
       , m_a10( a10 ), m_a11( a11 ), m_a12( a12 )
       , m_det( a00*a11 - a01*a10 )
    {
+   }
+
+   /*!
+    * Returns the determinant of the transformation matrix.
+    */
+   double Determinant() const
+   {
+      return m_det;
    }
 
    /*!
@@ -245,6 +254,22 @@ public:
    }
 
    /*!
+    * Returns a 2x3 matrix initialized with the transformation coefficients in
+    * this object.
+    */
+   Matrix To2x3Matrix() const
+   {
+      Matrix H( 2, 3 );
+      H[0][0] = m_a00;
+      H[0][1] = m_a01;
+      H[0][2] = m_a02;
+      H[1][0] = m_a10;
+      H[1][1] = m_a11;
+      H[1][2] = m_a12;
+      return H;
+   }
+
+   /*!
     * Returns a six-component vector initialized with the transformation
     * coefficients in this object.
     */
@@ -270,6 +295,15 @@ public:
       return text;
    }
 
+   /*!
+    * Returns a %LinearTransformation instance representing a singular matrix
+    * with all its elements set to zero.
+    */
+   static LinearTransformation Null()
+   {
+      return LinearTransformation( 0, 0, 0, 0, 0, 0 );
+   }
+
 private:
 
    double m_a00 = 1, m_a01 = 0, m_a02 = 0,
@@ -284,4 +318,4 @@ private:
 #endif   // __PCL_LinearTransformation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/LinearTransformation.h - Released 2023-12-01T19:15:45Z
+// EOF pcl/LinearTransformation.h - Released 2024-01-13T15:47:58Z

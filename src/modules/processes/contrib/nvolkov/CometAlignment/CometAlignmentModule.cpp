@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.4
+// /_/     \____//_____/   PCL 2.6.5
 // ----------------------------------------------------------------------------
 // Standard CometAlignment Process Module Version 1.3.7
 // ----------------------------------------------------------------------------
-// CometAlignmentModule.cpp - Released 2023-12-01T19:16:18Z
+// CometAlignmentModule.cpp - Released 2024-01-13T15:48:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CometAlignment PixInsight module.
 //
@@ -58,9 +58,9 @@
 #define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE eng
 
-#define MODULE_RELEASE_YEAR      2023
-#define MODULE_RELEASE_MONTH     12
-#define MODULE_RELEASE_DAY       1
+#define MODULE_RELEASE_YEAR      2024
+#define MODULE_RELEASE_MONTH     1
+#define MODULE_RELEASE_DAY       13
 
 #include "CometAlignmentModule.h"
 #include "CometAlignmentInterface.h"
@@ -118,7 +118,7 @@ String CometAlignmentModule::Author() const
 
 String CometAlignmentModule::Copyright() const
 {
-   return "Copyright (c) 2012-2023 Nikolay Volkov / 2019-2023 Pleiades Astrophoto";
+   return "Copyright (c) 2012-2024 Nikolay Volkov / 2019-2024 Pleiades Astrophoto";
 }
 
 // ----------------------------------------------------------------------------
@@ -175,4 +175,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF CometAlignmentModule.cpp - Released 2023-12-01T19:16:18Z
+// EOF CometAlignmentModule.cpp - Released 2024-01-13T15:48:23Z

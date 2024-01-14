@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.4
+// /_/     \____//_____/   PCL 2.6.5
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// INDICCDFrameInterface.cpp - Released 2023-12-01T19:16:18Z
+// INDICCDFrameInterface.cpp - Released 2024-01-13T15:48:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
-// Copyright (c) 2014-2023 Klaus Kretzschmar
+// Copyright (c) 2014-2024 Klaus Kretzschmar
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -742,7 +742,7 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
    CCDProperties_Sizer.Add( CCDTemp_HSizer );
    CCDProperties_Sizer.Add( CCDBinX_HSizer );
    CCDProperties_Sizer.Add( CCDBinY_HSizer );
-   CCDProperties_Sizer.Add( CCDMode_HSizer );   
+   CCDProperties_Sizer.Add( CCDMode_HSizer );
    CCDProperties_Sizer.Add( CCDFilter_HSizer );
    CCDProperties_Sizer.Add( CCDFrameType_HSizer );
    CCDProperties_Sizer.Add( UploadMode_HSizer );
@@ -1499,8 +1499,8 @@ void INDICCDFrameInterface::e_Timer( Timer& sender )
          GUI->CCDBinX_Label.SetVisible(false);
          GUI->CCDBinY_Combo.SetVisible(false);
          GUI->CCDBinY_Label.SetVisible(false);
-      } 
-      else if  (indi->GetPropertyItem( m_device, CCD_BIN_PROPERTY_NAME, CCD_BIN_HORIZONTAL_ITEM_NAME, item )  && indi->GetPropertyItem( m_device, CCD_BIN_PROPERTY_NAME, CCD_BIN_VERTICAL_ITEM_NAME, item2 ) )     
+      }
+      else if  (indi->GetPropertyItem( m_device, CCD_BIN_PROPERTY_NAME, CCD_BIN_HORIZONTAL_ITEM_NAME, item )  && indi->GetPropertyItem( m_device, CCD_BIN_PROPERTY_NAME, CCD_BIN_VERTICAL_ITEM_NAME, item2 ) )
       {
          SetVariableSize();
          GUI->CCDBinX_Combo.SetVisible(true);
@@ -1512,7 +1512,7 @@ void INDICCDFrameInterface::e_Timer( Timer& sender )
          GUI->CCDBinX_Combo.SetCurrentItem( item.PropertyValue.ToInt() - 1 );
          GUI->CCDBinY_Combo.SetCurrentItem( item2.PropertyValue.ToInt() - 1 );
       }
-      else 
+      else
       {
          GUI->CCDBinX_Combo.SetVisible(false);
          GUI->CCDBinX_Label.SetVisible(false);
@@ -1520,7 +1520,7 @@ void INDICCDFrameInterface::e_Timer( Timer& sender )
          GUI->CCDBinY_Label.SetVisible(false);
          GUI->CCDMode_Combo.SetVisible(false);
          GUI->CCDMode_Label.SetVisible(false);
-      } 
+      }
 
       String externalFilterWheelDeviceName = GUI->ExternalFilterDevice_Combo.ItemText( GUI->ExternalFilterDevice_Combo.CurrentItem() );
       if ( indi->GetPropertyItem( externalFilterWheelDeviceName != String( "<No filter wheel>" ) ? externalFilterWheelDeviceName : m_device, WHEEL_SLOT_PROPERTY_NAME, WHEEL_SLOT_ITEM_NAME, item ) )
@@ -1991,4 +1991,4 @@ void INDICCDFrameInterface::e_Click( Button& sender, bool checked )
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDICCDFrameInterface.cpp - Released 2023-12-01T19:16:18Z
+// EOF INDICCDFrameInterface.cpp - Released 2024-01-13T15:48:23Z

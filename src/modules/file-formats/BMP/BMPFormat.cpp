@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.4
+// /_/     \____//_____/   PCL 2.6.5
 // ----------------------------------------------------------------------------
 // Standard BMP File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// BMPFormat.cpp - Released 2023-12-01T19:16:09Z
+// BMPFormat.cpp - Released 2024-01-13T15:48:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard BMP PixInsight module.
 //
-// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2024 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -114,10 +114,10 @@ String BMPFormat::Implementation() const
    "<p>Support for the Windows Bitmap format (BMP), based on the Qt5 library.</p>"
 
    "<p>Qt Library:<br/>"
-   "Copyright (C) 2023 The Qt Company Ltd and other contributors.</p>"
+   "Copyright (C) 2024 The Qt Company Ltd and other contributors.</p>"
 
    "<p>PixInsight Class Library (PCL):<br/>"
-   "Copyright (c) 2003-2023 Pleiades Astrophoto</p>"
+   "Copyright (c) 2003-2024 Pleiades Astrophoto</p>"
    "</html>";
 }
 
@@ -212,10 +212,10 @@ String GIFFormat::Implementation() const
    "<p>Read-only support for the Graphics Interchange Format (GIF), based on the Qt5 library.</p>"
 
    "<p>Qt Library:<br/>"
-   "Copyright (C) 2023 The Qt Company Ltd and other contributors.</p>"
+   "Copyright (C) 2024 The Qt Company Ltd and other contributors.</p>"
 
    "<p>PixInsight Class Library (PCL):<br/>"
-   "Copyright (c) 2003-2023 Pleiades Astrophoto</p>"
+   "Copyright (c) 2003-2024 Pleiades Astrophoto</p>"
    "</html>";
 }
 
@@ -309,10 +309,10 @@ String ICOFormat::Implementation() const
    "<p>Support for the Windows Icon format (ICO), based on the Qt5 library.</p>"
 
    "<p>Qt Library:<br/>"
-   "Copyright (C) 2023 The Qt Company Ltd and other contributors.</p>"
+   "Copyright (C) 2024 The Qt Company Ltd and other contributors.</p>"
 
    "<p>PixInsight Class Library (PCL):<br/>"
-   "Copyright (c) 2003-2023 Pleiades Astrophoto</p>"
+   "Copyright (c) 2003-2024 Pleiades Astrophoto</p>"
    "</html>";
 }
 
@@ -406,10 +406,10 @@ String MNGFormat::Implementation() const
    "<p>Read-only support for the Multiple Network Graphics format (MNG), based on the Qt5 library.</p>"
 
    "<p>Qt Library:<br/>"
-   "Copyright (C) 2023 The Qt Company Ltd and other contributors.</p>"
+   "Copyright (C) 2024 The Qt Company Ltd and other contributors.</p>"
 
    "<p>PixInsight Class Library (PCL):<br/>"
-   "Copyright (c) 2003-2023 Pleiades Astrophoto</p>"
+   "Copyright (c) 2003-2024 Pleiades Astrophoto</p>"
    "</html>";
 }
 
@@ -503,10 +503,10 @@ String PBMFormat::Implementation() const
    "<p>Read-only support for the Portable Bitmap format (PBM), based on the Qt5 library.</p>"
 
    "<p>Qt Library:<br/>"
-   "Copyright (C) 2023 The Qt Company Ltd and other contributors.</p>"
+   "Copyright (C) 2024 The Qt Company Ltd and other contributors.</p>"
 
    "<p>PixInsight Class Library (PCL):<br/>"
-   "Copyright (c) 2003-2023 Pleiades Astrophoto</p>"
+   "Copyright (c) 2003-2024 Pleiades Astrophoto</p>"
    "</html>";
 }
 
@@ -600,10 +600,10 @@ String PGMFormat::Implementation() const
    "<p>Read-only support for the Portable Graymap format (PGM), based on the Qt5 library.</p>"
 
    "<p>Qt Library:<br/>"
-   "Copyright (C) 2023 The Qt Company Ltd and other contributors.</p>"
+   "Copyright (C) 2024 The Qt Company Ltd and other contributors.</p>"
 
    "<p>PixInsight Class Library (PCL):<br/>"
-   "Copyright (c) 2003-2023 Pleiades Astrophoto</p>"
+   "Copyright (c) 2003-2024 Pleiades Astrophoto</p>"
    "</html>";
 }
 
@@ -697,10 +697,10 @@ String PNGFormat::Implementation() const
    "<p>Basic support for the Portable Network Graphics format (PNG), based on the Qt5 library.</p>"
 
    "<p>Qt Library:<br/>"
-   "Copyright (C) 2023 The Qt Company Ltd and other contributors.</p>"
+   "Copyright (C) 2024 The Qt Company Ltd and other contributors.</p>"
 
    "<p>PixInsight Class Library (PCL):<br/>"
-   "Copyright (c) 2003-2023 Pleiades Astrophoto</p>"
+   "Copyright (c) 2003-2024 Pleiades Astrophoto</p>"
    "</html>";
 }
 
@@ -799,10 +799,10 @@ String PPMFormat::Implementation() const
    "<p>Support for the Portable Pixmap format (PPM), based on the Qt5 library.</p>"
 
    "<p>Qt Library:<br/>"
-   "Copyright (C) 2023 The Qt Company Ltd and other contributors.</p>"
+   "Copyright (C) 2024 The Qt Company Ltd and other contributors.</p>"
 
    "<p>PixInsight Class Library (PCL):<br/>"
-   "Copyright (c) 2003-2023 Pleiades Astrophoto</p>"
+   "Copyright (c) 2003-2024 Pleiades Astrophoto</p>"
    "</html>";
 }
 
@@ -896,10 +896,10 @@ String XBMFormat::Implementation() const
    "<p>Support for the X11 Bitmap format (XBM), based on the Qt5 library.</p>"
 
    "<p>Qt Library:<br/>"
-   "Copyright (C) 2023 The Qt Company Ltd and other contributors.</p>"
+   "Copyright (C) 2024 The Qt Company Ltd and other contributors.</p>"
 
    "<p>PixInsight Class Library (PCL):<br/>"
-   "Copyright (c) 2003-2023 Pleiades Astrophoto</p>"
+   "Copyright (c) 2003-2024 Pleiades Astrophoto</p>"
    "</html>";
 }
 
@@ -993,10 +993,10 @@ String XPMFormat::Implementation() const
    "<p>Support for the X11 Pixmap format (XPM), based on the Qt5 library.</p>"
 
    "<p>Qt Library:<br/>"
-   "Copyright (C) 2023 The Qt Company Ltd and other contributors.</p>"
+   "Copyright (C) 2024 The Qt Company Ltd and other contributors.</p>"
 
    "<p>PixInsight Class Library (PCL):<br/>"
-   "Copyright (c) 2003-2023 Pleiades Astrophoto</p>"
+   "Copyright (c) 2003-2024 Pleiades Astrophoto</p>"
    "</html>";
 }
 
@@ -1097,10 +1097,10 @@ String TGAFormat::Implementation() const
    "<p>RLE compressed TGA files are not supported by this reader. Only uncompressed images can be read.</p>"
 
    "<p>Qt Library:<br/>"
-   "Copyright (C) 2023 The Qt Company Ltd and other contributors.</p>"
+   "Copyright (C) 2024 The Qt Company Ltd and other contributors.</p>"
 
    "<p>PixInsight Class Library (PCL):<br/>"
-   "Copyright (c) 2003-2023 Pleiades Astrophoto</p>"
+   "Copyright (c) 2003-2024 Pleiades Astrophoto</p>"
    "</html>";
 }
 
@@ -1194,10 +1194,10 @@ String WEBPFormat::Implementation() const
    "<p>Basic support for the WebP image format, based on the Qt5 library.</p>"
 
    "<p>Qt Library:<br/>"
-   "Copyright (C) 2023 The Qt Company Ltd and other contributors.</p>"
+   "Copyright (C) 2024 The Qt Company Ltd and other contributors.</p>"
 
    "<p>PixInsight Class Library (PCL):<br/>"
-   "Copyright (c) 2003-2023 Pleiades Astrophoto</p>"
+   "Copyright (c) 2003-2024 Pleiades Astrophoto</p>"
    "</html>";
 }
 
@@ -1291,10 +1291,10 @@ String SVGFormat::Implementation() const
    "<p>Read-only support for the Scalable Vector Graphics format (SVG), based on the Qt5 library.</p>"
 
    "<p>Qt Library:<br/>"
-   "Copyright (C) 2023 The Qt Company Ltd and other contributors.</p>"
+   "Copyright (C) 2024 The Qt Company Ltd and other contributors.</p>"
 
    "<p>PixInsight Class Library (PCL):<br/>"
-   "Copyright (c) 2003-2023 Pleiades Astrophoto</p>"
+   "Copyright (c) 2003-2024 Pleiades Astrophoto</p>"
    "</html>";
 }
 
@@ -1345,4 +1345,4 @@ FileFormatImplementation* SVGFormat::Create() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BMPFormat.cpp - Released 2023-12-01T19:16:09Z
+// EOF BMPFormat.cpp - Released 2024-01-13T15:48:14Z

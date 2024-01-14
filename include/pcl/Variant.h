@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.4
+// /_/     \____//_____/   PCL 2.6.5
 // ----------------------------------------------------------------------------
-// pcl/Variant.h - Released 2023-12-01T19:15:45Z
+// pcl/Variant.h - Released 2024-01-13T15:47:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2024 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -1913,14 +1913,14 @@ public:
    Rect MatrixDimensions() const;
 
    /*!
-    * Returns the size in bytes of the scalar, complex, point, rectangle,
-    * vector or matrix object transported by this %Variant object.
+    * Returns the size in bytes of the scalar, complex, vector, matrix or
+    * string object transported by this %Variant object.
     *
     * The value returned by this function can be used along with
     * InternalBlockAddress() for object serialization purposes.
     *
-    * If this %Variant does not transport a scalar, complex, vector-like or
-    * matrix object, this member function throws an Error exception.
+    * If this %Variant does not transport a scalar, complex, vector, matrix or
+    * string object, this member function throws an Error exception.
     */
    size_type BlockSize() const;
 
@@ -1936,8 +1936,8 @@ public:
     * Returns the length in bytes of a block element, if this %Variant object
     * transports a scalar, complex, vector, matrix or string object.
     *
-    * If this %Variant does not transport a scalar, complex, vector-like or
-    * matrix object, this function throws an Error exception.
+    * If this %Variant does not transport a scalar, complex, vector, matrix or
+    * string object, this function throws an Error exception.
     */
    int BytesPerBlockElement() const
    {
@@ -2050,16 +2050,16 @@ public:
 
    /*!
     * Returns true only if the specified \a type is a structured %Variant type:
-    * fcomplex, dcomplex, Point, FPoint, DPoint, Rect, FRect, DRect,
-    * StringList, IsoStringList, StringKeyValue, IsoStringKeyValue,
-    * StringKeyValueList or IsoStringKeyValueList.
+    * TimePoint, Point, FPoint, DPoint, Rect, FRect, DRect, StringList,
+    * IsoStringList, StringKeyValue, IsoStringKeyValue, StringKeyValueList or
+    * IsoStringKeyValueList.
     */
    static bool IsStructuredType( int type );
 
    /*!
     * Returns true only if the object transported by this %Variant is of a
-    * structured type: fcomplex, dcomplex, Point, FPoint, DPoint, Rect, FRect,
-    * DRect, StringList, IsoStringList, StringKeyValue, IsoStringKeyValue,
+    * structured type: TimePoint, Point, FPoint, DPoint, Rect, FRect, DRect,
+    * StringList, IsoStringList, StringKeyValue, IsoStringKeyValue,
     * StringKeyValueList or IsoStringKeyValueList.
     *
     * For structured objects the InternalBlockAddress() and BlockSize() member
@@ -2199,4 +2199,4 @@ namespace pcl
 #endif   // __PCL_Variant_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Variant.h - Released 2023-12-01T19:15:45Z
+// EOF pcl/Variant.h - Released 2024-01-13T15:47:58Z

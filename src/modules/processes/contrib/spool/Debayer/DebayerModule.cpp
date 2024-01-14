@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.4
+// /_/     \____//_____/   PCL 2.6.5
 // ----------------------------------------------------------------------------
 // Standard Debayer Process Module Version 1.11.2
 // ----------------------------------------------------------------------------
-// DebayerModule.cpp - Released 2023-12-01T19:16:18Z
+// DebayerModule.cpp - Released 2024-01-13T15:48:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
-// Copyright (c) 2003-2023 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2024 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -56,9 +56,9 @@
 #define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
-#define MODULE_RELEASE_YEAR      2023
-#define MODULE_RELEASE_MONTH     12
-#define MODULE_RELEASE_DAY       1
+#define MODULE_RELEASE_YEAR      2024
+#define MODULE_RELEASE_MONTH     1
+#define MODULE_RELEASE_DAY       13
 
 #include "DebayerModule.h"
 #include "DebayerProcess.h"
@@ -116,7 +116,7 @@ String DebayerModule::Author() const
 
 String DebayerModule::Copyright() const
 {
-   return "Copyright (c) Sander Pool, 2009 / (c) Zbynek Vrastil, 2011 / (c) Pleiades Astrophoto, 2009-2023";
+   return "Copyright (c) Sander Pool, 2009 / (c) Zbynek Vrastil, 2011 / (c) Pleiades Astrophoto, 2009-2024";
 }
 
 // ----------------------------------------------------------------------------
@@ -173,4 +173,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF DebayerModule.cpp - Released 2023-12-01T19:16:18Z
+// EOF DebayerModule.cpp - Released 2024-01-13T15:48:23Z
