@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.5
+// /_/     \____//_____/   PCL 2.6.6
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// FITSPreferencesDialog.cpp - Released 2024-01-13T15:48:14Z
+// FITSPreferencesDialog.cpp - Released 2024-01-19T15:23:30Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -380,4 +380,4 @@ void FITSPreferencesDialog::Dialog_Return( Dialog& sender, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITSPreferencesDialog.cpp - Released 2024-01-13T15:48:14Z
+// EOF FITSPreferencesDialog.cpp - Released 2024-01-19T15:23:30Z

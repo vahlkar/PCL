@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.5
+// /_/     \____//_____/   PCL 2.6.6
 // ----------------------------------------------------------------------------
-// pcl/UCUppercase.cpp - Released 2024-01-13T15:48:04Z
+// pcl/UCUppercase.cpp - Released 2024-01-19T15:23:20Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -777,4 +777,4 @@ char16_type PCL_FUNC PCL_ToUppercase( char16_type c )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/UCUppercase.cpp - Released 2024-01-13T15:48:04Z
+// EOF pcl/UCUppercase.cpp - Released 2024-01-19T15:23:20Z

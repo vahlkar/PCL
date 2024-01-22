@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.5
+// /_/     \____//_____/   PCL 2.6.6
 // ----------------------------------------------------------------------------
-// pcl/AstrometricMetadata.cpp - Released 2024-01-13T15:48:04Z
+// pcl/AstrometricMetadata.cpp - Released 2024-01-19T15:23:20Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -457,7 +457,7 @@ double AstrometricMetadata::Rotation( bool& flipped ) const
       throw Error( "Invalid call to AstrometricMetadata::Rotation(): No world transformation defined." );
 
    LinearTransformation linearIW = m_transformWI->ApproximateLinearTransform();
-   flipped = linearIW.Determinant() > 0;
+   flipped = linearIW.Determinant() < 0;
    double rotation = Deg( ArcTan( linearIW.A00() + linearIW.A01(), linearIW.A10() + linearIW.A11() ) ) + 135;
    if ( flipped )
       rotation = -90 - rotation;
@@ -1235,4 +1235,4 @@ void AstrometricMetadata::UpdateDescription() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AstrometricMetadata.cpp - Released 2024-01-13T15:48:04Z
+// EOF pcl/AstrometricMetadata.cpp - Released 2024-01-19T15:23:20Z

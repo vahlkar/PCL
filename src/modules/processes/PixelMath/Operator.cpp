@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.5
+// /_/     \____//_____/   PCL 2.6.6
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// Operator.cpp - Released 2024-01-13T15:48:23Z
+// Operator.cpp - Released 2024-01-19T15:23:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -1383,4 +1383,4 @@ void AssignmentLogicalOrOperator::operator()( Pixel& r, PixelList::const_iterato
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Operator.cpp - Released 2024-01-13T15:48:23Z
+// EOF Operator.cpp - Released 2024-01-19T15:23:40Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.5
+// /_/     \____//_____/   PCL 2.6.6
 // ----------------------------------------------------------------------------
-// Standard IntensityTransformations Process Module Version 1.7.1
+// Standard IntensityTransformations Process Module Version 1.7.2
 // ----------------------------------------------------------------------------
-// ExponentialTransformationInterface.cpp - Released 2024-01-13T15:48:23Z
+// ExponentialTransformationInterface.cpp - Released 2024-01-19T15:23:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -222,7 +222,7 @@ bool ExponentialTransformationInterface::GenerateRealTimePreview( UInt16Image& i
    {
       ExponentialTransformationInstance previewInstance( m_instance );
       if ( zoomLevel < 0 )
-         previewInstance.sigma /= -zoomLevel;
+         previewInstance.p_sigma /= -zoomLevel;
 
       m_realTimeThread->Reset( image, previewInstance );
       m_realTimeThread->Start();
@@ -258,10 +258,10 @@ bool ExponentialTransformationInterface::GenerateRealTimePreview( UInt16Image& i
 
 void ExponentialTransformationInterface::UpdateControls()
 {
-   GUI->Function_ComboBox.SetCurrentItem( m_instance.type );
-   GUI->Order_NumericControl.SetValue( m_instance.order );
-   GUI->Smoothing_NumericControl.SetValue( m_instance.sigma );
-   GUI->LightnessMask_CheckBox.SetChecked( m_instance.useLightnessMask );
+   GUI->Function_ComboBox.SetCurrentItem( m_instance.p_type );
+   GUI->Order_NumericControl.SetValue( m_instance.p_order );
+   GUI->Smoothing_NumericControl.SetValue( m_instance.p_sigma );
+   GUI->LightnessMask_CheckBox.SetChecked( m_instance.p_useLightnessMask );
 }
 
 void ExponentialTransformationInterface::UpdateRealTimePreview()
@@ -279,23 +279,23 @@ void ExponentialTransformationInterface::UpdateRealTimePreview()
 
 void ExponentialTransformationInterface::__Function_ItemSelected( ComboBox& /*sender*/, int itemIndex )
 {
-   m_instance.type = itemIndex;
+   m_instance.p_type = itemIndex;
    UpdateRealTimePreview();
 }
 
 void ExponentialTransformationInterface::__FunctionParameter_ValueUpdated( NumericEdit& sender, double value )
 {
    if ( sender == GUI->Order_NumericControl )
-      m_instance.order = value;
+      m_instance.p_order = value;
    else if ( sender == GUI->Smoothing_NumericControl )
-      m_instance.sigma = value;
+      m_instance.p_sigma = value;
 
    UpdateRealTimePreview();
 }
 
 void ExponentialTransformationInterface::__LightnessMask_ButtonClick( Button& /*sender*/, bool checked )
 {
-   m_instance.useLightnessMask = checked;
+   m_instance.p_useLightnessMask = checked;
    UpdateRealTimePreview();
 }
 
@@ -347,7 +347,7 @@ ExponentialTransformationInterface::GUIData::GUIData( ExponentialTransformationI
    Order_NumericControl.label.SetText( "Order:" );
    Order_NumericControl.label.SetFixedWidth( labelWidth );
    Order_NumericControl.slider.SetScaledMinWidth( 250 );
-   Order_NumericControl.slider.SetRange( 1, 60 );
+   Order_NumericControl.slider.SetRange( 1, 600 );
    Order_NumericControl.SetReal();
    Order_NumericControl.SetRange( TheExponentialFunctionOrderParameter->MinimumValue(), TheExponentialFunctionOrderParameter->MaximumValue() );
    Order_NumericControl.SetPrecision( TheExponentialFunctionOrderParameter->Precision() );
@@ -388,4 +388,4 @@ ExponentialTransformationInterface::GUIData::GUIData( ExponentialTransformationI
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ExponentialTransformationInterface.cpp - Released 2024-01-13T15:48:23Z
+// EOF ExponentialTransformationInterface.cpp - Released 2024-01-19T15:23:40Z

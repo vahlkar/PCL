@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.5
+// /_/     \____//_____/   PCL 2.6.6
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// Function.h - Released 2024-01-13T15:48:23Z
+// Function.h - Released 2024-01-19T15:23:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -4206,8 +4206,7 @@ public:
                                                     "<p>Given two images <i>a</i> and <i>b</i> with pixel sample values in the [0,1] range, "
                                                     "the soft light operation is defined by the following expression:</p>"
                                                     "<p style=\"white-space: pre;\">"
-                                                    "   1 - (1 - a)*(1 - b - 0.5)   if b &gt; 0.5<br/>"
-                                                    "   a*(b + 0.5)                 otherwise"
+                                                    "   (1 - 2*b)*a*a + 2*a*b"
                                                     "</p>"
                                                     "<p>Invariant subexpression: always.</p>"; }
    String Token() const override           { return "op_soft_light"; }
@@ -4266,8 +4265,8 @@ public:
                                                     "<p>Given two images <i>a</i> and <i>b</i> with pixel sample values in the [0,1] range, "
                                                     "the vivid light operation is defined by the following expression:</p>"
                                                     "<p style=\"white-space: pre;\">"
-                                                    "   1 - max( (1 - a)/(b - 0.5)/2, 1 )   if b &gt; 0.5<br/>"
-                                                    "   min( a/(1 - 2*b ), 1 )              otherwise"
+                                                    "   max( 0, 1 - (1 - a)/(2*b) )   if b &lt; 0.5<br/>"
+                                                    "   min( 1, a/(2*(1 - b)) )       otherwise"
                                                     "</p>"
                                                     "<p>Invariant subexpression: always.</p>"; }
    String Token() const override           { return "op_vivid_light"; }
@@ -4296,8 +4295,7 @@ public:
                                                     "<p>Given two images <i>a</i> and <i>b</i> with pixel sample values in the [0,1] range, "
                                                     "the linear light operation is defined by the following expression:</p>"
                                                     "<p style=\"white-space: pre;\">"
-                                                    "   max( a + 2*(b - 0.5), 1 )   if b &gt; 0.5<br/>"
-                                                    "   max( a + 2*b - 1, 1 )       otherwise"
+                                                    "   min( max( 0, a + 2*b - 1 ), 1 )"
                                                     "</p>"
                                                     "<p>Invariant subexpression: always.</p>"; }
    String Token() const override           { return "op_linear_light"; }
@@ -4376,4 +4374,4 @@ public:
 #endif   // __Function_h
 
 // ----------------------------------------------------------------------------
-// EOF Function.h - Released 2024-01-13T15:48:23Z
+// EOF Function.h - Released 2024-01-19T15:23:40Z

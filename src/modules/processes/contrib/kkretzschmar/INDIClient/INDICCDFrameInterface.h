@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.5
+// /_/     \____//_____/   PCL 2.6.6
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// INDICCDFrameInterface.h - Released 2024-01-13T15:48:23Z
+// INDICCDFrameInterface.h - Released 2024-01-19T15:23:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -312,4 +312,4 @@ PCL_END_LOCAL
 #endif // __INDICCDFrameInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF INDICCDFrameInterface.h - Released 2024-01-13T15:48:23Z
+// EOF INDICCDFrameInterface.h - Released 2024-01-19T15:23:40Z

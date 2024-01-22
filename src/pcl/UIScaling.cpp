@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.5
+// /_/     \____//_____/   PCL 2.6.6
 // ----------------------------------------------------------------------------
-// pcl/UIScaling.cpp - Released 2024-01-13T15:48:04Z
+// pcl/UIScaling.cpp - Released 2024-01-19T15:23:20Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -66,4 +66,4 @@ PCL_DATA const char*  PCL_UIScalingSubdir_LUT[PCL_UIScaling_LUT_Length] =
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/UIScaling.cpp - Released 2024-01-13T15:48:04Z
+// EOF pcl/UIScaling.cpp - Released 2024-01-19T15:23:20Z

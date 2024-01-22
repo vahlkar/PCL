@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.5
+// /_/     \____//_____/   PCL 2.6.6
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsMergeMosaicParameters.h - Released 2024-01-13T15:48:23Z
+// GradientsMergeMosaicParameters.h - Released 2024-01-19T15:23:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
@@ -183,4 +183,4 @@ PCL_END_LOCAL
 #endif
 
 // ----------------------------------------------------------------------------
-// EOF GradientsMergeMosaicParameters.h - Released 2024-01-13T15:48:23Z
+// EOF GradientsMergeMosaicParameters.h - Released 2024-01-19T15:23:40Z

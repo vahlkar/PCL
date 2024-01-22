@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.5
+// /_/     \____//_____/   PCL 2.6.6
 // ----------------------------------------------------------------------------
-// pcl/PixelTraits.h - Released 2024-01-13T15:47:58Z
+// pcl/PixelTraits.h - Released 2024-01-19T15:23:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -880,7 +880,7 @@ public:
    static void SoftLight( sample& a, T b ) noexcept
    {
       sample fb = ToSample( b );
-      a = (fb > 0.5F) ? 1 - (1 - a)*(1 - fb - 0.5F) : a*(fb + 0.5F);
+      a = (1 - 2*fb)*a*a + 2*a*fb; // Pegtop's formula
    }
 
    /*!
@@ -904,7 +904,7 @@ public:
    static void VividLight( sample& a, T b ) noexcept
    {
       sample fb = ToSample( b );
-      a = (fb > 0.5F) ? 1 - pcl::Max( (1 - a)/(fb - 0.5F)/2, 1.0F ) : pcl::Min( a/pcl::Max( EPSILON_F, 1 - 2*fb ), 1.0F );
+      a = (fb < 0.5F) ? pcl::Max( 0.0F, 1 - (1 - a)/pcl::Max( EPSILON_F, 2*fb ) ) : pcl::Min( a/pcl::Max( EPSILON_F, 2*(1 - fb) ), 1.0F );
    }
 
    /*!
@@ -916,7 +916,7 @@ public:
    static void LinearLight( sample& a, T b ) noexcept
    {
       sample fb = ToSample( b );
-      a = (fb > 0.5F) ? pcl::Max( a + 2*(fb - 0.5F), 1.0F ) : pcl::Max( a + 2*fb - 1, 1.0F );
+      a = pcl::Range( a + 2*fb - 1, 0.0F, 1.0F );
    }
 
    /*!
@@ -1474,7 +1474,7 @@ public:
    static void SoftLight( sample& a, T b ) noexcept
    {
       sample fb = ToSample( b );
-      a = (fb > 0.5) ? 1 - (1 - a)*(1 - fb - 0.5) : a*(fb + 0.5);
+      a = (1 - 2*fb)*a*a + 2*a*fb; // Pegtop's formula
    }
 
    /*!
@@ -1498,7 +1498,7 @@ public:
    static void VividLight( sample& a, T b ) noexcept
    {
       sample fb = ToSample( b );
-      a = (fb > 0.5) ? 1 - pcl::Max( (1 - a)/(fb - 0.5)/2, 1.0 ) : pcl::Min( a/pcl::Max( EPSILON_D, 1 - 2*fb ), 1.0 );
+      a = (fb < 0.5) ? pcl::Max( 0.0, 1 - (1 - a)/pcl::Max( EPSILON_D, 2*fb ) ) : pcl::Min( a/pcl::Max( EPSILON_D, 2*(1 - fb) ), 1.0 );
    }
 
    /*!
@@ -1510,7 +1510,7 @@ public:
    static void LinearLight( sample& a, T b ) noexcept
    {
       sample fb = ToSample( b );
-      a = (fb > 0.5) ? pcl::Max( a + 2*(fb - 0.5), 1.0 ) : pcl::Max( a + 2*fb - 1, 1.0 );
+      a = pcl::Range( a + 2*fb - 1, 0.0, 1.0 );
    }
 
    /*!
@@ -2149,19 +2149,19 @@ public:
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
-      a = ToSample( (fb > 0.5F) ? 1 - (1 - fa)*(1 - fb - 0.5F) : a*(fb + 0.5F) );
+      a = ToSample( (1 - 2*fb)*fa*fa + 2*fa*fb ); // Pegtop's formula
    }
 
    static void SoftLight( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
-      a = ToSample( (b > 0.5F) ? 1 - (1 - fa)*(1 - b - 0.5F) : a*(b + 0.5F) );
+      a = ToSample( (1 - 2*b)*fa*fa + 2*fa*b );
    }
 
    static void SoftLight( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
-      a = ToSample( (b > 0.5) ? 1 - (1 - fa)*(1 - b - 0.5) : a*(b + 0.5) );
+      a = ToSample( (1 - 2*b)*fa*fa + 2*fa*b );
    }
 
    /*!
@@ -2199,19 +2199,19 @@ public:
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
-      a = ToSample( (fb > 0.5F) ? 1 - pcl::Max( (1 - fa)/(fb - 0.5F)/2, 1.0F ) : pcl::Min( fa/pcl::Max( EPSILON_F, 1 - 2*fb ), 1.0F ) );
+      a = ToSample( (fb < 0.5F) ? pcl::Max( 0.0F, 1 - (1 - fa)/pcl::Max( EPSILON_F, 2*fb ) ) : pcl::Min( fa/pcl::Max( EPSILON_F, 2*(1 - fb) ), 1.0F ) );
    }
 
    static void VividLight( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
-      a = ToSample( (b > 0.5F) ? 1 - pcl::Max( (1 - fa)/(b - 0.5F)/2, 1.0F ) : pcl::Min( fa/pcl::Max( EPSILON_F, 1 - 2*b ), 1.0F ) );
+      a = ToSample( (b < 0.5F) ? pcl::Max( 0.0F, 1 - (1 - fa)/pcl::Max( EPSILON_F, 2*b ) ) : pcl::Min( fa/pcl::Max( EPSILON_F, 2*(1 - b) ), 1.0F ) );
    }
 
    static void VividLight( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
-      a = ToSample( (b > 0.5) ? 1 - pcl::Max( (1 - fa)/(b - 0.5)/2, 1.0 ) : pcl::Min( fa/pcl::Max( EPSILON_D, 1 - 2*b ), 1.0 ) );
+      a = ToSample( (b < 0.5) ? pcl::Max( 0.0, 1 - (1 - fa)/pcl::Max( EPSILON_D, 2*b ) ) : pcl::Min( fa/pcl::Max( EPSILON_D, 2*(1 - b) ), 1.0 ) );
    }
 
    /*!
@@ -2224,19 +2224,19 @@ public:
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
-      a = ToSample( (fb > 0.5F) ? pcl::Max( fa + 2*(fb - 0.5F), 1.0F ) : pcl::Max( fa + 2*fb - 1, 1.0F ) );
+      a = ToSample( pcl::Range( fa + 2*fb - 1, 0.0F, 1.0F ) );
    }
 
    static void LinearLight( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
-      a = ToSample( (b > 0.5F) ? pcl::Max( fa + 2*(b - 0.5F), 1.0F ) : pcl::Max( fa + 2*b - 1, 1.0F ) );
+      a = ToSample( pcl::Range( fa + 2*b - 1, 0.0F, 1.0F ) );
    }
 
    static void LinearLight( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
-      a = ToSample( (b > 0.5) ? pcl::Max( fa + 2*(b - 0.5), 1.0 ) : pcl::Max( fa + 2*b - 1, 1.0 ) );
+      a = ToSample( pcl::Range( fa + 2*b - 1, 0.0, 1.0 ) );
    }
 
    /*!
@@ -2904,20 +2904,20 @@ public:
    {
       double fa; FromSample( fa, a );
       double fb; FromSample( fb, ToSample( b ) );
-      a = ToSample( (fb > 0.5) ? 1 - (1 - fa)*(1 - fb - 0.5) : a*(fb + 0.5) );
+      a = ToSample( (1 - 2*fb)*fa*fa + 2*fa*fb ); // Pegtop's formula
    }
 
    static void SoftLight( sample& a, float b ) noexcept
    {
       double fa; FromSample( fa, a );
       double fb = double( b );
-      a = ToSample( (fb > 0.5) ? 1 - (1 - fa)*(1 - fb - 0.5) : a*(fb + 0.5) );
+      a = ToSample( (1 - 2*fb)*fa*fa + 2*fa*fb );
    }
 
    static void SoftLight( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
-      a = ToSample( (b > 0.5) ? 1 - (1 - fa)*(1 - b - 0.5) : a*(b + 0.5) );
+      a = ToSample( (1 - 2*b)*fa*fa + 2*fa*b );
    }
 
    /*!
@@ -2956,20 +2956,20 @@ public:
    {
       double fa; FromSample( fa, a );
       double fb; FromSample( fb, ToSample( b ) );
-      a = ToSample( (fb > 0.5) ? 1 - pcl::Max( (1 - fa)/(fb - 0.5)/2, 1.0 ) : pcl::Min( fa/pcl::Max( EPSILON_D, 1 - 2*fb ), 1.0 ) );
+      a = ToSample( (fb < 0.5) ? pcl::Max( 0.0, 1 - (1 - fa)/pcl::Max( EPSILON_D, 2*fb ) ) : pcl::Min( fa/pcl::Max( EPSILON_D, 2*(1 - fb) ), 1.0 ) );
    }
 
    static void VividLight( sample& a, float b ) noexcept
    {
       double fa; FromSample( fa, a );
       double fb = double( b );
-      a = ToSample( (fb > 0.5) ? 1 - pcl::Max( (1 - fa)/(fb - 0.5)/2, 1.0 ) : pcl::Min( fa/pcl::Max( EPSILON_D, 1 - 2*fb ), 1.0 ) );
+      a = ToSample( (fb < 0.5) ? pcl::Max( 0.0, 1 - (1 - fa)/pcl::Max( EPSILON_D, 2*fb ) ) : pcl::Min( fa/pcl::Max( EPSILON_D, 2*(1 - fb) ), 1.0 ) );
    }
 
    static void VividLight( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
-      a = ToSample( (b > 0.5) ? 1 - pcl::Max( (1 - fa)/(b - 0.5)/2, 1.0 ) : pcl::Min( fa/pcl::Max( EPSILON_D, 1 - 2*b ), 1.0 ) );
+      a = ToSample( (b < 0.5) ? pcl::Max( 0.0, 1 - (1 - fa)/pcl::Max( EPSILON_D, 2*b ) ) : pcl::Min( fa/pcl::Max( EPSILON_D, 2*(1 - b) ), 1.0 ) );
    }
 
    /*!
@@ -2982,20 +2982,20 @@ public:
    {
       double fa; FromSample( fa, a );
       double fb; FromSample( fb, ToSample( b ) );
-      a = ToSample( (fb > 0.5) ? pcl::Max( fa + 2*(fb - 0.5), 1.0 ) : pcl::Max( fa + 2*fb - 1, 1.0 ) );
+      a = ToSample( pcl::Range( fa + 2*fb - 1, 0.0, 1.0 ) );
    }
 
    static void LinearLight( sample& a, float b ) noexcept
    {
       double fa; FromSample( fa, a );
       double fb = double( b );
-      a = ToSample( (fb > 0.5) ? pcl::Max( fa + 2*(fb - 0.5), 1.0 ) : pcl::Max( fa + 2*fb - 1, 1.0 ) );
+      a = ToSample( pcl::Range( fa + 2*fb - 1, 0.0, 1.0 ) );
    }
 
    static void LinearLight( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
-      a = ToSample( (b > 0.5) ? pcl::Max( fa + 2*(b - 0.5), 1.0 ) : pcl::Max( fa + 2*b - 1, 1.0 ) );
+      a = ToSample( pcl::Range( fa + 2*b - 1, 0.0, 1.0 ) );
    }
 
    /*!
@@ -3773,19 +3773,19 @@ public:
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
-      a = ToSample( (fb > 0.5F) ? 1 - (1 - fa)*(1 - fb - 0.5F) : a*(fb + 0.5F) );
+      a = ToSample( (1 - 2*fb)*fa*fa + 2*fa*fb ); // Pegtop's formula
    }
 
    static void SoftLight( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
-      a = ToSample( (b > 0.5F) ? 1 - (1 - fa)*(1 - b - 0.5F) : a*(b + 0.5F) );
+      a = ToSample( (1 - 2*b)*fa*fa + 2*fa*b );
    }
 
    static void SoftLight( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
-      a = ToSample( (b > 0.5) ? 1 - (1 - fa)*(1 - b - 0.5) : a*(b + 0.5) );
+      a = ToSample( (1 - 2*b)*fa*fa + 2*fa*b );
    }
 
    /*!
@@ -3823,19 +3823,19 @@ public:
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
-      a = ToSample( (fb > 0.5F) ? 1 - pcl::Max( (1 - fa)/(fb - 0.5F)/2, 1.0F ) : pcl::Min( fa/pcl::Max( EPSILON_F, 1 - 2*fb ), 1.0F ) );
+      a = ToSample( (fb < 0.5F) ? pcl::Max( 0.0F, 1 - (1 - fa)/pcl::Max( EPSILON_F, 2*fb ) ) : pcl::Min( fa/pcl::Max( EPSILON_F, 2*(1 - fb) ), 1.0F ) );
    }
 
    static void VividLight( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
-      a = ToSample( (b > 0.5F) ? 1 - pcl::Max( (1 - fa)/(b - 0.5F)/2, 1.0F ) : pcl::Min( fa/pcl::Max( EPSILON_F, 1 - 2*b ), 1.0F ) );
+      a = ToSample( (b < 0.5F) ? pcl::Max( 0.0F, 1 - (1 - fa)/pcl::Max( EPSILON_F, 2*b ) ) : pcl::Min( fa/pcl::Max( EPSILON_F, 2*(1 - b) ), 1.0F ) );
    }
 
    static void VividLight( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
-      a = ToSample( (b > 0.5) ? 1 - pcl::Max( (1 - fa)/(b - 0.5)/2, 1.0 ) : pcl::Min( fa/pcl::Max( EPSILON_D, 1 - 2*b ), 1.0 ) );
+      a = ToSample( (b < 0.5) ? pcl::Max( 0.0, 1 - (1 - fa)/pcl::Max( EPSILON_D, 2*b ) ) : pcl::Min( fa/pcl::Max( EPSILON_D, 2*(1 - b) ), 1.0 ) );
    }
 
    /*!
@@ -3848,19 +3848,19 @@ public:
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
-      a = ToSample( (fb > 0.5F) ? pcl::Max( fa + 2*(fb - 0.5F), 1.0F ) : pcl::Max( fa + 2*fb - 1, 1.0F ) );
+      a = ToSample( pcl::Range( fa + 2*fb - 1, 0.0F, 1.0F ) );
    }
 
    static void LinearLight( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
-      a = ToSample( (b > 0.5F) ? pcl::Max( fa + 2*(b - 0.5F), 1.0F ) : pcl::Max( fa + 2*b - 1, 1.0F ) );
+      a = ToSample( pcl::Range( fa + 2*b - 1, 0.0F, 1.0F ) );
    }
 
    static void LinearLight( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
-      a = ToSample( (b > 0.5) ? pcl::Max( fa + 2*(b - 0.5), 1.0 ) : pcl::Max( fa + 2*b - 1, 1.0 ) );
+      a = ToSample( pcl::Range( fa + 2*b - 1, 0.0, 1.0 ) );
    }
 
    /*!
@@ -4637,19 +4637,19 @@ public:
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
-      a = ToSample( (fb > 0.5F) ? 1 - (1 - fa)*(1 - fb - 0.5F) : a*(fb + 0.5F) );
+      a = ToSample( (1 - 2*fb)*fa*fa + 2*fa*fb ); // Pegtop's formula
    }
 
    static void SoftLight( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
-      a = ToSample( (b > 0.5F) ? 1 - (1 - fa)*(1 - b - 0.5F) : a*(b + 0.5F) );
+      a = ToSample( (1 - 2*b)*fa*fa + 2*fa*b );
    }
 
    static void SoftLight( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
-      a = ToSample( (b > 0.5) ? 1 - (1 - fa)*(1 - b - 0.5) : a*(b + 0.5) );
+      a = ToSample( (1 - 2*b)*fa*fa + 2*fa*b );
    }
 
    /*!
@@ -4687,19 +4687,19 @@ public:
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
-      a = ToSample( (fb > 0.5F) ? 1 - pcl::Max( (1 - fa)/(fb - 0.5F)/2, 1.0F ) : pcl::Min( fa/pcl::Max( EPSILON_F, 1 - 2*fb ), 1.0F ) );
+      a = ToSample( (fb < 0.5F) ? pcl::Max( 0.0F, 1 - (1 - fa)/pcl::Max( EPSILON_F, 2*fb ) ) : pcl::Min( fa/pcl::Max( EPSILON_F, 2*(1 - fb) ), 1.0F ) );
    }
 
    static void VividLight( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
-      a = ToSample( (b > 0.5F) ? 1 - pcl::Max( (1 - fa)/(b - 0.5F)/2, 1.0F ) : pcl::Min( fa/pcl::Max( EPSILON_F, 1 - 2*b ), 1.0F ) );
+      a = ToSample( (b < 0.5F) ? pcl::Max( 0.0F, 1 - (1 - fa)/pcl::Max( EPSILON_F, 2*b ) ) : pcl::Min( fa/pcl::Max( EPSILON_F, 2*(1 - b) ), 1.0F ) );
    }
 
    static void VividLight( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
-      a = ToSample( (b > 0.5) ? 1 - pcl::Max( (1 - fa)/(b - 0.5)/2, 1.0 ) : pcl::Min( fa/pcl::Max( EPSILON_D, 1 - 2*b ), 1.0 ) );
+      a = ToSample( (b < 0.5) ? pcl::Max( 0.0, 1 - (1 - fa)/pcl::Max( EPSILON_D, 2*b ) ) : pcl::Min( fa/pcl::Max( EPSILON_D, 2*(1 - b) ), 1.0 ) );
    }
 
    /*!
@@ -4712,19 +4712,19 @@ public:
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
-      a = ToSample( (fb > 0.5F) ? pcl::Max( fa + 2*(fb - 0.5F), 1.0F ) : pcl::Max( fa + 2*fb - 1, 1.0F ) );
+      a = ToSample( pcl::Range( fa + 2*fb - 1, 0.0F, 1.0F ) );
    }
 
    static void LinearLight( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
-      a = ToSample( (b > 0.5F) ? pcl::Max( fa + 2*(b - 0.5F), 1.0F ) : pcl::Max( fa + 2*b - 1, 1.0F ) );
+      a = ToSample( pcl::Range( fa + 2*b - 1, 0.0F, 1.0F ) );
    }
 
    static void LinearLight( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
-      a = ToSample( (b > 0.5) ? pcl::Max( fa + 2*(b - 0.5), 1.0 ) : pcl::Max( fa + 2*b - 1, 1.0 ) );
+      a = ToSample( pcl::Range( fa + 2*b - 1, 0.0, 1.0 ) );
    }
 
    /*!
@@ -5485,20 +5485,20 @@ public:
    {
       double fa; FromSample( fa, a );
       double fb; FromSample( fb, ToSample( b ) );
-      a = ToSample( (fb > 0.5) ? 1 - (1 - fa)*(1 - fb - 0.5) : a*(fb + 0.5) );
+      a = ToSample( (1 - 2*fb)*fa*fa + 2*fa*fb ); // Pegtop's formula
    }
 
    static void SoftLight( sample& a, float b ) noexcept
    {
       double fa; FromSample( fa, a );
       double fb = double( b );
-      a = ToSample( (fb > 0.5) ? 1 - (1 - fa)*(1 - fb - 0.5) : a*(fb + 0.5) );
+      a = ToSample( (1 - 2*fb)*fa*fa + 2*fa*fb );
    }
 
    static void SoftLight( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
-      a = ToSample( (b > 0.5) ? 1 - (1 - fa)*(1 - b - 0.5) : a*(b + 0.5) );
+      a = ToSample( (1 - 2*b)*fa*fa + 2*fa*b );
    }
 
    /*!
@@ -5537,20 +5537,20 @@ public:
    {
       double fa; FromSample( fa, a );
       double fb; FromSample( fb, ToSample( b ) );
-      a = ToSample( (fb > 0.5) ? 1 - pcl::Max( (1 - fa)/(fb - 0.5)/2, 1.0 ) : pcl::Min( fa/pcl::Max( EPSILON_D, 1 - 2*fb ), 1.0 ) );
+      a = ToSample( (fb < 0.5) ? pcl::Max( 0.0, 1 - (1 - fa)/pcl::Max( EPSILON_D, 2*fb ) ) : pcl::Min( fa/pcl::Max( EPSILON_D, 2*(1 - fb) ), 1.0 ) );
    }
 
    static void VividLight( sample& a, float b ) noexcept
    {
       double fa; FromSample( fa, a );
       double fb = double( b );
-      a = ToSample( (fb > 0.5) ? 1 - pcl::Max( (1 - fa)/(fb - 0.5)/2, 1.0 ) : pcl::Min( fa/pcl::Max( EPSILON_D, 1 - 2*fb ), 1.0 ) );
+      a = ToSample( (fb < 0.5) ? pcl::Max( 0.0, 1 - (1 - fa)/pcl::Max( EPSILON_D, 2*fb ) ) : pcl::Min( fa/pcl::Max( EPSILON_D, 2*(1 - fb) ), 1.0 ) );
    }
 
    static void VividLight( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
-      a = ToSample( (b > 0.5) ? 1 - pcl::Max( (1 - fa)/(b - 0.5)/2, 1.0 ) : pcl::Min( fa/pcl::Max( EPSILON_D, 1 - 2*b ), 1.0 ) );
+      a = ToSample( (b < 0.5) ? pcl::Max( 0.0, 1 - (1 - fa)/pcl::Max( EPSILON_D, 2*b ) ) : pcl::Min( fa/pcl::Max( EPSILON_D, 2*(1 - b) ), 1.0 ) );
    }
 
    /*!
@@ -5563,20 +5563,20 @@ public:
    {
       double fa; FromSample( fa, a );
       double fb; FromSample( fb, ToSample( b ) );
-      a = ToSample( (fb > 0.5) ? pcl::Max( fa + 2*(fb - 0.5), 1.0 ) : pcl::Max( fa + 2*fb - 1, 1.0 ) );
+      a = ToSample( pcl::Range( fa + 2*fb - 1, 0.0, 1.0 ) );
    }
 
    static void LinearLight( sample& a, float b ) noexcept
    {
       double fa; FromSample( fa, a );
       double fb = double( b );
-      a = ToSample( (fb > 0.5) ? pcl::Max( fa + 2*(fb - 0.5), 1.0 ) : pcl::Max( fa + 2*fb - 1, 1.0 ) );
+      a = ToSample( pcl::Range( fa + 2*fb - 1, 0.0, 1.0 ) );
    }
 
    static void LinearLight( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
-      a = ToSample( (b > 0.5) ? pcl::Max( fa + 2*(b - 0.5), 1.0 ) : pcl::Max( fa + 2*b - 1, 1.0 ) );
+      a = ToSample( pcl::Range( fa + 2*b - 1, 0.0, 1.0 ) );
    }
 
    /*!
@@ -6291,4 +6291,4 @@ public:
 #endif   // __PCL_PixelTraits_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PixelTraits.h - Released 2024-01-13T15:47:58Z
+// EOF pcl/PixelTraits.h - Released 2024-01-19T15:23:14Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.5
+// /_/     \____//_____/   PCL 2.6.6
 // ----------------------------------------------------------------------------
-// pcl/Rotate.h - Released 2024-01-13T15:47:58Z
+// pcl/Rotate.h - Released 2024-01-19T15:23:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -244,4 +244,4 @@ void __shift_right__( BI i, BI m, BI j, const T& v, BidirectionalIterator )
 #endif  // __PCL_Rotate_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Rotate.h - Released 2024-01-13T15:47:58Z
+// EOF pcl/Rotate.h - Released 2024-01-19T15:23:14Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.5
+// /_/     \____//_____/   PCL 2.6.6
 // ----------------------------------------------------------------------------
 // Standard ColorManagement Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// ICCProfileTransformationInstance.h - Released 2024-01-13T15:48:22Z
+// ICCProfileTransformationInstance.h - Released 2024-01-19T15:23:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorManagement PixInsight module.
 //
@@ -96,4 +96,4 @@ private:
 #endif   // __ICCProfileTransformationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ICCProfileTransformationInstance.h - Released 2024-01-13T15:48:22Z
+// EOF ICCProfileTransformationInstance.h - Released 2024-01-19T15:23:39Z

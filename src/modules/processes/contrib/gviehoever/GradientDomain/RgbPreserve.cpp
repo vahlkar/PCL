@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.5
+// /_/     \____//_____/   PCL 2.6.6
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// RgbPreserve.cpp - Released 2024-01-13T15:48:23Z
+// RgbPreserve.cpp - Released 2024-01-19T15:23:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
@@ -89,4 +89,4 @@ void RgbPreserve::rgbTransformation( imageType_t const& rOrigLuminance_p,
 }; // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF RgbPreserve.cpp - Released 2024-01-13T15:48:23Z
+// EOF RgbPreserve.cpp - Released 2024-01-19T15:23:40Z

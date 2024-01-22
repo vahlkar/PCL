@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.5
+// /_/     \____//_____/   PCL 2.6.6
 // ----------------------------------------------------------------------------
 // Standard NetworkService Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// NetworkServiceLogger.h - Released 2024-01-13T15:48:23Z
+// NetworkServiceLogger.h - Released 2024-01-19T15:23:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NetworkService PixInsight module.
 //
@@ -90,4 +90,4 @@ struct NetworkServiceLogger
 #endif   // __NetworkServiceLogger_h
 
 // ----------------------------------------------------------------------------
-// EOF NetworkServiceLogger.h - Released 2024-01-13T15:48:23Z
+// EOF NetworkServiceLogger.h - Released 2024-01-19T15:23:40Z

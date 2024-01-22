@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.5
+// /_/     \____//_____/   PCL 2.6.6
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.8.9
 // ----------------------------------------------------------------------------
-// SubframeSelectorCache.cpp - Released 2024-01-13T15:48:23Z
+// SubframeSelectorCache.cpp - Released 2024-01-19T15:23:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -320,4 +320,4 @@ void SubframeSelectorCache::SetMaxItemDuration( int days )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorCache.cpp - Released 2024-01-13T15:48:23Z
+// EOF SubframeSelectorCache.cpp - Released 2024-01-19T15:23:40Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.5
+// /_/     \____//_____/   PCL 2.6.6
 // ----------------------------------------------------------------------------
-// Standard IntensityTransformations Process Module Version 1.7.1
+// Standard IntensityTransformations Process Module Version 1.7.2
 // ----------------------------------------------------------------------------
-// ExponentialTransformationInstance.cpp - Released 2024-01-13T15:48:23Z
+// ExponentialTransformationInstance.cpp - Released 2024-01-19T15:23:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -56,7 +56,6 @@
 #include <pcl/AutoViewLock.h>
 #include <pcl/FFTConvolution.h>
 #include <pcl/GaussianFilter.h>
-#include <pcl/Mutex.h>
 #include <pcl/ReferenceArray.h>
 #include <pcl/SeparableConvolution.h>
 #include <pcl/StandardStatus.h>
@@ -70,10 +69,10 @@ namespace pcl
 
 ExponentialTransformationInstance::ExponentialTransformationInstance( const MetaProcess* P )
    : ProcessImplementation( P )
-   , type( TheExponentialFunctionTypeParameter->ElementValue( TheExponentialFunctionTypeParameter->DefaultValueIndex() ) )
-   , order( TheExponentialFunctionOrderParameter->DefaultValue() )
-   , sigma( TheExponentialFunctionSmoothingParameter->DefaultValue() )
-   , useLightnessMask( TheExponentialFunctionMaskParameter->DefaultValue() )
+   , p_type( TheExponentialFunctionTypeParameter->ElementValue( TheExponentialFunctionTypeParameter->DefaultValueIndex() ) )
+   , p_order( TheExponentialFunctionOrderParameter->DefaultValue() )
+   , p_sigma( TheExponentialFunctionSmoothingParameter->DefaultValue() )
+   , p_useLightnessMask( TheExponentialFunctionMaskParameter->DefaultValue() )
 {
 }
 
@@ -92,10 +91,10 @@ void ExponentialTransformationInstance::Assign( const ProcessImplementation& p )
    const ExponentialTransformationInstance* x = dynamic_cast<const ExponentialTransformationInstance*>( &p );
    if ( x != nullptr )
    {
-      type = x->type;
-      order = x->order;
-      sigma = x->sigma;
-      useLightnessMask = x->useLightnessMask;
+      p_type = x->p_type;
+      p_order = x->p_order;
+      p_sigma = x->p_sigma;
+      p_useLightnessMask = x->p_useLightnessMask;
    }
 }
 
@@ -148,7 +147,7 @@ public:
    {
       AutoPointer<Image> mask;
 
-      if ( instance.sigma > 0 )
+      if ( instance.p_sigma > 0 )
       {
          image.ResetSelections();
          image.SelectNominalChannels();
@@ -156,7 +155,7 @@ public:
          mask->Status().Initialize( "Generating smoothing mask", mask->NumberOfSamples() );
          mask->Status().DisableInitialization();
          mask->SelectNominalChannels();
-         GaussianFilter G( instance.sigma );
+         GaussianFilter G( instance.p_sigma );
          if ( G.Size() < FFTConvolution::FasterThanSeparableFilterSize( Thread::NumberOfThreads( PCL_MAX_PROCESSORS ) ) )
             SeparableConvolution( G.AsSeparableFilter() ) >> *mask;
          else
@@ -168,25 +167,25 @@ public:
       image.Status().Initialize( instance.TypeAsString() + " transformation", image.NumberOfNominalSamples() );
 
       ThreadData data( image, image.NumberOfNominalSamples() );
-      if ( instance.order == 1 )
+      if ( instance.p_order == 1 )
          data.iorder = 1;
-      else if ( instance.order == 2 )
+      else if ( instance.p_order == 2 )
          data.iorder = 2;
-      else if ( instance.order == 3 )
+      else if ( instance.p_order == 3 )
          data.iorder = 3;
-      else if ( instance.order == 4 )
+      else if ( instance.p_order == 4 )
          data.iorder = 4;
-      else if ( instance.order == 5 )
+      else if ( instance.p_order == 5 )
          data.iorder = 5;
-      else if ( instance.order == 6 )
+      else if ( instance.p_order == 6 )
          data.iorder = 6;
-      else if ( instance.order == 0.5 )
+      else if ( instance.p_order == 0.5 )
          data.iorder = -1;
       else
          data.iorder = 0;
 
       Array<size_type> L = pcl::Thread::OptimalThreadLoads( N, 16/*overheadLimit*/ );
-      ReferenceArray<ExponentialThread<P> > threads;
+      ReferenceArray<ExponentialThread<P>> threads;
       for ( size_type i = 0, n = 0; i < L.Length(); n += L[i++] )
          threads.Add( new ExponentialThread<P>( instance, data, image, mask, n, n + L[i] ) );
       AbstractImage::RunThreads( threads, data );
@@ -238,14 +237,14 @@ private:
          for ( int c = 0; c < nc; ++c )
          {
             f[c] = m_image[c] + m_start;
-            m[c] = (m_mask != 0) ? (*m_mask)[c] + m_start : 0;
+            m[c] = (m_mask != nullptr) ? (*m_mask)[c] + m_start : nullptr;
          }
          typename P::sample* fN = m_image[0] + m_end;
 
          for ( ; f[0] < fN; )
          {
             double L = 0, L1 = 0;
-            if ( m_instance.useLightnessMask )
+            if ( m_instance.p_useLightnessMask )
             {
                if ( nc == 1 )
                   P::FromSample( L, *f[0] );
@@ -266,7 +265,7 @@ private:
                P::FromSample( f0, *f[c] );
 
                double fm;
-               if ( m_mask != 0 )
+               if ( m_mask != nullptr )
                   fm = *(m[c])++;
                else
                   fm = f0;
@@ -274,13 +273,24 @@ private:
                switch ( m_data.iorder )
                {
                case 6:
+                  fm = fm*fm*fm;
                   fm *= fm;
+                  break;
                case 5:
-                  fm *= fm;
+                  {
+                     double fm1 = fm;
+                     fm = fm*fm;
+                     fm *= fm;
+                     fm *= fm1;
+                  }
+                  break;
                case 4:
+                  fm = fm*fm;
                   fm *= fm;
+                  break;
                case 3:
-                  fm *= fm;
+                  fm = fm*fm*fm;
+                  break;
                case 2:
                   fm *= fm;
                   break;
@@ -290,19 +300,19 @@ private:
                   fm = Sqrt( fm );
                   break;
                default:
-                  fm = Pow( fm, double( m_instance.order ) );
+                  fm = Pow( fm, double( m_instance.p_order ) );
                   break;
                }
 
                double f1;
-               switch ( m_instance.type )
+               switch ( m_instance.p_type )
                {
                default:
                case ExponentialFunctionType::PIP: f1 = Pow( f0, fm ); break;
                case ExponentialFunctionType::SMI: f1 = 1 - (1 - f0)*fm; break;
                }
 
-               if ( m_instance.useLightnessMask )
+               if ( m_instance.p_useLightnessMask )
                   f1 = L1*f1 + L*f0;
 
                *(f[c])++ = P::ToSample( f1 );
@@ -356,25 +366,27 @@ bool ExponentialTransformationInstance::ExecuteOn( View& view )
 void* ExponentialTransformationInstance::LockParameter( const MetaParameter* p, size_type /*tableRow*/ )
 {
    if ( p == TheExponentialFunctionTypeParameter )
-      return &type;
+      return &p_type;
    if ( p == TheExponentialFunctionOrderParameter )
-      return &order;
+      return &p_order;
    if ( p == TheExponentialFunctionSmoothingParameter )
-      return &sigma;
+      return &p_sigma;
    if ( p == TheExponentialFunctionMaskParameter )
-      return &useLightnessMask;
-   return 0;
+      return &p_useLightnessMask;
+
+   return nullptr;
 }
 
 // ----------------------------------------------------------------------------
 
 String ExponentialTransformationInstance::TypeAsString() const
 {
-   switch ( type )
+   switch ( p_type )
    {
    case ExponentialFunctionType::PIP: return "PIP";
    case ExponentialFunctionType::SMI: return "SMI";
    }
+
    return String();
 }
 
@@ -383,4 +395,4 @@ String ExponentialTransformationInstance::TypeAsString() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ExponentialTransformationInstance.cpp - Released 2024-01-13T15:48:23Z
+// EOF ExponentialTransformationInstance.cpp - Released 2024-01-19T15:23:40Z

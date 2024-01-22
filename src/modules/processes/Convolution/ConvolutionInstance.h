@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.5
+// /_/     \____//_____/   PCL 2.6.6
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// ConvolutionInstance.h - Released 2024-01-13T15:48:22Z
+// ConvolutionInstance.h - Released 2024-01-19T15:23:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -106,4 +106,4 @@ private:
 #endif   // __ConvolutionInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ConvolutionInstance.h - Released 2024-01-13T15:48:22Z
+// EOF ConvolutionInstance.h - Released 2024-01-19T15:23:39Z

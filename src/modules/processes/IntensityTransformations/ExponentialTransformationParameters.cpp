@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.5
+// /_/     \____//_____/   PCL 2.6.6
 // ----------------------------------------------------------------------------
-// Standard IntensityTransformations Process Module Version 1.7.1
+// Standard IntensityTransformations Process Module Version 1.7.2
 // ----------------------------------------------------------------------------
-// ExponentialTransformationParameters.cpp - Released 2024-01-13T15:48:23Z
+// ExponentialTransformationParameters.cpp - Released 2024-01-19T15:23:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -57,10 +57,10 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-ExponentialFunctionType*      TheExponentialFunctionTypeParameter = 0;
-ExponentialFunctionOrder*     TheExponentialFunctionOrderParameter = 0;
-ExponentialFunctionSmoothing* TheExponentialFunctionSmoothingParameter = 0;
-ExponentialFunctionMask*      TheExponentialFunctionMaskParameter = 0;
+ExponentialFunctionType*      TheExponentialFunctionTypeParameter = nullptr;
+ExponentialFunctionOrder*     TheExponentialFunctionOrderParameter = nullptr;
+ExponentialFunctionSmoothing* TheExponentialFunctionSmoothingParameter = nullptr;
+ExponentialFunctionMask*      TheExponentialFunctionMaskParameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -114,7 +114,7 @@ IsoString ExponentialFunctionOrder::Id() const
 
 int ExponentialFunctionOrder::Precision() const
 {
-   return 1;
+   return 2;
 }
 
 double ExponentialFunctionOrder::DefaultValue() const
@@ -191,4 +191,4 @@ bool ExponentialFunctionMask::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ExponentialTransformationParameters.cpp - Released 2024-01-13T15:48:23Z
+// EOF ExponentialTransformationParameters.cpp - Released 2024-01-19T15:23:40Z

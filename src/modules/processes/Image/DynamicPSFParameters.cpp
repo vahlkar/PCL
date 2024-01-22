@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.5
+// /_/     \____//_____/   PCL 2.6.6
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.4
 // ----------------------------------------------------------------------------
-// DynamicPSFParameters.cpp - Released 2024-01-13T15:48:23Z
+// DynamicPSFParameters.cpp - Released 2024-01-19T15:23:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -1480,4 +1480,4 @@ double DPBadStarFillColor::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DynamicPSFParameters.cpp - Released 2024-01-13T15:48:23Z
+// EOF DynamicPSFParameters.cpp - Released 2024-01-19T15:23:40Z

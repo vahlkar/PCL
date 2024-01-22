@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.5
+// /_/     \____//_____/   PCL 2.6.6
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// LinearFitInterface.cpp - Released 2024-01-13T15:48:22Z
+// LinearFitInterface.cpp - Released 2024-01-19T15:23:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -370,4 +370,4 @@ LinearFitInterface::GUIData::GUIData( LinearFitInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LinearFitInterface.cpp - Released 2024-01-13T15:48:22Z
+// EOF LinearFitInterface.cpp - Released 2024-01-19T15:23:39Z

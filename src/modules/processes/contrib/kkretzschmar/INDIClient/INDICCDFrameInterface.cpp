@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.5
+// /_/     \____//_____/   PCL 2.6.6
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// INDICCDFrameInterface.cpp - Released 2024-01-13T15:48:23Z
+// INDICCDFrameInterface.cpp - Released 2024-01-19T15:23:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -1477,8 +1477,8 @@ void INDICCDFrameInterface::e_Timer( Timer& sender )
       INDIPropertyListItemArray itemElements;
       if ( indi->GetPropertyItemElements( m_device, CCD_MODE_PROPERTY_NAME, itemElements ) )
       {
-         u_int32_t indexOfON=0;
-         u_int32_t index=0;
+         uint32_t indexOfON=0;
+         uint32_t index=0;
          for ( auto item : itemElements )
          {
             if ( m_firstUpdate )
@@ -1991,4 +1991,4 @@ void INDICCDFrameInterface::e_Click( Button& sender, bool checked )
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDICCDFrameInterface.cpp - Released 2024-01-13T15:48:23Z
+// EOF INDICCDFrameInterface.cpp - Released 2024-01-19T15:23:40Z
