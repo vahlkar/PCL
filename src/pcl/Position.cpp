@@ -637,12 +637,12 @@ Vector Position::Geometric( const StarPosition& S )
    // Barycentric direction at the catalog epoch.
    Vector u( cd*ca, cd*sa, sd );
 
-   // Parallax
+   // Parallax in radians
    double p = AsRad( S.p );
 
    // Relativistic Doppler effect.
    // ESAsA Eq. 7.26
-   double f = 1/(1 - S.v/c_km_s);
+   double f = 1; ///(1 - S.v/c_km_s);
 
    // Unit conversion factors.
    // - from mas/year to radians/day
@@ -651,21 +651,25 @@ Vector Position::Geometric( const StarPosition& S )
    static constexpr double k = 86400/au_km;
 
    // Space motion vector in radians/day.
-   Vector udot = (Matrix( -sa, -sd*ca, cd*ca,
-                           ca, -sd*sa, cd*sa,
-                          0.0,  cd,    sd    ) * Vector( f*s*S.muAlpha, f*s*S.muDelta, f*k*S.v*p ));
+   Vector m( f*s*S.muAlpha, f*s*S.muDelta, f*k*S.v*p );
+   Vector v( -sa*m[0] - sd*ca*m[1] + cd*ca*m[2],
+              ca*m[0] - sd*sa*m[1] + cd*sa*m[2],
+                           cd*m[1] +    sd*m[2] );
 
    // Time of observation corrected for the Roemer delay.
-   TimePoint tb = m_t + (ca*cd*m_Eb[0] + sa*cd*m_Eb[1] + sd*m_Eb[2])/c_au_day;
+   TimePoint tb = m_t + u.Dot( m_Eb )/c_au_day;
    // Barycentric position vector at time t.
    // ESAsA Eq. 7.127
-   m_ub = u + (tb - S.t0)*udot;
+   m_U = m_ub = u + (tb - S.t0)*v;
 
    // Geocentric position vector at time t.
    // ESAsA Eq. 7.128
-   m_U = m_ub - p*m_Eb;
-   if ( m_observer )
-      m_U -= p*(m_G/au_km); // topocentric position
+   if ( p != 0 )
+   {
+      m_U -= p*m_Eb;
+      if ( m_observer )
+         m_U -= p*(m_G/au_km); // topocentric position
+   }
 
    // We cannot know the 'true' direction of a star.
    m_tau = 0;
