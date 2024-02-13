@@ -642,7 +642,7 @@ Vector Position::Geometric( const StarPosition& S )
 
    // Relativistic Doppler effect.
    // ESAsA Eq. 7.26
-   double f = 1; ///(1 - S.v/c_km_s);
+   double f = 1/(1 - S.v/c_km_s);
 
    // Unit conversion factors.
    // - from mas/year to radians/day
