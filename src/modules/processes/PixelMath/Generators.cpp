@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// Generators.cpp - Released 2024-01-19T15:23:40Z
+// Generators.cpp - Released 2024-03-20T10:42:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -2289,4 +2289,4 @@ void OpExclusionFunction::operator()( Pixel& r, ExpressionList::const_iterator, 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Generators.cpp - Released 2024-01-19T15:23:40Z
+// EOF Generators.cpp - Released 2024-03-20T10:42:12Z

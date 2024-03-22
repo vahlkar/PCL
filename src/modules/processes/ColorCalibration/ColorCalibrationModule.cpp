@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.9.3
+// Standard ColorCalibration Process Module Version 1.9.5
 // ----------------------------------------------------------------------------
-// ColorCalibrationModule.cpp - Released 2024-01-19T15:23:39Z
+// ColorCalibrationModule.cpp - Released 2024-03-20T10:42:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -52,13 +52,13 @@
 
 #define MODULE_VERSION_MAJOR     1
 #define MODULE_VERSION_MINOR     9
-#define MODULE_VERSION_REVISION  3
+#define MODULE_VERSION_REVISION  5
 #define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2024
-#define MODULE_RELEASE_MONTH     1
-#define MODULE_RELEASE_DAY       19
+#define MODULE_RELEASE_MONTH     3
+#define MODULE_RELEASE_DAY       20
 
 #include "ColorCalibrationModule.h"
 #include "BackgroundNeutralizationProcess.h"
@@ -167,7 +167,6 @@ void ColorCalibrationModule::GetReleaseDate( int& year, int& month, int& day ) c
 
 void ColorCalibrationModule::OnUnload()
 {
-   SpectrophotometricColorCalibrationProcess::SavePreferences();
    TheSpectrophotometricColorCalibrationGraphInterface->CleanUp();
    ThePhotometricColorCalibrationGraphInterface->CleanUp();
 }
@@ -202,4 +201,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF ColorCalibrationModule.cpp - Released 2024-01-19T15:23:39Z
+// EOF ColorCalibrationModule.cpp - Released 2024-03-20T10:42:12Z

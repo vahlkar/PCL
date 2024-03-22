@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// PixelMathInterface.cpp - Released 2024-01-19T15:23:40Z
+// PixelMathInterface.cpp - Released 2024-03-20T10:42:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -1022,4 +1022,4 @@ PixelMathInterface::GUIData::GUIData( PixelMathInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PixelMathInterface.cpp - Released 2024-01-19T15:23:40Z
+// EOF PixelMathInterface.cpp - Released 2024-03-20T10:42:12Z

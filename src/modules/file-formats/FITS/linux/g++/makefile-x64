@@ -1,15 +1,15 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.133
+# PixInsight Makefile Generator Script v1.135
 # Copyright (C) 2009-2024 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2024-01-22T10:20:52.494Z
+# Generated on .... 2024-03-22T11:22:55.200Z
 # Project id ...... FITS
 # Project type .... Module
 # Platform ........ Linux/g++
 # Configuration ... Release/x64
 # --------------------------------------------------------------------
-# Additional libraries:
-# cfitsio-pxi
+# Additional preprocessor definitions:
+# f2cFortran
 ######################################################################
 
 OBJ_DIR="$(PCLSRCDIR)/modules/file-formats/FITS/linux/g++/x64/Release"
@@ -28,7 +28,72 @@ SRC_FILES= \
 ../../FITSModule.cpp \
 ../../FITSOptionsDialog.cpp \
 ../../FITSPreferencesDialog.cpp \
-../../FITSRangeOptionsDialog.cpp
+../../FITSRangeOptionsDialog.cpp \
+../../cfitsio/buffers.c \
+../../cfitsio/cfileio.c \
+../../cfitsio/checksum.c \
+../../cfitsio/drvrfile.c \
+../../cfitsio/drvrmem.c \
+../../cfitsio/drvrnet.c \
+../../cfitsio/drvrsmem.c \
+../../cfitsio/editcol.c \
+../../cfitsio/edithdu.c \
+../../cfitsio/eval_f.c \
+../../cfitsio/eval_l.c \
+../../cfitsio/eval_y.c \
+../../cfitsio/f77_wrap1.c \
+../../cfitsio/f77_wrap2.c \
+../../cfitsio/f77_wrap3.c \
+../../cfitsio/f77_wrap4.c \
+../../cfitsio/fits_hcompress.c \
+../../cfitsio/fits_hdecompress.c \
+../../cfitsio/fitscore.c \
+../../cfitsio/getcol.c \
+../../cfitsio/getcolb.c \
+../../cfitsio/getcold.c \
+../../cfitsio/getcole.c \
+../../cfitsio/getcoli.c \
+../../cfitsio/getcolj.c \
+../../cfitsio/getcolk.c \
+../../cfitsio/getcoll.c \
+../../cfitsio/getcols.c \
+../../cfitsio/getcolsb.c \
+../../cfitsio/getcolui.c \
+../../cfitsio/getcoluj.c \
+../../cfitsio/getcoluk.c \
+../../cfitsio/getkey.c \
+../../cfitsio/group.c \
+../../cfitsio/grparser.c \
+../../cfitsio/histo.c \
+../../cfitsio/imcompress.c \
+../../cfitsio/iraffits.c \
+../../cfitsio/modkey.c \
+../../cfitsio/pliocomp.c \
+../../cfitsio/putcol.c \
+../../cfitsio/putcolb.c \
+../../cfitsio/putcold.c \
+../../cfitsio/putcole.c \
+../../cfitsio/putcoli.c \
+../../cfitsio/putcolj.c \
+../../cfitsio/putcolk.c \
+../../cfitsio/putcoll.c \
+../../cfitsio/putcols.c \
+../../cfitsio/putcolsb.c \
+../../cfitsio/putcolu.c \
+../../cfitsio/putcolui.c \
+../../cfitsio/putcoluj.c \
+../../cfitsio/putcoluk.c \
+../../cfitsio/putkey.c \
+../../cfitsio/quantize.c \
+../../cfitsio/region.c \
+../../cfitsio/ricecomp.c \
+../../cfitsio/scalnull.c \
+../../cfitsio/simplerng.c \
+../../cfitsio/swapproc.c \
+../../cfitsio/wcssub.c \
+../../cfitsio/wcsutil.c \
+../../cfitsio/zcompress.c \
+../../cfitsio/zuncompress.c
 
 #
 # Object files
@@ -41,7 +106,72 @@ OBJ_FILES= \
 ./x64/Release/FITSModule.o \
 ./x64/Release/FITSOptionsDialog.o \
 ./x64/Release/FITSPreferencesDialog.o \
-./x64/Release/FITSRangeOptionsDialog.o
+./x64/Release/FITSRangeOptionsDialog.o \
+./x64/Release/cfitsio/buffers.o \
+./x64/Release/cfitsio/cfileio.o \
+./x64/Release/cfitsio/checksum.o \
+./x64/Release/cfitsio/drvrfile.o \
+./x64/Release/cfitsio/drvrmem.o \
+./x64/Release/cfitsio/drvrnet.o \
+./x64/Release/cfitsio/drvrsmem.o \
+./x64/Release/cfitsio/editcol.o \
+./x64/Release/cfitsio/edithdu.o \
+./x64/Release/cfitsio/eval_f.o \
+./x64/Release/cfitsio/eval_l.o \
+./x64/Release/cfitsio/eval_y.o \
+./x64/Release/cfitsio/f77_wrap1.o \
+./x64/Release/cfitsio/f77_wrap2.o \
+./x64/Release/cfitsio/f77_wrap3.o \
+./x64/Release/cfitsio/f77_wrap4.o \
+./x64/Release/cfitsio/fits_hcompress.o \
+./x64/Release/cfitsio/fits_hdecompress.o \
+./x64/Release/cfitsio/fitscore.o \
+./x64/Release/cfitsio/getcol.o \
+./x64/Release/cfitsio/getcolb.o \
+./x64/Release/cfitsio/getcold.o \
+./x64/Release/cfitsio/getcole.o \
+./x64/Release/cfitsio/getcoli.o \
+./x64/Release/cfitsio/getcolj.o \
+./x64/Release/cfitsio/getcolk.o \
+./x64/Release/cfitsio/getcoll.o \
+./x64/Release/cfitsio/getcols.o \
+./x64/Release/cfitsio/getcolsb.o \
+./x64/Release/cfitsio/getcolui.o \
+./x64/Release/cfitsio/getcoluj.o \
+./x64/Release/cfitsio/getcoluk.o \
+./x64/Release/cfitsio/getkey.o \
+./x64/Release/cfitsio/group.o \
+./x64/Release/cfitsio/grparser.o \
+./x64/Release/cfitsio/histo.o \
+./x64/Release/cfitsio/imcompress.o \
+./x64/Release/cfitsio/iraffits.o \
+./x64/Release/cfitsio/modkey.o \
+./x64/Release/cfitsio/pliocomp.o \
+./x64/Release/cfitsio/putcol.o \
+./x64/Release/cfitsio/putcolb.o \
+./x64/Release/cfitsio/putcold.o \
+./x64/Release/cfitsio/putcole.o \
+./x64/Release/cfitsio/putcoli.o \
+./x64/Release/cfitsio/putcolj.o \
+./x64/Release/cfitsio/putcolk.o \
+./x64/Release/cfitsio/putcoll.o \
+./x64/Release/cfitsio/putcols.o \
+./x64/Release/cfitsio/putcolsb.o \
+./x64/Release/cfitsio/putcolu.o \
+./x64/Release/cfitsio/putcolui.o \
+./x64/Release/cfitsio/putcoluj.o \
+./x64/Release/cfitsio/putcoluk.o \
+./x64/Release/cfitsio/putkey.o \
+./x64/Release/cfitsio/quantize.o \
+./x64/Release/cfitsio/region.o \
+./x64/Release/cfitsio/ricecomp.o \
+./x64/Release/cfitsio/scalnull.o \
+./x64/Release/cfitsio/simplerng.o \
+./x64/Release/cfitsio/swapproc.o \
+./x64/Release/cfitsio/wcssub.o \
+./x64/Release/cfitsio/wcsutil.o \
+./x64/Release/cfitsio/zcompress.o \
+./x64/Release/cfitsio/zuncompress.o
 
 #
 # Dependency files
@@ -54,7 +184,72 @@ DEP_FILES= \
 ./x64/Release/FITSModule.d \
 ./x64/Release/FITSOptionsDialog.d \
 ./x64/Release/FITSPreferencesDialog.d \
-./x64/Release/FITSRangeOptionsDialog.d
+./x64/Release/FITSRangeOptionsDialog.d \
+./x64/Release/cfitsio/buffers.d \
+./x64/Release/cfitsio/cfileio.d \
+./x64/Release/cfitsio/checksum.d \
+./x64/Release/cfitsio/drvrfile.d \
+./x64/Release/cfitsio/drvrmem.d \
+./x64/Release/cfitsio/drvrnet.d \
+./x64/Release/cfitsio/drvrsmem.d \
+./x64/Release/cfitsio/editcol.d \
+./x64/Release/cfitsio/edithdu.d \
+./x64/Release/cfitsio/eval_f.d \
+./x64/Release/cfitsio/eval_l.d \
+./x64/Release/cfitsio/eval_y.d \
+./x64/Release/cfitsio/f77_wrap1.d \
+./x64/Release/cfitsio/f77_wrap2.d \
+./x64/Release/cfitsio/f77_wrap3.d \
+./x64/Release/cfitsio/f77_wrap4.d \
+./x64/Release/cfitsio/fits_hcompress.d \
+./x64/Release/cfitsio/fits_hdecompress.d \
+./x64/Release/cfitsio/fitscore.d \
+./x64/Release/cfitsio/getcol.d \
+./x64/Release/cfitsio/getcolb.d \
+./x64/Release/cfitsio/getcold.d \
+./x64/Release/cfitsio/getcole.d \
+./x64/Release/cfitsio/getcoli.d \
+./x64/Release/cfitsio/getcolj.d \
+./x64/Release/cfitsio/getcolk.d \
+./x64/Release/cfitsio/getcoll.d \
+./x64/Release/cfitsio/getcols.d \
+./x64/Release/cfitsio/getcolsb.d \
+./x64/Release/cfitsio/getcolui.d \
+./x64/Release/cfitsio/getcoluj.d \
+./x64/Release/cfitsio/getcoluk.d \
+./x64/Release/cfitsio/getkey.d \
+./x64/Release/cfitsio/group.d \
+./x64/Release/cfitsio/grparser.d \
+./x64/Release/cfitsio/histo.d \
+./x64/Release/cfitsio/imcompress.d \
+./x64/Release/cfitsio/iraffits.d \
+./x64/Release/cfitsio/modkey.d \
+./x64/Release/cfitsio/pliocomp.d \
+./x64/Release/cfitsio/putcol.d \
+./x64/Release/cfitsio/putcolb.d \
+./x64/Release/cfitsio/putcold.d \
+./x64/Release/cfitsio/putcole.d \
+./x64/Release/cfitsio/putcoli.d \
+./x64/Release/cfitsio/putcolj.d \
+./x64/Release/cfitsio/putcolk.d \
+./x64/Release/cfitsio/putcoll.d \
+./x64/Release/cfitsio/putcols.d \
+./x64/Release/cfitsio/putcolsb.d \
+./x64/Release/cfitsio/putcolu.d \
+./x64/Release/cfitsio/putcolui.d \
+./x64/Release/cfitsio/putcoluj.d \
+./x64/Release/cfitsio/putcoluk.d \
+./x64/Release/cfitsio/putkey.d \
+./x64/Release/cfitsio/quantize.d \
+./x64/Release/cfitsio/region.d \
+./x64/Release/cfitsio/ricecomp.d \
+./x64/Release/cfitsio/scalnull.d \
+./x64/Release/cfitsio/simplerng.d \
+./x64/Release/cfitsio/swapproc.d \
+./x64/Release/cfitsio/wcssub.d \
+./x64/Release/cfitsio/wcsutil.d \
+./x64/Release/cfitsio/zcompress.d \
+./x64/Release/cfitsio/zuncompress.d
 
 #
 # Rules
@@ -63,7 +258,7 @@ DEP_FILES= \
 -include $(DEP_FILES)
 
 $(OBJ_DIR)/FITS-pxm.so: $(OBJ_FILES)
-	g++ -m64 -fPIC -pthread -Wl,-fuse-ld=gold -Wl,--enable-new-dtags -Wl,-z,noexecstack -Wl,-O1 -Wl,--gc-sections -rdynamic -shared -L"$(PCLLIBDIR64)" -L"$(PCLBINDIR64)/lib" -o $(OBJ_DIR)/FITS-pxm.so $(OBJ_FILES) -lpthread -lPCL-pxi -llz4-pxi -lzstd-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi -lcfitsio-pxi
+	g++ -m64 -fPIC -pthread -Wl,-fuse-ld=gold -Wl,--enable-new-dtags -Wl,-z,noexecstack -Wl,-O1 -Wl,--gc-sections -rdynamic -shared -L"$(PCLLIBDIR64)" -L"$(PCLBINDIR64)/lib" -o $(OBJ_DIR)/FITS-pxm.so $(OBJ_FILES) -lpthread -lPCL-pxi -llz4-pxi -lzstd-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi
 	$(MAKE) -f ./makefile-x64 --no-print-directory post-build
 
 .PHONY: clean
@@ -75,6 +270,9 @@ post-build:
 	cp $(OBJ_DIR)/FITS-pxm.so $(PCLBINDIR64)
 
 ./x64/Release/%.o: ../../%.cpp
-	g++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"$(CUDA_HOME)/include" -mfpmath=sse -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -fnon-call-exceptions -std=c++17 -Wall -Wno-parentheses -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	g++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -D"f2cFortran" -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mfpmath=sse -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -fnon-call-exceptions -std=c++17 -Wall -Wno-parentheses -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	@echo ' '
+./x64/Release/cfitsio/%.o: ../../cfitsio/%.c
+	gcc -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -D"f2cFortran" -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mfpmath=sse -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fnon-call-exceptions -std=c99 -Wall -Wno-parentheses -Wno-error=implicit-function-declaration -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 

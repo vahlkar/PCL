@@ -7,10 +7,10 @@
 // ----------------------------------------------------------------------------
 // This file is part of PixInsight X11 UNIX/Linux Installer
 // ----------------------------------------------------------------------------
-// 2024/01/19 15:26:27 UTC
+// 2024/03/20 10:47:54 UTC
 // installer.cpp
 // ----------------------------------------------------------------------------
-// Copyright (c) 2013-2023 Pleiades Astrophoto S.L.
+// Copyright (c) 2013-2024 Pleiades Astrophoto S.L.
 // ----------------------------------------------------------------------------
 
 #if !defined( __PCL_FREEBSD ) && !defined( __PCL_LINUX )
@@ -305,7 +305,8 @@ PixInsightX11Installer::PixInsightX11Installer( int argc, const char** argv )
    // Default source installation directory.
    m_sourceDir = m_baseDir + "/PixInsight";
 
-   // Default application installation directory.
+   // The application installation directory.
+   // ### N.B. Enforced for security since core 1.8.9-2 build 1603.
    m_installDir = "/opt/PixInsight";
 
    // Default desktop entry installation directory.
@@ -342,8 +343,6 @@ PixInsightX11Installer::PixInsightX11Installer( int argc, const char** argv )
       {
          if ( arg.Id() == "-source-dir" || arg.Id() == "s" )
             m_sourceDir = arg.StringValue();
-         else if ( arg.Id() == "-install-dir" || arg.Id() == "i" )
-            m_installDir = arg.StringValue();
          else if ( arg.Id() == "-install-desktop-dir" )
             m_installDesktopDir = arg.StringValue();
          else if ( arg.Id() == "-install-mime-dir" )
@@ -837,13 +836,6 @@ bool PixInsightX11Installer::DoShowHelp()
    "\n      Specifies the source installation files directory."
    "\n      (./PixInsight)"
    "\n"
-   "\n-i=<dir> | --install-dir=<dir>"
-   "\n"
-   "\n      Specifies the target installation directory. For basic security"
-   "\n      reasons, this should always be a protected system directory with"
-   "\n      exclusive root write permission."
-   "\n      (/opt/PixInsight)"
-   "\n"
    "\n-y | --yes"
    "\n"
    "\n      Do not ask for confirmation to install/uninstall. Without this"
@@ -908,7 +900,13 @@ bool PixInsightX11Installer::DoShowHelp()
    "\n"
    "\n      Shows this help text and exits."
    "\n"
-   "\nReferences"
+   "\n** Security Notes **"
+   "\n"
+   "\nSince version 1.8.9-2 build 1603, the PixInsight core application can"
+   "\nonly be installed on the /opt/PixInsight directory on Linux and FreeBSD"
+   "\noperating systems."
+   "\n"
+   "\n** References **"
    "\n"
    "\nhttps://specifications.freedesktop.org/desktop-entry-spec/latest/"
    "\nhttps://specifications.freedesktop.org/menu-spec/latest/"
@@ -1254,5 +1252,5 @@ int main( int argc, const char** argv )
 }
 
 // ----------------------------------------------------------------------------
-// 2024/01/19 15:26:27 UTC
+// 2024/03/20 10:47:54 UTC
 // installer.cpp

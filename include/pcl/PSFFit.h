@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
-// pcl/PSFFit.h - Released 2024-01-19T15:23:14Z
+// pcl/PSFFit.h - Released 2024-03-20T10:41:36Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -539,15 +539,13 @@ public:
     *                         from 1.0e-12 to 0.001.
     *
     * \param bkgMaxVar        Maximum relative difference allowed between the
-    *                         fitted local background (\e B PSF parameter) and
-    *       the initial local background estimated as the median pixel sample
-    *       value of the sampling region. The default value is 0.1, meaning
-    *       that a maximum relative difference of a 10% will be allowed. This
-    *       parameter is useful to enforce stability of the PSF fitting
-    *       process: assuming that the median pixel sample value is a robust
-    *       estimate of the local background, by constraining the range of
-    *       variation of the \e B parameter the PSF fitting process can be more
-    *       accurate and robust.
+    *                         fitted local background (the \e B PSF parameter)
+    *       and the initial local background estimated as a robust mean pixel
+    *       value within the sampling region. The default value is 0.1, meaning
+    *       that a maximum relative difference of 10% will be allowed. This
+    *       parameter is useful to enforce stability of the PSF fitting task by
+    *       constraining the range of variation of the \e B local background
+    *       parameter with respect to a robust and efficient initial estimate.
     *
     * \param growthForFlux    Growing factor in units of the Full Width at
     *                         Tenth Maximum (FWTM) for extension/contraction of
@@ -630,4 +628,4 @@ private:
 #endif   // __PCL_PSFFit_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFFit.h - Released 2024-01-19T15:23:14Z
+// EOF pcl/PSFFit.h - Released 2024-03-20T10:41:36Z

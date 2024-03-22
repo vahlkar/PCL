@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.133
+# PixInsight Makefile Generator Script v1.135
 # Copyright (C) 2009-2024 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2024-01-22T10:20:43.812Z
+# Generated on .... 2024-03-22T11:22:47.232Z
 # Project id ...... lz4
 # Project type .... StaticLibrary
 # Platform ........ Linux/g++
@@ -57,6 +57,6 @@ post-build:
 	cp $(OBJ_DIR)/liblz4-pxi.a $(PCLLIBDIR64)
 
 ./x64/Release/%.o: ../../%.c
-	gcc -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"$(CUDA_HOME)/include" -mfpmath=sse -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fnon-call-exceptions -std=c99 -Wall -Wno-parentheses -Wno-error=implicit-function-declaration -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	gcc -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mfpmath=sse -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fnon-call-exceptions -std=c99 -Wall -Wno-parentheses -Wno-error=implicit-function-declaration -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 

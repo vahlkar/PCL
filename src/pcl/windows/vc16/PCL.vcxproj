@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.133
+# PixInsight Makefile Generator Script v1.135
 # Copyright (C) 2009-2024 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2024-01-22T10:20:41.177Z
+# Generated on .... 2024-03-22T11:22:46.282Z
 # Project id ...... PCL
 # Project type .... StaticLibrary
 # Platform ........ Windows/vc16
@@ -22,7 +22,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{E90CFA7D-C0C2-48FA-94EE-4EF992BEBA66}</ProjectGuid>
+    <ProjectGuid>{1840CAA4-40F8-46B3-8A2D-1511253D9766}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -168,6 +168,7 @@
     <ClCompile Include="..\..\FileFormatImplementation.cpp"/>
     <ClCompile Include="..\..\FileFormatInstance.cpp"/>
     <ClCompile Include="..\..\FileInfo.cpp"/>
+    <ClCompile Include="..\..\FilterManager.cpp"/>
     <ClCompile Include="..\..\Font.cpp"/>
     <ClCompile Include="..\..\FontComboBox.cpp"/>
     <ClCompile Include="..\..\FourierTransform.cpp"/>

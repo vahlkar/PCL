@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
-// pcl/Console.cpp - Released 2024-01-19T15:23:20Z
+// pcl/Console.cpp - Released 2024-03-20T10:41:42Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -301,7 +301,7 @@ static String MakeScriptArguments( const StringKeyValueList& arguments )
 
 void Console::ExecuteScript( const String& filePath, const StringKeyValueList& arguments )
 {
-   ExecuteCommand( "run -x" + MakeScriptArguments( arguments ) +
+   ExecuteCommand( "run -x -r=m" + MakeScriptArguments( arguments ) +
                    " \"" + filePath + '\"' );
 }
 
@@ -309,7 +309,7 @@ void Console::ExecuteScript( const String& filePath, const StringKeyValueList& a
 
 void Console::ExecuteScriptGlobal( const String& filePath, const StringKeyValueList& arguments )
 {
-   ExecuteCommand( "run -x" + MakeScriptArguments( arguments ) +
+   ExecuteCommand( "run -x -r=m" + MakeScriptArguments( arguments ) +
                    " -p=\"isGlobalTarget,true\""
                    " -p=\"isViewTarget,false\""
                    " \"" + filePath + '\"' );
@@ -319,7 +319,7 @@ void Console::ExecuteScriptGlobal( const String& filePath, const StringKeyValueL
 
 void Console::ExecuteScriptOn( const View& view, const String& filePath, const StringKeyValueList& arguments )
 {
-   ExecuteCommand( "run -x" + MakeScriptArguments( arguments ) +
+   ExecuteCommand( "run -x -r=m" + MakeScriptArguments( arguments ) +
                    " -p=\"isGlobalTarget,false\""
                    " -p=\"isViewTarget,true\""
                    " -p=\"targetView," + view.FullId() + '\"' +
@@ -331,4 +331,4 @@ void Console::ExecuteScriptOn( const View& view, const String& filePath, const S
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Console.cpp - Released 2024-01-19T15:23:20Z
+// EOF pcl/Console.cpp - Released 2024-03-20T10:41:42Z

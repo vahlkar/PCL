@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.5.1
+// Standard Global Process Module Version 1.5.3
 // ----------------------------------------------------------------------------
-// PreferencesParameters.cpp - Released 2024-01-19T15:23:39Z
+// PreferencesParameters.cpp - Released 2024-03-20T10:42:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -94,6 +94,8 @@ IMPLEMENT_STRING_METAPARAMETER    ( Application, shortTermNutationModelFile )
 IMPLEMENT_STRING_METAPARAMETER    ( Application, deltaTDataFile )
 IMPLEMENT_STRING_METAPARAMETER    ( Application, deltaATDataFile )
 IMPLEMENT_STRING_METAPARAMETER    ( Application, cipITRSDataFile )
+IMPLEMENT_STRING_METAPARAMETER    ( Application, filtersDatabaseFile )
+IMPLEMENT_STRING_METAPARAMETER    ( Application, whiteReferencesDatabaseFile )
 
 // ----------------------------------------------------------------------------
 
@@ -241,9 +243,11 @@ IMPLEMENT_BOOLEAN_METAPARAMETER   ( Process, enableLaunchStatistics )
 // ----------------------------------------------------------------------------
 
 IMPLEMENT_BOOLEAN_METAPARAMETER   ( Security, allowUnsignedScriptExecution )
+IMPLEMENT_BOOLEAN_METAPARAMETER   ( Security, allowUnsignedModuleInstallation )
 IMPLEMENT_BOOLEAN_METAPARAMETER   ( Security, allowUnsignedRepositories )
 IMPLEMENT_BOOLEAN_METAPARAMETER   ( Security, allowInsecureRepositories )
 IMPLEMENT_BOOLEAN_METAPARAMETER   ( Security, reportScriptSignatures )
+IMPLEMENT_BOOLEAN_METAPARAMETER   ( Security, reportModuleSignatures )
 IMPLEMENT_BOOLEAN_METAPARAMETER   ( Security, warnOnUnsignedCodeExecution )
 IMPLEMENT_BOOLEAN_METAPARAMETER   ( Security, enableLocalSigningIdentity )
 
@@ -252,4 +256,4 @@ IMPLEMENT_BOOLEAN_METAPARAMETER   ( Security, enableLocalSigningIdentity )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesParameters.cpp - Released 2024-01-19T15:23:39Z
+// EOF PreferencesParameters.cpp - Released 2024-03-20T10:42:12Z

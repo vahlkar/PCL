@@ -7,10 +7,6 @@ cd $BASEDIR/APASS/linux/g++
 make clean
 make -j $NPROC
 
-# cd $BASEDIR/BackgroundModelization/linux/g++
-# make clean
-# make -j $NPROC
-
 cd $BASEDIR/CloneStamp/linux/g++
 make clean
 make -j $NPROC
@@ -27,25 +23,17 @@ cd $BASEDIR/ColorSpaces/linux/g++
 make clean
 make -j $NPROC
 
-# cd $BASEDIR/Compatibility/linux/g++
-# make clean
-# make -j $NPROC
-
 cd $BASEDIR/Convolution/linux/g++
 make clean
 make -j $NPROC
-
-# cd $BASEDIR/Deconvolution/linux/g++
-# make clean
-# make -j $NPROC
 
 cd $BASEDIR/EphemerisGeneration/linux/g++
 make clean
 make -j $NPROC
 
-# cd $BASEDIR/FastIntegration/linux/g++
-# make clean
-# make -j $NPROC
+cd $BASEDIR/FilterManager/linux/g++
+make clean
+make -j $NPROC
 
 cd $BASEDIR/FindingChart/linux/g++
 make clean
@@ -87,25 +75,13 @@ cd $BASEDIR/ImageIntegration/linux/g++
 make clean
 make -j $NPROC
 
-# cd $BASEDIR/ImageRegistration/linux/g++
-# make clean
-# make -j $NPROC
-
 cd $BASEDIR/IntensityTransformations/linux/g++
 make clean
 make -j $NPROC
 
-# cd $BASEDIR/MaskGeneration/linux/g++
-# make clean
-# make -j $NPROC
-
 cd $BASEDIR/Morphology/linux/g++
 make clean
 make -j $NPROC
-
-# cd $BASEDIR/MultiscaleProcessing/linux/g++
-# make clean
-# make -j $NPROC
 
 cd $BASEDIR/NetworkService/linux/g++
 make clean
@@ -115,17 +91,9 @@ cd $BASEDIR/NoiseGeneration/linux/g++
 make clean
 make -j $NPROC
 
-# cd $BASEDIR/NoiseReduction/linux/g++
-# make clean
-# make -j $NPROC
-
 cd $BASEDIR/NoOperation/linux/g++
 make clean
 make -j $NPROC
-
-# cd $BASEDIR/Obsolete/linux/g++
-# make clean
-# make -j $NPROC
 
 cd $BASEDIR/PixelMath/linux/g++
 make clean
@@ -139,14 +107,6 @@ cd $BASEDIR/Sandbox/linux/g++
 make clean
 make -j $NPROC
 
-# cd $BASEDIR/StarGenerator/linux/g++
-# make clean
-# make -j $NPROC
-
-# cd $BASEDIR/TGV/linux/g++
-# make clean
-# make -j $NPROC
-
 cd $BASEDIR/contrib/cleger/SubframeSelector/linux/g++
 make clean
 make -j $NPROC
@@ -158,10 +118,6 @@ make -j $NPROC
 cd $BASEDIR/contrib/kkretzschmar/INDIClient/linux/g++
 make clean
 make -j $NPROC
-
-# cd $BASEDIR/contrib/nmisiura/StarNet/linux/g++
-# make clean
-# make -j $NPROC
 
 cd $BASEDIR/contrib/nvolkov/Blink/linux/g++
 make clean

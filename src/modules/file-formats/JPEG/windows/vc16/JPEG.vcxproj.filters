@@ -1,31 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.133
+# PixInsight Makefile Generator Script v1.135
 # Copyright (C) 2009-2024 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2024-01-22T10:20:52.994Z
+# Generated on .... 2024-03-22T11:22:55.802Z
 # Project id ...... JPEG
 # Project type .... Module
 # Platform ........ Windows/vc16
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # Additional preprocessor definitions:
 # _CRT_SECURE_NO_WARNINGS
-# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# Additional libraries:
-# jpeg-pxi
 ######################################################################
 -->
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>305250dc-35ae-419a-900e-287420c39620</UniqueIdentifier>
+      <UniqueIdentifier>a845e314-1369-468a-b719-8b9c6dd3789e</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>455ab8dd-6c74-4c4e-8539-b2d813228062</UniqueIdentifier>
+      <UniqueIdentifier>a5f13923-6613-4aea-b92b-ff65805e51a0</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>6befdb82-dd5b-4379-a3cc-7cbb99606a45</UniqueIdentifier>
+      <UniqueIdentifier>5338bd96-ad13-4990-8a4d-d13662fd76fc</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -47,6 +44,144 @@
     <ClCompile Include="..\..\JPEGPreferencesDialog.cpp">
         <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jaricom.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jcapimin.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jcapistd.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jcarith.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jccoefct.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jccolor.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jcdctmgr.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jchuff.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jcinit.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jcmainct.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jcmarker.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jcmaster.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jcomapi.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jcparam.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jcprepct.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jcsample.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jctrans.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jdapimin.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jdapistd.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jdarith.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jdatadst.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jdatasrc.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jdcoefct.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jdcolor.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jddctmgr.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jdhuff.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jdinput.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jdmainct.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jdmarker.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jdmaster.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jdmerge.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jdpostct.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jdsample.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jdtrans.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jerror.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jfdctflt.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jfdctfst.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jfdctint.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jidctflt.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jidctfst.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jidctint.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jmemmgr.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jmemnobs.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jquant1.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jquant2.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\jpeglib\jutils.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\JPEG.h">
@@ -65,6 +200,33 @@
         <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\JPEGPreferencesDialog.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\jpeglib\jconfig.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\jpeglib\jdct.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\jpeglib\jerror.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\jpeglib\jinclude.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\jpeglib\jmemsys.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\jpeglib\jmorecfg.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\jpeglib\jpegint.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\jpeglib\jpeglib.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\jpeglib\jversion.h">
         <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

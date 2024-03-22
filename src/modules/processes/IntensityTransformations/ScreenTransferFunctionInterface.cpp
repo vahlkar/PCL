@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.2
 // ----------------------------------------------------------------------------
-// ScreenTransferFunctionInterface.cpp - Released 2024-01-19T15:23:40Z
+// ScreenTransferFunctionInterface.cpp - Released 2024-03-20T10:42:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -1624,4 +1624,4 @@ ScreenTransferFunctionInterface::GUIData::GUIData( ScreenTransferFunctionInterfa
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ScreenTransferFunctionInterface.cpp - Released 2024-01-19T15:23:40Z
+// EOF ScreenTransferFunctionInterface.cpp - Released 2024-03-20T10:42:12Z

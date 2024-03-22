@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.133
+# PixInsight Makefile Generator Script v1.135
 # Copyright (C) 2009-2024 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2024-01-22T10:20:52.661Z
+# Generated on .... 2024-03-22T11:22:55.384Z
 # Project id ...... FITS
 # Project type .... Module
 # Platform ........ Windows/vc17
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # Additional preprocessor definitions:
+# f2cFortran
 # _CRT_SECURE_NO_WARNINGS
-# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# Additional libraries:
-# cfitsio-pxi
+# _MBCS
+# FF_NO_UNISTD_H
 ######################################################################
 -->
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>610cbf96-f969-4010-99f2-41c77508f229</UniqueIdentifier>
+      <UniqueIdentifier>48023658-9552-4e39-ba87-1b64582fdcce</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>bded71d5-1625-45ec-bfb8-147788a47dab</UniqueIdentifier>
+      <UniqueIdentifier>e957df85-5e1b-4e22-b4c0-331db7e72673</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>349d760e-9f67-486c-ab29-8318ce1911d5</UniqueIdentifier>
+      <UniqueIdentifier>f2ad6941-d35c-43bc-98e0-45673efaee81</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -50,6 +50,201 @@
     <ClCompile Include="..\..\FITSRangeOptionsDialog.cpp">
         <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\cfitsio\buffers.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\cfileio.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\checksum.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\drvrfile.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\drvrmem.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\drvrnet.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\drvrsmem.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\editcol.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\edithdu.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\eval_f.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\eval_l.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\eval_y.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\f77_wrap1.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\f77_wrap2.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\f77_wrap3.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\f77_wrap4.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\fits_hcompress.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\fits_hdecompress.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\fitscore.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\getcol.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\getcolb.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\getcold.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\getcole.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\getcoli.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\getcolj.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\getcolk.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\getcoll.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\getcols.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\getcolsb.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\getcolui.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\getcoluj.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\getcoluk.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\getkey.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\group.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\grparser.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\histo.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\imcompress.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\iraffits.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\modkey.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\pliocomp.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\putcol.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\putcolb.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\putcold.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\putcole.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\putcoli.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\putcolj.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\putcolk.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\putcoll.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\putcols.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\putcolsb.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\putcolu.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\putcolui.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\putcoluj.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\putcoluk.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\putkey.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\quantize.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\region.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\ricecomp.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\scalnull.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\simplerng.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\swapproc.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\wcssub.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\wcsutil.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\zcompress.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cfitsio\zuncompress.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\FITS.h">
@@ -71,6 +266,42 @@
         <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\FITSRangeOptionsDialog.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cfitsio\cfortran.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cfitsio\drvrsmem.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cfitsio\eval_defs.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cfitsio\eval_tab.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cfitsio\f77_wrap.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cfitsio\fitsio.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cfitsio\fitsio2.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cfitsio\group.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cfitsio\grparser.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cfitsio\longnam.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cfitsio\region.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cfitsio\simplerng.h">
         <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

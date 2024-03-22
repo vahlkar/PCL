@@ -1,15 +1,16 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.133
+# PixInsight Makefile Generator Script v1.135
 # Copyright (C) 2009-2024 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2024-01-22T10:20:53.260Z
+# Generated on .... 2024-03-22T11:22:56.251Z
 # Project id ...... JPEG2000
 # Project type .... Module
 # Platform ........ Linux/g++
 # Configuration ... Release/x64
 # --------------------------------------------------------------------
-# Additional libraries:
-# jasper-pxi
+# Additional include search directories:
+# ../..
+# jasper
 ######################################################################
 
 OBJ_DIR="$(PCLSRCDIR)/modules/file-formats/JPEG2000/linux/g++/x64/Release"
@@ -26,7 +27,44 @@ SRC_FILES= \
 ../../JPEG2000Instance.cpp \
 ../../JPEG2000Module.cpp \
 ../../JPEG2000OptionsDialog.cpp \
-../../JPEG2000PreferencesDialog.cpp
+../../JPEG2000PreferencesDialog.cpp \
+../../jasper/base/jas_cm.c \
+../../jasper/base/jas_debug.c \
+../../jasper/base/jas_getopt.c \
+../../jasper/base/jas_icc.c \
+../../jasper/base/jas_iccdata.c \
+../../jasper/base/jas_image.c \
+../../jasper/base/jas_init.c \
+../../jasper/base/jas_malloc.c \
+../../jasper/base/jas_seq.c \
+../../jasper/base/jas_stream.c \
+../../jasper/base/jas_string.c \
+../../jasper/base/jas_tmr.c \
+../../jasper/base/jas_tvp.c \
+../../jasper/base/jas_version.c \
+../../jasper/dummy.c \
+../../jasper/jp2/jp2_cod.c \
+../../jasper/jp2/jp2_dec.c \
+../../jasper/jp2/jp2_enc.c \
+../../jasper/jpc/jpc_bs.c \
+../../jasper/jpc/jpc_cs.c \
+../../jasper/jpc/jpc_dec.c \
+../../jasper/jpc/jpc_enc.c \
+../../jasper/jpc/jpc_math.c \
+../../jasper/jpc/jpc_mct.c \
+../../jasper/jpc/jpc_mqcod.c \
+../../jasper/jpc/jpc_mqdec.c \
+../../jasper/jpc/jpc_mqenc.c \
+../../jasper/jpc/jpc_qmfb.c \
+../../jasper/jpc/jpc_t1cod.c \
+../../jasper/jpc/jpc_t1dec.c \
+../../jasper/jpc/jpc_t1enc.c \
+../../jasper/jpc/jpc_t2cod.c \
+../../jasper/jpc/jpc_t2dec.c \
+../../jasper/jpc/jpc_t2enc.c \
+../../jasper/jpc/jpc_tagtree.c \
+../../jasper/jpc/jpc_tsfb.c \
+../../jasper/jpc/jpc_util.c
 
 #
 # Object files
@@ -37,7 +75,44 @@ OBJ_FILES= \
 ./x64/Release/JPEG2000Instance.o \
 ./x64/Release/JPEG2000Module.o \
 ./x64/Release/JPEG2000OptionsDialog.o \
-./x64/Release/JPEG2000PreferencesDialog.o
+./x64/Release/JPEG2000PreferencesDialog.o \
+./x64/Release/jasper/base/jas_cm.o \
+./x64/Release/jasper/base/jas_debug.o \
+./x64/Release/jasper/base/jas_getopt.o \
+./x64/Release/jasper/base/jas_icc.o \
+./x64/Release/jasper/base/jas_iccdata.o \
+./x64/Release/jasper/base/jas_image.o \
+./x64/Release/jasper/base/jas_init.o \
+./x64/Release/jasper/base/jas_malloc.o \
+./x64/Release/jasper/base/jas_seq.o \
+./x64/Release/jasper/base/jas_stream.o \
+./x64/Release/jasper/base/jas_string.o \
+./x64/Release/jasper/base/jas_tmr.o \
+./x64/Release/jasper/base/jas_tvp.o \
+./x64/Release/jasper/base/jas_version.o \
+./x64/Release/jasper/dummy.o \
+./x64/Release/jasper/jp2/jp2_cod.o \
+./x64/Release/jasper/jp2/jp2_dec.o \
+./x64/Release/jasper/jp2/jp2_enc.o \
+./x64/Release/jasper/jpc/jpc_bs.o \
+./x64/Release/jasper/jpc/jpc_cs.o \
+./x64/Release/jasper/jpc/jpc_dec.o \
+./x64/Release/jasper/jpc/jpc_enc.o \
+./x64/Release/jasper/jpc/jpc_math.o \
+./x64/Release/jasper/jpc/jpc_mct.o \
+./x64/Release/jasper/jpc/jpc_mqcod.o \
+./x64/Release/jasper/jpc/jpc_mqdec.o \
+./x64/Release/jasper/jpc/jpc_mqenc.o \
+./x64/Release/jasper/jpc/jpc_qmfb.o \
+./x64/Release/jasper/jpc/jpc_t1cod.o \
+./x64/Release/jasper/jpc/jpc_t1dec.o \
+./x64/Release/jasper/jpc/jpc_t1enc.o \
+./x64/Release/jasper/jpc/jpc_t2cod.o \
+./x64/Release/jasper/jpc/jpc_t2dec.o \
+./x64/Release/jasper/jpc/jpc_t2enc.o \
+./x64/Release/jasper/jpc/jpc_tagtree.o \
+./x64/Release/jasper/jpc/jpc_tsfb.o \
+./x64/Release/jasper/jpc/jpc_util.o
 
 #
 # Dependency files
@@ -48,7 +123,44 @@ DEP_FILES= \
 ./x64/Release/JPEG2000Instance.d \
 ./x64/Release/JPEG2000Module.d \
 ./x64/Release/JPEG2000OptionsDialog.d \
-./x64/Release/JPEG2000PreferencesDialog.d
+./x64/Release/JPEG2000PreferencesDialog.d \
+./x64/Release/jasper/base/jas_cm.d \
+./x64/Release/jasper/base/jas_debug.d \
+./x64/Release/jasper/base/jas_getopt.d \
+./x64/Release/jasper/base/jas_icc.d \
+./x64/Release/jasper/base/jas_iccdata.d \
+./x64/Release/jasper/base/jas_image.d \
+./x64/Release/jasper/base/jas_init.d \
+./x64/Release/jasper/base/jas_malloc.d \
+./x64/Release/jasper/base/jas_seq.d \
+./x64/Release/jasper/base/jas_stream.d \
+./x64/Release/jasper/base/jas_string.d \
+./x64/Release/jasper/base/jas_tmr.d \
+./x64/Release/jasper/base/jas_tvp.d \
+./x64/Release/jasper/base/jas_version.d \
+./x64/Release/jasper/dummy.d \
+./x64/Release/jasper/jp2/jp2_cod.d \
+./x64/Release/jasper/jp2/jp2_dec.d \
+./x64/Release/jasper/jp2/jp2_enc.d \
+./x64/Release/jasper/jpc/jpc_bs.d \
+./x64/Release/jasper/jpc/jpc_cs.d \
+./x64/Release/jasper/jpc/jpc_dec.d \
+./x64/Release/jasper/jpc/jpc_enc.d \
+./x64/Release/jasper/jpc/jpc_math.d \
+./x64/Release/jasper/jpc/jpc_mct.d \
+./x64/Release/jasper/jpc/jpc_mqcod.d \
+./x64/Release/jasper/jpc/jpc_mqdec.d \
+./x64/Release/jasper/jpc/jpc_mqenc.d \
+./x64/Release/jasper/jpc/jpc_qmfb.d \
+./x64/Release/jasper/jpc/jpc_t1cod.d \
+./x64/Release/jasper/jpc/jpc_t1dec.d \
+./x64/Release/jasper/jpc/jpc_t1enc.d \
+./x64/Release/jasper/jpc/jpc_t2cod.d \
+./x64/Release/jasper/jpc/jpc_t2dec.d \
+./x64/Release/jasper/jpc/jpc_t2enc.d \
+./x64/Release/jasper/jpc/jpc_tagtree.d \
+./x64/Release/jasper/jpc/jpc_tsfb.d \
+./x64/Release/jasper/jpc/jpc_util.d
 
 #
 # Rules
@@ -57,7 +169,7 @@ DEP_FILES= \
 -include $(DEP_FILES)
 
 $(OBJ_DIR)/JPEG2000-pxm.so: $(OBJ_FILES)
-	g++ -m64 -fPIC -pthread -Wl,-fuse-ld=gold -Wl,--enable-new-dtags -Wl,-z,noexecstack -Wl,-O1 -Wl,--gc-sections -rdynamic -shared -L"$(PCLLIBDIR64)" -L"$(PCLBINDIR64)/lib" -o $(OBJ_DIR)/JPEG2000-pxm.so $(OBJ_FILES) -lpthread -lPCL-pxi -llz4-pxi -lzstd-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi -ljasper-pxi
+	g++ -m64 -fPIC -pthread -Wl,-fuse-ld=gold -Wl,--enable-new-dtags -Wl,-z,noexecstack -Wl,-O1 -Wl,--gc-sections -rdynamic -shared -L"$(PCLLIBDIR64)" -L"$(PCLBINDIR64)/lib" -o $(OBJ_DIR)/JPEG2000-pxm.so $(OBJ_FILES) -lpthread -lPCL-pxi -llz4-pxi -lzstd-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi
 	$(MAKE) -f ./makefile-x64 --no-print-directory post-build
 
 .PHONY: clean
@@ -69,6 +181,18 @@ post-build:
 	cp $(OBJ_DIR)/JPEG2000-pxm.so $(PCLBINDIR64)
 
 ./x64/Release/%.o: ../../%.cpp
-	g++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"$(CUDA_HOME)/include" -mfpmath=sse -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -fnon-call-exceptions -std=c++17 -Wall -Wno-parentheses -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	g++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"../.." -I"jasper" -mfpmath=sse -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -fnon-call-exceptions -std=c++17 -Wall -Wno-parentheses -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	@echo ' '
+./x64/Release/jasper/base/%.o: ../../jasper/base/%.c
+	gcc -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"../.." -I"jasper" -mfpmath=sse -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fnon-call-exceptions -std=c99 -Wall -Wno-parentheses -Wno-error=implicit-function-declaration -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	@echo ' '
+./x64/Release/jasper/%.o: ../../jasper/%.c
+	gcc -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"../.." -I"jasper" -mfpmath=sse -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fnon-call-exceptions -std=c99 -Wall -Wno-parentheses -Wno-error=implicit-function-declaration -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	@echo ' '
+./x64/Release/jasper/jp2/%.o: ../../jasper/jp2/%.c
+	gcc -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"../.." -I"jasper" -mfpmath=sse -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fnon-call-exceptions -std=c99 -Wall -Wno-parentheses -Wno-error=implicit-function-declaration -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	@echo ' '
+./x64/Release/jasper/jpc/%.o: ../../jasper/jpc/%.c
+	gcc -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"../.." -I"jasper" -mfpmath=sse -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fnon-call-exceptions -std=c99 -Wall -Wno-parentheses -Wno-error=implicit-function-declaration -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 

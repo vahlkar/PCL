@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
-// pcl/APIInterface.h - Released 2024-01-19T15:23:14Z
+// pcl/APIInterface.h - Released 2024-03-20T10:41:36Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -56,7 +56,7 @@
 
 // Global namespace
 
-#define PCL_API_Version 0x0179
+#define PCL_API_Version 0x0180
 
 extern "C"
 {
@@ -216,7 +216,8 @@ struct api_context GlobalContext
    /*
     * Miscellaneous message broadcasting
     */
-   void        (api_func* BroadcastImageUpdated)( const_view_handle, const void* );
+   void        (api_func* BroadcastImageUpdated)( const_view_handle, const void* /*reserved*/ );
+   void        (api_func* BroadcastGlobalFiltersUpdated)( const void* /*reserved*/ );
 
    /*
     * Miscellaneous color management
@@ -464,6 +465,7 @@ struct api_context InterfaceDefinitionContext
    void           (api_func* SetGlobalCMUpdatedNotificationRoutine)( pcl::global_notification_routine );
    void           (api_func* SetReadoutOptionsUpdatedNotificationRoutine)( pcl::global_notification_routine );
    void           (api_func* SetGlobalPreferencesUpdatedNotificationRoutine)( pcl::global_notification_routine );
+   void           (api_func* SetGlobalFiltersUpdatedNotificationRoutine)( pcl::global_notification_routine );
 
    void           (api_func* EndInterfaceDefinition)();
    void           (api_func* ExitInterfaceDefinitionContext)();
@@ -3095,4 +3097,4 @@ extern "C" void* api_func APIFunctionResolver( const char* );
 #endif   // __PCL_API_APIInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/APIInterface.h - Released 2024-01-19T15:23:14Z
+// EOF pcl/APIInterface.h - Released 2024-03-20T10:41:36Z

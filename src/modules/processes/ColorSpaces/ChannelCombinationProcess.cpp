@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// ChannelCombinationProcess.cpp - Released 2024-01-19T15:23:39Z
+// ChannelCombinationProcess.cpp - Released 2024-03-20T10:42:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -137,4 +137,4 @@ bool ChannelCombinationProcess::NeedsValidation() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ChannelCombinationProcess.cpp - Released 2024-01-19T15:23:39Z
+// EOF ChannelCombinationProcess.cpp - Released 2024-03-20T10:42:12Z

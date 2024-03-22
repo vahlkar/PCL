@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.5.1
+// Standard Global Process Module Version 1.5.3
 // ----------------------------------------------------------------------------
-// PreferencesParameters.h - Released 2024-01-19T15:23:39Z
+// PreferencesParameters.h - Released 2024-03-20T10:42:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -259,6 +259,8 @@ DECLARE_STRING_METAPARAMETER  ( Application, shortTermNutationModelFile,        
 DECLARE_STRING_METAPARAMETER  ( Application, deltaTDataFile,                      "core-deltat.txt" )
 DECLARE_STRING_METAPARAMETER  ( Application, deltaATDataFile,                     "core-deltaat.txt" )
 DECLARE_STRING_METAPARAMETER  ( Application, cipITRSDataFile,                     "core-cip_itrs.txt" )
+DECLARE_STRING_METAPARAMETER  ( Application, filtersDatabaseFile,                 "filters.xspd" )
+DECLARE_STRING_METAPARAMETER  ( Application, whiteReferencesDatabaseFile,         "white-references.xspd" )
 
 // ----------------------------------------------------------------------------
 
@@ -418,9 +420,11 @@ DECLARE_BOOLEAN_METAPARAMETER ( Process, enableLaunchStatistics,               t
 // ----------------------------------------------------------------------------
 
 DECLARE_BOOLEAN_METAPARAMETER( Security, allowUnsignedScriptExecution,         true )
+DECLARE_BOOLEAN_METAPARAMETER( Security, allowUnsignedModuleInstallation,      true )
 DECLARE_BOOLEAN_METAPARAMETER( Security, allowUnsignedRepositories,            true )
 DECLARE_BOOLEAN_METAPARAMETER( Security, allowInsecureRepositories,            false )
 DECLARE_BOOLEAN_METAPARAMETER( Security, reportScriptSignatures,               true )
+DECLARE_BOOLEAN_METAPARAMETER( Security, reportModuleSignatures,               false )
 DECLARE_BOOLEAN_METAPARAMETER( Security, warnOnUnsignedCodeExecution,          false )
 DECLARE_BOOLEAN_METAPARAMETER( Security, enableLocalSigningIdentity,           true )
 
@@ -433,4 +437,4 @@ PCL_END_LOCAL
 #endif   // __PreferencesParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesParameters.h - Released 2024-01-19T15:23:39Z
+// EOF PreferencesParameters.h - Released 2024-03-20T10:42:12Z

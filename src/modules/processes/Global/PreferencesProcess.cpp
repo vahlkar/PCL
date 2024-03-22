@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.5.1
+// Standard Global Process Module Version 1.5.3
 // ----------------------------------------------------------------------------
-// PreferencesProcess.cpp - Released 2024-01-19T15:23:39Z
+// PreferencesProcess.cpp - Released 2024-03-20T10:42:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -107,6 +107,8 @@ PreferencesProcess::PreferencesProcess()
    new METAPARAMETER_ID( Application, deltaTDataFile )( this );
    new METAPARAMETER_ID( Application, deltaATDataFile )( this );
    new METAPARAMETER_ID( Application, cipITRSDataFile )( this );
+   new METAPARAMETER_ID( Application, filtersDatabaseFile )( this );
+   new METAPARAMETER_ID( Application, whiteReferencesDatabaseFile )( this );
 
    // -------------------------------------------------------------------------
 
@@ -254,9 +256,11 @@ PreferencesProcess::PreferencesProcess()
    // -------------------------------------------------------------------------
 
    new METAPARAMETER_ID( Security, allowUnsignedScriptExecution )( this );
+   new METAPARAMETER_ID( Security, allowUnsignedModuleInstallation )( this );
    new METAPARAMETER_ID( Security, allowUnsignedRepositories )( this );
    new METAPARAMETER_ID( Security, allowInsecureRepositories )( this );
    new METAPARAMETER_ID( Security, reportScriptSignatures )( this );
+   new METAPARAMETER_ID( Security, reportModuleSignatures )( this );
    new METAPARAMETER_ID( Security, warnOnUnsignedCodeExecution )( this );
    new METAPARAMETER_ID( Security, enableLocalSigningIdentity )( this );
 }
@@ -402,4 +406,4 @@ int PreferencesProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesProcess.cpp - Released 2024-01-19T15:23:39Z
+// EOF PreferencesProcess.cpp - Released 2024-03-20T10:42:12Z

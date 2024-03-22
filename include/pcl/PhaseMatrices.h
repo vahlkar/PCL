@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
-// pcl/PhaseMatrices.h - Released 2024-01-19T15:23:14Z
+// pcl/PhaseMatrices.h - Released 2024-03-20T10:41:36Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -165,4 +165,4 @@ void PCL_FUNC CrossPowerSpectrumMatrix( GenericImage<P1>& R, const GenericImage<
 #endif   // __PCL_PhaseMatrices_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PhaseMatrices.h - Released 2024-01-19T15:23:14Z
+// EOF pcl/PhaseMatrices.h - Released 2024-03-20T10:41:36Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.5.3
 // ----------------------------------------------------------------------------
-// ImageIntegrationParameters.cpp - Released 2024-01-19T15:23:40Z
+// ImageIntegrationParameters.cpp - Released 2024-03-20T10:42:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -3904,4 +3904,4 @@ bool IIImageRejectedHighB::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationParameters.cpp - Released 2024-01-19T15:23:40Z
+// EOF ImageIntegrationParameters.cpp - Released 2024-03-20T10:42:12Z

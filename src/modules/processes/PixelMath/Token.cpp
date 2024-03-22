@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// Token.cpp - Released 2024-01-19T15:23:40Z
+// Token.cpp - Released 2024-03-20T10:42:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -414,4 +414,4 @@ void Tokenize( TokenSet& t, DirectiveList& d, const String& s )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Token.cpp - Released 2024-01-19T15:23:40Z
+// EOF Token.cpp - Released 2024-03-20T10:42:12Z

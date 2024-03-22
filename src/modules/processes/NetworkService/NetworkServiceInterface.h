@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
 // Standard NetworkService Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// NetworkServiceInterface.h - Released 2024-01-19T15:23:40Z
+// NetworkServiceInterface.h - Released 2024-03-20T10:42:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NetworkService PixInsight module.
 //
@@ -142,4 +142,4 @@ PCL_END_LOCAL
 #endif   // __NetworkServiceInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF NetworkServiceInterface.h - Released 2024-01-19T15:23:40Z
+// EOF NetworkServiceInterface.h - Released 2024-03-20T10:42:12Z

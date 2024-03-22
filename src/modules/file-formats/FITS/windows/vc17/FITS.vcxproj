@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.133
+# PixInsight Makefile Generator Script v1.135
 # Copyright (C) 2009-2024 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2024-01-22T10:20:52.660Z
+# Generated on .... 2024-03-22T11:22:55.384Z
 # Project id ...... FITS
 # Project type .... Module
 # Platform ........ Windows/vc17
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # Additional preprocessor definitions:
+# f2cFortran
 # _CRT_SECURE_NO_WARNINGS
-# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# Additional libraries:
-# cfitsio-pxi
+# _MBCS
+# FF_NO_UNISTD_H
 ######################################################################
 -->
 <Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
@@ -28,7 +28,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{56375587-133C-44E0-91E2-00137BAC0744}</ProjectGuid>
+    <ProjectGuid>{C1C047EC-6EAB-49BF-B1DD-E8C504FB9CE3}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -75,7 +75,7 @@
       <OmitFramePointers>true</OmitFramePointers>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <AdditionalIncludeDirectories>$(PCLINCDIR);$(PCLSRCDIR)\3rdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;WIN64;_WINDOWS;UNICODE;__PCL_WINDOWS;__PCL_NO_WIN32_MINIMUM_VERSIONS;_CRT_SECURE_NO_WARNINGS;_NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;WIN64;_WINDOWS;UNICODE;__PCL_WINDOWS;__PCL_NO_WIN32_MINIMUM_VERSIONS;f2cFortran;_CRT_SECURE_NO_WARNINGS;_MBCS;FF_NO_UNISTD_H;_NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -91,7 +91,7 @@
       <AdditionalOptions>/Zc:__cplusplus /permissive- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>PCL-pxi.lib;lz4-pxi.lib;zstd-pxi.lib;zlib-pxi.lib;RFC6234-pxi.lib;lcms-pxi.lib;cminpack-pxi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;userenv.lib;imm32.lib;shlwapi.lib;ws2_32.lib;wldap32.lib;mscms.lib;winmm.lib;crypt32.lib;normaliz.lib;cfitsio-pxi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PCL-pxi.lib;lz4-pxi.lib;zstd-pxi.lib;zlib-pxi.lib;RFC6234-pxi.lib;lcms-pxi.lib;cminpack-pxi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;userenv.lib;imm32.lib;shlwapi.lib;ws2_32.lib;wldap32.lib;mscms.lib;winmm.lib;crypt32.lib;normaliz.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(PCLBINDIR64)\FITS-pxm.dll</OutputFile>
       <AdditionalLibraryDirectories>$(PCLLIBDIR64);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile></ModuleDefinitionFile>
@@ -112,7 +112,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(PCLINCDIR);$(PCLSRCDIR)\3rdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;WIN64;_WINDOWS;UNICODE;__PCL_WINDOWS;__PCL_NO_WIN32_MINIMUM_VERSIONS;_CRT_SECURE_NO_WARNINGS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;WIN64;_WINDOWS;UNICODE;__PCL_WINDOWS;__PCL_NO_WIN32_MINIMUM_VERSIONS;f2cFortran;_CRT_SECURE_NO_WARNINGS;_MBCS;FF_NO_UNISTD_H;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Async</ExceptionHandling>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -126,7 +126,7 @@
       <AdditionalOptions>/Zc:__cplusplus /permissive- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>PCL-pxi.lib;lz4-pxi.lib;zstd-pxi.lib;zlib-pxi.lib;RFC6234-pxi.lib;lcms-pxi.lib;cminpack-pxi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;userenv.lib;imm32.lib;shlwapi.lib;ws2_32.lib;wldap32.lib;mscms.lib;winmm.lib;crypt32.lib;normaliz.lib;cfitsio-pxi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PCL-pxi.lib;lz4-pxi.lib;zstd-pxi.lib;zlib-pxi.lib;RFC6234-pxi.lib;lcms-pxi.lib;cminpack-pxi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;userenv.lib;imm32.lib;shlwapi.lib;ws2_32.lib;wldap32.lib;mscms.lib;winmm.lib;crypt32.lib;normaliz.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(PCLBINDIR64)\FITS-pxm.dll</OutputFile>
       <AdditionalLibraryDirectories>$(PCLLIBDIR64);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile></ModuleDefinitionFile>
@@ -145,6 +145,71 @@
     <ClCompile Include="..\..\FITSOptionsDialog.cpp"/>
     <ClCompile Include="..\..\FITSPreferencesDialog.cpp"/>
     <ClCompile Include="..\..\FITSRangeOptionsDialog.cpp"/>
+    <ClCompile Include="..\..\cfitsio\buffers.c"/>
+    <ClCompile Include="..\..\cfitsio\cfileio.c"/>
+    <ClCompile Include="..\..\cfitsio\checksum.c"/>
+    <ClCompile Include="..\..\cfitsio\drvrfile.c"/>
+    <ClCompile Include="..\..\cfitsio\drvrmem.c"/>
+    <ClCompile Include="..\..\cfitsio\drvrnet.c"/>
+    <ClCompile Include="..\..\cfitsio\drvrsmem.c"/>
+    <ClCompile Include="..\..\cfitsio\editcol.c"/>
+    <ClCompile Include="..\..\cfitsio\edithdu.c"/>
+    <ClCompile Include="..\..\cfitsio\eval_f.c"/>
+    <ClCompile Include="..\..\cfitsio\eval_l.c"/>
+    <ClCompile Include="..\..\cfitsio\eval_y.c"/>
+    <ClCompile Include="..\..\cfitsio\f77_wrap1.c"/>
+    <ClCompile Include="..\..\cfitsio\f77_wrap2.c"/>
+    <ClCompile Include="..\..\cfitsio\f77_wrap3.c"/>
+    <ClCompile Include="..\..\cfitsio\f77_wrap4.c"/>
+    <ClCompile Include="..\..\cfitsio\fits_hcompress.c"/>
+    <ClCompile Include="..\..\cfitsio\fits_hdecompress.c"/>
+    <ClCompile Include="..\..\cfitsio\fitscore.c"/>
+    <ClCompile Include="..\..\cfitsio\getcol.c"/>
+    <ClCompile Include="..\..\cfitsio\getcolb.c"/>
+    <ClCompile Include="..\..\cfitsio\getcold.c"/>
+    <ClCompile Include="..\..\cfitsio\getcole.c"/>
+    <ClCompile Include="..\..\cfitsio\getcoli.c"/>
+    <ClCompile Include="..\..\cfitsio\getcolj.c"/>
+    <ClCompile Include="..\..\cfitsio\getcolk.c"/>
+    <ClCompile Include="..\..\cfitsio\getcoll.c"/>
+    <ClCompile Include="..\..\cfitsio\getcols.c"/>
+    <ClCompile Include="..\..\cfitsio\getcolsb.c"/>
+    <ClCompile Include="..\..\cfitsio\getcolui.c"/>
+    <ClCompile Include="..\..\cfitsio\getcoluj.c"/>
+    <ClCompile Include="..\..\cfitsio\getcoluk.c"/>
+    <ClCompile Include="..\..\cfitsio\getkey.c"/>
+    <ClCompile Include="..\..\cfitsio\group.c"/>
+    <ClCompile Include="..\..\cfitsio\grparser.c"/>
+    <ClCompile Include="..\..\cfitsio\histo.c"/>
+    <ClCompile Include="..\..\cfitsio\imcompress.c"/>
+    <ClCompile Include="..\..\cfitsio\iraffits.c"/>
+    <ClCompile Include="..\..\cfitsio\modkey.c"/>
+    <ClCompile Include="..\..\cfitsio\pliocomp.c"/>
+    <ClCompile Include="..\..\cfitsio\putcol.c"/>
+    <ClCompile Include="..\..\cfitsio\putcolb.c"/>
+    <ClCompile Include="..\..\cfitsio\putcold.c"/>
+    <ClCompile Include="..\..\cfitsio\putcole.c"/>
+    <ClCompile Include="..\..\cfitsio\putcoli.c"/>
+    <ClCompile Include="..\..\cfitsio\putcolj.c"/>
+    <ClCompile Include="..\..\cfitsio\putcolk.c"/>
+    <ClCompile Include="..\..\cfitsio\putcoll.c"/>
+    <ClCompile Include="..\..\cfitsio\putcols.c"/>
+    <ClCompile Include="..\..\cfitsio\putcolsb.c"/>
+    <ClCompile Include="..\..\cfitsio\putcolu.c"/>
+    <ClCompile Include="..\..\cfitsio\putcolui.c"/>
+    <ClCompile Include="..\..\cfitsio\putcoluj.c"/>
+    <ClCompile Include="..\..\cfitsio\putcoluk.c"/>
+    <ClCompile Include="..\..\cfitsio\putkey.c"/>
+    <ClCompile Include="..\..\cfitsio\quantize.c"/>
+    <ClCompile Include="..\..\cfitsio\region.c"/>
+    <ClCompile Include="..\..\cfitsio\ricecomp.c"/>
+    <ClCompile Include="..\..\cfitsio\scalnull.c"/>
+    <ClCompile Include="..\..\cfitsio\simplerng.c"/>
+    <ClCompile Include="..\..\cfitsio\swapproc.c"/>
+    <ClCompile Include="..\..\cfitsio\wcssub.c"/>
+    <ClCompile Include="..\..\cfitsio\wcsutil.c"/>
+    <ClCompile Include="..\..\cfitsio\zcompress.c"/>
+    <ClCompile Include="..\..\cfitsio\zuncompress.c"/>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\FITS.h"/>
@@ -154,6 +219,18 @@
     <ClInclude Include="..\..\FITSOptionsDialog.h"/>
     <ClInclude Include="..\..\FITSPreferencesDialog.h"/>
     <ClInclude Include="..\..\FITSRangeOptionsDialog.h"/>
+    <ClInclude Include="..\..\cfitsio\cfortran.h"/>
+    <ClInclude Include="..\..\cfitsio\drvrsmem.h"/>
+    <ClInclude Include="..\..\cfitsio\eval_defs.h"/>
+    <ClInclude Include="..\..\cfitsio\eval_tab.h"/>
+    <ClInclude Include="..\..\cfitsio\f77_wrap.h"/>
+    <ClInclude Include="..\..\cfitsio\fitsio.h"/>
+    <ClInclude Include="..\..\cfitsio\fitsio2.h"/>
+    <ClInclude Include="..\..\cfitsio\group.h"/>
+    <ClInclude Include="..\..\cfitsio\grparser.h"/>
+    <ClInclude Include="..\..\cfitsio\longnam.h"/>
+    <ClInclude Include="..\..\cfitsio\region.h"/>
+    <ClInclude Include="..\..\cfitsio\simplerng.h"/>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\icons\FITS.svg"/>

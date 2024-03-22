@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
 // Standard Debayer Process Module Version 1.11.2
 // ----------------------------------------------------------------------------
-// DebayerInstance.cpp - Released 2024-01-19T15:23:40Z
+// DebayerInstance.cpp - Released 2024-03-20T10:42:13Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -4613,4 +4613,4 @@ size_type DebayerInstance::ParameterLength( const MetaParameter* p, size_type ta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DebayerInstance.cpp - Released 2024-01-19T15:23:40Z
+// EOF DebayerInstance.cpp - Released 2024-03-20T10:42:13Z

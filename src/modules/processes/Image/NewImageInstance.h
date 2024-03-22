@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.4
 // ----------------------------------------------------------------------------
-// NewImageInstance.h - Released 2024-01-19T15:23:40Z
+// NewImageInstance.h - Released 2024-03-20T10:42:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -103,4 +103,4 @@ private:
 #endif   // __NewImageInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF NewImageInstance.h - Released 2024-01-19T15:23:40Z
+// EOF NewImageInstance.h - Released 2024-03-20T10:42:12Z

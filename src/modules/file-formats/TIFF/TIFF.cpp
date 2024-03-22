@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
-// Standard TIFF File Format Module Version 1.0.9
+// Standard TIFF File Format Module Version 1.0.10
 // ----------------------------------------------------------------------------
-// TIFF.cpp - Released 2024-01-19T15:23:30Z
+// TIFF.cpp - Released 2024-03-20T10:42:02Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard TIFF PixInsight module.
 //
@@ -58,7 +58,7 @@
 #include <pcl/ErrorHandler.h>
 #include <pcl/MessageBox.h>
 
-#include <libtiff/tiffio.h>
+#include "libtiff/tiffio.h"
 
 #define  PCL_TIFF_STRICT_MODE    1
 #define  PCL_TIFF_SHOW_WARNINGS  1
@@ -1573,4 +1573,4 @@ void TIFFWriter::WriteImage( const UInt32Image& image )
 }  // pcl
 
 // ----------------------------------------------------------------------------
-// EOF TIFF.cpp - Released 2024-01-19T15:23:30Z
+// EOF TIFF.cpp - Released 2024-03-20T10:42:02Z

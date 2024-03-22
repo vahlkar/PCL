@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.9.3
+// Standard ColorCalibration Process Module Version 1.9.5
 // ----------------------------------------------------------------------------
-// SpectrophotometricColorCalibrationInterface.cpp - Released 2024-01-19T15:23:39Z
+// SpectrophotometricColorCalibrationInterface.cpp - Released 2024-03-20T10:42:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -50,12 +50,9 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#include "CurveExplorerDialog.h"
-#include "FilterManagementDialog.h"
 #include "SpectrophotometricColorCalibrationGraphInterface.h"
 #include "SpectrophotometricColorCalibrationInterface.h"
 #include "SpectrophotometricColorCalibrationParameters.h"
-#include "SpectrophotometricColorCalibrationPreferencesDialog.h"
 #include "SpectrophotometricColorCalibrationProcess.h"
 
 #include <pcl/Console.h>
@@ -114,22 +111,7 @@ String SpectrophotometricColorCalibrationInterface::IconImageSVGFile() const
 
 InterfaceFeatures SpectrophotometricColorCalibrationInterface::Features() const
 {
-   return InterfaceFeature::Default | InterfaceFeature::PreferencesButton;
-}
-
-// ----------------------------------------------------------------------------
-
-void SpectrophotometricColorCalibrationInterface::EditPreferences()
-{
-   SpectrophotometricColorCalibrationPreferencesDialog dialog;
-   if ( dialog.Execute() )
-   {
-      SpectrophotometricColorCalibrationProcess::InitializeSpectrumData( String()/*whiteReferencesDatabaseFilePath*/,
-                                                                         dialog.FiltersDatabaseFilePath() );
-      m_instance.SetDefaultSpectrumData();
-      RegenerateDatabaseAccessControls();
-      UpdateControls();
-   }
+   return InterfaceFeature::Default;
 }
 
 // ----------------------------------------------------------------------------
@@ -151,12 +133,11 @@ void SpectrophotometricColorCalibrationInterface::ResetInstance()
 
 bool SpectrophotometricColorCalibrationInterface::Launch( const MetaProcess& P, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ )
 {
-   if ( !SpectrophotometricColorCalibrationProcess::HasValidSpectrumData() )
-      SpectrophotometricColorCalibrationProcess::InitializeSpectrumData();
+   if ( !TheSpectraDatabase.IsValid() )
+      TheSpectraDatabase.Initialize();
 
    if ( GUI == nullptr )
    {
-
       GUI = new GUIData( *this );
       SetWindowTitle( "SpectrophotometricColorCalibration" );
       m_instance.SetDefaultSpectrumData();
@@ -202,6 +183,26 @@ bool SpectrophotometricColorCalibrationInterface::ImportProcess( const ProcessIm
 }
 
 // ----------------------------------------------------------------------------
+
+bool SpectrophotometricColorCalibrationInterface::WantsGlobalNotifications() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+void SpectrophotometricColorCalibrationInterface::GlobalFiltersUpdated()
+{
+   if ( GUI != nullptr )
+   {
+      TheSpectraDatabase.Initialize();
+      m_instance.SetDefaultSpectrumData();
+      RegenerateDatabaseAccessControls();
+      UpdateControls();
+   }
+}
+
+// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 #define OUTPUT_DIR_DEFAULT       String( "<system-temp-dir>" )
@@ -238,20 +239,20 @@ void SpectrophotometricColorCalibrationInterface::RegenerateDatabaseAccessContro
    GUI->GreenFilter_ComboBox.Clear();
    GUI->BlueFilter_ComboBox.Clear();
 
-   if ( SpectrophotometricColorCalibrationProcess::HasValidSpectrumData() )
+   if ( TheSpectraDatabase.IsValid() )
    {
-      for ( const SampledSpectrumData& ref : SpectrophotometricColorCalibrationProcess::WhiteReferences() )
+      for ( const SampledSpectrumData& ref : TheSpectraDatabase.WhiteReferences() )
          GUI->WhiteReference_ComboBox.AddItem( ref.name );
-      for ( const SampledSpectrumData& filter : SpectrophotometricColorCalibrationProcess::Filters() )
+      for ( const SampledSpectrumData& filter : TheSpectraDatabase.Filters() )
          if ( filter.channel == "R" || filter.channel.IsEmpty() )
             GUI->RedFilter_ComboBox.AddItem( filter.name );
-      for ( const SampledSpectrumData& filter : SpectrophotometricColorCalibrationProcess::Filters() )
+      for ( const SampledSpectrumData& filter : TheSpectraDatabase.Filters() )
          if ( filter.channel == "G" || filter.channel.IsEmpty() )
             GUI->GreenFilter_ComboBox.AddItem( filter.name );
-      for ( const SampledSpectrumData& filter : SpectrophotometricColorCalibrationProcess::Filters() )
+      for ( const SampledSpectrumData& filter : TheSpectraDatabase.Filters() )
          if ( filter.channel == "B" || filter.channel.IsEmpty() )
             GUI->BlueFilter_ComboBox.AddItem( filter.name );
-      for ( const SampledSpectrumData& filter : SpectrophotometricColorCalibrationProcess::Filters() )
+      for ( const SampledSpectrumData& filter : TheSpectraDatabase.Filters() )
          if ( filter.channel == "Q" )
             GUI->DeviceQE_ComboBox.AddItem( filter.name );
 
@@ -293,7 +294,7 @@ void SpectrophotometricColorCalibrationInterface::UpdateControls()
       GUI->Catalog_ComboBox.SetCurrentItem( itemIndex );
    }
 
-   if ( SpectrophotometricColorCalibrationProcess::HasValidSpectrumData() )
+   if ( TheSpectraDatabase.IsValid() )
    {
       int itemIndex = GUI->WhiteReference_ComboBox.FindItem( m_instance.p_whiteReferenceName, 0/*fromIdx*/, true/*exactMatch*/, true/*caseSensitive*/ );
       if ( itemIndex < 0 )
@@ -481,10 +482,10 @@ void SpectrophotometricColorCalibrationInterface::e_ItemSelected( ComboBox& send
    {
       if ( itemIndex >= 0 )
       {
-         int index = SpectrophotometricColorCalibrationProcess::FindWhiteReferenceByName( sender.ItemText( itemIndex ).Trimmed() );
+         int index = TheSpectraDatabase.FindWhiteReferenceByName( sender.ItemText( itemIndex ).Trimmed() );
          if ( index >= 0 )
          {
-            const SampledSpectrumData& s = SpectrophotometricColorCalibrationProcess::WhiteReferences()[index];
+            const SampledSpectrumData& s = TheSpectraDatabase.WhiteReferences()[index];
             m_instance.p_whiteReferenceSpectrum = s.data;
             m_instance.p_whiteReferenceName = s.name;
          }
@@ -494,10 +495,10 @@ void SpectrophotometricColorCalibrationInterface::e_ItemSelected( ComboBox& send
    {
       if ( itemIndex >= 0 )
       {
-         int index = SpectrophotometricColorCalibrationProcess::FindFilterByName( sender.ItemText( itemIndex ).Trimmed() );
+         int index = TheSpectraDatabase.FindFilterByName( sender.ItemText( itemIndex ).Trimmed() );
          if ( index >= 0 )
          {
-            const SampledSpectrumData& s = SpectrophotometricColorCalibrationProcess::Filters()[index];
+            const SampledSpectrumData& s = TheSpectraDatabase.Filters()[index];
             m_instance.p_redFilterTrCurve = s.data;
             m_instance.p_redFilterName = s.name;
          }
@@ -507,10 +508,10 @@ void SpectrophotometricColorCalibrationInterface::e_ItemSelected( ComboBox& send
    {
       if ( itemIndex >= 0 )
       {
-         int index = SpectrophotometricColorCalibrationProcess::FindFilterByName( sender.ItemText( itemIndex ).Trimmed() );
+         int index = TheSpectraDatabase.FindFilterByName( sender.ItemText( itemIndex ).Trimmed() );
          if ( index >= 0 )
          {
-            const SampledSpectrumData& s = SpectrophotometricColorCalibrationProcess::Filters()[index];
+            const SampledSpectrumData& s = TheSpectraDatabase.Filters()[index];
             m_instance.p_greenFilterTrCurve = s.data;
             m_instance.p_greenFilterName = s.name;
          }
@@ -520,10 +521,10 @@ void SpectrophotometricColorCalibrationInterface::e_ItemSelected( ComboBox& send
    {
       if ( itemIndex >= 0 )
       {
-         int index = SpectrophotometricColorCalibrationProcess::FindFilterByName( sender.ItemText( itemIndex ).Trimmed() );
+         int index = TheSpectraDatabase.FindFilterByName( sender.ItemText( itemIndex ).Trimmed() );
          if ( index >= 0 )
          {
-            const SampledSpectrumData& s = SpectrophotometricColorCalibrationProcess::Filters()[index];
+            const SampledSpectrumData& s = TheSpectraDatabase.Filters()[index];
             m_instance.p_blueFilterTrCurve = s.data;
             m_instance.p_blueFilterName = s.name;
          }
@@ -533,10 +534,10 @@ void SpectrophotometricColorCalibrationInterface::e_ItemSelected( ComboBox& send
    {
       if ( itemIndex >= 0 )
       {
-         int index = SpectrophotometricColorCalibrationProcess::FindFilterByName( sender.ItemText( itemIndex ).Trimmed() );
+         int index = TheSpectraDatabase.FindFilterByName( sender.ItemText( itemIndex ).Trimmed() );
          if ( index >= 0 )
          {
-            const SampledSpectrumData& s = SpectrophotometricColorCalibrationProcess::Filters()[index];
+            const SampledSpectrumData& s = TheSpectraDatabase.Filters()[index];
             m_instance.p_deviceQECurve = s.data;
             m_instance.p_deviceQECurveName = s.name;
          }
@@ -554,175 +555,9 @@ void SpectrophotometricColorCalibrationInterface::e_ItemSelected( ComboBox& send
 
 // ----------------------------------------------------------------------------
 
-static void SanitizeFileName( String& fileName )
-{
-   static const char* badChars = " #%&{}\\<>*?/$!'\":@+`|=";
-   for ( String::char_type& c : fileName )
-      if ( c < 255 )
-         if ( c == ' ' )
-            c = '-';
-         else if ( strchr( badChars, char( c ) ) )
-            c = '_';
-}
-
 void SpectrophotometricColorCalibrationInterface::e_Click( Button& sender, bool checked )
 {
-   if ( sender == GUI->CurveExplorer_Button )
-   {
-      if ( m_curveExplorer == nullptr )
-         m_curveExplorer = new CurveExplorerDialog;
-
-      m_curveExplorer->Execute();
-      if ( m_curveExplorer->MadeChanges() )
-      {
-         RegenerateDatabaseAccessControls();
-         UpdateControls();
-      }
-   }
-   else if ( sender == GUI->FilterManagement_Button )
-   {
-      FilterManagementDialog dialog;
-      if ( dialog.Execute() )
-      {
-         try
-         {
-            Console console;
-            console.Show();
-            Module->ProcessEvents();
-
-            switch ( dialog.Mode() )
-            {
-            case FilterManagementDialog::ImportXML:
-               {
-                  console.NoteLn( "<end><cbr><br>* SPCC: Importing filter definitions (XSPD format):" );
-                  console.WriteLn( dialog.Path() );
-
-                  SampledSpectrumDataList filters = SpectrophotometricColorCalibrationProcess::LoadFilters( dialog.Path() );
-                  if ( filters.IsEmpty() )
-                     throw Error( "No filter definitions available in database file: " + dialog.Path() );
-                  SpectrophotometricColorCalibrationProcess::ImportFilters( filters, dialog.Merge() );
-
-                  for ( const SampledSpectrumData& filter : filters )
-                     console.WriteLn( filter.name );
-                  console.WriteLn( String().Format( "<end><cbr><br>%u filter(s) imported, %u filters available.",
-                                                    filters.Length(), SpectrophotometricColorCalibrationProcess::Filters().Length() ) );
-                  m_instance.SetDefaultSpectrumData();
-                  RegenerateDatabaseAccessControls();
-                  UpdateControls();
-               }
-               break;
-            case FilterManagementDialog::ExportXML:
-               {
-                  console.NoteLn( "<end><cbr><br>* SPCC: Exporting filter definitions (XSPD format):" );
-                  console.WriteLn( dialog.Path() );
-
-                  SpectrophotometricColorCalibrationProcess::ExportFiltersDatabase( dialog.Path(), SpectrophotometricColorCalibrationProcess::Filters() );
-
-                  for ( const SampledSpectrumData& filter : SpectrophotometricColorCalibrationProcess::Filters() )
-                     console.WriteLn( filter.name );
-                  console.WriteLn( String().Format( "<end><cbr><br>%u filter(s) exported.",
-                                                    SpectrophotometricColorCalibrationProcess::Filters().Length() ) );
-               }
-               break;
-            case FilterManagementDialog::ImportCSV:
-               {
-                  StringList fileNames;
-                  String dirPath = dialog.Path();
-                  if ( !dirPath.EndsWith( '/' ) )
-                     dirPath << '/';
-                  FindFileInfo info;
-                  for ( File::Find f( dirPath + "*.csv" ); f.NextItem( info ); )
-                     if ( !info.IsDirectory() )
-                        fileNames << info.name;
-                  if ( fileNames.IsEmpty() )
-                     throw Error( "No .csv files found in directory: " + dialog.Path() );
-
-                  console.NoteLn( "<end><cbr><br>* SPCC: Importing filter definitions (CSV format):" );
-
-                  SampledSpectrumDataList filters;
-                  for ( const String& fileName : fileNames )
-                  {
-                     try
-                     {
-                        SampledSpectrumData filter = SpectrophotometricColorCalibrationProcess::DecodeFilterCSV(
-                              File::ReadLines( dirPath + fileName, ReadTextOption::RemoveEmptyLines|ReadTextOption::TrimSpaces ) );
-                        filters << filter;
-                        console.WriteLn( dirPath + fileName + ": " + filter.name );
-                     }
-                     catch ( const Exception& x )
-                     {
-                        throw Error( x.Message() + ": " + dirPath + fileName );
-                     }
-                  }
-                  SpectrophotometricColorCalibrationProcess::ImportFilters( filters, dialog.Merge() );
-
-                  console.WriteLn( String().Format( "<end><cbr><br>%u filter(s) imported, %u filters available.",
-                                                    filters.Length(), SpectrophotometricColorCalibrationProcess::Filters().Length() ) );
-                  m_instance.SetDefaultSpectrumData();
-                  RegenerateDatabaseAccessControls();
-                  UpdateControls();
-               }
-               break;
-            case FilterManagementDialog::ExportCSV:
-               {
-                  console.NoteLn( "<end><cbr><br>* SPCC: Exporting filter definitions (CSV format):" );
-
-                  for ( const SampledSpectrumData& filter : SpectrophotometricColorCalibrationProcess::Filters() )
-                  {
-                     String filePath = dialog.Path();
-                     if ( !filePath.EndsWith( '/' ) )
-                        filePath << '/';
-                     String fileName = filter.name.Trimmed();
-                     SanitizeFileName( fileName );
-                     filePath << fileName << ".csv";
-                     File::WriteTextFile( filePath, IsoString().ToNewLineSeparated( SpectrophotometricColorCalibrationProcess::EncodeFilterCSV( filter ) ) );
-                     console.WriteLn( filePath + ": " + filter.name );
-                  }
-
-                  console.WriteLn( String().Format( "<end><cbr><br>%u filter(s) exported.",
-                                                    SpectrophotometricColorCalibrationProcess::Filters().Length() ) );
-               }
-               break;
-            case FilterManagementDialog::MergeWithDefault:
-               if ( MessageBox( "<p>About to merge the current filters with the factory-default set.</p>"
-                                "<p><b>This cannot be undone. Proceed?</b></p>",
-                                "SPCC",
-                                StdIcon::Warning,
-                                StdButton::No, StdButton::Yes ).Execute() == StdButton::Yes )
-               {
-                  SampledSpectrumDataList filters = SpectrophotometricColorCalibrationProcess::Filters();
-                  SpectrophotometricColorCalibrationProcess::InitializeSpectrumData();
-                  SpectrophotometricColorCalibrationProcess::ImportFilters( filters, true/*merge*/ );
-                  console.NoteLn( String().Format( "<end><cbr><br>* SPCC: default filters merged, %u filters available.",
-                                                   SpectrophotometricColorCalibrationProcess::Filters().Length() ) );
-                  m_instance.SetDefaultSpectrumData();
-                  RegenerateDatabaseAccessControls();
-                  UpdateControls();
-               }
-               break;
-            case FilterManagementDialog::Reset:
-               if ( MessageBox( "<p>About to reset filters to the factory-default set.</p>"
-                                "<p><b>This cannot be undone. Proceed?</b></p>",
-                                "SPCC",
-                                StdIcon::Warning,
-                                StdButton::No, StdButton::Yes ).Execute() == StdButton::Yes )
-               {
-                  SpectrophotometricColorCalibrationProcess::InitializeSpectrumData();
-                  console.NoteLn( String().Format( "<end><cbr><br>* SPCC: default filters loaded, %u filters available.",
-                                                   SpectrophotometricColorCalibrationProcess::Filters().Length() ) );
-                  m_instance.SetDefaultSpectrumData();
-                  RegenerateDatabaseAccessControls();
-                  UpdateControls();
-               }
-               break;
-            }
-         }
-         ERROR_HANDLER
-
-         Module->ProcessEvents();
-      }
-   }
-   else if ( sender == GUI->NarrowbandMode_CheckBox )
+   if ( sender == GUI->NarrowbandMode_CheckBox )
    {
       m_instance.p_narrowbandMode = checked;
       UpdateControls();
@@ -978,7 +813,7 @@ SpectrophotometricColorCalibrationInterface::GUIData::GUIData( Spectrophotometri
 
    DeviceQE_Sizer.SetSpacing( 4 );
    DeviceQE_Sizer.Add( DeviceQE_Label );
-   DeviceQE_Sizer.Add( DeviceQE_ComboBox );
+   DeviceQE_Sizer.Add( DeviceQE_ComboBox, 100 );
    DeviceQE_Sizer.AddStretch();
 
    //
@@ -996,7 +831,7 @@ SpectrophotometricColorCalibrationInterface::GUIData::GUIData( Spectrophotometri
 
    RedFilter_Sizer.SetSpacing( 4 );
    RedFilter_Sizer.Add( RedFilter_Label );
-   RedFilter_Sizer.Add( RedFilter_ComboBox );
+   RedFilter_Sizer.Add( RedFilter_ComboBox, 100 );
    RedFilter_Sizer.AddStretch();
 
    const char* greenFilterToolTip = "<p>Green filter used to acquire the target image.</p>";
@@ -1012,7 +847,7 @@ SpectrophotometricColorCalibrationInterface::GUIData::GUIData( Spectrophotometri
 
    GreenFilter_Sizer.SetSpacing( 4 );
    GreenFilter_Sizer.Add( GreenFilter_Label );
-   GreenFilter_Sizer.Add( GreenFilter_ComboBox );
+   GreenFilter_Sizer.Add( GreenFilter_ComboBox, 100 );
    GreenFilter_Sizer.AddStretch();
 
    const char* blueFilterToolTip = "<p>Blue filter used to acquire the target image.</p>";
@@ -1028,30 +863,13 @@ SpectrophotometricColorCalibrationInterface::GUIData::GUIData( Spectrophotometri
 
    BlueFilter_Sizer.SetSpacing( 4 );
    BlueFilter_Sizer.Add( BlueFilter_Label );
-   BlueFilter_Sizer.Add( BlueFilter_ComboBox );
+   BlueFilter_Sizer.Add( BlueFilter_ComboBox, 100 );
    BlueFilter_Sizer.AddStretch();
 
-   FilterSelection_Sizer.SetSpacing( 4 );
-   FilterSelection_Sizer.Add( RedFilter_Sizer );
-   FilterSelection_Sizer.Add( GreenFilter_Sizer );
-   FilterSelection_Sizer.Add( BlueFilter_Sizer );
-
-   CurveExplorer_Button.SetText( "Curve Explorer" );
-   CurveExplorer_Button.SetToolTip( "<p>Explore the current filter and white reference databases with interactive graphs.</p>" );
-   CurveExplorer_Button.OnClick( (Button::click_event_handler)&SpectrophotometricColorCalibrationInterface::e_Click, w );
-
-   FilterManagement_Button.SetText( "Filter Management" );
-   FilterManagement_Button.SetToolTip( "<p>Manage filters by importing/exporting filter data in XML and CSV formats.</p>" );
-   FilterManagement_Button.OnClick( (Button::click_event_handler)&SpectrophotometricColorCalibrationInterface::e_Click, w );
-
-   FilterButtons_Sizer.AddStretch();
-   FilterButtons_Sizer.Add( CurveExplorer_Button );
-   FilterButtons_Sizer.AddSpacing( 4 );
-   FilterButtons_Sizer.Add( FilterManagement_Button );
-
-   BroadbandFilters_Sizer.Add( FilterSelection_Sizer );
-   BroadbandFilters_Sizer.AddSpacing( 12 );
-   BroadbandFilters_Sizer.Add( FilterButtons_Sizer );
+   BroadbandFilters_Sizer.SetSpacing( 4 );
+   BroadbandFilters_Sizer.Add( RedFilter_Sizer );
+   BroadbandFilters_Sizer.Add( GreenFilter_Sizer );
+   BroadbandFilters_Sizer.Add( BlueFilter_Sizer );
 
    BroadbandFilters_Control.SetSizer( BroadbandFilters_Sizer );
 
@@ -1202,8 +1020,8 @@ SpectrophotometricColorCalibrationInterface::GUIData::GUIData( Spectrophotometri
    GenerateTextFiles_Sizer.AddStretch();
 
    const char* outputDirectoryToolTip = "<p>The directory (or folder) where output text files (in CSV format) will be written.</p>"
-      "<p>If this field is left blank (or with its default &lt;system-tmp-dir&gt; value), output files will be written to the "
-      "system temporary directory.</p>";
+      "<p>If this field is left blank (or with its default &lt;system-temp-dir&gt; value), output files will be written to the "
+      "system temporary files directory.</p>";
 
    OutputDirectory_Label.SetText( "Output directory:" );
    OutputDirectory_Label.SetFixedWidth( labelWidth1 );
@@ -1791,4 +1609,4 @@ SpectrophotometricColorCalibrationInterface::GUIData::GUIData( Spectrophotometri
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SpectrophotometricColorCalibrationInterface.cpp - Released 2024-01-19T15:23:39Z
+// EOF SpectrophotometricColorCalibrationInterface.cpp - Released 2024-03-20T10:42:12Z

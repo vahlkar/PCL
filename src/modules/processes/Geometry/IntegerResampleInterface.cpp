@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// IntegerResampleInterface.cpp - Released 2024-01-19T15:23:39Z
+// IntegerResampleInterface.cpp - Released 2024-03-20T10:42:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -693,4 +693,4 @@ IntegerResampleInterface::GUIData::GUIData( IntegerResampleInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF IntegerResampleInterface.cpp - Released 2024-01-19T15:23:39Z
+// EOF IntegerResampleInterface.cpp - Released 2024-03-20T10:42:12Z

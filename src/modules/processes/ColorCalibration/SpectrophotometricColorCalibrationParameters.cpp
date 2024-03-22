@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.9.3
+// Standard ColorCalibration Process Module Version 1.9.5
 // ----------------------------------------------------------------------------
-// SpectrophotometricColorCalibrationParameters.cpp - Released 2024-01-19T15:23:39Z
+// SpectrophotometricColorCalibrationParameters.cpp - Released 2024-03-20T10:42:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -192,8 +192,8 @@ IsoString SPCCWhiteReferenceSpectrum::Id() const
 String SPCCWhiteReferenceSpectrum::DefaultValue() const
 {
    if ( API )
-      if ( SpectrophotometricColorCalibrationProcess::HasValidSpectrumData() )
-         return SpectrophotometricColorCalibrationProcess::DefaultWhiteReference().data;
+      if ( TheSpectraDatabase.IsValid() )
+         return TheSpectraDatabase.DefaultWhiteReference().data;
    return String();
 }
 
@@ -213,8 +213,8 @@ IsoString SPCCWhiteReferenceName::Id() const
 String SPCCWhiteReferenceName::DefaultValue() const
 {
    if ( API )
-      if ( SpectrophotometricColorCalibrationProcess::HasValidSpectrumData() )
-         return SpectrophotometricColorCalibrationProcess::DefaultWhiteReference().name;
+      if ( TheSpectraDatabase.IsValid() )
+         return TheSpectraDatabase.DefaultWhiteReference().name;
    return String();
 }
 
@@ -234,8 +234,8 @@ IsoString SPCCRedFilterTrCurve::Id() const
 String SPCCRedFilterTrCurve::DefaultValue() const
 {
    if ( API )
-      if ( SpectrophotometricColorCalibrationProcess::HasValidSpectrumData() )
-         return SpectrophotometricColorCalibrationProcess::DefaultRedFilter().data;
+      if ( TheSpectraDatabase.IsValid() )
+         return TheSpectraDatabase.DefaultRedFilter().data;
    return String();
 }
 
@@ -255,8 +255,8 @@ IsoString SPCCRedFilterName::Id() const
 String SPCCRedFilterName::DefaultValue() const
 {
    if ( API )
-      if ( SpectrophotometricColorCalibrationProcess::HasValidSpectrumData() )
-         return SpectrophotometricColorCalibrationProcess::DefaultRedFilter().name;
+      if ( TheSpectraDatabase.IsValid() )
+         return TheSpectraDatabase.DefaultRedFilter().name;
    return String();
 }
 
@@ -276,8 +276,8 @@ IsoString SPCCGreenFilterTrCurve::Id() const
 String SPCCGreenFilterTrCurve::DefaultValue() const
 {
    if ( API )
-      if ( SpectrophotometricColorCalibrationProcess::HasValidSpectrumData() )
-         return SpectrophotometricColorCalibrationProcess::DefaultGreenFilter().data;
+      if ( TheSpectraDatabase.IsValid() )
+         return TheSpectraDatabase.DefaultGreenFilter().data;
    return String();
 }
 
@@ -297,8 +297,8 @@ IsoString SPCCGreenFilterName::Id() const
 String SPCCGreenFilterName::DefaultValue() const
 {
    if ( API )
-      if ( SpectrophotometricColorCalibrationProcess::HasValidSpectrumData() )
-         return SpectrophotometricColorCalibrationProcess::DefaultGreenFilter().name;
+      if ( TheSpectraDatabase.IsValid() )
+         return TheSpectraDatabase.DefaultGreenFilter().name;
    return String();
 }
 
@@ -318,8 +318,8 @@ IsoString SPCCBlueFilterTrCurve::Id() const
 String SPCCBlueFilterTrCurve::DefaultValue() const
 {
    if ( API )
-      if ( SpectrophotometricColorCalibrationProcess::HasValidSpectrumData() )
-         return SpectrophotometricColorCalibrationProcess::DefaultBlueFilter().data;
+      if ( TheSpectraDatabase.IsValid() )
+         return TheSpectraDatabase.DefaultBlueFilter().data;
    return String();
 }
 
@@ -339,8 +339,8 @@ IsoString SPCCBlueFilterName::Id() const
 String SPCCBlueFilterName::DefaultValue() const
 {
    if ( API )
-      if ( SpectrophotometricColorCalibrationProcess::HasValidSpectrumData() )
-         return SpectrophotometricColorCalibrationProcess::DefaultBlueFilter().name;
+      if ( TheSpectraDatabase.IsValid() )
+         return TheSpectraDatabase.DefaultBlueFilter().name;
    return String();
 }
 
@@ -498,8 +498,8 @@ IsoString SPCCDeviceQECurve::Id() const
 String SPCCDeviceQECurve::DefaultValue() const
 {
    if ( API )
-      if ( SpectrophotometricColorCalibrationProcess::HasValidSpectrumData() )
-         return SpectrophotometricColorCalibrationProcess::DefaultDeviceQE().data;
+      if ( TheSpectraDatabase.IsValid() )
+         return TheSpectraDatabase.DefaultDeviceQE().data;
    return String();
 }
 
@@ -519,8 +519,8 @@ IsoString SPCCDeviceQECurveName::Id() const
 String SPCCDeviceQECurveName::DefaultValue() const
 {
    if ( API )
-      if ( SpectrophotometricColorCalibrationProcess::HasValidSpectrumData() )
-         return SpectrophotometricColorCalibrationProcess::DefaultDeviceQE().name;
+      if ( TheSpectraDatabase.IsValid() )
+         return TheSpectraDatabase.DefaultDeviceQE().name;
    return String();
 }
 
@@ -1446,4 +1446,4 @@ String SPCCOutputDirectory::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SpectrophotometricColorCalibrationParameters.cpp - Released 2024-01-19T15:23:39Z
+// EOF SpectrophotometricColorCalibrationParameters.cpp - Released 2024-03-20T10:42:12Z

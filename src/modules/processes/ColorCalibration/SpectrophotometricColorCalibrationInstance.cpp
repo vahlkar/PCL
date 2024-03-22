@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.9.3
+// Standard ColorCalibration Process Module Version 1.9.5
 // ----------------------------------------------------------------------------
-// SpectrophotometricColorCalibrationInstance.cpp - Released 2024-01-19T15:23:39Z
+// SpectrophotometricColorCalibrationInstance.cpp - Released 2024-03-20T10:42:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -72,6 +72,8 @@
 #include <pcl/StandardStatus.h>
 #include <pcl/Version.h>
 #include <pcl/View.h>
+
+#include <pcl/api/APIInterface.h>
 
 namespace pcl
 {
@@ -769,7 +771,7 @@ bool SpectrophotometricColorCalibrationInstance::ExecuteOn( View& view )
    DRect bounds = view.Bounds();
    DPoint centerRD;
    if ( !A.ImageToCelestial( centerRD, bounds.Center() ) )
-      throw Error( "Invalid astrometric solution: unable to compute celestial coordinates for the center of the image" );
+      throw Error( "Invalid astrometric solution: unable to compute celestial coordinates for the center of the image." );
    double radius = A.SearchRadius();
 
    // Limit magnitude
@@ -1472,18 +1474,22 @@ size_type SpectrophotometricColorCalibrationInstance::ParameterLength( const Met
 
 void SpectrophotometricColorCalibrationInstance::SetDefaultSpectrumData()
 {
-   if ( SpectrophotometricColorCalibrationProcess::HasValidSpectrumData() )
+   if ( API )
+      if ( !TheSpectraDatabase.IsValid() )
+         TheSpectraDatabase.Initialize();
+
+   if ( TheSpectraDatabase.IsValid() )
    {
-      p_whiteReferenceSpectrum = SpectrophotometricColorCalibrationProcess::DefaultWhiteReference().data;
-      p_whiteReferenceName = SpectrophotometricColorCalibrationProcess::DefaultWhiteReference().name;
-      p_redFilterTrCurve = SpectrophotometricColorCalibrationProcess::DefaultRedFilter().data;
-      p_redFilterName = SpectrophotometricColorCalibrationProcess::DefaultRedFilter().name;
-      p_greenFilterTrCurve = SpectrophotometricColorCalibrationProcess::DefaultGreenFilter().data;
-      p_greenFilterName = SpectrophotometricColorCalibrationProcess::DefaultGreenFilter().name;
-      p_blueFilterTrCurve = SpectrophotometricColorCalibrationProcess::DefaultBlueFilter().data;
-      p_blueFilterName = SpectrophotometricColorCalibrationProcess::DefaultBlueFilter().name;
-      p_deviceQECurve = SpectrophotometricColorCalibrationProcess::DefaultDeviceQE().data;
-      p_deviceQECurveName = SpectrophotometricColorCalibrationProcess::DefaultDeviceQE().name;
+      p_whiteReferenceSpectrum = TheSpectraDatabase.DefaultWhiteReference().data;
+      p_whiteReferenceName = TheSpectraDatabase.DefaultWhiteReference().name;
+      p_redFilterTrCurve = TheSpectraDatabase.DefaultRedFilter().data;
+      p_redFilterName = TheSpectraDatabase.DefaultRedFilter().name;
+      p_greenFilterTrCurve = TheSpectraDatabase.DefaultGreenFilter().data;
+      p_greenFilterName = TheSpectraDatabase.DefaultGreenFilter().name;
+      p_blueFilterTrCurve = TheSpectraDatabase.DefaultBlueFilter().data;
+      p_blueFilterName = TheSpectraDatabase.DefaultBlueFilter().name;
+      p_deviceQECurve = TheSpectraDatabase.DefaultDeviceQE().data;
+      p_deviceQECurveName = TheSpectraDatabase.DefaultDeviceQE().name;
    }
    else
    {
@@ -1505,4 +1511,4 @@ void SpectrophotometricColorCalibrationInstance::SetDefaultSpectrumData()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SpectrophotometricColorCalibrationInstance.cpp - Released 2024-01-19T15:23:39Z
+// EOF SpectrophotometricColorCalibrationInstance.cpp - Released 2024-03-20T10:42:12Z

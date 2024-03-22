@@ -1,32 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.133
+# PixInsight Makefile Generator Script v1.135
 # Copyright (C) 2009-2024 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2024-01-22T10:20:54.478Z
+# Generated on .... 2024-03-22T11:22:57.616Z
 # Project id ...... TIFF
 # Project type .... Module
 # Platform ........ Windows/vc16
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # Additional preprocessor definitions:
 # _CRT_SECURE_NO_WARNINGS
-# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# Additional libraries:
-# libtiff-pxi
-# jpeg-pxi
 ######################################################################
 -->
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>47eb2e6c-cc95-4187-b251-f591b0a17288</UniqueIdentifier>
+      <UniqueIdentifier>e73ac1da-ff69-4437-8ceb-329e3edb9387</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>e0214c86-2f17-430b-9d65-21829b1575f6</UniqueIdentifier>
+      <UniqueIdentifier>0b6fe456-3fc6-4072-b0fe-2adef5181407</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>80d4fe5d-d09f-403c-926f-09618ed503fd</UniqueIdentifier>
+      <UniqueIdentifier>86cd0bb8-2331-46bc-a569-e19a74618e88</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -51,6 +47,138 @@
     <ClCompile Include="..\..\TIFFRangeOptionsDialog.cpp">
         <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_aux.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_close.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_codec.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_color.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_compress.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_dir.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_dirinfo.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_dirread.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_dirwrite.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_dumpmode.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_error.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_extension.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_fax3.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_fax3sm.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_flush.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_getimage.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_hash_set.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_jbig.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_jpeg.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_jpeg_12.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_lerc.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_luv.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_lzma.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_lzw.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_next.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_ojpeg.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_open.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_packbits.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_pixarlog.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_predict.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_print.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_read.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_stream.cxx">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_strip.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_swab.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_thunder.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_tile.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_unix.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_version.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_warning.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_webp.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_write.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_zip.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libtiff\tif_zstd.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\TIFF.h">
@@ -72,6 +200,45 @@
         <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\TIFFRangeOptionsDialog.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libtiff\t4.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libtiff\tif_config.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libtiff\tif_dir.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libtiff\tif_fax3.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libtiff\tif_hash_set.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libtiff\tif_predict.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libtiff\tiff.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libtiff\tiffconf.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libtiff\tiffio.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libtiff\tiffio.hxx">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libtiff\tiffiop.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libtiff\tiffvers.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libtiff\uvcode.h">
         <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

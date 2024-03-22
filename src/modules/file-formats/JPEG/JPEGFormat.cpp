@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// JPEGFormat.cpp - Released 2024-01-19T15:23:30Z
+// JPEGFormat.cpp - Released 2024-03-20T10:42:01Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -108,11 +108,11 @@ String JPEGFormat::Implementation() const
    "<p>PixInsight Standard File Format Support Modules.</p>"
 
    "<p>This implementation of the JPEG format is based on the Independent JPEG "
-   "Group's (IJG) software library (version 9b), written by "
+   "Group's (IJG) software library (version 9f), written by "
    "Thomas G. Lane and Guido Vollbeding.</p>"
 
-   "<p>IJG JPEG Software Library (version 9b, released January 17 2016):<br/>"
-   "Copyright (c) 2016, Thomas G. Lane, Guido Vollbeding</p>"
+   "<p>IJG JPEG Software Library (version 9f, released January 14 2024):<br/>"
+   "opyright (C) 1991-2024, Thomas G. Lane, Guido Vollbeding.</p>"
 
    "<p>PixInsight Class Library (PCL):<br/>"
    "Copyright (c) 2003-2024 Pleiades Astrophoto</p>"
@@ -329,4 +329,4 @@ JPEGFormat::FormatOptions* JPEGFormat::FormatOptions::FromGenericDataBlock( cons
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF JPEGFormat.cpp - Released 2024-01-19T15:23:30Z
+// EOF JPEGFormat.cpp - Released 2024-03-20T10:42:01Z

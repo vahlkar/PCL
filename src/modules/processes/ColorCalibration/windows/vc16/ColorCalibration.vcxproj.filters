@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.133
+# PixInsight Makefile Generator Script v1.135
 # Copyright (C) 2009-2024 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2024-01-22T10:20:56.428Z
+# Generated on .... 2024-03-22T11:22:59.618Z
 # Project id ...... ColorCalibration
 # Project type .... Module
 # Platform ........ Windows/vc16
@@ -16,13 +16,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>41b7e1b4-6afe-43ac-a7c2-30461fe93a79</UniqueIdentifier>
+      <UniqueIdentifier>d24d9cb9-271e-4058-ae7b-95ede3a4aab7</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>196c581d-b35e-41bf-9034-143405b2b490</UniqueIdentifier>
+      <UniqueIdentifier>446700a6-cf76-46ad-84a0-66f1c0d85973</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>6e5540bc-4da8-41a5-ba84-d8e90ddab046</UniqueIdentifier>
+      <UniqueIdentifier>3366a0fa-4541-4c1e-a54a-468f8b8d5ca3</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -57,12 +57,6 @@
         <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\ColorCalibrationProcess.cpp">
-        <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\CurveExplorerDialog.cpp">
-        <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\FilterManagementDialog.cpp">
         <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\LinearFitInstance.cpp">
@@ -104,9 +98,6 @@
     <ClCompile Include="..\..\SpectrophotometricColorCalibrationParameters.cpp">
         <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\SpectrophotometricColorCalibrationPreferencesDialog.cpp">
-        <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\SpectrophotometricColorCalibrationProcess.cpp">
         <Filter>Source Files</Filter>
     </ClCompile>
@@ -145,12 +136,6 @@
     <ClInclude Include="..\..\ColorCalibrationProcess.h">
         <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CurveExplorerDialog.h">
-        <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\FilterManagementDialog.h">
-        <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\LinearFitInstance.h">
         <Filter>Header Files</Filter>
     </ClInclude>
@@ -178,9 +163,6 @@
     <ClInclude Include="..\..\PhotometricColorCalibrationProcess.h">
         <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\SampledSpectrumData.h">
-        <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\SpectrophotometricColorCalibrationGraphInterface.h">
         <Filter>Header Files</Filter>
     </ClInclude>
@@ -191,9 +173,6 @@
         <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\SpectrophotometricColorCalibrationParameters.h">
-        <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\SpectrophotometricColorCalibrationPreferencesDialog.h">
         <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\SpectrophotometricColorCalibrationProcess.h">

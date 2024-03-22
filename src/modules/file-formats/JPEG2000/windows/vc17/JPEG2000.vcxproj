@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.133
+# PixInsight Makefile Generator Script v1.135
 # Copyright (C) 2009-2024 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2024-01-22T10:20:53.427Z
+# Generated on .... 2024-03-22T11:22:56.467Z
 # Project id ...... JPEG2000
 # Project type .... Module
 # Platform ........ Windows/vc17
@@ -12,8 +12,9 @@
 # Additional preprocessor definitions:
 # _CRT_SECURE_NO_WARNINGS
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# Additional libraries:
-# jasper-pxi
+# Additional include search directories:
+# ../..
+# jasper
 ######################################################################
 -->
 <Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
@@ -28,7 +29,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{544F9695-154E-45FD-AACD-5E20EDF3618F}</ProjectGuid>
+    <ProjectGuid>{C0FB53D2-5BD1-404E-8EA0-B8DD0BB41184}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -74,7 +75,7 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>$(PCLINCDIR);$(PCLSRCDIR)\3rdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(PCLINCDIR);$(PCLSRCDIR)\3rdparty;..\..;jasper;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;WIN64;_WINDOWS;UNICODE;__PCL_WINDOWS;__PCL_NO_WIN32_MINIMUM_VERSIONS;_CRT_SECURE_NO_WARNINGS;_NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>Async</ExceptionHandling>
@@ -91,7 +92,7 @@
       <AdditionalOptions>/Zc:__cplusplus /permissive- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>PCL-pxi.lib;lz4-pxi.lib;zstd-pxi.lib;zlib-pxi.lib;RFC6234-pxi.lib;lcms-pxi.lib;cminpack-pxi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;userenv.lib;imm32.lib;shlwapi.lib;ws2_32.lib;wldap32.lib;mscms.lib;winmm.lib;crypt32.lib;normaliz.lib;jasper-pxi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PCL-pxi.lib;lz4-pxi.lib;zstd-pxi.lib;zlib-pxi.lib;RFC6234-pxi.lib;lcms-pxi.lib;cminpack-pxi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;userenv.lib;imm32.lib;shlwapi.lib;ws2_32.lib;wldap32.lib;mscms.lib;winmm.lib;crypt32.lib;normaliz.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(PCLBINDIR64)\JPEG2000-pxm.dll</OutputFile>
       <AdditionalLibraryDirectories>$(PCLLIBDIR64);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile></ModuleDefinitionFile>
@@ -111,7 +112,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(PCLINCDIR);$(PCLSRCDIR)\3rdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(PCLINCDIR);$(PCLSRCDIR)\3rdparty;..\..;jasper;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;WIN64;_WINDOWS;UNICODE;__PCL_WINDOWS;__PCL_NO_WIN32_MINIMUM_VERSIONS;_CRT_SECURE_NO_WARNINGS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Async</ExceptionHandling>
       <MinimalRebuild>true</MinimalRebuild>
@@ -126,7 +127,7 @@
       <AdditionalOptions>/Zc:__cplusplus /permissive- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>PCL-pxi.lib;lz4-pxi.lib;zstd-pxi.lib;zlib-pxi.lib;RFC6234-pxi.lib;lcms-pxi.lib;cminpack-pxi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;userenv.lib;imm32.lib;shlwapi.lib;ws2_32.lib;wldap32.lib;mscms.lib;winmm.lib;crypt32.lib;normaliz.lib;jasper-pxi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PCL-pxi.lib;lz4-pxi.lib;zstd-pxi.lib;zlib-pxi.lib;RFC6234-pxi.lib;lcms-pxi.lib;cminpack-pxi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;userenv.lib;imm32.lib;shlwapi.lib;ws2_32.lib;wldap32.lib;mscms.lib;winmm.lib;crypt32.lib;normaliz.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(PCLBINDIR64)\JPEG2000-pxm.dll</OutputFile>
       <AdditionalLibraryDirectories>$(PCLLIBDIR64);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile></ModuleDefinitionFile>
@@ -143,6 +144,43 @@
     <ClCompile Include="..\..\JPEG2000Module.cpp"/>
     <ClCompile Include="..\..\JPEG2000OptionsDialog.cpp"/>
     <ClCompile Include="..\..\JPEG2000PreferencesDialog.cpp"/>
+    <ClCompile Include="..\..\jasper\base\jas_cm.c"/>
+    <ClCompile Include="..\..\jasper\base\jas_debug.c"/>
+    <ClCompile Include="..\..\jasper\base\jas_getopt.c"/>
+    <ClCompile Include="..\..\jasper\base\jas_icc.c"/>
+    <ClCompile Include="..\..\jasper\base\jas_iccdata.c"/>
+    <ClCompile Include="..\..\jasper\base\jas_image.c"/>
+    <ClCompile Include="..\..\jasper\base\jas_init.c"/>
+    <ClCompile Include="..\..\jasper\base\jas_malloc.c"/>
+    <ClCompile Include="..\..\jasper\base\jas_seq.c"/>
+    <ClCompile Include="..\..\jasper\base\jas_stream.c"/>
+    <ClCompile Include="..\..\jasper\base\jas_string.c"/>
+    <ClCompile Include="..\..\jasper\base\jas_tmr.c"/>
+    <ClCompile Include="..\..\jasper\base\jas_tvp.c"/>
+    <ClCompile Include="..\..\jasper\base\jas_version.c"/>
+    <ClCompile Include="..\..\jasper\dummy.c"/>
+    <ClCompile Include="..\..\jasper\jp2\jp2_cod.c"/>
+    <ClCompile Include="..\..\jasper\jp2\jp2_dec.c"/>
+    <ClCompile Include="..\..\jasper\jp2\jp2_enc.c"/>
+    <ClCompile Include="..\..\jasper\jpc\jpc_bs.c"/>
+    <ClCompile Include="..\..\jasper\jpc\jpc_cs.c"/>
+    <ClCompile Include="..\..\jasper\jpc\jpc_dec.c"/>
+    <ClCompile Include="..\..\jasper\jpc\jpc_enc.c"/>
+    <ClCompile Include="..\..\jasper\jpc\jpc_math.c"/>
+    <ClCompile Include="..\..\jasper\jpc\jpc_mct.c"/>
+    <ClCompile Include="..\..\jasper\jpc\jpc_mqcod.c"/>
+    <ClCompile Include="..\..\jasper\jpc\jpc_mqdec.c"/>
+    <ClCompile Include="..\..\jasper\jpc\jpc_mqenc.c"/>
+    <ClCompile Include="..\..\jasper\jpc\jpc_qmfb.c"/>
+    <ClCompile Include="..\..\jasper\jpc\jpc_t1cod.c"/>
+    <ClCompile Include="..\..\jasper\jpc\jpc_t1dec.c"/>
+    <ClCompile Include="..\..\jasper\jpc\jpc_t1enc.c"/>
+    <ClCompile Include="..\..\jasper\jpc\jpc_t2cod.c"/>
+    <ClCompile Include="..\..\jasper\jpc\jpc_t2dec.c"/>
+    <ClCompile Include="..\..\jasper\jpc\jpc_t2enc.c"/>
+    <ClCompile Include="..\..\jasper\jpc\jpc_tagtree.c"/>
+    <ClCompile Include="..\..\jasper\jpc\jpc_tsfb.c"/>
+    <ClCompile Include="..\..\jasper\jpc\jpc_util.c"/>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\JPEG2000Format.h"/>
@@ -150,6 +188,49 @@
     <ClInclude Include="..\..\JPEG2000Module.h"/>
     <ClInclude Include="..\..\JPEG2000OptionsDialog.h"/>
     <ClInclude Include="..\..\JPEG2000PreferencesDialog.h"/>
+    <ClInclude Include="..\..\jasper\jas_cm.h"/>
+    <ClInclude Include="..\..\jasper\jas_config.h"/>
+    <ClInclude Include="..\..\jasper\jas_config2.h"/>
+    <ClInclude Include="..\..\jasper\jas_debug.h"/>
+    <ClInclude Include="..\..\jasper\jas_fix.h"/>
+    <ClInclude Include="..\..\jasper\jas_getopt.h"/>
+    <ClInclude Include="..\..\jasper\jas_icc.h"/>
+    <ClInclude Include="..\..\jasper\jas_image.h"/>
+    <ClInclude Include="..\..\jasper\jas_init.h"/>
+    <ClInclude Include="..\..\jasper\jas_malloc.h"/>
+    <ClInclude Include="..\..\jasper\jas_math.h"/>
+    <ClInclude Include="..\..\jasper\jas_seq.h"/>
+    <ClInclude Include="..\..\jasper\jas_stream.h"/>
+    <ClInclude Include="..\..\jasper\jas_string.h"/>
+    <ClInclude Include="..\..\jasper\jas_tmr.h"/>
+    <ClInclude Include="..\..\jasper\jas_tvp.h"/>
+    <ClInclude Include="..\..\jasper\jas_types.h"/>
+    <ClInclude Include="..\..\jasper\jas_version.h"/>
+    <ClInclude Include="..\..\jasper\jasper.h"/>
+    <ClInclude Include="..\..\jasper\jp2\jp2_cod.h"/>
+    <ClInclude Include="..\..\jasper\jp2\jp2_dec.h"/>
+    <ClInclude Include="..\..\jasper\jpc\jpc_bs.h"/>
+    <ClInclude Include="..\..\jasper\jpc\jpc_cod.h"/>
+    <ClInclude Include="..\..\jasper\jpc\jpc_cs.h"/>
+    <ClInclude Include="..\..\jasper\jpc\jpc_dec.h"/>
+    <ClInclude Include="..\..\jasper\jpc\jpc_enc.h"/>
+    <ClInclude Include="..\..\jasper\jpc\jpc_fix.h"/>
+    <ClInclude Include="..\..\jasper\jpc\jpc_flt.h"/>
+    <ClInclude Include="..\..\jasper\jpc\jpc_math.h"/>
+    <ClInclude Include="..\..\jasper\jpc\jpc_mct.h"/>
+    <ClInclude Include="..\..\jasper\jpc\jpc_mqcod.h"/>
+    <ClInclude Include="..\..\jasper\jpc\jpc_mqdec.h"/>
+    <ClInclude Include="..\..\jasper\jpc\jpc_mqenc.h"/>
+    <ClInclude Include="..\..\jasper\jpc\jpc_qmfb.h"/>
+    <ClInclude Include="..\..\jasper\jpc\jpc_t1cod.h"/>
+    <ClInclude Include="..\..\jasper\jpc\jpc_t1dec.h"/>
+    <ClInclude Include="..\..\jasper\jpc\jpc_t1enc.h"/>
+    <ClInclude Include="..\..\jasper\jpc\jpc_t2cod.h"/>
+    <ClInclude Include="..\..\jasper\jpc\jpc_t2dec.h"/>
+    <ClInclude Include="..\..\jasper\jpc\jpc_t2enc.h"/>
+    <ClInclude Include="..\..\jasper\jpc\jpc_tagtree.h"/>
+    <ClInclude Include="..\..\jasper\jpc\jpc_tsfb.h"/>
+    <ClInclude Include="..\..\jasper\jpc\jpc_util.h"/>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\icons\JP2.svg"/>

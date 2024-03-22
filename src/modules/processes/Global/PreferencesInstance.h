@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.5.1
+// Standard Global Process Module Version 1.5.3
 // ----------------------------------------------------------------------------
-// PreferencesInstance.h - Released 2024-01-19T15:23:39Z
+// PreferencesInstance.h - Released 2024-03-20T10:42:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -97,6 +97,8 @@ struct ApplicationPreferences
    String      deltaTDataFile;
    String      deltaATDataFile;
    String      cipITRSDataFile;
+   String      filtersDatabaseFile;
+   String      whiteReferencesDatabaseFile;
 };
 
 // ----------------------------------------------------------------------------
@@ -258,9 +260,11 @@ struct ProcessPreferences
 struct SecurityPreferences
 {
    pcl_bool    allowUnsignedScriptExecution;
+   pcl_bool    allowUnsignedModuleInstallation;
    pcl_bool    allowUnsignedRepositories;
    pcl_bool    allowInsecureRepositories;
    pcl_bool    reportScriptSignatures;
+   pcl_bool    reportModuleSignatures;
    pcl_bool    warnOnUnsignedCodeExecution;
    pcl_bool    enableLocalSigningIdentity;
 };
@@ -304,6 +308,7 @@ private:
    friend class DefaultTransparencySettingsPreferencesPage;
    friend class DirectoriesAndNetworkPreferencesPage;
    friend class EphemeridesPreferencesPage;
+   friend class FiltersPreferencesPage;
    friend class FileIOPreferencesPage;
    friend class GUIEffectsPreferencesPage;
    friend class MessageBoxPreferencesPage;
@@ -326,4 +331,4 @@ private:
 #endif   // __PreferencesInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInstance.h - Released 2024-01-19T15:23:39Z
+// EOF PreferencesInstance.h - Released 2024-03-20T10:42:12Z

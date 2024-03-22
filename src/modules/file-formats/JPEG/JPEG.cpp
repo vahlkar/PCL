@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// JPEG.cpp - Released 2024-01-19T15:23:30Z
+// JPEG.cpp - Released 2024-03-20T10:42:01Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -74,7 +74,7 @@ typedef unsigned char boolean;
 // standard Windows headers.
 #define XMD_H
 
-#include <jpeg/jpeglib.h>
+#include "jpeglib/jpeglib.h"
 
 } // extern "C"
 
@@ -894,4 +894,4 @@ void JPEGWriter::WriteImage( const UInt32Image& image )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF JPEG.cpp - Released 2024-01-19T15:23:30Z
+// EOF JPEG.cpp - Released 2024-03-20T10:42:01Z

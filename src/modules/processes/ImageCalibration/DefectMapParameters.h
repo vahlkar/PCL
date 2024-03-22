@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.9.8
 // ----------------------------------------------------------------------------
-// DefectMapParameters.h - Released 2024-01-19T15:23:40Z
+// DefectMapParameters.h - Released 2024-03-20T10:42:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -142,4 +142,4 @@ extern DMPIsCFA* TheDMPIsCFAParameter;
 #endif   // __DefectMapParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF DefectMapParameters.h - Released 2024-01-19T15:23:40Z
+// EOF DefectMapParameters.h - Released 2024-03-20T10:42:12Z

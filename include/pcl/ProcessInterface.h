@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
-// pcl/ProcessInterface.h - Released 2024-01-19T15:23:14Z
+// pcl/ProcessInterface.h - Released 2024-03-20T10:41:36Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -603,7 +603,7 @@ public:
     * reimplementation of the Features() member function in a derived class.
     *
     * \note The default implementation of this function does nothing. It is
-    * reimplemented by derived classes implementing dynamic interfaces, to
+    * reimplemented by derived classes implementing dynamic interfaces to
     * commit the active dynamic session. An example is the standard DynamicCrop
     * interface. The reimplementation of this function in the DynamicCrop
     * interface executes the defined crop/rotate/rescale operation on the
@@ -2425,6 +2425,20 @@ public:
    }
 
    /*!
+    * Notification sent when the global filters and/or white references
+    * databases have been created or modified for the running instance of the
+    * PixInsight core application.
+    *
+    * \note Since core version 1.8.9-2 build 1598 (February 2024).
+    *
+    * \ingroup global_notifications
+    * \sa \ref global_notifications "Global Notification Functions"
+    */
+   virtual void GlobalFiltersUpdated()
+   {
+   }
+
+   /*!
     * Returns a settings key that should be used for storage of all settings
     * data associated to this interface.
     *
@@ -2680,4 +2694,4 @@ private:
 #endif   // __PCL_ProcessInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ProcessInterface.h - Released 2024-01-19T15:23:14Z
+// EOF pcl/ProcessInterface.h - Released 2024-03-20T10:41:36Z

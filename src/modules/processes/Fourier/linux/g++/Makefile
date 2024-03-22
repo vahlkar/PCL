@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.133
+# PixInsight Makefile Generator Script v1.135
 # Copyright (C) 2009-2024 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2024-01-22T10:21:00.161Z
+# Generated on .... 2024-03-22T11:23:04.999Z
 # Project id ...... Fourier
 # Project type .... Module
 # Platform ........ Linux/g++

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
-// pcl/AutoLock.h - Released 2024-01-19T15:23:14Z
+// pcl/AutoLock.h - Released 2024-03-20T10:41:36Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -377,4 +377,4 @@ private:
 #endif   // __PCL_AutoLock_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AutoLock.h - Released 2024-01-19T15:23:14Z
+// EOF pcl/AutoLock.h - Released 2024-03-20T10:41:36Z

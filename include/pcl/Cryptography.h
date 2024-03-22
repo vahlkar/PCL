@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
-// pcl/Cryptography.h - Released 2024-01-19T15:23:14Z
+// pcl/Cryptography.h - Released 2024-03-20T10:41:36Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -139,10 +139,10 @@ public:
     * The \c C template argument must be a class with PCL container semantics
     * (the Begin() and Size() member functions are required). Typically the
     * ByteArray class is used, although any array-like class with contiguous
-    * storage is appropriate, including Array, String, Vector and Matrix.
+    * storage is appropriate, including String, IsoString, Vector and Matrix.
     */
    template <class C>
-   void Update( const C& data )
+   void UpdateWithContainer( const C& data )
    {
       Update( data.Begin(), data.Size() );
    }
@@ -1100,4 +1100,4 @@ private:
 #endif   // __PCL_Cryptography_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Cryptography.h - Released 2024-01-19T15:23:14Z
+// EOF pcl/Cryptography.h - Released 2024-03-20T10:41:36Z

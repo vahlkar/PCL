@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
-// pcl/GlobalSettings.h - Released 2024-01-19T15:23:14Z
+// pcl/GlobalSettings.h - Released 2024-03-20T10:41:36Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -112,7 +112,8 @@ namespace GlobalVariableType
  * pcl::GlobalVariableType namespace for more details.
  *
  * Below is a complete list of all global settings available in current
- * versions of the PixInsight platform (up-to-date as of core version 1.8.9-2).
+ * versions of the PixInsight platform (up-to-date as of core version 1.8.9-2
+ * build 1598, released January 2024).
  *
  * <h3>PixInsight Public Global Variables</h3>
  *
@@ -217,9 +218,11 @@ namespace GlobalVariableType
  * <tr><td>Process/InitCUDARuntimeAtStartup</td><td></td></tr>
  * <tr><td>Process/VerifyScriptChecksums</td><td></td></tr>
  * <tr><td>Security/AllowInsecureRepositories</td><td></td></tr>
+ * <tr><td>Security/AllowUnsignedModuleInstallation</td><td></td></tr>
  * <tr><td>Security/AllowUnsignedRepositories</td><td></td></tr>
  * <tr><td>Security/AllowUnsignedScriptExecution</td><td></td></tr>
  * <tr><td>Security/EnableLocalSigningIdentity</td><td></td></tr>
+ * <tr><td>Security/ReportModuleSignatures</td><td></td></tr>
  * <tr><td>Security/ReportScriptSignatures</td><td></td></tr>
  * <tr><td>Security/WarnOnUnsignedCodeExecution</td><td></td></tr>
  * </table>
@@ -303,25 +306,28 @@ namespace GlobalVariableType
  * <h4>Global Strings</h4>
  *
  * <table border="1" cellpadding="4" cellspacing="0">
- * <tr><td>Application/AppDirectory</td><td>Full path to the distribution's core application bundle. Read-only. macOS only,</td></tr>
+ *
+ * <tr><td>Application/AppDirectory</td><td>Full path to the distribution's core application bundle. Read-only. macOS only.</td></tr>
  * <tr><td>Application/AsteroidEphemeridesFile</td><td>File name or path of the distribution's asteroid ephemerides file (XEPH format).</td></tr>
- * <tr><td>Application/AsteroidEphemeridesFilePath</td><td>Full path to the current distribution's asteroid ephemerides file (XEPH format). Read-only.</td></tr>
+ * <tr><td>Application/AsteroidEphemeridesFilePath</td><td>Full path to the current asteroid ephemerides file (XEPH format). Read-only.</td></tr>
  * <tr><td>Application/BaseDirectory</td><td>Base directory of the core distribution. Read-only.</td></tr>
  * <tr><td>Application/BinDirectory</td><td>Full path to the distribution's bin directory. Read-only.</td></tr>
  * <tr><td>Application/CIP_ITRSDataFile</td><td>File name or path of the distribution's data file of CIP coordinates in the ITRS (plain text).</td></tr>
- * <tr><td>Application/CIP_ITRSDataFilePath</td><td>Full path to the current distribution's data file of CIP coordinates in the ITRS (plain text). Read-only</td></tr>
+ * <tr><td>Application/CIP_ITRSDataFilePath</td><td>Full path to the current data file of CIP coordinates in the ITRS (plain text). Read-only.</td></tr>
  * <tr><td>Application/ColorDirectory</td><td>Full path to the distribution's color directory. Read-only.</td></tr>
  * <tr><td>Application/ConfigDirectory</td><td>Full path to the application's configuration directory. Platform-dependent. Read-only.</td></tr>
  * <tr><td>Application/CoreDirectory</td><td>Full directory of the core executable file. Read-only.</td></tr>
  * <tr><td>Application/CoreFilePath</td><td>Full file path of the core executable. Read-only.</td></tr>
  * <tr><td>Application/DeltaATDataFile</td><td>File name or path of the distribution's Delta AT (TAI-UTC) data file (plain text).</td></tr>
- * <tr><td>Application/DeltaATDataFilePath</td><td>Full path to the current distribution's Delta AT (TAI-UTC) data file (plain text). Read-only</td></tr>
+ * <tr><td>Application/DeltaATDataFilePath</td><td>Full path to the current Delta AT (TAI-UTC) data file (plain text). Read-only.</td></tr>
  * <tr><td>Application/DeltaTDataFile</td><td>File name or path of the distribution's Delta T (TT-UT1) data file (plain text).</td></tr>
- * <tr><td>Application/DeltaTDataFilePath</td><td>Full path to the current distribution's Delta T (TT-UT1) data file (plain text). Read-only</td></tr>
+ * <tr><td>Application/DeltaTDataFilePath</td><td>Full path to the current Delta T (TT-UT1) data file (plain text). Read-only.</td></tr>
  * <tr><td>Application/DocDirectory</td><td>Full path to the distribution's doc directory. Read-only.</td></tr>
  * <tr><td>Application/EtcDirectory</td><td>Full path to the distribution's etc directory. Read-only.</td></tr>
+ * <tr><td>Application/FiltersDatabaseFile</td><td>File name or path of the distribution's spectrophotometric filter definitions database file (XML format).</td></tr>
+ * <tr><td>Application/FiltersDatabaseFilePath</td><td>Full file path to the current spectrophotometric filter definitions database file (XML format). Read-only.</td></tr>
  * <tr><td>Application/FundamentalEphemeridesFile</td><td>File name or path of the distribution's fundamental ephemerides file (XEPH format).</td></tr>
- * <tr><td>Application/FundamentalEphemeridesFilePath</td><td>Full path to the current distribution's fundamental ephemerides file (XEPH format). Read-only.</td></tr>
+ * <tr><td>Application/FundamentalEphemeridesFilePath</td><td>Full path to the current fundamental ephemerides file (XEPH format). Read-only.</td></tr>
  * <tr><td>Application/HighResFont</td><td>%Font family for automatic style sheet replacement on high-dpi displays.</td></tr>
  * <tr><td>Application/HighResMonoFont</td><td>Monospaced font family for automatic style sheet replacement on high-dpi displays.</td></tr>
  * <tr><td>Application/IncludeDirectory</td><td>Full path to the distribution's include directory. Read-only.</td></tr>
@@ -330,7 +336,7 @@ namespace GlobalVariableType
  * <tr><td>Application/LowResFont</td><td>%Font family for automatic style sheet replacement on low-dpi displays.</td></tr>
  * <tr><td>Application/LowResMonoFont</td><td>Monospaced font family for automatic style sheet replacement on low-dpi displays.</td></tr>
  * <tr><td>Application/NutationModelFile</td><td>File name or path of the distribution's nutation model file (XEPH format).</td></tr>
- * <tr><td>Application/NutationModelFilePath</td><td>Full path to the current distribution's nutation model file (XEPH format). Read-only.</td></tr>
+ * <tr><td>Application/NutationModelFilePath</td><td>Full path to the current nutation model file (XEPH format). Read-only.</td></tr>
  * <tr><td>Application/ResourceFile01</td><td>Core resource file #1.</td></tr>
  * <tr><td>Application/ResourceFile02</td><td>Core resource file #2.</td></tr>
  * <tr><td>Application/ResourceFile03</td><td>Core resource file #3.</td></tr>
@@ -343,14 +349,16 @@ namespace GlobalVariableType
  * <tr><td>Application/ResourceFile10</td><td>Core resource file #10.</td></tr>
  * <tr><td>Application/RscDirectory</td><td>Full path to the distribution's rsc directory. Read-only.</td></tr>
  * <tr><td>Application/ShortTermAsteroidEphemeridesFile</td><td>File name or path of the distribution's asteroid ephemerides file (XEPH format) - short-term version (reduced time span).</td></tr>
- * <tr><td>Application/ShortTermAsteroidEphemeridesFilePath</td><td>Full path to the current distribution's asteroid ephemerides file (XEPH format) - short-term version (reduced time span). Read-only.</td></tr>
+ * <tr><td>Application/ShortTermAsteroidEphemeridesFilePath</td><td>Full path to the current asteroid ephemerides file (XEPH format) - short-term version (reduced time span). Read-only.</td></tr>
  * <tr><td>Application/ShortTermFundamentalEphemeridesFile</td><td>File name or path of the distribution's fundamental ephemerides file (XEPH format) - short-term version (reduced time span).</td></tr>
- * <tr><td>Application/ShortTermFundamentalEphemeridesFilePath</td><td>Full path to the current distribution's fundamental ephemerides file (XEPH format) - short-term version (reduced time span). Read-only.</td></tr>
+ * <tr><td>Application/ShortTermFundamentalEphemeridesFilePath</td><td>Full path to the current fundamental ephemerides file (XEPH format) - short-term version (reduced time span). Read-only.</td></tr>
  * <tr><td>Application/ShortTermNutationModelFile</td><td>File name or path of the distribution's nutation model file (XEPH format) - short-term version (reduced time span).</td></tr>
- * <tr><td>Application/ShortTermNutationModelFilePath</td><td>Full path to the current distribution's nutation model file (XEPH format) - short-term version (reduced time span). Read-only.</td></tr>
+ * <tr><td>Application/ShortTermNutationModelFilePath</td><td>Full path to the current nutation model file (XEPH format) - short-term version (reduced time span). Read-only.</td></tr>
  * <tr><td>Application/SrcDirectory</td><td>Full path to the distribution's src directory. Read-only.</td></tr>
  * <tr><td>Application/StartTime</td><td>Starting time of the core application in ISO 8601 extended format. Read-only.</td></tr>
  * <tr><td>Application/StyleSheetFile</td><td>Main core stile sheet file.</td></tr>
+ * <tr><td>Application/WhiteReferencesDatabaseFile</td><td>File name or path of the distribution's spectrophotometric white reference definitions database file (XML format).</td></tr>
+ * <tr><td>Application/WhiteReferencesDatabaseFilePath</td><td>Full file path to the current spectrophotometric white reference definitions database file (XML format). Read-only.</td></tr>
  * <tr><td>ColorManagement/DefaultGrayscaleProfilePath</td><td>Full path to the default ICC color profile for grayscale monochrome images.</td></tr>
  * <tr><td>ColorManagement/DefaultRGBProfilePath</td><td>Full path to the default ICC color profile for RGB color images.</td></tr>
  * <tr><td>ColorManagement/MonitorProfilePath</td><td>Full path to the ICC color profile associated with the primary monitor. Read-only.</td></tr>
@@ -539,4 +547,4 @@ public:
 #endif   // __PCL_GlobalSettings_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/GlobalSettings.h - Released 2024-01-19T15:23:14Z
+// EOF pcl/GlobalSettings.h - Released 2024-03-20T10:41:36Z

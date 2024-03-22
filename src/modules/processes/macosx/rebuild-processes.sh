@@ -7,10 +7,6 @@ cd $BASEDIR/APASS/macosx/g++
 make clean
 make -j $NPROC
 
-# cd $BASEDIR/BackgroundModelization/macosx/g++
-# make clean
-# make -j $NPROC
-
 cd $BASEDIR/CloneStamp/macosx/g++
 make clean
 make -j $NPROC
@@ -27,25 +23,17 @@ cd $BASEDIR/ColorSpaces/macosx/g++
 make clean
 make -j $NPROC
 
-# cd $BASEDIR/Compatibility/macosx/g++
-# make clean
-# make -j $NPROC
-
 cd $BASEDIR/Convolution/macosx/g++
 make clean
 make -j $NPROC
-
-# cd $BASEDIR/Deconvolution/macosx/g++
-# make clean
-# make -j $NPROC
 
 cd $BASEDIR/EphemerisGeneration/macosx/g++
 make clean
 make -j $NPROC
 
-# cd $BASEDIR/FastIntegration/macosx/g++
-# make clean
-# make -j $NPROC
+cd $BASEDIR/FilterManager/macosx/g++
+make clean
+make -j $NPROC
 
 cd $BASEDIR/FindingChart/macosx/g++
 make clean
@@ -87,25 +75,13 @@ cd $BASEDIR/ImageIntegration/macosx/g++
 make clean
 make -j $NPROC
 
-# cd $BASEDIR/ImageRegistration/macosx/g++
-# make clean
-# make -j $NPROC
-
 cd $BASEDIR/IntensityTransformations/macosx/g++
 make clean
 make -j $NPROC
 
-# cd $BASEDIR/MaskGeneration/macosx/g++
-# make clean
-# make -j $NPROC
-
 cd $BASEDIR/Morphology/macosx/g++
 make clean
 make -j $NPROC
-
-# cd $BASEDIR/MultiscaleProcessing/macosx/g++
-# make clean
-# make -j $NPROC
 
 cd $BASEDIR/NetworkService/macosx/g++
 make clean
@@ -115,17 +91,9 @@ cd $BASEDIR/NoiseGeneration/macosx/g++
 make clean
 make -j $NPROC
 
-# cd $BASEDIR/NoiseReduction/macosx/g++
-# make clean
-# make -j $NPROC
-
 cd $BASEDIR/NoOperation/macosx/g++
 make clean
 make -j $NPROC
-
-# cd $BASEDIR/Obsolete/macosx/g++
-# make clean
-# make -j $NPROC
 
 cd $BASEDIR/PixelMath/macosx/g++
 make clean
@@ -139,14 +107,6 @@ cd $BASEDIR/Sandbox/macosx/g++
 make clean
 make -j $NPROC
 
-# cd $BASEDIR/StarGenerator/macosx/g++
-# make clean
-# make -j $NPROC
-
-# cd $BASEDIR/TGV/macosx/g++
-# make clean
-# make -j $NPROC
-
 cd $BASEDIR/contrib/cleger/SubframeSelector/macosx/g++
 make clean
 make -j $NPROC
@@ -158,10 +118,6 @@ make -j $NPROC
 cd $BASEDIR/contrib/kkretzschmar/INDIClient/macosx/g++
 make clean
 make -j $NPROC
-
-# cd $BASEDIR/contrib/nmisiura/StarNet/macosx/g++
-# make clean
-# make -j $NPROC
 
 cd $BASEDIR/contrib/nvolkov/Blink/macosx/g++
 make clean

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.5.1
+// Standard Global Process Module Version 1.5.3
 // ----------------------------------------------------------------------------
-// PreferencesInterface.h - Released 2024-01-19T15:23:39Z
+// PreferencesInterface.h - Released 2024-03-20T10:42:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -587,6 +587,22 @@ DEFINE_PREFERENCES_CATEGORY( Ephemerides, "Core Ephemerides" )
 
 // ----------------------------------------------------------------------------
 
+class FiltersPreferencesPage : public PreferencesCategoryPage
+{
+public:
+
+   FiltersPreferencesPage( PreferencesInstance& );
+
+   void TransferSettings( PreferencesInstance& to, const PreferencesInstance& from ) override;
+
+   GlobalFileControl          FiltersDatabase_File;
+   GlobalFileControl          WhiteReferencesDatabase_File;
+};
+
+DEFINE_PREFERENCES_CATEGORY( Filters, "Core Filters" )
+
+// ----------------------------------------------------------------------------
+
 class GUIEffectsPreferencesPage : public PreferencesCategoryPage
 {
 public:
@@ -710,9 +726,11 @@ public:
    void TransferSettings( PreferencesInstance& to, const PreferencesInstance& from ) override;
 
    GlobalFlagControl          AllowUnsignedScriptExecution_Flag;
+   GlobalFlagControl          AllowUnsignedModuleInstallation_Flag;
    GlobalFlagControl          AllowUnsignedRepositories_Flag;
    GlobalFlagControl          AllowInsecureRepositories_Flag;
    GlobalFlagControl          ReportScriptSignatures_Flag;
+   GlobalFlagControl          ReportModuleSignatures_Flag;
    GlobalFlagControl          WarnOnUnsignedCodeExecution_Flag;
    GlobalFlagControl          EnableLocalSigningIdentity_Flag;
 };
@@ -1002,4 +1020,4 @@ PCL_END_LOCAL
 #endif   // __PreferencesInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInterface.h - Released 2024-01-19T15:23:39Z
+// EOF PreferencesInterface.h - Released 2024-03-20T10:42:12Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// FITS.cpp - Released 2024-01-19T15:23:30Z
+// FITS.cpp - Released 2024-03-20T10:42:01Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -64,7 +64,7 @@
 // Tell fitsio.h that we do support 64-bit integers.
 #define HAVE_LONGLONG   1
 
-#include <cfitsio/fitsio.h>
+#include "cfitsio/fitsio.h"
 
 namespace pcl
 {
@@ -2341,4 +2341,4 @@ void FITSWriter::WriteExtensionHDU( const FITSExtensionData& ext )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITS.cpp - Released 2024-01-19T15:23:30Z
+// EOF FITS.cpp - Released 2024-03-20T10:42:01Z

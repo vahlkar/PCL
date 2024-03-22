@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.8.9
 // ----------------------------------------------------------------------------
-// GraphWebView.cpp - Released 2024-01-19T15:23:40Z
+// GraphWebView.cpp - Released 2024-03-20T10:42:13Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -876,4 +876,4 @@ void GraphWebView::Cleanup()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GraphWebView.cpp - Released 2024-01-19T15:23:40Z
+// EOF GraphWebView.cpp - Released 2024-03-20T10:42:13Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// ConvolutionInterface.cpp - Released 2024-01-19T15:23:39Z
+// ConvolutionInterface.cpp - Released 2024-03-20T10:42:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -1009,4 +1009,4 @@ ConvolutionInterface::GUIData::GUIData( ConvolutionInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ConvolutionInterface.cpp - Released 2024-01-19T15:23:39Z
+// EOF ConvolutionInterface.cpp - Released 2024-03-20T10:42:12Z

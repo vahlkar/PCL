@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
 // Standard XISF File Format Module Version 1.0.13
 // ----------------------------------------------------------------------------
-// XISFInstance.cpp - Released 2024-01-19T15:23:30Z
+// XISFInstance.cpp - Released 2024-03-20T10:42:02Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard XISF PixInsight module.
 //
@@ -1160,7 +1160,7 @@ void XISFInstance::WriteSamples( const UInt32Image::sample* buffer, int startRow
 void XISFInstance::CloseImage()
 {
    CheckOpenStream( m_writer, "CloseImage" );
-  m_writer->CloseImage();
+   m_writer->CloseImage();
 }
 
 // ----------------------------------------------------------------------------
@@ -1168,4 +1168,4 @@ void XISFInstance::CloseImage()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF XISFInstance.cpp - Released 2024-01-19T15:23:30Z
+// EOF XISFInstance.cpp - Released 2024-03-20T10:42:02Z

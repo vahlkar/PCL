@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
-// pcl/PSFFit.cpp - Released 2024-01-19T15:23:20Z
+// pcl/PSFFit.cpp - Released 2024-03-20T10:41:42Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -811,7 +811,20 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
     * Setup initial working parameters.
     */
    P = Vector( 8 );
-   P[0] = m_bkg = S.Median();          // B
+
+   // Robust local background estimate
+   {
+      double s = 2*1.4826*S.MAD();
+      double m = S.Median();
+      Array<double> M;
+      for ( double v : S )
+         if ( v - m < s )
+            M << v;
+      if ( M.Length() >= 3 )
+         m = pcl::Median( M.Begin(), M.End() );
+      P[0] = m_bkg = m;                // B
+   }
+
    P[1] = S.MaxElement() - P[0];       // A
    P[2] = pos.x - r0.x;                // x0
    P[3] = pos.y - r0.y;                // y0
@@ -826,7 +839,7 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
 
    tolerance = Range( tolerance, 1.0e-12, 1.0e-03 );
 
-   m_bkgMaxVar = Range( bkgMaxVar, 0.01F, 1.0F );
+   m_bkgMaxVar = Range( bkgMaxVar, 0.005F, 1.0F );
    m_growthForFlux = Range( growthForFlux, 0.1F, 10.0F );
 
    /*
@@ -1050,7 +1063,7 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
       // Estimated local background. Must be >= 0.
       psf.B = Max( 0.0, P[0] );
       // Constrain local background by limiting its maximum variation w.r.t the
-      // initial mean background estimate.
+      // initial robust mean background estimate.
       if ( m_bkg > 0 )
          if ( Abs( psf.B - m_bkg )/m_bkg > m_bkgMaxVar )
             psf.B = P[0] = m_bkg;
@@ -1615,4 +1628,4 @@ String PSFData::StatusText() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFFit.cpp - Released 2024-01-19T15:23:20Z
+// EOF pcl/PSFFit.cpp - Released 2024-03-20T10:41:42Z

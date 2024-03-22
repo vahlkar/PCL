@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
-// Standard FindingChart Process Module Version 1.0.0
+// Standard FindingChart Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// FindingChartInstance.cpp - Released 2024-01-19T15:23:39Z
+// FindingChartInstance.cpp - Released 2024-03-20T10:42:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FindingChart PixInsight module.
 //
@@ -302,7 +302,7 @@ bool FindingChartInstance::ExecuteOn( View& view )
    float maxMagnitude;
    if ( p_autoChartMaxMagnitude )
    {
-      maxMagnitude = (resolution < 125) ? 8.0 : 7.0;
+      maxMagnitude = (resolution < 125) ? 7.5 : 7.0;
       console.NoteLn( String().Format( "* Automatically calculated limit magnitude: %.1f", maxMagnitude ) );
    }
    else
@@ -364,11 +364,11 @@ bool FindingChartInstance::ExecuteOn( View& view )
                   << StringKeyValue( "BrightStars_magMin", SNULLMAG )
                   << StringKeyValue( "BrightStars_magMax", "7" )
                   << StringKeyValue( "BrightStars_magnitudeFilter", "Vmag" )
-                  << StringKeyValue( "TYCHO2_magMin", SNULLMAG )
-                  << StringKeyValue( "TYCHO2_magMax", SNULLMAG )
-                  << StringKeyValue( "TYCHO2_magnitudeFilter", "VTmag" )
+                  << StringKeyValue( "HD_CrossReference_magMin", SNULLMAG )
+                  << StringKeyValue( "HD_CrossReference_magMax", "14" )
+                  << StringKeyValue( "HD_CrossReference_magnitudeFilter", "Vmag" )
                   << StringKeyValue( "sgen_projectionOriginMode", "0" ) // center
-                  << StringKeyValue( "sgen_vizierServer", "http://vizier.u-strasbg.fr/" )
+                  << StringKeyValue( "sgen_vizierServer", "https://vizier.cds.unistra.fr/" )
                   << StringKeyValue( "sgen_autoGraphics", "true" )
                   << StringKeyValue( "sgen_minMagnitude", "-2" )
                   << StringKeyValue( "sgen_maxMagnitude", String().Format( "%.2f", maxMagnitude ) )
@@ -378,8 +378,8 @@ bool FindingChartInstance::ExecuteOn( View& view )
                   << StringKeyValue( "sgen_beta", "1.5" )
                   << StringKeyValue( "sgen_generateStars", String( bool( p_drawStars ) ) )
                   << StringKeyValue( "sgen_generateNoise", "false" )
-                  << StringKeyValue( "sgen_catalogName", "Bright Stars" )
-                  << StringKeyValue( "sgen_catalog2Name", "TYCHO-2" )
+                  << StringKeyValue( "sgen_catalogName", "HD Cross-Reference" )
+                  << StringKeyValue( "sgen_catalog2Name", "null" )
                   << StringKeyValue( "sgen_outputImageId", window.MainView().Id() + "_FindingChart" )
                   << StringKeyValue( "non_interactive", "true" );
 
@@ -691,4 +691,4 @@ size_type FindingChartInstance::ParameterLength( const MetaParameter* p, size_ty
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FindingChartInstance.cpp - Released 2024-01-19T15:23:39Z
+// EOF FindingChartInstance.cpp - Released 2024-03-20T10:42:12Z

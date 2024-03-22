@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
-// pcl/MetaModule.h - Released 2024-01-19T15:23:14Z
+// pcl/MetaModule.h - Released 2024-03-20T10:41:36Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -601,7 +601,11 @@ public:
     *
     * \b References
     *
-    * \li The Qt Resource System: http://doc.qt.io/qt-5/resources.html
+    * \li The Qt Resource System:https://doc.qt.io/qt-6/resources.html
+    *
+    * \note Since PixInsight core version 1.8.9-2, calling this function
+    * requires the following security entitlement:
+    * 'com.pixinsight.security.pcl.allow-load-resource'.
     *
     * \sa UnloadResource()
     */
@@ -619,6 +623,10 @@ public:
     * references to the resource (for example, because one or more existing
     * Bitmap objects depend on data stored in the resource), this function
     * will throw an Error exception.
+    *
+    * \note Since PixInsight core version 1.8.9-2, calling this function
+    * requires the following security entitlement:
+    * 'com.pixinsight.security.pcl.allow-unload-resource'.
     *
     * \sa LoadResource()
     */
@@ -663,19 +671,23 @@ public:
    Variant EvaluateScript( const String& sourceCode, const IsoString& language = IsoString() );
 
    /*!
-    * Returns true iff the module has the specified security \a entitlement.
+    * Returns true iff the module has the specified \a entitlement.
     *
     * Entitlements are special permissions granted to installed modules by the
-    * PixInsight core application, as part of the implemented code security
+    * PixInsight core application as part of the implemented code security
     * infrastructure.
     *
     * An entitlement may be necessary to perform certain operations considered
     * potentially dangerous, either for the user or for the PixInsight
     * platform. Entitlements can also be required by running process and format
-    * instances to perform specific actions.
+    * instances to perform some actions considered critical or experimental.
     *
     * String representations of entitlements normally follow the inverse URL
-    * format. For example: "com.pixinsight.security.pcl.experimental-features".
+    * format. Examples:
+    *
+    * com.pixinsight.security.pcl.allow-load-resource \n
+    * com.pixinsight.security.pjsr.allow-write-global-settings \n
+    * com.pixinsight.developer.experimental-features
     */
    bool HasEntitlement( const IsoString& entitlement );
 
@@ -1034,4 +1046,4 @@ namespace InstallMode
 #endif   // __PCL_MetaModule_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MetaModule.h - Released 2024-01-19T15:23:14Z
+// EOF pcl/MetaModule.h - Released 2024-03-20T10:41:36Z

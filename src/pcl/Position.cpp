@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
-// pcl/Position.cpp - Released 2024-01-19T15:23:20Z
+// pcl/Position.cpp - Released 2024-03-20T10:41:42Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -637,38 +637,45 @@ Vector Position::Geometric( const StarPosition& S )
    // Barycentric direction at the catalog epoch.
    Vector u( cd*ca, cd*sa, sd );
 
-   // Parallax in radians
-   double p = AsRad( S.p );
-
-   // Relativistic Doppler effect.
-   // ESAsA Eq. 7.26
-   double f = 1/(1 - S.v/c_km_s);
-
-   // Unit conversion factors.
-   // - from mas/year to radians/day
-   static constexpr double s = Pi()/180/365.25/3600000;
-   // - from km/s to ua/day
-   static constexpr double k = 86400/au_km;
-
-   // Space motion vector in radians/day.
-   Vector m( f*s*S.muAlpha, f*s*S.muDelta, f*k*S.v*p );
-   Vector v( -sa*m[0] - sd*ca*m[1] + cd*ca*m[2],
-              ca*m[0] - sd*sa*m[1] + cd*sa*m[2],
-                           cd*m[1] +    sd*m[2] );
-
-   // Time of observation corrected for the Roemer delay.
-   TimePoint tb = m_t + u.Dot( m_Eb )/c_au_day;
-   // Barycentric position vector at time t.
-   // ESAsA Eq. 7.127
-   m_U = m_ub = u + (tb - S.t0)*v;
-
-   // Geocentric position vector at time t.
-   // ESAsA Eq. 7.128
-   if ( p != 0 )
+   if ( S.muAlpha != 0 || S.muDelta != 0 || S.p != 0 )
    {
-      m_U -= p*m_Eb;
-      if ( m_observer )
-         m_U -= p*(m_G/au_km); // topocentric position
+      // Parallax in radians
+      double p = AsRad( S.p );
+
+      // Relativistic Doppler effect.
+      // ESAsA Eq. 7.26
+      double f = 1/(1 - S.v/c_km_s);
+
+      // Unit conversion factors.
+      // - from mas/year to radians/day
+      static constexpr double s = Pi()/180/365.25/3600000;
+      // - from km/s to ua/day
+      static constexpr double k = 86400/au_km;
+
+      // Space motion vector in radians/day.
+      Vector m( f*s*S.muAlpha, f*s*S.muDelta, f*k*S.v*p );
+      Vector v( -sa*m[0] - sd*ca*m[1] + cd*ca*m[2],
+               ca*m[0] - sd*sa*m[1] + cd*sa*m[2],
+                              cd*m[1] +    sd*m[2] );
+
+      // Time of observation corrected for the Roemer delay.
+      TimePoint tb = m_t + u.Dot( m_Eb )/c_au_day;
+      // Barycentric position vector at time t.
+      // ESAsA Eq. 7.127
+      m_U = m_ub = u + (tb - S.t0)*v;
+
+      // Geocentric position vector at time t.
+      // ESAsA Eq. 7.128
+      if ( p != 0 )
+      {
+         m_U -= p*m_Eb;
+         if ( m_observer )
+            m_U -= p*(m_G/au_km); // topocentric position
+      }
+   }
+   else
+   {
+      m_U = m_ub = u;
    }
 
    // We cannot know the 'true' direction of a star.
@@ -1203,4 +1210,4 @@ Optional<double> Position::ApparentVisualMagnitude( EphemerisFile::Handle& H )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Position.cpp - Released 2024-01-19T15:23:20Z
+// EOF pcl/Position.cpp - Released 2024-03-20T10:41:42Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
 // Standard Flux Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// FluxCalibrationInterface.cpp - Released 2024-01-19T15:23:39Z
+// FluxCalibrationInterface.cpp - Released 2024-03-20T10:42:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Flux PixInsight module.
 //
@@ -249,4 +249,4 @@ FluxCalibrationInterface::GUIData::GUIData( FluxCalibrationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FluxCalibrationInterface.cpp - Released 2024-01-19T15:23:39Z
+// EOF FluxCalibrationInterface.cpp - Released 2024-03-20T10:42:12Z

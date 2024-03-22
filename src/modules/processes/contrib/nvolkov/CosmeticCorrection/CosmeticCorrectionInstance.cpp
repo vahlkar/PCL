@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
 // Standard CosmeticCorrection Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// CosmeticCorrectionInstance.cpp - Released 2024-01-19T15:23:40Z
+// CosmeticCorrectionInstance.cpp - Released 2024-03-20T10:42:13Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CosmeticCorrection PixInsight module.
 //
@@ -1301,4 +1301,4 @@ size_type CosmeticCorrectionInstance::ParameterLength( const MetaParameter* p, s
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF CosmeticCorrectionInstance.cpp - Released 2024-01-19T15:23:40Z
+// EOF CosmeticCorrectionInstance.cpp - Released 2024-03-20T10:42:13Z

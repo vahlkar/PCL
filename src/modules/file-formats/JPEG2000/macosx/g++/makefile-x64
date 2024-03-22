@@ -1,15 +1,16 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.133
+# PixInsight Makefile Generator Script v1.135
 # Copyright (C) 2009-2024 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2024-01-22T10:20:53.311Z
+# Generated on .... 2024-03-22T11:22:56.351Z
 # Project id ...... JPEG2000
 # Project type .... Module
 # Platform ........ MacOSX/g++
 # Configuration ... Release/x64
 # --------------------------------------------------------------------
-# Additional libraries:
-# jasper-pxi
+# Additional include search directories:
+# ../..
+# jasper
 ######################################################################
 
 OBJ_DIR="$(PCLSRCDIR)/modules/file-formats/JPEG2000/macosx/g++/x64/Release"
@@ -26,7 +27,44 @@ SRC_FILES= \
 ../../JPEG2000Instance.cpp \
 ../../JPEG2000Module.cpp \
 ../../JPEG2000OptionsDialog.cpp \
-../../JPEG2000PreferencesDialog.cpp
+../../JPEG2000PreferencesDialog.cpp \
+../../jasper/base/jas_cm.c \
+../../jasper/base/jas_debug.c \
+../../jasper/base/jas_getopt.c \
+../../jasper/base/jas_icc.c \
+../../jasper/base/jas_iccdata.c \
+../../jasper/base/jas_image.c \
+../../jasper/base/jas_init.c \
+../../jasper/base/jas_malloc.c \
+../../jasper/base/jas_seq.c \
+../../jasper/base/jas_stream.c \
+../../jasper/base/jas_string.c \
+../../jasper/base/jas_tmr.c \
+../../jasper/base/jas_tvp.c \
+../../jasper/base/jas_version.c \
+../../jasper/dummy.c \
+../../jasper/jp2/jp2_cod.c \
+../../jasper/jp2/jp2_dec.c \
+../../jasper/jp2/jp2_enc.c \
+../../jasper/jpc/jpc_bs.c \
+../../jasper/jpc/jpc_cs.c \
+../../jasper/jpc/jpc_dec.c \
+../../jasper/jpc/jpc_enc.c \
+../../jasper/jpc/jpc_math.c \
+../../jasper/jpc/jpc_mct.c \
+../../jasper/jpc/jpc_mqcod.c \
+../../jasper/jpc/jpc_mqdec.c \
+../../jasper/jpc/jpc_mqenc.c \
+../../jasper/jpc/jpc_qmfb.c \
+../../jasper/jpc/jpc_t1cod.c \
+../../jasper/jpc/jpc_t1dec.c \
+../../jasper/jpc/jpc_t1enc.c \
+../../jasper/jpc/jpc_t2cod.c \
+../../jasper/jpc/jpc_t2dec.c \
+../../jasper/jpc/jpc_t2enc.c \
+../../jasper/jpc/jpc_tagtree.c \
+../../jasper/jpc/jpc_tsfb.c \
+../../jasper/jpc/jpc_util.c
 
 #
 # Object files
@@ -37,7 +75,44 @@ OBJ_FILES= \
 ./x64/Release/JPEG2000Instance.o \
 ./x64/Release/JPEG2000Module.o \
 ./x64/Release/JPEG2000OptionsDialog.o \
-./x64/Release/JPEG2000PreferencesDialog.o
+./x64/Release/JPEG2000PreferencesDialog.o \
+./x64/Release/jasper/base/jas_cm.o \
+./x64/Release/jasper/base/jas_debug.o \
+./x64/Release/jasper/base/jas_getopt.o \
+./x64/Release/jasper/base/jas_icc.o \
+./x64/Release/jasper/base/jas_iccdata.o \
+./x64/Release/jasper/base/jas_image.o \
+./x64/Release/jasper/base/jas_init.o \
+./x64/Release/jasper/base/jas_malloc.o \
+./x64/Release/jasper/base/jas_seq.o \
+./x64/Release/jasper/base/jas_stream.o \
+./x64/Release/jasper/base/jas_string.o \
+./x64/Release/jasper/base/jas_tmr.o \
+./x64/Release/jasper/base/jas_tvp.o \
+./x64/Release/jasper/base/jas_version.o \
+./x64/Release/jasper/dummy.o \
+./x64/Release/jasper/jp2/jp2_cod.o \
+./x64/Release/jasper/jp2/jp2_dec.o \
+./x64/Release/jasper/jp2/jp2_enc.o \
+./x64/Release/jasper/jpc/jpc_bs.o \
+./x64/Release/jasper/jpc/jpc_cs.o \
+./x64/Release/jasper/jpc/jpc_dec.o \
+./x64/Release/jasper/jpc/jpc_enc.o \
+./x64/Release/jasper/jpc/jpc_math.o \
+./x64/Release/jasper/jpc/jpc_mct.o \
+./x64/Release/jasper/jpc/jpc_mqcod.o \
+./x64/Release/jasper/jpc/jpc_mqdec.o \
+./x64/Release/jasper/jpc/jpc_mqenc.o \
+./x64/Release/jasper/jpc/jpc_qmfb.o \
+./x64/Release/jasper/jpc/jpc_t1cod.o \
+./x64/Release/jasper/jpc/jpc_t1dec.o \
+./x64/Release/jasper/jpc/jpc_t1enc.o \
+./x64/Release/jasper/jpc/jpc_t2cod.o \
+./x64/Release/jasper/jpc/jpc_t2dec.o \
+./x64/Release/jasper/jpc/jpc_t2enc.o \
+./x64/Release/jasper/jpc/jpc_tagtree.o \
+./x64/Release/jasper/jpc/jpc_tsfb.o \
+./x64/Release/jasper/jpc/jpc_util.o
 
 #
 # Dependency files
@@ -48,7 +123,44 @@ DEP_FILES= \
 ./x64/Release/JPEG2000Instance.d \
 ./x64/Release/JPEG2000Module.d \
 ./x64/Release/JPEG2000OptionsDialog.d \
-./x64/Release/JPEG2000PreferencesDialog.d
+./x64/Release/JPEG2000PreferencesDialog.d \
+./x64/Release/jasper/base/jas_cm.d \
+./x64/Release/jasper/base/jas_debug.d \
+./x64/Release/jasper/base/jas_getopt.d \
+./x64/Release/jasper/base/jas_icc.d \
+./x64/Release/jasper/base/jas_iccdata.d \
+./x64/Release/jasper/base/jas_image.d \
+./x64/Release/jasper/base/jas_init.d \
+./x64/Release/jasper/base/jas_malloc.d \
+./x64/Release/jasper/base/jas_seq.d \
+./x64/Release/jasper/base/jas_stream.d \
+./x64/Release/jasper/base/jas_string.d \
+./x64/Release/jasper/base/jas_tmr.d \
+./x64/Release/jasper/base/jas_tvp.d \
+./x64/Release/jasper/base/jas_version.d \
+./x64/Release/jasper/dummy.d \
+./x64/Release/jasper/jp2/jp2_cod.d \
+./x64/Release/jasper/jp2/jp2_dec.d \
+./x64/Release/jasper/jp2/jp2_enc.d \
+./x64/Release/jasper/jpc/jpc_bs.d \
+./x64/Release/jasper/jpc/jpc_cs.d \
+./x64/Release/jasper/jpc/jpc_dec.d \
+./x64/Release/jasper/jpc/jpc_enc.d \
+./x64/Release/jasper/jpc/jpc_math.d \
+./x64/Release/jasper/jpc/jpc_mct.d \
+./x64/Release/jasper/jpc/jpc_mqcod.d \
+./x64/Release/jasper/jpc/jpc_mqdec.d \
+./x64/Release/jasper/jpc/jpc_mqenc.d \
+./x64/Release/jasper/jpc/jpc_qmfb.d \
+./x64/Release/jasper/jpc/jpc_t1cod.d \
+./x64/Release/jasper/jpc/jpc_t1dec.d \
+./x64/Release/jasper/jpc/jpc_t1enc.d \
+./x64/Release/jasper/jpc/jpc_t2cod.d \
+./x64/Release/jasper/jpc/jpc_t2dec.d \
+./x64/Release/jasper/jpc/jpc_t2enc.d \
+./x64/Release/jasper/jpc/jpc_tagtree.d \
+./x64/Release/jasper/jpc/jpc_tsfb.d \
+./x64/Release/jasper/jpc/jpc_util.d
 
 #
 # Rules
@@ -57,7 +169,7 @@ DEP_FILES= \
 -include $(DEP_FILES)
 
 $(OBJ_DIR)/JPEG2000-pxm.dylib: $(OBJ_FILES)
-	clang++ -arch x86_64 -fPIC -headerpad_max_install_names -Wl,-syslibroot,/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -mmacosx-version-min=12 -stdlib=libc++ -Wl,-dead_strip -rdynamic -dynamiclib -install_name @executable_path/JPEG2000-pxm.dylib -L"$(PCLLIBDIR64)" -o $(OBJ_DIR)/JPEG2000-pxm.dylib $(OBJ_FILES) -framework AppKit -lpthread -lPCL-pxi -llz4-pxi -lzstd-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi -ljasper-pxi
+	clang++ -arch x86_64 -fPIC -headerpad_max_install_names -Wl,-syslibroot,/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -mmacosx-version-min=13 -stdlib=libc++ -Wl,-dead_strip -rdynamic -dynamiclib -install_name @executable_path/JPEG2000-pxm.dylib -L"$(PCLLIBDIR64)" -o $(OBJ_DIR)/JPEG2000-pxm.dylib $(OBJ_FILES) -framework AppKit -lpthread -lPCL-pxi -llz4-pxi -lzstd-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi
 	$(MAKE) -f ./makefile-x64 --no-print-directory post-build
 
 .PHONY: clean
@@ -70,6 +182,18 @@ post-build:
 	codesign --deep --options=runtime -s pleiades -f -v --timestamp $(PCLBINDIR64)/JPEG2000-pxm.dylib
 
 ./x64/Release/%.o: ../../%.cpp
-	clang++ -c -pipe -pthread -arch x86_64 -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -mmacosx-version-min=12 -D_REENTRANT -D__PCL_MACOSX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -std=c++17 -stdlib=libc++ -Wall -Wno-parentheses -Wno-extern-c-compat -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	clang++ -c -pipe -pthread -arch x86_64 -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -mmacosx-version-min=13 -D_REENTRANT -D__PCL_MACOSX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"../.." -I"jasper" -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -std=c++17 -stdlib=libc++ -Wall -Wno-parentheses -Wno-extern-c-compat -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	@echo ' '
+./x64/Release/jasper/base/%.o: ../../jasper/base/%.c
+	clang -c -pipe -pthread -arch x86_64 -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -mmacosx-version-min=13 -D_REENTRANT -D__PCL_MACOSX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"../.." -I"jasper" -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -std=c99 -Wall -Wno-parentheses -Wno-error=implicit-function-declaration -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	@echo ' '
+./x64/Release/jasper/%.o: ../../jasper/%.c
+	clang -c -pipe -pthread -arch x86_64 -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -mmacosx-version-min=13 -D_REENTRANT -D__PCL_MACOSX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"../.." -I"jasper" -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -std=c99 -Wall -Wno-parentheses -Wno-error=implicit-function-declaration -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	@echo ' '
+./x64/Release/jasper/jp2/%.o: ../../jasper/jp2/%.c
+	clang -c -pipe -pthread -arch x86_64 -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -mmacosx-version-min=13 -D_REENTRANT -D__PCL_MACOSX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"../.." -I"jasper" -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -std=c99 -Wall -Wno-parentheses -Wno-error=implicit-function-declaration -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	@echo ' '
+./x64/Release/jasper/jpc/%.o: ../../jasper/jpc/%.c
+	clang -c -pipe -pthread -arch x86_64 -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -mmacosx-version-min=13 -D_REENTRANT -D__PCL_MACOSX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"../.." -I"jasper" -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -std=c99 -Wall -Wno-parentheses -Wno-error=implicit-function-declaration -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 

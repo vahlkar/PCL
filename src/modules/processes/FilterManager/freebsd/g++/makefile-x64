@@ -1,0 +1,77 @@
+######################################################################
+# PixInsight Makefile Generator Script v1.135
+# Copyright (C) 2009-2024 Pleiades Astrophoto
+######################################################################
+# Generated on .... 2024-03-22T11:23:03.834Z
+# Project id ...... FilterManager
+# Project type .... Module
+# Platform ........ FreeBSD/g++
+# Configuration ... Release/x64
+######################################################################
+
+OBJ_DIR="$(PCLSRCDIR)/modules/processes/FilterManager/freebsd/g++/x64/Release"
+
+.PHONY: all
+all: $(OBJ_DIR)/FilterManager-pxm.so
+
+#
+# Source files
+#
+
+SRC_FILES= \
+../../CurveExplorerDialog.cpp \
+../../FilterManagementDialog.cpp \
+../../FilterManagerInstance.cpp \
+../../FilterManagerInterface.cpp \
+../../FilterManagerModule.cpp \
+../../FilterManagerParameters.cpp \
+../../FilterManagerProcess.cpp
+
+#
+# Object files
+#
+
+OBJ_FILES= \
+./x64/Release/CurveExplorerDialog.o \
+./x64/Release/FilterManagementDialog.o \
+./x64/Release/FilterManagerInstance.o \
+./x64/Release/FilterManagerInterface.o \
+./x64/Release/FilterManagerModule.o \
+./x64/Release/FilterManagerParameters.o \
+./x64/Release/FilterManagerProcess.o
+
+#
+# Dependency files
+#
+
+DEP_FILES= \
+./x64/Release/CurveExplorerDialog.d \
+./x64/Release/FilterManagementDialog.d \
+./x64/Release/FilterManagerInstance.d \
+./x64/Release/FilterManagerInterface.d \
+./x64/Release/FilterManagerModule.d \
+./x64/Release/FilterManagerParameters.d \
+./x64/Release/FilterManagerProcess.d
+
+#
+# Rules
+#
+
+-include $(DEP_FILES)
+
+$(OBJ_DIR)/FilterManager-pxm.so: $(OBJ_FILES)
+	clang++ -m64 -fPIC -Wl,-z,noexecstack -Wl,-O1 -Wl,--gc-sections -rdynamic -shared -L"$(PCLLIBDIR64)" -L"$(PCLBINDIR64)/lib" -o $(OBJ_DIR)/FilterManager-pxm.so $(OBJ_FILES) -lpthread -lPCL-pxi -llz4-pxi -lzstd-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi
+	$(MAKE) -f ./makefile-x64 --no-print-directory post-build
+
+.PHONY: clean
+clean:
+	rm -f $(OBJ_FILES) $(DEP_FILES) $(OBJ_DIR)/FilterManager-pxm.so
+
+.PHONY: post-build
+post-build:
+	cp $(OBJ_DIR)/FilterManager-pxm.so $(PCLBINDIR64)
+
+./x64/Release/%.o: ../../%.cpp
+	clang++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_FREEBSD -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -std=c++17 -Wall -Wno-parentheses -Wno-extern-c-compat -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	@echo ' '
+

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.9.3
+// Standard ColorCalibration Process Module Version 1.9.5
 // ----------------------------------------------------------------------------
-// SpectrophotometricColorCalibrationInterface.h - Released 2024-01-19T15:23:39Z
+// SpectrophotometricColorCalibrationInterface.h - Released 2024-03-20T10:42:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -71,10 +71,6 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-class CurveExplorerDialog;
-
-// ----------------------------------------------------------------------------
-
 class SpectrophotometricColorCalibrationInterface : public ProcessInterface
 {
 public:
@@ -86,19 +82,19 @@ public:
    MetaProcess* Process() const override;
    String IconImageSVGFile() const override;
    InterfaceFeatures Features() const override;
-   void EditPreferences() override;
    void ApplyInstance() const override;
    void ResetInstance() override;
    bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
    ProcessImplementation* NewProcess() const override;
-   bool ValidateProcess( const ProcessImplementation&, pcl::String& whyNot ) const override;
+   bool ValidateProcess( const ProcessImplementation&, String& whyNot ) const override;
    bool RequiresInstanceValidation() const override;
    bool ImportProcess( const ProcessImplementation& ) override;
+   bool WantsGlobalNotifications() const override;
+   void GlobalFiltersUpdated() override;
 
 private:
 
    SpectrophotometricColorCalibrationInstance m_instance;
-   CurveExplorerDialog*                       m_curveExplorer = nullptr;
 
    struct GUIData
    {
@@ -118,20 +114,16 @@ private:
             ComboBox          DeviceQE_ComboBox;
 
          Control        BroadbandFilters_Control;
-         HorizontalSizer   BroadbandFilters_Sizer;
-            VerticalSizer     FilterSelection_Sizer;
-               HorizontalSizer   RedFilter_Sizer;
-                  Label             RedFilter_Label;
-                  ComboBox          RedFilter_ComboBox;
-               HorizontalSizer   GreenFilter_Sizer;
-                  Label             GreenFilter_Label;
-                  ComboBox          GreenFilter_ComboBox;
-               HorizontalSizer   BlueFilter_Sizer;
-                  Label             BlueFilter_Label;
-                  ComboBox          BlueFilter_ComboBox;
-            VerticalSizer     FilterButtons_Sizer;
-               PushButton        CurveExplorer_Button;
-               PushButton        FilterManagement_Button;
+         VerticalSizer  BroadbandFilters_Sizer;
+            HorizontalSizer   RedFilter_Sizer;
+               Label             RedFilter_Label;
+               ComboBox          RedFilter_ComboBox;
+            HorizontalSizer   GreenFilter_Sizer;
+               Label             GreenFilter_Label;
+               ComboBox          GreenFilter_ComboBox;
+            HorizontalSizer   BlueFilter_Sizer;
+               Label             BlueFilter_Label;
+               ComboBox          BlueFilter_ComboBox;
 
          Control        NarrowbandFilters_Control;
          VerticalSizer  NarrowbandFilters_Sizer;
@@ -264,4 +256,4 @@ PCL_END_LOCAL
 #endif   // __SpectrophotometricColorCalibrationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF SpectrophotometricColorCalibrationInterface.h - Released 2024-01-19T15:23:39Z
+// EOF SpectrophotometricColorCalibrationInterface.h - Released 2024-03-20T10:42:12Z

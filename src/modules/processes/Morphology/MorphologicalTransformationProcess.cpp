@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
 // Standard Morphology Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// MorphologicalTransformationProcess.cpp - Released 2024-01-19T15:23:40Z
+// MorphologicalTransformationProcess.cpp - Released 2024-03-20T10:42:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Morphology PixInsight module.
 //
@@ -143,4 +143,4 @@ ProcessImplementation* MorphologicalTransformationProcess::Clone( const ProcessI
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF MorphologicalTransformationProcess.cpp - Released 2024-01-19T15:23:40Z
+// EOF MorphologicalTransformationProcess.cpp - Released 2024-03-20T10:42:12Z

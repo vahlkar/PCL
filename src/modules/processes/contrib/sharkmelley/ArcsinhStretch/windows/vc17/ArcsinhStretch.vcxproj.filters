@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.133
+# PixInsight Makefile Generator Script v1.135
 # Copyright (C) 2009-2024 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2024-01-22T10:21:11.577Z
+# Generated on .... 2024-03-22T11:23:16.568Z
 # Project id ...... ArcsinhStretch
 # Project type .... Module
 # Platform ........ Windows/vc17
@@ -16,13 +16,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>87887137-c5a8-4ef5-b5c3-fcedfb4f05a4</UniqueIdentifier>
+      <UniqueIdentifier>9fe9d3d4-6937-47a4-92af-de42a403111e</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>38188b69-88cd-4991-8446-6ff91a1f53a1</UniqueIdentifier>
+      <UniqueIdentifier>ddccb7bd-83a3-4670-8f4c-0de15e76a502</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>2879e7da-e2a7-4a3e-b93f-3fd53a28eb52</UniqueIdentifier>
+      <UniqueIdentifier>131e4bde-d537-43bf-b5b1-830143ef40e7</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.9.8
 // ----------------------------------------------------------------------------
-// LocalNormalizationInstance.cpp - Released 2024-01-19T15:23:40Z
+// LocalNormalizationInstance.cpp - Released 2024-03-20T10:42:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -372,11 +372,9 @@ class LocalNormalizationThread : public Thread
 {
 public:
 
-   typedef ShepardInterpolation<double>   background_interpolation;
-
-   typedef GridInterpolation              background_model;
-
-   typedef Array<background_model>        background_models;
+   using background_interpolation = ShepardInterpolation<double>;
+   using background_model         = GridInterpolation;
+   using background_models        = Array<background_model>;
 
    LocalNormalizationThread( const LocalNormalizationInstance& instance,
                              const Image& referenceImage,
@@ -2946,4 +2944,4 @@ size_type LocalNormalizationInstance::ParameterLength( const MetaParameter* p, s
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationInstance.cpp - Released 2024-01-19T15:23:40Z
+// EOF LocalNormalizationInstance.cpp - Released 2024-03-20T10:42:12Z

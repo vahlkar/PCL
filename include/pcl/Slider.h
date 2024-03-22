@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
-// pcl/Slider.h - Released 2024-01-19T15:23:14Z
+// pcl/Slider.h - Released 2024-03-20T10:41:36Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -489,4 +489,4 @@ public:
 #endif   // __PCL_Slider_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Slider.h - Released 2024-01-19T15:23:14Z
+// EOF pcl/Slider.h - Released 2024-03-20T10:41:36Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.9.3
+// Standard ColorCalibration Process Module Version 1.9.5
 // ----------------------------------------------------------------------------
-// SpectrophotometricColorCalibrationProcess.h - Released 2024-01-19T15:23:39Z
+// SpectrophotometricColorCalibrationProcess.h - Released 2024-03-20T10:42:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -53,9 +53,8 @@
 #ifndef __SpectrophotometricColorCalibrationProcess_h
 #define __SpectrophotometricColorCalibrationProcess_h
 
+#include <pcl/FilterManager.h>
 #include <pcl/MetaProcess.h>
-
-#include "SampledSpectrumData.h"
 
 namespace pcl
 {
@@ -77,54 +76,19 @@ public:
    ProcessImplementation* Create() const override;
    ProcessImplementation* Clone( const ProcessImplementation& ) const override;
 
-   static SampledSpectrumDataList LoadWhiteReferences( const String& filePath );
-   static SampledSpectrumDataList LoadFilters( const String& filePath );
-
-   static void ExportWhiteReferencesDatabase( const String& filePath, const SampledSpectrumDataList& );
-   static void ExportFiltersDatabase( const String& filePath, const SampledSpectrumDataList& );
-
-   static SampledSpectrumData DecodeWhiteReferenceCSV( const IsoStringList& );
-   static SampledSpectrumData DecodeFilterCSV( const IsoStringList& );
-
-   static IsoStringList EncodeWhiteReferenceCSV( const SampledSpectrumData& );
-   static IsoStringList EncodeFilterCSV( const SampledSpectrumData& );
-
-   static bool ImportWhiteReferences( const String& filePath, bool merge = true );
-   static void ImportWhiteReferences( const SampledSpectrumDataList& filters, bool merge = true );
-
-   static bool ImportFilters( const String& filePath, bool merge = true );
-   static void ImportFilters( const SampledSpectrumDataList& filters, bool merge = true );
-
-   static bool InitializeSpectrumData( const String& whiteReferencesDatabaseFilePath = String(),
-                                       const String& filtersDatabaseFilePath = String() );
-   static bool HasValidSpectrumData();
-   static const SampledSpectrumDataList& WhiteReferences();
-   static const SampledSpectrumData& DefaultWhiteReference();
-   static const SampledSpectrumDataList& Filters();
-   static const SampledSpectrumData& DefaultRedFilter();
-   static const SampledSpectrumData& DefaultGreenFilter();
-   static const SampledSpectrumData& DefaultBlueFilter();
-   static const SampledSpectrumData& DefaultDeviceQE();
-
-   static String WhiteReferencesDatabaseFilePath();
-   static String FiltersDatabaseFilePath();
-   static String DefaultWhiteReferencesDatabaseFilePath();
-   static String DefaultFiltersDatabaseFilePath();
-   static bool UsingDefaultWhiteReferencesDatabase();
-   static bool UsingDefaultFiltersDatabase();
-
-   static int FindWhiteReferenceByName( const String& name )
+   const FilterManager& SpectraDatabase() const
    {
-      return WhiteReferences().Find( name );
+      return m_spectraDatabase;
    }
 
-   static int FindFilterByName( const String& name )
+   FilterManager& SpectraDatabase()
    {
-      return Filters().Find( name );
+      return m_spectraDatabase;
    }
 
-   static void LoadPreferences();
-   static void SavePreferences();
+private:
+
+   FilterManager m_spectraDatabase;
 };
 
 // ----------------------------------------------------------------------------
@@ -133,6 +97,8 @@ PCL_BEGIN_LOCAL
 extern SpectrophotometricColorCalibrationProcess* TheSpectrophotometricColorCalibrationProcess;
 PCL_END_LOCAL
 
+#define TheSpectraDatabase    TheSpectrophotometricColorCalibrationProcess->SpectraDatabase()
+
 // ----------------------------------------------------------------------------
 
 } // pcl
@@ -140,4 +106,4 @@ PCL_END_LOCAL
 #endif   // __SpectrophotometricColorCalibrationProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF SpectrophotometricColorCalibrationProcess.h - Released 2024-01-19T15:23:39Z
+// EOF SpectrophotometricColorCalibrationProcess.h - Released 2024-03-20T10:42:12Z

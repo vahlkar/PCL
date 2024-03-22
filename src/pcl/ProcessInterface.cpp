@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
-// pcl/ProcessInterface.cpp - Released 2024-01-19T15:23:20Z
+// pcl/ProcessInterface.cpp - Released 2024-03-20T10:41:42Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -165,7 +165,7 @@ bool ProcessInterface::Launch( unsigned flags )
 
 void ProcessInterface::BroadcastImageUpdated( const View& v )
 {
-   (*API->Global->BroadcastImageUpdated)( v.handle, 0 ); // extra argument reserved for future use
+   (*API->Global->BroadcastImageUpdated)( v.handle, nullptr /*reserved*/ );
 }
 
 // ----------------------------------------------------------------------------
@@ -1059,6 +1059,15 @@ public:
       }
       ERROR_HANDLER
    }
+
+   static void api_func GlobalFiltersUpdated( interface_handle hi )
+   {
+      try
+      {
+         reinterpret_cast<ProcessInterface*>( hi )->GlobalFiltersUpdated();
+      }
+      ERROR_HANDLER
+   }
 }; // InterfaceDispatcher
 
 // ----------------------------------------------------------------------------
@@ -1246,6 +1255,7 @@ void ProcessInterface::PerformAPIDefinitions() const
       (*API->InterfaceDefinition->SetGlobalCMUpdatedNotificationRoutine)( InterfaceDispatcher::GlobalCMUpdated );
       (*API->InterfaceDefinition->SetReadoutOptionsUpdatedNotificationRoutine)( InterfaceDispatcher::ReadoutOptionsUpdated );
       (*API->InterfaceDefinition->SetGlobalPreferencesUpdatedNotificationRoutine)( InterfaceDispatcher::GlobalPreferencesUpdated );
+      (*API->InterfaceDefinition->SetGlobalFiltersUpdatedNotificationRoutine)( InterfaceDispatcher::GlobalFiltersUpdated );
    }
 
    (*API->InterfaceDefinition->EndInterfaceDefinition)();
@@ -1258,4 +1268,4 @@ void ProcessInterface::PerformAPIDefinitions() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ProcessInterface.cpp - Released 2024-01-19T15:23:20Z
+// EOF pcl/ProcessInterface.cpp - Released 2024-03-20T10:41:42Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.5.1
+// Standard Global Process Module Version 1.5.3
 // ----------------------------------------------------------------------------
-// PreferencesInterface.cpp - Released 2024-01-19T15:23:39Z
+// PreferencesInterface.cpp - Released 2024-03-20T10:42:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -1508,7 +1508,7 @@ EphemeridesPreferencesPage::EphemeridesPreferencesPage( PreferencesInstance& ins
 {
    FundamentalEphemerides_File.label.SetText( "Fundamental Ephemerides" );
    FundamentalEphemerides_File.item = &instance.application.fundamentalEphemeridesFile;
-   FundamentalEphemerides_File.dialogTitle = "<p>Select the core fundamental ephemerides file (XEPH format).</p>";
+   FundamentalEphemerides_File.dialogTitle = "Select the core fundamental ephemerides file";
    FundamentalEphemerides_File.fileExtensions << ".xeph";
    FundamentalEphemerides_File.SetToolTip(
       "<p>Path to the global fundamental ephemerides file (XEPH format).</p>"
@@ -1518,7 +1518,7 @@ EphemeridesPreferencesPage::EphemeridesPreferencesPage( PreferencesInstance& ins
 
 //    ShortTermFundamentalEphemerides_File.label.SetText( "Short-Term Fundamental Ephemerides" );
 //    ShortTermFundamentalEphemerides_File.item = &instance.application.shortTermFundamentalEphemeridesFile;
-//    ShortTermFundamentalEphemerides_File.dialogTitle = "<p>Select the core short-term fundamental ephemerides file (XEPH format).</p>";
+//    ShortTermFundamentalEphemerides_File.dialogTitle = "Select the core short-term fundamental ephemerides file";
 //    ShortTermFundamentalEphemerides_File.fileExtensions << ".xeph";
 //    ShortTermFundamentalEphemerides_File.SetToolTip(
 //       "<p>Path to the global short-term fundamental ephemerides file (XEPH format).</p>"
@@ -1527,7 +1527,7 @@ EphemeridesPreferencesPage::EphemeridesPreferencesPage( PreferencesInstance& ins
 
    AsteroidEphemerides_File.label.SetText( "Asteroid Ephemerides" );
    AsteroidEphemerides_File.item = &instance.application.asteroidEphemeridesFile;
-   AsteroidEphemerides_File.dialogTitle = "<p>Select the core asteroid ephemerides file (XEPH format).</p>";
+   AsteroidEphemerides_File.dialogTitle = "Select the core asteroid ephemerides file";
    AsteroidEphemerides_File.fileExtensions << ".xeph";
    AsteroidEphemerides_File.SetToolTip(
       "<p>Path to the global asteroid ephemerides file (XEPH format).</p>"
@@ -1536,7 +1536,7 @@ EphemeridesPreferencesPage::EphemeridesPreferencesPage( PreferencesInstance& ins
 
 //    ShortTermAsteroidEphemerides_File.label.SetText( "Short-Term Asteroid Ephemerides" );
 //    ShortTermAsteroidEphemerides_File.item = &instance.application.shortTermAsteroidEphemeridesFile;
-//    ShortTermAsteroidEphemerides_File.dialogTitle = "<p>Select the core short-term asteroid ephemerides file (XEPH format).</p>";
+//    ShortTermAsteroidEphemerides_File.dialogTitle = "Select the core short-term asteroid ephemerides file";
 //    ShortTermAsteroidEphemerides_File.fileExtensions << ".xeph";
 //    ShortTermAsteroidEphemerides_File.SetToolTip(
 //       "<p>Path to the global short-term asteroid ephemerides file (XEPH format).</p>"
@@ -1546,7 +1546,7 @@ EphemeridesPreferencesPage::EphemeridesPreferencesPage( PreferencesInstance& ins
 
    KBOEphemerides_File.label.SetText( "KBO Ephemerides" );
    KBOEphemerides_File.item = &instance.application.kboEphemeridesFile;
-   KBOEphemerides_File.dialogTitle = "<p>Select the core KBO ephemerides file (XEPH format).</p>";
+   KBOEphemerides_File.dialogTitle = "Select the core KBO ephemerides file";
    KBOEphemerides_File.fileExtensions << ".xeph";
    KBOEphemerides_File.SetToolTip(
       "<p>Path to the global Kuiper belt objects (KBOs) ephemerides file (XEPH format).</p>"
@@ -1555,7 +1555,7 @@ EphemeridesPreferencesPage::EphemeridesPreferencesPage( PreferencesInstance& ins
 
 //    ShortTermKBOEphemerides_File.label.SetText( "Short-Term KBO Ephemerides" );
 //    ShortTermKBOEphemerides_File.item = &instance.application.shortTermKBOEphemeridesFile;
-//    ShortTermKBOEphemerides_File.dialogTitle = "<p>Select the core short-term KBO ephemerides file (XEPH format).</p>";
+//    ShortTermKBOEphemerides_File.dialogTitle = "Select the core short-term KBO ephemerides file";
 //    ShortTermKBOEphemerides_File.fileExtensions << ".xeph";
 //    ShortTermKBOEphemerides_File.SetToolTip(
 //       "<p>Path to the global short-term Kuiper belt objects (KBOs) ephemerides file (XEPH format).</p>"
@@ -1565,7 +1565,7 @@ EphemeridesPreferencesPage::EphemeridesPreferencesPage( PreferencesInstance& ins
 
    NutationModel_File.label.SetText( "Nutation Model" );
    NutationModel_File.item = &instance.application.nutationModelFile;
-   NutationModel_File.dialogTitle = "<p>Select the core nutation model file (XEPH format).</p>";
+   NutationModel_File.dialogTitle = "Select the core nutation model file";
    NutationModel_File.fileExtensions << ".xeph";
    NutationModel_File.SetToolTip(
       "<p>Path to the global nutation model ephemerides file (XEPH format).</p>"
@@ -1575,7 +1575,7 @@ EphemeridesPreferencesPage::EphemeridesPreferencesPage( PreferencesInstance& ins
 
 //    ShortTermNutationModel_File.label.SetText( "Short-Term Nutation Model" );
 //    ShortTermNutationModel_File.item = &instance.application.shortTermNutationModelFile;
-//    ShortTermNutationModel_File.dialogTitle = "<p>Select the core short-term nutation model file (XEPH format).</p>";
+//    ShortTermNutationModel_File.dialogTitle = "Select the core short-term nutation model file";
 //    ShortTermNutationModel_File.fileExtensions << ".xeph";
 //    ShortTermNutationModel_File.SetToolTip(
 //       "<p>Path to the global short-term nutation model ephemerides file (XEPH format).</p>"
@@ -1585,7 +1585,7 @@ EphemeridesPreferencesPage::EphemeridesPreferencesPage( PreferencesInstance& ins
 
    DeltaTData_File.label.SetText( "DeltaT Database" );
    DeltaTData_File.item = &instance.application.deltaTDataFile;
-   DeltaTData_File.dialogTitle = "<p>Select the core DeltaT database file (plain text format).</p>";
+   DeltaTData_File.dialogTitle = "Select the core DeltaT database file";
    DeltaTData_File.fileExtensions << ".txt" << ".dat";
    DeltaTData_File.SetToolTip(
       "<p>Path to the global database file of observed Delta T values (plain text).</p>"
@@ -1599,7 +1599,7 @@ EphemeridesPreferencesPage::EphemeridesPreferencesPage( PreferencesInstance& ins
 
    DeltaATData_File.label.SetText( "DeltaAT Database" );
    DeltaATData_File.item = &instance.application.deltaATDataFile;
-   DeltaATData_File.dialogTitle = "<p>Select the core DeltaAT database file (plain text format).</p>";
+   DeltaATData_File.dialogTitle = "Select the core DeltaAT database";
    DeltaATData_File.fileExtensions << ".txt" << ".dat";
    DeltaATData_File.SetToolTip(
       "<p>Path to the global database file of Delta AT values (plain text).</p>"
@@ -1609,7 +1609,7 @@ EphemeridesPreferencesPage::EphemeridesPreferencesPage( PreferencesInstance& ins
 
    CIPITRSData_File.label.SetText( "CIP-ITRS Database" );
    CIPITRSData_File.item = &instance.application.cipITRSDataFile;
-   CIPITRSData_File.dialogTitle = "<p>Select the core CIP-ITRS database file (plain text format).</p>";
+   CIPITRSData_File.dialogTitle = "Select the core CIP-ITRS database file";
    CIPITRSData_File.fileExtensions << ".txt" << ".dat";
    CIPITRSData_File.SetToolTip(
       "<p>Path to the global database file of CIP positions referred to the ITRS (plain text).</p>"
@@ -1650,6 +1650,36 @@ void EphemeridesPreferencesPage::TransferSettings( PreferencesInstance& to, cons
    to.application.deltaTDataFile                      = from.application.deltaTDataFile;
    to.application.deltaATDataFile                     = from.application.deltaATDataFile;
    to.application.cipITRSDataFile                     = from.application.cipITRSDataFile;
+}
+
+// ----------------------------------------------------------------------------
+
+FiltersPreferencesPage::FiltersPreferencesPage( PreferencesInstance& instance )
+{
+   FiltersDatabase_File.label.SetText( "Default Filters Database" );
+   FiltersDatabase_File.item = &instance.application.filtersDatabaseFile;
+   FiltersDatabase_File.dialogTitle = "Select the default filters database file";
+   FiltersDatabase_File.fileExtensions << ".xspd";
+   FiltersDatabase_File.SetToolTip( "<p>Path to the default filters database file (XSPD format).</p>" );
+
+   WhiteReferencesDatabase_File.label.SetText( "Default White References Database" );
+   WhiteReferencesDatabase_File.item = &instance.application.whiteReferencesDatabaseFile;
+   WhiteReferencesDatabase_File.dialogTitle = "Select the default white references database file";
+   WhiteReferencesDatabase_File.fileExtensions << ".xspd";
+   WhiteReferencesDatabase_File.SetToolTip( "<p>Path to the default white references database file (XSPD format).</p>" );
+
+   Page_Sizer.SetSpacing( 4 );
+   Page_Sizer.Add( FiltersDatabase_File );
+   Page_Sizer.Add( WhiteReferencesDatabase_File );
+   Page_Sizer.AddStretch();
+
+   SetSizer( Page_Sizer );
+}
+
+void FiltersPreferencesPage::TransferSettings( PreferencesInstance& to, const PreferencesInstance& from )
+{
+   to.application.filtersDatabaseFile          = from.application.filtersDatabaseFile;
+   to.application.whiteReferencesDatabaseFile  = from.application.whiteReferencesDatabaseFile;
 }
 
 // ----------------------------------------------------------------------------
@@ -2147,6 +2177,13 @@ SecurityPreferencesPage::SecurityPreferencesPage( PreferencesInstance& instance 
       "<p><b>Important:</b> Execution of scripts with invalid code signatures is always forbidden, "
       "regardless of this option.</p>" );
 
+   AllowUnsignedModuleInstallation_Flag.checkBox.SetText( "Allow installation of unsigned modules" );
+   AllowUnsignedModuleInstallation_Flag.item = &instance.security.allowUnsignedModuleInstallation;
+   AllowUnsignedModuleInstallation_Flag.SetToolTip(
+      "<p>Allow installation of modules without code signature files.</p>"
+      "<p><b>Important:</b> Installation of modules with invalid code signatures is always forbidden, "
+      "regardless of this option.</p>" );
+
    AllowUnsignedRepositories_Flag.checkBox.SetText( "Allow unsigned update repositories" );
    AllowUnsignedRepositories_Flag.item = &instance.security.allowUnsignedRepositories;
    AllowUnsignedRepositories_Flag.SetToolTip(
@@ -2169,6 +2206,11 @@ SecurityPreferencesPage::SecurityPreferencesPage( PreferencesInstance& instance 
    ReportScriptSignatures_Flag.SetToolTip(
       "<p>Write information on valid script signatures on console upon script execution.</p>" );
 
+   ReportModuleSignatures_Flag.checkBox.SetText( "Report module signatures" );
+   ReportModuleSignatures_Flag.item = &instance.security.reportModuleSignatures;
+   ReportModuleSignatures_Flag.SetToolTip(
+      "<p>Write information on valid module signatures on console upon module installation.</p>" );
+
    WarnOnUnsignedCodeExecution_Flag.checkBox.SetText( "Warn on execution of unsigned code" );
    WarnOnUnsignedCodeExecution_Flag.item = &instance.security.warnOnUnsignedCodeExecution;
    WarnOnUnsignedCodeExecution_Flag.SetToolTip(
@@ -2189,9 +2231,11 @@ SecurityPreferencesPage::SecurityPreferencesPage( PreferencesInstance& instance 
 
    Page_Sizer.SetSpacing( 4 );
    Page_Sizer.Add( AllowUnsignedScriptExecution_Flag );
+   Page_Sizer.Add( AllowUnsignedModuleInstallation_Flag );
    Page_Sizer.Add( AllowUnsignedRepositories_Flag );
    Page_Sizer.Add( AllowInsecureRepositories_Flag );
    Page_Sizer.Add( ReportScriptSignatures_Flag );
+   Page_Sizer.Add( ReportModuleSignatures_Flag );
    Page_Sizer.Add( WarnOnUnsignedCodeExecution_Flag );
    Page_Sizer.Add( EnableLocalSigningIdentity_Flag );
    Page_Sizer.AddStretch();
@@ -2201,12 +2245,14 @@ SecurityPreferencesPage::SecurityPreferencesPage( PreferencesInstance& instance 
 
 void SecurityPreferencesPage::TransferSettings( PreferencesInstance& to, const PreferencesInstance& from )
 {
-   to.security.allowUnsignedScriptExecution = from.security.allowUnsignedScriptExecution;
-   to.security.allowUnsignedRepositories    = from.security.allowUnsignedRepositories;
-   to.security.allowInsecureRepositories    = from.security.allowInsecureRepositories;
-   to.security.reportScriptSignatures       = from.security.reportScriptSignatures;
-   to.security.warnOnUnsignedCodeExecution  = from.security.warnOnUnsignedCodeExecution;
-   to.security.enableLocalSigningIdentity   = from.security.enableLocalSigningIdentity;
+   to.security.allowUnsignedScriptExecution    = from.security.allowUnsignedScriptExecution;
+   to.security.allowUnsignedModuleInstallation = from.security.allowUnsignedModuleInstallation;
+   to.security.allowUnsignedRepositories       = from.security.allowUnsignedRepositories;
+   to.security.allowInsecureRepositories       = from.security.allowInsecureRepositories;
+   to.security.reportScriptSignatures          = from.security.reportScriptSignatures;
+   to.security.reportModuleSignatures          = from.security.reportModuleSignatures;
+   to.security.warnOnUnsignedCodeExecution     = from.security.warnOnUnsignedCodeExecution;
+   to.security.enableLocalSigningIdentity      = from.security.enableLocalSigningIdentity;
 }
 
 // ----------------------------------------------------------------------------
@@ -3067,6 +3113,7 @@ void PreferencesInterface::GUIData::InitializeCategories()
    categories.Add( new ResourcesPreferencesCategory );
    categories.Add( new WallpapersPreferencesCategory );
    categories.Add( new EphemeridesPreferencesCategory );
+   categories.Add( new FiltersPreferencesCategory );
    categories.Add( new GUIEffectsPreferencesCategory );
    categories.Add( new MessageBoxPreferencesCategory );
    categories.Add( new FileIOPreferencesCategory );
@@ -3088,4 +3135,4 @@ void PreferencesInterface::GUIData::InitializeCategories()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInterface.cpp - Released 2024-01-19T15:23:39Z
+// EOF PreferencesInterface.cpp - Released 2024-03-20T10:42:12Z

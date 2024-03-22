@@ -1,15 +1,12 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.133
+# PixInsight Makefile Generator Script v1.135
 # Copyright (C) 2009-2024 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2024-01-22T10:20:52.827Z
+# Generated on .... 2024-03-22T11:22:55.601Z
 # Project id ...... JPEG
 # Project type .... Module
 # Platform ........ FreeBSD/g++
 # Configuration ... Release/x64
-# --------------------------------------------------------------------
-# Additional libraries:
-# jpeg-pxi
 ######################################################################
 
 OBJ_DIR="$(PCLSRCDIR)/modules/file-formats/JPEG/freebsd/g++/x64/Release"
@@ -27,7 +24,53 @@ SRC_FILES= \
 ../../JPEGInstance.cpp \
 ../../JPEGModule.cpp \
 ../../JPEGOptionsDialog.cpp \
-../../JPEGPreferencesDialog.cpp
+../../JPEGPreferencesDialog.cpp \
+../../jpeglib/jaricom.c \
+../../jpeglib/jcapimin.c \
+../../jpeglib/jcapistd.c \
+../../jpeglib/jcarith.c \
+../../jpeglib/jccoefct.c \
+../../jpeglib/jccolor.c \
+../../jpeglib/jcdctmgr.c \
+../../jpeglib/jchuff.c \
+../../jpeglib/jcinit.c \
+../../jpeglib/jcmainct.c \
+../../jpeglib/jcmarker.c \
+../../jpeglib/jcmaster.c \
+../../jpeglib/jcomapi.c \
+../../jpeglib/jcparam.c \
+../../jpeglib/jcprepct.c \
+../../jpeglib/jcsample.c \
+../../jpeglib/jctrans.c \
+../../jpeglib/jdapimin.c \
+../../jpeglib/jdapistd.c \
+../../jpeglib/jdarith.c \
+../../jpeglib/jdatadst.c \
+../../jpeglib/jdatasrc.c \
+../../jpeglib/jdcoefct.c \
+../../jpeglib/jdcolor.c \
+../../jpeglib/jddctmgr.c \
+../../jpeglib/jdhuff.c \
+../../jpeglib/jdinput.c \
+../../jpeglib/jdmainct.c \
+../../jpeglib/jdmarker.c \
+../../jpeglib/jdmaster.c \
+../../jpeglib/jdmerge.c \
+../../jpeglib/jdpostct.c \
+../../jpeglib/jdsample.c \
+../../jpeglib/jdtrans.c \
+../../jpeglib/jerror.c \
+../../jpeglib/jfdctflt.c \
+../../jpeglib/jfdctfst.c \
+../../jpeglib/jfdctint.c \
+../../jpeglib/jidctflt.c \
+../../jpeglib/jidctfst.c \
+../../jpeglib/jidctint.c \
+../../jpeglib/jmemmgr.c \
+../../jpeglib/jmemnobs.c \
+../../jpeglib/jquant1.c \
+../../jpeglib/jquant2.c \
+../../jpeglib/jutils.c
 
 #
 # Object files
@@ -39,7 +82,53 @@ OBJ_FILES= \
 ./x64/Release/JPEGInstance.o \
 ./x64/Release/JPEGModule.o \
 ./x64/Release/JPEGOptionsDialog.o \
-./x64/Release/JPEGPreferencesDialog.o
+./x64/Release/JPEGPreferencesDialog.o \
+./x64/Release/jpeglib/jaricom.o \
+./x64/Release/jpeglib/jcapimin.o \
+./x64/Release/jpeglib/jcapistd.o \
+./x64/Release/jpeglib/jcarith.o \
+./x64/Release/jpeglib/jccoefct.o \
+./x64/Release/jpeglib/jccolor.o \
+./x64/Release/jpeglib/jcdctmgr.o \
+./x64/Release/jpeglib/jchuff.o \
+./x64/Release/jpeglib/jcinit.o \
+./x64/Release/jpeglib/jcmainct.o \
+./x64/Release/jpeglib/jcmarker.o \
+./x64/Release/jpeglib/jcmaster.o \
+./x64/Release/jpeglib/jcomapi.o \
+./x64/Release/jpeglib/jcparam.o \
+./x64/Release/jpeglib/jcprepct.o \
+./x64/Release/jpeglib/jcsample.o \
+./x64/Release/jpeglib/jctrans.o \
+./x64/Release/jpeglib/jdapimin.o \
+./x64/Release/jpeglib/jdapistd.o \
+./x64/Release/jpeglib/jdarith.o \
+./x64/Release/jpeglib/jdatadst.o \
+./x64/Release/jpeglib/jdatasrc.o \
+./x64/Release/jpeglib/jdcoefct.o \
+./x64/Release/jpeglib/jdcolor.o \
+./x64/Release/jpeglib/jddctmgr.o \
+./x64/Release/jpeglib/jdhuff.o \
+./x64/Release/jpeglib/jdinput.o \
+./x64/Release/jpeglib/jdmainct.o \
+./x64/Release/jpeglib/jdmarker.o \
+./x64/Release/jpeglib/jdmaster.o \
+./x64/Release/jpeglib/jdmerge.o \
+./x64/Release/jpeglib/jdpostct.o \
+./x64/Release/jpeglib/jdsample.o \
+./x64/Release/jpeglib/jdtrans.o \
+./x64/Release/jpeglib/jerror.o \
+./x64/Release/jpeglib/jfdctflt.o \
+./x64/Release/jpeglib/jfdctfst.o \
+./x64/Release/jpeglib/jfdctint.o \
+./x64/Release/jpeglib/jidctflt.o \
+./x64/Release/jpeglib/jidctfst.o \
+./x64/Release/jpeglib/jidctint.o \
+./x64/Release/jpeglib/jmemmgr.o \
+./x64/Release/jpeglib/jmemnobs.o \
+./x64/Release/jpeglib/jquant1.o \
+./x64/Release/jpeglib/jquant2.o \
+./x64/Release/jpeglib/jutils.o
 
 #
 # Dependency files
@@ -51,7 +140,53 @@ DEP_FILES= \
 ./x64/Release/JPEGInstance.d \
 ./x64/Release/JPEGModule.d \
 ./x64/Release/JPEGOptionsDialog.d \
-./x64/Release/JPEGPreferencesDialog.d
+./x64/Release/JPEGPreferencesDialog.d \
+./x64/Release/jpeglib/jaricom.d \
+./x64/Release/jpeglib/jcapimin.d \
+./x64/Release/jpeglib/jcapistd.d \
+./x64/Release/jpeglib/jcarith.d \
+./x64/Release/jpeglib/jccoefct.d \
+./x64/Release/jpeglib/jccolor.d \
+./x64/Release/jpeglib/jcdctmgr.d \
+./x64/Release/jpeglib/jchuff.d \
+./x64/Release/jpeglib/jcinit.d \
+./x64/Release/jpeglib/jcmainct.d \
+./x64/Release/jpeglib/jcmarker.d \
+./x64/Release/jpeglib/jcmaster.d \
+./x64/Release/jpeglib/jcomapi.d \
+./x64/Release/jpeglib/jcparam.d \
+./x64/Release/jpeglib/jcprepct.d \
+./x64/Release/jpeglib/jcsample.d \
+./x64/Release/jpeglib/jctrans.d \
+./x64/Release/jpeglib/jdapimin.d \
+./x64/Release/jpeglib/jdapistd.d \
+./x64/Release/jpeglib/jdarith.d \
+./x64/Release/jpeglib/jdatadst.d \
+./x64/Release/jpeglib/jdatasrc.d \
+./x64/Release/jpeglib/jdcoefct.d \
+./x64/Release/jpeglib/jdcolor.d \
+./x64/Release/jpeglib/jddctmgr.d \
+./x64/Release/jpeglib/jdhuff.d \
+./x64/Release/jpeglib/jdinput.d \
+./x64/Release/jpeglib/jdmainct.d \
+./x64/Release/jpeglib/jdmarker.d \
+./x64/Release/jpeglib/jdmaster.d \
+./x64/Release/jpeglib/jdmerge.d \
+./x64/Release/jpeglib/jdpostct.d \
+./x64/Release/jpeglib/jdsample.d \
+./x64/Release/jpeglib/jdtrans.d \
+./x64/Release/jpeglib/jerror.d \
+./x64/Release/jpeglib/jfdctflt.d \
+./x64/Release/jpeglib/jfdctfst.d \
+./x64/Release/jpeglib/jfdctint.d \
+./x64/Release/jpeglib/jidctflt.d \
+./x64/Release/jpeglib/jidctfst.d \
+./x64/Release/jpeglib/jidctint.d \
+./x64/Release/jpeglib/jmemmgr.d \
+./x64/Release/jpeglib/jmemnobs.d \
+./x64/Release/jpeglib/jquant1.d \
+./x64/Release/jpeglib/jquant2.d \
+./x64/Release/jpeglib/jutils.d
 
 #
 # Rules
@@ -60,7 +195,7 @@ DEP_FILES= \
 -include $(DEP_FILES)
 
 $(OBJ_DIR)/JPEG-pxm.so: $(OBJ_FILES)
-	clang++ -m64 -fPIC -Wl,-z,noexecstack -Wl,-O1 -Wl,--gc-sections -rdynamic -shared -L"$(PCLLIBDIR64)" -L"$(PCLBINDIR64)/lib" -o $(OBJ_DIR)/JPEG-pxm.so $(OBJ_FILES) -lpthread -lPCL-pxi -llz4-pxi -lzstd-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi -ljpeg-pxi
+	clang++ -m64 -fPIC -Wl,-z,noexecstack -Wl,-O1 -Wl,--gc-sections -rdynamic -shared -L"$(PCLLIBDIR64)" -L"$(PCLBINDIR64)/lib" -o $(OBJ_DIR)/JPEG-pxm.so $(OBJ_FILES) -lpthread -lPCL-pxi -llz4-pxi -lzstd-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi
 	$(MAKE) -f ./makefile-x64 --no-print-directory post-build
 
 .PHONY: clean
@@ -73,5 +208,8 @@ post-build:
 
 ./x64/Release/%.o: ../../%.cpp
 	clang++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_FREEBSD -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -std=c++17 -Wall -Wno-parentheses -Wno-extern-c-compat -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	@echo ' '
+./x64/Release/jpeglib/%.o: ../../jpeglib/%.c
+	clang -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_FREEBSD -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -std=c99 -Wall -Wno-parentheses -Wno-error=implicit-function-declaration -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 

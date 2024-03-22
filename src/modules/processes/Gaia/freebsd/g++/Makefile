@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.133
+# PixInsight Makefile Generator Script v1.135
 # Copyright (C) 2009-2024 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2024-01-22T10:21:00.517Z
+# Generated on .... 2024-03-22T11:23:05.316Z
 # Project id ...... Gaia
 # Project type .... Module
 # Platform ........ FreeBSD/g++

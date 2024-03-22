@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.133
+# PixInsight Makefile Generator Script v1.135
 # Copyright (C) 2009-2024 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2024-01-22T10:20:56.360Z
+# Generated on .... 2024-03-22T11:22:59.433Z
 # Project id ...... ColorCalibration
 # Project type .... Module
 # Platform ........ MacOSX/g++
@@ -30,8 +30,6 @@ SRC_FILES= \
 ../../ColorCalibrationModule.cpp \
 ../../ColorCalibrationParameters.cpp \
 ../../ColorCalibrationProcess.cpp \
-../../CurveExplorerDialog.cpp \
-../../FilterManagementDialog.cpp \
 ../../LinearFitInstance.cpp \
 ../../LinearFitInterface.cpp \
 ../../LinearFitParameters.cpp \
@@ -45,7 +43,6 @@ SRC_FILES= \
 ../../SpectrophotometricColorCalibrationInstance.cpp \
 ../../SpectrophotometricColorCalibrationInterface.cpp \
 ../../SpectrophotometricColorCalibrationParameters.cpp \
-../../SpectrophotometricColorCalibrationPreferencesDialog.cpp \
 ../../SpectrophotometricColorCalibrationProcess.cpp
 
 #
@@ -64,8 +61,6 @@ OBJ_FILES= \
 ./x64/Release/ColorCalibrationModule.o \
 ./x64/Release/ColorCalibrationParameters.o \
 ./x64/Release/ColorCalibrationProcess.o \
-./x64/Release/CurveExplorerDialog.o \
-./x64/Release/FilterManagementDialog.o \
 ./x64/Release/LinearFitInstance.o \
 ./x64/Release/LinearFitInterface.o \
 ./x64/Release/LinearFitParameters.o \
@@ -79,7 +74,6 @@ OBJ_FILES= \
 ./x64/Release/SpectrophotometricColorCalibrationInstance.o \
 ./x64/Release/SpectrophotometricColorCalibrationInterface.o \
 ./x64/Release/SpectrophotometricColorCalibrationParameters.o \
-./x64/Release/SpectrophotometricColorCalibrationPreferencesDialog.o \
 ./x64/Release/SpectrophotometricColorCalibrationProcess.o
 
 #
@@ -98,8 +92,6 @@ DEP_FILES= \
 ./x64/Release/ColorCalibrationModule.d \
 ./x64/Release/ColorCalibrationParameters.d \
 ./x64/Release/ColorCalibrationProcess.d \
-./x64/Release/CurveExplorerDialog.d \
-./x64/Release/FilterManagementDialog.d \
 ./x64/Release/LinearFitInstance.d \
 ./x64/Release/LinearFitInterface.d \
 ./x64/Release/LinearFitParameters.d \
@@ -113,7 +105,6 @@ DEP_FILES= \
 ./x64/Release/SpectrophotometricColorCalibrationInstance.d \
 ./x64/Release/SpectrophotometricColorCalibrationInterface.d \
 ./x64/Release/SpectrophotometricColorCalibrationParameters.d \
-./x64/Release/SpectrophotometricColorCalibrationPreferencesDialog.d \
 ./x64/Release/SpectrophotometricColorCalibrationProcess.d
 
 #
@@ -123,7 +114,7 @@ DEP_FILES= \
 -include $(DEP_FILES)
 
 $(OBJ_DIR)/ColorCalibration-pxm.dylib: $(OBJ_FILES)
-	clang++ -arch x86_64 -fPIC -headerpad_max_install_names -Wl,-syslibroot,/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -mmacosx-version-min=12 -stdlib=libc++ -Wl,-dead_strip -rdynamic -dynamiclib -install_name @executable_path/ColorCalibration-pxm.dylib -L"$(PCLLIBDIR64)" -o $(OBJ_DIR)/ColorCalibration-pxm.dylib $(OBJ_FILES) -framework AppKit -lpthread -lPCL-pxi -llz4-pxi -lzstd-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi
+	clang++ -arch x86_64 -fPIC -headerpad_max_install_names -Wl,-syslibroot,/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -mmacosx-version-min=13 -stdlib=libc++ -Wl,-dead_strip -rdynamic -dynamiclib -install_name @executable_path/ColorCalibration-pxm.dylib -L"$(PCLLIBDIR64)" -o $(OBJ_DIR)/ColorCalibration-pxm.dylib $(OBJ_FILES) -framework AppKit -lpthread -lPCL-pxi -llz4-pxi -lzstd-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi
 	$(MAKE) -f ./makefile-x64 --no-print-directory post-build
 
 .PHONY: clean
@@ -136,6 +127,6 @@ post-build:
 	codesign --deep --options=runtime -s pleiades -f -v --timestamp $(PCLBINDIR64)/ColorCalibration-pxm.dylib
 
 ./x64/Release/%.o: ../../%.cpp
-	clang++ -c -pipe -pthread -arch x86_64 -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -mmacosx-version-min=12 -D_REENTRANT -D__PCL_MACOSX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -std=c++17 -stdlib=libc++ -Wall -Wno-parentheses -Wno-extern-c-compat -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	clang++ -c -pipe -pthread -arch x86_64 -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -mmacosx-version-min=13 -D_REENTRANT -D__PCL_MACOSX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -std=c++17 -stdlib=libc++ -Wall -Wno-parentheses -Wno-extern-c-compat -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 

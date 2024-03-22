@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.5.1
+// Standard Global Process Module Version 1.5.3
 // ----------------------------------------------------------------------------
-// PreferencesInstance.cpp - Released 2024-01-19T15:23:39Z
+// PreferencesInstance.cpp - Released 2024-03-20T10:42:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -148,6 +148,8 @@ bool PreferencesInstance::ExecuteGlobal()
       PixInsightSettings::SetGlobalString  ( "Application/DeltaTDataFile",                      application.deltaTDataFile );
       PixInsightSettings::SetGlobalString  ( "Application/DeltaATDataFile",                     application.deltaATDataFile );
       PixInsightSettings::SetGlobalString  ( "Application/CIP_ITRSDataFile",                    application.cipITRSDataFile );
+      PixInsightSettings::SetGlobalString  ( "Application/FiltersDatabaseFile",                 application.filtersDatabaseFile );
+      PixInsightSettings::SetGlobalString  ( "Application/WhiteReferencesDatabaseFile",         application.whiteReferencesDatabaseFile );
 
       PixInsightSettings::SetGlobalFlag    ( "MainWindow/MaximizeAtStartup",                    mainWindow.maximizeAtStartup );
       PixInsightSettings::SetGlobalFlag    ( "MainWindow/FullScreenAtStartup",                  mainWindow.fullScreenAtStartup );
@@ -286,9 +288,11 @@ bool PreferencesInstance::ExecuteGlobal()
       PixInsightSettings::SetGlobalFlag    ( "Process/EnableLaunchStatistics",                  process.enableLaunchStatistics );
 
       PixInsightSettings::SetGlobalFlag    ( "Security/AllowUnsignedScriptExecution",           security.allowUnsignedScriptExecution );
+      PixInsightSettings::SetGlobalFlag    ( "Security/AllowUnsignedModuleInstallation",        security.allowUnsignedModuleInstallation );
       PixInsightSettings::SetGlobalFlag    ( "Security/AllowUnsignedRepositories",              security.allowUnsignedRepositories );
       PixInsightSettings::SetGlobalFlag    ( "Security/AllowInsecureRepositories",              security.allowInsecureRepositories );
       PixInsightSettings::SetGlobalFlag    ( "Security/ReportScriptSignatures",                 security.reportScriptSignatures );
+      PixInsightSettings::SetGlobalFlag    ( "Security/ReportModuleSignatures",                 security.reportModuleSignatures );
       PixInsightSettings::SetGlobalFlag    ( "Security/WarnOnUnsignedCodeExecution",            security.warnOnUnsignedCodeExecution );
       PixInsightSettings::SetGlobalFlag    ( "Security/EnableLocalSigningIdentity",             security.enableLocalSigningIdentity );
 
@@ -380,6 +384,10 @@ void* PreferencesInstance::LockParameter( const MetaParameter* p, size_type tabl
       return application.deltaATDataFile.Begin();
    if ( p == METAPARAMETER_INSTANCE_ID( Application, cipITRSDataFile ) )
       return application.cipITRSDataFile.Begin();
+   if ( p == METAPARAMETER_INSTANCE_ID( Application, filtersDatabaseFile ) )
+      return application.filtersDatabaseFile.Begin();
+   if ( p == METAPARAMETER_INSTANCE_ID( Application, whiteReferencesDatabaseFile ) )
+      return application.whiteReferencesDatabaseFile.Begin();
 
    if ( p == METAPARAMETER_INSTANCE_ID( MainWindow, maximizeAtStartup ) )
       return &mainWindow.maximizeAtStartup;
@@ -648,12 +656,16 @@ void* PreferencesInstance::LockParameter( const MetaParameter* p, size_type tabl
 
    if ( p == METAPARAMETER_INSTANCE_ID( Security, allowUnsignedScriptExecution ) )
       return &security.allowUnsignedScriptExecution;
+   if ( p == METAPARAMETER_INSTANCE_ID( Security, allowUnsignedModuleInstallation ) )
+      return &security.allowUnsignedModuleInstallation;
    if ( p == METAPARAMETER_INSTANCE_ID( Security, allowUnsignedRepositories ) )
       return &security.allowUnsignedRepositories;
    if ( p == METAPARAMETER_INSTANCE_ID( Security, allowInsecureRepositories ) )
       return &security.allowInsecureRepositories;
    if ( p == METAPARAMETER_INSTANCE_ID( Security, reportScriptSignatures ) )
       return &security.reportScriptSignatures;
+   if ( p == METAPARAMETER_INSTANCE_ID( Security, reportModuleSignatures ) )
+      return &security.reportModuleSignatures;
    if ( p == METAPARAMETER_INSTANCE_ID( Security, warnOnUnsignedCodeExecution ) )
       return &security.warnOnUnsignedCodeExecution;
    if ( p == METAPARAMETER_INSTANCE_ID( Security, enableLocalSigningIdentity ) )
@@ -748,6 +760,8 @@ void PreferencesInstance::LoadDefaultSettings()
    application.deltaTDataFile                   =         METAPARAMETER_INSTANCE_ID( Application, deltaTDataFile                   )->DefaultValue();
    application.deltaATDataFile                  =         METAPARAMETER_INSTANCE_ID( Application, deltaATDataFile                  )->DefaultValue();
    application.cipITRSDataFile                  =         METAPARAMETER_INSTANCE_ID( Application, cipITRSDataFile                  )->DefaultValue();
+   application.filtersDatabaseFile              =         METAPARAMETER_INSTANCE_ID( Application, filtersDatabaseFile              )->DefaultValue();
+   application.whiteReferencesDatabaseFile      =         METAPARAMETER_INSTANCE_ID( Application, whiteReferencesDatabaseFile      )->DefaultValue();
 
    mainWindow.maximizeAtStartup                 =         METAPARAMETER_INSTANCE_ID( MainWindow, maximizeAtStartup                 )->DefaultValue();
    mainWindow.fullScreenAtStartup               =         METAPARAMETER_INSTANCE_ID( MainWindow, fullScreenAtStartup               )->DefaultValue();
@@ -886,9 +900,11 @@ void PreferencesInstance::LoadDefaultSettings()
    process.enableLaunchStatistics               =         METAPARAMETER_INSTANCE_ID( Process, enableLaunchStatistics               )->DefaultValue();
 
    security.allowUnsignedScriptExecution        =         METAPARAMETER_INSTANCE_ID( Security, allowUnsignedScriptExecution        )->DefaultValue();
+   security.allowUnsignedModuleInstallation     =         METAPARAMETER_INSTANCE_ID( Security, allowUnsignedModuleInstallation     )->DefaultValue();
    security.allowUnsignedRepositories           =         METAPARAMETER_INSTANCE_ID( Security, allowUnsignedRepositories           )->DefaultValue();
    security.allowInsecureRepositories           =         METAPARAMETER_INSTANCE_ID( Security, allowInsecureRepositories           )->DefaultValue();
    security.reportScriptSignatures              =         METAPARAMETER_INSTANCE_ID( Security, reportScriptSignatures              )->DefaultValue();
+   security.reportModuleSignatures              =         METAPARAMETER_INSTANCE_ID( Security, reportModuleSignatures              )->DefaultValue();
    security.warnOnUnsignedCodeExecution         =         METAPARAMETER_INSTANCE_ID( Security, warnOnUnsignedCodeExecution         )->DefaultValue();
    security.enableLocalSigningIdentity          =         METAPARAMETER_INSTANCE_ID( Security, enableLocalSigningIdentity          )->DefaultValue();
 }
@@ -931,6 +947,8 @@ void PreferencesInstance::LoadCurrentSettings()
    application.deltaTDataFile                   = PixInsightSettings::GlobalString  ( "Application/DeltaTDataFile" );
    application.deltaATDataFile                  = PixInsightSettings::GlobalString  ( "Application/DeltaATDataFile" );
    application.cipITRSDataFile                  = PixInsightSettings::GlobalString  ( "Application/CIP_ITRSDataFile" );
+   application.filtersDatabaseFile              = PixInsightSettings::GlobalString  ( "Application/FiltersDatabaseFile" );
+   application.whiteReferencesDatabaseFile      = PixInsightSettings::GlobalString  ( "Application/WhiteReferencesDatabaseFile" );
 
    mainWindow.maximizeAtStartup                 = PixInsightSettings::GlobalFlag    ( "MainWindow/MaximizeAtStartup" );
    mainWindow.fullScreenAtStartup               = PixInsightSettings::GlobalFlag    ( "MainWindow/FullScreenAtStartup" );
@@ -1067,9 +1085,11 @@ void PreferencesInstance::LoadCurrentSettings()
    process.enableLaunchStatistics               = PixInsightSettings::GlobalFlag    ( "Process/EnableLaunchStatistics" );
 
    security.allowUnsignedScriptExecution        = PixInsightSettings::GlobalFlag    ( "Security/AllowUnsignedScriptExecution" );
+   security.allowUnsignedModuleInstallation     = PixInsightSettings::GlobalFlag    ( "Security/AllowUnsignedModuleInstallation" );
    security.allowUnsignedRepositories           = PixInsightSettings::GlobalFlag    ( "Security/AllowUnsignedRepositories" );
    security.allowInsecureRepositories           = PixInsightSettings::GlobalFlag    ( "Security/AllowInsecureRepositories" );
    security.reportScriptSignatures              = PixInsightSettings::GlobalFlag    ( "Security/ReportScriptSignatures" );
+   security.reportModuleSignatures              = PixInsightSettings::GlobalFlag    ( "Security/ReportModuleSignatures" );
    security.warnOnUnsignedCodeExecution         = PixInsightSettings::GlobalFlag    ( "Security/WarnOnUnsignedCodeExecution" );
    security.enableLocalSigningIdentity          = PixInsightSettings::GlobalFlag    ( "Security/EnableLocalSigningIdentity" );
 }
@@ -1132,6 +1152,10 @@ String* PreferencesInstance::StringParameterFromMetaParameter( const MetaParamet
       s = &application.deltaATDataFile;
    else if ( p == METAPARAMETER_INSTANCE_ID( Application, cipITRSDataFile ) )
       s = &application.cipITRSDataFile;
+   else if ( p == METAPARAMETER_INSTANCE_ID( Application, filtersDatabaseFile ) )
+      s = &application.filtersDatabaseFile;
+   else if ( p == METAPARAMETER_INSTANCE_ID( Application, whiteReferencesDatabaseFile ) )
+      s = &application.whiteReferencesDatabaseFile;
 
    else if ( p == METAPARAMETER_INSTANCE_ID( MainWindow, wallpaperFile01 ) )
       s = &mainWindow.wallpaperFile01;
@@ -1194,4 +1218,4 @@ String* PreferencesInstance::StringParameterFromMetaParameter( const MetaParamet
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInstance.cpp - Released 2024-01-19T15:23:39Z
+// EOF PreferencesInstance.cpp - Released 2024-03-20T10:42:12Z

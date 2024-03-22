@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
 // Standard JPEG2000 File Format Module Version 1.0.3
 // ----------------------------------------------------------------------------
-// JPEG2000Instance.h - Released 2024-01-19T15:23:30Z
+// JPEG2000Instance.h - Released 2024-03-20T10:42:02Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG2000 PixInsight module.
 //
@@ -55,9 +55,7 @@
 
 #include <pcl/FileFormatImplementation.h>
 
-PCL_BEGIN_LOCAL // Comment out these *_LOCAL macros if using JasPer as a dynamic library
-#include <jasper/jasper.h>
-PCL_END_LOCAL
+#include "jasper/jasper.h"
 
 namespace pcl
 {
@@ -200,4 +198,4 @@ private:
 #endif   // __JPEG2000Instance_h
 
 // ----------------------------------------------------------------------------
-// EOF JPEG2000Instance.h - Released 2024-01-19T15:23:30Z
+// EOF JPEG2000Instance.h - Released 2024-03-20T10:42:02Z

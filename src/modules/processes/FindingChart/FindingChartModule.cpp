@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
-// Standard FindingChart Process Module Version 1.0.0
+// Standard FindingChart Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// FindingChartModule.cpp - Released 2024-01-19T15:23:39Z
+// FindingChartModule.cpp - Released 2024-03-20T10:42:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FindingChart PixInsight module.
 //
@@ -51,14 +51,14 @@
 // ----------------------------------------------------------------------------
 
 #define MODULE_VERSION_MAJOR     1
-#define MODULE_VERSION_MINOR     0
+#define MODULE_VERSION_MINOR     1
 #define MODULE_VERSION_REVISION  0
 #define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2024
-#define MODULE_RELEASE_MONTH     1
-#define MODULE_RELEASE_DAY       19
+#define MODULE_RELEASE_MONTH     3
+#define MODULE_RELEASE_DAY       20
 
 #include "FindingChartModule.h"
 #include "FindingChartProcess.h"
@@ -173,4 +173,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF FindingChartModule.cpp - Released 2024-01-19T15:23:39Z
+// EOF FindingChartModule.cpp - Released 2024-03-20T10:42:12Z

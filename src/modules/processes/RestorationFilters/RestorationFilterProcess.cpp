@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.6
+// /_/     \____//_____/   PCL 2.6.9
 // ----------------------------------------------------------------------------
 // Standard RestorationFilters Process Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// RestorationFilterProcess.cpp - Released 2024-01-19T15:23:40Z
+// RestorationFilterProcess.cpp - Released 2024-03-20T10:42:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RestorationFilters PixInsight module.
 //
@@ -159,4 +159,4 @@ ProcessImplementation* RestorationFilterProcess::Clone( const ProcessImplementat
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RestorationFilterProcess.cpp - Released 2024-01-19T15:23:40Z
+// EOF RestorationFilterProcess.cpp - Released 2024-03-20T10:42:12Z
