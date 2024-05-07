@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
-// Standard EphemerisGeneration Process Module Version 1.2.6
+// Standard EphemerisGeneration Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// EphemerisGeneratorParameters.h - Released 2024-03-20T10:42:12Z
+// EphemerisGeneratorParameters.h - Released 2024-05-07T15:28:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -364,6 +364,20 @@ extern EGObjectName* TheEGObjectNameParameter;
 
 // ----------------------------------------------------------------------------
 
+class EGHDefined : public MetaBoolean
+{
+public:
+
+   EGHDefined( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern EGHDefined* TheEGHDefinedParameter;
+
+// ----------------------------------------------------------------------------
+
 class EGH : public MetaFloat
 {
 public:
@@ -376,6 +390,21 @@ public:
 };
 
 extern EGH* TheEGHParameter;
+
+
+// ----------------------------------------------------------------------------
+
+class EGGDefined : public MetaBoolean
+{
+public:
+
+   EGGDefined( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern EGGDefined* TheEGGDefinedParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -391,6 +420,151 @@ public:
 };
 
 extern EGG* TheEGGParameter;
+
+// ----------------------------------------------------------------------------
+
+class EGM1Defined : public MetaBoolean
+{
+public:
+
+   EGM1Defined( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern EGM1Defined* TheEGM1DefinedParameter;
+
+// ----------------------------------------------------------------------------
+
+class EGM1 : public MetaFloat
+{
+public:
+
+   EGM1( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+};
+
+extern EGM1* TheEGM1Parameter;
+
+// ----------------------------------------------------------------------------
+
+class EGK1Defined : public MetaBoolean
+{
+public:
+
+   EGK1Defined( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern EGK1Defined* TheEGK1DefinedParameter;
+
+// ----------------------------------------------------------------------------
+
+class EGK1 : public MetaFloat
+{
+public:
+
+   EGK1( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+};
+
+extern EGK1* TheEGK1Parameter;
+
+// ----------------------------------------------------------------------------
+
+class EGM2Defined : public MetaBoolean
+{
+public:
+
+   EGM2Defined( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern EGM2Defined* TheEGM2DefinedParameter;
+
+// ----------------------------------------------------------------------------
+
+class EGM2 : public MetaFloat
+{
+public:
+
+   EGM2( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+};
+
+extern EGM2* TheEGM2Parameter;
+
+// ----------------------------------------------------------------------------
+
+class EGK2Defined : public MetaBoolean
+{
+public:
+
+   EGK2Defined( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern EGK2Defined* TheEGK2DefinedParameter;
+
+// ----------------------------------------------------------------------------
+
+class EGK2 : public MetaFloat
+{
+public:
+
+   EGK2( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+};
+
+extern EGK2* TheEGK2Parameter;
+
+// ----------------------------------------------------------------------------
+
+class EGPCDefined : public MetaBoolean
+{
+public:
+
+   EGPCDefined( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern EGPCDefined* TheEGPCDefinedParameter;
+
+// ----------------------------------------------------------------------------
+
+class EGPC : public MetaFloat
+{
+public:
+
+   EGPC( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+};
+
+extern EGPC* TheEGPCParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -423,6 +597,64 @@ extern EGB_V* TheEGB_VParameter;
 
 // ----------------------------------------------------------------------------
 
+class EGU_BDefined : public MetaBoolean
+{
+public:
+
+   EGU_BDefined( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern EGU_BDefined* TheEGU_BDefinedParameter;
+
+// ----------------------------------------------------------------------------
+
+class EGU_B : public MetaFloat
+{
+public:
+
+   EGU_B( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+};
+
+extern EGU_B* TheEGU_BParameter;
+
+// ----------------------------------------------------------------------------
+
+class EGI_RDefined : public MetaBoolean
+{
+public:
+
+   EGI_RDefined( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern EGI_RDefined* TheEGI_RDefinedParameter;
+
+// ----------------------------------------------------------------------------
+
+class EGI_R : public MetaFloat
+{
+public:
+
+   EGI_R( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+};
+
+extern EGI_R* TheEGI_RParameter;
+
+// ----------------------------------------------------------------------------
+
 class EGDDefined : public MetaBoolean
 {
 public:
@@ -449,6 +681,125 @@ public:
 };
 
 extern EGD* TheEGDParameter;
+
+// ----------------------------------------------------------------------------
+
+class EGA1Defined : public MetaBoolean
+{
+public:
+
+   EGA1Defined( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern EGA1Defined* TheEGA1DefinedParameter;
+
+// ----------------------------------------------------------------------------
+
+class EGA1 : public MetaFloat
+{
+public:
+
+   EGA1( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   bool ScientificNotation() const override;
+};
+
+extern EGA1* TheEGA1Parameter;
+
+// ----------------------------------------------------------------------------
+
+class EGA2Defined : public MetaBoolean
+{
+public:
+
+   EGA2Defined( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern EGA2Defined* TheEGA2DefinedParameter;
+
+// ----------------------------------------------------------------------------
+
+class EGA2 : public MetaFloat
+{
+public:
+
+   EGA2( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   bool ScientificNotation() const override;
+};
+
+extern EGA2* TheEGA2Parameter;
+
+// ----------------------------------------------------------------------------
+
+class EGA3Defined : public MetaBoolean
+{
+public:
+
+   EGA3Defined( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern EGA3Defined* TheEGA3DefinedParameter;
+
+// ----------------------------------------------------------------------------
+
+class EGA3 : public MetaFloat
+{
+public:
+
+   EGA3( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   bool ScientificNotation() const override;
+};
+
+extern EGA3* TheEGA3Parameter;
+
+// ----------------------------------------------------------------------------
+
+class EGDTDefined : public MetaBoolean
+{
+public:
+
+   EGDTDefined( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern EGDTDefined* TheEGDTDefinedParameter;
+
+// ----------------------------------------------------------------------------
+
+class EGDT : public MetaFloat
+{
+public:
+
+   EGDT( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+};
+
+extern EGDT* TheEGDTParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -673,6 +1024,20 @@ extern EGFigureEffects* TheEGFigureEffectsParameter;
 
 // ----------------------------------------------------------------------------
 
+class EGNonGravitationalPerturbations : public MetaBoolean
+{
+public:
+
+   EGNonGravitationalPerturbations( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern EGNonGravitationalPerturbations* TheEGNonGravitationalPerturbationsParameter;
+
+// ----------------------------------------------------------------------------
+
 class EGOutputXEPHFile : public MetaBoolean
 {
 public:
@@ -786,6 +1151,7 @@ public:
 
    IsoString Id() const override;
    int Precision() const override;
+   bool ScientificNotation() const override;
    double DefaultValue() const override;
    double MinimumValue() const override;
    double MaximumValue() const override;
@@ -804,4 +1170,4 @@ PCL_END_LOCAL
 #endif   // __EphemerisGeneratorParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF EphemerisGeneratorParameters.h - Released 2024-03-20T10:42:12Z
+// EOF EphemerisGeneratorParameters.h - Released 2024-05-07T15:28:00Z

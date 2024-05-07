@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
-// Standard EphemerisGeneration Process Module Version 1.2.6
+// Standard EphemerisGeneration Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// Ephemerides.cpp - Released 2024-03-20T10:42:12Z
+// Ephemerides.cpp - Released 2024-05-07T15:28:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -118,6 +118,28 @@ double Ephemerides::GMS() const
 
 // ----------------------------------------------------------------------------
 
+TimePoint Ephemerides::StartTime() const
+{
+   TimePoint t0 = m_eph->StartTime();
+   if ( m_ast != nullptr )
+      t0 = Max( t0, m_ast->StartTime() );
+   if ( m_kbo != nullptr )
+      t0 = Max( t0, m_kbo->StartTime() );
+   return t0 + 1.0;
+}
+
+TimePoint Ephemerides::EndTime() const
+{
+   TimePoint t1 = m_eph->EndTime();
+   if ( m_ast != nullptr )
+      t1 = Min( t1, m_ast->EndTime() );
+   if ( m_kbo != nullptr )
+      t1 = Min( t1, m_kbo->EndTime() );
+   return t1 - 1.0;
+}
+
+// ----------------------------------------------------------------------------
+
 struct KBOData
 {
    IsoString id;
@@ -197,4 +219,4 @@ double Ephemerides::KBOMass( const EphemerisObject& obj )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Ephemerides.cpp - Released 2024-03-20T10:42:12Z
+// EOF Ephemerides.cpp - Released 2024-05-07T15:28:00Z

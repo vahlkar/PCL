@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.135
+# PixInsight Makefile Generator Script v1.138
 # Copyright (C) 2009-2024 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2024-03-22T11:23:06.351Z
+# Generated on .... 2024-05-07T16:58:06.225Z
 # Project id ...... Global
 # Project type .... Module
 # Platform ........ Windows/vc17
@@ -16,13 +16,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>93938977-bb1a-4777-a9fd-4f323ac36d81</UniqueIdentifier>
+      <UniqueIdentifier>5c78e50a-fc54-4ed5-9a03-8dd345f17e25</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>9c7efcd5-8d58-44f6-8a53-b0fd56599e18</UniqueIdentifier>
+      <UniqueIdentifier>bba1fff3-c311-4e40-bbc0-0bcacea22f17</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>de357922-386c-4b27-82d3-c817d15d5e9d</UniqueIdentifier>
+      <UniqueIdentifier>225f50bc-b863-4ff9-9af1-8d2dcce54a55</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -39,6 +39,24 @@
         <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\ColorManagementSetupProcess.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\CurveExplorerDialog.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\FilterManagementDialog.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\FilterManagerInstance.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\FilterManagerInterface.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\FilterManagerParameters.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\FilterManagerProcess.cpp">
         <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\GlobalModule.cpp">
@@ -91,6 +109,24 @@
     <ClInclude Include="..\..\ColorManagementSetupProcess.h">
         <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\CurveExplorerDialog.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\FilterManagementDialog.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\FilterManagerInstance.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\FilterManagerInterface.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\FilterManagerParameters.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\FilterManagerProcess.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\GlobalModule.h">
         <Filter>Header Files</Filter>
     </ClInclude>
@@ -127,6 +163,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\icons\ColorManagementSetup.svg">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\icons\FilterManager.svg">
         <Filter>Image Files</Filter>
     </None>
     <None Include="..\..\icons\Preferences.svg">

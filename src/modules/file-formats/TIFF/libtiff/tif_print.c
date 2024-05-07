@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
 // Standard TIFF File Format Module Version 1.0.10
 // ----------------------------------------------------------------------------
-// tif_print.c - Released 2024-03-20T10:42:02Z
+// tif_print.c - Released 2024-05-07T15:27:52Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard TIFF PixInsight module.
 //
@@ -807,4 +807,4 @@ void _TIFFprintAsciiTag(FILE *fd, const char *name, const char *value)
 }
 
 // ----------------------------------------------------------------------------
-// EOF tif_print.c - Released 2024-03-20T10:42:02Z
+// EOF tif_print.c - Released 2024-05-07T15:27:52Z

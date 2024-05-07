@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.9.8
+// Standard ImageCalibration Process Module Version 2.1.0
 // ----------------------------------------------------------------------------
-// ImageCalibrationInstance.cpp - Released 2024-03-20T10:42:12Z
+// ImageCalibrationInstance.cpp - Released 2024-05-07T15:28:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -162,7 +162,7 @@ ImageCalibrationInstance::ImageCalibrationInstance( const MetaProcess* m )
    , p_psfGrowth( TheICPSFGrowthParameter->DefaultValue() )
    , p_maxStars( TheICMaxStarsParameter->DefaultValue() )
    , p_outputDirectory( TheICOutputDirectoryParameter->DefaultValue() )
-   , p_outputExtension( TheICOutputExtensionParameter->DefaultValue() )
+   , p_outputExtension( TheICOutputExtensionParameter->DefaultValue() ) // ### DEPRECATED
    , p_outputPrefix( TheICOutputPrefixParameter->DefaultValue() )
    , p_outputPostfix( TheICOutputPostfixParameter->DefaultValue() )
    , p_outputSampleFormat( ICOutputSampleFormat::Default )
@@ -1306,13 +1306,7 @@ private:
       /*
        * Output file extension, which defines the output file format.
        */
-      String fileExtension = m_data.instance->p_outputExtension.Trimmed();
-      if ( fileExtension.IsEmpty() )
-         fileExtension = File::ExtractExtension( m_targetPath );
-      if ( fileExtension.IsEmpty() )
-         throw Error( m_targetPath + ": Unable to determine an output file extension." );
-      if ( !fileExtension.StartsWith( '.' ) )
-         fileExtension.Prepend( '.' );
+      const String fileExtension = ".xisf";
 
       /*
        * Output file name.
@@ -3207,4 +3201,4 @@ size_type ImageCalibrationInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInstance.cpp - Released 2024-03-20T10:42:12Z
+// EOF ImageCalibrationInstance.cpp - Released 2024-05-07T15:28:00Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
 // Standard Blink Process Module Version 1.2.4
 // ----------------------------------------------------------------------------
-// BlinkModule.cpp - Released 2024-03-20T10:42:13Z
+// BlinkModule.cpp - Released 2024-05-07T15:28:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Blink PixInsight module.
 //
@@ -58,8 +58,8 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2024
-#define MODULE_RELEASE_MONTH     3
-#define MODULE_RELEASE_DAY       20
+#define MODULE_RELEASE_MONTH     5
+#define MODULE_RELEASE_DAY       7
 
 #include "BlinkModule.h"
 #include "BlinkProcess.h"
@@ -174,4 +174,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF BlinkModule.cpp - Released 2024-03-20T10:42:13Z
+// EOF BlinkModule.cpp - Released 2024-05-07T15:28:00Z

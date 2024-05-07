@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
-// Standard EphemerisGeneration Process Module Version 1.2.6
+// Standard EphemerisGeneration Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// EphemerisGeneratorParameters.cpp - Released 2024-03-20T10:42:12Z
+// EphemerisGeneratorParameters.cpp - Released 2024-05-07T15:28:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -57,54 +57,79 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-EGWorkingMode*                 TheEGWorkingModeParameter = nullptr;
-EGPosX*                        TheEGPosXParameter = nullptr;
-EGPosY*                        TheEGPosYParameter = nullptr;
-EGPosZ*                        TheEGPosZParameter = nullptr;
-EGVelX*                        TheEGVelXParameter = nullptr;
-EGVelY*                        TheEGVelYParameter = nullptr;
-EGVelZ*                        TheEGVelZParameter = nullptr;
-EGElemA*                       TheEGElemAParameter = nullptr;
-EGElemQ*                       TheEGElemQParameter = nullptr;
-EGElemE*                       TheEGElemEParameter = nullptr;
-EGElemM*                       TheEGElemMParameter = nullptr;
-EGElemT*                       TheEGElemTParameter = nullptr;
-EGElemI*                       TheEGElemIParameter = nullptr;
-EGElemO*                       TheEGElemOParameter = nullptr;
-EGElemW*                       TheEGElemWParameter = nullptr;
-EGEpochJD*                     TheEGEpochJDParameter = nullptr;
-EGObjectId*                    TheEGObjectIdParameter = nullptr;
-EGObjectName*                  TheEGObjectNameParameter = nullptr;
-EGH*                           TheEGHParameter = nullptr;
-EGG*                           TheEGGParameter = nullptr;
-EGB_VDefined*                  TheEGB_VDefinedParameter = nullptr;
-EGB_V*                         TheEGB_VParameter = nullptr;
-EGDDefined*                    TheEGDDefinedParameter = nullptr;
-EGD*                           TheEGDParameter = nullptr;
-EGDatabaseFilePath*            TheEGDatabaseFilePathParameter = nullptr;
-EGDatabaseFormatName*          TheEGDatabaseFormatNameParameter = nullptr;
-EGObjects*                     TheEGObjectsParameter = nullptr;
-EGUseRegularExpressions*       TheEGUseRegularExpressionsParameter = nullptr;
-EGExcludeCoreAsteroids*        TheEGExcludeCoreAsteroidsParameter = nullptr;
-EGFundamentalFilePath*         TheEGFundamentalFilePathParameter = nullptr;
-EGAsteroidsFilePath*           TheEGAsteroidsFilePathParameter = nullptr;
-EGKBOsFilePath*                TheEGKBOsFilePathParameter = nullptr;
-EGStartTimeJD*                 TheEGStartTimeJDParameter = nullptr;
-EGEndTimeJD*                   TheEGEndTimeJDParameter = nullptr;
-EGUseAsteroidPerturbers*       TheEGUseAsteroidPerturbersParameter = nullptr;
-EGUseKBOPerturbers*            TheEGUseKBOPerturbersParameter = nullptr;
-EGVelocityExpansions*          TheEGVelocityExpansionsParameter = nullptr;
-EGSeparateEarthMoonPerturbers* TheEGSeparateEarthMoonPerturbersParameter = nullptr;
-EGRelativisticPerturbations*   TheEGRelativisticPerturbationsParameter = nullptr;
-EGFigureEffects*               TheEGFigureEffectsParameter = nullptr;
-EGOutputXEPHFile*              TheEGOutputXEPHFileParameter = nullptr;
-EGOutputXEPHFilePath*          TheEGOutputXEPHFilePathParameter = nullptr;
-EGOutputLogFile*               TheEGOutputLogFileParameter = nullptr;
-EGOverwriteExistingFiles*      TheEGOverwriteExistingFilesParameter = nullptr;
-EGDenseOutputToleranceFactor*  TheEGDenseOutputToleranceFactorParameter = nullptr;
-EGEphemerisToleranceFactor*    TheEGEphemerisToleranceFactorParameter = nullptr;
-EGEphemerisMaxExpansionLength* TheEGEphemerisMaxExpansionLengthParameter = nullptr;
-EGEphemerisMaxTruncationError* TheEGEphemerisMaxTruncationErrorParameter = nullptr;
+EGWorkingMode*                   TheEGWorkingModeParameter = nullptr;
+EGPosX*                          TheEGPosXParameter = nullptr;
+EGPosY*                          TheEGPosYParameter = nullptr;
+EGPosZ*                          TheEGPosZParameter = nullptr;
+EGVelX*                          TheEGVelXParameter = nullptr;
+EGVelY*                          TheEGVelYParameter = nullptr;
+EGVelZ*                          TheEGVelZParameter = nullptr;
+EGElemA*                         TheEGElemAParameter = nullptr;
+EGElemQ*                         TheEGElemQParameter = nullptr;
+EGElemE*                         TheEGElemEParameter = nullptr;
+EGElemM*                         TheEGElemMParameter = nullptr;
+EGElemT*                         TheEGElemTParameter = nullptr;
+EGElemI*                         TheEGElemIParameter = nullptr;
+EGElemO*                         TheEGElemOParameter = nullptr;
+EGElemW*                         TheEGElemWParameter = nullptr;
+EGEpochJD*                       TheEGEpochJDParameter = nullptr;
+EGObjectId*                      TheEGObjectIdParameter = nullptr;
+EGObjectName*                    TheEGObjectNameParameter = nullptr;
+EGHDefined*                      TheEGHDefinedParameter = nullptr;
+EGH*                             TheEGHParameter = nullptr;
+EGGDefined*                      TheEGGDefinedParameter = nullptr;
+EGG*                             TheEGGParameter = nullptr;
+EGM1Defined*                     TheEGM1DefinedParameter = nullptr;
+EGM1*                            TheEGM1Parameter = nullptr;
+EGK1Defined*                     TheEGK1DefinedParameter = nullptr;
+EGK1*                            TheEGK1Parameter = nullptr;
+EGM2Defined*                     TheEGM2DefinedParameter = nullptr;
+EGM2*                            TheEGM2Parameter = nullptr;
+EGK2Defined*                     TheEGK2DefinedParameter = nullptr;
+EGK2*                            TheEGK2Parameter = nullptr;
+EGPCDefined*                     TheEGPCDefinedParameter = nullptr;
+EGPC*                            TheEGPCParameter = nullptr;
+EGB_VDefined*                    TheEGB_VDefinedParameter = nullptr;
+EGB_V*                           TheEGB_VParameter = nullptr;
+EGU_BDefined*                    TheEGU_BDefinedParameter = nullptr;
+EGU_B*                           TheEGU_BParameter = nullptr;
+EGI_RDefined*                    TheEGI_RDefinedParameter = nullptr;
+EGI_R*                           TheEGI_RParameter = nullptr;
+EGDDefined*                      TheEGDDefinedParameter = nullptr;
+EGD*                             TheEGDParameter = nullptr;
+EGA1Defined*                     TheEGA1DefinedParameter = nullptr;
+EGA1*                            TheEGA1Parameter = nullptr;
+EGA2Defined*                     TheEGA2DefinedParameter = nullptr;
+EGA2*                            TheEGA2Parameter = nullptr;
+EGA3Defined*                     TheEGA3DefinedParameter = nullptr;
+EGA3*                            TheEGA3Parameter = nullptr;
+EGDTDefined*                     TheEGDTDefinedParameter = nullptr;
+EGDT*                            TheEGDTParameter = nullptr;
+EGDatabaseFilePath*              TheEGDatabaseFilePathParameter = nullptr;
+EGDatabaseFormatName*            TheEGDatabaseFormatNameParameter = nullptr;
+EGObjects*                       TheEGObjectsParameter = nullptr;
+EGUseRegularExpressions*         TheEGUseRegularExpressionsParameter = nullptr;
+EGExcludeCoreAsteroids*          TheEGExcludeCoreAsteroidsParameter = nullptr;
+EGFundamentalFilePath*           TheEGFundamentalFilePathParameter = nullptr;
+EGAsteroidsFilePath*             TheEGAsteroidsFilePathParameter = nullptr;
+EGKBOsFilePath*                  TheEGKBOsFilePathParameter = nullptr;
+EGStartTimeJD*                   TheEGStartTimeJDParameter = nullptr;
+EGEndTimeJD*                     TheEGEndTimeJDParameter = nullptr;
+EGUseAsteroidPerturbers*         TheEGUseAsteroidPerturbersParameter = nullptr;
+EGUseKBOPerturbers*              TheEGUseKBOPerturbersParameter = nullptr;
+EGVelocityExpansions*            TheEGVelocityExpansionsParameter = nullptr;
+EGSeparateEarthMoonPerturbers*   TheEGSeparateEarthMoonPerturbersParameter = nullptr;
+EGRelativisticPerturbations*     TheEGRelativisticPerturbationsParameter = nullptr;
+EGFigureEffects*                 TheEGFigureEffectsParameter = nullptr;
+EGNonGravitationalPerturbations* TheEGNonGravitationalPerturbationsParameter = nullptr;
+EGOutputXEPHFile*                TheEGOutputXEPHFileParameter = nullptr;
+EGOutputXEPHFilePath*            TheEGOutputXEPHFilePathParameter = nullptr;
+EGOutputLogFile*                 TheEGOutputLogFileParameter = nullptr;
+EGOverwriteExistingFiles*        TheEGOverwriteExistingFilesParameter = nullptr;
+EGDenseOutputToleranceFactor*    TheEGDenseOutputToleranceFactorParameter = nullptr;
+EGEphemerisToleranceFactor*      TheEGEphemerisToleranceFactorParameter = nullptr;
+EGEphemerisMaxExpansionLength*   TheEGEphemerisMaxExpansionLengthParameter = nullptr;
+EGEphemerisMaxTruncationError*   TheEGEphemerisMaxTruncationErrorParameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -358,7 +383,7 @@ IsoString EGElemA::Id() const
 
 int EGElemA::Precision() const
 {
-   return 10;
+   return 16;
 }
 
 double EGElemA::DefaultValue() const
@@ -391,7 +416,7 @@ IsoString EGElemQ::Id() const
 
 int EGElemQ::Precision() const
 {
-   return 10;
+   return 16;
 }
 
 double EGElemQ::DefaultValue() const
@@ -424,7 +449,7 @@ IsoString EGElemE::Id() const
 
 int EGElemE::Precision() const
 {
-   return 10;
+   return 16;
 }
 
 double EGElemE::DefaultValue() const
@@ -490,7 +515,7 @@ IsoString EGElemT::Id() const
 
 int EGElemT::Precision() const
 {
-   return 7; // 1 ms = 2.7...e-07 day
+   return 10; // 1 ms = 2.7...e-07 day
 }
 
 double EGElemT::DefaultValue() const
@@ -513,7 +538,7 @@ IsoString EGElemI::Id() const
 
 int EGElemI::Precision() const
 {
-   return 7;
+   return 16;
 }
 
 double EGElemI::DefaultValue() const
@@ -546,7 +571,7 @@ IsoString EGElemO::Id() const
 
 int EGElemO::Precision() const
 {
-   return 7;
+   return 16;
 }
 
 double EGElemO::DefaultValue() const
@@ -579,7 +604,7 @@ IsoString EGElemW::Id() const
 
 int EGElemW::Precision() const
 {
-   return 7;
+   return 16;
 }
 
 double EGElemW::DefaultValue() const
@@ -612,7 +637,7 @@ IsoString EGEpochJD::Id() const
 
 int EGEpochJD::Precision() const
 {
-   return 7; // 1 ms = 2.7...e-07 day
+   return 10; // 1 ms = 2.7...e-07 day
 }
 
 double EGEpochJD::DefaultValue() const
@@ -648,6 +673,24 @@ IsoString EGObjectName::Id() const
 
 // ----------------------------------------------------------------------------
 
+EGHDefined::EGHDefined( MetaProcess* P )
+   : MetaBoolean( P )
+{
+   TheEGHDefinedParameter = this;
+}
+
+IsoString EGHDefined::Id() const
+{
+   return "H_defined";
+}
+
+bool EGHDefined::DefaultValue() const
+{
+   return false;
+}
+
+// ----------------------------------------------------------------------------
+
 EGH::EGH( MetaProcess* P )
    : MetaFloat( P )
 {
@@ -671,6 +714,24 @@ double EGH::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
+EGGDefined::EGGDefined( MetaProcess* P )
+   : MetaBoolean( P )
+{
+   TheEGGDefinedParameter = this;
+}
+
+IsoString EGGDefined::Id() const
+{
+   return "G_defined";
+}
+
+bool EGGDefined::DefaultValue() const
+{
+   return false;
+}
+
+// ----------------------------------------------------------------------------
+
 EGG::EGG( MetaProcess* P )
    : MetaFloat( P )
 {
@@ -690,6 +751,211 @@ int EGG::Precision() const
 double EGG::DefaultValue() const
 {
    return 0.15;
+}
+
+// ----------------------------------------------------------------------------
+
+EGM1Defined::EGM1Defined( MetaProcess* P )
+   : MetaBoolean( P )
+{
+   TheEGM1DefinedParameter = this;
+}
+
+IsoString EGM1Defined::Id() const
+{
+   return "M1_defined";
+}
+
+bool EGM1Defined::DefaultValue() const
+{
+   return false;
+}
+
+// ----------------------------------------------------------------------------
+
+EGM1::EGM1( MetaProcess* P )
+   : MetaFloat( P )
+{
+   TheEGM1Parameter = this;
+}
+
+IsoString EGM1::Id() const
+{
+   return "M1";
+}
+
+int EGM1::Precision() const
+{
+   return 2;
+}
+
+double EGM1::DefaultValue() const
+{
+   return 15.0;
+}
+
+// ----------------------------------------------------------------------------
+
+EGK1Defined::EGK1Defined( MetaProcess* P )
+   : MetaBoolean( P )
+{
+   TheEGK1DefinedParameter = this;
+}
+
+IsoString EGK1Defined::Id() const
+{
+   return "K1_defined";
+}
+
+bool EGK1Defined::DefaultValue() const
+{
+   return false;
+}
+
+// ----------------------------------------------------------------------------
+
+EGK1::EGK1( MetaProcess* P )
+   : MetaFloat( P )
+{
+   TheEGK1Parameter = this;
+}
+
+IsoString EGK1::Id() const
+{
+   return "K1";
+}
+
+int EGK1::Precision() const
+{
+   return 2;
+}
+
+double EGK1::DefaultValue() const
+{
+   return 5.0;
+}
+
+// ----------------------------------------------------------------------------
+
+EGM2Defined::EGM2Defined( MetaProcess* P )
+   : MetaBoolean( P )
+{
+   TheEGM2DefinedParameter = this;
+}
+
+IsoString EGM2Defined::Id() const
+{
+   return "M2_defined";
+}
+
+bool EGM2Defined::DefaultValue() const
+{
+   return false;
+}
+
+// ----------------------------------------------------------------------------
+
+EGM2::EGM2( MetaProcess* P )
+   : MetaFloat( P )
+{
+   TheEGM2Parameter = this;
+}
+
+IsoString EGM2::Id() const
+{
+   return "M2";
+}
+
+int EGM2::Precision() const
+{
+   return 2;
+}
+
+double EGM2::DefaultValue() const
+{
+   return 15.0;
+}
+
+// ----------------------------------------------------------------------------
+
+EGK2Defined::EGK2Defined( MetaProcess* P )
+   : MetaBoolean( P )
+{
+   TheEGK2DefinedParameter = this;
+}
+
+IsoString EGK2Defined::Id() const
+{
+   return "K2_defined";
+}
+
+bool EGK2Defined::DefaultValue() const
+{
+   return false;
+}
+
+// ----------------------------------------------------------------------------
+
+EGK2::EGK2( MetaProcess* P )
+   : MetaFloat( P )
+{
+   TheEGK2Parameter = this;
+}
+
+IsoString EGK2::Id() const
+{
+   return "K2";
+}
+
+int EGK2::Precision() const
+{
+   return 2;
+}
+
+double EGK2::DefaultValue() const
+{
+   return 5.0;
+}
+
+// ----------------------------------------------------------------------------
+
+EGPCDefined::EGPCDefined( MetaProcess* P )
+   : MetaBoolean( P )
+{
+   TheEGPCDefinedParameter = this;
+}
+
+IsoString EGPCDefined::Id() const
+{
+   return "PC_defined";
+}
+
+bool EGPCDefined::DefaultValue() const
+{
+   return false;
+}
+
+// ----------------------------------------------------------------------------
+
+EGPC::EGPC( MetaProcess* P )
+   : MetaFloat( P )
+{
+   TheEGPCParameter = this;
+}
+
+IsoString EGPC::Id() const
+{
+   return "PC";
+}
+
+int EGPC::Precision() const
+{
+   return 2;
+}
+
+double EGPC::DefaultValue() const
+{
+   return 0.03;
 }
 
 // ----------------------------------------------------------------------------
@@ -735,6 +1001,88 @@ double EGB_V::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
+EGU_BDefined::EGU_BDefined( MetaProcess* P )
+   : MetaBoolean( P )
+{
+   TheEGU_BDefinedParameter = this;
+}
+
+IsoString EGU_BDefined::Id() const
+{
+   return "U_B_defined";
+}
+
+bool EGU_BDefined::DefaultValue() const
+{
+   return false;
+}
+
+// ----------------------------------------------------------------------------
+
+EGU_B::EGU_B( MetaProcess* P )
+   : MetaFloat( P )
+{
+   TheEGU_BParameter = this;
+}
+
+IsoString EGU_B::Id() const
+{
+   return "U_B";
+}
+
+int EGU_B::Precision() const
+{
+   return 2;
+}
+
+double EGU_B::DefaultValue() const
+{
+   return 0;
+}
+
+// ----------------------------------------------------------------------------
+
+EGI_RDefined::EGI_RDefined( MetaProcess* P )
+   : MetaBoolean( P )
+{
+   TheEGI_RDefinedParameter = this;
+}
+
+IsoString EGI_RDefined::Id() const
+{
+   return "I_R_defined";
+}
+
+bool EGI_RDefined::DefaultValue() const
+{
+   return false;
+}
+
+// ----------------------------------------------------------------------------
+
+EGI_R::EGI_R( MetaProcess* P )
+   : MetaFloat( P )
+{
+   TheEGI_RParameter = this;
+}
+
+IsoString EGI_R::Id() const
+{
+   return "I_R";
+}
+
+int EGI_R::Precision() const
+{
+   return 2;
+}
+
+double EGI_R::DefaultValue() const
+{
+   return 0;
+}
+
+// ----------------------------------------------------------------------------
+
 EGDDefined::EGDDefined( MetaProcess* P )
    : MetaBoolean( P )
 {
@@ -770,6 +1118,185 @@ int EGD::Precision() const
 }
 
 double EGD::DefaultValue() const
+{
+   return 0;
+}
+
+// ----------------------------------------------------------------------------
+
+EGA1Defined::EGA1Defined( MetaProcess* P )
+   : MetaBoolean( P )
+{
+   TheEGA1DefinedParameter = this;
+}
+
+IsoString EGA1Defined::Id() const
+{
+   return "A1_defined";
+}
+
+bool EGA1Defined::DefaultValue() const
+{
+   return false;
+}
+
+// ----------------------------------------------------------------------------
+
+EGA1::EGA1( MetaProcess* P )
+   : MetaFloat( P )
+{
+   TheEGA1Parameter = this;
+}
+
+IsoString EGA1::Id() const
+{
+   return "A1";
+}
+
+int EGA1::Precision() const
+{
+   return 5;
+}
+
+double EGA1::DefaultValue() const
+{
+   return 0;
+}
+
+bool EGA1::ScientificNotation() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+EGA2Defined::EGA2Defined( MetaProcess* P )
+   : MetaBoolean( P )
+{
+   TheEGA2DefinedParameter = this;
+}
+
+IsoString EGA2Defined::Id() const
+{
+   return "A2_defined";
+}
+
+bool EGA2Defined::DefaultValue() const
+{
+   return false;
+}
+
+// ----------------------------------------------------------------------------
+
+EGA2::EGA2( MetaProcess* P )
+   : MetaFloat( P )
+{
+   TheEGA2Parameter = this;
+}
+
+IsoString EGA2::Id() const
+{
+   return "A2";
+}
+
+int EGA2::Precision() const
+{
+   return 5;
+}
+
+double EGA2::DefaultValue() const
+{
+   return 0;
+}
+
+bool EGA2::ScientificNotation() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+EGA3Defined::EGA3Defined( MetaProcess* P )
+   : MetaBoolean( P )
+{
+   TheEGA3DefinedParameter = this;
+}
+
+IsoString EGA3Defined::Id() const
+{
+   return "A3_defined";
+}
+
+bool EGA3Defined::DefaultValue() const
+{
+   return false;
+}
+
+// ----------------------------------------------------------------------------
+
+EGA3::EGA3( MetaProcess* P )
+   : MetaFloat( P )
+{
+   TheEGA3Parameter = this;
+}
+
+IsoString EGA3::Id() const
+{
+   return "A3";
+}
+
+int EGA3::Precision() const
+{
+   return 5;
+}
+
+double EGA3::DefaultValue() const
+{
+   return 0;
+}
+
+bool EGA3::ScientificNotation() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+EGDTDefined::EGDTDefined( MetaProcess* P )
+   : MetaBoolean( P )
+{
+   TheEGDTDefinedParameter = this;
+}
+
+IsoString EGDTDefined::Id() const
+{
+   return "DT_defined";
+}
+
+bool EGDTDefined::DefaultValue() const
+{
+   return false;
+}
+
+// ----------------------------------------------------------------------------
+
+EGDT::EGDT( MetaProcess* P )
+   : MetaFloat( P )
+{
+   TheEGDTParameter = this;
+}
+
+IsoString EGDT::Id() const
+{
+   return "DT";
+}
+
+int EGDT::Precision() const
+{
+   return 5;
+}
+
+double EGDT::DefaultValue() const
 {
    return 0;
 }
@@ -1049,6 +1576,24 @@ bool EGFigureEffects::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
+EGNonGravitationalPerturbations::EGNonGravitationalPerturbations( MetaProcess* P )
+   : MetaBoolean( P )
+{
+   TheEGNonGravitationalPerturbationsParameter = this;
+}
+
+IsoString EGNonGravitationalPerturbations::Id() const
+{
+   return "nonGravitationalPerturbations";
+}
+
+bool EGNonGravitationalPerturbations::DefaultValue() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
 EGOutputXEPHFile::EGOutputXEPHFile( MetaProcess* P )
    : MetaBoolean( P )
 {
@@ -1194,7 +1739,7 @@ IsoString EGEphemerisMaxExpansionLength::Id() const
 
 double EGEphemerisMaxExpansionLength::DefaultValue() const
 {
-   return 50;
+   return 100;
 }
 
 double EGEphemerisMaxExpansionLength::MinimumValue() const
@@ -1227,9 +1772,14 @@ int EGEphemerisMaxTruncationError::Precision() const
    return 2;
 }
 
+bool EGEphemerisMaxTruncationError::ScientificNotation() const
+{
+   return true;
+}
+
 double EGEphemerisMaxTruncationError::DefaultValue() const
 {
-   return 1.0e-08; // 1.5 km
+   return 1.0e-07; // 15 km
 }
 
 double EGEphemerisMaxTruncationError::MinimumValue() const
@@ -1247,4 +1797,4 @@ double EGEphemerisMaxTruncationError::MaximumValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF EphemerisGeneratorParameters.cpp - Released 2024-03-20T10:42:12Z
+// EOF EphemerisGeneratorParameters.cpp - Released 2024-05-07T15:28:00Z

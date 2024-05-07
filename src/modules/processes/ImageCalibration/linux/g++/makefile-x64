@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.135
+# PixInsight Makefile Generator Script v1.138
 # Copyright (C) 2009-2024 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2024-03-22T11:23:07.701Z
+# Generated on .... 2024-05-07T16:58:07.575Z
 # Project id ...... ImageCalibration
 # Project type .... Module
 # Platform ........ Linux/g++
@@ -32,6 +32,10 @@ SRC_FILES= \
 ../../LocalNormalizationInterface.cpp \
 ../../LocalNormalizationParameters.cpp \
 ../../LocalNormalizationProcess.cpp \
+../../SpectrophotometricFluxCalibrationInstance.cpp \
+../../SpectrophotometricFluxCalibrationInterface.cpp \
+../../SpectrophotometricFluxCalibrationParameters.cpp \
+../../SpectrophotometricFluxCalibrationProcess.cpp \
 ../../SuperbiasInstance.cpp \
 ../../SuperbiasInterface.cpp \
 ../../SuperbiasParameters.cpp \
@@ -55,6 +59,10 @@ OBJ_FILES= \
 ./x64/Release/LocalNormalizationInterface.o \
 ./x64/Release/LocalNormalizationParameters.o \
 ./x64/Release/LocalNormalizationProcess.o \
+./x64/Release/SpectrophotometricFluxCalibrationInstance.o \
+./x64/Release/SpectrophotometricFluxCalibrationInterface.o \
+./x64/Release/SpectrophotometricFluxCalibrationParameters.o \
+./x64/Release/SpectrophotometricFluxCalibrationProcess.o \
 ./x64/Release/SuperbiasInstance.o \
 ./x64/Release/SuperbiasInterface.o \
 ./x64/Release/SuperbiasParameters.o \
@@ -78,6 +86,10 @@ DEP_FILES= \
 ./x64/Release/LocalNormalizationInterface.d \
 ./x64/Release/LocalNormalizationParameters.d \
 ./x64/Release/LocalNormalizationProcess.d \
+./x64/Release/SpectrophotometricFluxCalibrationInstance.d \
+./x64/Release/SpectrophotometricFluxCalibrationInterface.d \
+./x64/Release/SpectrophotometricFluxCalibrationParameters.d \
+./x64/Release/SpectrophotometricFluxCalibrationProcess.d \
 ./x64/Release/SuperbiasInstance.d \
 ./x64/Release/SuperbiasInterface.d \
 ./x64/Release/SuperbiasParameters.d \

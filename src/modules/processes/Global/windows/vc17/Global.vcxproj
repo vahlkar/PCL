@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.135
+# PixInsight Makefile Generator Script v1.138
 # Copyright (C) 2009-2024 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2024-03-22T11:23:06.351Z
+# Generated on .... 2024-05-07T16:58:06.225Z
 # Project id ...... Global
 # Project type .... Module
 # Platform ........ Windows/vc17
@@ -25,7 +25,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{52F09141-4BAB-4A3F-A902-22B12C8EFC2C}</ProjectGuid>
+    <ProjectGuid>{B72B0829-8E44-4DC3-809F-FA548F21A434}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -140,6 +140,12 @@
     <ClCompile Include="..\..\ColorManagementSetupInterface.cpp"/>
     <ClCompile Include="..\..\ColorManagementSetupParameters.cpp"/>
     <ClCompile Include="..\..\ColorManagementSetupProcess.cpp"/>
+    <ClCompile Include="..\..\CurveExplorerDialog.cpp"/>
+    <ClCompile Include="..\..\FilterManagementDialog.cpp"/>
+    <ClCompile Include="..\..\FilterManagerInstance.cpp"/>
+    <ClCompile Include="..\..\FilterManagerInterface.cpp"/>
+    <ClCompile Include="..\..\FilterManagerParameters.cpp"/>
+    <ClCompile Include="..\..\FilterManagerProcess.cpp"/>
     <ClCompile Include="..\..\GlobalModule.cpp"/>
     <ClCompile Include="..\..\PreferencesAction.cpp"/>
     <ClCompile Include="..\..\PreferencesInstance.cpp"/>
@@ -158,6 +164,12 @@
     <ClInclude Include="..\..\ColorManagementSetupInterface.h"/>
     <ClInclude Include="..\..\ColorManagementSetupParameters.h"/>
     <ClInclude Include="..\..\ColorManagementSetupProcess.h"/>
+    <ClInclude Include="..\..\CurveExplorerDialog.h"/>
+    <ClInclude Include="..\..\FilterManagementDialog.h"/>
+    <ClInclude Include="..\..\FilterManagerInstance.h"/>
+    <ClInclude Include="..\..\FilterManagerInterface.h"/>
+    <ClInclude Include="..\..\FilterManagerParameters.h"/>
+    <ClInclude Include="..\..\FilterManagerProcess.h"/>
     <ClInclude Include="..\..\GlobalModule.h"/>
     <ClInclude Include="..\..\PreferencesAction.h"/>
     <ClInclude Include="..\..\PreferencesInstance.h"/>
@@ -172,6 +184,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\icons\ColorManagementSetup.svg"/>
+    <None Include="..\..\icons\FilterManager.svg"/>
     <None Include="..\..\icons\Preferences.svg"/>
     <None Include="..\..\icons\ReadoutOptions.svg"/>
   </ItemGroup>

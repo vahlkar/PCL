@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.135
+# PixInsight Makefile Generator Script v1.138
 # Copyright (C) 2009-2024 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2024-03-22T11:23:07.868Z
+# Generated on .... 2024-05-07T16:58:07.742Z
 # Project id ...... ImageCalibration
 # Project type .... Module
 # Platform ........ Windows/vc17
@@ -16,13 +16,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>6ded09b0-624a-4002-86b7-cc0a3039b639</UniqueIdentifier>
+      <UniqueIdentifier>5dd8cf90-8762-4cb3-a8e9-2250e60ecba1</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>fdb3cc2e-2d55-4188-93b5-058c4f1917ca</UniqueIdentifier>
+      <UniqueIdentifier>20627438-0b9f-4001-bb0c-84e485b5df86</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>8f70c3b6-2e87-4b11-a0f8-f1644cc13a6f</UniqueIdentifier>
+      <UniqueIdentifier>b6cd557a-2e37-4976-b0fa-0aad7cfec16f</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -63,6 +63,18 @@
         <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\LocalNormalizationProcess.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\SpectrophotometricFluxCalibrationInstance.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\SpectrophotometricFluxCalibrationInterface.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\SpectrophotometricFluxCalibrationParameters.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\SpectrophotometricFluxCalibrationProcess.cpp">
         <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\SuperbiasInstance.cpp">
@@ -119,6 +131,18 @@
         <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\OutputFileData.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SpectrophotometricFluxCalibrationInstance.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SpectrophotometricFluxCalibrationInterface.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SpectrophotometricFluxCalibrationParameters.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SpectrophotometricFluxCalibrationProcess.h">
         <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\SuperbiasInstance.h">

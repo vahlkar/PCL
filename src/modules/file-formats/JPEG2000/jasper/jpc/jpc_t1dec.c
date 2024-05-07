@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
 // Standard JPEG2000 File Format Module Version 1.0.3
 // ----------------------------------------------------------------------------
-// jpc_t1dec.c - Released 2024-03-20T10:42:02Z
+// jpc_t1dec.c - Released 2024-05-07T15:27:52Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG2000 PixInsight module.
 //
@@ -974,4 +974,4 @@ static int dec_clnpass(jpc_dec_t *dec, register jpc_mqdec_t *mqdec, int bitpos, 
 }
 
 // ----------------------------------------------------------------------------
-// EOF jpc_t1dec.c - Released 2024-03-20T10:42:02Z
+// EOF jpc_t1dec.c - Released 2024-05-07T15:27:52Z

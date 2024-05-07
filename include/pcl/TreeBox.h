@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
-// pcl/TreeBox.h - Released 2024-03-20T10:41:36Z
+// pcl/TreeBox.h - Released 2024-05-07T15:27:32Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -968,4 +968,4 @@ protected:
 #endif   // __PCL_TreeBox_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/TreeBox.h - Released 2024-03-20T10:41:36Z
+// EOF pcl/TreeBox.h - Released 2024-05-07T15:27:32Z

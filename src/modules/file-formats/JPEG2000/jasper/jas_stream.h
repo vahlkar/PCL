@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
 // Standard JPEG2000 File Format Module Version 1.0.3
 // ----------------------------------------------------------------------------
-// jas_stream.h - Released 2024-03-20T10:42:02Z
+// jas_stream.h - Released 2024-05-07T15:27:52Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG2000 PixInsight module.
 //
@@ -516,4 +516,4 @@ int jas_stream_putc_func(jas_stream_t *stream, int c);
 #endif
 
 // ----------------------------------------------------------------------------
-// EOF jas_stream.h - Released 2024-03-20T10:42:02Z
+// EOF jas_stream.h - Released 2024-05-07T15:27:52Z

@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.135
+# PixInsight Makefile Generator Script v1.138
 # Copyright (C) 2009-2024 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2024-03-22T11:22:46.115Z
+# Generated on .... 2024-05-07T16:57:46.957Z
 # Project id ...... PCL
 # Project type .... StaticLibrary
 # Platform ........ FreeBSD/g++
@@ -123,6 +123,7 @@ SRC_FILES= \
 ../../NumericControl.cpp \
 ../../OnlineObjectSearchDialog.cpp \
 ../../OrthographicProjection.cpp \
+../../OsculatingElements.cpp \
 ../../PSFEstimator.cpp \
 ../../PSFFit.cpp \
 ../../PSFScaleEstimator.cpp \
@@ -315,6 +316,7 @@ OBJ_FILES= \
 ./x64/Release/NumericControl.o \
 ./x64/Release/OnlineObjectSearchDialog.o \
 ./x64/Release/OrthographicProjection.o \
+./x64/Release/OsculatingElements.o \
 ./x64/Release/PSFEstimator.o \
 ./x64/Release/PSFFit.o \
 ./x64/Release/PSFScaleEstimator.o \
@@ -507,6 +509,7 @@ DEP_FILES= \
 ./x64/Release/NumericControl.d \
 ./x64/Release/OnlineObjectSearchDialog.d \
 ./x64/Release/OrthographicProjection.d \
+./x64/Release/OsculatingElements.d \
 ./x64/Release/PSFEstimator.d \
 ./x64/Release/PSFFit.d \
 ./x64/Release/PSFScaleEstimator.d \

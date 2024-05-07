@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
-// pcl/Position.h - Released 2024-03-20T10:41:36Z
+// pcl/Position.h - Released 2024-05-07T15:27:32Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -948,28 +948,28 @@ public:
     * This member function calculates the following structures:
     *
     * \li Precession+bias angles, IAU 2006 precession model, Fukushima-Williams
-    * parameterization. See ESAsA sections 6.6.2.2 and 7.2.5.1.
+    * parameterization. See ESAA sections 6.6.2.2 and 7.2.5.1.
     *
-    * \li Mean obliquity of the ecliptic, IAU 2006 precession model. See ESAsA
+    * \li Mean obliquity of the ecliptic, IAU 2006 precession model. See ESAA
     * section 7.2.5.1.
     *
-    * \li Nutation angles, IAU 2006/2000A_R nutation model. See ESAsA section
+    * \li Nutation angles, IAU 2006/2000A_R nutation model. See ESAA section
     * 6.6.1.
     *
-    * \li Combined bias-precession-nutation matrix, equinox-based. See ESAsA
+    * \li Combined bias-precession-nutation matrix, equinox-based. See ESAA
     * sections 6.7 and 7.2.5.1.
     *
-    * \li Position of the Celestial Intermediate Pole (CIP). ESAsA section 6.7.
+    * \li Position of the Celestial Intermediate Pole (CIP). ESAA section 6.7.
     *
-    * \li Celestial Intermediate Origin (CIO) locator. ESAsA section 6.7.
+    * \li Celestial Intermediate Origin (CIO) locator. ESAA section 6.7.
     *
     * \li Equation of the origins (EO). See Wallace, P. & Capitaine, N., 2006,
-    * Astron.Astrophys. 459, 981, and ESAsA section 6.4.
+    * Astron.Astrophys. 459, 981, and ESAA section 6.4.
     *
     * \li Earth rotation angle (ERA) for the UT1 time of calculation. See IERS
     * Technical Note No. 32, 2003, Section 5.4.4.
     *
-    * \li Greenwich Apparent Sidereal Time (GAST), IAU 2006. ESAsA 6.8.5.
+    * \li Greenwich Apparent Sidereal Time (GAST), IAU 2006. ESAA 6.8.5.
     *
     * Since all of these items depend exclusively on time, they are computed
     * only once in the first call to this function, and subsequent calls will
@@ -987,7 +987,7 @@ public:
     *
     * This member function starts by calling InitEquinoxBasedParameters(), so
     * it implicitly calculates all equinox-based parameters. Then it calculates
-    * the CIO-based combined bias-precession-nutation matrix. See ESAsA
+    * the CIO-based combined bias-precession-nutation matrix. See ESAA
     * sections 6.7 and 7.2.5.2.
     *
     * Since all of these items depend exclusively on time, they are computed
@@ -1158,6 +1158,22 @@ public:
    }
 
    /*!
+    * The observed phase angle of a solar system body, in radians.
+    *
+    * The phase angle of a solar system body is the angle between the
+    * observer-body and Sun-body vectors.
+    */
+   double PhaseAngle( EphemerisFile::Handle& H );
+
+   /*!
+    * The observed phase angle of a star, in radians.
+    *
+    * The phase angle of a star is the angle between the observer-star and
+    * Sun-star vectors.
+    */
+   double PhaseAngle( const StarPosition& S );
+
+   /*!
     * Returns true iff the apparent visual magnitude of the object represented
     * by the specified handle \a H can be calculated with the current
     * implementation, at the calculation time defined by this instance.
@@ -1169,9 +1185,13 @@ public:
     * slope coefficient). This happens for most asteroids included in standard
     * XEPH files.
     *
-    * \li Mercury, Venus, Mars, Jupiter, Saturn, Uranus, Neptune and Pluto.
+    * \li Objects providing valid M1 or M2 parameters (absolute total or
+    * nuclear comet magnitudes). This happens for most comets included in
+    * standard XEPH files.
     *
-    * \li The four Galilean satellites of Jupiter: Io, Europa, Ganymede and
+    * \li Mercury, Venus, Mars, Jupiter, Saturn, Uranus, Neptune, and Pluto.
+    *
+    * \li The four Galilean satellites of Jupiter: Io, Europa, Ganymede, and
     * Callisto.
     *
     * \sa ApparentVisualMagnitude()
@@ -1187,7 +1207,13 @@ public:
     * applying the algorithm for minor planets described in Bowell et al.
     * (1989). See also The Explanatory Supplement, Section 10.4.3.
     *
-    * For Mercury, Venus, Mars, Jupiter, Saturn and Neptune, we apply the
+    * For objects with known M1 or M2 parameters (absolute total or nuclear
+    * comet magnitudes), the apparent visual magnitude is calculated as either
+    * the total comet magnitude (nucleus+coma) or, if only M2 is known, the
+    * comet nucleus magnitude. The algorithms are described in the
+    * documentation for the EphemerisFile::Handle::M1() member function.
+    *
+    * For Mercury, Venus, Mars, Jupiter, Saturn, and Neptune, we apply the
     * equations described in the following paper:
     *
     * Anthony Mallama, James L. Hilton, <em>Computing Apparent Planetary
@@ -1217,6 +1243,110 @@ public:
     * \sa CanComputeApparentVisualMagnitude()
     */
    Optional<double> ApparentVisualMagnitude( EphemerisFile::Handle& H );
+
+   /*!
+    * Returns true iff the comet's apparent visual total magnitude can be
+    * calculated at the calculation time defined by this instance for the
+    * object represented by the specified handle \a H.
+    *
+    * This function returns true only if the object provides a valid M1
+    * parameter, the absolute total comet magnitude (nucleus and coma). This is
+    * the case for most comets included in standard XEPH files.
+    */
+   bool CanComputeCometApparentVisualTotalMagnitude( const EphemerisFile::Handle& H ) const;
+
+   /*!
+    * Returns the comet's apparent visual total magnitude.
+    *
+    * Total comet magnitudes include the observed brightness of the comet
+    * nucleus and coma. For information on the calculation of comet magnitudes,
+    * see the EphemerisFile::Handle::M1() member function.
+    *
+    * If the required data are not available for the specified object, this
+    * member function returns an undefined Optional object.
+    */
+   Optional<double> CometApparentVisualTotalMagnitude( EphemerisFile::Handle& H );
+
+   /*!
+    * Returns true iff the comet's apparent visual nuclear magnitude can be
+    * calculated at the calculation time defined by this instance for the
+    * object represented by the specified handle \a H.
+    *
+    * This function returns true only if the object provides a valid M2
+    * parameter, the absolute nuclear comet magnitude. This is the case for
+    * many comets included in standard XEPH files.
+    */
+   bool CanComputeCometApparentVisualNuclearMagnitude( const EphemerisFile::Handle& H ) const;
+
+   /*!
+    * Returns the comet's apparent visual nuclear magnitude.
+    *
+    * Nuclear comet magnitudes include the observed brightness of the comet's
+    * nucleus, \e excluding the coma. For information on the calculation of
+    * comet magnitudes, see the EphemerisFile::Handle::M1() member function.
+    *
+    * If the required data are not available for the specified object, this
+    * member function returns an undefined Optional object.
+    */
+   Optional<double> CometApparentVisualNuclearMagnitude( EphemerisFile::Handle& H );
+
+   /*!
+    * Conversion from spherical equatorial to spherical local horizontal
+    * coordinates (azimuth and altitude).
+    *
+    * \param q    Spherical equatorial coordinates in radians, where \a q.x is
+    *             the right ascension and \a q.y is the declination.
+    *
+    * Returns the horizontal coordinates in radians as a point \e p, where
+    * \e p.x is the azimuth in the range [0,2pi) and \e p.y is the altitude in
+    * [-pi/2,+pi/2]. The horizontal coordinates are calculated at the current
+    * local hour angle for the specified right ascension.
+    *
+    * This function requires valid geodetic coordinates of the observer set
+    * through a previous call to SetObserver(). If no valid observer
+    * coordinates have been defined, this function returns zero horizontal
+    * coordinates conventionally.
+    *
+    * Local hour angles are calculated either from the Greenwich Apparent
+    * Sidereal Time (GAST) or the Earth Rotation Angle (ERA), respectively for
+    * equinox-based and CIO-based observers.
+    *
+    * For accurate results, apparent topocentric coordinates should be
+    * specified, including corrections for diurnal parallax and diurnal
+    * aberration.
+    */
+   DPoint EquatorialToHorizontal( const DPoint& q )
+   {
+      return EquatorialToHorizontal( q.x, q.y );
+   }
+
+   /*!
+    * Conversion from spherical equatorial to spherical local horizontal
+    * coordinates (azimuth and altitude).
+    *
+    * \param ra   Right ascension in radians.
+    *
+    * \param dec  Declination in radians.
+    *
+    * Calling this function is equivalent to:
+    *
+    * \code EquatorialToHorizontal( DPoint( ra, dec ) ) \endcode
+    */
+   DPoint EquatorialToHorizontal( double ra, double dec )
+   {
+      if ( !IsTopocentric() )
+         return DPoint( 0 );
+
+      if ( m_observer->cioBased )
+         InitCIOBasedParameters();
+      else
+         InitEquinoxBasedParameters();
+
+      double sh, ch; SinCos( Norm2Pi( (m_observer->cioBased ? m_ERA : m_GAST) - ra + Rad( m_observer->lambda ) ), sh, ch );
+      double sd, cd; SinCos( dec, sd, cd );
+      return DPoint( Norm2Pi( ArcTan( -cd*sh, sd*m_cphi - cd*ch*m_sphi ) ),
+                     ArcSin( sd*m_sphi + cd*ch*m_cphi ) );
+   }
 
    /*!
     * Conversion from rectangular equatorial to rectangular ecliptic
@@ -1499,6 +1629,7 @@ private:
 
    // Current observer for calculation of topocentric coordinates.
    AutoPointerCloner<ObserverPosition> m_observer;
+   double                              m_sphi, m_cphi;
 
    // Special case flags.
    bool m_isMoon = false, m_isSun = false, m_isStar = false;
@@ -1546,4 +1677,4 @@ private:
 #endif  // __PCL_Position_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Position.h - Released 2024-03-20T10:41:36Z
+// EOF pcl/Position.h - Released 2024-05-07T15:27:32Z

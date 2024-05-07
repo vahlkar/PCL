@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
-// Standard EphemerisGeneration Process Module Version 1.2.6
+// Standard EphemerisGeneration Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// Integration.h - Released 2024-03-20T10:42:12Z
+// Integration.h - Released 2024-05-07T15:28:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -407,8 +407,19 @@ public:
               , const IsoString excludeName = IsoString() )
       : m_instance( instance )
    {
+      /*
+       * Speed of light in high-precision floating point format.
+       */
       GetC( s_c, s_c2, s_2c2 );
 
+      /*
+       * Solar gravitational mass parameter.
+       */
+      m_GMS = eph.GMS();
+
+      /*
+       * Fundamental ephemerides.
+       */
       EphemerisFile& fun = eph.Fundamental();
 
       /*
@@ -508,6 +519,21 @@ public:
    virtual ~Integration()
    {
       m_perturbers.Destroy();
+   }
+
+   /*
+    * Non-gravitational acceleration parameters.
+    */
+   void SetNonGravitationalParameters( const Optional<double>& A1,
+                                       const Optional<double>& A2,
+                                       const Optional<double>& A3,
+                                       const Optional<double>& DT )
+   {
+      m_A1 = A1.OrElse( 0 );
+      m_A2 = A2.OrElse( 0 );
+      m_A3 = A3.OrElse( 0 );
+      m_DT = DT.OrElse( 0 );
+      m_haveNGParams = m_A1 != 0 || m_A2 != 0 || m_A3 != 0;
    }
 
    /*
@@ -738,6 +764,9 @@ private:
          TimePoint                   m_endTime;    // end time of integration
          bool                        m_backwards;  // integrating with m_endTime < m_startTime
          AutoPointer<Stepper>        m_stepper;    // the integration stepper
+         double                      m_GMS;        // solar gravitational mass parameter
+         double                      m_A1 = 0, m_A2 = 0, m_A3 = 0, m_DT = 0; // non-gravitational acceleration parameters
+         bool                        m_haveNGParams = false;
  mutable bool                        m_haveCollision = false;
  mutable CollisionData               m_collision;
    const EphemerisGeneratorInstance& m_instance;   // the instance being executed
@@ -745,12 +774,28 @@ private:
          IntegrationDenseOutputData  m_outputData; // output times and coordinate expansions
          TimePoint                   m_finalTime;  // the final integration time (can be < m_endTime)
          State                       m_finalState; // the state of integration at the final time
-         hscalar_type                s_c;          // speed of light (au/day) = (s_c_km_s/s_au_km)*86400
-         hscalar_type                s_c2;         // square of the speed of light
-         hscalar_type                s_2c2;        // 2*s_c2
 
-   constexpr static scalar_type s_au_km  = 149597870.7; // astronomical unit (km)
-   constexpr static scalar_type s_c_km_s = 299792.458;  // speed of light (km/s)
+   /*
+    * Fundamental constants.
+    */
+   constexpr static scalar_type      s_au_km  = 149597870.7; // astronomical unit (km)
+   constexpr static scalar_type      s_c_km_s = 299792.458;  // speed of light (km/s)
+
+   /*
+    * Derived speed of light constants at integration precision.
+    */
+                    hscalar_type     s_c;   // speed of light (au/day) = (s_c_km_s/s_au_km)*86400
+                    hscalar_type     s_c2;  // square of the speed of light
+                    hscalar_type     s_2c2; // 2*s_c2
+
+   /*
+    * Standard non-gravitational perturbations model g(r) (Marsden et al., 1973).
+    */
+   constexpr static scalar_type      s_alpha = 0.1112620426; // normalization factor
+   constexpr static scalar_type      s_r0 = 2.808;           // scaling distance
+   constexpr static scalar_type      s_n = 5.093;
+   constexpr static scalar_type      s_k = 4.6142;
+   constexpr static scalar_type      s_m = 2.15;
 
    /*
     * PPN perturbed n-body motion
@@ -947,16 +992,87 @@ private:
                        * hvector_type( (9*sp*sp - 3)/2,
                                        _0_,
                                        -3*cp*sp )) );
-// {
-//    Vector a = TB.Transpose()*Rt*a1;
-//    std::cout << IsoString().Format( "%.16e %.16e %.16e\n", a[0], a[1], a[2] );
-// }
+
                   /*
                    * Transformation to barycentric equatorial coordinates.
                    */
                   A << TB.Transpose()*Rt*a1;
                }
       } // for each perturber body
+
+      /*
+       * Non-gravitational perturbations.
+       */
+      if ( m_haveNGParams )
+      {
+         /*
+          * Barycentric state vectors.
+          */
+         hvector_type p = Ri;
+         hvector_type v = Vi;
+
+         /*
+          * Heliocentric state vectors. Assume that the Sun is the last body
+          * in the list of perturbers, which we have sorted by ascending GM.
+          */
+         p -= Rj[m_perturbers.UpperBound()];
+         v -= m_perturbers[m_perturbers.UpperBound()]->Velocity( T );
+
+         /*
+          * Heliocentric distance.
+          */
+         hscalar_type r;
+         if ( m_DT != 0 )
+         {
+            /*
+             * For an asymmetric model we need the heliocentric distance at
+             * time T - DT. Use a two-body approximation to calculate the
+             * orbital position at the required time.
+             */
+            double eps = AsRad( Poly( T.CenturiesSinceJ2000(), { 84381.406, -46.836769, -0.0001831, 0.00200340, -0.000000576, -0.0000000434 } ) );
+            double se = Sin( eps );
+            double ce = Cos( eps );
+            Vector ep( p[0], p[1]*ce + p[2]*se, p[2]*ce - p[1]*se );
+            Vector ev( v[0], v[1]*ce + v[2]*se, v[2]*ce - v[1]*se );
+            OsculatingElements el( ep, ev, T, m_GMS );
+            if ( !el.IsNearParabolic() )
+               el.M = Norm2Pi( el.M - el.MeanMotion() * m_DT );
+            double xp, yp;
+            el.ToPerifocalPosition( xp, yp, T - m_DT, m_GMS );
+            r = Sqrt( xp*xp + yp*yp );
+         }
+         else
+         {
+            /*
+             * For a symmetric model (DT = 0) we already have calculated the
+             * heliocentric position vector.
+             */
+            r = rij[m_perturbers.UpperBound()];
+         }
+
+         /*
+          * Standard momentum-transfer law at heliocentric distance.
+          */
+         r /= s_r0;
+         hscalar_type g = s_alpha * Pow( r, -s_m ) * Pow( 1 + Pow( r, s_n ), -s_k );
+
+         /*
+          * Non-gravitational acceleration vector.
+          */
+         r = rij[m_perturbers.UpperBound()];
+         hscalar_type r2 = r*r;
+         hscalar_type pv = p*v;
+         hvector_type t( r2*v[0] - pv*p[0]   // within-orbital-plane transverse vector
+                       , r2*v[1] - pv*p[1]
+                       , r2*v[2] - pv*p[2] );
+         hvector_type n = p.Cross( v );      // orbit-normal vector.
+         hscalar_type a1 = m_A1 * g / r;
+         hscalar_type a2 = m_A2 * g / t.L2Norm();
+         hscalar_type a3 = m_A3 * g / n.L2Norm();
+         A << hvector_type( a1*p[0] + a2*t[0] + a3*n[0]
+                          , a1*p[1] + a2*t[1] + a3*n[1]
+                          , a1*p[2] + a2*t[2] + a3*n[2] );
+      }
 
       /*
        * Accumulate acceleration perturbation terms using a second-order
@@ -1204,23 +1320,11 @@ __recurse:
    /*
     * Raw integration tolerances for different scalar types.
     */
-   static double RawTolerance( double* )
+   template <typename T>
+   static T RawTolerance( T* )
    {
-      return 1.0e-15;
+      return 2*std::numeric_limits<T>::epsilon();
    }
-
-#ifndef _MSC_VER
-   static long double RawTolerance( long double* )
-   {
-      return 1.0e-16;
-   }
-#else
-   // See comment about MSVC and long double above.
-   static long double RawTolerance( long double* )
-   {
-      return 1.0e-15;
-   }
-#endif
 
 #if 0
    static float128 RawTolerance( float128* )
@@ -1241,4 +1345,4 @@ __recurse:
 #endif   // __Integration_h
 
 // ----------------------------------------------------------------------------
-// EOF Integration.h - Released 2024-03-20T10:42:12Z
+// EOF Integration.h - Released 2024-05-07T15:28:00Z

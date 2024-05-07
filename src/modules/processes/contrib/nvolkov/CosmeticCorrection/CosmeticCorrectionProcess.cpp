@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
-// Standard CosmeticCorrection Process Module Version 1.3.0
+// Standard CosmeticCorrection Process Module Version 1.4.0
 // ----------------------------------------------------------------------------
-// CosmeticCorrectionProcess.cpp - Released 2024-03-20T10:42:13Z
+// CosmeticCorrectionProcess.cpp - Released 2024-05-07T15:28:01Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CosmeticCorrection PixInsight module.
 //
@@ -165,4 +165,4 @@ ProcessImplementation* CosmeticCorrectionProcess::Clone( const ProcessImplementa
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF CosmeticCorrectionProcess.cpp - Released 2024-03-20T10:42:13Z
+// EOF CosmeticCorrectionProcess.cpp - Released 2024-05-07T15:28:01Z

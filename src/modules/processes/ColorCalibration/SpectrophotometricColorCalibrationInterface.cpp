@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.9.5
 // ----------------------------------------------------------------------------
-// SpectrophotometricColorCalibrationInterface.cpp - Released 2024-03-20T10:42:12Z
+// SpectrophotometricColorCalibrationInterface.cpp - Released 2024-05-07T15:28:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -1288,7 +1288,7 @@ SpectrophotometricColorCalibrationInterface::GUIData::GUIData( Spectrophotometri
 
    const char* psfTypeToolTip = "<p>Point spread function type used for PSF fitting and photometry.</p>"
       "<p>In all cases elliptical functions are fitted to detected star structures, and PSF sampling regions are "
-      "defined adaptively using a median stabilization algorithm.</p>"
+      "defined adaptively using a robust median stabilization algorithm.</p>"
       "<p>When the <b>Auto</b> option is selected, a series of different PSFs will be fitted for each source, and "
       "the fit that leads to the least absolute difference among function values and sampled pixel values will be "
       "used for scale estimation. Currently the following functions are tested in this special automatic mode: "
@@ -1325,10 +1325,10 @@ SpectrophotometricColorCalibrationInterface::GUIData::GUIData( Spectrophotometri
    PSFGrowth_NumericControl.edit.SetFixedWidth( editWidth1 );
    PSFGrowth_NumericControl.SetToolTip( "<p>Growing factor for expansion/contraction of the PSF flux measurement region for "
       "each source, in units of the Full Width at Tenth Maximum (FWTM).</p>"
-      "<p>The default value of this parameter is 1.0, meaning that flux is measured exclusively for pixels within the elliptical "
-      "region defined at one tenth of the fitted PSF maximum. Increasing this parameter can inprove accuracy of PSF flux "
-      "measurements for undersampled images, where PSF fitting uncertainty is relatively large. Decreasing it can be beneficial "
-      "in some cases working with very noisy data to restrict flux evaluation to star cores.</p>" );
+      "<p>A value of 1.0 means that flux will be measured exclusively from pixels within the elliptical region defined at one "
+      "tenth of the fitted PSF maximum. Increasing this parameter can inprove accuracy of PSF flux measurements for "
+      "undersampled images, where PSF fitting uncertainty is relatively large. Decreasing it can be beneficial in some cases "
+      "working with very noisy data to restrict flux evaluation to star cores. The default value is 1.25.</p>" );
    PSFGrowth_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&SpectrophotometricColorCalibrationInterface::e_ValueUpdated, w );
 
    const char* psfMaxStarsToolTip =
@@ -1609,4 +1609,4 @@ SpectrophotometricColorCalibrationInterface::GUIData::GUIData( Spectrophotometri
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SpectrophotometricColorCalibrationInterface.cpp - Released 2024-03-20T10:42:12Z
+// EOF SpectrophotometricColorCalibrationInterface.cpp - Released 2024-05-07T15:28:00Z

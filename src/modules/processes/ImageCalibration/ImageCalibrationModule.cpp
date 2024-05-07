@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.9.8
+// Standard ImageCalibration Process Module Version 2.1.0
 // ----------------------------------------------------------------------------
-// ImageCalibrationModule.cpp - Released 2024-03-20T10:42:12Z
+// ImageCalibrationModule.cpp - Released 2024-05-07T15:28:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -50,23 +50,25 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#define MODULE_VERSION_MAJOR     1
-#define MODULE_VERSION_MINOR     9
-#define MODULE_VERSION_REVISION  8
+#define MODULE_VERSION_MAJOR     2
+#define MODULE_VERSION_MINOR     1
+#define MODULE_VERSION_REVISION  0
 #define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2024
-#define MODULE_RELEASE_MONTH     3
-#define MODULE_RELEASE_DAY       20
+#define MODULE_RELEASE_MONTH     5
+#define MODULE_RELEASE_DAY       7
 
 #include "DefectMapInterface.h"
 #include "DefectMapProcess.h"
-#include "LocalNormalizationInterface.h"
-#include "LocalNormalizationProcess.h"
 #include "ImageCalibrationInterface.h"
 #include "ImageCalibrationModule.h"
 #include "ImageCalibrationProcess.h"
+#include "LocalNormalizationInterface.h"
+#include "LocalNormalizationProcess.h"
+#include "SpectrophotometricFluxCalibrationInterface.h"
+#include "SpectrophotometricFluxCalibrationProcess.h"
 #include "SuperbiasInterface.h"
 #include "SuperbiasProcess.h"
 
@@ -115,7 +117,7 @@ String ImageCalibrationModule::Company() const
 
 String ImageCalibrationModule::Author() const
 {
-   return "ImageCalibration/LocalNormalization/Superbias: Juan Conejero, PTeam / DefectMap/Superbias: Carlos Milovic F., PTeam";
+   return "ImageCalibration/LocalNormalization/SPFC/Superbias: Juan Conejero, PTeam / DefectMap/Superbias: Carlos Milovic F., PTeam";
 }
 
 // ----------------------------------------------------------------------------
@@ -171,12 +173,14 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 
    if ( mode == pcl::InstallMode::FullInstall )
    {
+      new pcl::DefectMapProcess;
+      new pcl::DefectMapInterface;
       new pcl::ImageCalibrationProcess;
       new pcl::ImageCalibrationInterface;
       new pcl::LocalNormalizationProcess;
       new pcl::LocalNormalizationInterface;
-      new pcl::DefectMapProcess;
-      new pcl::DefectMapInterface;
+      new pcl::SpectrophotometricFluxCalibrationProcess;
+      new pcl::SpectrophotometricFluxCalibrationInterface;
       new pcl::SuperbiasProcess;
       new pcl::SuperbiasInterface;
    }
@@ -185,4 +189,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationModule.cpp - Released 2024-03-20T10:42:12Z
+// EOF ImageCalibrationModule.cpp - Released 2024-05-07T15:28:00Z

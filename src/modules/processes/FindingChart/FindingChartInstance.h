@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
 // Standard FindingChart Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// FindingChartInstance.h - Released 2024-03-20T10:42:12Z
+// FindingChartInstance.h - Released 2024-05-07T15:28:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FindingChart PixInsight module.
 //
@@ -119,4 +119,4 @@ private:
 #endif   // __FindingChartInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF FindingChartInstance.h - Released 2024-03-20T10:42:12Z
+// EOF FindingChartInstance.h - Released 2024-05-07T15:28:00Z

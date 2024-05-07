@@ -19,9 +19,6 @@ msbuild Convolution.vcxproj /t:Clean,Build -m /p:Configuration=Release /p:Platfo
 cd %PCLSRCDIR%\modules\processes\EphemerisGeneration\windows\vc17
 msbuild EphemerisGeneration.vcxproj /t:Clean,Build -m /p:Configuration=Release /p:Platform=x64
 
-cd %PCLSRCDIR%\modules\processes\FilterManager\windows\vc17
-msbuild FilterManager.vcxproj /t:Clean,Build -m /p:Configuration=Release /p:Platform=x64
-
 cd %PCLSRCDIR%\modules\processes\FindingChart\windows\vc17
 msbuild FindingChart.vcxproj /t:Clean,Build -m /p:Configuration=Release /p:Platform=x64
 

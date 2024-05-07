@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
-// pcl/EphemerisFile.cpp - Released 2024-03-20T10:41:42Z
+// pcl/EphemerisFile.cpp - Released 2024-05-07T15:27:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -184,12 +184,45 @@ void EphemerisFile::DeserializeObjectThread::Run()
          s = element.AttributeValue( "G" );
          if ( !s.IsEmpty() )
             index.G = s.ToDouble();
+         s = element.AttributeValue( "M1" );
+         if ( !s.IsEmpty() )
+            index.M1 = s.ToDouble();
+         s = element.AttributeValue( "K1" );
+         if ( !s.IsEmpty() )
+            index.K1 = s.ToDouble();
+         s = element.AttributeValue( "M2" );
+         if ( !s.IsEmpty() )
+            index.M2 = s.ToDouble();
+         s = element.AttributeValue( "K2" );
+         if ( !s.IsEmpty() )
+            index.K2 = s.ToDouble();
+         s = element.AttributeValue( "PC" );
+         if ( !s.IsEmpty() )
+            index.PC = s.ToDouble();
          s = element.AttributeValue( "B_V" );
          if ( !s.IsEmpty() )
             index.B_V = s.ToDouble();
+         s = element.AttributeValue( "U_B" );
+         if ( !s.IsEmpty() )
+            index.U_B = s.ToDouble();
+         s = element.AttributeValue( "I_R" );
+         if ( !s.IsEmpty() )
+            index.I_R = s.ToDouble();
          s = element.AttributeValue( "D" );
          if ( !s.IsEmpty() )
             index.D = s.ToDouble();
+         s = element.AttributeValue( "A1" );
+         if ( !s.IsEmpty() )
+            index.A1 = s.ToDouble();
+         s = element.AttributeValue( "A2" );
+         if ( !s.IsEmpty() )
+            index.A2 = s.ToDouble();
+         s = element.AttributeValue( "A3" );
+         if ( !s.IsEmpty() )
+            index.A3 = s.ToDouble();
+         s = element.AttributeValue( "DT" );
+         if ( !s.IsEmpty() )
+            index.DT = s.ToDouble();
 
          for ( const XMLNode& node : element )
          {
@@ -715,10 +748,32 @@ void EphemerisFile::Serialize( const String& filePath,
             objectElement->SetAttribute( "H", String().Format( "%.2f", o.H() ) );
          if ( o.G.IsDefined() )
             objectElement->SetAttribute( "G", String().Format( "%.2f", o.G() ) );
+         if ( o.M1.IsDefined() )
+            objectElement->SetAttribute( "M1", String().Format( "%.2f", o.M1() ) );
+         if ( o.K1.IsDefined() )
+            objectElement->SetAttribute( "K1", String().Format( "%.2f", o.K1() ) );
+         if ( o.M2.IsDefined() )
+            objectElement->SetAttribute( "M2", String().Format( "%.2f", o.M2() ) );
+         if ( o.K2.IsDefined() )
+            objectElement->SetAttribute( "K2", String().Format( "%.2f", o.K2() ) );
+         if ( o.PC.IsDefined() )
+            objectElement->SetAttribute( "PC", String().Format( "%.2f", o.PC() ) );
          if ( o.B_V.IsDefined() )
             objectElement->SetAttribute( "B_V", String().Format( "%.2f", o.B_V() ) );
+         if ( o.U_B.IsDefined() )
+            objectElement->SetAttribute( "U_B", String().Format( "%.2f", o.U_B() ) );
+         if ( o.I_R.IsDefined() )
+            objectElement->SetAttribute( "I_R", String().Format( "%.2f", o.I_R() ) );
          if ( o.D.IsDefined() )
             objectElement->SetAttribute( "D", String().Format( "%.2f", o.D() ) );
+         if ( o.A1.IsDefined() )
+            objectElement->SetAttribute( "A1", String().Format( "%.6e", o.A1() ) );
+         if ( o.A2.IsDefined() )
+            objectElement->SetAttribute( "A2", String().Format( "%.6e", o.A2() ) );
+         if ( o.A3.IsDefined() )
+            objectElement->SetAttribute( "A3", String().Format( "%.6e", o.A3() ) );
+         if ( o.DT.IsDefined() )
+            objectElement->SetAttribute( "DT", String().Format( "%.5f", o.DT() ) );
 
          if ( !o.description.IsEmpty() )
             *(new XMLElement( *objectElement, "Description" )) << new XMLText( o.description );
@@ -1324,4 +1379,4 @@ void EphemerisFile::OverrideCIP_ITRSDataFilePath( const String& filePath )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/EphemerisFile.cpp - Released 2024-03-20T10:41:42Z
+// EOF pcl/EphemerisFile.cpp - Released 2024-05-07T15:27:40Z

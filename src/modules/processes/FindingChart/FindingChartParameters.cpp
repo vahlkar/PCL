@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
 // Standard FindingChart Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// FindingChartParameters.cpp - Released 2024-03-20T10:42:12Z
+// FindingChartParameters.cpp - Released 2024-05-07T15:28:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FindingChart PixInsight module.
 //
@@ -601,4 +601,4 @@ double FCNGCTextColor::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FindingChartParameters.cpp - Released 2024-03-20T10:42:12Z
+// EOF FindingChartParameters.cpp - Released 2024-05-07T15:28:00Z

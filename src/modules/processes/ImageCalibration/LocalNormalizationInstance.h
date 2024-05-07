@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.9.8
+// Standard ImageCalibration Process Module Version 2.1.0
 // ----------------------------------------------------------------------------
-// LocalNormalizationInstance.h - Released 2024-03-20T10:42:12Z
+// LocalNormalizationInstance.h - Released 2024-05-07T15:28:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -152,12 +152,12 @@ private:
    pcl_bool    p_showRejectionMaps;
    pcl_bool    p_showStructureMaps;
    pcl_enum    p_plotNormalizationFunctions;
-   pcl_bool    p_noGUIMessages; // ### DEPRECATED
+   pcl_bool    p_noGUIMessages;   // ### DEPRECATED
    float       p_autoMemoryLimit; // maximum fraction of available physical memory we can use
 
    // Output images
    String      p_outputDirectory;
-   String      p_outputExtension;
+   String      p_outputExtension; // ### DEPRECATED
    String      p_outputPrefix;
    String      p_outputPostfix;
    pcl_bool    p_overwriteExistingFiles;
@@ -204,4 +204,4 @@ private:
 #endif   // __LocalNormalizationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationInstance.h - Released 2024-03-20T10:42:12Z
+// EOF LocalNormalizationInstance.h - Released 2024-05-07T15:28:00Z

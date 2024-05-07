@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.135
+# PixInsight Makefile Generator Script v1.138
 # Copyright (C) 2009-2024 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2024-03-22T11:23:06.234Z
+# Generated on .... 2024-05-07T16:58:06.108Z
 # Project id ...... Global
 # Project type .... Module
 # Platform ........ MacOSX/g++
@@ -24,6 +24,12 @@ SRC_FILES= \
 ../../ColorManagementSetupInterface.cpp \
 ../../ColorManagementSetupParameters.cpp \
 ../../ColorManagementSetupProcess.cpp \
+../../CurveExplorerDialog.cpp \
+../../FilterManagementDialog.cpp \
+../../FilterManagerInstance.cpp \
+../../FilterManagerInterface.cpp \
+../../FilterManagerParameters.cpp \
+../../FilterManagerProcess.cpp \
 ../../GlobalModule.cpp \
 ../../PreferencesAction.cpp \
 ../../PreferencesInstance.cpp \
@@ -46,6 +52,12 @@ OBJ_FILES= \
 ./x64/Release/ColorManagementSetupInterface.o \
 ./x64/Release/ColorManagementSetupParameters.o \
 ./x64/Release/ColorManagementSetupProcess.o \
+./x64/Release/CurveExplorerDialog.o \
+./x64/Release/FilterManagementDialog.o \
+./x64/Release/FilterManagerInstance.o \
+./x64/Release/FilterManagerInterface.o \
+./x64/Release/FilterManagerParameters.o \
+./x64/Release/FilterManagerProcess.o \
 ./x64/Release/GlobalModule.o \
 ./x64/Release/PreferencesAction.o \
 ./x64/Release/PreferencesInstance.o \
@@ -68,6 +80,12 @@ DEP_FILES= \
 ./x64/Release/ColorManagementSetupInterface.d \
 ./x64/Release/ColorManagementSetupParameters.d \
 ./x64/Release/ColorManagementSetupProcess.d \
+./x64/Release/CurveExplorerDialog.d \
+./x64/Release/FilterManagementDialog.d \
+./x64/Release/FilterManagerInstance.d \
+./x64/Release/FilterManagerInterface.d \
+./x64/Release/FilterManagerParameters.d \
+./x64/Release/FilterManagerProcess.d \
 ./x64/Release/GlobalModule.d \
 ./x64/Release/PreferencesAction.d \
 ./x64/Release/PreferencesInstance.d \
@@ -87,7 +105,7 @@ DEP_FILES= \
 -include $(DEP_FILES)
 
 $(OBJ_DIR)/Global-pxm.dylib: $(OBJ_FILES)
-	clang++ -arch x86_64 -fPIC -headerpad_max_install_names -Wl,-syslibroot,/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -mmacosx-version-min=13 -stdlib=libc++ -Wl,-dead_strip -rdynamic -dynamiclib -install_name @executable_path/Global-pxm.dylib -L"$(PCLLIBDIR64)" -o $(OBJ_DIR)/Global-pxm.dylib $(OBJ_FILES) -framework AppKit -lpthread -lPCL-pxi -llz4-pxi -lzstd-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi
+	clang++ -arch x86_64 -fPIC -headerpad_max_install_names -Wl,-syslibroot,/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -mmacosx-version-min=12 -stdlib=libc++ -Wl,-dead_strip -rdynamic -dynamiclib -install_name @executable_path/Global-pxm.dylib -L"$(PCLLIBDIR64)" -o $(OBJ_DIR)/Global-pxm.dylib $(OBJ_FILES) -framework AppKit -lpthread -lPCL-pxi -llz4-pxi -lzstd-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi
 	$(MAKE) -f ./makefile-x64 --no-print-directory post-build
 
 .PHONY: clean
@@ -100,6 +118,6 @@ post-build:
 	codesign --deep --options=runtime -s pleiades -f -v --timestamp $(PCLBINDIR64)/Global-pxm.dylib
 
 ./x64/Release/%.o: ../../%.cpp
-	clang++ -c -pipe -pthread -arch x86_64 -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -mmacosx-version-min=13 -D_REENTRANT -D__PCL_MACOSX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -std=c++17 -stdlib=libc++ -Wall -Wno-parentheses -Wno-extern-c-compat -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	clang++ -c -pipe -pthread -arch x86_64 -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -mmacosx-version-min=12 -D_REENTRANT -D__PCL_MACOSX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -std=c++17 -stdlib=libc++ -Wall -Wno-parentheses -Wno-extern-c-compat -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 

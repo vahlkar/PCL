@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
 // Standard SplitCFA Process Module Version 1.0.6
 // ----------------------------------------------------------------------------
-// SplitCFAParameters.cpp - Released 2024-03-20T10:42:13Z
+// SplitCFAParameters.cpp - Released 2024-05-07T15:28:01Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SplitCFA PixInsight module.
 //
@@ -317,4 +317,4 @@ bool SplitCFAOutputViewId3::IsReadOnly() const
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF SplitCFAParameters.cpp - Released 2024-03-20T10:42:13Z
+// EOF SplitCFAParameters.cpp - Released 2024-05-07T15:28:01Z

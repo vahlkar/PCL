@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
-// Standard CosmeticCorrection Process Module Version 1.3.0
+// Standard CosmeticCorrection Process Module Version 1.4.0
 // ----------------------------------------------------------------------------
-// CosmeticCorrectionInstance.h - Released 2024-03-20T10:42:13Z
+// CosmeticCorrectionInstance.h - Released 2024-05-07T15:28:01Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CosmeticCorrection PixInsight module.
 //
@@ -143,7 +143,7 @@ private:
 
    image_list  p_targetFrames;
    String      p_outputDir;
-   String      p_outputExtension;
+   String      p_outputExtension; // ### DEPRECATED
    pcl_bool    p_overwrite;
    String      p_prefix;
    String      p_postfix;
@@ -189,4 +189,4 @@ private:
 #endif // __CosmeticCorrectionInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF CosmeticCorrectionInstance.h - Released 2024-03-20T10:42:13Z
+// EOF CosmeticCorrectionInstance.h - Released 2024-05-07T15:28:01Z

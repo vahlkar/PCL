@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.135
+# PixInsight Makefile Generator Script v1.138
 # Copyright (C) 2009-2024 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2024-03-22T11:23:14.684Z
+# Generated on .... 2024-05-07T16:58:14.528Z
 # Project id ...... INDIClient
 # Project type .... Module
 # Platform ........ Windows/vc16
@@ -25,10 +25,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>5d00ad56-e557-4604-b19d-d059f005ae50</UniqueIdentifier>
+      <UniqueIdentifier>a6bbfa12-d2ea-48f9-98a9-68fd9f6484e0</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>9dee0509-45a2-4fa1-9d9d-8ff36411e5d3</UniqueIdentifier>
+      <UniqueIdentifier>f587557e-c96f-41a5-ac7c-78cbd031061d</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Image Files">
+      <UniqueIdentifier>ec0f2718-bb7a-4050-ac67-ce7c74022b4a</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -160,5 +163,16 @@
     <ClInclude Include="..\..\ZeroconfServiceDetection.h">
         <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\icons\IndigoCCDFrame.svg">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\icons\IndigoDeviceController.svg">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\icons\IndigoMount.svg">
+        <Filter>Image Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.9.8
+// Standard ImageCalibration Process Module Version 2.1.0
 // ----------------------------------------------------------------------------
-// ImageCalibrationInstance.h - Released 2024-03-20T10:42:12Z
+// ImageCalibrationInstance.h - Released 2024-05-07T15:28:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -231,7 +231,7 @@ private:
 
    // Output files
    String          p_outputDirectory;
-   String          p_outputExtension;
+   String          p_outputExtension; // ### DEPRECATED
    String          p_outputPrefix;
    String          p_outputPostfix;
    pcl_enum        p_outputSampleFormat;
@@ -303,4 +303,4 @@ private:
 #endif   // __ImageCalibrationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInstance.h - Released 2024-03-20T10:42:12Z
+// EOF ImageCalibrationInstance.h - Released 2024-05-07T15:28:00Z

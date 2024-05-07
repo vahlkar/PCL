@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// GrayscaleRGBInstances.h - Released 2024-03-20T10:42:12Z
+// GrayscaleRGBInstances.h - Released 2024-05-07T15:28:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -93,4 +93,4 @@ public:
 #endif   // __GrayscaleRGBInstances_h
 
 // ----------------------------------------------------------------------------
-// EOF GrayscaleRGBInstances.h - Released 2024-03-20T10:42:12Z
+// EOF GrayscaleRGBInstances.h - Released 2024-05-07T15:28:00Z

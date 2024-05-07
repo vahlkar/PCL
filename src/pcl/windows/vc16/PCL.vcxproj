@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.135
+# PixInsight Makefile Generator Script v1.138
 # Copyright (C) 2009-2024 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2024-03-22T11:22:46.282Z
+# Generated on .... 2024-05-07T16:57:47.124Z
 # Project id ...... PCL
 # Project type .... StaticLibrary
 # Platform ........ Windows/vc16
@@ -22,7 +22,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{1840CAA4-40F8-46B3-8A2D-1511253D9766}</ProjectGuid>
+    <ProjectGuid>{CCED4DA4-E36C-43B0-9CC1-CFBBDFCAFBB1}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -217,6 +217,7 @@
     <ClCompile Include="..\..\NumericControl.cpp"/>
     <ClCompile Include="..\..\OnlineObjectSearchDialog.cpp"/>
     <ClCompile Include="..\..\OrthographicProjection.cpp"/>
+    <ClCompile Include="..\..\OsculatingElements.cpp"/>
     <ClCompile Include="..\..\PSFEstimator.cpp"/>
     <ClCompile Include="..\..\PSFFit.cpp"/>
     <ClCompile Include="..\..\PSFScaleEstimator.cpp"/>

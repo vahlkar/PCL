@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
-// Standard EphemerisGeneration Process Module Version 1.2.6
+// Standard EphemerisGeneration Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// EphemerisGeneratorInterface.h - Released 2024-03-20T10:42:12Z
+// EphemerisGeneratorInterface.h - Released 2024-05-07T15:28:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -107,7 +107,6 @@ private:
       SectionBar        InitialConditions_SectionBar;
       Control           InitialConditions_Control;
       VerticalSizer     InitialConditions_Sizer;
-
          HorizontalSizer   WorkingMode_Sizer;
             Label             WorkingMode_Label;
             ComboBox          WorkingMode_ComboBox;
@@ -149,15 +148,6 @@ private:
             HorizontalSizer   ObjectName_Sizer;
                Label             ObjectName_Label;
                Edit              ObjectName_Edit;
-            HorizontalSizer   H_Sizer;
-               NumericEdit       H_NumericEdit;
-               CheckBox          B_V_CheckBox;
-               NumericEdit       B_V_NumericEdit;
-            HorizontalSizer   G_Sizer;
-               NumericEdit       G_NumericEdit;
-               CheckBox          D_CheckBox;
-               NumericEdit       D_NumericEdit;
-
          GroupBox          Database_GroupBox;
          VerticalSizer     Database_Sizer;
             HorizontalSizer   DatabasePath_Sizer;
@@ -176,6 +166,51 @@ private:
             HorizontalSizer   DatabaseButtons_Sizer;
                PushButton        GetFirst_Button;
                PushButton        CheckObjects_Button;
+
+      SectionBar        PhysicalParameters_SectionBar;
+      Control           PhysicalParameters_Control;
+      VerticalSizer     PhysicalParameters_Sizer;
+            HorizontalSizer   PhysicalParametersRow1_Sizer;
+               CheckBox          H_CheckBox;
+               NumericEdit       H_NumericEdit;
+               CheckBox          G_CheckBox;
+               NumericEdit       G_NumericEdit;
+            HorizontalSizer   PhysicalParametersRow2_Sizer;
+               CheckBox          M1_CheckBox;
+               NumericEdit       M1_NumericEdit;
+               CheckBox          K1_CheckBox;
+               NumericEdit       K1_NumericEdit;
+            HorizontalSizer   PhysicalParametersRow3_Sizer;
+               CheckBox          M2_CheckBox;
+               NumericEdit       M2_NumericEdit;
+               CheckBox          K2_CheckBox;
+               NumericEdit       K2_NumericEdit;
+               CheckBox          PC_CheckBox;
+               NumericEdit       PC_NumericEdit;
+            HorizontalSizer   PhysicalParametersRow4_Sizer;
+               CheckBox          B_V_CheckBox;
+               NumericEdit       B_V_NumericEdit;
+               CheckBox          U_B_CheckBox;
+               NumericEdit       U_B_NumericEdit;
+               CheckBox          I_R_CheckBox;
+               NumericEdit       I_R_NumericEdit;
+            HorizontalSizer   PhysicalParametersRow5_Sizer;
+               CheckBox          D_CheckBox;
+               NumericEdit       D_NumericEdit;
+
+      SectionBar        NonGravitationalParameters_SectionBar;
+      Control           NonGravitationalParameters_Control;
+      VerticalSizer     NonGravitationalParameters_Sizer;
+            HorizontalSizer   NonGravitationalParametersRow1_Sizer;
+               CheckBox          A1_CheckBox;
+               NumericEdit       A1_NumericEdit;
+               CheckBox          A2_CheckBox;
+               NumericEdit       A2_NumericEdit;
+               CheckBox          A3_CheckBox;
+               NumericEdit       A3_NumericEdit;
+            HorizontalSizer   NonGravitationalParametersRow2_Sizer;
+               CheckBox          DT_CheckBox;
+               NumericEdit       DT_NumericEdit;
 
       SectionBar        NumericalIntegration_SectionBar;
       Control           NumericalIntegration_Control;
@@ -208,6 +243,8 @@ private:
             CheckBox          RelativisticPerturbations_CheckBox;
          HorizontalSizer   FigureEffects_Sizer;
             CheckBox          FigureEffects_CheckBox;
+         HorizontalSizer   NonGravitationalPerturbations_Sizer;
+            CheckBox          NonGravitationalPerturbations_CheckBox;
 
       SectionBar        Output_SectionBar;
       Control           Output_Control;
@@ -230,6 +267,8 @@ private:
 
    GUIData* GUI = nullptr;
 
+   double m_GMS = 0; // solar gravitational mass parameter
+
    void UpdateControls();
    void UpdateElementDependencies( int idx );
 
@@ -244,6 +283,8 @@ private:
    void e_ItemSelected( ComboBox& sender, int itemIndex );
    void e_TextUpdated( TextBox& sender, const String& );
    void e_GroupBoxCheck( GroupBox& sender, bool checked );
+   void e_FileDrag( Control& sender, const Point& pos, const StringList& files, unsigned modifiers, bool& wantsFiles );
+   void e_FileDrop( Control& sender, const Point& pos, const StringList& files, unsigned modifiers );
 
    Array<TextDatabase::ObjectData> SearchDatabase( bool& gotElements, int maxCount = 0 ) const;
 
@@ -265,4 +306,4 @@ PCL_END_LOCAL
 #endif   // __EphemerisGeneratorInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF EphemerisGeneratorInterface.h - Released 2024-03-20T10:42:12Z
+// EOF EphemerisGeneratorInterface.h - Released 2024-05-07T15:28:00Z

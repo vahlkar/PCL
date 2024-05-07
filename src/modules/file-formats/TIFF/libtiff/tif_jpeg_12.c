@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
 // Standard TIFF File Format Module Version 1.0.10
 // ----------------------------------------------------------------------------
-// tif_jpeg_12.c - Released 2024-03-20T10:42:02Z
+// tif_jpeg_12.c - Released 2024-05-07T15:27:52Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard TIFF PixInsight module.
 //
@@ -114,4 +114,4 @@ int TIFFReInitJPEG_12(TIFF *tif, const JPEGOtherSettings *otherSettings,
 #endif /* defined(JPEG_DUAL_MODE_8_12) */
 
 // ----------------------------------------------------------------------------
-// EOF tif_jpeg_12.c - Released 2024-03-20T10:42:02Z
+// EOF tif_jpeg_12.c - Released 2024-05-07T15:27:52Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
-// pcl/EphemerisFile.h - Released 2024-03-20T10:41:36Z
+// pcl/EphemerisFile.h - Released 2024-05-07T15:27:32Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -369,9 +369,10 @@ struct PCL_CLASS SerializableEphemerisObjectData
     */
    SerializableEphemerisDataList data[ 2 ];
 
-   /*
-    * Absolute magnitude. H is the visual magnitude of the object as seen at 1
-    * au of the Earth, 1 au from the Sun, and with a phase angle of 0 degrees.
+   /*!
+    * Absolute asteroid magnitude. H is the visual magnitude of the object as
+    * seen at 1 au of the Earth, 1 au from the Sun, and with a phase angle of
+    * zero degrees.
     *
     * <b>References</b>
     *
@@ -383,20 +384,94 @@ struct PCL_CLASS SerializableEphemerisObjectData
     */
    Optional<double>              H;
 
-   /*
-    * Slope parameter. See the H data member for references.
+   /*!
+    * Asteroid magnitude slope parameter. See the H data member for references.
     */
    Optional<double>              G;
 
-   /*
+   /*!
+    * Comet total absolute magnitude. M1 is the visual absolute magnitude of
+    * the comet's combined nucleus and coma.
+    *
+    * For the calculation of apparent comet magnitudes we apply the following
+    * equations:
+    *
+    * Tmag = M1 + 5*log(d) + K1*log(r) \n
+    * Nmag = M2 + 5*log(d) + K2*log(r) + PC*beta
+    *
+    * where \a Tmag and \a Nmag are, respectively, the total (nucleus+coma) and
+    * nuclear apparent magnitudes. In these equations, \a M1 and \a M2 are the
+    * comet's total and nuclear absolute magnitude paranmeters, \a K1 and \a K2
+    * are the total and nuclear magnitude slope parameters, \a PC is the
+    * nuclear magnitude phase coefficient, \a d is the comet's distance to
+    * Earth, \a r is its distance from the Sun, and \a beta is the phase angle.
+    */
+   Optional<double>              M1;
+
+   /*!
+    * Comet total magnitude slope parameter. See the M1 data member for
+    * information on the calculation of comet apparent magnitudes.
+    */
+   Optional<double>              K1;
+
+   /*!
+    * Comet nuclear absolute magnitude. M2 is the visual absolute magnitude of
+    * the comet's nucleus. See the M1 data member for information on the
+    * calculation of comet apparent magnitudes.
+    */
+   Optional<double>              M2;
+
+   /*!
+    * Comet nuclear magnitude slope parameter. See the M1 data member for
+    * information on the calculation of comet apparent magnitudes.
+    */
+   Optional<double>              K2;
+
+   /*!
+    * Comet nuclear magnitude phase coefficient. See the M1 data member for
+    * information on the calculation of comet apparent magnitudes.
+    */
+   Optional<double>              PC;
+
+   /*!
     * Color index B-V in magnitudes.
     */
    Optional<double>              B_V;
 
-   /*
+   /*!
+    * Color index U-B in magnitudes.
+    */
+   Optional<double>              U_B;
+
+   /*!
+    * Color index I-R in magnitudes.
+    */
+   Optional<double>              I_R;
+
+   /*!
     * Diameter of the object in km.
     */
    Optional<double>              D;
+
+   /*!
+    * Comet non-gravitational acceleration, radial component (au/day^2).
+    */
+   Optional<double>              A1;
+
+   /*!
+    * Comet non-gravitational acceleration, transverse component (au/day^2).
+    */
+   Optional<double>              A2;
+
+   /*!
+    * Comet non-gravitational acceleration, normal component (au/day^2).
+    */
+   Optional<double>              A3;
+
+   /*!
+    * Comet non-gravitational acceleration, perihelion time offset (days).
+    */
+   Optional<double>              DT;
 
    /*!
     * Memberwise constructor.
@@ -504,8 +579,9 @@ struct PCL_CLASS EphemerisObject
    String                        objectDescription;
 
    /*!
-    * Absolute magnitude. H is the visual magnitude of the object as seen at 1
-    * au of the Earth, 1 au from the Sun, and with a phase angle of 0 degrees.
+    * Absolute asteroid magnitude. H is the visual magnitude of the object as
+    * seen at 1 au of the Earth, 1 au from the Sun, and with a phase angle of
+    * zero degrees.
     *
     * <b>References</b>
     *
@@ -518,9 +594,53 @@ struct PCL_CLASS EphemerisObject
    Optional<double>              H;
 
    /*!
-    * Slope parameter. See the H data member for references.
+    * Asteroid magnitude slope parameter. See the H data member for references.
     */
    Optional<double>              G;
+
+   /*!
+    * Comet total absolute magnitude. M1 is the visual absolute magnitude of
+    * the comet's combined nucleus and coma.
+    *
+    * For the calculation of apparent comet magnitudes we apply the following
+    * equations:
+    *
+    * Tmag = M1 + 5*log(d) + K1*log(r) \n
+    * Nmag = M2 + 5*log(d) + K2*log(r) + PC*beta
+    *
+    * where \a Tmag and \a Nmag are, respectively, the total (nucleus+coma) and
+    * nuclear apparent magnitudes. In these equations, \a M1 and \a M2 are the
+    * comet's total and nuclear absolute magnitude paranmeters, \a K1 and \a K2
+    * are the total and nuclear magnitude slope parameters, \a PC is the
+    * nuclear magnitude phase coefficient, \a d is the comet's distance to
+    * Earth, \a r is its distance from the Sun, and \a beta is the phase angle.
+    */
+   Optional<double>              M1;
+
+   /*!
+    * Comet total magnitude slope parameter. See the M1 data member for
+    * information on the calculation of comet apparent magnitudes.
+    */
+   Optional<double>              K1;
+
+   /*!
+    * Comet nuclear absolute magnitude. M2 is the visual absolute magnitude of
+    * the comet's nucleus. See the M1 data member for information on the
+    * calculation of comet apparent magnitudes.
+    */
+   Optional<double>              M2;
+
+   /*!
+    * Comet nuclear magnitude slope parameter. See the M1 data member for
+    * information on the calculation of comet apparent magnitudes.
+    */
+   Optional<double>              K2;
+
+   /*!
+    * Comet nuclear magnitude phase coefficient. See the M1 data member for
+    * information on the calculation of comet apparent magnitudes.
+    */
+   Optional<double>              PC;
 
    /*!
     * Color index B-V in magnitudes.
@@ -528,29 +648,81 @@ struct PCL_CLASS EphemerisObject
    Optional<double>              B_V;
 
    /*!
+    * Color index U-B in magnitudes.
+    */
+   Optional<double>              U_B;
+
+   /*!
+    * Color index I-R in magnitudes.
+    */
+   Optional<double>              I_R;
+
+   /*!
     * Diameter of the object in km.
     */
    Optional<double>              D;
 
    /*!
+    * Comet non-gravitational acceleration, radial component (au/day^2).
+    */
+   Optional<double>              A1;
+
+   /*!
+    * Comet non-gravitational acceleration, transverse component (au/day^2).
+    */
+   Optional<double>              A2;
+
+   /*!
+    * Comet non-gravitational acceleration, normal component (au/day^2).
+    */
+   Optional<double>              A3;
+
+   /*!
+    * Comet non-gravitational acceleration, perihelion time offset (days).
+    */
+   Optional<double>              DT;
+
+   /*!
     * Memberwise constructor.
     */
-   EphemerisObject( const IsoString& objectId_,
-                    const IsoString& originId_,
-                    const String&    objectName_ = String(),
-                    const String&    objectDescription_ = String(),
-                    Optional<double> H_ = Optional<double>(),
-                    Optional<double> G_ = Optional<double>(),
-                    Optional<double> B_V_ = Optional<double>(),
-                    Optional<double> D_ = Optional<double>() )
-      : objectId( objectId_ )
-      , originId( originId_ )
-      , objectName( objectName_ )
-      , objectDescription( objectDescription_ )
-      , H( H_ )
-      , G( G_ )
-      , B_V( B_V_ )
-      , D( D_ )
+   EphemerisObject( const IsoString& a_objectId,
+                    const IsoString& a_originId,
+                    const String&    a_objectName = String(),
+                    const String&    a_objectDescription = String(),
+                    Optional<double> a_H = Optional<double>(),
+                    Optional<double> a_G = Optional<double>(),
+                    Optional<double> a_M1 = Optional<double>(),
+                    Optional<double> a_K1 = Optional<double>(),
+                    Optional<double> a_M2 = Optional<double>(),
+                    Optional<double> a_K2 = Optional<double>(),
+                    Optional<double> a_PC = Optional<double>(),
+                    Optional<double> a_B_V = Optional<double>(),
+                    Optional<double> a_U_B = Optional<double>(),
+                    Optional<double> a_I_R = Optional<double>(),
+                    Optional<double> a_D = Optional<double>(),
+                    Optional<double> a_A1 = Optional<double>(),
+                    Optional<double> a_A2 = Optional<double>(),
+                    Optional<double> a_A3 = Optional<double>(),
+                    Optional<double> a_DT = Optional<double>() )
+      : objectId( a_objectId )
+      , originId( a_originId )
+      , objectName( a_objectName )
+      , objectDescription( a_objectDescription )
+      , H( a_H )
+      , G( a_G )
+      , M1( a_M1 )
+      , K1( a_K1 )
+      , M2( a_M2 )
+      , K2( a_K2 )
+      , PC( a_PC )
+      , B_V( a_B_V )
+      , U_B( a_U_B )
+      , I_R( a_I_R )
+      , D( a_D )
+      , A1( a_A1 )
+      , A2( a_A2 )
+      , A3( a_A3 )
+      , DT( a_DT )
    {
    }
 
@@ -816,8 +988,33 @@ public:
       for ( const Index& ix : m_index )
          objects << EphemerisObject( ix.objectId, ix.originId,
                                      ix.objectName, ix.objectDescription,
-                                     ix.H, ix.G, ix.B_V, ix.D );
+                                     ix.H, ix.G, ix.M1, ix.K1, ix.M2, ix.K2, ix.PC, ix.B_V, ix.U_B, ix.I_R, ix.D,
+                                     ix.A1, ix.A2, ix.A3, ix.DT );
       return objects;
+   }
+
+   /*!
+    * Returns a dynamic list of object identifiers for all the objects
+    * available in this file.
+    */
+   IsoStringList ObjectIds() const
+   {
+      IsoStringList ids;
+      for ( const Index& ix : m_index )
+         ids << ix.objectId;
+      return ids;
+   }
+
+   /*!
+    * Returns a dynamic list of object names for all the objects available in
+    * this file.
+    */
+   StringList ObjectNames() const
+   {
+      StringList names;
+      for ( const Index& ix : m_index )
+         names << ix.objectName;
+      return names;
    }
 
    /*!
@@ -1560,10 +1757,21 @@ private:
       IsoString        originId;          // Identifier of the origin of coordinates (mandatory, case-sensitive).
       String           objectName;        // Object name (optional, case-insensitive).
       String           objectDescription; // Object description (optional, arbitrary)
-      Optional<double> H;                 // Absolute magnitude.
-      Optional<double> G;                 // Slope parameter.
+      Optional<double> H;                 // Asteroid absolute magnitude.
+      Optional<double> G;                 // Asteroid magnitude slope parameter.
+      Optional<double> M1;                // Comet total absolute magnitude.
+      Optional<double> K1;                // Comet total magnitude slope parameter.
+      Optional<double> M2;                // Comet nuclear absolute magnitude.
+      Optional<double> K2;                // Comet nuclear magnitude slope parameter.
+      Optional<double> PC;                // Comet nuclear magnitude phase coefficient parameter.
       Optional<double> B_V;               // Color index B-V in magnitudes.
+      Optional<double> U_B;               // Color index U-B in magnitudes.
+      Optional<double> I_R;               // Color index I-R in magnitudes.
       Optional<double> D;                 // Diameter of the object in km.
+      Optional<double> A1;                // Comet non-gravitational acceleration, radial component (au/day^2).
+      Optional<double> A2;                // Comet non-gravitational acceleration, transverse component (au/day^2).
+      Optional<double> A3;                // Comet non-gravitational acceleration, normal component (au/day^2).
+      Optional<double> DT;                // Comet non-gravitational acceleration, perihelion time offset (days).
       Array<IndexNode> nodes[ 2 ];        // Expansion indexes: 0=function 1=derivative.
 
       Index( const IsoString& objectId_,
@@ -1676,6 +1884,12 @@ public:
    public:
 
       /*!
+       * Default constructor. Constructs an invalid instance that cannot be
+       * used unless assigned with a valid %EphemerisFile::Handle object.
+       */
+      Handle() = default;
+
+      /*!
        * Constructs a new %Handle object.
        *
        * \param parent  Reference to an open EphemerisFile object providing
@@ -1715,6 +1929,8 @@ public:
        */
       Handle( const Handle& x )
       {
+         if ( m_parent != nullptr )
+            m_parent->m_handleCount.Decrement();
          m_parent = x.m_parent;
          m_index = x.m_index;
          m_node[0] = x.m_node[0];
@@ -2110,9 +2326,9 @@ public:
       }
 
       /*!
-       * Returns the absolute magnitude of the object. H is the visual
-       * magnitude of the object as seen at 1 au of the Earth, 1 au from the
-       * Sun, and with a phase angle of 0 degrees.
+       * Returns the asteroid absolute magnitude. H is the visual magnitude of
+       * the object as seen at 1 au of the Earth, 1 au from the Sun, and with a
+       * phase angle of 0 degrees.
        *
        * <b>References</b>
        *
@@ -2129,7 +2345,8 @@ public:
       }
 
       /*!
-       * Slope parameter. See H() for references.
+       * Returns the asteroid magnitude slope parameter. See H() for
+       * references.
        */
       const Optional<double>& G() const
       {
@@ -2137,7 +2354,67 @@ public:
       }
 
       /*!
-       * Color index B-V, in magnitudes.
+       * Returns the comet total absolute magnitude. M1 is the visual absolute
+       * magnitude of the comet's combined nucleus and coma.
+       *
+       * For the calculation of apparent comet magnitudes we apply the
+       * following equations:
+       *
+       * Tmag = M1 + 5*log(d) + K1*log(r) \n
+       * Nmag = M2 + 5*log(d) + K2*log(r) + PC*beta
+       *
+       * where \a Tmag and \a Nmag are, respectively, the total (nucleus+coma)
+       * and nuclear apparent magnitudes. In these equations, \a M1 and \a M2
+       * are the comet's total and nuclear absolute magnitude paranmeters,
+       * \a K1 and \a K2 are the total and nuclear magnitude slope parameters,
+       * \a PC is the nuclear magnitude phase coefficient, \a d is the comet's
+       * distance to Earth, \a r is its distance from the Sun, and \a beta is
+       * the phase angle.
+       */
+      const Optional<double>& M1() const
+      {
+         return m_index->M1;
+      }
+
+      /*!
+       * Returns the comet total magnitude slope parameter. See M1() for
+       * information on the calculation of comet apparent magnitudes.
+       */
+      const Optional<double>& K1() const
+      {
+         return m_index->K1;
+      }
+
+      /*!
+       * Returns the comet nuclear absolute magnitude. M2 is the visual
+       * absolute magnitude of the comet's nucleus. See M1() for information on
+       * the calculation of comet apparent magnitudes.
+       */
+      const Optional<double>& M2() const
+      {
+         return m_index->M2;
+      }
+
+      /*!
+       * Returns the comet nuclear magnitude slope parameter. See M1() for
+       * information on the calculation of comet apparent magnitudes.
+       */
+      const Optional<double>& K2() const
+      {
+         return m_index->K2;
+      }
+
+      /*!
+       * Returns the comet nuclear magnitude phase coefficient. See M1() for
+       * information on the calculation of comet apparent magnitudes.
+       */
+      const Optional<double>& PC() const
+      {
+         return m_index->PC;
+      }
+
+      /*!
+       * Returns the color index B-V, in magnitudes.
        */
       const Optional<double>& B_V() const
       {
@@ -2145,12 +2422,64 @@ public:
       }
 
       /*!
-       * Diameter of the object in km. When available, this is normally an IRAS
-       * diameter for an asteroid.
+       * Returns the color index U-B, in magnitudes.
+       */
+      const Optional<double>& U_B() const
+      {
+         return m_index->U_B;
+      }
+
+      /*!
+       * Returns the color index I-R, in magnitudes.
+       */
+      const Optional<double>& I_R() const
+      {
+         return m_index->I_R;
+      }
+
+      /*!
+       * Returns the object's diameter in km. When available, this is normally
+       * an IRAS diameter for an asteroid.
        */
       const Optional<double>& D() const
       {
          return m_index->D;
+      }
+
+      /*!
+       * Returns the radial component of the comet non-gravitational
+       * acceleration, in au/day^2.
+       */
+      const Optional<double>& A1() const
+      {
+         return m_index->A1;
+      }
+
+      /*!
+       * Returns the transverse component of the comet non-gravitational
+       * acceleration, in au/day^2.
+       */
+      const Optional<double>& A2() const
+      {
+         return m_index->A2;
+      }
+
+      /*!
+       * Returns the normal component of the comet non-gravitational
+       * acceleration, in au/day^2.
+       */
+      const Optional<double>& A3() const
+      {
+         return m_index->A3;
+      }
+
+      /*!
+       * Returns the perihelion time offset parameter of the comet
+       * non-gravitational acceleration, in days.
+       */
+      const Optional<double>& DT() const
+      {
+         return m_index->DT;
       }
 
    private:
@@ -2181,7 +2510,7 @@ public:
          if ( !t.IsValid() )
             throw Error( "Invalid time point." );
          if ( t < m_parent->StartTime() || t > m_parent->EndTime() )
-            throw Error( "Time point out of range." );
+            throw Error( "Time point out of range: " + t.ToString() );
 
          const Array<IndexNode>& nodes = m_index->nodes[index];
          NodeInfo& info = m_node[index];
@@ -2306,4 +2635,4 @@ private:
 #endif  // __PCL_EphemerisFile_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/EphemerisFile.h - Released 2024-03-20T10:41:36Z
+// EOF pcl/EphemerisFile.h - Released 2024-05-07T15:27:32Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
-// Standard EphemerisGeneration Process Module Version 1.2.6
+// Standard EphemerisGeneration Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// EphemerisGeneratorInstance.cpp - Released 2024-03-20T10:42:12Z
+// EphemerisGeneratorInstance.cpp - Released 2024-05-07T15:28:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -81,12 +81,36 @@ EphemerisGeneratorInstance::EphemerisGeneratorInstance( const MetaProcess* m )
    , p_epochJD( TheEGEpochJDParameter->DefaultValue() )
    , p_objectId( TheEGObjectIdParameter->DefaultValue() )
    , p_objectName( TheEGObjectNameParameter->DefaultValue() )
+   , p_H_defined( TheEGHDefinedParameter->DefaultValue() )
    , p_H( TheEGHParameter->DefaultValue() )
+   , p_G_defined( TheEGGDefinedParameter->DefaultValue() )
    , p_G( TheEGGParameter->DefaultValue() )
+   , p_M1_defined( TheEGM1DefinedParameter->DefaultValue() )
+   , p_M1( TheEGM1Parameter->DefaultValue() )
+   , p_K1_defined( TheEGK1DefinedParameter->DefaultValue() )
+   , p_K1( TheEGK1Parameter->DefaultValue() )
+   , p_M2_defined( TheEGM2DefinedParameter->DefaultValue() )
+   , p_M2( TheEGM2Parameter->DefaultValue() )
+   , p_K2_defined( TheEGK2DefinedParameter->DefaultValue() )
+   , p_K2( TheEGK2Parameter->DefaultValue() )
+   , p_PC_defined( TheEGPCDefinedParameter->DefaultValue() )
+   , p_PC( TheEGPCParameter->DefaultValue() )
    , p_B_V_defined( TheEGB_VDefinedParameter->DefaultValue() )
    , p_B_V( TheEGB_VParameter->DefaultValue() )
+   , p_U_B_defined( TheEGU_BDefinedParameter->DefaultValue() )
+   , p_U_B( TheEGU_BParameter->DefaultValue() )
+   , p_I_R_defined( TheEGI_RDefinedParameter->DefaultValue() )
+   , p_I_R( TheEGI_RParameter->DefaultValue() )
    , p_D_defined( TheEGDDefinedParameter->DefaultValue() )
    , p_D( TheEGDParameter->DefaultValue() )
+   , p_A1_defined( TheEGA1DefinedParameter->DefaultValue() )
+   , p_A1( TheEGA1Parameter->DefaultValue() )
+   , p_A2_defined( TheEGA2DefinedParameter->DefaultValue() )
+   , p_A2( TheEGA2Parameter->DefaultValue() )
+   , p_A3_defined( TheEGA3DefinedParameter->DefaultValue() )
+   , p_A3( TheEGA3Parameter->DefaultValue() )
+   , p_DT_defined( TheEGDTDefinedParameter->DefaultValue() )
+   , p_DT( TheEGDTParameter->DefaultValue() )
    , p_databaseFilePath( TheEGDatabaseFilePathParameter->DefaultValue() )
    , p_databaseFormatName( TheEGDatabaseFormatNameParameter->DefaultValue() )
    , p_objects( TheEGObjectsParameter->DefaultValue() )
@@ -103,6 +127,7 @@ EphemerisGeneratorInstance::EphemerisGeneratorInstance( const MetaProcess* m )
    , p_separateEarthMoonPerturbers( TheEGSeparateEarthMoonPerturbersParameter->DefaultValue() )
    , p_relativisticPerturbations( TheEGRelativisticPerturbationsParameter->DefaultValue() )
    , p_figureEffects( TheEGFigureEffectsParameter->DefaultValue() )
+   , p_nonGravitationalPerturbations( TheEGNonGravitationalPerturbationsParameter->DefaultValue() )
    , p_outputXEPHFile( TheEGOutputXEPHFileParameter->DefaultValue() )
    , p_outputXEPHFilePath( TheEGOutputXEPHFilePathParameter->DefaultValue() )
    , p_outputLogFile( TheEGOutputLogFileParameter->DefaultValue() )
@@ -121,7 +146,7 @@ EphemerisGeneratorInstance::EphemerisGeneratorInstance( const MetaProcess* m )
    el_O = TheEGElemOParameter->DefaultValue();
    el_w = TheEGElemWParameter->DefaultValue();
 
-   StateVectorsFromOrbitalElements( p_position, p_velocity, p_elements, p_epochJD );
+   ToOsculatingElements().ToStateVectors( p_position, p_velocity, p_epochJD ); //, Ephemerides( *this, true/*fundamentalOnly*/ ).GMS() );
 }
 
 // ----------------------------------------------------------------------------
@@ -146,12 +171,36 @@ void EphemerisGeneratorInstance::Assign( const ProcessImplementation& p )
       p_epochJD = x->p_epochJD;
       p_objectId = x->p_objectId;
       p_objectName = x->p_objectName;
+      p_H_defined = x->p_H_defined;
       p_H = x->p_H;
+      p_G_defined = x->p_G_defined;
       p_G = x->p_G;
+      p_M1_defined = x->p_M1_defined;
+      p_M1 = x->p_M1;
+      p_K1_defined = x->p_K1_defined;
+      p_K1 = x->p_K1;
+      p_M2_defined = x->p_M2_defined;
+      p_M2 = x->p_M2;
+      p_K2_defined = x->p_K2_defined;
+      p_K2 = x->p_K2;
+      p_PC_defined = x->p_PC_defined;
+      p_PC = x->p_PC;
       p_B_V_defined = x->p_B_V_defined;
       p_B_V = x->p_B_V;
+      p_U_B_defined = x->p_U_B_defined;
+      p_U_B = x->p_U_B;
+      p_I_R_defined = x->p_I_R_defined;
+      p_I_R = x->p_I_R;
       p_D_defined = x->p_D_defined;
       p_D = x->p_D;
+      p_A1_defined = x->p_A1_defined;
+      p_A1 = x->p_A1;
+      p_A2_defined = x->p_A2_defined;
+      p_A2 = x->p_A2;
+      p_A3_defined = x->p_A3_defined;
+      p_A3 = x->p_A3;
+      p_DT_defined = x->p_DT_defined;
+      p_DT = x->p_DT;
       p_databaseFilePath = x->p_databaseFilePath;
       p_databaseFormatName = x->p_databaseFormatName;
       p_objects = x->p_objects;
@@ -168,6 +217,7 @@ void EphemerisGeneratorInstance::Assign( const ProcessImplementation& p )
       p_separateEarthMoonPerturbers = x->p_separateEarthMoonPerturbers;
       p_relativisticPerturbations = x->p_relativisticPerturbations;
       p_figureEffects = x->p_figureEffects;
+      p_nonGravitationalPerturbations = x->p_nonGravitationalPerturbations;
       p_outputXEPHFile = x->p_outputXEPHFile;
       p_outputXEPHFilePath = x->p_outputXEPHFilePath;
       p_outputLogFile = x->p_outputLogFile;
@@ -212,7 +262,6 @@ bool EphemerisGeneratorInstance::CanExecuteOn( const View&, String& whyNot ) con
 
 bool EphemerisGeneratorInstance::CanExecuteGlobal( String& whyNot ) const
 {
-   whyNot = "EphemerisGenerator can only be executed in the global context.";
    return true;
 }
 
@@ -227,7 +276,11 @@ public:
                            , const IntegrationDenseOutputData& data
                            , int startJDI, int endJDI
                            , const IsoString& id, const String& name
-                           , Optional<double> H, Optional<double> G, Optional<double> B_V, Optional<double> D )
+                           , Optional<double> H, Optional<double> G
+                           , Optional<double> M1, Optional<double> K1, Optional<double> M2, Optional<double> K2, Optional<double> PC
+                           , Optional<double> B_V, Optional<double> U_B, Optional<double> I_R
+                           , Optional<double> D
+                           , Optional<double> A1, Optional<double> A2, Optional<double> A3, Optional<double> DT )
    {
       if ( data.IsEmpty() )
          throw Error( "MakeEphemeris(): Internal error: Empty integration data." );
@@ -246,16 +299,27 @@ public:
       SerializableEphemerisObjectData object( id, "SSB", name );
       object.H = H;
       object.G = G;
+      object.M1 = M1;
+      object.K1 = K1;
+      object.M2 = M2;
+      object.K2 = K2;
+      object.PC = PC;
       object.B_V = B_V;
+      object.U_B = U_B;
+      object.I_R = I_R;
       object.D = D;
+      object.A1 = A1;
+      object.A2 = A2;
+      object.A3 = A3;
+      object.DT = DT;
 
       bool haveVelocity = !data[0].c1[0].IsEmpty();
 
       for ( int order = 0, startDelta = 0; order <= 1; ++order )
       {
-         IntegrationDenseOutputEvaluation eval( data, order );
+         IntegrationDenseOutputEvaluation dense( data, order );
          if ( order == 0 )
-            startDelta = InitialExpansionSpan( eval( startJDI + 0.5 ).L2Norm() );
+            startDelta = InitialExpansionSpan( dense( startJDI + 0.5 ).L2Norm() );
 
          int delta = startDelta;
          int minDelta = int32_max;
@@ -267,7 +331,7 @@ public:
          {
             int jdi2;
             int length = 25;
-            Vector epsilon( eval.Tolerance( jdi1 + 0.5 ) * instance.p_ephemerisToleranceFactor, 3 );
+            Vector epsilon( dense.Tolerance( jdi1 + 0.5 ) * instance.p_ephemerisToleranceFactor, 3 );
             ChebyshevFit T;
 
             for ( bool reduce = false, truncated = false;; )
@@ -286,7 +350,7 @@ public:
 
                T = ChebyshevFit( [=]( double dt )
                                  {
-                                    return eval( jdi1 + 0.5 + dt );
+                                    return dense( jdi1 + 0.5 + dt );
                                  },
                                  0, delta, 3, 2*length );
 
@@ -486,8 +550,26 @@ struct IntegrationObjectData
    IsoString        objectName;
    Optional<double> H;
    Optional<double> G;
+   Optional<double> M1;
+   Optional<double> K1;
+   Optional<double> M2;
+   Optional<double> K2;
+   Optional<double> PC;
    Optional<double> B_V;
+   Optional<double> U_B;
+   Optional<double> I_R;
    Optional<double> D;
+   Optional<double> A1;
+   Optional<double> A2;
+   Optional<double> A3;
+   Optional<double> DT;
+
+   bool HaveNonGravitationalParameters() const
+   {
+      return A1.IsDefined() && A1() != 0
+          || A2.IsDefined() && A2() != 0
+          || A3.IsDefined() && A3() != 0;
+   }
 };
 
 using IntegrationObjectDataList = Array<IntegrationObjectData>;
@@ -551,6 +633,10 @@ public:
             }
 
             Integration integrator( m_eph, m_instance, object.objectId/*excludeId*/, object.objectName/*excludeName*/ );
+
+            if ( m_instance.p_nonGravitationalPerturbations )
+               if ( object.HaveNonGravitationalParameters() )
+                  integrator.SetNonGravitationalParameters( object.A1, object.A2, object.A3, object.DT );
 
             IntegrationDenseOutputData integrationData;
             TimePoint t0, t1;
@@ -634,7 +720,21 @@ public:
                                                       , integrationData
                                                       , startJDI, endJDI
                                                       , object.objectId, object.objectName
-                                                      , object.H, object.G, object.B_V, object.D );
+                                                      , object.H
+                                                      , object.G
+                                                      , object.M1
+                                                      , object.K1
+                                                      , object.M2
+                                                      , object.K2
+                                                      , object.PC
+                                                      , object.B_V
+                                                      , object.U_B
+                                                      , object.I_R
+                                                      , object.D
+                                                      , object.A1
+                                                      , object.A2
+                                                      , object.A3
+                                                      , object.DT );
             }
          }
          catch ( ... )
@@ -698,14 +798,18 @@ static String UniqueFilePath( const String& filePath )
 
 bool EphemerisGeneratorInstance::ExecuteGlobal()
 {
+   Ephemerides eph( *this );
+
    TimePoint startTime( p_startTimeJD );
    TimePoint endTime( p_endTimeJD );
    if ( endTime < startTime )
       Swap( startTime, endTime );
+
+   if ( startTime < eph.StartTime() || endTime > eph.EndTime() )
+      throw Error( "Integration time span out of range. The supported range is: "
+                  + eph.StartTime().ToString() + " -> " + eph.EndTime().ToString() );
    if ( endTime - startTime < 5 )
       throw Error( IsoString().Format( "Too short integration time span: %.2f. At least 5 days are required.", endTime - startTime ) );
-
-   Ephemerides eph( *this );
 
    if ( p_outputXEPHFile )
    {
@@ -714,6 +818,9 @@ bool EphemerisGeneratorInstance::ExecuteGlobal()
       if ( File::ExtractSuffix( p_outputXEPHFilePath ) != ".xeph" )
          throw Error( "The output ephemerides file name must have the '.xeph' extension." );
    }
+
+   Console console;
+   console.EnableAbort();
 
    /*
     * N.B. Unique object identifiers are mandatory in XEPH files, so we have to
@@ -730,20 +837,40 @@ bool EphemerisGeneratorInstance::ExecuteGlobal()
    default:
    case EGWorkingMode::StateVectors:
       {
+         if ( p_epochJD < eph.StartTime() || p_epochJD > eph.EndTime() )
+            throw Error( "Epoch of state vectors out of range. The supported range is: "
+                        + eph.StartTime().ToString() + " -> " + eph.EndTime().ToString() );
+
          objects << IntegrationObjectData{ p_position, p_velocity
                                           , p_epochJD
                                           , p_objectId.IsEmpty() ? IsoString( "X0001" ) : p_objectId.ToIsoString()
                                           , p_objectName.ToIsoString()
-                                          , p_H, p_G
+                                          , p_H_defined ? Optional<double>( p_H ) : Optional<double>()
+                                          , p_G_defined ? Optional<double>( p_G ) : Optional<double>()
+                                          , p_M1_defined ? Optional<double>( p_M1 ) : Optional<double>()
+                                          , p_K1_defined ? Optional<double>( p_K1 ) : Optional<double>()
+                                          , p_M2_defined ? Optional<double>( p_M2 ) : Optional<double>()
+                                          , p_K2_defined ? Optional<double>( p_K2 ) : Optional<double>()
+                                          , p_PC_defined ? Optional<double>( p_PC ) : Optional<double>()
                                           , p_B_V_defined ? Optional<double>( p_B_V ) : Optional<double>()
-                                          , p_D_defined ? Optional<double>( p_D ) : Optional<double>() };
+                                          , p_U_B_defined ? Optional<double>( p_U_B ) : Optional<double>()
+                                          , p_I_R_defined ? Optional<double>( p_I_R ) : Optional<double>()
+                                          , p_D_defined ? Optional<double>( p_D ) : Optional<double>()
+                                          , p_A1_defined ? Optional<double>( p_A1 ) : Optional<double>()
+                                          , p_A2_defined ? Optional<double>( p_A2 ) : Optional<double>()
+                                          , p_A3_defined ? Optional<double>( p_A3 ) : Optional<double>()
+                                          , p_DT_defined ? Optional<double>( p_DT ) : Optional<double>() };
       }
       break;
 
    case EGWorkingMode::OrbitalElements:
       {
+         if ( p_epochJD < eph.StartTime() || p_epochJD > eph.EndTime() )
+            throw Error( "Epoch of osculating orbital elements out of range. The supported range is: "
+                        + eph.StartTime().ToString() + " -> " + eph.EndTime().ToString() );
+
          Vector initialPosition, initialVelocity;
-         StateVectorsFromOrbitalElements( initialPosition, initialVelocity, p_elements, p_epochJD, eph.GMS() );
+         ToOsculatingElements().ToStateVectors( initialPosition, initialVelocity, p_epochJD, eph.GMS() );
 
          Position P( TimePoint::J2000(), "TDB" );
          initialPosition = Position::EclipticToEquatorial( initialPosition, P.EpsA() );
@@ -759,9 +886,21 @@ bool EphemerisGeneratorInstance::ExecuteGlobal()
                                           , p_epochJD
                                           , p_objectId.IsEmpty() ? IsoString( "X0001" ) : p_objectId.ToIsoString()
                                           , p_objectName.ToIsoString()
-                                          , p_H, p_G
+                                          , p_H_defined ? Optional<double>( p_H ) : Optional<double>()
+                                          , p_G_defined ? Optional<double>( p_G ) : Optional<double>()
+                                          , p_M1_defined ? Optional<double>( p_M1 ) : Optional<double>()
+                                          , p_K1_defined ? Optional<double>( p_K1 ) : Optional<double>()
+                                          , p_M2_defined ? Optional<double>( p_M2 ) : Optional<double>()
+                                          , p_K2_defined ? Optional<double>( p_K2 ) : Optional<double>()
+                                          , p_PC_defined ? Optional<double>( p_PC ) : Optional<double>()
                                           , p_B_V_defined ? Optional<double>( p_B_V ) : Optional<double>()
-                                          , p_D_defined ? Optional<double>( p_D ) : Optional<double>() };
+                                          , p_U_B_defined ? Optional<double>( p_U_B ) : Optional<double>()
+                                          , p_I_R_defined ? Optional<double>( p_I_R ) : Optional<double>()
+                                          , p_D_defined ? Optional<double>( p_D ) : Optional<double>()
+                                          , p_A1_defined ? Optional<double>( p_A1 ) : Optional<double>()
+                                          , p_A2_defined ? Optional<double>( p_A2 ) : Optional<double>()
+                                          , p_A3_defined ? Optional<double>( p_A3 ) : Optional<double>()
+                                          , p_DT_defined ? Optional<double>( p_DT ) : Optional<double>() };
       }
       break;
 
@@ -784,40 +923,82 @@ bool EphemerisGeneratorInstance::ExecuteGlobal()
 
          for ( const TextDatabase::ObjectData& object : objectData )
          {
-            Vector initialPosition, initialVelocity;
-            if ( format.contents == TextDatabase::Contents_OrbitalElements )
+            try
             {
-               StateVectorsFromOrbitalElements( initialPosition, initialVelocity, object.state, object.epochJD, eph.GMS() );
+               if ( object.epochJD < eph.StartTime() || object.epochJD > eph.EndTime() )
+               {
+                  console.WarningLn( "** Skipping object with initial conditions epoch out of range: "
+                                     "id = '" + object.id + "', name = '" + object.name + "'" );
+                  continue;
+               }
 
-               Position P( TimePoint::J2000(), "TDB" );
-               initialPosition = Position::EclipticToEquatorial( initialPosition, P.EpsA() );
-               initialVelocity = Position::EclipticToEquatorial( initialVelocity, P.EpsA() );
+               Module->ProcessEvents();
 
-               EphemerisFile::Handle sun( eph.Fundamental(), "Sn", "SSB" );
-               Vector r0, v0;
-               sun.ComputeState( r0, v0, object.epochJD );
-               initialPosition += r0;
-               initialVelocity += v0;
+               Vector initialPosition, initialVelocity;
+               if ( format.contents == TextDatabase::Contents_OrbitalElements )
+               {
+                  OsculatingElements el;
+                  el.a = object.state[a_idx];
+                  el.q = object.state[q_idx];
+                  el.e = object.state[e_idx];
+                  el.M = Rad( object.state[M_idx] );
+                  el.T = TimePoint( object.state[T_idx] );
+                  el.i = Rad( object.state[i_idx] );
+                  el.O = Rad( object.state[O_idx] );
+                  el.w = Rad( object.state[w_idx] );
+                  el.ToStateVectors( initialPosition, initialVelocity, object.epochJD, eph.GMS() );
+
+                  Position P( TimePoint::J2000(), "TDB" );
+                  initialPosition = Position::EclipticToEquatorial( initialPosition, P.EpsA() );
+                  initialVelocity = Position::EclipticToEquatorial( initialVelocity, P.EpsA() );
+
+                  EphemerisFile::Handle sun( eph.Fundamental(), "Sn", "SSB" );
+                  Vector r0, v0;
+                  sun.ComputeState( r0, v0, object.epochJD );
+                  initialPosition += r0;
+                  initialVelocity += v0;
+               }
+               else
+               {
+                  initialPosition = Vector( object.state[0], object.state[1], object.state[2] );
+                  initialVelocity = Vector( object.state[3], object.state[4], object.state[5] );
+               }
+
+               objects << IntegrationObjectData{ initialPosition, initialVelocity
+                                                , object.epochJD
+                                                , object.id.IsEmpty() ? IsoString().Format( "X%04u", objects.Length()+1 ) : object.id
+                                                , object.name
+                                                , object.H
+                                                , object.G
+                                                , object.M1
+                                                , object.K1
+                                                , object.M2
+                                                , object.K2
+                                                , object.PC
+                                                , object.B_V
+                                                , object.U_B
+                                                , object.I_R
+                                                , object.D
+                                                , object.A1
+                                                , object.A2
+                                                , object.A3
+                                                , object.DT };
             }
-            else
+            catch ( const Exception& ex )
             {
-               initialPosition = Vector( object.state[0], object.state[1], object.state[2] );
-               initialVelocity = Vector( object.state[3], object.state[4], object.state[5] );
+               console.CriticalLn( "*** Error: " + ex.Message() + "\nobject id = '" + object.id + "', name = '" + object.name + "'" );
             }
-
-            objects << IntegrationObjectData{ initialPosition, initialVelocity
-                                             , object.epochJD
-                                             , object.id.IsEmpty() ? IsoString().Format( "X%04u", objects.Length()+1 ) : object.id
-                                             , object.name
-                                             , object.H, object.G
-                                             , object.B_V, object.D };
+            catch ( ... )
+            {
+               throw;
+            }
          }
+
+         if ( objects.IsEmpty() )
+            throw Error( "EphemerisGenerator: No objects could be selected." );
       }
       break;
    }
-
-   Console console;
-   console.EnableAbort();
 
    StatusMonitor monitor;
 
@@ -984,18 +1165,66 @@ void* EphemerisGeneratorInstance::LockParameter( const MetaParameter* p, size_ty
       return p_objectId.Begin();
    if ( p == TheEGObjectNameParameter )
       return p_objectName.Begin();
+   if ( p == TheEGHDefinedParameter )
+      return &p_H_defined;
    if ( p == TheEGHParameter )
       return &p_H;
+   if ( p == TheEGGDefinedParameter )
+      return &p_G_defined;
    if ( p == TheEGGParameter )
       return &p_G;
+   if ( p == TheEGM1DefinedParameter )
+      return &p_M1_defined;
+   if ( p == TheEGM1Parameter )
+      return &p_M1;
+   if ( p == TheEGK1DefinedParameter )
+      return &p_K1_defined;
+   if ( p == TheEGK1Parameter )
+      return &p_K1;
+   if ( p == TheEGM2DefinedParameter )
+      return &p_M2_defined;
+   if ( p == TheEGM2Parameter )
+      return &p_M2;
+   if ( p == TheEGK2DefinedParameter )
+      return &p_K2_defined;
+   if ( p == TheEGK2Parameter )
+      return &p_K2;
+   if ( p == TheEGPCDefinedParameter )
+      return &p_PC_defined;
+   if ( p == TheEGPCParameter )
+      return &p_PC;
    if ( p == TheEGB_VDefinedParameter )
       return &p_B_V_defined;
    if ( p == TheEGB_VParameter )
       return &p_B_V;
+   if ( p == TheEGU_BDefinedParameter )
+      return &p_U_B_defined;
+   if ( p == TheEGU_BParameter )
+      return &p_U_B;
+   if ( p == TheEGI_RDefinedParameter )
+      return &p_I_R_defined;
+   if ( p == TheEGI_RParameter )
+      return &p_I_R;
    if ( p == TheEGDDefinedParameter )
       return &p_D_defined;
    if ( p == TheEGDParameter )
       return &p_D;
+   if ( p == TheEGA1DefinedParameter )
+      return &p_A1_defined;
+   if ( p == TheEGA1Parameter )
+      return &p_A1;
+   if ( p == TheEGA2DefinedParameter )
+      return &p_A2_defined;
+   if ( p == TheEGA2Parameter )
+      return &p_A2;
+   if ( p == TheEGA3DefinedParameter )
+      return &p_A3_defined;
+   if ( p == TheEGA3Parameter )
+      return &p_A3;
+   if ( p == TheEGDTDefinedParameter )
+      return &p_DT_defined;
+   if ( p == TheEGDTParameter )
+      return &p_DT;
    if ( p == TheEGDatabaseFilePathParameter )
       return p_databaseFilePath.Begin();
    if ( p == TheEGDatabaseFormatNameParameter )
@@ -1028,6 +1257,8 @@ void* EphemerisGeneratorInstance::LockParameter( const MetaParameter* p, size_ty
       return &p_relativisticPerturbations;
    if ( p == TheEGFigureEffectsParameter )
       return &p_figureEffects;
+   if ( p == TheEGNonGravitationalPerturbationsParameter )
+      return &p_nonGravitationalPerturbations;
    if ( p == TheEGOutputXEPHFileParameter )
       return &p_outputXEPHFile;
    if ( p == TheEGOutputXEPHFilePathParameter )
@@ -1143,4 +1374,4 @@ size_type EphemerisGeneratorInstance::ParameterLength( const MetaParameter* p, s
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF EphemerisGeneratorInstance.cpp - Released 2024-03-20T10:42:12Z
+// EOF EphemerisGeneratorInstance.cpp - Released 2024-05-07T15:28:00Z

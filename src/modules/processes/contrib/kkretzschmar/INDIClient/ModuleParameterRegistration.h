@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// ModuleParameterRegistration.h - Released 2024-03-20T10:42:13Z
+// ModuleParameterRegistration.h - Released 2024-05-07T15:28:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -438,4 +438,4 @@
 #endif // __ModuleParameterRegistration_h
 
 // ----------------------------------------------------------------------------
-// EOF ModuleParameterRegistration.h - Released 2024-03-20T10:42:13Z
+// EOF ModuleParameterRegistration.h - Released 2024-05-07T15:28:00Z

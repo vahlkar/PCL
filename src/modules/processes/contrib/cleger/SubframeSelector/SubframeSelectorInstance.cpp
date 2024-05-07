@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.8.9
+// Standard SubframeSelector Process Module Version 1.9.0
 // ----------------------------------------------------------------------------
-// SubframeSelectorInstance.cpp - Released 2024-03-20T10:42:13Z
+// SubframeSelectorInstance.cpp - Released 2024-05-07T15:28:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -134,7 +134,7 @@ SubframeSelectorInstance::SubframeSelectorInstance( const MetaProcess* m )
    , p_inputHints( TheSSInputHintsParameter->DefaultValue() )
    , p_outputHints( TheSSOutputHintsParameter->DefaultValue() )
    , p_outputDirectory( TheSSOutputDirectoryParameter->DefaultValue() )
-   , p_outputExtension( TheSSOutputExtensionParameter->DefaultValue() )
+   , p_outputExtension( TheSSOutputExtensionParameter->DefaultValue() ) // ### DEPRECATED
    , p_outputPrefix( TheSSOutputPrefixParameter->DefaultValue() )
    , p_outputPostfix( TheSSOutputPostfixParameter->DefaultValue() )
    , p_outputKeyword( TheSSOutputKeywordParameter->DefaultValue() )
@@ -1753,11 +1753,7 @@ private:
       /*
        * Output file extension, which defines the output file format.
        */
-      String outputFileExtension = m_instance.p_outputExtension.Trimmed();
-      if ( outputFileExtension.IsEmpty() )
-         outputFileExtension = inputFileExtension;
-      else if ( !outputFileExtension.StartsWith( '.' ) )
-         outputFileExtension.Prepend( '.' );
+      const String outputFileExtension = ".xisf";
 
       /*
        * Output file name.
@@ -1847,7 +1843,6 @@ private:
        */
       FileFormat inputFormat( inputFileExtension, true/*read*/, false/*write*/ );
       FileFormat outputFormat( outputFileExtension, false/*read*/, true/*write*/ );
-
       if ( outputFormat.IsDeprecated() )
          console.WarningLn( "** Warning: Deprecated file format: " + outputFormat.Name() );
 
@@ -2743,4 +2738,4 @@ size_type SubframeSelectorInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInstance.cpp - Released 2024-03-20T10:42:13Z
+// EOF SubframeSelectorInstance.cpp - Released 2024-05-07T15:28:00Z

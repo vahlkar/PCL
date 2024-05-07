@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
-// pcl/GnomonicProjection.h - Released 2024-03-20T10:41:36Z
+// pcl/GnomonicProjection.h - Released 2024-05-07T15:27:32Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -83,23 +83,10 @@ public:
     */
    GnomonicProjection( double ra0, double dec0 )
    {
-      m_theta0 = 90;
       m_ra0 = Rad( ra0 );
       m_dec0 = Rad( dec0 );
       SinCos( m_dec0, m_sinDec0, m_cosDec0 );
-   }
-
-   /*!
-    * Constructs a %GnomonicProjection object with the specified \a scale
-    * factor and origin equatorial coordinates \a ra0 and \a dec0 in degrees.
-    */
-   GnomonicProjection( double scale, double ra0, double dec0 )
-      : m_scale( scale )
-   {
       m_theta0 = 90;
-      m_ra0 = Rad( ra0 );
-      m_dec0 = Rad( dec0 );
-      SinCos( m_dec0, m_sinDec0, m_cosDec0 );
    }
 
    /*!
@@ -173,7 +160,6 @@ protected:
 
 private:
 
-   double m_scale = Const<double>::deg();
    double m_sinDec0;
    double m_cosDec0;
 };
@@ -185,4 +171,4 @@ private:
 #endif   // __PCL_GnomonicProjection_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/GnomonicProjection.h - Released 2024-03-20T10:41:36Z
+// EOF pcl/GnomonicProjection.h - Released 2024-05-07T15:27:32Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
-// Standard CometAlignment Process Module Version 1.3.7
+// Standard CometAlignment Process Module Version 1.3.8
 // ----------------------------------------------------------------------------
-// CometAlignmentInstance.cpp - Released 2024-03-20T10:42:13Z
+// CometAlignmentInstance.cpp - Released 2024-05-07T15:28:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CometAlignment PixInsight module.
 //
@@ -88,7 +88,7 @@ CometAlignmentInstance::CometAlignmentInstance( const MetaProcess* m )
    , p_inputHints( TheCAInputHintsParameter->DefaultValue() )
    , p_outputHints( TheCAOutputHintsParameter->DefaultValue() )
    , p_outputDirectory( TheCAOutputDirectoryParameter->DefaultValue() )
-   , p_outputExtension( TheCAOutputExtensionParameter->DefaultValue() )
+   , p_outputExtension( TheCAOutputExtensionParameter->DefaultValue() ) // ### DEPRECATED
    , p_outputPrefix( TheCAOutputPrefixParameter->DefaultValue() )
    , p_outputPostfix( TheCAOutputPostfixParameter->DefaultValue() )
    , p_overwriteExistingFiles( TheCAOverwriteExistingFilesParameter->DefaultValue() )
@@ -681,7 +681,8 @@ private:
       if ( !postfix.IsEmpty() )
          fileName.Append( postfix );
 
-      String outputFilePath = fileDir + fileName + m_instance.p_outputExtension;
+      const String outputFileExtension = ".xisf";
+      String outputFilePath = fileDir + fileName + outputFileExtension;
 
       console.WriteLn( "<end><cbr>Writing output file: <raw>" + outputFilePath + "</raw>" );
 
@@ -691,9 +692,9 @@ private:
       else if ( checks.exists )
          console.NoteLn( "* File already exists, writing to: <raw>" + outputFilePath + "</raw>" );
 
-      FileFormat outputFormat( m_instance.p_outputExtension, false/*read*/, true/*write*/ );
-      FileFormatInstance outputFile( outputFormat );
+      FileFormat outputFormat( outputFileExtension, false/*read*/, true/*write*/ );
 
+      FileFormatInstance outputFile( outputFormat );
       if ( !outputFile.Create( outputFilePath, m_instance.p_outputHints ) )
          throw CaughtException();
 
@@ -1406,4 +1407,4 @@ size_type CometAlignmentInstance::ParameterLength( const MetaParameter* p, size_
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF CometAlignmentInstance.cpp - Released 2024-03-20T10:42:13Z
+// EOF CometAlignmentInstance.cpp - Released 2024-05-07T15:28:00Z

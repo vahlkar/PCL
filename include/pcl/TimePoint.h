@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
-// pcl/TimePoint.h - Released 2024-03-20T10:41:36Z
+// pcl/TimePoint.h - Released 2024-05-07T15:27:32Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -607,13 +607,46 @@ public:
     * EphemerisFile::OverrideDeltaTDataFilePath() for more information.
     *
     * Otherwise, if this time point falls outside the Delta T database time
-    * span, this function will use the polynomial expressions for Delta T
-    * included in <em>Five Millennium Canon of Solar Eclipses</em>, by Fred
-    * Espenak and Jean Meeus (NASA/TP–2006–214141, Revision 1.0, 2007).
+    * span, the behavior of this function depends on whether Delta T
+    * extrapolation is currently enabled. If extrapolation is enabled, this
+    * function will use the polynomial expressions for Delta T included in
+    * <em>Five Millennium Canon of Solar Eclipses</em>, by Fred Espenak and
+    * Jean Meeus (NASA/TP–2006–214141, Revision 1.0, 2007). If extrapolation of
+    * Delta T values is disabled, this function will return the value for the
+    * closest time point available in the global Delta T database. Delta T
+    * extrapolation is disabled by default.
     *
     * The returned value is the difference TT-UT1 in seconds.
+    *
+    * \sa IsDeltaTExtrapolationEnabled(), EnableDeltaTExtrapolation()
     */
    double DeltaT() const;
+
+   /*!
+    * Returns true iff extrapolation of Delta T values is currently enabled for
+    * the %TimePoint class.
+    *
+    * Delta T extrapolation is disabled by default. See DeltaT() for more
+    * information.
+    */
+   static bool IsDeltaTExtrapolationEnabled();
+
+   /*!
+    * Enables extrapolation of Delta T values.
+    *
+    * See DeltaT() for information on Delta T extrapolation.
+    */
+   static void EnableDeltaTExtrapolation( bool enable = true );
+
+   /*!
+    * Disables extrapolation of Delta T values.
+    *
+    * See DeltaT() for information on Delta T extrapolation.
+    */
+   static void DisableDeltaTExtrapolation( bool disable = true )
+   {
+      EnableDeltaTExtrapolation( !disable );
+   }
 
    /*!
     * Returns the value of Delta AT, or the difference TAI-UTC, corresponding
@@ -626,9 +659,9 @@ public:
     * EphemerisFile::DeltaATDataFilePath() and
     * EphemerisFile::OverrideDeltaATDataFilePath() for more information.
     *
-    * UTC does not exist before 1960, so calling this function for a TimePoint
-    * before that year is a conceptual error. For convenience, zero is returned
-    * in such case instead of throwing an exception.
+    * UTC does not exist before 1960, so calling this function for a %TimePoint
+    * object before that year is a conceptual error. For convenience, zero is
+    * returned in such a case instead of throwing an exception.
     *
     * The returned value is the difference TAI-UTC in seconds.
     */
@@ -1214,7 +1247,7 @@ inline constexpr bool operator <( const TimePoint& t1, double jd2 )
  */
 inline constexpr bool operator <( double jd1, const TimePoint& t2 )
 {
-   return t2.IsValid() && t2.JD() < jd1;
+   return t2.IsValid() && jd1 < t2.JD();
 }
 
 /*!
@@ -1267,4 +1300,4 @@ inline TimePoint operator -( const TimePoint& t, double d )
 #endif   // __PCL_TimePoint_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/TimePoint.h - Released 2024-03-20T10:41:36Z
+// EOF pcl/TimePoint.h - Released 2024-05-07T15:27:32Z

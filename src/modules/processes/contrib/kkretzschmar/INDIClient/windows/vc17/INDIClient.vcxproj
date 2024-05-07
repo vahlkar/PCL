@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.135
+# PixInsight Makefile Generator Script v1.138
 # Copyright (C) 2009-2024 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2024-03-22T11:23:14.733Z
+# Generated on .... 2024-05-07T16:58:14.577Z
 # Project id ...... INDIClient
 # Project type .... Module
 # Platform ........ Windows/vc17
@@ -34,7 +34,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{77C9EB0A-A5DD-4331-BF5D-B593D2FECBEF}</ProjectGuid>
+    <ProjectGuid>{B894D63C-5A73-4BE1-99AE-98C61CAF553C}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -188,6 +188,11 @@
     <ClInclude Include="..\..\IndigoDefs.h"/>
     <ClInclude Include="..\..\ModuleParameterRegistration.h"/>
     <ClInclude Include="..\..\ZeroconfServiceDetection.h"/>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\icons\IndigoCCDFrame.svg"/>
+    <None Include="..\..\icons\IndigoDeviceController.svg"/>
+    <None Include="..\..\icons\IndigoMount.svg"/>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets"/>
   <ImportGroup Label="ExtensionTargets">

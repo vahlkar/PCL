@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// drvrmem.c - Released 2024-03-20T10:42:01Z
+// drvrmem.c - Released 2024-05-07T15:27:52Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -1353,4 +1353,4 @@ void bzip2uncompress2mem(char *filename, FILE *diskfile, int hdl,
 #endif
 
 // ----------------------------------------------------------------------------
-// EOF drvrmem.c - Released 2024-03-20T10:42:01Z
+// EOF drvrmem.c - Released 2024-05-07T15:27:52Z

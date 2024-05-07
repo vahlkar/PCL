@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.135
+# PixInsight Makefile Generator Script v1.138
 # Copyright (C) 2009-2024 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2024-03-22T11:23:07.867Z
+# Generated on .... 2024-05-07T16:58:07.742Z
 # Project id ...... ImageCalibration
 # Project type .... Module
 # Platform ........ Windows/vc17
@@ -25,7 +25,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{7CE09B28-5370-4ED7-B264-50FD2EBC9CD2}</ProjectGuid>
+    <ProjectGuid>{E817847A-6AD0-4293-9524-0CF771CC24F0}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -148,6 +148,10 @@
     <ClCompile Include="..\..\LocalNormalizationInterface.cpp"/>
     <ClCompile Include="..\..\LocalNormalizationParameters.cpp"/>
     <ClCompile Include="..\..\LocalNormalizationProcess.cpp"/>
+    <ClCompile Include="..\..\SpectrophotometricFluxCalibrationInstance.cpp"/>
+    <ClCompile Include="..\..\SpectrophotometricFluxCalibrationInterface.cpp"/>
+    <ClCompile Include="..\..\SpectrophotometricFluxCalibrationParameters.cpp"/>
+    <ClCompile Include="..\..\SpectrophotometricFluxCalibrationProcess.cpp"/>
     <ClCompile Include="..\..\SuperbiasInstance.cpp"/>
     <ClCompile Include="..\..\SuperbiasInterface.cpp"/>
     <ClCompile Include="..\..\SuperbiasParameters.cpp"/>
@@ -168,6 +172,10 @@
     <ClInclude Include="..\..\LocalNormalizationParameters.h"/>
     <ClInclude Include="..\..\LocalNormalizationProcess.h"/>
     <ClInclude Include="..\..\OutputFileData.h"/>
+    <ClInclude Include="..\..\SpectrophotometricFluxCalibrationInstance.h"/>
+    <ClInclude Include="..\..\SpectrophotometricFluxCalibrationInterface.h"/>
+    <ClInclude Include="..\..\SpectrophotometricFluxCalibrationParameters.h"/>
+    <ClInclude Include="..\..\SpectrophotometricFluxCalibrationProcess.h"/>
     <ClInclude Include="..\..\SuperbiasInstance.h"/>
     <ClInclude Include="..\..\SuperbiasInterface.h"/>
     <ClInclude Include="..\..\SuperbiasParameters.h"/>

@@ -24,9 +24,6 @@ make -j $NPROC
 cd $BASEDIR/EphemerisGeneration/macosx/g++
 make -j $NPROC
 
-cd $BASEDIR/FilterManager/macosx/g++
-make -j $NPROC
-
 cd $BASEDIR/FindingChart/macosx/g++
 make -j $NPROC
 

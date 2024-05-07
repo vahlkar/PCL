@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.135
+# PixInsight Makefile Generator Script v1.138
 # Copyright (C) 2009-2024 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2024-03-22T11:23:03.084Z
+# Generated on .... 2024-05-07T16:58:03.325Z
 # Project id ...... EphemerisGeneration
 # Project type .... Module
 # Platform ........ FreeBSD/g++
@@ -19,7 +19,6 @@ all: $(OBJ_DIR)/EphemerisGeneration-pxm.so
 #
 
 SRC_FILES= \
-../../Elements.cpp \
 ../../Ephemerides.cpp \
 ../../EphemerisGenerationModule.cpp \
 ../../EphemerisGeneratorInstance.cpp \
@@ -33,7 +32,6 @@ SRC_FILES= \
 #
 
 OBJ_FILES= \
-./x64/Release/Elements.o \
 ./x64/Release/Ephemerides.o \
 ./x64/Release/EphemerisGenerationModule.o \
 ./x64/Release/EphemerisGeneratorInstance.o \
@@ -47,7 +45,6 @@ OBJ_FILES= \
 #
 
 DEP_FILES= \
-./x64/Release/Elements.d \
 ./x64/Release/Ephemerides.d \
 ./x64/Release/EphemerisGenerationModule.d \
 ./x64/Release/EphemerisGeneratorInstance.d \

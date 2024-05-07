@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
-// pcl/Position.cpp - Released 2024-03-20T10:41:42Z
+// pcl/Position.cpp - Released 2024-05-07T15:27:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -93,7 +93,7 @@ uint64 StarPosition::UniqueId()
 static double TDB_TT( const TimePoint& t )
 {
    // Approximate formula for TDB-TT, result in seconds.
-   // ESAsA Eq. 7.101
+   // ESAA Eq. 7.101
    double T1 = t.CenturiesSinceJ2000();
    double g = Rad( 357.53 + 3.599905e+4*T1 );
    double L_LJ = Rad( 246.11 + 3.296447e+4*T1 );
@@ -228,13 +228,12 @@ void Position::SetObserver( const ObserverPosition& O )
     */
    double slst, clst;
    SinCos( Norm2Pi( (m_observer->cioBased ? m_ERA : m_GAST) + Rad( m_observer->lambda ) ), slst, clst );
-   double sphi, cphi;
-   SinCos( Rad( m_observer->phi ), sphi, cphi );
+   SinCos( Rad( m_observer->phi ), m_sphi, m_cphi );
    double f2 = 1 - m_observer->f;
    f2 *= f2;
-   double C = 1/Sqrt( cphi*cphi + f2*sphi*sphi );
+   double C = 1/Sqrt( m_cphi*m_cphi + f2*m_sphi*m_sphi );
    double S = f2*C;
-   double aC_hcphi = (m_observer->a*C + m_observer->h)*cphi;
+   double aC_hcphi = (m_observer->a*C + m_observer->h)*m_cphi;
    double aS_h = m_observer->a*S + m_observer->h;
    // guard us against ill-formed structures
    Vector r0 = m_observer->r0;
@@ -243,7 +242,7 @@ void Position::SetObserver( const ObserverPosition& O )
    // Position vector in km
    Vector g( r0[0] + aC_hcphi*clst,
              r0[1] + aC_hcphi*slst,
-             r0[2] + aS_h*sphi );
+             r0[2] + aS_h*m_sphi );
    g /= 1000;
    // Velocity vector in km/day
    Vector gd( -earth_omega * g[1],
@@ -255,12 +254,12 @@ void Position::SetObserver( const ObserverPosition& O )
    {
       Vector p = CIP_ITRS();
       double s1 = AsRad( -0.000047*m_TT ); // TIO locator
-      // ESAsA Eq. 7.77
+      // ESAA Eq. 7.77
       Matrix Winv = Matrix::UnitMatrix( 3 );
       Winv.RotateX( p[1] );
       Winv.RotateY( p[0] );
       Winv.RotateZ( -s1 );
-      // ESAsA Eq. 7.138, Eq. 7.140
+      // ESAA Eq. 7.138, Eq. 7.140
       g = Winv*g;
       gd = Winv*gd;
    }
@@ -285,7 +284,7 @@ void Position::SetGeocentric()
    if ( m_observer )
    {
       m_observer.Destroy();
-
+      m_sphi = m_cphi = 0;
       m_U0 = m_U = m_ub = m_u1 = m_u2 = m_u3e = m_u3i = m_G = m_Gd = m_Oh = Vector();
       m_tau = 0;
       m_isMoon = m_isSun = m_isStar = false;
@@ -410,46 +409,50 @@ Vector Position::CIP_ITRS() const
       volatile AutoLock lock( s_cipITRSMutex );
       if ( s_cipITRSInitialized.Load() == 0 )
       {
-         Array<double> T, XP, YP;
-         IsoStringList lines = File::ReadLines( EphemerisFile::CIP_ITRSDataFilePath() );
-         for ( IsoString line : lines )
+         String filePath = EphemerisFile::CIP_ITRSDataFilePath();
+         if ( File::Exists( filePath ) )
          {
-            line.Trim();
-            if ( line.IsEmpty() || line.StartsWith( '/' ) ) // empty line or comment
-               continue;
-            IsoStringList tokens;
-            line.Break( tokens, ' ', true/*trim*/ );
-            tokens.Remove( IsoString() );
-            if ( tokens.Length() < 3 ) // invalid format, ignore
-               continue;
-            TimePoint t( tokens[0].ToDouble() + 2400000.5 );
-            double xp = tokens[1].ToDouble();
-            double yp = tokens[2].ToDouble();
-
-            // Make sure that dates are valid and lines are sorted in ascending
-            // date order.
-            if ( t.IsValid() )
+            Array<double> T, XP, YP;
+            IsoStringList lines = File::ReadLines( filePath );
+            for ( IsoString line : lines )
             {
-               if ( T.IsEmpty() )
-                  s_cipITRSStart = t;
-               else if ( t <= s_cipITRSEnd )
+               line.Trim();
+               if ( line.IsEmpty() || line.StartsWith( '/' ) ) // empty line or comment
                   continue;
+               IsoStringList tokens;
+               line.Break( tokens, ' ', true/*trim*/ );
+               tokens.Remove( IsoString() );
+               if ( tokens.Length() < 3 ) // invalid format, ignore
+                  continue;
+               TimePoint t( tokens[0].ToDouble() + 2400000.5 );
+               double xp = tokens[1].ToDouble();
+               double yp = tokens[2].ToDouble();
 
-               T << t.YearsSinceJ2000();
-               XP << xp;
-               YP << yp;
-               s_cipITRSEnd = t;
+               // Ensure valid dates and lines sorted in ascending date order.
+               if ( t.IsValid() )
+               {
+                  if ( T.IsEmpty() )
+                     s_cipITRSStart = t;
+                  else if ( t <= s_cipITRSEnd )
+                     continue;
+
+                  T << t.YearsSinceJ2000();
+                  XP << xp;
+                  YP << yp;
+                  s_cipITRSEnd = t;
+               }
             }
+
+            // Check for reasonable minimum data.
+            if ( (s_cipITRSEnd - s_cipITRSStart) < 365 )
+               throw Error( "The CIP_ITRS data covers an insufficient time span." );
+            if ( int( T.Length() ) < TruncInt( (s_cipITRSEnd - s_cipITRSStart)/365.25 )*8 )
+               throw Error( "Insufficient CIP_ITRS data points." );
+
+            s_xp.Initialize( Vector( T.Begin(), int( T.Length() ) ), Vector( XP.Begin(), int( XP.Length() ) ) );
+            s_yp.Initialize( Vector( T.Begin(), int( T.Length() ) ), Vector( YP.Begin(), int( YP.Length() ) ) );
          }
 
-         // Check for reasonable minimum data.
-         if ( (s_cipITRSEnd - s_cipITRSStart) < 365 )
-            throw Error( "The CIP_ITRS data covers an insufficient time span." );
-         if ( int( T.Length() ) < TruncInt( (s_cipITRSEnd - s_cipITRSStart)/365.25 )*8 )
-            throw Error( "Insufficient CIP_ITRS data points." );
-
-         s_xp.Initialize( Vector( T.Begin(), int( T.Length() ) ), Vector( XP.Begin(), int( XP.Length() ) ) );
-         s_yp.Initialize( Vector( T.Begin(), int( T.Length() ) ), Vector( YP.Begin(), int( YP.Length() ) ) );
          s_cipITRSInitialized.Store( 1 );
       }
    }
@@ -459,7 +462,7 @@ Vector Position::CIP_ITRS() const
    /*
     * Return an interpolated value when possible.
     */
-   if ( m_tt >= s_cipITRSStart && m_tt <= s_cipITRSEnd )
+   if ( s_cipITRSEnd.IsValid() && m_tt >= s_cipITRSStart && m_tt <= s_cipITRSEnd )
    {
       double t = m_tt.YearsSinceJ2000();
       p[0] = AsRad( s_xp( t ) );
@@ -504,10 +507,10 @@ Vector Position::Deflection()
          Vector Sb = m_HS->StateVector( m_t-m_tau );
          // Heliocentric position at t-tau.
          Vector q = (m_ub - Sb).Unit();
-         // ESAsA Eq. 7.64
+         // ESAA Eq. 7.64
          double g1 = 2*9.8706e-9/d;
          double g2 = 1 + q*e;
-         // ESAsA Eq. 7.63
+         // ESAA Eq. 7.63
          m_u1 = U*(u + g1*(((u*q)*e - eu*q)/g2));
       }
    }
@@ -528,7 +531,7 @@ Vector Position::Aberration()
       // account for the geocentric velocity of the observer.
       m_u2 = m_u1;
       if ( m_observer )
-         m_u2 += m_tau*m_Gd;  // ESAsA Eq. 7.55
+         m_u2 += m_tau*m_Gd; // ESAA Eq. 7.55
    }
    else
    {
@@ -544,7 +547,7 @@ Vector Position::Aberration()
       double bm1 = Sqrt( 1 - V.SumOfSquares() );
       double f1 = u*V;
       double f2 = 1 + f1/(1 + bm1);
-      m_u2 = (bm1*m_u1 + f2*m_u1.L2Norm()*V)/(1 + f1);
+      m_u2 = (bm1*m_u1 + f2*m_u1.L2Norm()*V)/(1 + f1); // ESAA Eq. 7.118
    }
 
    return m_u2;
@@ -643,7 +646,7 @@ Vector Position::Geometric( const StarPosition& S )
       double p = AsRad( S.p );
 
       // Relativistic Doppler effect.
-      // ESAsA Eq. 7.26
+      // ESAA Eq. 7.26
       double f = 1/(1 - S.v/c_km_s);
 
       // Unit conversion factors.
@@ -661,11 +664,11 @@ Vector Position::Geometric( const StarPosition& S )
       // Time of observation corrected for the Roemer delay.
       TimePoint tb = m_t + u.Dot( m_Eb )/c_au_day;
       // Barycentric position vector at time t.
-      // ESAsA Eq. 7.127
+      // ESAA Eq. 7.127
       m_U = m_ub = u + (tb - S.t0)*v;
 
       // Geocentric position vector at time t.
-      // ESAsA Eq. 7.128
+      // ESAA Eq. 7.128
       if ( p != 0 )
       {
          m_U -= p*m_Eb;
@@ -920,8 +923,8 @@ double Position::CIOLocator( double T, double X, double Y )
 
    /*
     * Non-periodic terms, values in arcseconds.
-    * Source: ESAsA Eq. 6.53
-    * N.B: There is a known error in the third edition (2013) of ESAsA:
+    * Source: ESAA Eq. 6.53
+    * N.B: There is a known error in the third edition (2013) of ESAA:
     *    On page 229, Eq. 6.53, the last line of Equation 6.53: the factor
     *    -0.7257411 should be -0.07257411.
     */
@@ -980,12 +983,32 @@ double Position::CIOLocator( double T, double X, double Y )
 
 // ----------------------------------------------------------------------------
 
+double Position::PhaseAngle( EphemerisFile::Handle& H )
+{
+   Vector r = True( H );                  // observer-body position vector
+   Vector r0 = (m_Oh ? m_Oh : m_Eh) + r;  // Sun-body position vector
+   return ArcCos( (r * r0)/r.L2Norm()/r0.L2Norm() );
+}
+
+double Position::PhaseAngle( const StarPosition& S )
+{
+   Vector r = True( S );                  // observer-body position vector
+   Vector r0 = (m_Oh ? m_Oh : m_Eh) + r;  // Sun-body position vector
+   return ArcCos( (r * r0)/r.L2Norm()/r0.L2Norm() );
+}
+
+// ----------------------------------------------------------------------------
+
 bool Position::CanComputeApparentVisualMagnitude( const EphemerisFile::Handle& H ) const
 {
    // Minor planets with known absolute magnitudes and phase coefficients.
    if ( H.H().IsDefined() )
       if ( H.G().IsDefined() )
          return true;
+
+   // Comets with known total and/or nuclear absolute magnitudes.
+   if ( H.M1().IsDefined() || H.M2().IsDefined() )
+      return true;
 
    if ( H.OriginId() == "SSB" )
    {
@@ -1030,32 +1053,51 @@ bool Position::CanComputeApparentVisualMagnitude( const EphemerisFile::Handle& H
 Optional<double> Position::ApparentVisualMagnitude( EphemerisFile::Handle& H )
 {
    /*
+    * Position vectors and distances.
+    */
+   Vector r = True( H );                  // observer-body position vector
+   Vector r0 = (m_Oh ? m_Oh : m_Eh) + r;  // Sun-body position vector
+   double d = r.L2Norm();                 // distance observer-body
+   double d0 = r0.L2Norm();               // distance Sun-body
+
+   /*
     * Phase angle, or the angle between the observer-body and Sun-body vectors.
     */
-   Vector r = True( H ); // observer-body vector
-   Vector r0 = (m_Oh ? m_Oh : m_Eh) + r; // Sun-body vector
-   double d = r.L2Norm() * r0.L2Norm();
-   double i = ArcCos( (r * r0)/d );
+   double i = ArcCos( (r * r0)/d/d0 );
 
    Optional<double> V;
 
-   /*
-    * For objects with available H and G values in ephemeris data, apply the
-    * standard apparent magnitude algorithm for minor planets.
-    * See ESAsA Section 10.4.3.
-    */
    if ( H.H().IsDefined() )
    {
+      /*
+       * For objects with available H and G values in ephemeris data, apply the
+       * standard apparent magnitude algorithm for minor planets.
+       * See ESAA Section 10.4.3.
+       */
       if ( H.G().IsDefined() )
          if ( 0 <= i && Deg( i ) <= 120 )
          {
-            // ESAsA Eq. 10.40
-            double t2 = ArcTan( i/2 );
+            // ESAA Eq. 10.40
+            double t2 = Tan( i/2 );
             double phi1 = Exp( -3.33*Pow( t2, 0.63 ) );
             double phi2 = Exp( -1.87*Pow( t2, 1.22 ) );
-            // ESAsA Eq. 10.38
-            V = H.H()() -2.5*Log( (1 - H.G()())*phi1 + H.G()()*phi2 );
+            // ESAA Eq. 10.38
+            V = H.H()() - 2.5*Log( (1 - H.G()())*phi1 + H.G()()*phi2 );
          }
+   }
+   else if ( H.M1().IsDefined() )
+   {
+      /*
+       * Total (nucleus+coma) comet apparent magnitude.
+       */
+      return V = H.M1() + 5*Log( d ) + H.K1().OrElse( 0 )*Log( d0 );
+   }
+   else if ( H.M2().IsDefined() )
+   {
+      /*
+       * Apparent comet nucleus magnitude.
+       */
+      return V = H.M2() + 5*Log( d ) + H.K2().OrElse( 0 )*Log( d0 ) + H.PC().OrElse( 0 )*i;
    }
    else
    {
@@ -1073,7 +1115,7 @@ Optional<double> Position::ApparentVisualMagnitude( EphemerisFile::Handle& H )
        * light reflected by the rings.
        *
        * For Uranus, Pluto and the Galilean satellites of Jupiter, apply
-       * coefficients taken from ESAsA Table 10.6. See also Errata in the ESAsA
+       * coefficients taken from ESAA Table 10.6. See also Errata in the ESAA
        * (3rd edition, 1st printing), last update of 24 April 2018.
        */
       if ( H.OriginId() == "SSB" )
@@ -1116,13 +1158,13 @@ Optional<double> Position::ApparentVisualMagnitude( EphemerisFile::Handle& H )
                   // Jean Meeus (1991), Astronomical Algorithms, Chapter 44.
                   double ea = EpsA();
                   Vector R0 = EquatorialToEcliptic( m_U + (m_Oh ? m_Oh : m_Eh), ea );
-                  double d0 = R0.L2Norm();
+                  double D0 = R0.L2Norm();
                   double N  = Rad( 113.6655 + 0.8771*m_TT );
                   // Heliocentric longitude and latitude of Saturn, corrected for
                   // the Sun's aberration as seen from Saturn.
                   double ls, bs; R0.ToSpherical( ls, bs );
-                  ls -= Rad( 0.01759 )/d0;
-                  bs -= Rad( 0.000764 )*Cos( ls - N )/d0;
+                  ls -= Rad( 0.01759 )/D0;
+                  bs -= Rad( 0.000764 )*Cos( ls - N )/D0;
                   double ir = Rad(  28.075216 - 0.012998*m_TT + 0.000004*m_TT*m_TT );
                   double si, ci; SinCos( ir, si, ci );
                   double Or = Rad( 169.508470 + 1.394681*m_TT + 0.000412*m_TT*m_TT );
@@ -1197,9 +1239,9 @@ Optional<double> Position::ApparentVisualMagnitude( EphemerisFile::Handle& H )
       }
    }
 
-   // Observed visual magnitude, ESAsA Eq. 10.4, Eq. 10.41.
+   // Observed visual magnitude, ESAA Eq. 10.4, Eq. 10.41.
    if ( V.IsDefined() )
-      return V() + 5*Log( d );
+      return V() + 5*Log( d*d0 );
 
    // Unable to compute.
    return Optional<double>();
@@ -1207,7 +1249,57 @@ Optional<double> Position::ApparentVisualMagnitude( EphemerisFile::Handle& H )
 
 // ----------------------------------------------------------------------------
 
+bool Position::CanComputeCometApparentVisualTotalMagnitude( const EphemerisFile::Handle& H ) const
+{
+   return H.M1().IsDefined();
+}
+
+Optional<double> Position::CometApparentVisualTotalMagnitude( EphemerisFile::Handle& H )
+{
+   if ( !H.M1().IsDefined() )
+      return Optional<double>();
+
+   Vector r = True( H ); // observer-body position vector
+   double V = H.M1() + 5*Log( r.L2Norm() );
+   if ( H.K1().IsDefined() )
+   {
+      Vector r0 = (m_Oh ? m_Oh : m_Eh) + r; // Sun-body position vector
+      V += H.K1()*Log( r0.L2Norm() );
+   }
+
+   return V;
+}
+
+// ----------------------------------------------------------------------------
+
+bool Position::CanComputeCometApparentVisualNuclearMagnitude( const EphemerisFile::Handle& H ) const
+{
+   return H.M2().IsDefined();
+}
+
+Optional<double> Position::CometApparentVisualNuclearMagnitude( EphemerisFile::Handle& H )
+{
+   if ( !H.M2().IsDefined() )
+      return Optional<double>();
+
+   Vector r = True( H );  // observer-body position vector
+   double d = r.L2Norm(); // distance observer-body
+   double V = H.M2() + 5*Log( d );
+   if ( H.K2().IsDefined() || H.PC().IsDefined() )
+   {
+      Vector r0 = (m_Oh ? m_Oh : m_Eh) + r; // Sun-body position vector
+      double d0 = r0.L2Norm();              // distance Sun-body
+      V += H.K2()*Log( d0 );
+      if ( H.PC().IsDefined() )
+         V += H.PC()*ArcCos( (r * r0)/d/d0 ); // phase angle
+   }
+
+   return V;
+}
+
+// ----------------------------------------------------------------------------
+
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Position.cpp - Released 2024-03-20T10:41:42Z
+// EOF pcl/Position.cpp - Released 2024-05-07T15:27:40Z

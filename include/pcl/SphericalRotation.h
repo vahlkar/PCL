@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
-// pcl/SphericalRotation.h - Released 2024-03-20T10:41:36Z
+// pcl/SphericalRotation.h - Released 2024-05-07T15:27:32Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -147,4 +147,4 @@ private:
 #endif   // __PCL_SphericalRotation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SphericalRotation.h - Released 2024-03-20T10:41:36Z
+// EOF pcl/SphericalRotation.h - Released 2024-05-07T15:27:32Z

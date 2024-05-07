@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.135
+# PixInsight Makefile Generator Script v1.138
 # Copyright (C) 2009-2024 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2024-03-22T11:23:03.251Z
+# Generated on .... 2024-05-07T16:58:03.491Z
 # Project id ...... EphemerisGeneration
 # Project type .... Module
 # Platform ........ Windows/vc16
@@ -25,7 +25,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{08B3A62A-0B70-41C8-A236-DC656DB3DFD5}</ProjectGuid>
+    <ProjectGuid>{70B34409-6B4C-4E7F-B102-70F18DC49EDB}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -135,7 +135,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Elements.cpp"/>
     <ClCompile Include="..\..\Ephemerides.cpp"/>
     <ClCompile Include="..\..\EphemerisGenerationModule.cpp"/>
     <ClCompile Include="..\..\EphemerisGeneratorInstance.cpp"/>
@@ -145,7 +144,6 @@
     <ClCompile Include="..\..\TextDatabase.cpp"/>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Elements.h"/>
     <ClInclude Include="..\..\Ephemerides.h"/>
     <ClInclude Include="..\..\EphemerisGenerationModule.h"/>
     <ClInclude Include="..\..\EphemerisGeneratorInstance.h"/>

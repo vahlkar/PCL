@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
 // Standard TIFF File Format Module Version 1.0.10
 // ----------------------------------------------------------------------------
-// tif_unix.c - Released 2024-03-20T10:42:02Z
+// tif_unix.c - Released 2024-05-07T15:27:52Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard TIFF PixInsight module.
 //
@@ -422,4 +422,4 @@ static void unixErrorHandler(const char *module, const char *fmt, va_list ap)
 TIFFErrorHandler _TIFFerrorHandler = unixErrorHandler;
 
 // ----------------------------------------------------------------------------
-// EOF tif_unix.c - Released 2024-03-20T10:42:02Z
+// EOF tif_unix.c - Released 2024-05-07T15:27:52Z

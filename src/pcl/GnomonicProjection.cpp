@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
-// pcl/GnomonicProjection.cpp - Released 2024-03-20T10:41:42Z
+// pcl/GnomonicProjection.cpp - Released 2024-05-07T15:27:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -62,25 +62,17 @@ namespace pcl
 
 bool GnomonicProjection::Direct( DPoint& pW, const DPoint& pRD ) const noexcept
 {
-   double ra = Rad( pRD.x );
-   if ( m_ra0 - ra > Const<double>::pi() )
-      ra += Const<double>::_2pi();
-   else if ( m_ra0 - ra < -Const<double>::pi() )
-      ra -= Const<double>::_2pi();
    double sinRA, cosRA;
-   SinCos( ra - m_ra0, sinRA, cosRA );
-
+   SinCos( Rad( pRD.x ) - m_ra0, sinRA, cosRA );
    double sinDec, cosDec;
    SinCos( Rad( pRD.y ), sinDec, cosDec );
-
-   double dist = ArcCos( m_sinDec0*sinDec + m_cosDec0*cosDec*cosRA );
-   if ( dist > Const<double>::pi2() )
-      return false;
-
    double A = cosDec * cosRA;
-   double F = m_scale/(m_sinDec0*sinDec + A*m_cosDec0);
+   double cosD = m_sinDec0*sinDec + m_cosDec0*A;
+   if ( cosD < 1.0e-5 ) // distance > 89.999 deg ?
+      return false;
+   double F = Const<double>::deg()/cosD;
    pW.x = F * cosDec * sinRA;
-   pW.y = F * (m_cosDec0*sinDec - A*m_sinDec0);
+   pW.y = F * (m_cosDec0*sinDec - m_sinDec0*A);
    return true;
 }
 
@@ -88,20 +80,14 @@ bool GnomonicProjection::Direct( DPoint& pW, const DPoint& pRD ) const noexcept
 
 bool GnomonicProjection::Inverse( DPoint& pRD, const DPoint& pW ) const noexcept
 {
-   double X = -pW.x/m_scale;
-   double Y = -pW.y/m_scale;
-   double D = ArcTan( Sqrt( X*X + Y*Y ) );
-   double B = ArcTan( -X, Y);
+   double X = Rad( pW.x );
+   double Y = Rad( pW.y );
    double sinD, cosD;
-   SinCos( D, sinD, cosD );
+   SinCos( ArcTan( Sqrt( X*X + Y*Y ) ), sinD, cosD );
    double sinB, cosB;
-   SinCos( B, sinB, cosB );
-   double XX = m_sinDec0*sinD*cosB + m_cosDec0*cosD;
-   double YY = sinD * sinB;
-   double ra = m_ra0 + ArcTan( YY, XX );
-   double dec = ArcSin( m_sinDec0*cosD - m_cosDec0*sinD*cosB );
-   pRD.x = Deg( ra );
-   pRD.y = Deg( dec );
+   SinCos( ArcTan( X, -Y ), sinB, cosB );
+   pRD.x = Deg( m_ra0 + ArcTan( sinD*sinB, m_sinDec0*sinD*cosB + m_cosDec0*cosD ) );
+   pRD.y = Deg( ArcSin( m_sinDec0*cosD - m_cosDec0*sinD*cosB ) );
    return true;
 }
 
@@ -110,4 +96,4 @@ bool GnomonicProjection::Inverse( DPoint& pRD, const DPoint& pW ) const noexcept
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/GnomonicProjection.cpp - Released 2024-03-20T10:41:42Z
+// EOF pcl/GnomonicProjection.cpp - Released 2024-05-07T15:27:40Z

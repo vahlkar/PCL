@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
-// Standard EphemerisGeneration Process Module Version 1.2.6
+// Standard EphemerisGeneration Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// TextDatabase.h - Released 2024-03-20T10:42:12Z
+// TextDatabase.h - Released 2024-05-07T15:28:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -76,7 +76,7 @@ class TextDatabase
 public:
 
    /*
-    * Enumerated types describing database types, field types and formats.
+    * Enumerated types describing database types, field types, and formats.
     */
    enum contents_type
    {
@@ -135,8 +135,19 @@ public:
       Field fld_epoch;
       Field fld_H;
       Field fld_G;
+      Field fld_M1;
+      Field fld_K1;
+      Field fld_M2;
+      Field fld_K2;
+      Field fld_PC;
       Field fld_B_V;
+      Field fld_U_B;
+      Field fld_I_R;
       Field fld_D;
+      Field fld_A1;
+      Field fld_A2;
+      Field fld_A3;
+      Field fld_DT;
       Field fld_a;
       Field fld_q;
       Field fld_e;
@@ -177,9 +188,20 @@ public:
       Vector           state = Vector( 0.0, 8 ); // state vectors or orbital elements
       double           epochJD; // epoch of initial conditions, JD, TDB
       Optional<double> H;       // absolute magnitude (mag)
-      Optional<double> G;       // slope parameter
-      Optional<double> B_V;     // color index (mag)
+      Optional<double> G;       // magnitude slope parameter
+      Optional<double> M1;      // comet total absolute magnitude
+      Optional<double> K1;      // comet total magnitude slope parameter
+      Optional<double> M2;      // comet nuclear absolute magnitude
+      Optional<double> K2;      // comet nuclear magnitude slope parameter
+      Optional<double> PC;      // comet nuclear magnitude phase coefficient
+      Optional<double> B_V;     // color index B-V (mag)
+      Optional<double> U_B;     // color index U-B (mag)
+      Optional<double> I_R;     // color index I-R (mag)
       Optional<double> D;       // diameter (km)
+      Optional<double> A1;      // non-gravitational acceleration, radial component (au/day^2)
+      Optional<double> A2;      // non-gravitational acceleration, transversal component (au/day^2)
+      Optional<double> A3;      // non-gravitational acceleration, normal component (au/day^2)
+      Optional<double> DT;      // non-gravitational acceleration, perihelion time offset (day)
 
       bool operator ==( const ObjectData& x ) const
       {
@@ -230,4 +252,4 @@ private:
 #endif   // __TextBatabase_h
 
 // ----------------------------------------------------------------------------
-// EOF TextDatabase.h - Released 2024-03-20T10:42:12Z
+// EOF TextDatabase.h - Released 2024-05-07T15:28:00Z

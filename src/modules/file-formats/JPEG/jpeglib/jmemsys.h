@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// jmemsys.h - Released 2024-03-20T10:42:01Z
+// jmemsys.h - Released 2024-05-07T15:27:52Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -250,4 +250,4 @@ EXTERN(long) jpeg_mem_init JPP((j_common_ptr cinfo));
 EXTERN(void) jpeg_mem_term JPP((j_common_ptr cinfo));
 
 // ----------------------------------------------------------------------------
-// EOF jmemsys.h - Released 2024-03-20T10:42:01Z
+// EOF jmemsys.h - Released 2024-05-07T15:27:52Z

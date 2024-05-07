@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// f77_wrap1.c - Released 2024-03-20T10:42:01Z
+// f77_wrap1.c - Released 2024-05-07T15:27:52Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -408,4 +408,4 @@ FCALLSCSUB1(Cffgtmo,FTGTMO,ftgtmo,PINT)
 FCALLSCSUB2(ffstmo,FTSTMO,ftstmo,INT,PINT)
 
 // ----------------------------------------------------------------------------
-// EOF f77_wrap1.c - Released 2024-03-20T10:42:01Z
+// EOF f77_wrap1.c - Released 2024-05-07T15:27:52Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.5.3
+// Standard Global Process Module Version 1.6.0
 // ----------------------------------------------------------------------------
-// GlobalModule.cpp - Released 2024-03-20T10:42:12Z
+// GlobalModule.cpp - Released 2024-05-07T15:28:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -51,18 +51,20 @@
 // ----------------------------------------------------------------------------
 
 #define MODULE_VERSION_MAJOR     1
-#define MODULE_VERSION_MINOR     5
-#define MODULE_VERSION_REVISION  3
+#define MODULE_VERSION_MINOR     6
+#define MODULE_VERSION_REVISION  0
 #define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2024
-#define MODULE_RELEASE_MONTH     3
-#define MODULE_RELEASE_DAY       20
+#define MODULE_RELEASE_MONTH     5
+#define MODULE_RELEASE_DAY       7
 
 #include "ColorManagementSetupAction.h"
 #include "ColorManagementSetupInterface.h"
 #include "ColorManagementSetupProcess.h"
+#include "FilterManagerInterface.h"
+#include "FilterManagerProcess.h"
 #include "GlobalModule.h"
 #include "PreferencesAction.h"
 #include "PreferencesInterface.h"
@@ -187,10 +189,12 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
       new pcl::ReadoutOptionsInterface;
       new pcl::ColorManagementSetupProcess;
       new pcl::ColorManagementSetupInterface;
+      new pcl::FilterManagerProcess;
+      new pcl::FilterManagerInterface;
    }
 
    return 0;
 }
 
 // ----------------------------------------------------------------------------
-// EOF GlobalModule.cpp - Released 2024-03-20T10:42:12Z
+// EOF GlobalModule.cpp - Released 2024-05-07T15:28:00Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
-// pcl/TimePoint.cpp - Released 2024-03-20T10:41:42Z
+// pcl/TimePoint.cpp - Released 2024-05-07T15:27:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -127,7 +127,10 @@ TimePoint::TimePoint( const FileTime& fileTime )
 static AkimaInterpolation<double> s_deltaT;
 static TimePoint                  s_deltaTStart;
 static TimePoint                  s_deltaTEnd;
+static double                     s_deltaTFirstValue = 0;
+static double                     s_deltaTLastValue = 0;
 static AtomicInt                  s_deltaTInitialized;
+static bool                       s_deltaTExtrapolate = false;
 static Mutex                      s_deltaTMutex;
 
 double TimePoint::DeltaT() const
@@ -140,70 +143,88 @@ double TimePoint::DeltaT() const
       volatile AutoLock lock( s_deltaTMutex );
       if ( s_deltaTInitialized.Load() == 0 )
       {
-         Array<double> T, D;
-         IsoStringList lines = File::ReadLines( EphemerisFile::DeltaTDataFilePath() );
-         for ( IsoString line : lines )
+         String filePath = EphemerisFile::DeltaTDataFilePath();
+         if ( File::Exists( filePath ) )
          {
-            line.Trim();
-            if ( line.IsEmpty() || line.StartsWith( '/' ) ) // empty line or comment
-               continue;
-            IsoStringList tokens;
-            line.Break( tokens, ' ', true/*trim*/ );
-            tokens.Remove( IsoString() );
-            TimePoint t;
-            double d;
-            switch ( tokens.Length() )
+            Array<double> T, D;
+            IsoStringList lines = File::ReadLines( filePath );
+            for ( IsoString line : lines )
             {
-            case 2:
-               // YY.yyy DeltaT
-               {
-                  double y = tokens[0].ToDouble();
-                  t = TimePoint( TruncInt( y ), 1, 1.0 ) + Frac( y )*365.25;
-                  d = tokens[1].ToDouble();
-               }
-               break;
-            case 4:
-               // YY MM DD.ddd DeltaT
-               t = TimePoint( tokens[0].ToInt(), tokens[1].ToInt(), tokens[2].ToDouble() );
-               d = tokens[3].ToDouble();
-               break;
-            default:
-               // Invalid format, ignore.
-               continue;
-            }
-
-            // Make sure that dates are valid and lines are sorted in ascending
-            // date order.
-            if ( t.IsValid() )
-            {
-               if ( T.IsEmpty() )
-                  s_deltaTStart = t;
-               else if ( t <= s_deltaTEnd )
+               line.Trim();
+               if ( line.IsEmpty() || line.StartsWith( '/' ) ) // empty line or comment
                   continue;
+               IsoStringList tokens;
+               line.Break( tokens, ' ', true/*trim*/ );
+               tokens.Remove( IsoString() );
+               TimePoint t;
+               double d;
+               switch ( tokens.Length() )
+               {
+               case 2:
+                  // YY.yyy DeltaT
+                  {
+                     double y = tokens[0].ToDouble();
+                     t = TimePoint( TruncInt( y ), 1, 1.0 ) + Frac( y )*365.25;
+                     d = tokens[1].ToDouble();
+                  }
+                  break;
+               case 4:
+                  // YY MM DD.ddd DeltaT
+                  t = TimePoint( tokens[0].ToInt(), tokens[1].ToInt(), tokens[2].ToDouble() );
+                  d = tokens[3].ToDouble();
+                  break;
+               default:
+                  // Invalid format, ignore.
+                  continue;
+               }
 
-               T << t.YearsSinceJ2000();
-               D << d;
-               s_deltaTEnd = t;
+               // Ensure valid dates and lines sorted by ascending date.
+               if ( t.IsValid() )
+               {
+                  if ( T.IsEmpty() )
+                  {
+                     s_deltaTStart = t;
+                     s_deltaTFirstValue = d;
+                  }
+                  else if ( t <= s_deltaTEnd )
+                     continue;
+
+                  T << t.YearsSinceJ2000();
+                  D << d;
+                  s_deltaTEnd = t;
+                  s_deltaTLastValue = d;
+               }
             }
+
+            // Check for reasonable minimum data.
+            if ( T.Length() < 10 )
+               throw Error( "Insufficient DeltaT data items." );
+            if ( (s_deltaTEnd - s_deltaTStart) < 365 )
+               throw Error( "The DeltaT data covers an insufficient time span." );
+
+            s_deltaT.Initialize( Vector( T.Begin(), int( T.Length() ) ), Vector( D.Begin(), int( D.Length() ) ) );
          }
 
-         // Check for reasonable minimum data.
-         if ( T.Length() < 10 )
-            throw Error( "Insufficient DeltaT data items." );
-         if ( (s_deltaTEnd - s_deltaTStart) < 365 )
-            throw Error( "The DeltaT data covers an insufficient time span." );
-
-         s_deltaT.Initialize( Vector( T.Begin(), int( T.Length() ) ), Vector( D.Begin(), int( D.Length() ) ) );
          s_deltaTInitialized.Store( 1 );
       }
    }
 
-   /*
-    * Return an interpolated value when possible.
-    */
-   if ( *this >= s_deltaTStart )
-      if ( *this <= s_deltaTEnd )
-         return s_deltaT( YearsSinceJ2000() );
+   if ( s_deltaTEnd.IsValid() )
+   {
+      /*
+       * Return an interpolated DT value when possible.
+       */
+      if ( *this >= s_deltaTStart )
+         if ( *this <= s_deltaTEnd )
+            return s_deltaT( YearsSinceJ2000() );
+
+      /*
+       * If extrapolation is disabled, return the DT value for the closest date
+       * available in the database.
+       */
+      if ( !s_deltaTExtrapolate )
+         return (*this > s_deltaTEnd) ? s_deltaTLastValue : s_deltaTFirstValue;
+   }
 
    /*
     * Use Espenak/Meeus polynomials otherwise.
@@ -263,6 +284,16 @@ double TimePoint::DeltaT() const
    return Poly( y - 2000,  { 63.86, 0.3345, -0.060374, 0.0017275, 0.000651814, 0.00002373599 } );
 }
 
+bool TimePoint::IsDeltaTExtrapolationEnabled()
+{
+   return s_deltaTExtrapolate;
+}
+
+void TimePoint::EnableDeltaTExtrapolation( bool enable )
+{
+   s_deltaTExtrapolate = enable;
+}
+
 // ----------------------------------------------------------------------------
 
 struct DeltaATItem
@@ -289,51 +320,54 @@ double TimePoint::DeltaAT() const
       volatile AutoLock lock( s_deltaATMutex );
       if ( s_deltaATInitialized.Load() == 0 )
       {
-         IsoStringList lines = File::ReadLines( EphemerisFile::DeltaATDataFilePath() );
-         for ( IsoString line : lines )
+         String filePath = EphemerisFile::DeltaATDataFilePath();
+         if ( File::Exists( filePath ) )
          {
-            line.Trim();
-            if ( line.IsEmpty() || line.StartsWith( '/' ) ) // empty line or comment
-               continue;
-            IsoStringList tokens;
-            line.Break( tokens, ' ', true/*trim*/ );
-            tokens.Remove( IsoString() );
-            if ( tokens.Length() < 2 ) // malformed
-               continue;
-            TimePoint t( tokens[0].ToDouble() );
-            double d = tokens[1].ToDouble();
-            double d1 = 0, d2 = 0;
-            if ( tokens.Length() > 2 )
+            IsoStringList lines = File::ReadLines( filePath );
+            for ( IsoString line : lines )
             {
-               if ( tokens.Length() != 4 ) // malformed
+               line.Trim();
+               if ( line.IsEmpty() || line.StartsWith( '/' ) ) // empty line or comment
                   continue;
-               d1 = tokens[2].ToDouble();
-               d2 = tokens[3].ToDouble();
+               IsoStringList tokens;
+               line.Break( tokens, ' ', true/*trim*/ );
+               tokens.Remove( IsoString() );
+               if ( tokens.Length() < 2 ) // malformed
+                  continue;
+               TimePoint t( tokens[0].ToDouble() );
+               double d = tokens[1].ToDouble();
+               double d1 = 0, d2 = 0;
+               if ( tokens.Length() > 2 )
+               {
+                  if ( tokens.Length() != 4 ) // malformed
+                     continue;
+                  d1 = tokens[2].ToDouble();
+                  d2 = tokens[3].ToDouble();
+               }
+
+               // Ensure valid dates and lines sorted by ascending date.
+               if ( t.IsValid() )
+               {
+                  if ( s_deltaAT.IsEmpty() )
+                     s_deltaATStart = t;
+                  else if ( t.JDI() <= s_deltaATEnd.JDI() )
+                     continue;
+
+                  s_deltaAT << DeltaATItem{ t.JDI(), d, d1, d2 };
+                  s_deltaATEnd = t;
+               }
             }
 
-            // Make sure that dates are valid and lines are sorted in ascending
-            // date order.
-            if ( t.IsValid() )
-            {
-               if ( s_deltaAT.IsEmpty() )
-                  s_deltaATStart = t;
-               else if ( t.JDI() <= s_deltaATEnd.JDI() )
-                  continue;
+            // UTC does not exist before 1960.0
+            if ( s_deltaATStart < TimePoint( 1960, 1, 1.0 ) )
+               throw Error( "Invalid DeltaAT time span." );
 
-               s_deltaAT << DeltaATItem{ t.JDI(), d, d1, d2 };
-               s_deltaATEnd = t;
-            }
+            // Check for reasonable data.
+            if ( s_deltaAT.Length() < 40 )
+               throw Error( "Insufficient DeltaAT data items." );
+            if ( (s_deltaATEnd - s_deltaATStart) < 40*365.25 )
+               throw Error( "The DeltaAT data covers an insufficient time span." );
          }
-
-         // UTC does not exist before 1960.0
-         if ( s_deltaATStart < TimePoint( 1960, 1, 1.0 ) )
-            throw Error( "Invalid DeltaAT time span." );
-
-         // Check for reasonable data.
-         if ( s_deltaAT.Length() < 40 )
-            throw Error( "Insufficient DeltaAT data items." );
-         if ( (s_deltaATEnd - s_deltaATStart) < 40*365.25 )
-            throw Error( "The DeltaAT data covers an insufficient time span." );
 
          s_deltaATInitialized.Store( 1 );
       }
@@ -494,4 +528,4 @@ String TimePoint::ToString( const String& format ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/TimePoint.cpp - Released 2024-03-20T10:41:42Z
+// EOF pcl/TimePoint.cpp - Released 2024-05-07T15:27:40Z

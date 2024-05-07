@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
-// pcl/ImageVariant.h - Released 2024-03-20T10:41:36Z
+// pcl/ImageVariant.h - Released 2024-05-07T15:27:32Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -6774,15 +6774,23 @@ public:
     *                      value is false.
     *
     * Each string in the \a directories string list must be a full path
-    * specification to an existing directory. On each directory, an output file
-    * will be created and an independent execution thread will write the
+    * specification to an existing directory. An output file will be created on
+    * each directory, and an independent execution thread will write the
     * corresponding section of the pixel data from the image transported by
     * this %ImageVariant. To retrieve the data, call the ReadSwapFiles() member
     * function with the same base file name and output directories.
     *
-    * \warning This function is not thread-safe: it can only be called from the
-    * root thread. This function will throw an Error exception if it is called
+    * \warning This function is \e not thread-safe: it can only be called from
+    * the root thread. This function will throw an Error exception if called
     * from a local thread.
+    *
+    * \warning For spinning disks (hard disks or HDDs), if more than one
+    * directory is specified, all of them should be supported by different
+    * \e physical devices on the system. Multiple I/O operations performed
+    * concurrently on the same spinning disk can severely degrade performance
+    * and, in some cases, pose a risk to the device's integrity. This
+    * recommendation does not apply to solid-state storage devices such as SDD
+    * or NVMe disks, where you can specify the same directory multiple times.
     */
    void WriteSwapFiles( const String& fileName, const StringList& directories,
                         swap_compression compression = SwapCompression::None,
@@ -6806,16 +6814,15 @@ public:
     *                      value is false.
     *
     * If necessary, the transported image is re-created as an instance of a
-    * different template instantiation, to match the sample data type stored
-    * in the input file.
+    * different template instantiation to match the sample data type stored in
+    * the input file. In any case, if %ImageVariant owned the previously
+    * transported image (if one existed), it will be destroyed before reading
+    * the new one.
     *
-    * In any case, if %ImageVariant owned the previously transported image ( if
-    * any ), it is destroyed before reading the new one.
-    *
-    * This function is useful to read pixel data without having to resolve
-    * template instantiation, neither of the input file nor of the transported
-    * image. PCL does all the necessary data reading, decompression, allocation
-    * and deallocation transparently.
+    * This function is useful for reading pixel data without having to resolve
+    * template instantiations, either of the input file or of the transported
+    * image. PCL does all the necessary data reading, decompression,
+    * allocation, and deallocation transparently.
     */
    void ReadSwapFile( const String& filePath,
                       Compression::Performance* perf = nullptr,
@@ -6843,17 +6850,17 @@ public:
     *                      responsive during long disk operations. The default
     *                      value is false.
     *
-    * The read image will be transported and owned by this %ImageVariant
-    * instance. If an image is already transported by this object before
-    * calling this function, it is removed by a call to Free() prior to the
-    * reading operation.
+    * This %ImageVariant instance will transport and own the read image. If
+    * this object already transports an image before calling this function, a
+    * call to Free() will be performed to remove it before the disk read
+    * operation.
     *
     * If necessary, the transported image is re-created as an instance of a
-    * different template instantiation, to match the sample data type stored
-    * in the input file(s).
+    * different template instantiation to match the sample data type stored in
+    * the input file(s).
     *
-    * \warning This function is not thread-safe: it can only be called from the
-    * root thread. This function will throw an Error exception if it is called
+    * \warning This function is \e not thread-safe: it can only be called from
+    * the root thread. This function will throw an Error exception if called
     * from a local thread.
     */
    void ReadSwapFiles( const String& fileName, const StringList& directories,
@@ -6927,8 +6934,8 @@ public:
     * This routine produces exactly the same result as its single-threaded
     * counterpart MaskFromSwapFile().
     *
-    * \warning This function is not thread-safe: it can only be called from the
-    * root thread. This function will throw an Error exception if it is called
+    * \warning This function is \e not thread-safe: it can only be called from
+    * the root thread. This function will throw an Error exception if called
     * from a local thread.
     */
    void MaskFromSwapFiles( const String& fileName, const StringList& directories,
@@ -6945,8 +6952,8 @@ public:
     * Deletes all raw storage files previously created by a call to the
     * WriteSwapFiles() member function.
     *
-    * \warning This function is not thread-safe: it can only be called from the
-    * root thread. This function will throw an Error exception if it is called
+    * \warning This function is \e not thread-safe: it can only be called from
+    * the root thread. This function will throw an Error exception if called
     * from a local thread.
     */
    static void DeleteSwapFiles( const String& fileName, const StringList& directories );
@@ -7284,4 +7291,4 @@ GenericImage<P>& GenericImage<P>::SetLightness( const ImageVariant& L, const Poi
 #endif   // __PCL_ImageVariant_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ImageVariant.h - Released 2024-03-20T10:41:36Z
+// EOF pcl/ImageVariant.h - Released 2024-05-07T15:27:32Z

@@ -31,10 +31,6 @@ cd $BASEDIR/EphemerisGeneration/macosx/g++
 make clean
 make -j $NPROC
 
-cd $BASEDIR/FilterManager/macosx/g++
-make clean
-make -j $NPROC
-
 cd $BASEDIR/FindingChart/macosx/g++
 make clean
 make -j $NPROC

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
-// Standard EphemerisGeneration Process Module Version 1.2.6
+// Standard EphemerisGeneration Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// TextDatabase.cpp - Released 2024-03-20T10:42:12Z
+// TextDatabase.cpp - Released 2024-05-07T15:28:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -50,7 +50,6 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#include "Elements.h"
 #include "TextDatabase.h"
 
 #include <pcl/Console.h>
@@ -131,9 +130,31 @@ public:
             ++mustHaveTokens;
          if ( m_format.fld_G )
             ++mustHaveTokens;
+         if ( m_format.fld_M1 )
+            ++mustHaveTokens;
+         if ( m_format.fld_K1 )
+            ++mustHaveTokens;
+         if ( m_format.fld_M2 )
+            ++mustHaveTokens;
+         if ( m_format.fld_K2 )
+            ++mustHaveTokens;
+         if ( m_format.fld_PC )
+            ++mustHaveTokens;
          if ( m_format.fld_B_V )
             ++mustHaveTokens;
+         if ( m_format.fld_U_B )
+            ++mustHaveTokens;
+         if ( m_format.fld_I_R )
+            ++mustHaveTokens;
          if ( m_format.fld_D )
+            ++mustHaveTokens;
+         if ( m_format.fld_A1 )
+            ++mustHaveTokens;
+         if ( m_format.fld_A2 )
+            ++mustHaveTokens;
+         if ( m_format.fld_A3 )
+            ++mustHaveTokens;
+         if ( m_format.fld_DT )
             ++mustHaveTokens;
 
          size_type count = 0;
@@ -160,8 +181,68 @@ public:
             {
             default: // ?!
             case TextDatabase::FieldDisposition_CommaSeparated:
+               {
+                  IsoStringList unorderedTokens;
+                  line.Break( unorderedTokens, ',' );
 
-               line.Break( tokens, ',' );
+                  if ( m_format.fld_id )
+                     tokens << unorderedTokens[m_format.fld_id.pos-1];
+                  if ( m_format.fld_name )
+                     tokens << unorderedTokens[m_format.fld_name.pos-1];
+
+                  tokens << unorderedTokens[m_format.fld_epoch.pos-1];
+
+                  if ( m_format.contents == TextDatabase::Contents_OrbitalElements )
+                  {
+                     tokens << unorderedTokens[m_format.fld_a ? m_format.fld_a.pos-1 : m_format.fld_q.pos-1]
+                            << unorderedTokens[m_format.fld_e.pos-1]
+                            << unorderedTokens[m_format.fld_M ? m_format.fld_M.pos-1 : m_format.fld_T.pos-1]
+                            << unorderedTokens[m_format.fld_i.pos-1]
+                            << unorderedTokens[m_format.fld_O.pos-1]
+                            << unorderedTokens[m_format.fld_w.pos-1];
+                  }
+                  else // TextDatabase::Contents_StateVectors
+                  {
+                     tokens << unorderedTokens[m_format.fld_x.pos-1]
+                            << unorderedTokens[m_format.fld_y.pos-1]
+                            << unorderedTokens[m_format.fld_z.pos-1]
+                            << unorderedTokens[m_format.fld_vx.pos-1]
+                            << unorderedTokens[m_format.fld_vy.pos-1]
+                            << unorderedTokens[m_format.fld_vz.pos-1];
+                  }
+
+
+                  if ( m_format.fld_H )
+                     tokens << unorderedTokens[m_format.fld_H.pos-1];
+                  if ( m_format.fld_G )
+                     tokens << unorderedTokens[m_format.fld_G.pos-1];
+                  if ( m_format.fld_M1 )
+                     tokens << unorderedTokens[m_format.fld_M1.pos-1];
+                  if ( m_format.fld_K1 )
+                     tokens << unorderedTokens[m_format.fld_K1.pos-1];
+                  if ( m_format.fld_M2 )
+                     tokens << unorderedTokens[m_format.fld_M2.pos-1];
+                  if ( m_format.fld_K2 )
+                     tokens << unorderedTokens[m_format.fld_K2.pos-1];
+                  if ( m_format.fld_PC )
+                     tokens << unorderedTokens[m_format.fld_PC.pos-1];
+                  if ( m_format.fld_B_V )
+                     tokens << unorderedTokens[m_format.fld_B_V.pos-1];
+                  if ( m_format.fld_U_B )
+                     tokens << unorderedTokens[m_format.fld_U_B.pos-1];
+                  if ( m_format.fld_I_R )
+                     tokens << unorderedTokens[m_format.fld_I_R.pos-1];
+                  if ( m_format.fld_D )
+                     tokens << unorderedTokens[m_format.fld_D.pos-1];
+                  if ( m_format.fld_A1 )
+                     tokens << unorderedTokens[m_format.fld_A1.pos-1];
+                  if ( m_format.fld_A2 )
+                     tokens << unorderedTokens[m_format.fld_A2.pos-1];
+                  if ( m_format.fld_A3 )
+                     tokens << unorderedTokens[m_format.fld_A3.pos-1];
+                  if ( m_format.fld_DT )
+                     tokens << unorderedTokens[m_format.fld_DT.pos-1];
+               }
                break;
 
             case TextDatabase::FieldDisposition_FixedWidth:
@@ -196,10 +277,32 @@ public:
                   tokens << ExtractToken( m_format.fld_H, line );
                if ( m_format.fld_G )
                   tokens << ExtractToken( m_format.fld_G, line );
+               if ( m_format.fld_M1 )
+                  tokens << ExtractToken( m_format.fld_M1, line );
+               if ( m_format.fld_K1 )
+                  tokens << ExtractToken( m_format.fld_K1, line );
+               if ( m_format.fld_M2 )
+                  tokens << ExtractToken( m_format.fld_M2, line );
+               if ( m_format.fld_K2 )
+                  tokens << ExtractToken( m_format.fld_K2, line );
+               if ( m_format.fld_PC )
+                  tokens << ExtractToken( m_format.fld_PC, line );
                if ( m_format.fld_B_V )
                   tokens << ExtractToken( m_format.fld_B_V, line );
+               if ( m_format.fld_U_B )
+                  tokens << ExtractToken( m_format.fld_U_B, line );
+               if ( m_format.fld_I_R )
+                  tokens << ExtractToken( m_format.fld_I_R, line );
                if ( m_format.fld_D )
                   tokens << ExtractToken( m_format.fld_D, line );
+               if ( m_format.fld_A1 )
+                  tokens << ExtractToken( m_format.fld_A1, line );
+               if ( m_format.fld_A2 )
+                  tokens << ExtractToken( m_format.fld_A2, line );
+               if ( m_format.fld_A3 )
+                  tokens << ExtractToken( m_format.fld_A3, line );
+               if ( m_format.fld_DT )
+                  tokens << ExtractToken( m_format.fld_DT, line );
                break;
             }
 
@@ -208,8 +311,8 @@ public:
                            + String( tokens.Length() ) + ", " + String( mustHaveTokens ) + " required." );
 
             int i = 0;
-            IsoString objectId = m_format.fld_id ? tokens[i++].Trimmed() : IsoString();
-            IsoString objectName = m_format.fld_name ? tokens[i++].Trimmed() : IsoString();
+            IsoString objectId = m_format.fld_id ? tokens[i++].Unquoted().Trimmed() : IsoString();
+            IsoString objectName = m_format.fld_name ? tokens[i++].Unquoted().Trimmed() : IsoString();
 
             // In MPC asteroid databases, asteroid numbers are between
             // parentheses.
@@ -296,33 +399,59 @@ __matched:
 
             if ( m_format.contents == TextDatabase::Contents_OrbitalElements )
             {
+               OsculatingElements el;
+
                if ( m_format.fld_a )
                {
                   if ( !ParseRealToken( object.state[a_idx], tokens[i++], -1.0e6, +1.0e6 ) )
                      throw Error( "Missing 'a' orbital element value" );
+                  el.a = object.state[a_idx];
                }
                else // m_format.fld_q
+               {
                   if ( !ParseRealToken( object.state[q_idx], tokens[i++], 0.0, 10000.0 ) )
                      throw Error( "Missing 'q' orbital element value" );
+                  el.q = object.state[q_idx];
+               }
 
                if ( !ParseRealToken( object.state[e_idx], tokens[i++], 0.0, 100.0 ) )
                   throw Error( "Missing 'e' orbital element value" );
+               el.e = object.state[e_idx];
 
                if ( m_format.fld_M )
                {
                   if ( !ParseRealToken( object.state[M_idx], tokens[i++], -360.0, +360.0 ) )
                      throw Error( "Missing 'M' orbital element value" );
+                  el.M = Rad( object.state[M_idx] );
                }
                else // m_format.fld_T
+               {
                   if ( !ParseDateToken( object.state[T_idx], tokens[i++], m_format.timePPFormat ) )
                      throw Error( "Missing 'T' orbital element value" );
+                  el.T = TimePoint( object.state[T_idx] );
+               }
 
                if ( !ParseRealToken( object.state[i_idx], tokens[i++], 0.0, 180.0 ) )
                   throw Error( "Missing 'i' orbital element value" );
+               el.i = Rad( object.state[i_idx] );
+
                if ( !ParseRealToken( object.state[O_idx], tokens[i++], 0.0, 360.0 ) )
                   throw Error( "Missing 'O' orbital element value" );
+               el.O = Rad( object.state[O_idx] );
+
                if ( !ParseRealToken( object.state[w_idx], tokens[i++], 0.0, 360.0 ) )
                   throw Error( "Missing 'w' orbital element value" );
+               el.w = Rad( object.state[w_idx] );
+
+               if ( m_format.fld_a )
+                  object.state[q_idx] = el.q = el.PerihelionDistanceFromSemimajorAxis();
+               else
+                  object.state[a_idx] = el.a = el.SemimajorAxisFromPerihelionDistance();
+
+               if ( m_format.fld_M )
+                  object.state[T_idx] = el.TimeOfPerihelionPassageFromMeanAnomaly( object.epochJD ).JD();
+               else
+                  object.state[M_idx] = Deg( el.MeanAnomalyFromTimeOfPerihelionPassage( object.epochJD ) );
             }
             else // TextDatabase::Contents_StateVectors
             {
@@ -340,16 +469,6 @@ __matched:
                   throw Error( "Missing 'vz' state vector value" );
             }
 
-            if ( m_format.fld_a )
-               object.state[q_idx] = PerihelionDistanceFromSemimajorAxis( object.state );
-            else
-               object.state[a_idx] = SemimajorAxisFromPerihelionDistance( object.state );
-
-            if ( m_format.fld_M )
-               object.state[T_idx] = TimeOfPerihelionPassageFromMeanAnomaly( object.state, object.epochJD );
-            else
-               object.state[M_idx] = MeanAnomalyFromTimeOfPerihelionPassage( object.state, object.epochJD );
-
             if ( m_format.fld_H )
             {
                float H;
@@ -365,6 +484,41 @@ __matched:
                   object.G = G;
             }
 
+            if ( m_format.fld_M1 )
+            {
+               float M1;
+               if ( ParseRealToken( M1, tokens[i++], 0.0, 100.0 ) )
+                  object.M1 = M1;
+            }
+
+            if ( m_format.fld_K1 )
+            {
+               float K1;
+               if ( ParseRealToken( K1, tokens[i++], 0.0, 100.0 ) )
+                  object.K1 = K1;
+            }
+
+            if ( m_format.fld_M2 )
+            {
+               float M2;
+               if ( ParseRealToken( M2, tokens[i++], 0.0, 100.0 ) )
+                  object.M2 = M2;
+            }
+
+            if ( m_format.fld_K2 )
+            {
+               float K2;
+               if ( ParseRealToken( K2, tokens[i++], 0.0, 100.0 ) )
+                  object.K2 = K2;
+            }
+
+            if ( m_format.fld_PC )
+            {
+               float PC;
+               if ( ParseRealToken( PC, tokens[i++], 0.0, 1.0 ) )
+                  object.PC = PC;
+            }
+
             if ( m_format.fld_B_V )
             {
                float B_V;
@@ -372,11 +526,53 @@ __matched:
                   object.B_V = B_V;
             }
 
+            if ( m_format.fld_U_B )
+            {
+               float U_B;
+               if ( ParseRealToken( U_B, tokens[i++], 0.0, 2.0 ) )
+                  object.U_B = U_B;
+            }
+
+            if ( m_format.fld_I_R )
+            {
+               float I_R;
+               if ( ParseRealToken( I_R, tokens[i++], 0.0, 2.0 ) )
+                  object.I_R = I_R;
+            }
+
             if ( m_format.fld_D )
             {
                float D;
-               if ( ParseRealToken( D, tokens[i++], 0.0, 4000.0 ) )
+               if ( ParseRealToken( D, tokens[i++], 0.0, 5000.0 ) )
                   object.D = D;
+            }
+
+            if ( m_format.fld_A1 )
+            {
+               float A1;
+               if ( ParseRealToken( A1, tokens[i++], -1, +1 ) )
+                  object.A1 = A1;
+            }
+
+            if ( m_format.fld_A2 )
+            {
+               float A2;
+               if ( ParseRealToken( A2, tokens[i++], -1, +1 ) )
+                  object.A2 = A2;
+            }
+
+            if ( m_format.fld_A3 )
+            {
+               float A3;
+               if ( ParseRealToken( A3, tokens[i++], -1, +1 ) )
+                  object.A3 = A3;
+            }
+
+            if ( m_format.fld_DT )
+            {
+               float DT;
+               if ( ParseRealToken( DT, tokens[i++], -4000, +4000 ) )
+                  object.DT = DT;
             }
 
             objects << object;
@@ -384,7 +580,7 @@ __matched:
             if ( m_maxCount > 0 )
                if ( ++count == m_maxCount )
                   break;
-         } // for
+         } // for each text line
 
          objects.Sort();
 
@@ -832,13 +1028,57 @@ Array<TextDatabase::FormatDescription> TextDatabase::FormatDescription::Parse( c
                         format.fld_G.pos = pos;
                         format.fld_G.width = width;
                         break;
+                     case 0x58e0e06a: // 'M1'
+                        format.fld_M1.pos = pos;
+                        format.fld_M1.width = width;
+                        break;
+                     case 0xdc7bc926: // 'K1'
+                        format.fld_K1.pos = pos;
+                        format.fld_K1.width = width;
+                        break;
+                     case 0x5f70403b: // 'M2'
+                        format.fld_M2.pos = pos;
+                        format.fld_M2.width = width;
+                        break;
+                     case 0x99b14dc1: // 'K2'
+                        format.fld_K2.pos = pos;
+                        format.fld_K2.width = width;
+                        break;
+                     case 0x89e1b136: // 'PC'
+                        format.fld_PC.pos = pos;
+                        format.fld_PC.width = width;
+                        break;
                      case 0x81f9bc9e: // 'B_V'
                         format.fld_B_V.pos = pos;
                         format.fld_B_V.width = width;
                         break;
+                     case 0x31905dd6: // 'U_B'
+                        format.fld_U_B.pos = pos;
+                        format.fld_U_B.width = width;
+                        break;
+                     case 0x6e53651f: // 'I_R'
+                        format.fld_I_R.pos = pos;
+                        format.fld_I_R.width = width;
+                        break;
                      case 0x94a883a6: // 'D'
                         format.fld_D.pos = pos;
                         format.fld_D.width = width;
+                        break;
+                     case 0xe082e157: // 'A1'
+                        format.fld_A1.pos = pos;
+                        format.fld_A1.width = width;
+                        break;
+                     case 0xcdeec6da: // 'A2'
+                        format.fld_A2.pos = pos;
+                        format.fld_A2.width = width;
+                        break;
+                     case 0x71cdccd9: // 'A3'
+                        format.fld_A3.pos = pos;
+                        format.fld_A3.width = width;
+                        break;
+                     case 0xd38d99ad: // 'DT'
+                        format.fld_DT.pos = pos;
+                        format.fld_DT.width = width;
                         break;
                      case 0x2cd5278b: // 'a'
                         format.fld_a.pos = pos;
@@ -1055,4 +1295,4 @@ Array<TextDatabase::FormatDescription> TextDatabase::FormatDescription::Parse( c
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF TextDatabase.cpp - Released 2024-03-20T10:42:12Z
+// EOF TextDatabase.cpp - Released 2024-05-07T15:28:00Z

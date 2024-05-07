@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.9.8
+// Standard ImageCalibration Process Module Version 2.1.0
 // ----------------------------------------------------------------------------
-// LocalNormalizationInstance.cpp - Released 2024-03-20T10:42:12Z
+// LocalNormalizationInstance.cpp - Released 2024-05-07T15:28:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -153,7 +153,7 @@ LocalNormalizationInstance::LocalNormalizationInstance( const MetaProcess* P )
    , p_noGUIMessages( TheLNNoGUIMessagesParameter->DefaultValue() ) // ### DEPRECATED
    , p_autoMemoryLimit( TheLNAutoMemoryLimitParameter->DefaultValue() )
    , p_outputDirectory( TheLNOutputDirectoryParameter->DefaultValue() )
-   , p_outputExtension( TheLNOutputExtensionParameter->DefaultValue() )
+   , p_outputExtension( TheLNOutputExtensionParameter->DefaultValue() ) // ### DEPRECATED
    , p_outputPrefix( TheLNOutputPrefixParameter->DefaultValue() )
    , p_outputPostfix( TheLNOutputPostfixParameter->DefaultValue() )
    , p_overwriteExistingFiles( TheLNOverwriteExistingFilesParameter->DefaultValue() )
@@ -2045,14 +2045,7 @@ __rcr_end:
 
       if ( GeneratesNormalizedImages() )
       {
-         String fileExtension = m_instance.p_outputExtension.Trimmed();
-         if ( fileExtension.IsEmpty() )
-            fileExtension = File::ExtractExtension( m_targetFilePath ).Trimmed();
-         if ( fileExtension.IsEmpty() )
-            throw Error( "Unable to determine an output file extension: " + m_targetFilePath );
-         if ( !fileExtension.StartsWith( '.' ) )
-            fileExtension.Prepend( '.' );
-
+         const String fileExtension = ".xisf";
          m_outputFilePath = fileDir + m_instance.p_outputPrefix + fileName + m_instance.p_outputPostfix + fileExtension;
 
          console.WriteLn( "<end><cbr>Writing output file: <raw>" + m_outputFilePath + "</raw>" );
@@ -2064,8 +2057,8 @@ __rcr_end:
             console.NoteLn( "* File already exists, writing to: <raw>" + m_outputFilePath + "</raw>" );
 
          FileFormat outputFormat( fileExtension, false/*read*/, true/*write*/ );
-         FileFormatInstance outputFile( outputFormat );
 
+         FileFormatInstance outputFile( outputFormat );
          if ( !outputFile.Create( m_outputFilePath, m_instance.p_outputHints ) )
             throw CaughtException();
 
@@ -2944,4 +2937,4 @@ size_type LocalNormalizationInstance::ParameterLength( const MetaParameter* p, s
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationInstance.cpp - Released 2024-03-20T10:42:12Z
+// EOF LocalNormalizationInstance.cpp - Released 2024-05-07T15:28:00Z

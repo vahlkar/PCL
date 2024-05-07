@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
-// Standard EphemerisGeneration Process Module Version 1.2.6
+// Standard EphemerisGeneration Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// EphemerisGeneratorInterface.cpp - Released 2024-03-20T10:42:12Z
+// EphemerisGeneratorInterface.cpp - Released 2024-05-07T15:28:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -50,7 +50,6 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#include "Elements.h"
 #include "Ephemerides.h"
 #include "EphemerisGeneratorInterface.h"
 #include "EphemerisGeneratorParameters.h"
@@ -174,6 +173,7 @@ bool EphemerisGeneratorInterface::RequiresInstanceValidation() const
 bool EphemerisGeneratorInterface::ImportProcess( const ProcessImplementation& p )
 {
    m_instance.Assign( p );
+   m_GMS = 0; // force update
    UpdateControls();
    return true;
 }
@@ -240,16 +240,6 @@ void EphemerisGeneratorInterface::UpdateControls()
    GUI->ObjectId_Edit.SetText( m_instance.p_objectId );
    GUI->ObjectName_Edit.SetText( m_instance.p_objectName );
 
-   GUI->H_NumericEdit.SetValue( m_instance.p_H );
-   GUI->G_NumericEdit.SetValue( m_instance.p_G );
-   GUI->B_V_NumericEdit.SetValue( m_instance.p_B_V );
-   GUI->B_V_CheckBox.SetChecked( m_instance.p_B_V_defined );
-   GUI->D_NumericEdit.SetValue( m_instance.p_D );
-   GUI->D_CheckBox.SetChecked( m_instance.p_D_defined );
-
-   GUI->B_V_NumericEdit.Enable( m_instance.p_B_V_defined );
-   GUI->D_NumericEdit.Enable( m_instance.p_D_defined );
-
    GUI->ObjectParameters_Control.Enable( m_instance.p_workingMode != EGWorkingMode::DatabaseObjects );
 
    GUI->Database_GroupBox.SetChecked( m_instance.p_workingMode == EGWorkingMode::DatabaseObjects );
@@ -263,6 +253,70 @@ void EphemerisGeneratorInterface::UpdateControls()
 
    GUI->UseRegularExpressions_CheckBox.SetChecked( m_instance.p_useRegularExpressions );
    GUI->ExcludeCoreAsteroids_CheckBox.SetChecked( m_instance.p_excludeCoreAsteroids );
+
+   GUI->H_CheckBox.SetChecked( m_instance.p_H_defined );
+   GUI->H_NumericEdit.SetValue( m_instance.p_H );
+   GUI->H_NumericEdit.Enable( m_instance.p_H_defined );
+
+   GUI->G_CheckBox.SetChecked( m_instance.p_G_defined );
+   GUI->G_NumericEdit.SetValue( m_instance.p_G );
+   GUI->G_NumericEdit.Enable( m_instance.p_G_defined );
+
+   GUI->M1_CheckBox.SetChecked( m_instance.p_M1_defined );
+   GUI->M1_NumericEdit.SetValue( m_instance.p_M1 );
+   GUI->M1_NumericEdit.Enable( m_instance.p_M1_defined );
+
+   GUI->K1_CheckBox.SetChecked( m_instance.p_K1_defined );
+   GUI->K1_NumericEdit.SetValue( m_instance.p_K1 );
+   GUI->K1_NumericEdit.Enable( m_instance.p_K1_defined );
+
+   GUI->M2_CheckBox.SetChecked( m_instance.p_M2_defined );
+   GUI->M2_NumericEdit.SetValue( m_instance.p_M2 );
+   GUI->M2_NumericEdit.Enable( m_instance.p_M2_defined );
+
+   GUI->K2_CheckBox.SetChecked( m_instance.p_K2_defined );
+   GUI->K2_NumericEdit.SetValue( m_instance.p_K2 );
+   GUI->K2_NumericEdit.Enable( m_instance.p_K2_defined );
+
+   GUI->PC_CheckBox.SetChecked( m_instance.p_PC_defined );
+   GUI->PC_NumericEdit.SetValue( m_instance.p_PC );
+   GUI->PC_NumericEdit.Enable( m_instance.p_PC_defined );
+
+   GUI->B_V_CheckBox.SetChecked( m_instance.p_B_V_defined );
+   GUI->B_V_NumericEdit.SetValue( m_instance.p_B_V );
+   GUI->B_V_NumericEdit.Enable( m_instance.p_B_V_defined );
+
+   GUI->U_B_CheckBox.SetChecked( m_instance.p_U_B_defined );
+   GUI->U_B_NumericEdit.SetValue( m_instance.p_U_B );
+   GUI->U_B_NumericEdit.Enable( m_instance.p_U_B_defined );
+
+   GUI->I_R_CheckBox.SetChecked( m_instance.p_I_R_defined );
+   GUI->I_R_NumericEdit.SetValue( m_instance.p_I_R );
+   GUI->I_R_NumericEdit.Enable( m_instance.p_I_R_defined );
+
+   GUI->D_CheckBox.SetChecked( m_instance.p_D_defined );
+   GUI->D_NumericEdit.SetValue( m_instance.p_D );
+   GUI->D_NumericEdit.Enable( m_instance.p_D_defined );
+
+   GUI->PhysicalParameters_Control.Enable( m_instance.p_workingMode != EGWorkingMode::DatabaseObjects );
+
+   GUI->A1_CheckBox.SetChecked( m_instance.p_A1_defined );
+   GUI->A1_NumericEdit.SetValue( m_instance.p_A1 );
+   GUI->A1_NumericEdit.Enable( m_instance.p_A1_defined );
+
+   GUI->A2_CheckBox.SetChecked( m_instance.p_A2_defined );
+   GUI->A2_NumericEdit.SetValue( m_instance.p_A2 );
+   GUI->A2_NumericEdit.Enable( m_instance.p_A2_defined );
+
+   GUI->A3_CheckBox.SetChecked( m_instance.p_A3_defined );
+   GUI->A3_NumericEdit.SetValue( m_instance.p_A3 );
+   GUI->A3_NumericEdit.Enable( m_instance.p_A3_defined );
+
+   GUI->DT_CheckBox.SetChecked( m_instance.p_DT_defined );
+   GUI->DT_NumericEdit.SetValue( m_instance.p_DT );
+   GUI->DT_NumericEdit.Enable( m_instance.p_DT_defined );
+
+   GUI->NonGravitationalParameters_Control.Enable( m_instance.p_workingMode != EGWorkingMode::DatabaseObjects );
 
    GUI->FundamentalEphemerides_Edit.SetText( m_instance.p_fundamentalFilePath.IsEmpty() ?
                                     DEFAULT_CORE_XEPH_FILE_TAG : m_instance.p_fundamentalFilePath );
@@ -284,6 +338,7 @@ void EphemerisGeneratorInterface::UpdateControls()
    GUI->SeparateEarthMoon_CheckBox.SetChecked( m_instance.p_separateEarthMoonPerturbers );
    GUI->RelativisticPerturbations_CheckBox.SetChecked( m_instance.p_relativisticPerturbations );
    GUI->FigureEffects_CheckBox.SetChecked( m_instance.p_figureEffects );
+   GUI->NonGravitationalPerturbations_CheckBox.SetChecked( m_instance.p_nonGravitationalPerturbations );
 
    GUI->StartTime_Edit.SetText( TimeParameterValueToString( m_instance.p_startTimeJD ) );
    GUI->EndTime_Edit.SetText( TimeParameterValueToString( m_instance.p_endTimeJD ) );
@@ -312,25 +367,28 @@ void EphemerisGeneratorInterface::UpdateControls()
 
 void EphemerisGeneratorInterface::UpdateElementDependencies( int idx )
 {
+   if ( m_GMS == 0 )
+      m_GMS = Ephemerides( m_instance, true/*fundamentalOnly*/ ).GMS();
+
    switch ( idx )
    {
    case a_idx:
-      m_instance.el_q = PerihelionDistanceFromSemimajorAxis( m_instance.p_elements );
+      m_instance.el_q = m_instance.ToOsculatingElements().PerihelionDistanceFromSemimajorAxis();
       break;
    case q_idx:
-      m_instance.el_a = SemimajorAxisFromPerihelionDistance( m_instance.p_elements );
+      m_instance.el_a = m_instance.ToOsculatingElements().SemimajorAxisFromPerihelionDistance();
       break;
    case e_idx:
-      if ( NearParabolic( m_instance.p_elements ) )
-         m_instance.el_a = SemimajorAxisFromPerihelionDistance( m_instance.p_elements );
+      if ( m_instance.ToOsculatingElements().IsNearParabolic() )
+         m_instance.el_a = m_instance.ToOsculatingElements().SemimajorAxisFromPerihelionDistance();
       else
-         m_instance.el_q = PerihelionDistanceFromSemimajorAxis( m_instance.p_elements );
+         m_instance.el_q = m_instance.ToOsculatingElements().PerihelionDistanceFromSemimajorAxis();
       break;
    case M_idx:
-      m_instance.el_T = TimeOfPerihelionPassageFromMeanAnomaly( m_instance.p_elements, m_instance.p_epochJD );
+      m_instance.el_T = m_instance.ToOsculatingElements().TimeOfPerihelionPassageFromMeanAnomaly( m_instance.p_epochJD, m_GMS ).JD();
       break;
    case T_idx:
-      m_instance.el_M = MeanAnomalyFromTimeOfPerihelionPassage( m_instance.p_elements, m_instance.p_epochJD );
+      m_instance.el_M = m_instance.ToOsculatingElements().MeanAnomalyFromTimeOfPerihelionPassage( m_instance.p_epochJD, m_GMS );
       break;
    default:
       break;
@@ -341,10 +399,10 @@ void EphemerisGeneratorInterface::UpdateElementDependencies( int idx )
    case a_idx:
    case q_idx:
    case e_idx:
-      if ( NearParabolic( m_instance.p_elements ) )
-         m_instance.el_M = MeanAnomalyFromTimeOfPerihelionPassage( m_instance.p_elements, m_instance.p_epochJD );
+      if ( m_instance.ToOsculatingElements().IsNearParabolic() )
+         m_instance.el_M = m_instance.ToOsculatingElements().MeanAnomalyFromTimeOfPerihelionPassage( m_instance.p_epochJD, m_GMS );
       else
-         m_instance.el_T = TimeOfPerihelionPassageFromMeanAnomaly( m_instance.p_elements, m_instance.p_epochJD );
+         m_instance.el_T = m_instance.ToOsculatingElements().TimeOfPerihelionPassageFromMeanAnomaly( m_instance.p_epochJD, m_GMS ).JD();
       break;
    default:
       break;
@@ -462,6 +520,12 @@ void EphemerisGeneratorInterface::e_FilePathEditCompleted( Edit& sender )
          text = DEFAULT_CORE_XEPH_FILE_TAG;
 
    sender.SetText( text );
+
+   if ( sender == GUI->FundamentalEphemerides_Edit )
+   {
+      m_GMS = 0; // force update
+      UpdateControls();
+   }
 }
 
 // ----------------------------------------------------------------------------
@@ -537,10 +601,33 @@ void EphemerisGeneratorInterface::e_EditValueUpdated( NumericEdit& sender, doubl
       m_instance.p_H = value;
    else if ( sender == GUI->G_NumericEdit )
       m_instance.p_G = value;
+   else if ( sender == GUI->M1_NumericEdit )
+      m_instance.p_M1 = value;
+   else if ( sender == GUI->K1_NumericEdit )
+      m_instance.p_K1 = value;
+   else if ( sender == GUI->M2_NumericEdit )
+      m_instance.p_M2 = value;
+   else if ( sender == GUI->K2_NumericEdit )
+      m_instance.p_K2 = value;
+   else if ( sender == GUI->PC_NumericEdit )
+      m_instance.p_PC = value;
    else if ( sender == GUI->B_V_NumericEdit )
       m_instance.p_B_V = value;
+   else if ( sender == GUI->U_B_NumericEdit )
+      m_instance.p_U_B = value;
+   else if ( sender == GUI->I_R_NumericEdit )
+      m_instance.p_I_R = value;
    else if ( sender == GUI->D_NumericEdit )
       m_instance.p_D = value;
+
+   else if ( sender == GUI->A1_NumericEdit )
+      m_instance.p_A1 = value;
+   else if ( sender == GUI->A2_NumericEdit )
+      m_instance.p_A2 = value;
+   else if ( sender == GUI->A3_NumericEdit )
+      m_instance.p_A3 = value;
+   else if ( sender == GUI->DT_NumericEdit )
+      m_instance.p_DT = value;
 
    else if ( sender == GUI->MaxTruncationError_NumericEdit )
       m_instance.p_ephemerisMaxTruncationError = value;
@@ -619,9 +706,7 @@ void EphemerisGeneratorInterface::e_Click( Button& sender, bool checked )
       r = Position::EquatorialToEcliptic( r, P.EpsA() );
       v = Position::EquatorialToEcliptic( v, P.EpsA() );
 
-      Vector el;
-      OrbitalElementsFromStateVectors( el, r, v, m_instance.p_epochJD, eph.GMS() );
-      m_instance.p_elements = el;
+      m_instance.FromOsculatingElements( OsculatingElements::FromStateVectors( r, v, m_instance.p_epochJD, m_GMS = eph.GMS() ) );
       m_instance.p_workingMode = EGWorkingMode::OrbitalElements;
       UpdateControls();
    }
@@ -629,7 +714,7 @@ void EphemerisGeneratorInterface::e_Click( Button& sender, bool checked )
    {
       Ephemerides eph( m_instance, true/*fundamentalOnly*/ );
       Vector r, v;
-      StateVectorsFromOrbitalElements( r, v, m_instance.p_elements, m_instance.p_epochJD, eph.GMS() );
+      m_instance.ToOsculatingElements().ToStateVectors( r, v, m_instance.p_epochJD, m_GMS = eph.GMS() );
 
       pcl::Position P( TimePoint::J2000(), "TDB" );
       r = Position::EclipticToEquatorial( r, P.EpsA() );
@@ -646,14 +731,79 @@ void EphemerisGeneratorInterface::e_Click( Button& sender, bool checked )
       m_instance.p_workingMode = EGWorkingMode::StateVectors;
       UpdateControls();
    }
+   else if ( sender == GUI->H_CheckBox )
+   {
+      m_instance.p_H_defined = checked;
+      UpdateControls();
+   }
+   else if ( sender == GUI->G_CheckBox )
+   {
+      m_instance.p_G_defined = checked;
+      UpdateControls();
+   }
+   else if ( sender == GUI->M1_CheckBox )
+   {
+      m_instance.p_M1_defined = checked;
+      UpdateControls();
+   }
+   else if ( sender == GUI->K1_CheckBox )
+   {
+      m_instance.p_K1_defined = checked;
+      UpdateControls();
+   }
+   else if ( sender == GUI->M2_CheckBox )
+   {
+      m_instance.p_M2_defined = checked;
+      UpdateControls();
+   }
+   else if ( sender == GUI->K2_CheckBox )
+   {
+      m_instance.p_K2_defined = checked;
+      UpdateControls();
+   }
+   else if ( sender == GUI->PC_CheckBox )
+   {
+      m_instance.p_PC_defined = checked;
+      UpdateControls();
+   }
    else if ( sender == GUI->B_V_CheckBox )
    {
       m_instance.p_B_V_defined = checked;
       UpdateControls();
    }
+   else if ( sender == GUI->U_B_CheckBox )
+   {
+      m_instance.p_U_B_defined = checked;
+      UpdateControls();
+   }
+   else if ( sender == GUI->I_R_CheckBox )
+   {
+      m_instance.p_I_R_defined = checked;
+      UpdateControls();
+   }
    else if ( sender == GUI->D_CheckBox )
    {
       m_instance.p_D_defined = checked;
+      UpdateControls();
+   }
+   else if ( sender == GUI->A1_CheckBox )
+   {
+      m_instance.p_A1_defined = checked;
+      UpdateControls();
+   }
+   else if ( sender == GUI->A2_CheckBox )
+   {
+      m_instance.p_A2_defined = checked;
+      UpdateControls();
+   }
+   else if ( sender == GUI->A3_CheckBox )
+   {
+      m_instance.p_A3_defined = checked;
+      UpdateControls();
+   }
+   else if ( sender == GUI->DT_CheckBox )
+   {
+      m_instance.p_DT_defined = checked;
       UpdateControls();
    }
    else if ( sender == GUI->UseRegularExpressions_CheckBox )
@@ -696,12 +846,52 @@ void EphemerisGeneratorInterface::e_Click( Button& sender, bool checked )
       m_instance.p_epochJD = objects[0].epochJD;
       m_instance.p_objectId = objects[0].id;
       m_instance.p_objectName = objects[0].name;
-      m_instance.p_H = objects[0].H.OrElse( 14.0 );
-      m_instance.p_G = objects[0].G.OrElse( 0.15 );
+
+      m_instance.p_H_defined = objects[0].H.IsDefined();
+      if ( m_instance.p_H_defined )
+         m_instance.p_H = objects[0].H();
+      m_instance.p_G_defined = objects[0].G.IsDefined();
+      if ( m_instance.p_G_defined )
+         m_instance.p_G = objects[0].G();
+      m_instance.p_M1_defined = objects[0].M1.IsDefined();
+      if ( m_instance.p_M1_defined )
+         m_instance.p_M1 = objects[0].M1();
+      m_instance.p_K1_defined = objects[0].K1.IsDefined();
+      if ( m_instance.p_K1_defined )
+         m_instance.p_K1 = objects[0].K1();
+      m_instance.p_M2_defined = objects[0].M2.IsDefined();
+      if ( m_instance.p_M2_defined )
+         m_instance.p_M2 = objects[0].M2();
+      m_instance.p_K2_defined = objects[0].K2.IsDefined();
+      if ( m_instance.p_K2_defined )
+         m_instance.p_K2 = objects[0].K2();
+      m_instance.p_PC_defined = objects[0].PC.IsDefined();
+      if ( m_instance.p_PC_defined )
+         m_instance.p_PC = objects[0].PC();
       m_instance.p_B_V_defined = objects[0].B_V.IsDefined();
-      m_instance.p_B_V = objects[0].B_V.OrElse( 0.0 );
+      if ( m_instance.p_B_V_defined )
+         m_instance.p_B_V = objects[0].B_V();
+      m_instance.p_U_B_defined = objects[0].U_B.IsDefined();
+      if ( m_instance.p_U_B_defined )
+         m_instance.p_U_B = objects[0].U_B();
+      m_instance.p_I_R_defined = objects[0].I_R.IsDefined();
+      if ( m_instance.p_I_R_defined )
+         m_instance.p_I_R = objects[0].I_R();
       m_instance.p_D_defined = objects[0].D.IsDefined();
-      m_instance.p_D = objects[0].D.OrElse( 0.0 );
+      if ( m_instance.p_D_defined )
+         m_instance.p_D = objects[0].D();
+      m_instance.p_A1_defined = objects[0].A1.IsDefined();
+      if ( m_instance.p_A1_defined )
+         m_instance.p_A1 = objects[0].A1();
+      m_instance.p_A2_defined = objects[0].A2.IsDefined();
+      if ( m_instance.p_A2_defined )
+         m_instance.p_A2 = objects[0].A2();
+      m_instance.p_A3_defined = objects[0].A3.IsDefined();
+      if ( m_instance.p_A3_defined )
+         m_instance.p_A3 = objects[0].A3();
+      m_instance.p_DT_defined = objects[0].DT.IsDefined();
+      if ( m_instance.p_DT_defined )
+         m_instance.p_DT = objects[0].DT();
 
       UpdateControls();
    }
@@ -731,35 +921,49 @@ void EphemerisGeneratorInterface::e_Click( Button& sender, bool checked )
       String text;
       if ( gotElements )
          text <<
-"  #    " << idHdr << ' ' << nameHdr <<   "     Epoch       H    G         a              q             e            i             M            T            L.Node       A.Per\n"
-"------ " << idHdr1 << ' ' << nameHdr1 << " ------------- ----- ---- -------------- -------------- ------------ ------------ ------------ ---------------- ----------- -----------\n"
-"       " << idHdr2 << ' ' << nameHdr2 << "     JD TDB      mag         au             au                           deg          deg           JD TDB         deg         deg\n"
-"====== " << idHdr3 << ' ' << nameHdr3 << " ============= ===== ==== ============== ============== ============ ============ ============ ================ =========== ===========\n";
+"  #    " << idHdr  << ' ' << nameHdr  << "     Epoch                 a                  q               e              i              M              T             L.Node         A.Per       H    G    M1    K1    M2    K2    PC    D        A1           A2           A3           DT\n"
+"------ " << idHdr1 << ' ' << nameHdr1 << " ---------------- -------------------- ---------------- -------------- -------------- -------------- ---------------- ------------- ------------- ----- ---- ----- ----- ----- ----- ---- ----- ------------ ------------ ------------ -----------\n"
+"       " << idHdr2 << ' ' << nameHdr2 << "      JD TDB             au               au                               deg            deg             JD TDB         deg           deg          mag        mag         mag               km   au/day^2     au/day^2     au/day^2        day\n"
+"====== " << idHdr3 << ' ' << nameHdr3 << " ================ ==================== ================ ============== ============== ============== ================ ============= ============= ===== ==== ===== ===== ===== ===== ==== ===== ============ ============ ============ ===========\n";
       else
          text <<
-"  #    " << idHdr << ' ' << nameHdr <<   "     Epoch       H    G         x              y              z             vx            vy            vz\n"
-"------ " << idHdr1 << ' ' << nameHdr1 << " ------------- ----- ---- -------------- -------------- -------------- ------------- ------------- -------------\n"
-"       " << idHdr2 << ' ' << nameHdr2 << "     JD TDB      mag         au             au             au            au/day        au/day        au/day\n"
-"====== " << idHdr3 << ' ' << nameHdr3 << " ============= ===== ==== ============== ============== ============== ============= ============= =============\n";
+"  #    " << idHdr  << ' ' << nameHdr  << "     Epoch              x              y              z             vx            vy            vz         H    G    M1    K1    M2    K2    PC    D        A1           A2           A3           DT\n"
+"------ " << idHdr1 << ' ' << nameHdr1 << " ---------------- -------------- -------------- -------------- ------------- ------------- ------------- ----- ---- ----- ----- ----- ----- ---- ----- ------------ ------------ ------------ -----------\n"
+"       " << idHdr2 << ' ' << nameHdr2 << "      JD TDB         au             au             au            au/day        au/day        au/day        mag        mag         mag               km   au/day^2     au/day^2     au/day^2        day\n"
+"====== " << idHdr3 << ' ' << nameHdr3 << " ================ ============== ============== ============== ============= ============= ============= ===== ==== ===== ===== ===== ===== ==== ===== ============ ============ ============ ===========\n";
 
       int n = 1;
       for ( TextDatabase::ObjectData& o : objects )
       {
-         text << String( n++ ).RightJustified( 6 ) << ' '
+         String line;
+         line << String( n++ ).RightJustified( 6 ) << ' '
               << o.id.RightJustified( idLength ) << ' '
               << o.name.LeftJustified( nameLength ) << ' '
-              << String().Format( "%13.5f", o.epochJD ) << ' '
-              << (o.H.IsDefined() ? String().Format( "%5.2f", o.H() ) : String( ' ', 5 )) << ' '
-              << (o.G.IsDefined() ? String().Format( "%4.2f", o.G() ) : String( ' ', 4 )) << ' ';
+              << String().Format( "%16.8f", o.epochJD ) << ' ';
 
          if ( gotElements )
-            text << String().Format( "%14.10f %14.10f %12.10f %12.7f %12.7f %16.7f %11.7f %11.7f\n"
+            line << String().Format( "%20.12f %16.12f %14.12f %14.9f %14.9f %16.8f %13.9f %13.9f"
                                    , o.state[a_idx], o.state[q_idx], o.state[e_idx], o.state[i_idx]
                                    , o.state[M_idx], o.state[T_idx], o.state[O_idx], o.state[w_idx] );
          else // vectors
-            text << String().Format( "%+14.10f %+14.10f %+14.10f %+13.10f %+13.10f %+13.10f\n"
+            line << String().Format( "%+14.10f %+14.10f %+14.10f %+13.10f %+13.10f %+13.10f"
                                    , o.state[0], o.state[1], o.state[2]
                                    , o.state[3], o.state[4], o.state[5] );
+
+         line << (o.H.IsDefined()  ? String().Format( " %5.2f",   o.H() ) :  String( ' ',  6 ))
+              << (o.G.IsDefined()  ? String().Format( " %4.2f",   o.G() ) :  String( ' ',  5 ))
+              << (o.M1.IsDefined() ? String().Format( " %5.2f",   o.M1() ) : String( ' ',  6 ))
+              << (o.K1.IsDefined() ? String().Format( " %5.2f",   o.K1() ) : String( ' ',  6 ))
+              << (o.M2.IsDefined() ? String().Format( " %5.2f",   o.M2() ) : String( ' ',  6 ))
+              << (o.K2.IsDefined() ? String().Format( " %5.2f",   o.K2() ) : String( ' ',  6 ))
+              << (o.PC.IsDefined() ? String().Format( " %4.2f",   o.PC() ) : String( ' ',  5 ))
+              << (o.D.IsDefined()  ? String().Format( " %5.1f",   o.D() ) :  String( ' ',  6 ))
+              << (o.A1.IsDefined() ? String().Format( " %+12.5e", o.A1() ) : String( ' ', 13 ))
+              << (o.A2.IsDefined() ? String().Format( " %+12.5e", o.A2() ) : String( ' ', 13 ))
+              << (o.A3.IsDefined() ? String().Format( " %+12.5e", o.A3() ) : String( ' ', 13 ))
+              << (o.DT.IsDefined() ? String().Format( " %+11.5f", o.DT() ) : String());
+
+         text << line.TrimmedRight() << '\n';
       }
 
       ObjectDataDialog( text ).Execute();
@@ -825,6 +1029,10 @@ void EphemerisGeneratorInterface::e_Click( Button& sender, bool checked )
    {
       m_instance.p_figureEffects = checked;
    }
+   else if ( sender == GUI->NonGravitationalPerturbations_CheckBox )
+   {
+      m_instance.p_nonGravitationalPerturbations = checked;
+   }
    else if ( sender == GUI->OutputXEPHFile_CheckBox )
    {
       m_instance.p_outputXEPHFile = checked;
@@ -886,6 +1094,59 @@ void EphemerisGeneratorInterface::e_GroupBoxCheck( GroupBox& sender, bool checke
       m_instance.p_workingMode = EGWorkingMode::DatabaseObjects;
 
    UpdateControls();
+}
+
+// ----------------------------------------------------------------------------
+
+void EphemerisGeneratorInterface::e_FileDrag( Control& sender, const Point& pos, const StringList& files, unsigned modifiers, bool& wantsFiles )
+{
+   if ( sender == GUI->Database_GroupBox || sender == GUI->DatabasePath_Edit )
+      wantsFiles = files.Length() == 1 && File::Exists( files[0] );
+   else if ( sender == GUI->FundamentalEphemerides_Edit
+          || sender == GUI->AsteroidEphemerides_Edit
+          || sender == GUI->KBOEphemerides_Edit
+          || sender == GUI->OutputXEPHFilePath_Edit )
+      wantsFiles = files.Length() == 1 && File::Exists( files[0] ) && File::ExtractExtension( files[0] ).CaseFolded() == ".xeph";
+}
+
+// ----------------------------------------------------------------------------
+
+void EphemerisGeneratorInterface::e_FileDrop( Control& sender, const Point& pos, const StringList& files, unsigned modifiers )
+{
+   if ( sender == GUI->Database_GroupBox )
+   {
+      if ( File::Exists( files[0] ) )
+      {
+         m_instance.p_workingMode = EGWorkingMode::DatabaseObjects;
+         m_instance.p_databaseFilePath = files[0];
+         UpdateControls();
+      }
+   }
+   else if ( sender == GUI->DatabasePath_Edit )
+   {
+      if ( File::Exists( files[0] ) )
+         GUI->DatabasePath_Edit.SetText( m_instance.p_databaseFilePath = files[0] );
+   }
+   else if ( sender == GUI->FundamentalEphemerides_Edit )
+   {
+      if ( File::Exists( files[0] ) )
+         GUI->FundamentalEphemerides_Edit.SetText( m_instance.p_fundamentalFilePath = files[0] );
+   }
+   else if ( sender == GUI->AsteroidEphemerides_Edit )
+   {
+      if ( File::Exists( files[0] ) )
+         GUI->AsteroidEphemerides_Edit.SetText( m_instance.p_asteroidsFilePath = files[0] );
+   }
+   else if ( sender == GUI->KBOEphemerides_Edit )
+   {
+      if ( File::Exists( files[0] ) )
+         GUI->KBOEphemerides_Edit.SetText( m_instance.p_KBOsFilePath = files[0] );
+   }
+   else if ( sender == GUI->OutputXEPHFilePath_Edit )
+   {
+      if ( File::Exists( files[0] ) )
+         GUI->OutputXEPHFilePath_Edit.SetText( m_instance.p_outputXEPHFilePath = files[0] );
+   }
 }
 
 // ----------------------------------------------------------------------------
@@ -1265,86 +1526,20 @@ EphemerisGeneratorInterface::GUIData::GUIData( EphemerisGeneratorInterface& w )
 
    //
 
-   H_NumericEdit.label.SetText( "H:" );
-   H_NumericEdit.label.SetFixedWidth( labelWidth1 );
-   H_NumericEdit.SetReal();
-   H_NumericEdit.EnableFixedPrecision();
-   H_NumericEdit.SetRange( TheEGHParameter->MinimumValue(), TheEGHParameter->MaximumValue() );
-   H_NumericEdit.SetPrecision( TheEGHParameter->Precision() );
-   H_NumericEdit.edit.SetStyleSheet( crdStyleSheet );
-   H_NumericEdit.sizer.AddStretch();
-   H_NumericEdit.SetToolTip( "<p>Absolute magnitude.</p>" );
-   H_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&EphemerisGeneratorInterface::e_EditValueUpdated, w );
-
-   B_V_CheckBox.SetText( "" );
-   B_V_CheckBox.SetToolTip( "<p>Checked if the B-V color index is available.</p>" );
-   B_V_CheckBox.OnClick( (Button::click_event_handler)&EphemerisGeneratorInterface::e_Click, w );
-
-   B_V_NumericEdit.label.SetText( "B-V:" );
-   B_V_NumericEdit.label.SetFixedWidth( labelWidth2 );
-   B_V_NumericEdit.SetReal();
-   B_V_NumericEdit.EnableFixedPrecision();
-   B_V_NumericEdit.SetRange( TheEGB_VParameter->MinimumValue(), TheEGB_VParameter->MaximumValue() );
-   B_V_NumericEdit.SetPrecision( TheEGB_VParameter->Precision() );
-   B_V_NumericEdit.edit.SetStyleSheet( crdStyleSheet );
-   B_V_NumericEdit.SetToolTip( "<p>B-V color index (mag).</p>" );
-   B_V_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&EphemerisGeneratorInterface::e_EditValueUpdated, w );
-
-   H_Sizer.Add( H_NumericEdit );
-   H_Sizer.AddSpacing( 12 );
-   H_Sizer.Add( B_V_CheckBox );
-   H_Sizer.Add( B_V_NumericEdit );
-   H_Sizer.AddStretch();
-
-   //
-
-   G_NumericEdit.label.SetText( "G:" );
-   G_NumericEdit.label.SetFixedWidth( labelWidth1 );
-   G_NumericEdit.SetReal();
-   G_NumericEdit.EnableFixedPrecision();
-   G_NumericEdit.SetRange( TheEGGParameter->MinimumValue(), TheEGGParameter->MaximumValue() );
-   G_NumericEdit.SetPrecision( TheEGGParameter->Precision() );
-   G_NumericEdit.edit.SetStyleSheet( crdStyleSheet );
-   G_NumericEdit.sizer.AddStretch();
-   G_NumericEdit.SetToolTip( "<p>Slope parameter.</p>" );
-   G_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&EphemerisGeneratorInterface::e_EditValueUpdated, w );
-
-   D_CheckBox.SetText( "" );
-   D_CheckBox.SetToolTip( "<p>Checked if the object's diameter is available.</p>" );
-   D_CheckBox.OnClick( (Button::click_event_handler)&EphemerisGeneratorInterface::e_Click, w );
-
-   D_NumericEdit.label.SetText( "D:" );
-   D_NumericEdit.label.SetFixedWidth( labelWidth2 );
-   D_NumericEdit.SetReal();
-   D_NumericEdit.EnableFixedPrecision();
-   D_NumericEdit.SetRange( TheEGDParameter->MinimumValue(), TheEGDParameter->MaximumValue() );
-   D_NumericEdit.SetPrecision( TheEGDParameter->Precision() );
-   D_NumericEdit.edit.SetStyleSheet( crdStyleSheet );
-   D_NumericEdit.SetToolTip( "<p>Object's mean diameter (km).</p>" );
-   D_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&EphemerisGeneratorInterface::e_EditValueUpdated, w );
-
-   G_Sizer.Add( G_NumericEdit );
-   G_Sizer.AddSpacing( 12 );
-   G_Sizer.Add( D_CheckBox );
-   G_Sizer.Add( D_NumericEdit );
-   G_Sizer.AddStretch();
-
-   //
-
    ObjectParameters_Sizer.SetSpacing( 4 );
    ObjectParameters_Sizer.Add( Epoch_Sizer );
    ObjectParameters_Sizer.Add( ObjectId_Sizer );
    ObjectParameters_Sizer.Add( ObjectName_Sizer );
-   ObjectParameters_Sizer.Add( H_Sizer );
-   ObjectParameters_Sizer.Add( G_Sizer );
 
    ObjectParameters_Control.SetSizer( ObjectParameters_Sizer );
 
    //
 
-   Database_GroupBox.SetTitle( "Database" );
+   Database_GroupBox.SetTitle( "Database Search" );
    Database_GroupBox.EnableTitleCheckBox();
    Database_GroupBox.OnCheck( (GroupBox::check_event_handler)&EphemerisGeneratorInterface::e_GroupBoxCheck, w );
+   Database_GroupBox.OnFileDrag( (Control::file_drag_event_handler)&EphemerisGeneratorInterface::e_FileDrag, w );
+   Database_GroupBox.OnFileDrop( (Control::file_drop_event_handler)&EphemerisGeneratorInterface::e_FileDrop, w );
 
    //
 
@@ -1362,6 +1557,8 @@ EphemerisGeneratorInterface::GUIData::GUIData( EphemerisGeneratorInterface& w )
    DatabasePath_Edit.SetToolTip( databasePathToolTip );
    DatabasePath_Edit.SetScaledMinWidth( 250 );
    DatabasePath_Edit.OnEditCompleted( (Edit::edit_event_handler)&EphemerisGeneratorInterface::e_FilePathEditCompleted, w );
+   DatabasePath_Edit.OnFileDrag( (Control::file_drag_event_handler)&EphemerisGeneratorInterface::e_FileDrag, w );
+   DatabasePath_Edit.OnFileDrop( (Control::file_drop_event_handler)&EphemerisGeneratorInterface::e_FileDrop, w );
 
    DatabasePath_ToolButton.SetIcon( Bitmap( w.ScaledResource( ":/browser/select-file.png" ) ) );
    DatabasePath_ToolButton.SetScaledFixedSize( 20, 20 );
@@ -1519,6 +1716,317 @@ EphemerisGeneratorInterface::GUIData::GUIData( EphemerisGeneratorInterface& w )
 
    //
 
+   PhysicalParameters_SectionBar.SetTitle( "Physical Parameters" );
+   PhysicalParameters_SectionBar.SetSection( PhysicalParameters_Control );
+   PhysicalParameters_SectionBar.SetToolTip( "<p>Physical properties of the object: asteroid and comet magnitude "
+      "parameters, color indices, and mean diameter.</p>" );
+
+   //
+
+   H_CheckBox.SetText( "" );
+   H_CheckBox.SetToolTip( "<p>Checked if the H parameter is available.</p>" );
+   H_CheckBox.OnClick( (Button::click_event_handler)&EphemerisGeneratorInterface::e_Click, w );
+
+   H_NumericEdit.label.SetText( "H:" );
+   H_NumericEdit.label.SetFixedWidth( labelWidth2 );
+   H_NumericEdit.SetReal();
+   H_NumericEdit.EnableFixedPrecision();
+   H_NumericEdit.SetRange( TheEGHParameter->MinimumValue(), TheEGHParameter->MaximumValue() );
+   H_NumericEdit.SetPrecision( TheEGHParameter->Precision() );
+   H_NumericEdit.edit.SetStyleSheet( crdStyleSheet );
+   H_NumericEdit.SetToolTip( "<p>Asteroid absolute magnitude.</p>" );
+   H_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&EphemerisGeneratorInterface::e_EditValueUpdated, w );
+
+   G_CheckBox.SetText( "" );
+   G_CheckBox.SetToolTip( "<p>Checked if the G parameter is available.</p>" );
+   G_CheckBox.OnClick( (Button::click_event_handler)&EphemerisGeneratorInterface::e_Click, w );
+
+   G_NumericEdit.label.SetText( "G:" );
+   G_NumericEdit.label.SetFixedWidth( labelWidth2 );
+   G_NumericEdit.SetReal();
+   G_NumericEdit.EnableFixedPrecision();
+   G_NumericEdit.SetRange( TheEGGParameter->MinimumValue(), TheEGGParameter->MaximumValue() );
+   G_NumericEdit.SetPrecision( TheEGGParameter->Precision() );
+   G_NumericEdit.edit.SetStyleSheet( crdStyleSheet );
+   G_NumericEdit.SetToolTip( "<p>Asteroid magnitude slope parameter.</p>" );
+   G_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&EphemerisGeneratorInterface::e_EditValueUpdated, w );
+
+   PhysicalParametersRow1_Sizer.AddStretch();
+   PhysicalParametersRow1_Sizer.Add( H_CheckBox );
+   PhysicalParametersRow1_Sizer.Add( H_NumericEdit );
+   PhysicalParametersRow1_Sizer.AddSpacing( 12 );
+   PhysicalParametersRow1_Sizer.Add( G_CheckBox );
+   PhysicalParametersRow1_Sizer.Add( G_NumericEdit );
+
+   //
+
+   M1_CheckBox.SetText( "" );
+   M1_CheckBox.SetToolTip( "<p>Checked if the M1 parameter is available.</p>" );
+   M1_CheckBox.OnClick( (Button::click_event_handler)&EphemerisGeneratorInterface::e_Click, w );
+
+   M1_NumericEdit.label.SetText( "M1:" );
+   M1_NumericEdit.label.SetFixedWidth( labelWidth2 );
+   M1_NumericEdit.SetReal();
+   M1_NumericEdit.EnableFixedPrecision();
+   M1_NumericEdit.SetRange( TheEGM1Parameter->MinimumValue(), TheEGM1Parameter->MaximumValue() );
+   M1_NumericEdit.SetPrecision( TheEGM1Parameter->Precision() );
+   M1_NumericEdit.edit.SetStyleSheet( crdStyleSheet );
+   M1_NumericEdit.SetToolTip( "<p>Comet total absolute magnitude.</p>" );
+   M1_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&EphemerisGeneratorInterface::e_EditValueUpdated, w );
+
+   K1_CheckBox.SetText( "" );
+   K1_CheckBox.SetToolTip( "<p>Checked if the K1 parameter is available.</p>" );
+   K1_CheckBox.OnClick( (Button::click_event_handler)&EphemerisGeneratorInterface::e_Click, w );
+
+   K1_NumericEdit.label.SetText( "K1:" );
+   K1_NumericEdit.label.SetFixedWidth( labelWidth2 );
+   K1_NumericEdit.SetReal();
+   K1_NumericEdit.EnableFixedPrecision();
+   K1_NumericEdit.SetRange( TheEGK1Parameter->MinimumValue(), TheEGK1Parameter->MaximumValue() );
+   K1_NumericEdit.SetPrecision( TheEGK1Parameter->Precision() );
+   K1_NumericEdit.edit.SetStyleSheet( crdStyleSheet );
+   K1_NumericEdit.SetToolTip( "<p>Comet total magnitude slope parameter.</p>" );
+   K1_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&EphemerisGeneratorInterface::e_EditValueUpdated, w );
+
+   PhysicalParametersRow2_Sizer.AddStretch();
+   PhysicalParametersRow2_Sizer.Add( M1_CheckBox );
+   PhysicalParametersRow2_Sizer.Add( M1_NumericEdit );
+   PhysicalParametersRow2_Sizer.AddSpacing( 12 );
+   PhysicalParametersRow2_Sizer.Add( K1_CheckBox );
+   PhysicalParametersRow2_Sizer.Add( K1_NumericEdit );
+
+   //
+
+   M2_CheckBox.SetText( "" );
+   M2_CheckBox.SetToolTip( "<p>Checked if the M2 parameter is available.</p>" );
+   M2_CheckBox.OnClick( (Button::click_event_handler)&EphemerisGeneratorInterface::e_Click, w );
+
+   M2_NumericEdit.label.SetText( "M2:" );
+   M2_NumericEdit.label.SetFixedWidth( labelWidth2 );
+   M2_NumericEdit.SetReal();
+   M2_NumericEdit.EnableFixedPrecision();
+   M2_NumericEdit.SetRange( TheEGM2Parameter->MinimumValue(), TheEGM2Parameter->MaximumValue() );
+   M2_NumericEdit.SetPrecision( TheEGM2Parameter->Precision() );
+   M2_NumericEdit.edit.SetStyleSheet( crdStyleSheet );
+   M2_NumericEdit.SetToolTip( "<p>Comet nuclear absolute magnitude.</p>" );
+   M2_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&EphemerisGeneratorInterface::e_EditValueUpdated, w );
+
+   K2_CheckBox.SetText( "" );
+   K2_CheckBox.SetToolTip( "<p>Checked if the K2 parameter is available.</p>" );
+   K2_CheckBox.OnClick( (Button::click_event_handler)&EphemerisGeneratorInterface::e_Click, w );
+
+   K2_NumericEdit.label.SetText( "K2:" );
+   K2_NumericEdit.label.SetFixedWidth( labelWidth2 );
+   K2_NumericEdit.SetReal();
+   K2_NumericEdit.EnableFixedPrecision();
+   K2_NumericEdit.SetRange( TheEGK2Parameter->MinimumValue(), TheEGK2Parameter->MaximumValue() );
+   K2_NumericEdit.SetPrecision( TheEGK2Parameter->Precision() );
+   K2_NumericEdit.edit.SetStyleSheet( crdStyleSheet );
+   K2_NumericEdit.SetToolTip( "<p>Comet nuclear magnitude slope parameter.</p>" );
+   K2_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&EphemerisGeneratorInterface::e_EditValueUpdated, w );
+
+   PC_CheckBox.SetText( "" );
+   PC_CheckBox.SetToolTip( "<p>Checked if the PC parameter is available.</p>" );
+   PC_CheckBox.OnClick( (Button::click_event_handler)&EphemerisGeneratorInterface::e_Click, w );
+
+   PC_NumericEdit.label.SetText( "PC:" );
+   PC_NumericEdit.label.SetFixedWidth( labelWidth2 );
+   PC_NumericEdit.SetReal();
+   PC_NumericEdit.EnableFixedPrecision();
+   PC_NumericEdit.SetRange( TheEGPCParameter->MinimumValue(), TheEGPCParameter->MaximumValue() );
+   PC_NumericEdit.SetPrecision( TheEGPCParameter->Precision() );
+   PC_NumericEdit.edit.SetStyleSheet( crdStyleSheet );
+   PC_NumericEdit.SetToolTip( "<p>Comet nuclear magnitude phase coefficient.</p>" );
+   PC_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&EphemerisGeneratorInterface::e_EditValueUpdated, w );
+
+   PhysicalParametersRow3_Sizer.AddStretch();
+   PhysicalParametersRow3_Sizer.Add( M2_CheckBox );
+   PhysicalParametersRow3_Sizer.Add( M2_NumericEdit );
+   PhysicalParametersRow3_Sizer.AddSpacing( 12 );
+   PhysicalParametersRow3_Sizer.Add( K2_CheckBox );
+   PhysicalParametersRow3_Sizer.Add( K2_NumericEdit );
+   PhysicalParametersRow3_Sizer.AddSpacing( 12 );
+   PhysicalParametersRow3_Sizer.Add( PC_CheckBox );
+   PhysicalParametersRow3_Sizer.Add( PC_NumericEdit );
+
+   //
+
+   B_V_CheckBox.SetText( "" );
+   B_V_CheckBox.SetToolTip( "<p>Checked if the B-V parameter is available.</p>" );
+   B_V_CheckBox.OnClick( (Button::click_event_handler)&EphemerisGeneratorInterface::e_Click, w );
+
+   B_V_NumericEdit.label.SetText( "B-V:" );
+   B_V_NumericEdit.label.SetFixedWidth( labelWidth2 );
+   B_V_NumericEdit.SetReal();
+   B_V_NumericEdit.EnableFixedPrecision();
+   B_V_NumericEdit.SetRange( TheEGB_VParameter->MinimumValue(), TheEGB_VParameter->MaximumValue() );
+   B_V_NumericEdit.SetPrecision( TheEGB_VParameter->Precision() );
+   B_V_NumericEdit.edit.SetStyleSheet( crdStyleSheet );
+   B_V_NumericEdit.SetToolTip( "<p>B-V color index (mag).</p>" );
+   B_V_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&EphemerisGeneratorInterface::e_EditValueUpdated, w );
+
+   U_B_CheckBox.SetText( "" );
+   U_B_CheckBox.SetToolTip( "<p>Checked if the U-B parameter is available.</p>" );
+   U_B_CheckBox.OnClick( (Button::click_event_handler)&EphemerisGeneratorInterface::e_Click, w );
+
+   U_B_NumericEdit.label.SetText( "U-B:" );
+   U_B_NumericEdit.label.SetFixedWidth( labelWidth2 );
+   U_B_NumericEdit.SetReal();
+   U_B_NumericEdit.EnableFixedPrecision();
+   U_B_NumericEdit.SetRange( TheEGU_BParameter->MinimumValue(), TheEGU_BParameter->MaximumValue() );
+   U_B_NumericEdit.SetPrecision( TheEGU_BParameter->Precision() );
+   U_B_NumericEdit.edit.SetStyleSheet( crdStyleSheet );
+   U_B_NumericEdit.SetToolTip( "<p>U-B color index (mag).</p>" );
+   U_B_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&EphemerisGeneratorInterface::e_EditValueUpdated, w );
+
+   I_R_CheckBox.SetText( "" );
+   I_R_CheckBox.SetToolTip( "<p>Checked if the I-R parameter is available.</p>" );
+   I_R_CheckBox.OnClick( (Button::click_event_handler)&EphemerisGeneratorInterface::e_Click, w );
+
+   I_R_NumericEdit.label.SetText( "I-R:" );
+   I_R_NumericEdit.label.SetFixedWidth( labelWidth2 );
+   I_R_NumericEdit.SetReal();
+   I_R_NumericEdit.EnableFixedPrecision();
+   I_R_NumericEdit.SetRange( TheEGI_RParameter->MinimumValue(), TheEGI_RParameter->MaximumValue() );
+   I_R_NumericEdit.SetPrecision( TheEGI_RParameter->Precision() );
+   I_R_NumericEdit.edit.SetStyleSheet( crdStyleSheet );
+   I_R_NumericEdit.SetToolTip( "<p>I-R color index (mag).</p>" );
+   I_R_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&EphemerisGeneratorInterface::e_EditValueUpdated, w );
+
+   PhysicalParametersRow4_Sizer.AddStretch();
+   PhysicalParametersRow4_Sizer.Add( B_V_CheckBox );
+   PhysicalParametersRow4_Sizer.Add( B_V_NumericEdit );
+   PhysicalParametersRow4_Sizer.AddSpacing( 12 );
+   PhysicalParametersRow4_Sizer.Add( U_B_CheckBox );
+   PhysicalParametersRow4_Sizer.Add( U_B_NumericEdit );
+   PhysicalParametersRow4_Sizer.AddSpacing( 12 );
+   PhysicalParametersRow4_Sizer.Add( I_R_CheckBox );
+   PhysicalParametersRow4_Sizer.Add( I_R_NumericEdit );
+
+   //
+
+   D_CheckBox.SetText( "" );
+   D_CheckBox.SetToolTip( "<p>Checked if the D parameter is available.</p>" );
+   D_CheckBox.OnClick( (Button::click_event_handler)&EphemerisGeneratorInterface::e_Click, w );
+
+   D_NumericEdit.label.SetText( "D:" );
+   D_NumericEdit.label.SetFixedWidth( labelWidth2 );
+   D_NumericEdit.SetReal();
+   D_NumericEdit.EnableFixedPrecision();
+   D_NumericEdit.SetRange( TheEGDParameter->MinimumValue(), TheEGDParameter->MaximumValue() );
+   D_NumericEdit.SetPrecision( TheEGDParameter->Precision() );
+   D_NumericEdit.edit.SetStyleSheet( crdStyleSheet );
+   D_NumericEdit.SetToolTip( "<p>Object's diameter (of the equivalent sphere, in km).</p>" );
+   D_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&EphemerisGeneratorInterface::e_EditValueUpdated, w );
+
+   PhysicalParametersRow5_Sizer.AddStretch();
+   PhysicalParametersRow5_Sizer.Add( D_CheckBox );
+   PhysicalParametersRow5_Sizer.Add( D_NumericEdit );
+
+   //
+
+   PhysicalParameters_Sizer.SetSpacing( 4 );
+   PhysicalParameters_Sizer.Add( PhysicalParametersRow1_Sizer );
+   PhysicalParameters_Sizer.Add( PhysicalParametersRow2_Sizer );
+   PhysicalParameters_Sizer.Add( PhysicalParametersRow3_Sizer );
+   PhysicalParameters_Sizer.Add( PhysicalParametersRow4_Sizer );
+   PhysicalParameters_Sizer.Add( PhysicalParametersRow5_Sizer );
+
+   PhysicalParameters_Control.SetSizer( PhysicalParameters_Sizer );
+
+   //
+
+   NonGravitationalParameters_SectionBar.SetTitle( "Non-Gravitational Perturbations" );
+   NonGravitationalParameters_SectionBar.SetSection( NonGravitationalParameters_Control );
+   NonGravitationalParameters_SectionBar.SetToolTip( "<p>Non-gravitational perturbations parameters (comets).</p>" );
+
+   //
+
+   A1_CheckBox.SetText( "" );
+   A1_CheckBox.SetToolTip( "<p>Checked if the A1 parameter is available.</p>" );
+   A1_CheckBox.OnClick( (Button::click_event_handler)&EphemerisGeneratorInterface::e_Click, w );
+
+   A1_NumericEdit.label.SetText( "A1:" );
+   A1_NumericEdit.label.SetFixedWidth( labelWidth2 );
+   A1_NumericEdit.SetReal();
+   A1_NumericEdit.EnableFixedPrecision();
+   A1_NumericEdit.EnableScientificNotation();
+   A1_NumericEdit.SetRange( TheEGA1Parameter->MinimumValue(), TheEGA1Parameter->MaximumValue() );
+   A1_NumericEdit.SetPrecision( TheEGA1Parameter->Precision() );
+   A1_NumericEdit.edit.SetStyleSheet( crdStyleSheet );
+   A1_NumericEdit.SetToolTip( "<p>Non-gravitational acceleration, radial component (au/day^2).</p>" );
+   A1_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&EphemerisGeneratorInterface::e_EditValueUpdated, w );
+
+   A2_CheckBox.SetText( "" );
+   A2_CheckBox.SetToolTip( "<p>Checked if the A2 parameter is available.</p>" );
+   A2_CheckBox.OnClick( (Button::click_event_handler)&EphemerisGeneratorInterface::e_Click, w );
+
+   A2_NumericEdit.label.SetText( "A2:" );
+   A2_NumericEdit.label.SetFixedWidth( labelWidth2 );
+   A2_NumericEdit.SetReal();
+   A2_NumericEdit.EnableFixedPrecision();
+   A2_NumericEdit.EnableScientificNotation();
+   A2_NumericEdit.SetRange( TheEGA2Parameter->MinimumValue(), TheEGA2Parameter->MaximumValue() );
+   A2_NumericEdit.SetPrecision( TheEGA2Parameter->Precision() );
+   A2_NumericEdit.edit.SetStyleSheet( crdStyleSheet );
+   A2_NumericEdit.SetToolTip( "<p>Non-gravitational acceleration, transverse component (au/day^2).</p>" );
+   A2_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&EphemerisGeneratorInterface::e_EditValueUpdated, w );
+
+   A3_CheckBox.SetText( "" );
+   A3_CheckBox.SetToolTip( "<p>Checked if the A3 parameter is available.</p>" );
+   A3_CheckBox.OnClick( (Button::click_event_handler)&EphemerisGeneratorInterface::e_Click, w );
+
+   A3_NumericEdit.label.SetText( "A3:" );
+   A3_NumericEdit.label.SetFixedWidth( labelWidth2 );
+   A3_NumericEdit.SetReal();
+   A3_NumericEdit.EnableFixedPrecision();
+   A3_NumericEdit.EnableScientificNotation();
+   A3_NumericEdit.SetRange( TheEGA3Parameter->MinimumValue(), TheEGA3Parameter->MaximumValue() );
+   A3_NumericEdit.SetPrecision( TheEGA3Parameter->Precision() );
+   A3_NumericEdit.edit.SetStyleSheet( crdStyleSheet );
+   A3_NumericEdit.SetToolTip( "<p>Non-gravitational acceleration, normal component (au/day^2).</p>" );
+   A3_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&EphemerisGeneratorInterface::e_EditValueUpdated, w );
+
+   NonGravitationalParametersRow1_Sizer.AddStretch();
+   NonGravitationalParametersRow1_Sizer.Add( A1_CheckBox );
+   NonGravitationalParametersRow1_Sizer.Add( A1_NumericEdit );
+   NonGravitationalParametersRow1_Sizer.AddSpacing( 12 );
+   NonGravitationalParametersRow1_Sizer.Add( A2_CheckBox );
+   NonGravitationalParametersRow1_Sizer.Add( A2_NumericEdit );
+   NonGravitationalParametersRow1_Sizer.AddSpacing( 12 );
+   NonGravitationalParametersRow1_Sizer.Add( A3_CheckBox );
+   NonGravitationalParametersRow1_Sizer.Add( A3_NumericEdit );
+
+   //
+
+   DT_CheckBox.SetText( "" );
+   DT_CheckBox.SetToolTip( "<p>Checked if the DT parameter is available.</p>" );
+   DT_CheckBox.OnClick( (Button::click_event_handler)&EphemerisGeneratorInterface::e_Click, w );
+
+   DT_NumericEdit.label.SetText( "DT:" );
+   DT_NumericEdit.label.SetFixedWidth( labelWidth2 );
+   DT_NumericEdit.SetReal();
+   DT_NumericEdit.EnableFixedPrecision();
+   DT_NumericEdit.SetRange( TheEGDTParameter->MinimumValue(), TheEGDTParameter->MaximumValue() );
+   DT_NumericEdit.SetPrecision( TheEGDTParameter->Precision() );
+   DT_NumericEdit.edit.SetStyleSheet( crdStyleSheet );
+   DT_NumericEdit.SetToolTip( "<p>Non-gravitational acceleration, perihelion time offset (days).</p>" );
+   DT_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&EphemerisGeneratorInterface::e_EditValueUpdated, w );
+
+   NonGravitationalParametersRow2_Sizer.AddStretch();
+   NonGravitationalParametersRow2_Sizer.Add( DT_CheckBox );
+   NonGravitationalParametersRow2_Sizer.Add( DT_NumericEdit );
+
+   //
+
+   NonGravitationalParameters_Sizer.SetSpacing( 4 );
+   NonGravitationalParameters_Sizer.Add( NonGravitationalParametersRow1_Sizer );
+   NonGravitationalParameters_Sizer.Add( NonGravitationalParametersRow2_Sizer );
+
+   NonGravitationalParameters_Control.SetSizer( NonGravitationalParameters_Sizer );
+
+   //
+
    NumericalIntegration_SectionBar.SetTitle( "Numerical Integration" );
    NumericalIntegration_SectionBar.SetSection( NumericalIntegration_Control );
    NumericalIntegration_SectionBar.SetToolTip( "<p>Working parameters for the numerical integration process.</p>" );
@@ -1575,6 +2083,8 @@ EphemerisGeneratorInterface::GUIData::GUIData( EphemerisGeneratorInterface& w )
    FundamentalEphemerides_Edit.OnEditCompleted( (Edit::edit_event_handler)&EphemerisGeneratorInterface::e_FilePathEditCompleted, w );
    FundamentalEphemerides_Edit.OnGetFocus( (Control::event_handler)&EphemerisGeneratorInterface::e_FilePathEditGetFocus, w );
    FundamentalEphemerides_Edit.OnLoseFocus( (Control::event_handler)&EphemerisGeneratorInterface::e_FilePathEditLoseFocus, w );
+   FundamentalEphemerides_Edit.OnFileDrag( (Control::file_drag_event_handler)&EphemerisGeneratorInterface::e_FileDrag, w );
+   FundamentalEphemerides_Edit.OnFileDrop( (Control::file_drop_event_handler)&EphemerisGeneratorInterface::e_FileDrop, w );
 
    FundamentalEphemerides_ToolButton.SetIcon( Bitmap( w.ScaledResource( ":/browser/select-file.png" ) ) );
    FundamentalEphemerides_ToolButton.SetScaledFixedSize( 20, 20 );
@@ -1620,6 +2130,8 @@ EphemerisGeneratorInterface::GUIData::GUIData( EphemerisGeneratorInterface& w )
    AsteroidEphemerides_Edit.OnEditCompleted( (Edit::edit_event_handler)&EphemerisGeneratorInterface::e_FilePathEditCompleted, w );
    AsteroidEphemerides_Edit.OnGetFocus( (Control::event_handler)&EphemerisGeneratorInterface::e_FilePathEditGetFocus, w );
    AsteroidEphemerides_Edit.OnLoseFocus( (Control::event_handler)&EphemerisGeneratorInterface::e_FilePathEditLoseFocus, w );
+   AsteroidEphemerides_Edit.OnFileDrag( (Control::file_drag_event_handler)&EphemerisGeneratorInterface::e_FileDrag, w );
+   AsteroidEphemerides_Edit.OnFileDrop( (Control::file_drop_event_handler)&EphemerisGeneratorInterface::e_FileDrop, w );
 
    AsteroidEphemerides_ToolButton.SetIcon( Bitmap( w.ScaledResource( ":/browser/select-file.png" ) ) );
    AsteroidEphemerides_ToolButton.SetScaledFixedSize( 20, 20 );
@@ -1656,6 +2168,10 @@ EphemerisGeneratorInterface::GUIData::GUIData( EphemerisGeneratorInterface& w )
    KBOEphemerides_Edit.SetToolTip( kboEphemeridesToolTip );
    KBOEphemerides_Edit.SetScaledMinWidth( 250 );
    KBOEphemerides_Edit.OnEditCompleted( (Edit::edit_event_handler)&EphemerisGeneratorInterface::e_FilePathEditCompleted, w );
+   KBOEphemerides_Edit.OnGetFocus( (Control::event_handler)&EphemerisGeneratorInterface::e_FilePathEditGetFocus, w );
+   KBOEphemerides_Edit.OnLoseFocus( (Control::event_handler)&EphemerisGeneratorInterface::e_FilePathEditLoseFocus, w );
+   KBOEphemerides_Edit.OnFileDrag( (Control::file_drag_event_handler)&EphemerisGeneratorInterface::e_FileDrag, w );
+   KBOEphemerides_Edit.OnFileDrop( (Control::file_drop_event_handler)&EphemerisGeneratorInterface::e_FileDrop, w );
 
    KBOEphemerides_ToolButton.SetIcon( Bitmap( w.ScaledResource( ":/browser/select-file.png" ) ) );
    KBOEphemerides_ToolButton.SetScaledFixedSize( 20, 20 );
@@ -1707,6 +2223,22 @@ EphemerisGeneratorInterface::GUIData::GUIData( EphemerisGeneratorInterface& w )
    FigureEffects_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    FigureEffects_Sizer.Add( FigureEffects_CheckBox );
 
+
+   //
+
+   NonGravitationalPerturbations_CheckBox.SetText( "Non-gravitational perturbations" );
+   NonGravitationalPerturbations_CheckBox.SetToolTip( "<p>Compute non-gravitational perturbations when the required "
+                        "data are available. This option normally applies only to comets with available "
+                        "non-gravitational acceleration parameters A1, A2, A3 and DT (see the Non-Gravitational "
+                        "Perturbations section). We implement the standard asymmetric model of D.K. Yeomans and "
+                        "P.W. Chodas (Astron. J. 98 (3), 1989).</p>"
+                        "<p>Under normal working conditions this option should always be enabled for the sake "
+                        "of accuracy in computed ephemerides. It can be disabled for testing purposes.</p>" );
+   NonGravitationalPerturbations_CheckBox.OnClick( (Button::click_event_handler)&EphemerisGeneratorInterface::e_Click, w );
+
+   NonGravitationalPerturbations_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   NonGravitationalPerturbations_Sizer.Add( NonGravitationalPerturbations_CheckBox );
+
    //
 
    NumericalIntegration_Sizer.SetSpacing( 4 );
@@ -1720,6 +2252,7 @@ EphemerisGeneratorInterface::GUIData::GUIData( EphemerisGeneratorInterface& w )
    NumericalIntegration_Sizer.Add( SeparateEarthMoon_Sizer );
    NumericalIntegration_Sizer.Add( RelativisticPerturbations_Sizer );
    NumericalIntegration_Sizer.Add( FigureEffects_Sizer );
+   NumericalIntegration_Sizer.Add( NonGravitationalPerturbations_Sizer );
 
    NumericalIntegration_Control.SetSizer( NumericalIntegration_Sizer );
 
@@ -1756,6 +2289,8 @@ EphemerisGeneratorInterface::GUIData::GUIData( EphemerisGeneratorInterface& w )
    OutputXEPHFilePath_Edit.OnEditCompleted( (Edit::edit_event_handler)&EphemerisGeneratorInterface::e_FilePathEditCompleted, w );
    OutputXEPHFilePath_Edit.OnGetFocus( (Control::event_handler)&EphemerisGeneratorInterface::e_FilePathEditGetFocus, w );
    OutputXEPHFilePath_Edit.OnLoseFocus( (Control::event_handler)&EphemerisGeneratorInterface::e_FilePathEditLoseFocus, w );
+   OutputXEPHFilePath_Edit.OnFileDrag( (Control::file_drag_event_handler)&EphemerisGeneratorInterface::e_FileDrag, w );
+   OutputXEPHFilePath_Edit.OnFileDrop( (Control::file_drop_event_handler)&EphemerisGeneratorInterface::e_FileDrop, w );
 
    OutputXEPHFilePath_ToolButton.SetIcon( Bitmap( w.ScaledResource( ":/browser/select-file.png" ) ) );
    OutputXEPHFilePath_ToolButton.SetScaledFixedSize( 20, 20 );
@@ -1838,6 +2373,10 @@ EphemerisGeneratorInterface::GUIData::GUIData( EphemerisGeneratorInterface& w )
    Global_Sizer.SetSpacing( 6 );
    Global_Sizer.Add( InitialConditions_SectionBar );
    Global_Sizer.Add( InitialConditions_Control );
+   Global_Sizer.Add( PhysicalParameters_SectionBar );
+   Global_Sizer.Add( PhysicalParameters_Control );
+   Global_Sizer.Add( NonGravitationalParameters_SectionBar );
+   Global_Sizer.Add( NonGravitationalParameters_Control );
    Global_Sizer.Add( NumericalIntegration_SectionBar );
    Global_Sizer.Add( NumericalIntegration_Control );
    Global_Sizer.Add( Output_SectionBar );
@@ -1894,10 +2433,30 @@ EphemerisGeneratorInterface::GUIData::GUIData( EphemerisGeneratorInterface& w )
 
    H_NumericEdit.edit.SetFixedWidth( hgEditWidth );
    G_NumericEdit.edit.SetFixedWidth( hgEditWidth );
+   M1_NumericEdit.edit.SetFixedWidth( hgEditWidth );
+   K1_NumericEdit.edit.SetFixedWidth( hgEditWidth );
+   M2_NumericEdit.edit.SetFixedWidth( hgEditWidth );
+   K2_NumericEdit.edit.SetFixedWidth( hgEditWidth );
+   PC_NumericEdit.edit.SetFixedWidth( hgEditWidth );
    B_V_NumericEdit.edit.SetFixedWidth( hgEditWidth );
+   U_B_NumericEdit.edit.SetFixedWidth( hgEditWidth );
+   I_R_NumericEdit.edit.SetFixedWidth( hgEditWidth );
    D_NumericEdit.edit.SetFixedWidth( hgEditWidth );
 
+   int ngEditWidth = A1_NumericEdit.edit.Font().Width( String( '0', 14 ) );
+
+   A1_NumericEdit.edit.SetFixedWidth( ngEditWidth );
+   A2_NumericEdit.edit.SetFixedWidth( ngEditWidth );
+   A3_NumericEdit.edit.SetFixedWidth( ngEditWidth );
+   DT_NumericEdit.edit.SetFixedWidth( ngEditWidth );
+
    w.EnsureLayoutUpdated();
+   w.AdjustToContents();
+   w.SetMinWidth();
+
+   PhysicalParameters_Control.Hide();
+   NonGravitationalParameters_Control.Hide();
+
    w.AdjustToContents();
    w.SetFixedSize();
 }
@@ -1907,4 +2466,4 @@ EphemerisGeneratorInterface::GUIData::GUIData( EphemerisGeneratorInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF EphemerisGeneratorInterface.cpp - Released 2024-03-20T10:42:12Z
+// EOF EphemerisGeneratorInterface.cpp - Released 2024-05-07T15:28:00Z

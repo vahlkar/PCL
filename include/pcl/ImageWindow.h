@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
-// pcl/ImageWindow.h - Released 2024-03-20T10:41:36Z
+// pcl/ImageWindow.h - Released 2024-05-07T15:27:32Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -1672,9 +1672,9 @@ public:
     * (usually the value of the TEMP or TMP environmental variables).
     *
     * When the returned list contains two or more directories, PixInsight uses
-    * parallel disk I/O operations to store and retrieve swap files on separate
-    * physical devices, which greatly improves performance of history traversal
-    * operations (as undo/redo operations).
+    * parallel disk I/O operations to store and retrieve swap files, which
+    * greatly improves performance of history traversal operations, such as
+    * image undo/redo operations.
     */
    static StringList SwapDirectories();
 
@@ -1687,18 +1687,19 @@ public:
     * this function returns false and no changes are done.
     *
     * The specified list can contain zero or more path specifications to
-    * existing directories. If more than one directory is specified, all of
-    * them must be supported by different \e physical devices (usually hard
-    * disks) on the system. Read the documentation for the
-    * ImageVariant::WriteSwapFiles() member function for more information about
-    * parallel disk I/O operations and their associated risks.
+    * existing directories. If the specified list is empty, the PixInsight
+    * platform will perform a reset of the swap directories list to its default
+    * settings. This usually means that all swap files will be generated and
+    * maintained on the system's temporary storage directory (the value of the
+    * TEMP or TMP environmental variables by default) using single-threaded
+    * disk I/O operations.
     *
-    * If the specified list is empty, the PixInsight platform will perform a
-    * reset of the swap directories list to its default settings. This usually
-    * means that all swap files will be generated and maintained on the
-    * system's temporary storage directory (the value of the TEMP or TMP
-    * environmental variables by default) using single-threaded disk I/O
-    * operations.
+    * \warning For spinning disks (hard disks or HDDs), if more than one
+    * directory is specified, all of them should be supported by different
+    * \e physical devices on the system. This recommendation does not apply to
+    * solid state storage devices (such as SDD or NVMe disks). Read the
+    * documentation for the ImageVariant::WriteSwapFiles() member function for
+    * more information about parallel disk I/O operations.
     */
    static bool SetSwapDirectories( const StringList& directories );
 
@@ -3067,4 +3068,4 @@ private:
 #endif   // __PCL_ImageWindow_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ImageWindow.h - Released 2024-03-20T10:41:36Z
+// EOF pcl/ImageWindow.h - Released 2024-05-07T15:27:32Z

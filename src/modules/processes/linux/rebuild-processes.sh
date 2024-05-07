@@ -31,10 +31,6 @@ cd $BASEDIR/EphemerisGeneration/linux/g++
 make clean
 make -j $NPROC
 
-cd $BASEDIR/FilterManager/linux/g++
-make clean
-make -j $NPROC
-
 cd $BASEDIR/FindingChart/linux/g++
 make clean
 make -j $NPROC

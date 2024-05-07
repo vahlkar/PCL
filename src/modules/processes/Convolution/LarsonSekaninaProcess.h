@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// LarsonSekaninaProcess.h - Released 2024-03-20T10:42:12Z
+// LarsonSekaninaProcess.h - Released 2024-05-07T15:28:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -92,4 +92,4 @@ PCL_END_LOCAL
 #endif   // __LarsonSekaninaProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF LarsonSekaninaProcess.h - Released 2024-03-20T10:42:12Z
+// EOF LarsonSekaninaProcess.h - Released 2024-05-07T15:28:00Z

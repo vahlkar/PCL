@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
-// Standard Debayer Process Module Version 1.11.2
+// Standard Debayer Process Module Version 1.12.0
 // ----------------------------------------------------------------------------
-// DebayerInstance.cpp - Released 2024-03-20T10:42:13Z
+// DebayerInstance.cpp - Released 2024-05-07T15:28:01Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -150,7 +150,7 @@ DebayerInstance::DebayerInstance( const MetaProcess* m )
    , p_outputRGBImages( TheDebayerOutputRGBImagesParameter->DefaultValue() )
    , p_outputSeparateChannels( TheDebayerOutputSeparateChannelsParameter->DefaultValue() )
    , p_outputDirectory( TheDebayerOutputDirectoryParameter->DefaultValue() )
-   , p_outputExtension( TheDebayerOutputExtensionParameter->DefaultValue() )
+   , p_outputExtension( TheDebayerOutputExtensionParameter->DefaultValue() ) // ### DEPRECATED
    , p_outputPrefix( TheDebayerOutputPrefixParameter->DefaultValue() )
    , p_outputPostfix( TheDebayerOutputPostfixParameter->DefaultValue() )
    , p_overwriteExistingFiles( TheDebayerOverwriteExistingFilesParameter->DefaultValue() )
@@ -2671,15 +2671,8 @@ private:
 
       Console console;
 
-      String fileExtension = m_instance.p_outputExtension.Trimmed();
-      if ( fileExtension.IsEmpty() )
-         fileExtension = File::ExtractExtension( m_targetFilePath ).Trimmed();
-      if ( fileExtension.IsEmpty() )
-         throw Error( "Unable to determine an output file extension: " + m_targetFilePath );
-      if ( !fileExtension.StartsWith( '.' ) )
-         fileExtension.Prepend( '.' );
-
-      String outputFilePath = fileDir + m_instance.p_outputPrefix + fileName + m_instance.p_outputPostfix + fileExtension;
+      const String fileExtension = ".xisf";
+      const String outputFilePath = fileDir + m_instance.p_outputPrefix + fileName + m_instance.p_outputPostfix + fileExtension;
 
       FileFormat outputFormat( fileExtension, false/*read*/, true/*write*/ );
 
@@ -4613,4 +4606,4 @@ size_type DebayerInstance::ParameterLength( const MetaParameter* p, size_type ta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DebayerInstance.cpp - Released 2024-03-20T10:42:13Z
+// EOF DebayerInstance.cpp - Released 2024-05-07T15:28:01Z

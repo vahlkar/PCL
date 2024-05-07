@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.9
+// /_/     \____//_____/   PCL 2.6.11
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.2
 // ----------------------------------------------------------------------------
-// ExponentialTransformationInstance.h - Released 2024-03-20T10:42:12Z
+// ExponentialTransformationInstance.h - Released 2024-05-07T15:28:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -98,4 +98,4 @@ private:
 #endif   // __ExponentialTransformationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ExponentialTransformationInstance.h - Released 2024-03-20T10:42:12Z
+// EOF ExponentialTransformationInstance.h - Released 2024-05-07T15:28:00Z

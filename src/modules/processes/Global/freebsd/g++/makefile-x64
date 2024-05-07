@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.135
+# PixInsight Makefile Generator Script v1.138
 # Copyright (C) 2009-2024 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2024-03-22T11:23:06.134Z
+# Generated on .... 2024-05-07T16:58:06.008Z
 # Project id ...... Global
 # Project type .... Module
 # Platform ........ FreeBSD/g++
@@ -24,6 +24,12 @@ SRC_FILES= \
 ../../ColorManagementSetupInterface.cpp \
 ../../ColorManagementSetupParameters.cpp \
 ../../ColorManagementSetupProcess.cpp \
+../../CurveExplorerDialog.cpp \
+../../FilterManagementDialog.cpp \
+../../FilterManagerInstance.cpp \
+../../FilterManagerInterface.cpp \
+../../FilterManagerParameters.cpp \
+../../FilterManagerProcess.cpp \
 ../../GlobalModule.cpp \
 ../../PreferencesAction.cpp \
 ../../PreferencesInstance.cpp \
@@ -46,6 +52,12 @@ OBJ_FILES= \
 ./x64/Release/ColorManagementSetupInterface.o \
 ./x64/Release/ColorManagementSetupParameters.o \
 ./x64/Release/ColorManagementSetupProcess.o \
+./x64/Release/CurveExplorerDialog.o \
+./x64/Release/FilterManagementDialog.o \
+./x64/Release/FilterManagerInstance.o \
+./x64/Release/FilterManagerInterface.o \
+./x64/Release/FilterManagerParameters.o \
+./x64/Release/FilterManagerProcess.o \
 ./x64/Release/GlobalModule.o \
 ./x64/Release/PreferencesAction.o \
 ./x64/Release/PreferencesInstance.o \
@@ -68,6 +80,12 @@ DEP_FILES= \
 ./x64/Release/ColorManagementSetupInterface.d \
 ./x64/Release/ColorManagementSetupParameters.d \
 ./x64/Release/ColorManagementSetupProcess.d \
+./x64/Release/CurveExplorerDialog.d \
+./x64/Release/FilterManagementDialog.d \
+./x64/Release/FilterManagerInstance.d \
+./x64/Release/FilterManagerInterface.d \
+./x64/Release/FilterManagerParameters.d \
+./x64/Release/FilterManagerProcess.d \
 ./x64/Release/GlobalModule.d \
 ./x64/Release/PreferencesAction.d \
 ./x64/Release/PreferencesInstance.d \
