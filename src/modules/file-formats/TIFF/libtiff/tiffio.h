@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
 // Standard TIFF File Format Module Version 1.0.10
 // ----------------------------------------------------------------------------
-// tiffio.h - Released 2024-05-07T15:27:52Z
+// tiffio.h - Released 2024-06-18T15:49:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard TIFF PixInsight module.
 //
@@ -705,4 +705,4 @@ extern int TIFFReadRGBAImageOriented(TIFF *, uint32_t, uint32_t, uint32_t *,
 #endif /* _TIFFIO_ */
 
 // ----------------------------------------------------------------------------
-// EOF tiffio.h - Released 2024-05-07T15:27:52Z
+// EOF tiffio.h - Released 2024-06-18T15:49:17Z

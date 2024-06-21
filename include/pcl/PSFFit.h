@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
-// pcl/PSFFit.h - Released 2024-05-07T15:27:32Z
+// pcl/PSFFit.h - Released 2024-06-18T15:48:54Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -311,20 +311,25 @@ struct PSFData
     * Returns the PSF bounding rectangle. The coordinates of the bounding
     * rectangle \a r are calculated as follows:
     *
-    * r.x0 = c0.x - d \n
-    * r.y0 = c0.y - d \n
-    * r.x1 = c0.x + d \n
-    * r.y1 = c0.y + d \n
+    * r.x0 = c0.x - dx \n
+    * r.y0 = c0.y - dy \n
+    * r.x1 = c0.x + dx \n
+    * r.y1 = c0.y + dy \n
     *
-    * where d is equal to:
+    * where:
     *
-    * FWHMx()/2 for a circular PSF, \n
-    * Max( FWHMx(), FWHMy() )/2 for an elliptic PSF.
+    * dx = k*FWHMx()/2 \n
+    * dy = k*FWHMy()/2
+    *
+    * The optional argument \a k can be specified to account for an additional
+    * growing factor. This can be useful to represent measurement regions; e.g.
+    * in photometry applications.
     */
-   DRect Bounds() const
+   DRect Bounds( double k = 1.0 ) const
    {
-      double d = (circular ? FWHMx() : Max( FWHMx(), FWHMy() ))/2;
-      return DRect( c0.x-d, c0.y-d, c0.x+d, c0.y+d );
+      double dx = k*FWHMx()/2;
+      double dy = k*FWHMy()/2;
+      return DRect( c0.x-dx, c0.y-dy, c0.x+dx, c0.y+dy );
    }
 
    /*!
@@ -332,20 +337,25 @@ struct PSFData
     * tenth maximum (FWTM). The coordinates of the bounding rectangle \a r are
     * calculated as follows:
     *
-    * r.x0 = c0.x - d \n
-    * r.y0 = c0.y - d \n
-    * r.x1 = c0.x + d \n
-    * r.y1 = c0.y + d \n
+    * r.x0 = c0.x - dx \n
+    * r.y0 = c0.y - dy \n
+    * r.x1 = c0.x + dx \n
+    * r.y1 = c0.y + dy \n
     *
-    * where d is equal to:
+    * where:
     *
-    * FWTMx()/2 for a circular PSF, \n
-    * Max( FWTMx(), FWTMy() )/2 for an elliptic PSF.
+    * dx = k*FWTMx()/2 \n
+    * dy = k*FWTMy()/2
+    *
+    * The optional argument \a k can be specified to account for an additional
+    * growing factor. This can be useful to represent measurement regions; e.g.
+    * in photometry applications.
     */
-   DRect FWTMBounds() const
+   DRect FWTMBounds( double k = 1.0 ) const
    {
-      double d = (circular ? FWHMx() : Max( FWHMx(), FWHMy() ))/2;
-      return DRect( c0.x-d, c0.y-d, c0.x+d, c0.y+d );
+      double dx = k*FWTMx()/2;
+      double dy = k*FWTMy()/2;
+      return DRect( c0.x-dx, c0.y-dy, c0.x+dx, c0.y+dy );
    }
 
    /*!
@@ -628,4 +638,4 @@ private:
 #endif   // __PCL_PSFFit_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFFit.h - Released 2024-05-07T15:27:32Z
+// EOF pcl/PSFFit.h - Released 2024-06-18T15:48:54Z

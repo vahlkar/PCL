@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
-// Standard Blink Process Module Version 1.2.4
+// Standard Blink Process Module Version 1.2.5
 // ----------------------------------------------------------------------------
-// BlinkInterface.cpp - Released 2024-05-07T15:28:00Z
+// BlinkInterface.cpp - Released 2024-06-18T15:49:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Blink PixInsight module.
 //
@@ -382,6 +382,9 @@ void BlinkInterface::AutoHTThread::Run()
 
 void BlinkInterface::BlinkData::AutoHT()
 {
+   if ( m_filesData.IsEmpty() )
+      return;
+
    ProgressBarStatus status( "Blink"
 #ifdef __PCL_MACOSX
    , *TheBlinkInterface
@@ -424,6 +427,7 @@ void BlinkInterface::BlinkData::AutoHT()
 
 void BlinkInterface::BlinkData::ResetHT()
 {
+
    Console console;
    console.Show();
    console.NoteLn( "<end><cbr><br><br>* Blink: Reloading data..." );
@@ -517,38 +521,44 @@ bool BlinkInterface::BlinkData::CheckGeomery( const ImageDescription& descriptio
 
 void BlinkInterface::BlinkData::Next()
 {
-   const int wasCurrent = m_currentImage;
-   while ( true )
+   if ( !m_filesData.IsEmpty() )
    {
-      m_currentImage++;
-      if ( m_currentImage >= int( m_filesData.Length() ) )
-         m_currentImage = 0;
-      if ( m_currentImage == wasCurrent ) // one round passed
-         return;  // no new images
-      if ( m_isBlinkMaster && m_currentImage == m_blinkMaster )
-         continue; // skip blinkMaster
-      if ( TheBlinkInterface->GUI->Files_TreeBox.Child( m_currentImage )->IsChecked() ) // skip unchecked
-         break;
+      const int wasCurrent = m_currentImage;
+      while ( true )
+      {
+         m_currentImage++;
+         if ( m_currentImage >= int( m_filesData.Length() ) )
+            m_currentImage = 0;
+         if ( m_currentImage == wasCurrent ) // one round passed
+            return;  // no new images
+         if ( m_isBlinkMaster && m_currentImage == m_blinkMaster )
+            continue; // skip blinkMaster
+         if ( TheBlinkInterface->GUI->Files_TreeBox.Child( m_currentImage )->IsChecked() ) // skip unchecked
+            break;
+      }
+      Update();
    }
-   Update();
 }
 
 // ----------------------------------------------------------------------------
 
 void BlinkInterface::BlinkData::Prev()
 {
-   const int wasCurrent = m_currentImage;
-   while ( true )
+   if ( !m_filesData.IsEmpty() )
    {
-      if ( m_currentImage == 0 )
-         m_currentImage = int( m_filesData.Length() );
-      m_currentImage--;
-      if ( m_currentImage == wasCurrent ) // one round passed
-         break; // no new images
-      if ( TheBlinkInterface->GUI->Files_TreeBox.Child( m_currentImage )->IsChecked() )
-         break;
+      const int wasCurrent = m_currentImage;
+      while ( true )
+      {
+         if ( m_currentImage == 0 )
+            m_currentImage = int( m_filesData.Length() );
+         m_currentImage--;
+         if ( m_currentImage == wasCurrent ) // one round passed
+            break; // no new images
+         if ( TheBlinkInterface->GUI->Files_TreeBox.Child( m_currentImage )->IsChecked() )
+            break;
+      }
+      Update();
    }
-   Update();
 }
 
 // ----------------------------------------------------------------------------
@@ -596,30 +606,31 @@ void BlinkInterface::BlinkData::Update( int row )
 
 void BlinkInterface::BlinkData::ShowNextImage()
 {
-   if ( m_isBlinkMaster )
-   {
-      static bool showBlinkMaster = false; // trigger
-      showBlinkMaster = !showBlinkMaster;
-      if ( showBlinkMaster )
+   if ( !m_filesData.IsEmpty() )
+      if ( m_isBlinkMaster )
       {
-         //while PCL don't have events on TreeBox sorting, we must check blinkMaster row position every time
-         if ( TheBlinkInterface->GUI->Files_TreeBox.Child( m_blinkMaster )->Icon( 0 ).IsNull() )
+         static bool showBlinkMaster = false; // trigger
+         showBlinkMaster = !showBlinkMaster;
+         if ( showBlinkMaster )
          {
-            //row of blinkMaster chenged >> find row with blinkMaster
-            for ( int i = 0; i < TheBlinkInterface->GUI->Files_TreeBox.NumberOfChildren(); ++i )
-               if ( !TheBlinkInterface->GUI->Files_TreeBox.Child( i )->Icon( 0 ).IsNull() )
-               {
-                  m_blinkMaster = i;
-                  break;
-               }
+            //while PCL don't have events on TreeBox sorting, we must check blinkMaster row position every time
+            if ( TheBlinkInterface->GUI->Files_TreeBox.Child( m_blinkMaster )->Icon( 0 ).IsNull() )
+            {
+               //row of blinkMaster chenged >> find row with blinkMaster
+               for ( int i = 0; i < TheBlinkInterface->GUI->Files_TreeBox.NumberOfChildren(); ++i )
+                  if ( !TheBlinkInterface->GUI->Files_TreeBox.Child( i )->Icon( 0 ).IsNull() )
+                  {
+                     m_blinkMaster = i;
+                     break;
+                  }
+            }
+            Update( m_blinkMaster );
          }
-         Update( m_blinkMaster );
+         else
+            Next();
       }
       else
          Next();
-   }
-   else
-      Next();
 }
 
 // ----------------------------------------------------------------------------
@@ -2169,4 +2180,4 @@ BlinkInterface::GUIData::GUIData( BlinkInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BlinkInterface.cpp - Released 2024-05-07T15:28:00Z
+// EOF BlinkInterface.cpp - Released 2024-06-18T15:49:25Z

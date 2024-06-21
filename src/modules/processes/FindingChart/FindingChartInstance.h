@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
-// Standard FindingChart Process Module Version 1.1.0
+// Standard FindingChart Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// FindingChartInstance.h - Released 2024-05-07T15:28:00Z
+// FindingChartInstance.h - Released 2024-06-18T15:49:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FindingChart PixInsight module.
 //
@@ -84,6 +84,8 @@ private:
    pcl_bool p_autoChartMaxMagnitude;
    float    p_chartMaxMagnitude; // mag, ignored if p_autoChartMaxMagnitude
    pcl_bool p_drawGrid;
+   pcl_bool p_drawEcliptic;
+   pcl_bool p_drawGalacticEquator;
    pcl_bool p_drawConstellationBorders;
    pcl_bool p_drawConstellationLines;
    pcl_bool p_drawConstellationNames;
@@ -99,6 +101,10 @@ private:
    uint32   p_imageRegionBorderColor;
    uint32   p_gridColor;
    uint32   p_gridTextColor;
+   uint32   p_eclipticColor;
+   uint32   p_eclipticTextColor;
+   uint32   p_galacticEquatorColor;
+   uint32   p_galacticEquatorTextColor;
    uint32   p_constellationBorderColor;
    uint32   p_constellationLineColor;
    uint32   p_constellationTextColor;
@@ -119,4 +125,4 @@ private:
 #endif   // __FindingChartInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF FindingChartInstance.h - Released 2024-05-07T15:28:00Z
+// EOF FindingChartInstance.h - Released 2024-06-18T15:49:25Z

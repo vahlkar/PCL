@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
-// pcl/EphemerisFile.h - Released 2024-05-07T15:27:32Z
+// pcl/EphemerisFile.h - Released 2024-06-18T15:48:54Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -788,8 +788,8 @@ using EphemerisObjectList = Array<EphemerisObject>;
  *
  * An XEPH file storing up-to-date JPL DE/LE ephemeris data is part of all
  * standard PixInsight distributions since 1.8.5 versions released Fall 2018.
- * As of writing this documentation, the standard XEPH file provides the
- * complete JPL DE440/LE440 ephemerides. See the
+ * As of writing this documentation (June 2024), the standard XEPH file
+ * provides the complete JPL DE440 planetary and lunar ephemerides. See the
  * EphemerisFile::FundamentalEphemerides() static member function for detailed
  * information.
  *
@@ -1191,9 +1191,10 @@ public:
     * <tr><td>TT_TDB</td><td>TT-TDB difference at the geocenter in seconds.</td></tr>
     * </table>
     *
-    * As of writing this documentation, the standard fundamental ephemeris file
-    * provides the complete JPL's DE440/LE440 ephemerides, but nutations,
-    * librations and time differences are not included.
+    * As of writing this documentation (June 2024), the standard fundamental
+    * ephemeris file provides the complete JPL DE440 planetary and lunar
+    * ephemerides, but nutations, librations and time differences are not
+    * included.
     *
     * The fundamental ephemeris file can be overridden by the caller module.
     * See the OverrideFundamentalEphemerides() member function for more
@@ -1214,8 +1215,8 @@ public:
     *
     * Under normal running conditions, the returned object should be a
     * shortened version (that is, covering a shorter time span) of the standard
-    * fundamental ephemerides file. As of writing this documentation, the
-    * standard short-term fundamental ephemeris file provides DE440/LE440
+    * fundamental ephemerides file. As of writing this documentation (June
+    * 2024), the standard short-term fundamental ephemeris file provides DE440
     * ephemerides for the period from 1850 January 1.0 to 2150 December 32.0.
     *
     * The short-term fundamental ephemeris file can be overridden by the caller
@@ -1256,8 +1257,7 @@ public:
     *
     * As of writing this documentation, the standard asteroid ephemeris file
     * provides the complete set of 343 asteroids used for the numerical
-    * integration of DE430 ephemerides, with barycentric coordinates coherent
-    * with DE440.
+    * integration of JPL DE440 and DE441 ephemerides.
     *
     * The asteroid ephemeris file can be overridden by the caller module. See
     * the OverrideAsteroidEphemerides() member function for more information.
@@ -1294,9 +1294,9 @@ public:
     * Returns a reference to the global Kuiper belt objects (KBOs) ephemerides
     * file currently defined by the running PixInsight platform.
     *
-    * As of writing this documentation (March 2021), the default KBO
-    * ephemerides file includes the set of 30 most massive known
-    * trans-Neptunian objects used in JPL's DE440 numerical integration:
+    * As of writing this documentation (June 2024), the default KBO ephemerides
+    * file includes the set of 30 most massive known trans-Neptunian objects
+    * used in JPL's DE440 numerical integration:
     *
     * <table border="1" cellpadding="4" cellspacing="0">
     * <tr><td>Identifier</td><td>Name</td></tr>
@@ -1422,26 +1422,30 @@ public:
     * Returns the path to the global database file of observed Delta T values.
     *
     * Delta T is the difference TT-UT1 in seconds. In current versions of
-    * PixInsight the Delta T database is a plain text file generated with values
-    * taken from the following online references:
+    * PixInsight the Delta T database is a plain text file generated with
+    * values taken from the following online references:
     *
-    * For the period 1657-1973.0:\n
-    * http://maia.usno.navy.mil/ser7/historic_deltat.data
+    * For the period 1657-1956.0:\n
+    * http://maia.usno.navy.mil/ser7/historic_deltat.data (now unavailable)
     *
-    * For the period 1973 Feb 1 to the beginning of the current year:\n
-    * http://maia.usno.navy.mil/ser7/deltat.data
+    * For the period 1956 Jan 19 to the date of release:\n
+    * https://datacenter.iers.org/data/latestVersion/
+    *                               186_EOP_C01_2000.1846_NOW_V2013_01186.txt
     *
-    * For predicted Delta T values until 2025 approximately (as of writing this
-    * documentation, October 2018):\n
-    * http://maia.usno.navy.mil/ser7/deltat.preds
+    * The Delta T database usually includes a few extrapolated values covering
+    * a short period after the date of release. These extrapolated values must
+    * always be taken only as approximations; actual Delta T values are
+    * unpredictable and can only be known through observations.
     *
     * Delta T data files are expected to follow a simple format where each text
     * line provides a TT/DeltaT pair. The exact format is described at the top
     * of the corresponding file included in the current PixInsight
     * distribution.
     *
-    * Outside of the period from 1657 to the current year, the current
-    * PixInsight/PCL implementation uses polynomial expressions taken from
+    * Outside of the period from 1657 to the last time point included in the
+    * Delta T database, the current PixInsight/PCL implementation uses
+    * polynomial expressions taken from:
+    *
     * <em>Five Millennium Canon of Solar Eclipses</em>, by Fred Espenak and
     * Jean Meeus (NASA/TP–2006–214141, Revision 1.0, 2007).
     *
@@ -1462,7 +1466,7 @@ public:
     * PixInsight the Delta AT database is a plain text file generated with
     * values taken from the following online reference:
     *
-    * http://maia.usno.navy.mil/ser7/tai-utc.dat
+    * http://maia.usno.navy.mil/ser7/tai-utc.dat (now unavailable)
     *
     * Delta AT data files are expected to follow a simple format where each
     * text line provides a UTC/DeltaAT pair. The exact format is described at
@@ -1491,9 +1495,11 @@ public:
     *
     * In current versions of PixInsight the CIP_ITRS database is a plain text
     * file generated with values provided by the IERS Rapid Service/Prediction
-    * Center. As of writing this documentation, the main online reference is:
+    * Center. As of writing this documentation (June 2024), the main online
+    * reference is:
     *
-    * http://hpiers.obspm.fr/iers/eop/eopc01/eopc01.iau2000.1846-now
+    * https://datacenter.iers.org/data/latestVersion/
+    *                               186_EOP_C01_2000.1846_NOW_V2013_01186.txt
     */
    static String CIP_ITRSDataFilePath();
 
@@ -2635,4 +2641,4 @@ private:
 #endif  // __PCL_EphemerisFile_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/EphemerisFile.h - Released 2024-05-07T15:27:32Z
+// EOF pcl/EphemerisFile.h - Released 2024-06-18T15:48:54Z

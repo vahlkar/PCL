@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
-// pcl/IntegrationMetadata.cpp - Released 2024-05-07T15:27:40Z
+// pcl/IntegrationMetadata.cpp - Released 2024-06-18T15:49:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -339,20 +339,28 @@ IntegrationMetadata::IntegrationMetadata( const PropertyArray& properties, const
       }
    }
 
+   IsoString fitsCrdSys;
+   if ( celCrdSys.IsDefined() )
+   {
+      fitsCrdSys = celCrdSys().Uppercase();
+      if ( fitsCrdSys == "TRUE" || fitsCrdSys == "MEAN" || fitsCrdSys == "APPARENT" )
+         fitsCrdSys = "GAPPT";
+   }
+
    if ( equinox.IsDefined() )
    {
       if ( celCrdSys.IsDefined() )
-         if ( celCrdSys() == "ICRS" || celCrdSys() == "GAPPT" )
+         if ( celCrdSys() == "ICRS" || celCrdSys() == "GCRS" || fitsCrdSys == "GAPPT" )
             equinox.Undefine();
    }
    else
    {
       if ( ra.IsDefined() )
          if ( dec.IsDefined() )
-            if ( celCrdSys.IsDefined() && celCrdSys() != "ICRS" && celCrdSys() != "GAPPT" )
-               equinox = 2000.0; // assume FK5 / J2000.0
-            else
+            if ( !celCrdSys.IsDefined() )
                celCrdSys = "ICRS";
+            else if ( celCrdSys() != "ICRS" && celCrdSys() != "GCRS" && fitsCrdSys != "GAPPT" )
+               equinox = 2000.0; // assume FK5 / J2000.0
    }
 
    if ( !endTime.IsDefined() )
@@ -920,4 +928,4 @@ IntegrationMetadata IntegrationMetadata::Summary( const Array<IntegrationMetadat
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/IntegrationMetadata.cpp - Released 2024-05-07T15:27:40Z
+// EOF pcl/IntegrationMetadata.cpp - Released 2024-06-18T15:49:06Z

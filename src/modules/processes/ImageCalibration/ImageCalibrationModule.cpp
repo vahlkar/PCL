@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 2.1.0
 // ----------------------------------------------------------------------------
-// ImageCalibrationModule.cpp - Released 2024-05-07T15:28:00Z
+// ImageCalibrationModule.cpp - Released 2024-06-18T15:49:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -57,8 +57,8 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2024
-#define MODULE_RELEASE_MONTH     5
-#define MODULE_RELEASE_DAY       7
+#define MODULE_RELEASE_MONTH     6
+#define MODULE_RELEASE_DAY       18
 
 #include "DefectMapInterface.h"
 #include "DefectMapProcess.h"
@@ -67,6 +67,7 @@
 #include "ImageCalibrationProcess.h"
 #include "LocalNormalizationInterface.h"
 #include "LocalNormalizationProcess.h"
+#include "SpectrophotometricFluxCalibrationGraphInterface.h"
 #include "SpectrophotometricFluxCalibrationInterface.h"
 #include "SpectrophotometricFluxCalibrationProcess.h"
 #include "SuperbiasInterface.h"
@@ -181,6 +182,7 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
       new pcl::LocalNormalizationInterface;
       new pcl::SpectrophotometricFluxCalibrationProcess;
       new pcl::SpectrophotometricFluxCalibrationInterface;
+      new pcl::SpectrophotometricFluxCalibrationGraphInterface;
       new pcl::SuperbiasProcess;
       new pcl::SuperbiasInterface;
    }
@@ -189,4 +191,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationModule.cpp - Released 2024-05-07T15:28:00Z
+// EOF ImageCalibrationModule.cpp - Released 2024-06-18T15:49:25Z

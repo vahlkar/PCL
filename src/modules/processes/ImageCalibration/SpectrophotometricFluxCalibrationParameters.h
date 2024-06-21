@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 2.1.0
 // ----------------------------------------------------------------------------
-// SpectrophotometricFluxCalibrationParameters.h - Released 2024-05-07T15:28:00Z
+// SpectrophotometricFluxCalibrationParameters.h - Released 2024-06-18T15:49:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -370,11 +370,11 @@ extern SPFCNarrowbandIntegrationSteps* TheSPFCNarrowbandIntegrationStepsParamete
 
 // ----------------------------------------------------------------------------
 
-class SPFCTrimmingFraction : public MetaFloat
+class SPFCRejectionLimit : public MetaFloat
 {
 public:
 
-   SPFCTrimmingFraction( MetaProcess* );
+   SPFCRejectionLimit( MetaProcess* );
 
    IsoString Id() const override;
    int Precision() const override;
@@ -383,7 +383,7 @@ public:
    double MaximumValue() const override;
 };
 
-extern SPFCTrimmingFraction* TheSPFCTrimmingFractionParameter;
+extern SPFCRejectionLimit* TheSPFCRejectionLimitParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -398,6 +398,23 @@ public:
 };
 
 extern SPFCCatalogId* TheSPFCCatalogIdParameter;
+
+// ----------------------------------------------------------------------------
+
+class SPFCMinMagnitude : public MetaFloat
+{
+public:
+
+   SPFCMinMagnitude( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern SPFCMinMagnitude* TheSPFCMinMagnitudeParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -702,6 +719,62 @@ extern SPFCPSFChannelSearchTolerance* TheSPFCPSFChannelSearchToleranceParameter;
 
 // ----------------------------------------------------------------------------
 
+class SPFCGenerateGraphs : public MetaBoolean
+{
+public:
+
+   SPFCGenerateGraphs( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern SPFCGenerateGraphs* TheSPFCGenerateGraphsParameter;
+
+// ----------------------------------------------------------------------------
+
+class SPFCGenerateStarMaps : public MetaBoolean
+{
+public:
+
+   SPFCGenerateStarMaps( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern SPFCGenerateStarMaps* TheSPFCGenerateStarMapsParameter;
+
+// ----------------------------------------------------------------------------
+
+class SPFCGenerateTextFiles : public MetaBoolean
+{
+public:
+
+   SPFCGenerateTextFiles( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern SPFCGenerateTextFiles* TheSPFCGenerateTextFilesParameter;
+
+// ----------------------------------------------------------------------------
+
+class SPFCOutputDirectory : public MetaString
+{
+public:
+
+   SPFCOutputDirectory( MetaProcess* );
+
+   IsoString Id() const override;
+   String DefaultValue() const override;
+};
+
+extern SPFCOutputDirectory* TheSPFCOutputDirectoryParameter;
+
+// ----------------------------------------------------------------------------
+
 PCL_END_LOCAL
 
 } // pcl
@@ -709,4 +782,4 @@ PCL_END_LOCAL
 #endif   // __SpectrophotometricFluxCalibrationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF SpectrophotometricFluxCalibrationParameters.h - Released 2024-05-07T15:28:00Z
+// EOF SpectrophotometricFluxCalibrationParameters.h - Released 2024-06-18T15:49:25Z

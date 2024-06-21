@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// INDIClientModule.h - Released 2024-05-07T15:28:00Z
+// INDIClientModule.h - Released 2024-06-18T15:49:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -84,4 +84,4 @@ public:
 #endif // __INDIClientModule_h
 
 // ----------------------------------------------------------------------------
-// EOF INDIClientModule.h - Released 2024-05-07T15:28:00Z
+// EOF INDIClientModule.h - Released 2024-06-18T15:49:25Z

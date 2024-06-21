@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.5.3
+// Standard ImageIntegration Process Module Version 1.6.0
 // ----------------------------------------------------------------------------
-// IntegrationFile.cpp - Released 2024-05-07T15:28:00Z
+// IntegrationFile.cpp - Released 2024-06-18T15:49:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -1158,6 +1158,21 @@ void IntegrationFile::NormalizeImageWeights()
 
 // ----------------------------------------------------------------------------
 
+DVector IntegrationFile::TotalExposureTime()
+{
+   DVector expTime( 0.0, s_numberOfChannels );
+   for ( const IntegrationFile* file : s_files )
+   {
+      if ( !file->m_metadata.expTime.IsDefined() )
+         return DVector();
+      for ( int i = 0; i < s_numberOfChannels; ++i )
+         expTime[i] += file->m_metadata.expTime() * file->m_weights[i];
+   }
+   return expTime;
+}
+
+// ----------------------------------------------------------------------------
+
 IntegrationMetadata IntegrationFile::SummaryMetadata()
 {
    Array<IntegrationMetadata> items;
@@ -1373,4 +1388,4 @@ void IntegrationFile::OpenFileThread::Run()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationFile.cpp - Released 2024-05-07T15:28:00Z
+// EOF IntegrationFile.cpp - Released 2024-06-18T15:49:25Z

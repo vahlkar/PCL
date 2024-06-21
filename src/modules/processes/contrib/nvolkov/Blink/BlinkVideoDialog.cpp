@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
-// Standard Blink Process Module Version 1.2.4
+// Standard Blink Process Module Version 1.2.5
 // ----------------------------------------------------------------------------
-// BlinkVideoDialog.cpp - Released 2024-05-07T15:28:00Z
+// BlinkVideoDialog.cpp - Released 2024-06-18T15:49:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Blink PixInsight module.
 //
@@ -646,4 +646,4 @@ BlinkVideoDialog::BlinkVideoDialog( BlinkInterface* parent )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BlinkVideoDialog.cpp - Released 2024-05-07T15:28:00Z
+// EOF BlinkVideoDialog.cpp - Released 2024-06-18T15:49:25Z

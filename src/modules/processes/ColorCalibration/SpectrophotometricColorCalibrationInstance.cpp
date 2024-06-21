@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.9.5
 // ----------------------------------------------------------------------------
-// SpectrophotometricColorCalibrationInstance.cpp - Released 2024-05-07T15:28:00Z
+// SpectrophotometricColorCalibrationInstance.cpp - Released 2024-06-18T15:49:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -196,8 +196,8 @@ void SpectrophotometricColorCalibrationInstance::Assign( const ProcessImplementa
 
 UndoFlags SpectrophotometricColorCalibrationInstance::UndoMode( const View& ) const
 {
-   return p_applyCalibration ? UndoFlag::Keywords | UndoFlag::PixelData
-                             : UndoFlag::Keywords;
+   return p_applyCalibration ? UndoFlag::ViewProperties | UndoFlag::PixelData
+                             : UndoFlag::ViewProperties;
 }
 
 // ----------------------------------------------------------------------------
@@ -387,7 +387,7 @@ static float GaiaSPAutoLimitMagnitude( const DPoint& centerRD, double radius, co
    {
       File::WriteTextFile( scriptFilePath, IsoString().Format(
 R"JS_SOURCE(var __PJSR_Gaia_SP_limitMagnitude = -1;
-console.writeln( "<end><cbr><br>* Searching for optimal magnitude limit..." );
+console.writeln( "<end><cbr><br>* Searching for optimal magnitude limit. Target: %d stars" );
 let xpsd = ((typeof Gaia) != 'undefined') ? (new Gaia) : null;
 if ( xpsd )
 {
@@ -432,7 +432,7 @@ if ( xpsd )
       }
       __PJSR_Gaia_SP_limitMagnitude = m;
    }
-} )JS_SOURCE", centerRD.x, centerRD.y, radius, TruncInt( 0.875*targetCount ), targetCount ) );
+} )JS_SOURCE", targetCount, centerRD.x, centerRD.y, radius, TruncInt( 0.875*targetCount ), targetCount ) );
 
       Console().ExecuteScript( scriptFilePath );
 
@@ -546,7 +546,9 @@ private:
       {
          if ( refSys == "GCRS" )
             return &Position::Proper;
-         if ( refSys == "GAPPT" )
+
+         IsoString r = refSys.Uppercase();
+         if ( r == "TRUE" || r == "MEAN" || r == "APPARENT" || r == "GAPPT" )
             return &Position::Apparent;
       }
       return &Position::Astrometric;
@@ -1137,15 +1139,6 @@ bool SpectrophotometricColorCalibrationInstance::ExecuteOn( View& view )
     */
    window.MainView().SetStorablePermanentPropertyValue( "PCL:SPCC:WhiteBalanceFactors", W );
 
-   FITSKeywordArray keywords = window.Keywords();
-
-   keywords << FITSHeaderKeyword( "COMMENT", IsoString(), "Color calibration with "  + PixInsightVersion::AsString() )
-            << FITSHeaderKeyword( "HISTORY", IsoString(), "Color calibration with "  + Module->ReadableVersion() )
-            << FITSHeaderKeyword( "HISTORY", IsoString(), "Color calibration with SpectrophotometricColorCalibration process" )
-            << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                  IsoString().Format( "SPCC.whiteBalanceFactors: %.4f %.4f %.4f",
-                                                      W[0], W[1], W[2] ) );
-
    /*
     * Apply white balance and background neutralization.
     */
@@ -1220,16 +1213,10 @@ bool SpectrophotometricColorCalibrationInstance::ExecuteOn( View& view )
 
          window.MainView().SetStorablePermanentPropertyValue( "PCL:SPCC:BackgroundReference", backgroundReference );
 
-         keywords << FITSHeaderKeyword( "HISTORY", IsoString(),
-                        IsoString().Format( "SPCC.backgroundReference: %.8f %.8f %.8f",
-                                             backgroundReference[0], backgroundReference[1], backgroundReference[2] ) );
-
          console.WriteLn();
          ApplyBackgroundNeutralization( image, backgroundReference );
       }
    }
-
-   window.SetKeywords( keywords );
 
    return true;
 }
@@ -1511,4 +1498,4 @@ void SpectrophotometricColorCalibrationInstance::SetDefaultSpectrumData()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SpectrophotometricColorCalibrationInstance.cpp - Released 2024-05-07T15:28:00Z
+// EOF SpectrophotometricColorCalibrationInstance.cpp - Released 2024-06-18T15:49:25Z

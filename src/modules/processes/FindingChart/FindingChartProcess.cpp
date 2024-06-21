@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
-// Standard FindingChart Process Module Version 1.1.0
+// Standard FindingChart Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// FindingChartProcess.cpp - Released 2024-05-07T15:28:00Z
+// FindingChartProcess.cpp - Released 2024-06-18T15:49:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FindingChart PixInsight module.
 //
@@ -79,6 +79,8 @@ FindingChartProcess::FindingChartProcess()
    new FCAutoChartMaxMagnitude( this );
    new FCChartMaxMagnitude( this );
    new FCDrawGrid( this );
+   new FCDrawEcliptic( this );
+   new FCDrawGalacticEquator( this );
    new FCDrawConstellationBorders( this );
    new FCDrawConstellationLines( this );
    new FCDrawConstellationNames( this );
@@ -94,6 +96,10 @@ FindingChartProcess::FindingChartProcess()
    new FCImageRegionBorderColor( this );
    new FCGridColor( this );
    new FCGridTextColor( this );
+   new FCEclipticColor( this );
+   new FCEclipticTextColor( this );
+   new FCGalacticEquatorColor( this );
+   new FCGalacticEquatorTextColor( this );
    new FCConstellationBorderColor( this );
    new FCConstellationLineColor( this );
    new FCConstellationTextColor( this );
@@ -256,4 +262,4 @@ int FindingChartProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FindingChartProcess.cpp - Released 2024-05-07T15:28:00Z
+// EOF FindingChartProcess.cpp - Released 2024-06-18T15:49:25Z

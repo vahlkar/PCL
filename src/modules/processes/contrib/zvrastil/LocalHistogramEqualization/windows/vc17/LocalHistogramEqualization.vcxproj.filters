@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.138
+# PixInsight Makefile Generator Script v1.139
 # Copyright (C) 2009-2024 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2024-05-07T16:58:17.894Z
+# Generated on .... 2024-06-21T11:22:39.258Z
 # Project id ...... LocalHistogramEqualization
 # Project type .... Module
 # Platform ........ Windows/vc17
@@ -16,13 +16,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>4c201bf2-0186-48d8-a448-f332cafb877c</UniqueIdentifier>
+      <UniqueIdentifier>3d6a0039-e6d7-4958-a0d5-8ee01f8eaf3b</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>b7eab4b9-2d66-41a7-959b-b5b1e15787f4</UniqueIdentifier>
+      <UniqueIdentifier>ad852d77-4012-4eeb-963a-125686babb3f</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>e1f1c7b5-a441-4d8a-8f77-02a605ec3397</UniqueIdentifier>
+      <UniqueIdentifier>5ce9bbf0-67ad-424b-9bb0-c51588dffb8c</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

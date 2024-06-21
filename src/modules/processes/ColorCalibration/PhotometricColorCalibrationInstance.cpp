@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.9.5
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationInstance.cpp - Released 2024-05-07T15:28:00Z
+// PhotometricColorCalibrationInstance.cpp - Released 2024-06-18T15:49:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -192,8 +192,8 @@ void PhotometricColorCalibrationInstance::Assign( const ProcessImplementation& p
 
 UndoFlags PhotometricColorCalibrationInstance::UndoMode( const View& ) const
 {
-   return p_applyCalibration ? UndoFlag::Keywords | UndoFlag::PixelData
-                             : UndoFlag::Keywords;
+   return p_applyCalibration ? UndoFlag::ViewProperties | UndoFlag::PixelData
+                             : UndoFlag::ViewProperties;
 }
 
 // ----------------------------------------------------------------------------
@@ -961,8 +961,6 @@ bool PhotometricColorCalibrationInstance::ExecuteOn( View& view )
    console.WriteLn( "<end><cbr><br>* Computing color calibration functions" );
    Module->ProcessEvents();
 
-   FITSKeywordArray keywords = window.Keywords();
-
    Array<ColorSample> colorSamples;
    IsoString text;
    Array<StarPSFSample> validPSFSamples;
@@ -1113,24 +1111,6 @@ bool PhotometricColorCalibrationInstance::ExecuteOn( View& view )
                                     << Property( "PCL:PCC:Zero_Sr_JV", Z0[0] )
                                     << Property( "PCL:PCC:Zero_JB_JV", Z0[1] )
                                     << Property( "PCL:PCC:Scale_Sr_JV_JB_JV", W ) );
-
-      keywords << FITSHeaderKeyword( "COMMENT", IsoString(), "Color calibration with "  + PixInsightVersion::AsString() )
-               << FITSHeaderKeyword( "HISTORY", IsoString(), "Color calibration with "  + Module->ReadableVersion() )
-               << FITSHeaderKeyword( "HISTORY", IsoString(), "Color calibration with PhotometricColorCalibration process" )
-               << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                    IsoString().Format( "PCC.fit_Sr_JV_R_G: %.6e %.6e %.6e", LRG.a, LRG.b, LRG.adev ) )
-               << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                    IsoString().Format( "PCC.fit_JB_JV_B_G: %.6e %.6e %.6e", LBG.a, LBG.b, LBG.adev ) )
-               << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                    IsoString().Format( "PCC.white_Sr_JV: %.5e", W0[0] ) )
-               << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                    IsoString().Format( "PCC.white_JB_JV: %.5e", W0[1] ) )
-               << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                    IsoString().Format( "PCC.zero_Sr_JV: %.5e", Z0[0] ) )
-               << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                    IsoString().Format( "PCC.zero_JB_JV: %.5e", Z0[1] ) )
-               << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                    IsoString().Format( "PCC.scale_Sr_JV_JB_JV: %.4f %.4f %.4f", W[0], W[1], W[2] ) );
    }
 
    /*
@@ -1207,16 +1187,10 @@ bool PhotometricColorCalibrationInstance::ExecuteOn( View& view )
 
          window.MainView().SetStorablePermanentPropertyValue( "PCL:PCC:BackgroundReference", backgroundReference );
 
-         keywords << FITSHeaderKeyword( "HISTORY", IsoString(),
-                        IsoString().Format( "PCC.backgroundReference: %.8f %.8f %.8f",
-                                            backgroundReference[0], backgroundReference[1], backgroundReference[2] ) );
-
          console.WriteLn();
          ApplyBackgroundNeutralization( image, backgroundReference );
       }
    }
-
-   window.SetKeywords( keywords );
 
    return true;
 }
@@ -1382,4 +1356,4 @@ size_type PhotometricColorCalibrationInstance::ParameterLength( const MetaParame
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationInstance.cpp - Released 2024-05-07T15:28:00Z
+// EOF PhotometricColorCalibrationInstance.cpp - Released 2024-06-18T15:49:25Z

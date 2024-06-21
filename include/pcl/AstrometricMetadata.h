@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
-// pcl/AstrometricMetadata.h - Released 2024-05-07T15:27:32Z
+// pcl/AstrometricMetadata.h - Released 2024-06-18T15:48:54Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -1080,7 +1080,7 @@ public:
 
    /*!
     * Undefines the optional metadata items for observation time (start and end
-    * times) and geodetic coordinates (longitude, latitude and height).
+    * times) and geodetic coordinates (longitude, latitude, and height).
     *
     * This function is useful to propagate the astrometric solution to other
     * images, for example during an image registration task, without altering
@@ -1093,6 +1093,48 @@ public:
       m_geoLongitude.Undefine();
       m_geoLatitude.Undefine();
       m_geoHeight.Undefine();
+   }
+
+   /*!
+    * Copies the optional metadata items for observation time (start and end
+    * times) and geodetic coordinates (longitude, latitude, and height) from
+    * the specified \a source object.
+    *
+    * This function is useful to ensure that image-specific observational
+    * properties are preserved when copying astrometric solutions among images.
+    */
+   void CopyTimeAndLocationMetadata( const AstrometricMetadata& source )
+   {
+      m_obsStartTime = source.m_obsStartTime;
+      m_obsEndTime   = source.m_obsEndTime;
+      m_geoLongitude = source.m_geoLongitude;
+      m_geoLatitude  = source.m_geoLatitude;
+      m_geoHeight    = source.m_geoHeight;
+   }
+
+   /*!
+    * Copies the optional metadata items for observation time (start and end
+    * times) and geodetic coordinates (longitude, latitude, and height) from
+    * the specified \a wcs object.
+    *
+    * This function is useful to ensure that image-specific observational
+    * properties are preserved when copying astrometric solutions among images.
+    */
+   void CopyTimeAndLocationMetadata( const WCSKeywords& wcs )
+   {
+      if ( wcs.dateobs.IsDefined() )
+         m_obsStartTime = TimePoint( wcs.dateobs() );
+      else
+         m_obsStartTime.Undefine();
+
+      if ( wcs.dateend.IsDefined() )
+         m_obsEndTime = TimePoint( wcs.dateend() );
+      else
+         m_obsEndTime.Undefine();
+
+      m_geoLongitude = wcs.longobs;
+      m_geoLatitude = wcs.latobs;
+      m_geoHeight = wcs.altobs;
    }
 
    /*!
@@ -1324,4 +1366,4 @@ private:
 #endif // __AstrometricMetadata_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AstrometricMetadata.h - Released 2024-05-07T15:27:32Z
+// EOF pcl/AstrometricMetadata.h - Released 2024-06-18T15:48:54Z

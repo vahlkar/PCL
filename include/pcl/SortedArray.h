@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
-// pcl/SortedArray.h - Released 2024-05-07T15:27:32Z
+// pcl/SortedArray.h - Released 2024-06-18T15:48:54Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -601,6 +601,34 @@ public:
    }
 
    /*!
+    * Removes a contiguous leading sequence of \a n existing objects from this
+    * sorted array. This operation is equivalent to:
+    *
+    * \code Remove( Begin(), At( n ) ); \endcode
+    *
+    * If the specified count \a n is greater than or equal to the length of
+    * this array, this function calls Clear() to yield an empty array.
+    */
+   void RemoveFirst( size_type n = 1 )
+   {
+      m_array.RemoveFirst( n );
+   }
+
+   /*!
+    * Removes a contiguous trailing sequence of \a n existing objects from this
+    * sorted array. This operation is equivalent to:
+    *
+    * \code Truncate( End() - n ); \endcode
+    *
+    * If the specified count \a n is greater than or equal to the length of
+    * this array, this function calls Clear() to yield an empty array.
+    */
+   void RemoveLast( size_type n = 1 )
+   {
+      m_array.RemoveLast( n );
+   }
+
+   /*!
     * Destroys and removes a trailing sequence of contiguous objects from the
     * specified iterator of this array. This operation is equivalent to:
     *
@@ -617,12 +645,7 @@ public:
 
    /*!
     * Removes a contiguous trailing sequence of \a n existing objects from this
-    * sorted array. This operation is equivalent to:
-    *
-    * \code Truncate( End() - n ) \endcode
-    *
-    * If the specified count \a n is greater than or equal to the length of
-    * this array, this function calls Clear() to yield an empty array.
+    * sorted array. This function is a synonym for RemoveLast().
     */
    void Shrink( size_type n = 1 )
    {
@@ -1095,4 +1118,4 @@ SortedArray<T,A>& operator <<( SortedArray<T,A>&& x1, const Array<T,A>& x2 )
 #endif  // __PCL_SortedArray_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SortedArray.h - Released 2024-05-07T15:27:32Z
+// EOF pcl/SortedArray.h - Released 2024-06-18T15:48:54Z

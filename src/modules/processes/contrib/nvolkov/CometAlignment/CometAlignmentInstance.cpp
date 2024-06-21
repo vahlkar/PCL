@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
 // Standard CometAlignment Process Module Version 1.3.8
 // ----------------------------------------------------------------------------
-// CometAlignmentInstance.cpp - Released 2024-05-07T15:28:00Z
+// CometAlignmentInstance.cpp - Released 2024-06-18T15:49:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CometAlignment PixInsight module.
 //
@@ -1407,4 +1407,4 @@ size_type CometAlignmentInstance::ParameterLength( const MetaParameter* p, size_
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF CometAlignmentInstance.cpp - Released 2024-05-07T15:28:00Z
+// EOF CometAlignmentInstance.cpp - Released 2024-06-18T15:49:25Z

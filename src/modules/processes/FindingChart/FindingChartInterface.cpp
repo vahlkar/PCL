@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
-// Standard FindingChart Process Module Version 1.1.0
+// Standard FindingChart Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// FindingChartInterface.cpp - Released 2024-05-07T15:28:00Z
+// FindingChartInterface.cpp - Released 2024-06-18T15:49:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FindingChart PixInsight module.
 //
@@ -200,6 +200,10 @@ void FindingChartInterface::UpdateControls()
 
    GUI->DrawGrid_CheckBox.SetChecked( m_instance.p_drawGrid );
 
+   GUI->DrawEcliptic_CheckBox.SetChecked( m_instance.p_drawEcliptic );
+
+   GUI->DrawGalacticEquator_CheckBox.SetChecked( m_instance.p_drawGalacticEquator );
+
    GUI->DrawConstellationBorders_CheckBox.SetChecked( m_instance.p_drawConstellationBorders );
 
    GUI->DrawConstellationLines_CheckBox.SetChecked( m_instance.p_drawConstellationLines );
@@ -227,6 +231,18 @@ void FindingChartInterface::UpdateControls()
 
    GUI->GridTextColor_ComboBox.SetCurrentColor( m_instance.p_gridTextColor );
    GUI->GridTextColor_Control.Update();
+
+   GUI->EclipticColor_ComboBox.SetCurrentColor( m_instance.p_eclipticColor );
+   GUI->EclipticColor_Control.Update();
+
+   GUI->EclipticTextColor_ComboBox.SetCurrentColor( m_instance.p_eclipticTextColor );
+   GUI->EclipticTextColor_Control.Update();
+
+   GUI->GalacticEquatorColor_ComboBox.SetCurrentColor( m_instance.p_galacticEquatorColor );
+   GUI->GalacticEquatorColor_Control.Update();
+
+   GUI->GalacticEquatorTextColor_ComboBox.SetCurrentColor( m_instance.p_galacticEquatorTextColor );
+   GUI->GalacticEquatorTextColor_Control.Update();
 
    GUI->ConstellationBorderColor_ComboBox.SetCurrentColor( m_instance.p_constellationBorderColor );
    GUI->ConstellationBorderColor_Control.Update();
@@ -352,6 +368,14 @@ void FindingChartInterface::e_ColorSelected( ColorComboBox& sender, RGBA color )
       m_instance.p_gridColor = uint32( color );
    else if ( sender == GUI->GridTextColor_ComboBox )
       m_instance.p_gridTextColor = uint32( color );
+   else if ( sender == GUI->EclipticColor_ComboBox )
+      m_instance.p_eclipticColor = uint32( color );
+   else if ( sender == GUI->EclipticTextColor_ComboBox )
+      m_instance.p_eclipticTextColor = uint32( color );
+   else if ( sender == GUI->GalacticEquatorColor_ComboBox )
+      m_instance.p_galacticEquatorColor = uint32( color );
+   else if ( sender == GUI->GalacticEquatorTextColor_ComboBox )
+      m_instance.p_galacticEquatorTextColor = uint32( color );
    else if ( sender == GUI->ConstellationBorderColor_ComboBox )
       m_instance.p_constellationBorderColor = uint32( color );
    else if ( sender == GUI->ConstellationLineColor_ComboBox )
@@ -381,6 +405,14 @@ void FindingChartInterface::e_Paint( Control& sender, const Rect& /*updateRect*/
       color = m_instance.p_gridColor;
    else if ( sender == GUI->GridTextColor_Control )
       color = m_instance.p_gridTextColor;
+   else if ( sender == GUI->EclipticColor_Control )
+      color = m_instance.p_eclipticColor;
+   else if ( sender == GUI->EclipticTextColor_Control )
+      color = m_instance.p_eclipticTextColor;
+   else if ( sender == GUI->GalacticEquatorColor_Control )
+      color = m_instance.p_galacticEquatorColor;
+   else if ( sender == GUI->GalacticEquatorTextColor_Control )
+      color = m_instance.p_galacticEquatorTextColor;
    else if ( sender == GUI->ConstellationBorderColor_Control )
       color = m_instance.p_constellationBorderColor;
    else if ( sender == GUI->ConstellationLineColor_Control )
@@ -418,6 +450,14 @@ void FindingChartInterface::e_MouseRelease( Control& sender, const pcl::Point& p
          dlg.SetColor( m_instance.p_gridColor );
       else if ( sender == GUI->GridTextColor_Control )
          dlg.SetColor( m_instance.p_gridTextColor );
+      else if ( sender == GUI->EclipticColor_Control )
+         dlg.SetColor( m_instance.p_eclipticColor );
+      else if ( sender == GUI->EclipticTextColor_Control )
+         dlg.SetColor( m_instance.p_eclipticTextColor );
+      else if ( sender == GUI->GalacticEquatorColor_Control )
+         dlg.SetColor( m_instance.p_galacticEquatorColor );
+      else if ( sender == GUI->GalacticEquatorTextColor_Control )
+         dlg.SetColor( m_instance.p_galacticEquatorTextColor );
       else if ( sender == GUI->ConstellationBorderColor_Control )
          dlg.SetColor( m_instance.p_constellationBorderColor );
       else if ( sender == GUI->ConstellationLineColor_Control )
@@ -444,6 +484,14 @@ void FindingChartInterface::e_MouseRelease( Control& sender, const pcl::Point& p
             m_instance.p_gridColor = color;
          else if ( sender == GUI->GridTextColor_Control )
             m_instance.p_gridTextColor = color;
+         else if ( sender == GUI->EclipticColor_Control )
+            m_instance.p_eclipticColor = color;
+         else if ( sender == GUI->EclipticTextColor_Control )
+            m_instance.p_eclipticTextColor = color;
+         else if ( sender == GUI->GalacticEquatorColor_Control )
+            m_instance.p_galacticEquatorColor = color;
+         else if ( sender == GUI->GalacticEquatorTextColor_Control )
+            m_instance.p_galacticEquatorTextColor = color;
          else if ( sender == GUI->ConstellationBorderColor_Control )
             m_instance.p_constellationBorderColor = color;
          else if ( sender == GUI->ConstellationLineColor_Control )
@@ -485,7 +533,7 @@ void FindingChartInterface::e_FileDrop( Control& sender, const Point& pos, const
 FindingChartInterface::GUIData::GUIData( FindingChartInterface& w )
 {
    pcl::Font font = w.Font();
-   int labelWidth1 = font.Width( String( "Constellation borders:" ) + 'T' );
+   int labelWidth1 = font.Width( String( "Galactic longitude labels:" ) + 'T' );
    int editWidth1 = font.Width( String( '0', 8 ) );
 
    //
@@ -642,6 +690,26 @@ FindingChartInterface::GUIData::GUIData( FindingChartInterface& w )
 
    //
 
+   DrawEcliptic_CheckBox.SetText( "Ecliptic" );
+   DrawEcliptic_CheckBox.SetToolTip( "<p>Draw the ecliptic great circle with ecliptic longitude labels.</p>" );
+   DrawEcliptic_CheckBox.OnClick( (pcl::Button::click_event_handler)&FindingChartInterface::e_ItemClicked, w );
+
+   DrawEcliptic_Sizer.AddUnscaledSpacing( labelWidth1 + w.LogicalPixelsToPhysical( 4 ) );
+   DrawEcliptic_Sizer.Add( DrawEcliptic_CheckBox );
+   DrawEcliptic_Sizer.AddStretch();
+
+   //
+
+   DrawGalacticEquator_CheckBox.SetText( "Galactic equator" );
+   DrawGalacticEquator_CheckBox.SetToolTip( "<p>Draw the galactic equator great circle with galactic longitude labels.</p>" );
+   DrawGalacticEquator_CheckBox.OnClick( (pcl::Button::click_event_handler)&FindingChartInterface::e_ItemClicked, w );
+
+   DrawGalacticEquator_Sizer.AddUnscaledSpacing( labelWidth1 + w.LogicalPixelsToPhysical( 4 ) );
+   DrawGalacticEquator_Sizer.Add( DrawGalacticEquator_CheckBox );
+   DrawGalacticEquator_Sizer.AddStretch();
+
+   //
+
    DrawConstellationBorders_CheckBox.SetText( "Constellation borders" );
    DrawConstellationBorders_CheckBox.SetToolTip( "<p>Draw constellation borders.</p>" );
    DrawConstellationBorders_CheckBox.OnClick( (pcl::Button::click_event_handler)&FindingChartInterface::e_ItemClicked, w );
@@ -714,6 +782,8 @@ FindingChartInterface::GUIData::GUIData( FindingChartInterface& w )
 
    Contents_Sizer.SetSpacing( 4 );
    Contents_Sizer.Add( DrawGrid_Sizer );
+   Contents_Sizer.Add( DrawEcliptic_Sizer );
+   Contents_Sizer.Add( DrawGalacticEquator_Sizer );
    Contents_Sizer.Add( DrawConstellationBorders_Sizer );
    Contents_Sizer.Add( DrawConstellationLines_Sizer );
    Contents_Sizer.Add( DrawConstellationNames_Sizer );
@@ -820,6 +890,98 @@ FindingChartInterface::GUIData::GUIData( FindingChartInterface& w )
    GridTextColor_Sizer.Add( GridTextColor_Label );
    GridTextColor_Sizer.Add( GridTextColor_ComboBox, 100 );
    GridTextColor_Sizer.Add( GridTextColor_Control );
+
+   //
+
+   const char* eclipticColorToolTip = "<p>Color of the ecliptic great circle.</p>";
+
+   EclipticColor_Label.SetText( "Ecliptic:" );
+   EclipticColor_Label.SetMinWidth( labelWidth1 );
+   EclipticColor_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   EclipticColor_Label.SetToolTip( eclipticColorToolTip );
+
+   EclipticColor_ComboBox.OnColorSelected( (ColorComboBox::color_event_handler)&FindingChartInterface::e_ColorSelected, w );
+   EclipticColor_ComboBox.SetToolTip( eclipticColorToolTip );
+
+   EclipticColor_Control.SetScaledMinWidth( 30 );
+   EclipticColor_Control.SetCursor( StdCursor::UpArrow );
+   EclipticColor_Control.SetToolTip( eclipticColorToolTip );
+   EclipticColor_Control.OnPaint( (Control::paint_event_handler)&FindingChartInterface::e_Paint, w );
+   EclipticColor_Control.OnMouseRelease( (Control::mouse_button_event_handler)&FindingChartInterface::e_MouseRelease, w );
+
+   EclipticColor_Sizer.SetSpacing( 4 );
+   EclipticColor_Sizer.Add( EclipticColor_Label );
+   EclipticColor_Sizer.Add( EclipticColor_ComboBox, 100 );
+   EclipticColor_Sizer.Add( EclipticColor_Control );
+
+   //
+
+   const char* eclipticTextColorToolTip = "<p>Color of the ecliptic longitude labels.</p>";
+
+   EclipticTextColor_Label.SetText( "Ecliptic longitude labels:" );
+   EclipticTextColor_Label.SetMinWidth( labelWidth1 );
+   EclipticTextColor_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   EclipticTextColor_Label.SetToolTip( eclipticTextColorToolTip );
+
+   EclipticTextColor_ComboBox.OnColorSelected( (ColorComboBox::color_event_handler)&FindingChartInterface::e_ColorSelected, w );
+   EclipticTextColor_ComboBox.SetToolTip( eclipticTextColorToolTip );
+
+   EclipticTextColor_Control.SetScaledMinWidth( 30 );
+   EclipticTextColor_Control.SetCursor( StdCursor::UpArrow );
+   EclipticTextColor_Control.SetToolTip( eclipticTextColorToolTip );
+   EclipticTextColor_Control.OnPaint( (Control::paint_event_handler)&FindingChartInterface::e_Paint, w );
+   EclipticTextColor_Control.OnMouseRelease( (Control::mouse_button_event_handler)&FindingChartInterface::e_MouseRelease, w );
+
+   EclipticTextColor_Sizer.SetSpacing( 4 );
+   EclipticTextColor_Sizer.Add( EclipticTextColor_Label );
+   EclipticTextColor_Sizer.Add( EclipticTextColor_ComboBox, 100 );
+   EclipticTextColor_Sizer.Add( EclipticTextColor_Control );
+
+   //
+
+   const char* galacticEquatorColorToolTip = "<p>Color of the galactic equator great circle.</p>";
+
+   GalacticEquatorColor_Label.SetText( "Galactic equator:" );
+   GalacticEquatorColor_Label.SetMinWidth( labelWidth1 );
+   GalacticEquatorColor_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   GalacticEquatorColor_Label.SetToolTip( galacticEquatorColorToolTip );
+
+   GalacticEquatorColor_ComboBox.OnColorSelected( (ColorComboBox::color_event_handler)&FindingChartInterface::e_ColorSelected, w );
+   GalacticEquatorColor_ComboBox.SetToolTip( galacticEquatorColorToolTip );
+
+   GalacticEquatorColor_Control.SetScaledMinWidth( 30 );
+   GalacticEquatorColor_Control.SetCursor( StdCursor::UpArrow );
+   GalacticEquatorColor_Control.SetToolTip( galacticEquatorColorToolTip );
+   GalacticEquatorColor_Control.OnPaint( (Control::paint_event_handler)&FindingChartInterface::e_Paint, w );
+   GalacticEquatorColor_Control.OnMouseRelease( (Control::mouse_button_event_handler)&FindingChartInterface::e_MouseRelease, w );
+
+   GalacticEquatorColor_Sizer.SetSpacing( 4 );
+   GalacticEquatorColor_Sizer.Add( GalacticEquatorColor_Label );
+   GalacticEquatorColor_Sizer.Add( GalacticEquatorColor_ComboBox, 100 );
+   GalacticEquatorColor_Sizer.Add( GalacticEquatorColor_Control );
+
+   //
+
+   const char* galacticEquatorTextColorToolTip = "<p>Color of the galactic longitude labels.</p>";
+
+   GalacticEquatorTextColor_Label.SetText( "Galactic longitude labels:" );
+   GalacticEquatorTextColor_Label.SetMinWidth( labelWidth1 );
+   GalacticEquatorTextColor_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   GalacticEquatorTextColor_Label.SetToolTip( galacticEquatorTextColorToolTip );
+
+   GalacticEquatorTextColor_ComboBox.OnColorSelected( (ColorComboBox::color_event_handler)&FindingChartInterface::e_ColorSelected, w );
+   GalacticEquatorTextColor_ComboBox.SetToolTip( galacticEquatorTextColorToolTip );
+
+   GalacticEquatorTextColor_Control.SetScaledMinWidth( 30 );
+   GalacticEquatorTextColor_Control.SetCursor( StdCursor::UpArrow );
+   GalacticEquatorTextColor_Control.SetToolTip( galacticEquatorTextColorToolTip );
+   GalacticEquatorTextColor_Control.OnPaint( (Control::paint_event_handler)&FindingChartInterface::e_Paint, w );
+   GalacticEquatorTextColor_Control.OnMouseRelease( (Control::mouse_button_event_handler)&FindingChartInterface::e_MouseRelease, w );
+
+   GalacticEquatorTextColor_Sizer.SetSpacing( 4 );
+   GalacticEquatorTextColor_Sizer.Add( GalacticEquatorTextColor_Label );
+   GalacticEquatorTextColor_Sizer.Add( GalacticEquatorTextColor_ComboBox, 100 );
+   GalacticEquatorTextColor_Sizer.Add( GalacticEquatorTextColor_Control );
 
    //
 
@@ -966,6 +1128,10 @@ FindingChartInterface::GUIData::GUIData( FindingChartInterface& w )
    Colors_Sizer.Add( ImageRegionBorderColor_Sizer );
    Colors_Sizer.Add( GridColor_Sizer );
    Colors_Sizer.Add( GridTextColor_Sizer );
+   Colors_Sizer.Add( EclipticColor_Sizer );
+   Colors_Sizer.Add( EclipticTextColor_Sizer );
+   Colors_Sizer.Add( GalacticEquatorColor_Sizer );
+   Colors_Sizer.Add( GalacticEquatorTextColor_Sizer );
    Colors_Sizer.Add( ConstellationBorderColor_Sizer );
    Colors_Sizer.Add( ConstellationLineColor_Sizer );
    Colors_Sizer.Add( ConstellationTextColor_Sizer );
@@ -1008,4 +1174,4 @@ FindingChartInterface::GUIData::GUIData( FindingChartInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FindingChartInterface.cpp - Released 2024-05-07T15:28:00Z
+// EOF FindingChartInterface.cpp - Released 2024-06-18T15:49:25Z

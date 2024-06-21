@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
 // Standard SplitCFA Process Module Version 1.0.6
 // ----------------------------------------------------------------------------
-// SplitCFAInstance.cpp - Released 2024-05-07T15:28:01Z
+// SplitCFAInstance.cpp - Released 2024-06-18T15:49:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SplitCFA PixInsight module.
 //
@@ -53,6 +53,7 @@
 
 #include "SplitCFAInstance.h"
 
+#include <pcl/AstrometricMetadata.h>
 #include <pcl/AutoViewLock.h>
 #include <pcl/ErrorHandler.h>
 #include <pcl/FileFormat.h>
@@ -141,6 +142,23 @@ static void CopySTF( View& target, const View& source )
 template <class P>
 void SplitCFAInstance::SplitCFAViewImage( const GenericImage<P>& inputImage, const View& inputView )
 {
+   PropertyArray properties = inputView.Properties();
+   if ( !properties.IsEmpty() )
+   {
+      AstrometricMetadata::RemoveProperties( properties, false/*removeCenterProperties*/, false/*removeScaleProperties*/ );
+      AstrometricMetadata::RescalePixelSizeProperties( properties, 2.0/*scalingFactor*/ );
+   }
+
+   FITSKeywordArray keywords = inputView.Window().Keywords();
+   if ( !keywords.IsEmpty() )
+   {
+      AstrometricMetadata::RemoveKeywords( keywords, false/*removeCenterProperties*/, false/*removeScaleProperties*/ );
+      AstrometricMetadata::RescalePixelSizeKeywords( keywords, 2.0/*scalingFactor*/ );
+   }
+
+   ICCProfile profile;
+   inputView.Window().GetICCProfile( profile );
+
    for ( int cfaIndex = 0; cfaIndex < 4; ++cfaIndex )
    {
       ImageWindow outputWindow( inputImage.Width() / 2, inputImage.Height() / 2,
@@ -177,6 +195,13 @@ void SplitCFAInstance::SplitCFAViewImage( const GenericImage<P>& inputImage, con
          }
 
       o_outputViewId[cfaIndex] = outputView.Id();
+
+      if ( !properties.IsEmpty() )
+         outputView.SetProperties( properties );
+      if ( !keywords.IsEmpty() )
+         outputView.Window().SetKeywords( keywords );
+      if ( profile.IsProfile() )
+         outputView.Window().SetICCProfile( profile );
 
       CopySTF( outputView, inputView );
       outputWindow.Show();
@@ -258,13 +283,27 @@ bool SplitCFAInstance::CanExecuteGlobal( String& whyNot ) const
 
 struct FileData
 {
-   FileFormat* format = nullptr; // the file format of retrieved data
-   const void* fsData = nullptr; // format-specific data
-   ImageOptions options;         // currently used for resolution only
-   FITSKeywordArray keywords;    // FITS keywords
-   ICCProfile profile;           // ICC profile
+   FileFormat*      format = nullptr; // the file format of retrieved data
+   const void*      fsData = nullptr; // format-specific data
+   ImageOptions     options;          // currently used for resolution only
+   PropertyArray    properties;       // image properties
+   FITSKeywordArray keywords;         // FITS keywords
+   ICCProfile       profile;          // ICC profile
 
    FileData() = default;
+
+   FileData( const FileData& ) = delete;
+
+   FileData( FileData&& x )
+      : format( std::move( x.format ) )
+      , fsData( x.fsData )
+      , options( x.options )
+      , properties( std::move( x.properties ) )
+      , keywords( std::move( x.keywords ) )
+      , profile( std::move( x.profile ) )
+   {
+      x.fsData = nullptr;
+   }
 
    FileData( FileFormatInstance& file, const ImageOptions& o )
       : options( o )
@@ -272,6 +311,8 @@ struct FileData
       format = new FileFormat( file.Format() );
       if ( format->UsesFormatSpecificData() )
          fsData = file.FormatSpecificData();
+      if ( format->CanStoreImageProperties() )
+         properties = file.ReadImageProperties();
       if ( format->CanStoreKeywords() )
          file.ReadFITSKeywords( keywords );
       if ( format->CanStoreICCProfiles() )
@@ -287,6 +328,19 @@ struct FileData
          delete format, format = nullptr;
       }
    }
+
+   FileData& operator =( const FileData& ) = delete;
+
+   FileData& operator =( FileData&& x )
+   {
+      format = std::move( x.format );
+      fsData = x.fsData; x.fsData = nullptr;
+      options = x.options;
+      properties = std::move( x.properties );
+      keywords = std::move( x.keywords );
+      profile = std::move( x.profile );
+      return *this;
+   }
 };
 
 // ----------------------------------------------------------------------------
@@ -296,8 +350,7 @@ class SplitCFAThread : public Thread
 public:
 
    SplitCFAThread( ImageVariant* s, FileData* fd, const String& tp, const String& tf, int i )
-      : targetImages()
-      , sourceImage( s )
+      : sourceImage( s )
       , targetData( fd )
       , targetPath( tp )
       , targetFolder( tf )
@@ -621,46 +674,67 @@ String SplitCFAInstance::OutputFilePath( const String& filePath, const String& f
 void SplitCFAInstance::SaveImage( const SplitCFAThread* t )
 {
    Console console;
+
+   const FileData& data = t->TargetData();
+
+   ImageOptions options = data.options; // get resolution, etc.
+
+   FileFormat outputFormat( outputExtension, false /*read*/, true /*write*/ );
+
+   PropertyArray properties = data.properties;
+   if ( !properties.IsEmpty() )
+      if ( outputFormat.CanStoreImageProperties() && outputFormat.SupportsViewProperties() )
+      {
+         AstrometricMetadata::RemoveProperties( properties, false/*removeCenterProperties*/, false/*removeScaleProperties*/ );
+         AstrometricMetadata::RescalePixelSizeProperties( properties, 2.0/*scalingFactor*/ );
+      }
+      else
+      {
+         console.WarningLn( "** Warning: The output format cannot store image properties - existing properties not embedded." );
+         properties.Clear();
+      }
+
+   FITSKeywordArray keywords = data.keywords;
+   if ( outputFormat.CanStoreKeywords() )
+   {
+      AstrometricMetadata::RemoveKeywords( keywords, false/*removeCenterProperties*/, false/*removeScaleProperties*/ );
+      AstrometricMetadata::RescalePixelSizeKeywords( keywords, 2.0/*scalingFactor*/ );
+      keywords << FITSHeaderKeyword( "COMMENT", IsoString(), PixInsightVersion::AsString() )
+               << FITSHeaderKeyword( "COMMENT", IsoString(), Module->ReadableVersion() )
+               << FITSHeaderKeyword( "HISTORY", IsoString(), "SplitCFA" );
+   }
+   else if ( !data.keywords.IsEmpty() )
+   {
+      console.WarningLn( "** Warning: The output format cannot store FITS keywords - original keywords not embedded." );
+      keywords.Clear();
+   }
+
    for ( int i = 0; i < 4; ++i )
    {
       String outputFilePath = OutputFilePath( t->TargetPath(), t->TargetFolder(), t->SubimageIndex(), i );
       console.WriteLn( "Create " + outputFilePath );
 
-      FileFormat outputFormat( outputExtension, false /*read*/, true /*write*/ );
       FileFormatInstance outputFile( outputFormat );
       if ( !outputFile.Create( outputFilePath ) )
          throw CaughtException();
 
-      const FileData& data = t->TargetData();
-
-      ImageOptions options = data.options; // get resolution, etc.
       outputFile.SetOptions( options );
 
       if ( data.fsData != nullptr )
          if ( outputFormat.ValidateFormatSpecificData( data.fsData ) )
             outputFile.SetFormatSpecificData( data.fsData );
 
-      /*
-       * Add FITS header keywords and preserve existing ones, if possible.
-       * NB: A COMMENT or HISTORY keyword cannot have a value; these keywords
-       * have only the name and comment components.
-       */
-      if ( outputFormat.CanStoreKeywords() )
-      {
-         FITSKeywordArray keywords = data.keywords;
-         keywords.Add( FITSHeaderKeyword( "COMMENT", IsoString(), PixInsightVersion::AsString() ) );
-         keywords.Add( FITSHeaderKeyword( "COMMENT", IsoString(), Module->ReadableVersion() ) );
-         keywords.Add( FITSHeaderKeyword( "HISTORY", IsoString(), "SplitCFA" ) );
+      if ( !properties.IsEmpty() )
+         outputFile.WriteImageProperties( properties );
+
+      if ( !keywords.IsEmpty() )
          outputFile.WriteFITSKeywords( keywords );
-      }
-      else if ( !data.keywords.IsEmpty() )
-         console.WarningLn( "** Warning: The output format cannot store FITS keywords - original keywords not embedded" );
 
       if ( data.profile.IsProfile() )
          if ( outputFormat.CanStoreICCProfiles() )
             outputFile.WriteICCProfile( data.profile );
          else
-            console.WarningLn( "** Warning: The output format cannot store ICC profiles - original profile not embedded" );
+            console.WarningLn( "** Warning: The output format cannot store ICC profiles - original profile not embedded." );
 
       SaveImageFile( *t->TargetImage( i ), outputFile );
 
@@ -964,4 +1038,4 @@ size_type SplitCFAInstance::ParameterLength( const MetaParameter* p, size_type t
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF SplitCFAInstance.cpp - Released 2024-05-07T15:28:01Z
+// EOF SplitCFAInstance.cpp - Released 2024-06-18T15:49:25Z

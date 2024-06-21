@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
 // Standard RestorationFilters Process Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// RestorationFilterInterface.h - Released 2024-05-07T15:28:00Z
+// RestorationFilterInterface.h - Released 2024-06-18T15:49:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RestorationFilters PixInsight module.
 //
@@ -200,4 +200,4 @@ PCL_END_LOCAL
 #endif   // __RestorationFilterInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF RestorationFilterInterface.h - Released 2024-05-07T15:28:00Z
+// EOF RestorationFilterInterface.h - Released 2024-06-18T15:49:25Z

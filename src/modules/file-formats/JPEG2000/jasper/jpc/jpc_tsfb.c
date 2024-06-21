@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
 // Standard JPEG2000 File Format Module Version 1.0.3
 // ----------------------------------------------------------------------------
-// jpc_tsfb.c - Released 2024-05-07T15:27:52Z
+// jpc_tsfb.c - Released 2024-06-18T15:49:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG2000 PixInsight module.
 //
@@ -340,4 +340,4 @@ void jpc_tsfb_getbands2(jpc_tsfb_t *tsfb, int locxstart, int locystart,
 }
 
 // ----------------------------------------------------------------------------
-// EOF jpc_tsfb.c - Released 2024-05-07T15:27:52Z
+// EOF jpc_tsfb.c - Released 2024-06-18T15:49:17Z

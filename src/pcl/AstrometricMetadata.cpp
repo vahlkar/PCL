@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
-// pcl/AstrometricMetadata.cpp - Released 2024-05-07T15:27:40Z
+// pcl/AstrometricMetadata.cpp - Released 2024-06-18T15:49:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -647,13 +647,17 @@ void AstrometricMetadata::UpdateWCSKeywords( FITSKeywordArray& keywords, bool ge
          keywords << FITSHeaderKeyword( "RADESYS", "'ICRS'", "Coordinates referred to ICRS / J2000.0" );
       else if ( refSys == "GCRS" )
          keywords << FITSHeaderKeyword( "RADESYS", "'GCRS'", "Coordinates referred to GCRS / J2000.0" );
-      else if ( refSys == "GAPPT" )
-         keywords << FITSHeaderKeyword( "RADESYS", "'GAPPT'", "Geocentric apparent coordinates / J2000.0" );
       else
       {
-         keywords << FITSHeaderKeyword( "RADESYS", refSys.SingleQuoted(), "Reference system of celestial coordinates" );
-         if ( m_equinox.IsDefined() )
-            keywords << FITSHeaderKeyword( "EQUINOX", IsoString( m_equinox() ), "Epoch of the mean equator and equinox (years)" );
+         IsoString fitsRefSys = refSys.Uppercase();
+         if ( fitsRefSys == "TRUE" || fitsRefSys == "MEAN" || fitsRefSys == "APPARENT" || fitsRefSys == "GAPPT" )
+            keywords << FITSHeaderKeyword( "RADESYS", "'GAPPT'", "Geocentric apparent coordinates / J2000.0" );
+         else
+         {
+            keywords << FITSHeaderKeyword( "RADESYS", refSys.SingleQuoted(), "Reference system of celestial coordinates" );
+            if ( m_equinox.IsDefined() )
+               keywords << FITSHeaderKeyword( "EQUINOX", IsoString( m_equinox() ), "Epoch of the mean equator and equinox (years)" );
+         }
       }
 
       WCSKeywords wcs = ComputeWCSKeywords();
@@ -1235,4 +1239,4 @@ void AstrometricMetadata::UpdateDescription() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AstrometricMetadata.cpp - Released 2024-05-07T15:27:40Z
+// EOF pcl/AstrometricMetadata.cpp - Released 2024-06-18T15:49:06Z

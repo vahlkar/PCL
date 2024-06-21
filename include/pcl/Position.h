@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
-// pcl/Position.h - Released 2024-05-07T15:27:32Z
+// pcl/Position.h - Released 2024-06-18T15:48:54Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -329,10 +329,10 @@ struct PCL_CLASS ObserverPosition
  * solar system bodies except the Moon, for which positions are given in
  * kilometers.
  *
- * As of writing this documentation (October 2018), the IAU 2006/2000A
- * precession-nutation theory is implemented (adjusted model with corrections
- * to nutation angles, IAU 2006/2000A<sub>R</sub>). The standard fundamental
- * ephemerides are JPL's DE438/LE438.
+ * As of writing this documentation (October 2018, last updated June 2024), the
+ * IAU 2006/2000A precession-nutation theory is implemented (adjusted model
+ * with corrections to nutation angles, IAU 2006/2000A<sub>R</sub>). The
+ * standard fundamental ephemerides are JPL's DE440.
  *
  * Most of the reference publications and material used are cited in source
  * code comments and the documentation. The main authoritative resource is:
@@ -1531,7 +1531,7 @@ public:
     * &delta;<sup>p</sup> = +27&deg;06'11".193172
     *
     * Note that these definitions are not consistent with the conventional
-    * values currently accepted by the IAU. The current (as of October 2018)
+    * values currently accepted by the IAU. The current (as of June 2024)
     * galactic coordinate system was defined by the IAU in 1959 in the FK4
     * B1950.0 reference system.
     */
@@ -1561,6 +1561,45 @@ public:
       DPoint g;
       ICRSEquatorialToGalactic( Vector::FromSpherical( q.x, q.y ) ).ToSpherical2Pi( g.x, g.y );
       return g;
+   }
+
+   /*!
+    * Conversion from rectangular galactic to ICRS rectangular equatorial
+    * coordinates.
+    *
+    * \param g    Rectangular galactic coordinates.
+    *
+    * Returns a vector whose components are the calculated rectangular
+    * equatorial coordinates in the ICRS.
+    *
+    * See ICRSEquatorialToGalactic( const Vector& ) for detailed information.
+    */
+   static Vector GalacticToICRSEquatorial( const Vector& g )
+   {
+      return Matrix( -0.823971452454, +1.289170419979, -2.918407488771,
+                     -2.840810442223, -1.835975400200, +0.229340705201,
+                     -2.808784424949, +1.654265575150, -3.263314653103 )*g;
+   }
+
+   /*!
+    * Conversion from spherical galactic to ICRS spherical equatorial
+    * coordinates.
+    *
+    * \param g    Spherical galactic coordinates in radians, where \e p.x is
+    *             the galactic longitude and \e p.y is the galactic latitude.
+    *
+    * Returns the ICRS equatorial coordinates in radians as a point \e p, where
+    * \e p.x is the right ascension in the range [0,2pi) and \e p.y is the
+    * declination in [-pi/2,+pi/2].
+    *
+    * See the documentation for ICRSEquatorialToGalactic( const Vector& ) for
+    * detailed information.
+    */
+   static DPoint GalacticToICRSEquatorial( const DPoint& g )
+   {
+      DPoint q;
+      GalacticToICRSEquatorial( Vector::FromSpherical( g.x, g.y ) ).ToSpherical2Pi( q.x, q.y );
+      return q;
    }
 
 private:
@@ -1677,4 +1716,4 @@ private:
 #endif  // __PCL_Position_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Position.h - Released 2024-05-07T15:27:32Z
+// EOF pcl/Position.h - Released 2024-06-18T15:48:54Z

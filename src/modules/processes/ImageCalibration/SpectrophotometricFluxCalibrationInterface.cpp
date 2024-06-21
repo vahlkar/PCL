@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 2.1.0
 // ----------------------------------------------------------------------------
-// SpectrophotometricFluxCalibrationInterface.cpp - Released 2024-05-07T15:28:00Z
+// SpectrophotometricFluxCalibrationInterface.cpp - Released 2024-06-18T15:49:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -50,9 +50,12 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
+#include "SpectrophotometricFluxCalibrationGraphInterface.h"
 #include "SpectrophotometricFluxCalibrationInterface.h"
-#include "SpectrophotometricFluxCalibrationProcess.h"
 #include "SpectrophotometricFluxCalibrationParameters.h"
+#include "SpectrophotometricFluxCalibrationProcess.h"
+
+#include <pcl/FileDialog.h>
 
 namespace pcl
 {
@@ -195,6 +198,12 @@ void SpectrophotometricFluxCalibrationInterface::GlobalFiltersUpdated()
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+
+#define OUTPUT_DIR_DEFAULT       String( "<system-temp-dir>" )
+#define OUTPUT_DIR( x )          (x.IsEmpty() ? OUTPUT_DIR_DEFAULT : x)
+#define OUTPUT_DIR_INSTANCE      OUTPUT_DIR( m_instance.p_outputDirectory )
+
 // ----------------------------------------------------------------------------
 
 static int ComboBoxItemIndexFromCatalogId( const String& catalogId )
@@ -358,13 +367,24 @@ void SpectrophotometricFluxCalibrationInterface::UpdateControls()
       }
    }
 
+   GUI->GenerateGraphs_CheckBox.SetChecked( m_instance.p_generateGraphs );
+   GUI->GenerateStarMaps_CheckBox.SetChecked( m_instance.p_generateStarMaps );
+   GUI->GenerateTextFiles_CheckBox.SetChecked( m_instance.p_generateTextFiles );
+
+   GUI->OutputDirectory_Label.Enable( m_instance.p_generateTextFiles );
+   GUI->OutputDirectory_Edit.SetText( OUTPUT_DIR_INSTANCE );
+   GUI->OutputDirectory_Edit.Enable( m_instance.p_generateTextFiles );
+   GUI->OutputDirectory_ToolButton.Enable( m_instance.p_generateTextFiles );
+
    GUI->AutoLimitMagnitude_CheckBox.SetChecked( m_instance.p_autoLimitMagnitude );
    GUI->LimitMagnitude_NumericEdit.SetValue( m_instance.p_limitMagnitude );
    GUI->LimitMagnitude_NumericEdit.Enable( !m_instance.p_autoLimitMagnitude );
+   GUI->MinMagnitude_NumericEdit.SetValue( m_instance.p_minMagnitude );
 
    GUI->StructureLayers_SpinBox.SetValue( m_instance.p_structureLayers );
    GUI->SaturationThreshold_NumericControl.SetValue( m_instance.p_saturationThreshold );
    GUI->SaturationRelative_CheckBox.SetChecked( m_instance.p_saturationRelative );
+   GUI->RejectionLimit_NumericControl.SetValue( m_instance.p_rejectionLimit );
    GUI->PSFNoiseLayers_SpinBox.SetValue( m_instance.p_psfNoiseLayers );
    GUI->PSFMinStructureSize_SpinBox.SetValue( m_instance.p_psfMinStructureSize );
    GUI->PSFHotPixelFilterRadius_SpinBox.SetValue( m_instance.p_psfHotPixelFilterRadius );
@@ -374,6 +394,34 @@ void SpectrophotometricFluxCalibrationInterface::UpdateControls()
    GUI->PSFGrowth_NumericControl.SetValue( m_instance.p_psfGrowth );
    GUI->PSFMaxStars_SpinBox.SetValue( m_instance.p_psfMaxStars );
    GUI->PSFAllowClusteredSources_CheckBox.SetChecked( m_instance.p_psfAllowClusteredSources );
+}
+
+// ----------------------------------------------------------------------------
+
+void SpectrophotometricFluxCalibrationInterface::e_GetFocus( Control& sender )
+{
+   if ( sender == GUI->OutputDirectory_Edit )
+   {
+      Edit* e = dynamic_cast<Edit*>( &sender );
+      if ( e != nullptr ) // ?!
+         if ( e->Text().Trimmed() == OUTPUT_DIR_DEFAULT )
+            e->Clear();
+   }
+}
+
+// ----------------------------------------------------------------------------
+
+void SpectrophotometricFluxCalibrationInterface::e_EditCompleted( Edit& sender )
+{
+   String text = sender.Text().Trimmed();
+
+   if ( sender == GUI->OutputDirectory_Edit )
+   {
+      if ( text == OUTPUT_DIR_DEFAULT )
+         text.Clear();
+      m_instance.p_outputDirectory = text;
+      sender.SetText( OUTPUT_DIR_INSTANCE );
+   }
 }
 
 // ----------------------------------------------------------------------------
@@ -464,6 +512,29 @@ void SpectrophotometricFluxCalibrationInterface::e_Click( Button& sender, bool c
       m_instance.p_narrowbandMode = checked;
       UpdateControls();
    }
+   else if ( sender == GUI->GenerateGraphs_CheckBox )
+   {
+      m_instance.p_generateGraphs = checked;
+      if ( checked )
+         if ( !TheSpectrophotometricFluxCalibrationGraphInterface->IsVisible() )
+            TheSpectrophotometricFluxCalibrationGraphInterface->Launch();
+   }
+   else if ( sender == GUI->GenerateStarMaps_CheckBox )
+   {
+      m_instance.p_generateStarMaps = checked;
+   }
+   else if ( sender == GUI->GenerateTextFiles_CheckBox )
+   {
+      m_instance.p_generateTextFiles = checked;
+      UpdateControls();
+   }
+   else if ( sender == GUI->OutputDirectory_ToolButton )
+   {
+      GetDirectoryDialog d;
+      d.SetCaption( "SPFC: Select Output Directory" );
+      if ( d.Execute() )
+         GUI->OutputDirectory_Edit.SetText( m_instance.p_outputDirectory = d.Directory() );
+   }
    else if ( sender == GUI->AutoLimitMagnitude_CheckBox )
    {
       m_instance.p_autoLimitMagnitude = checked;
@@ -501,8 +572,12 @@ void SpectrophotometricFluxCalibrationInterface::e_ValueUpdated( NumericEdit& se
       m_instance.p_blueFilterBandwidth = value;
    else if ( sender == GUI->LimitMagnitude_NumericEdit )
       m_instance.p_limitMagnitude = value;
+   else if ( sender == GUI->MinMagnitude_NumericEdit )
+      m_instance.p_minMagnitude = value;
    else if ( sender == GUI->SaturationThreshold_NumericControl )
       m_instance.p_saturationThreshold = value;
+   else if ( sender == GUI->RejectionLimit_NumericControl )
+      m_instance.p_rejectionLimit = value;
    else if ( sender == GUI->PSFMinSNR_NumericEdit )
       m_instance.p_psfMinSNR = value;
    else if ( sender == GUI->PSFGrowth_NumericControl )
@@ -525,6 +600,23 @@ void SpectrophotometricFluxCalibrationInterface::e_SpinValueUpdated( SpinBox& se
       m_instance.p_psfNoiseReductionFilterRadius = value;
    else if ( sender == GUI->PSFMaxStars_SpinBox )
       m_instance.p_psfMaxStars = value;
+}
+
+// ----------------------------------------------------------------------------
+
+void SpectrophotometricFluxCalibrationInterface::e_FileDrag( Control& sender, const Point& pos, const StringList& files, unsigned modifiers, bool& wantsFiles )
+{
+   if ( sender == GUI->OutputDirectory_Edit )
+      wantsFiles = files.Length() == 1 && File::DirectoryExists( files[0] );
+}
+
+// ----------------------------------------------------------------------------
+
+void SpectrophotometricFluxCalibrationInterface::e_FileDrop( Control& sender, const Point& pos, const StringList& files, unsigned modifiers )
+{
+   if ( sender == GUI->OutputDirectory_Edit )
+      if ( File::DirectoryExists( files[0] ) )
+         GUI->OutputDirectory_Edit.SetText( m_instance.p_outputDirectory = files[0] );
 }
 
 // ----------------------------------------------------------------------------
@@ -565,7 +657,7 @@ SpectrophotometricFluxCalibrationInterface::GUIData::GUIData( Spectrophotometric
 
    //
 
-   const char* grayFilterToolTip = "<p>Gray filter used to acquire the target image (applicable to grayscale images only).</p>";
+   const char* grayFilterToolTip = "<p>Gray filter used to acquire the target image (only applicable to grayscale images).</p>";
 
    GrayFilter_Label.SetText( "Gray filter:" );
    GrayFilter_Label.SetFixedWidth( labelWidth1 );
@@ -581,7 +673,7 @@ SpectrophotometricFluxCalibrationInterface::GUIData::GUIData( Spectrophotometric
    GrayFilter_Sizer.Add( GrayFilter_ComboBox, 100 );
    GrayFilter_Sizer.AddStretch();
 
-   const char* redFilterToolTip = "<p>Red filter used to acquire the target image.</p>";
+   const char* redFilterToolTip = "<p>Red filter used to acquire the target image (only applicable to RGB color images).</p>";
 
    RedFilter_Label.SetText( "Red filter:" );
    RedFilter_Label.SetFixedWidth( labelWidth1 );
@@ -597,7 +689,7 @@ SpectrophotometricFluxCalibrationInterface::GUIData::GUIData( Spectrophotometric
    RedFilter_Sizer.Add( RedFilter_ComboBox, 100 );
    RedFilter_Sizer.AddStretch();
 
-   const char* greenFilterToolTip = "<p>Green filter used to acquire the target image.</p>";
+   const char* greenFilterToolTip = "<p>Green filter used to acquire the target image (only applicable to RGB color images).</p>";
 
    GreenFilter_Label.SetText( "Green filter:" );
    GreenFilter_Label.SetFixedWidth( labelWidth1 );
@@ -613,7 +705,7 @@ SpectrophotometricFluxCalibrationInterface::GUIData::GUIData( Spectrophotometric
    GreenFilter_Sizer.Add( GreenFilter_ComboBox, 100 );
    GreenFilter_Sizer.AddStretch();
 
-   const char* blueFilterToolTip = "<p>Blue filter used to acquire the target image.</p>";
+   const char* blueFilterToolTip = "<p>Blue filter used to acquire the target image (only applicable to RGB color images).</p>";
 
    BlueFilter_Label.SetText( "Blue filter:" );
    BlueFilter_Label.SetFixedWidth( labelWidth1 );
@@ -776,6 +868,57 @@ SpectrophotometricFluxCalibrationInterface::GUIData::GUIData( Spectrophotometric
    NarrowbandMode_Sizer.Add( NarrowbandMode_CheckBox );
    NarrowbandMode_Sizer.AddStretch();
 
+   GenerateGraphs_CheckBox.SetText( "Generate graphs" );
+   GenerateGraphs_CheckBox.SetToolTip( "<p>Generate interactive graphs to analyze the function fits among catalog "
+      "and image signal samples for measured stars.</p>" );
+   GenerateGraphs_CheckBox.OnClick( (Button::click_event_handler)&SpectrophotometricFluxCalibrationInterface::e_Click, w );
+
+   GenerateGraphs_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   GenerateGraphs_Sizer.Add( GenerateGraphs_CheckBox );
+   GenerateGraphs_Sizer.AddStretch();
+
+   GenerateStarMaps_CheckBox.SetText( "Generate star maps" );
+   GenerateStarMaps_CheckBox.SetToolTip( "<p>Generate monochrome 8-bit images representing the measured stars. These images "
+      "can be used as masks on the target image.</p>" );
+   GenerateStarMaps_CheckBox.OnClick( (Button::click_event_handler)&SpectrophotometricFluxCalibrationInterface::e_Click, w );
+
+   GenerateStarMaps_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   GenerateStarMaps_Sizer.Add( GenerateStarMaps_CheckBox );
+   GenerateStarMaps_Sizer.AddStretch();
+
+   GenerateTextFiles_CheckBox.SetText( "Generate text files" );
+   GenerateTextFiles_CheckBox.SetToolTip( "<p>Generate text files in CSV format with positional, photometric and scale sampling data.</p>" );
+   GenerateTextFiles_CheckBox.OnClick( (Button::click_event_handler)&SpectrophotometricFluxCalibrationInterface::e_Click, w );
+
+   GenerateTextFiles_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   GenerateTextFiles_Sizer.Add( GenerateTextFiles_CheckBox );
+   GenerateTextFiles_Sizer.AddStretch();
+
+   const char* outputDirectoryToolTip = "<p>The directory (or folder) where output text files (in CSV format) will be written.</p>"
+      "<p>If this field is left blank (or with its default &lt;system-temp-dir&gt; value), output files will be written to the "
+      "system temporary files directory.</p>";
+
+   OutputDirectory_Label.SetText( "Output directory:" );
+   OutputDirectory_Label.SetFixedWidth( labelWidth1 );
+   OutputDirectory_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   OutputDirectory_Label.SetToolTip( outputDirectoryToolTip );
+
+   OutputDirectory_Edit.SetToolTip( outputDirectoryToolTip );
+   OutputDirectory_Edit.OnGetFocus( (Control::event_handler)&SpectrophotometricFluxCalibrationInterface::e_GetFocus, w );
+   OutputDirectory_Edit.OnEditCompleted( (Edit::edit_event_handler)&SpectrophotometricFluxCalibrationInterface::e_EditCompleted, w );
+   OutputDirectory_Edit.OnFileDrag( (Control::file_drag_event_handler)&SpectrophotometricFluxCalibrationInterface::e_FileDrag, w );
+   OutputDirectory_Edit.OnFileDrop( (Control::file_drop_event_handler)&SpectrophotometricFluxCalibrationInterface::e_FileDrop, w );
+
+   OutputDirectory_ToolButton.SetIcon( Bitmap( w.ScaledResource( ":/icons/select-file.png" ) ) );
+   OutputDirectory_ToolButton.SetScaledFixedSize( 20, 20 );
+   OutputDirectory_ToolButton.SetToolTip( "<p>Select the output directory for CSV files.</p>" );
+   OutputDirectory_ToolButton.OnClick( (Button::click_event_handler)&SpectrophotometricFluxCalibrationInterface::e_Click, w );
+
+   OutputDirectory_Sizer.SetSpacing( 4 );
+   OutputDirectory_Sizer.Add( OutputDirectory_Label );
+   OutputDirectory_Sizer.Add( OutputDirectory_Edit, 100 );
+   OutputDirectory_Sizer.Add( OutputDirectory_ToolButton );
+
    //
 
    SystemParameters_Sizer.SetSpacing( 4 );
@@ -783,6 +926,10 @@ SpectrophotometricFluxCalibrationInterface::GUIData::GUIData( Spectrophotometric
    SystemParameters_Sizer.Add( BroadbandFilters_Control );
    SystemParameters_Sizer.Add( NarrowbandFilters_Control );
    SystemParameters_Sizer.Add( NarrowbandMode_Sizer );
+   SystemParameters_Sizer.Add( GenerateGraphs_Sizer );
+   SystemParameters_Sizer.Add( GenerateStarMaps_Sizer );
+   SystemParameters_Sizer.Add( GenerateTextFiles_Sizer );
+   SystemParameters_Sizer.Add( OutputDirectory_Sizer );
 
    SystemParameters_Control.SetSizer( SystemParameters_Sizer );
 
@@ -834,10 +981,23 @@ SpectrophotometricFluxCalibrationInterface::GUIData::GUIData( Spectrophotometric
       "value under normal working conditions.</p>" );
    LimitMagnitude_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&SpectrophotometricFluxCalibrationInterface::e_ValueUpdated, w );
 
+   MinMagnitude_NumericEdit.label.SetText( "Minimum magnitude:" );
+   MinMagnitude_NumericEdit.label.SetFixedWidth( labelWidth1 );
+   MinMagnitude_NumericEdit.SetReal();
+   MinMagnitude_NumericEdit.SetRange( TheSPFCMinMagnitudeParameter->MinimumValue(), TheSPFCMinMagnitudeParameter->MaximumValue() );
+   MinMagnitude_NumericEdit.SetPrecision( TheSPFCMinMagnitudeParameter->Precision() );
+   MinMagnitude_NumericEdit.edit.SetFixedWidth( editWidth1 );
+   MinMagnitude_NumericEdit.sizer.AddStretch();
+   MinMagnitude_NumericEdit.SetToolTip( "<p>Minimum magnitude (G band) of extracted catalog stars. This parameter can be useful in "
+      "special cases where sampling too bright stars can lead to accuracy problems caused by contamination of signal estimates "
+      "in highly crowded fields. This may happen with wide-field images.</p>" );
+   MinMagnitude_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&SpectrophotometricFluxCalibrationInterface::e_ValueUpdated, w );
+
    CatalogSearch_Sizer.SetSpacing( 4 );
    CatalogSearch_Sizer.Add( Catalog_Sizer );
    CatalogSearch_Sizer.Add( AutoLimitMagnitude_Sizer );
    CatalogSearch_Sizer.Add( LimitMagnitude_NumericEdit );
+   CatalogSearch_Sizer.Add( MinMagnitude_NumericEdit );
 
    CatalogSearch_Control.SetSizer( CatalogSearch_Sizer );
 
@@ -895,6 +1055,23 @@ SpectrophotometricFluxCalibrationInterface::GUIData::GUIData( Spectrophotometric
    SaturationRelative_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    SaturationRelative_Sizer.Add( SaturationRelative_CheckBox );
    SaturationRelative_Sizer.AddStretch();
+
+   RejectionLimit_NumericControl.label.SetText( "Rejection limit:" );
+   RejectionLimit_NumericControl.label.SetFixedWidth( labelWidth1 );
+   RejectionLimit_NumericControl.slider.SetRange( 0, 250 );
+   RejectionLimit_NumericControl.SetReal();
+   RejectionLimit_NumericControl.SetRange( TheSPFCRejectionLimitParameter->MinimumValue(), TheSPFCRejectionLimitParameter->MaximumValue() );
+   RejectionLimit_NumericControl.SetPrecision( TheSPFCRejectionLimitParameter->Precision() );
+   RejectionLimit_NumericControl.edit.SetFixedWidth( editWidth1 );
+   RejectionLimit_NumericControl.SetToolTip( "<p>Limit for the modified Chauvenet rejection criterion.</p>"
+      "<p>A modified Robust Chauvenet Rejection (RCR) routine is used internally by this implementation for rejection of "
+      "outlier relative scale samples. The larger the value of this parameter, the more samples will be rejected by the RCR "
+      "algorithm.</p>"
+      "<p>The original Chauvenet rejection criterion is N*P(x > |z|) &lt; 0.5, where N is the number of measurements and "
+      "P() represents the probability of x being more than z standard deviations from the mean. This parameter modifies the "
+      "rejection criterion by replacing 0.5 with an arbitrary limit in the [0,1] range, in order to make the algorithm "
+      "controllable. The default rejection limit is 0.3.</p>" );
+   RejectionLimit_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&SpectrophotometricFluxCalibrationInterface::e_ValueUpdated, w );
 
    const char* psfNoiseLayersToolTip =
       "<p>Star detector: Number of wavelet layers used for noise reduction.</p>"
@@ -1047,7 +1224,7 @@ SpectrophotometricFluxCalibrationInterface::GUIData::GUIData( Spectrophotometric
       "<p>A value of 1.0 means that flux will be measured exclusively from pixels within the elliptical region defined at one "
       "tenth of the fitted PSF maximum. Increasing this parameter can inprove accuracy of PSF flux measurements for "
       "undersampled images, where PSF fitting uncertainty is relatively large. Decreasing it can be beneficial in some cases "
-      "working with very noisy data to restrict flux evaluation to star cores. The default value is 1.25.</p>" );
+      "working with very noisy data to restrict flux evaluation to star cores. The default value is 1.75.</p>" );
    PSFGrowth_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&SpectrophotometricFluxCalibrationInterface::e_ValueUpdated, w );
 
    const char* psfMaxStarsToolTip =
@@ -1090,6 +1267,7 @@ SpectrophotometricFluxCalibrationInterface::GUIData::GUIData( Spectrophotometric
    SignalEvaluation_Sizer.Add( StructureLayers_Sizer );
    SignalEvaluation_Sizer.Add( SaturationThreshold_NumericControl );
    SignalEvaluation_Sizer.Add( SaturationRelative_Sizer );
+   SignalEvaluation_Sizer.Add( RejectionLimit_NumericControl );
    SignalEvaluation_Sizer.Add( PSFNoiseLayers_Sizer );
    SignalEvaluation_Sizer.Add( PSFMinStructureSize_Sizer );
    SignalEvaluation_Sizer.Add( PSFHotPixelFilterRadius_Sizer );
@@ -1131,4 +1309,4 @@ SpectrophotometricFluxCalibrationInterface::GUIData::GUIData( Spectrophotometric
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SpectrophotometricFluxCalibrationInterface.cpp - Released 2024-05-07T15:28:00Z
+// EOF SpectrophotometricFluxCalibrationInterface.cpp - Released 2024-06-18T15:49:25Z

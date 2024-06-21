@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.5.3
+// Standard ImageIntegration Process Module Version 1.6.0
 // ----------------------------------------------------------------------------
-// IntegrationCache.cpp - Released 2024-05-07T15:28:00Z
+// IntegrationCache.cpp - Released 2024-06-18T15:49:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -364,4 +364,4 @@ void IntegrationCache::SetMaxItemDuration( int days )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationCache.cpp - Released 2024-05-07T15:28:00Z
+// EOF IntegrationCache.cpp - Released 2024-06-18T15:49:25Z

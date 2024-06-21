@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
-// pcl/Rectangle.h - Released 2024-05-07T15:27:32Z
+// pcl/Rectangle.h - Released 2024-06-18T15:48:54Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -1635,6 +1635,53 @@ public:
    }
 
    /*!
+    * Inflates this rectangle by the specified factors \a kx and \a ky with
+    * respect to the current width and height, respectively. This function is
+    * equivalent to:
+    *
+    * \code InflateBy( kx*Width()/2, ky*Height()/2 ); \endcode
+    */
+   void InflateByFactors( double kx, double ky ) noexcept
+   {
+      InflateBy( kx*Width()/2, ky*Height()/2 );
+   }
+
+   /*!
+    * Inflates this rectangle by the specified factor \a k with respect to the
+    * current width and height. This function is equivalent to:
+    *
+    * \code InflateBy( k*Width()/2, k*Height()/2 ); \endcode
+    */
+   void InflateByFactor( double k ) noexcept
+   {
+      InflateBy( k*Width()/2, k*Height()/2 );
+   }
+
+   /*!
+    * Returns a rectangle equivalent to this rectangle inflated by the
+    * specified factors \a kx and \a ky with respect to the current width and
+    * height, respectively. See InflateByFactors() for more information.
+    */
+   GenericRectangle InflatedByFactors( double kx, double ky ) noexcept
+   {
+      GenericRectangle r( *this );
+      r.InflateByFactors( kx, ky );
+      return r;
+   }
+
+   /*!
+    * Returns a rectangle equivalent to this rectangle inflated by the
+    * specified factor \a k with respect to the current width and height. See
+    * InflateByFactor() for more information.
+    */
+   GenericRectangle InflatedByFactor( double k ) noexcept
+   {
+      GenericRectangle r( *this );
+      r.InflateByFactor( k );
+      return r;
+   }
+
+   /*!
     * Shrinks this rectangle by the specified \a dx and \a dy increments on the
     * X and Y axes respectively. Adds \a dx and \a dy to the upper left corner,
     * and subtracts them to the bottom right corner.
@@ -3021,4 +3068,4 @@ using DRect = F64Rect;
 #endif  // __PCL_Rectangle_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Rectangle.h - Released 2024-05-07T15:27:32Z
+// EOF pcl/Rectangle.h - Released 2024-06-18T15:48:54Z

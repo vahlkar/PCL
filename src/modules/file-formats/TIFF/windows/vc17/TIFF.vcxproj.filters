@@ -1,28 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.138
+# PixInsight Makefile Generator Script v1.139
 # Copyright (C) 2009-2024 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2024-05-07T16:57:59.377Z
+# Generated on .... 2024-06-21T11:22:20.824Z
 # Project id ...... TIFF
 # Project type .... Module
 # Platform ........ Windows/vc17
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # Additional preprocessor definitions:
 # _CRT_SECURE_NO_WARNINGS
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# Additional include search directories:
+# $(PCLSRCDIR)/3rdparty/zlib
 ######################################################################
 -->
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>0004ba74-35e9-40ae-a5f3-833782bc6ca4</UniqueIdentifier>
+      <UniqueIdentifier>791b3fdd-b808-41c4-a387-7de6230887e7</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>695e020a-8453-4b23-9103-c02e3a1880a2</UniqueIdentifier>
+      <UniqueIdentifier>d9c80c1a-785d-4459-af64-40e1adeec2b2</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>2e95bc0f-11fc-4001-9b9b-f8a047e0f6e1</UniqueIdentifier>
+      <UniqueIdentifier>80cc708d-16e8-4aea-b99a-cbc9abd3f244</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

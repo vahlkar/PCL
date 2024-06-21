@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.138
+# PixInsight Makefile Generator Script v1.139
 # Copyright (C) 2009-2024 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2024-05-07T16:58:07.692Z
+# Generated on .... 2024-06-21T11:22:29.091Z
 # Project id ...... ImageCalibration
 # Project type .... Module
 # Platform ........ Windows/vc16
@@ -25,7 +25,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{D44A1228-9C0E-4762-87C3-65B51ED282A8}</ProjectGuid>
+    <ProjectGuid>{2AA6C17A-0F65-4C1B-8AB7-4023C9F662C3}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -148,6 +148,7 @@
     <ClCompile Include="..\..\LocalNormalizationInterface.cpp"/>
     <ClCompile Include="..\..\LocalNormalizationParameters.cpp"/>
     <ClCompile Include="..\..\LocalNormalizationProcess.cpp"/>
+    <ClCompile Include="..\..\SpectrophotometricFluxCalibrationGraphInterface.cpp"/>
     <ClCompile Include="..\..\SpectrophotometricFluxCalibrationInstance.cpp"/>
     <ClCompile Include="..\..\SpectrophotometricFluxCalibrationInterface.cpp"/>
     <ClCompile Include="..\..\SpectrophotometricFluxCalibrationParameters.cpp"/>
@@ -172,6 +173,7 @@
     <ClInclude Include="..\..\LocalNormalizationParameters.h"/>
     <ClInclude Include="..\..\LocalNormalizationProcess.h"/>
     <ClInclude Include="..\..\OutputFileData.h"/>
+    <ClInclude Include="..\..\SpectrophotometricFluxCalibrationGraphInterface.h"/>
     <ClInclude Include="..\..\SpectrophotometricFluxCalibrationInstance.h"/>
     <ClInclude Include="..\..\SpectrophotometricFluxCalibrationInterface.h"/>
     <ClInclude Include="..\..\SpectrophotometricFluxCalibrationParameters.h"/>
@@ -185,6 +187,7 @@
     <None Include="..\..\icons\DefectMap.svg"/>
     <None Include="..\..\icons\ImageCalibration.svg"/>
     <None Include="..\..\icons\LocalNormalization.svg"/>
+    <None Include="..\..\icons\SpectrophotometricFluxCalibration.svg"/>
     <None Include="..\..\icons\Superbias.svg"/>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets"/>

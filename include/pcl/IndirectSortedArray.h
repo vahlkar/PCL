@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
-// pcl/IndirectSortedArray.h - Released 2024-05-07T15:27:32Z
+// pcl/IndirectSortedArray.h - Released 2024-06-18T15:48:54Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -665,6 +665,40 @@ public:
    }
 
    /*!
+    * Removes a contiguous leading sequence of \a n existing pointers from this
+    * indirect sorted array. This operation is equivalent to:
+    *
+    * \code Remove( Begin(), At( n ) ); \endcode
+    *
+    * If the specified count \a n is greater than or equal to the length of
+    * this array, this function calls Clear() to yield an empty array.
+    *
+    * Only pointers are removed by this function; the pointed objects are not
+    * affected in any way.
+    */
+   void RemoveFirst( size_type n = 1 )
+   {
+      m_array.RemoveFirst( n );
+   }
+
+   /*!
+    * Removes a contiguous trailing sequence of \a n existing pointers from
+    * this indirect sorted array. This operation is equivalent to:
+    *
+    * \code Truncate( End() - n ); \endcode
+    *
+    * If the specified count \a n is greater than or equal to the length of
+    * this array, this function calls Clear() to yield an empty array.
+    *
+    * Only pointers are removed by this function; the pointed objects are not
+    * affected in any way.
+    */
+   void RemoveLast( size_type n = 1 )
+   {
+      m_array.RemoveLast( n );
+   }
+
+   /*!
     * Removes a trailing sequence of contiguous pointers from the specified
     * iterator of this indirect array. This operation is equivalent to:
     *
@@ -684,15 +718,7 @@ public:
 
    /*!
     * Removes a contiguous trailing sequence of \a n existing pointers from
-    * this indirect array. This operation is equivalent to:
-    *
-    * \code Truncate( End() - n ) \endcode
-    *
-    * If the specified count \a n is greater than or equal to the length of
-    * this array, this function calls Clear() to yield an empty array.
-    *
-    * Only pointers are removed by this function; the pointed objects are not
-    * affected in any way.
+    * this indirect array. This function is a synonym for RemoveLast().
     */
    void Shrink( size_type n = 1 )
    {
@@ -1300,4 +1326,4 @@ IndirectSortedArray<T,A>& operator <<( IndirectSortedArray<T,A>&& x1, const Indi
 #endif  // __PCL_IndirectSortedArray_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/IndirectSortedArray.h - Released 2024-05-07T15:27:32Z
+// EOF pcl/IndirectSortedArray.h - Released 2024-06-18T15:48:54Z

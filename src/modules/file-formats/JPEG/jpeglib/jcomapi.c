@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// jcomapi.c - Released 2024-05-07T15:27:52Z
+// jcomapi.c - Released 2024-06-18T15:49:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -296,4 +296,4 @@ jpeg_std_huff_table (j_common_ptr cinfo, boolean isDC, int tblno)
 }
 
 // ----------------------------------------------------------------------------
-// EOF jcomapi.c - Released 2024-05-07T15:27:52Z
+// EOF jcomapi.c - Released 2024-06-18T15:49:17Z

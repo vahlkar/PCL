@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.138
+# PixInsight Makefile Generator Script v1.139
 # Copyright (C) 2009-2024 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2024-05-07T16:58:07.742Z
+# Generated on .... 2024-06-21T11:22:29.141Z
 # Project id ...... ImageCalibration
 # Project type .... Module
 # Platform ........ Windows/vc17
@@ -16,13 +16,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>5dd8cf90-8762-4cb3-a8e9-2250e60ecba1</UniqueIdentifier>
+      <UniqueIdentifier>012bb897-42bb-4c64-9186-424c549b1feb</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>20627438-0b9f-4001-bb0c-84e485b5df86</UniqueIdentifier>
+      <UniqueIdentifier>9d9b752e-9d05-412f-a889-632f403b7d64</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>b6cd557a-2e37-4976-b0fa-0aad7cfec16f</UniqueIdentifier>
+      <UniqueIdentifier>b924a3af-da88-4572-be1b-451c29a83c83</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -63,6 +63,9 @@
         <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\LocalNormalizationProcess.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\SpectrophotometricFluxCalibrationGraphInterface.cpp">
         <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\SpectrophotometricFluxCalibrationInstance.cpp">
@@ -133,6 +136,9 @@
     <ClInclude Include="..\..\OutputFileData.h">
         <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\SpectrophotometricFluxCalibrationGraphInterface.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\SpectrophotometricFluxCalibrationInstance.h">
         <Filter>Header Files</Filter>
     </ClInclude>
@@ -166,6 +172,9 @@
         <Filter>Image Files</Filter>
     </None>
     <None Include="..\..\icons\LocalNormalization.svg">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\icons\SpectrophotometricFluxCalibration.svg">
         <Filter>Image Files</Filter>
     </None>
     <None Include="..\..\icons\Superbias.svg">

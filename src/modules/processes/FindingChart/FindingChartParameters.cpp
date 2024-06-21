@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
-// Standard FindingChart Process Module Version 1.1.0
+// Standard FindingChart Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// FindingChartParameters.cpp - Released 2024-05-07T15:28:00Z
+// FindingChartParameters.cpp - Released 2024-06-18T15:49:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FindingChart PixInsight module.
 //
@@ -63,6 +63,8 @@ FCChartResolution*          TheFCChartResolutionParameter = nullptr;
 FCAutoChartMaxMagnitude*    TheFCAutoChartMaxMagnitudeParameter = nullptr;
 FCChartMaxMagnitude*        TheFCChartMaxMagnitudeParameter = nullptr;
 FCDrawGrid*                 TheFCDrawGridParameter = nullptr;
+FCDrawEcliptic*             TheFCDrawEclipticParameter = nullptr;
+FCDrawGalacticEquator*      TheFCDrawGalacticEquatorParameter = nullptr;
 FCDrawConstellationBorders* TheFCDrawConstellationBordersParameter = nullptr;
 FCDrawConstellationLines*   TheFCDrawConstellationLinesParameter = nullptr;
 FCDrawConstellationNames*   TheFCDrawConstellationNamesParameter = nullptr;
@@ -78,6 +80,10 @@ FCImageRegionColor*         TheFCImageRegionColorParameter = nullptr;
 FCImageRegionBorderColor*   TheFCImageRegionBorderColorParameter = nullptr;
 FCGridColor*                TheFCGridColorParameter = nullptr;
 FCGridTextColor*            TheFCGridTextColorParameter = nullptr;
+FCEclipticColor*            TheFCEclipticColorParameter = nullptr;
+FCEclipticTextColor*        TheFCEclipticTextColorParameter = nullptr;
+FCGalacticEquatorColor*     TheFCGalacticEquatorColorParameter = nullptr;
+FCGalacticEquatorTextColor* TheFCGalacticEquatorTextColorParameter = nullptr;
 FCConstellationBorderColor* TheFCConstellationBorderColorParameter = nullptr;
 FCConstellationLineColor*   TheFCConstellationLineColorParameter = nullptr;
 FCConstellationTextColor*   TheFCConstellationTextColorParameter = nullptr;
@@ -229,6 +235,42 @@ IsoString FCDrawGrid::Id() const
 }
 
 bool FCDrawGrid::DefaultValue() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+FCDrawEcliptic::FCDrawEcliptic( MetaProcess* P )
+   : MetaBoolean( P )
+{
+   TheFCDrawEclipticParameter = this;
+}
+
+IsoString FCDrawEcliptic::Id() const
+{
+   return "drawEcliptic";
+}
+
+bool FCDrawEcliptic::DefaultValue() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+FCDrawGalacticEquator::FCDrawGalacticEquator( MetaProcess* P )
+   : MetaBoolean( P )
+{
+   TheFCDrawGalacticEquatorParameter = this;
+}
+
+IsoString FCDrawGalacticEquator::Id() const
+{
+   return "drawGalacticEquator";
+}
+
+bool FCDrawGalacticEquator::DefaultValue() const
 {
    return true;
 }
@@ -496,6 +538,74 @@ double FCGridTextColor::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
+FCEclipticColor::FCEclipticColor( MetaProcess* P ) : MetaUInt32( P )
+{
+   TheFCEclipticColorParameter = this;
+}
+
+IsoString FCEclipticColor::Id() const
+{
+   return "eclipticColor";
+}
+
+double FCEclipticColor::DefaultValue() const
+{
+   return 0x80FFA500;
+}
+
+// ----------------------------------------------------------------------------
+
+FCEclipticTextColor::FCEclipticTextColor( MetaProcess* P ) : MetaUInt32( P )
+{
+   TheFCEclipticTextColorParameter = this;
+}
+
+IsoString FCEclipticTextColor::Id() const
+{
+   return "eclipticTextColor";
+}
+
+double FCEclipticTextColor::DefaultValue() const
+{
+   return 0x80FFA500;
+}
+
+// ----------------------------------------------------------------------------
+
+FCGalacticEquatorColor::FCGalacticEquatorColor( MetaProcess* P ) : MetaUInt32( P )
+{
+   TheFCGalacticEquatorColorParameter = this;
+}
+
+IsoString FCGalacticEquatorColor::Id() const
+{
+   return "galacticEquatorColor";
+}
+
+double FCGalacticEquatorColor::DefaultValue() const
+{
+   return 0x8087CEEB;
+}
+
+// ----------------------------------------------------------------------------
+
+FCGalacticEquatorTextColor::FCGalacticEquatorTextColor( MetaProcess* P ) : MetaUInt32( P )
+{
+   TheFCGalacticEquatorTextColorParameter = this;
+}
+
+IsoString FCGalacticEquatorTextColor::Id() const
+{
+   return "galacticEquatorTextColor";
+}
+
+double FCGalacticEquatorTextColor::DefaultValue() const
+{
+   return 0x8087CEEB;
+}
+
+// ----------------------------------------------------------------------------
+
 FCConstellationBorderColor::FCConstellationBorderColor( MetaProcess* P ) : MetaUInt32( P )
 {
    TheFCConstellationBorderColorParameter = this;
@@ -601,4 +711,4 @@ double FCNGCTextColor::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FindingChartParameters.cpp - Released 2024-05-07T15:28:00Z
+// EOF FindingChartParameters.cpp - Released 2024-06-18T15:49:25Z

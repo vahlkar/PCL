@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// jidctfst.c - Released 2024-05-07T15:27:52Z
+// jidctfst.c - Released 2024-06-18T15:49:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -403,4 +403,4 @@ jpeg_idct_ifast (j_decompress_ptr cinfo, jpeg_component_info * compptr,
 #endif /* DCT_IFAST_SUPPORTED */
 
 // ----------------------------------------------------------------------------
-// EOF jidctfst.c - Released 2024-05-07T15:27:52Z
+// EOF jidctfst.c - Released 2024-06-18T15:49:17Z

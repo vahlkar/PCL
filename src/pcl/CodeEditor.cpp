@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
-// pcl/CodeEditor.cpp - Released 2024-05-07T15:27:40Z
+// pcl/CodeEditor.cpp - Released 2024-06-18T15:49:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -544,4 +544,4 @@ void CodeEditor::OnDynamicWordWrapModeUpdated( state_event_handler handler, Cont
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/CodeEditor.cpp - Released 2024-05-07T15:27:40Z
+// EOF pcl/CodeEditor.cpp - Released 2024-06-18T15:49:06Z

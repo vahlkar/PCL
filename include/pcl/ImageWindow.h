@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
-// pcl/ImageWindow.h - Released 2024-05-07T15:27:32Z
+// pcl/ImageWindow.h - Released 2024-06-18T15:48:54Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -228,6 +228,7 @@ namespace TransparencyMode
  * <tr><td>UndoFlag::ImageId</td>                 <td>Save image identifier.</td></tr>
  * <tr><td>UndoFlag::Resolution</td>              <td>Save image resolution data.</td></tr>
  * <tr><td>UndoFlag::AstrometricSolution</td>     <td>Save existing astrometric solution.</td></tr>
+ * <tr><td>UndoFlag::ViewProperties</td>          <td>The process modifies view properties.</td></tr>
  * <tr><td>UndoFlag::All</td>                     <td>Save all data items.</td></tr>
  * <tr><td>UndoFlag::DeletePropertiesOnEntry</td> <td>Unconditionally destroy/delete non-permanent view properties before execution.</td></tr>
  * <tr><td>UndoFlag::DeletePropertiesOnExit</td>  <td>Unconditionally destroy/delete non-permanent view properties after execution.</td></tr>
@@ -252,6 +253,7 @@ namespace UndoFlag
       ImageId                 = 0x00000040,  // %Image identifier
       Resolution              = 0x00000080,  // %Image resolution
       AstrometricSolution     = 0x00000100,  // Save the current astrometric solution
+      ViewProperties          = 0x00010000,  // The process modifies view properties (since core build 1607)
       All                     = 0x000FFFFF,  // Save all data items
       DeletePropertiesOnEntry = 0x01000000,  // Destroy/delete non-permanent view properties before execution
       DeletePropertiesOnExit  = 0x02000000,  // Destroy/delete non-permanent view properties after execution
@@ -3068,4 +3070,4 @@ private:
 #endif   // __PCL_ImageWindow_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ImageWindow.h - Released 2024-05-07T15:27:32Z
+// EOF pcl/ImageWindow.h - Released 2024-06-18T15:48:54Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 2.1.0
 // ----------------------------------------------------------------------------
-// SpectrophotometricFluxCalibrationInterface.h - Released 2024-05-07T15:28:00Z
+// SpectrophotometricFluxCalibrationInterface.h - Released 2024-06-18T15:49:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -144,6 +144,16 @@ private:
 
          HorizontalSizer   NarrowbandMode_Sizer;
             CheckBox          NarrowbandMode_CheckBox;
+         HorizontalSizer   GenerateGraphs_Sizer;
+            CheckBox          GenerateGraphs_CheckBox;
+         HorizontalSizer   GenerateStarMaps_Sizer;
+            CheckBox          GenerateStarMaps_CheckBox;
+         HorizontalSizer   GenerateTextFiles_Sizer;
+            CheckBox          GenerateTextFiles_CheckBox;
+         HorizontalSizer   OutputDirectory_Sizer;
+            Label             OutputDirectory_Label;
+            Edit              OutputDirectory_Edit;
+            ToolButton        OutputDirectory_ToolButton;
 
       SectionBar        CatalogSearch_SectionBar;
       Control           CatalogSearch_Control;
@@ -154,6 +164,7 @@ private:
          HorizontalSizer   AutoLimitMagnitude_Sizer;
             CheckBox          AutoLimitMagnitude_CheckBox;
          NumericEdit       LimitMagnitude_NumericEdit;
+         NumericEdit       MinMagnitude_NumericEdit;
 
       SectionBar        SignalEvaluation_SectionBar;
       Control           SignalEvaluation_Control;
@@ -164,6 +175,7 @@ private:
          NumericControl    SaturationThreshold_NumericControl;
          HorizontalSizer   SaturationRelative_Sizer;
             CheckBox          SaturationRelative_CheckBox;
+         NumericControl    RejectionLimit_NumericControl;
          HorizontalSizer   PSFNoiseLayers_Sizer;
             Label             PSFNoiseLayers_Label;
             SpinBox           PSFNoiseLayers_SpinBox;
@@ -193,10 +205,14 @@ private:
    void RegenerateDatabaseAccessControls();
    void UpdateControls();
 
+   void e_GetFocus( Control& sender );
+   void e_EditCompleted( Edit& sender );
    void e_ItemSelected( ComboBox& sender, int itemIndex );
    void e_Click( Button& sender, bool checked );
    void e_ValueUpdated( NumericEdit& sender, double value );
    void e_SpinValueUpdated( SpinBox& sender, int value );
+   void e_FileDrag( Control& sender, const Point& pos, const StringList& files, unsigned modifiers, bool& wantsFiles );
+   void e_FileDrop( Control& sender, const Point& pos, const StringList& files, unsigned modifiers );
 
    friend struct GUIData;
 };
@@ -214,4 +230,4 @@ PCL_END_LOCAL
 #endif   // __SpectrophotometricFluxCalibrationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF SpectrophotometricFluxCalibrationInterface.h - Released 2024-05-07T15:28:00Z
+// EOF SpectrophotometricFluxCalibrationInterface.h - Released 2024-06-18T15:49:25Z

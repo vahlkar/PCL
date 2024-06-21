@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
-// pcl/StandardAllocator.h - Released 2024-05-07T15:27:32Z
+// pcl/StandardAllocator.h - Released 2024-06-18T15:48:54Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -346,4 +346,4 @@ inline void operator delete( void* p, void*, pcl::StandardAllocator& )
 #endif  // __PCL_StandardAllocator_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/StandardAllocator.h - Released 2024-05-07T15:27:32Z
+// EOF pcl/StandardAllocator.h - Released 2024-06-18T15:48:54Z

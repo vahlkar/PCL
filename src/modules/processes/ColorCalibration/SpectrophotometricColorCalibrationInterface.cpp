@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.9.5
 // ----------------------------------------------------------------------------
-// SpectrophotometricColorCalibrationInterface.cpp - Released 2024-05-07T15:28:00Z
+// SpectrophotometricColorCalibrationInterface.cpp - Released 2024-06-18T15:49:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -445,7 +445,7 @@ void SpectrophotometricColorCalibrationInterface::e_EditCompleted( Edit& sender 
    {
       if ( text == OUTPUT_DIR_DEFAULT )
          text.Clear();
-      m_instance.p_backgroundReferenceViewId = text;
+      m_instance.p_outputDirectory = text;
       sender.SetText( OUTPUT_DIR_INSTANCE );
    }
    else if ( sender == GUI->BackgroundReferenceViewId_Edit )
@@ -767,7 +767,7 @@ SpectrophotometricColorCalibrationInterface::GUIData::GUIData( Spectrophotometri
    pcl::Font fnt = w.Font();
    int labelWidth1 = fnt.Width( "Minimum detection SNR:m" );
    int labelWidth2 = fnt.Width( "Height:m" );
-   int editWidth1 = fnt.Width( "9999999m" );
+   int editWidth1 = fnt.Width( "999999999m" );
    int editWidth2 = fnt.Width( String( '0', 10 ) );
    int editWidth3 = fnt.Width( "Wavelengthm" );
    int comboWidth1 = fnt.Width( String( 'm', 24 ) );
@@ -1609,4 +1609,4 @@ SpectrophotometricColorCalibrationInterface::GUIData::GUIData( Spectrophotometri
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SpectrophotometricColorCalibrationInterface.cpp - Released 2024-05-07T15:28:00Z
+// EOF SpectrophotometricColorCalibrationInterface.cpp - Released 2024-06-18T15:49:25Z

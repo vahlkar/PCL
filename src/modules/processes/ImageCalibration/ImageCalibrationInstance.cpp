@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 2.1.0
 // ----------------------------------------------------------------------------
-// ImageCalibrationInstance.cpp - Released 2024-05-07T15:28:00Z
+// ImageCalibrationInstance.cpp - Released 2024-06-18T15:49:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -1469,7 +1469,7 @@ private:
          if ( outputFormat.CanStoreImageProperties() && outputFormat.SupportsViewProperties() )
             outputFile.WriteImageProperties( m_outputData.properties );
          else
-            console.WarningLn( "** Warning: The output format cannot store image properties - existing properties not embedded" );
+            console.WarningLn( "** Warning: The output format cannot store image properties - existing properties not embedded." );
 
       /*
        * Add FITS header keywords and preserve existing ones, if possible.
@@ -1743,7 +1743,7 @@ private:
       }
       else
       {
-         console.WarningLn( "** Warning: The output format cannot store FITS header keywords - calibration metadata not embedded" );
+         console.WarningLn( "** Warning: The output format cannot store FITS header keywords - calibration metadata not embedded." );
       }
 
       /*
@@ -1753,7 +1753,7 @@ private:
          if ( outputFormat.CanStoreICCProfiles() )
             outputFile.WriteICCProfile( m_outputData.profile );
          else
-            console.WarningLn( "** Warning: The output format cannot store color profiles - original ICC profile not embedded" );
+            console.WarningLn( "** Warning: The output format cannot store color profiles - original ICC profile not embedded." );
 
       Module->ProcessEvents();
 
@@ -3201,4 +3201,4 @@ size_type ImageCalibrationInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInstance.cpp - Released 2024-05-07T15:28:00Z
+// EOF ImageCalibrationInstance.cpp - Released 2024-06-18T15:49:25Z

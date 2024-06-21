@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
-// Standard FindingChart Process Module Version 1.1.0
+// Standard FindingChart Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// FindingChartInstance.cpp - Released 2024-05-07T15:28:00Z
+// FindingChartInstance.cpp - Released 2024-06-18T15:49:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FindingChart PixInsight module.
 //
@@ -82,6 +82,8 @@ FindingChartInstance::FindingChartInstance( const MetaProcess* m )
    , p_autoChartMaxMagnitude( TheFCAutoChartMaxMagnitudeParameter->DefaultValue() )
    , p_chartMaxMagnitude( TheFCChartMaxMagnitudeParameter->DefaultValue() )
    , p_drawGrid( TheFCDrawGridParameter->DefaultValue() )
+   , p_drawEcliptic( TheFCDrawEclipticParameter->DefaultValue() )
+   , p_drawGalacticEquator( TheFCDrawGalacticEquatorParameter->DefaultValue() )
    , p_drawConstellationBorders( TheFCDrawConstellationBordersParameter->DefaultValue() )
    , p_drawConstellationLines( TheFCDrawConstellationLinesParameter->DefaultValue() )
    , p_drawConstellationNames( TheFCDrawConstellationNamesParameter->DefaultValue() )
@@ -96,6 +98,10 @@ FindingChartInstance::FindingChartInstance( const MetaProcess* m )
    , p_imageRegionBorderColor( uint32( TheFCImageRegionBorderColorParameter->DefaultValue() ) )
    , p_gridColor( uint32( TheFCGridColorParameter->DefaultValue() ) )
    , p_gridTextColor( uint32( TheFCGridTextColorParameter->DefaultValue() ) )
+   , p_eclipticColor( uint32( TheFCEclipticColorParameter->DefaultValue() ) )
+   , p_eclipticTextColor( uint32( TheFCEclipticTextColorParameter->DefaultValue() ) )
+   , p_galacticEquatorColor( uint32( TheFCGalacticEquatorColorParameter->DefaultValue() ) )
+   , p_galacticEquatorTextColor( uint32( TheFCGalacticEquatorTextColorParameter->DefaultValue() ) )
    , p_constellationBorderColor( uint32( TheFCConstellationBorderColorParameter->DefaultValue() ) )
    , p_constellationLineColor( uint32( TheFCConstellationLineColorParameter->DefaultValue() ) )
    , p_constellationTextColor( uint32( TheFCConstellationTextColorParameter->DefaultValue() ) )
@@ -126,6 +132,8 @@ void FindingChartInstance::Assign( const ProcessImplementation& p )
       p_autoChartMaxMagnitude = x->p_autoChartMaxMagnitude;
       p_chartMaxMagnitude = x->p_chartMaxMagnitude;
       p_drawGrid = x->p_drawGrid;
+      p_drawEcliptic = x->p_drawEcliptic;
+      p_drawGalacticEquator = x->p_drawGalacticEquator;
       p_drawConstellationBorders = x->p_drawConstellationBorders;
       p_drawConstellationLines = x->p_drawConstellationLines;
       p_drawConstellationNames = x->p_drawConstellationNames;
@@ -141,6 +149,10 @@ void FindingChartInstance::Assign( const ProcessImplementation& p )
       p_imageRegionBorderColor = x->p_imageRegionBorderColor;
       p_gridColor = x->p_gridColor;
       p_gridTextColor = x->p_gridTextColor;
+      p_eclipticColor = x->p_eclipticColor;
+      p_eclipticTextColor = x->p_eclipticTextColor;
+      p_galacticEquatorColor = x->p_galacticEquatorColor;
+      p_galacticEquatorTextColor = x->p_galacticEquatorTextColor;
       p_constellationBorderColor = x->p_constellationBorderColor;
       p_constellationLineColor = x->p_constellationLineColor;
       p_constellationTextColor = x->p_constellationTextColor;
@@ -474,73 +486,99 @@ bool FindingChartInstance::ExecuteOn( View& view )
                   << StringKeyValue( "ly0_labelFace", "DejaVu Sans" )
                   << StringKeyValue( "ly0_labelFields", "|||||||" )
                   << StringKeyValue( "ly0_density", "4" )
-                  // Constellation Borders
-                  << StringKeyValue( "ly1_visible", String( bool( p_drawConstellationBorders ) ) )
+                  // Ecliptic
+                  << StringKeyValue( "ly1_visible", String( bool( p_drawEcliptic ) ) )
                   << StringKeyValue( "ly1_showMarkers", "true" )
-                  << StringKeyValue( "ly1_lineColor", String( p_constellationBorderColor ) )
-                  << StringKeyValue( "ly1_lineWidth", "4" )
-                  << StringKeyValue( "ly1_showLabels", String( bool( p_drawConstellationNames ) ) )
-                  << StringKeyValue( "ly1_labelSize", "18" )
+                  << StringKeyValue( "ly1_lineColor", String( p_eclipticColor ) )
+                  << StringKeyValue( "ly1_lineWidth", "1" )
+                  << StringKeyValue( "ly1_showLabels", "true" )
+                  << StringKeyValue( "ly1_labelSize", "12" )
                   << StringKeyValue( "ly1_labelBold", "false" )
                   << StringKeyValue( "ly1_labelItalic", "false" )
-                  << StringKeyValue( "ly1_labelColor", String( p_constellationTextColor ) )
+                  << StringKeyValue( "ly1_labelColor", String( p_eclipticTextColor ) )
                   << StringKeyValue( "ly1_labelFace", "DejaVu Sans" )
                   << StringKeyValue( "ly1_labelFields", "|||||||" )
-                  // Constellation Lines
-                  << StringKeyValue( "ly2_visible", String( bool( p_drawConstellationLines ) ) )
+                  << StringKeyValue( "ly1_density", "4" )
+                  // Galactic equator
+                  << StringKeyValue( "ly2_visible", String( bool( p_drawGalacticEquator ) ) )
                   << StringKeyValue( "ly2_showMarkers", "true" )
-                  << StringKeyValue( "ly2_lineColor", String( p_constellationLineColor ) )
-                  << StringKeyValue( "ly2_lineWidth", "4" )
-                  << StringKeyValue( "ly2_showLabels", "false" )
-                  << StringKeyValue( "ly2_labelSize", "32" )
+                  << StringKeyValue( "ly2_lineColor", String( p_galacticEquatorColor ) )
+                  << StringKeyValue( "ly2_lineWidth", "1" )
+                  << StringKeyValue( "ly2_showLabels", "true" )
+                  << StringKeyValue( "ly2_labelSize", "12" )
                   << StringKeyValue( "ly2_labelBold", "false" )
                   << StringKeyValue( "ly2_labelItalic", "false" )
-                  << StringKeyValue( "ly2_labelColor", String( p_constellationLineColor ) )
+                  << StringKeyValue( "ly2_labelColor", String( p_galacticEquatorTextColor ) )
                   << StringKeyValue( "ly2_labelFace", "DejaVu Sans" )
                   << StringKeyValue( "ly2_labelFields", "|||||||" )
-                  << StringKeyValue( "ly2_margin", "8" )
-                  // Messier
-                  << StringKeyValue( "ly3_visible", String( bool( p_drawMessierObjects ) ) )
+                  << StringKeyValue( "ly2_density", "4" )
+                  // Constellation Borders
+                  << StringKeyValue( "ly3_visible", String( bool( p_drawConstellationBorders ) ) )
                   << StringKeyValue( "ly3_showMarkers", "true" )
-                  << StringKeyValue( "ly3_lineColor", String( p_messierTextColor ) )
-                  << StringKeyValue( "ly3_lineWidth", "1" )
-                  << StringKeyValue( "ly3_showLabels", "true" )
-                  << StringKeyValue( "ly3_labelSize", "16" )
+                  << StringKeyValue( "ly3_lineColor", String( p_constellationBorderColor ) )
+                  << StringKeyValue( "ly3_lineWidth", "4" )
+                  << StringKeyValue( "ly3_showLabels", String( bool( p_drawConstellationNames ) ) )
+                  << StringKeyValue( "ly3_labelSize", "18" )
                   << StringKeyValue( "ly3_labelBold", "false" )
                   << StringKeyValue( "ly3_labelItalic", "false" )
-                  << StringKeyValue( "ly3_labelColor", String( p_messierTextColor ) )
+                  << StringKeyValue( "ly3_labelColor", String( p_constellationTextColor ) )
                   << StringKeyValue( "ly3_labelFace", "DejaVu Sans" )
-                  << StringKeyValue( "ly3_labelFields", "||||Name|||Common name" )
-                  << StringKeyValue( "ly3_maxObjects", "4294967295" )
-                  // NamedStars
-                  << StringKeyValue( "ly4_visible", String( p_drawStars && p_drawStarNames ) )
-                  << StringKeyValue( "ly4_showMarkers", "false" )
-                  << StringKeyValue( "ly4_lineColor", String( p_starTextColor ) )
-                  << StringKeyValue( "ly4_lineWidth", "1" )
-                  << StringKeyValue( "ly4_showLabels", "true" )
-                  << StringKeyValue( "ly4_labelSize", "14" )
+                  << StringKeyValue( "ly3_labelFields", "|||||||" )
+                  // Constellation Lines
+                  << StringKeyValue( "ly4_visible", String( bool( p_drawConstellationLines ) ) )
+                  << StringKeyValue( "ly4_showMarkers", "true" )
+                  << StringKeyValue( "ly4_lineColor", String( p_constellationLineColor ) )
+                  << StringKeyValue( "ly4_lineWidth", "4" )
+                  << StringKeyValue( "ly4_showLabels", "false" )
+                  << StringKeyValue( "ly4_labelSize", "32" )
                   << StringKeyValue( "ly4_labelBold", "false" )
                   << StringKeyValue( "ly4_labelItalic", "false" )
-                  << StringKeyValue( "ly4_labelColor", String( p_starTextColor ) )
+                  << StringKeyValue( "ly4_labelColor", String( p_constellationLineColor ) )
                   << StringKeyValue( "ly4_labelFace", "DejaVu Sans" )
-                  << StringKeyValue( "ly4_labelFields", "||||Common name|||" )
-                  << StringKeyValue( "ly4_magMax", "2.0" )
-                  << StringKeyValue( "ly4_maxObjects", "4294967295" )
-                  // NGC-IC
-                  << StringKeyValue( "ly5_visible", String( bool( p_drawNGCObjects ) ) )
+                  << StringKeyValue( "ly4_labelFields", "|||||||" )
+                  << StringKeyValue( "ly4_margin", "8" )
+                  // Messier
+                  << StringKeyValue( "ly5_visible", String( bool( p_drawMessierObjects ) ) )
                   << StringKeyValue( "ly5_showMarkers", "true" )
-                  << StringKeyValue( "ly5_lineColor", String( p_ngcTextColor ) )
+                  << StringKeyValue( "ly5_lineColor", String( p_messierTextColor ) )
                   << StringKeyValue( "ly5_lineWidth", "1" )
                   << StringKeyValue( "ly5_showLabels", "true" )
                   << StringKeyValue( "ly5_labelSize", "16" )
                   << StringKeyValue( "ly5_labelBold", "false" )
                   << StringKeyValue( "ly5_labelItalic", "false" )
-                  << StringKeyValue( "ly5_labelColor", String( p_ngcTextColor ) )
+                  << StringKeyValue( "ly5_labelColor", String( p_messierTextColor ) )
                   << StringKeyValue( "ly5_labelFace", "DejaVu Sans" )
                   << StringKeyValue( "ly5_labelFields", "||||Name|||Common name" )
                   << StringKeyValue( "ly5_maxObjects", "4294967295" )
+                  // NamedStars
+                  << StringKeyValue( "ly6_visible", String( p_drawStars && p_drawStarNames ) )
+                  << StringKeyValue( "ly6_showMarkers", "false" )
+                  << StringKeyValue( "ly6_lineColor", String( p_starTextColor ) )
+                  << StringKeyValue( "ly6_lineWidth", "1" )
+                  << StringKeyValue( "ly6_showLabels", "true" )
+                  << StringKeyValue( "ly6_labelSize", "14" )
+                  << StringKeyValue( "ly6_labelBold", "false" )
+                  << StringKeyValue( "ly6_labelItalic", "false" )
+                  << StringKeyValue( "ly6_labelColor", String( p_starTextColor ) )
+                  << StringKeyValue( "ly6_labelFace", "DejaVu Sans" )
+                  << StringKeyValue( "ly6_labelFields", "||||Common name|||" )
+                  << StringKeyValue( "ly6_magMax", "2.0" )
+                  << StringKeyValue( "ly6_maxObjects", "4294967295" )
+                  // NGC-IC
+                  << StringKeyValue( "ly7_visible", String( bool( p_drawNGCObjects ) ) )
+                  << StringKeyValue( "ly7_showMarkers", "true" )
+                  << StringKeyValue( "ly7_lineColor", String( p_ngcTextColor ) )
+                  << StringKeyValue( "ly7_lineWidth", "1" )
+                  << StringKeyValue( "ly7_showLabels", "true" )
+                  << StringKeyValue( "ly7_labelSize", "16" )
+                  << StringKeyValue( "ly7_labelBold", "false" )
+                  << StringKeyValue( "ly7_labelItalic", "false" )
+                  << StringKeyValue( "ly7_labelColor", String( p_ngcTextColor ) )
+                  << StringKeyValue( "ly7_labelFace", "DejaVu Sans" )
+                  << StringKeyValue( "ly7_labelFields", "||||Name|||Common name" )
+                  << StringKeyValue( "ly7_maxObjects", "4294967295" )
                   //
-                  << StringKeyValue( "engine_layers", "Grid|Constellation Borders|Constellation Lines|Messier|NamedStars|NGC-IC" )
+                  << StringKeyValue( "engine_layers", "Grid|Ecliptic|Galactic Equator|Constellation Borders|Constellation Lines|Messier|NamedStars|NGC-IC" )
                   << StringKeyValue( "non_interactive", "true" );
 
       Console().ExecuteScriptOn( starFieldWindow.MainView(), coreSrcDir + "/scripts/AdP/AnnotateImage.js", arguments );
@@ -606,6 +644,10 @@ void* FindingChartInstance::LockParameter( const MetaParameter* p, size_type /*t
       return &p_chartMaxMagnitude;
    if ( p == TheFCDrawGridParameter )
       return &p_drawGrid;
+   if ( p == TheFCDrawEclipticParameter )
+      return &p_drawEcliptic;
+   if ( p == TheFCDrawGalacticEquatorParameter )
+      return &p_drawGalacticEquator;
    if ( p == TheFCDrawConstellationBordersParameter )
       return &p_drawConstellationBorders;
    if ( p == TheFCDrawConstellationLinesParameter )
@@ -636,6 +678,14 @@ void* FindingChartInstance::LockParameter( const MetaParameter* p, size_type /*t
       return &p_gridColor;
    if ( p == TheFCGridTextColorParameter )
       return &p_gridTextColor;
+   if ( p == TheFCEclipticColorParameter )
+      return &p_eclipticColor;
+   if ( p == TheFCEclipticTextColorParameter )
+      return &p_eclipticTextColor;
+   if ( p == TheFCGalacticEquatorColorParameter )
+      return &p_galacticEquatorColor;
+   if ( p == TheFCGalacticEquatorTextColorParameter )
+      return &p_galacticEquatorTextColor;
    if ( p == TheFCConstellationBorderColorParameter )
       return &p_constellationBorderColor;
    if ( p == TheFCConstellationLineColorParameter )
@@ -691,4 +741,4 @@ size_type FindingChartInstance::ParameterLength( const MetaParameter* p, size_ty
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FindingChartInstance.cpp - Released 2024-05-07T15:28:00Z
+// EOF FindingChartInstance.cpp - Released 2024-06-18T15:49:25Z

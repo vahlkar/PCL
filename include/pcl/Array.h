@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
-// pcl/Array.h - Released 2024-05-07T15:27:32Z
+// pcl/Array.h - Released 2024-06-18T15:48:54Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -840,19 +840,11 @@ public:
 
    /*!
     * Removes a contiguous trailing sequence of \a n existing objects from this
-    * array. This operation is equivalent to:
-    *
-    * \code Truncate( End() - n ) \endcode
-    *
-    * If the specified count \a n is greater than or equal to the length of
-    * this array, this function calls Clear() to yield an empty array.
+    * array. This function is a synonym for RemoveLast().
     */
    void Shrink( size_type n = 1 )
    {
-      if ( n < m_data->Length() )
-         Truncate( m_data->end - n );
-      else
-         Clear();
+      RemoveLast( n );
    }
 
    /*!
@@ -1065,6 +1057,34 @@ public:
             else
                Clear();
          }
+   }
+
+   /*!
+    * Removes a contiguous leading sequence of \a n existing objects from this
+    * array. This operation is equivalent to:
+    *
+    * \code Remove( Begin(), At( n ) ); \endcode
+    *
+    * If the specified count \a n is greater than or equal to the length of
+    * this array, this function calls Clear() to yield an empty array.
+    */
+   void RemoveFirst( size_type n = 1 )
+   {
+      Remove( m_data->begin, m_data->begin + pcl::Min( n, m_data->Length() ) );
+   }
+
+   /*!
+    * Removes a contiguous trailing sequence of \a n existing objects from this
+    * array. This operation is equivalent to:
+    *
+    * \code Truncate( End() - n ); \endcode
+    *
+    * If the specified count \a n is greater than or equal to the length of
+    * this array, this function calls Clear() to yield an empty array.
+    */
+   void RemoveLast( size_type n = 1 )
+   {
+      Remove( m_data->end - pcl::Min( n, m_data->Length() ), m_data->end );
    }
 
    /*!
@@ -1384,14 +1404,26 @@ public:
    }
 
    /*!
+    * Returns an immutable iterator pointing to the first object x in this
+    * array such that f( const T& x ) is true. Returns End() if such object
+    * does not exist.
+    */
+   template <class F>
+   const_iterator FirstThat( F f ) const noexcept( noexcept( f ) )
+   {
+      return pcl::FirstThat( m_data->begin, m_data->end, f );
+   }
+
+   /*!
     * Returns an iterator pointing to the first object x in this array such
     * that f( const T& x ) is true. Returns End() if such object does not
     * exist.
     */
    template <class F>
-   iterator FirstThat( F f ) const noexcept( noexcept( f ) )
+   iterator FirstThat( F f )
    {
-      return const_cast<iterator>( pcl::FirstThat( m_data->begin, m_data->end, f ) );
+      EnsureUnique();
+      return pcl::FirstThat( m_data->begin, m_data->end, f );
    }
 
    /*!
@@ -1400,9 +1432,9 @@ public:
     * exist.
     */
    template <class F>
-   iterator LastThat( F f ) const noexcept( noexcept( f ) )
+   const_iterator LastThat( F f ) const noexcept( noexcept( f ) )
    {
-      return const_cast<iterator>( pcl::LastThat( m_data->begin, m_data->end, f ) );
+      return pcl::LastThat( m_data->begin, m_data->end, f );
    }
 
    /*! #
@@ -1430,32 +1462,66 @@ public:
 
    /*! #
     */
-   iterator MinItem() const noexcept
+   const_iterator MinItem() const noexcept
    {
-      return const_cast<iterator>( pcl::MinItem( m_data->begin, m_data->end ) );
+      return pcl::MinItem( m_data->begin, m_data->end );
+   }
+
+   /*! #
+    */
+   iterator MinItem()
+   {
+      EnsureUnique();
+      return pcl::MinItem( m_data->begin, m_data->end );
    }
 
    /*! #
     */
    template <class BP>
-   iterator MinItem( BP p ) const noexcept( noexcept( p ) )
+   const_iterator MinItem( BP p ) const noexcept( noexcept( p ) )
    {
-      return const_cast<iterator>( pcl::MinItem( m_data->begin, m_data->end, p ) );
-   }
-
-   /*! #
-    */
-   iterator MaxItem() const noexcept
-   {
-      return const_cast<iterator>( pcl::MaxItem( m_data->begin, m_data->end ) );
+      return pcl::MinItem( m_data->begin, m_data->end, p );
    }
 
    /*! #
     */
    template <class BP>
-   iterator MaxItem( BP p ) const noexcept( noexcept( p ) )
+   iterator MinItem( BP p )
    {
-      return const_cast<iterator>( pcl::MaxItem( m_data->begin, m_data->end, p ) );
+      EnsureUnique();
+      return pcl::MinItem( m_data->begin, m_data->end, p );
+   }
+
+   /*! #
+    */
+   const_iterator MaxItem() const noexcept
+   {
+      return pcl::MaxItem( m_data->begin, m_data->end );
+   }
+
+   /*! #
+    */
+   iterator MaxItem()
+   {
+      EnsureUnique();
+      return pcl::MaxItem( m_data->begin, m_data->end );
+   }
+
+   /*! #
+    */
+   template <class BP>
+   const_iterator MaxItem( BP p ) const noexcept( noexcept( p ) )
+   {
+      return pcl::MaxItem( m_data->begin, m_data->end, p );
+   }
+
+   /*! #
+    */
+   template <class BP>
+   iterator MaxItem( BP p )
+   {
+      EnsureUnique();
+      return pcl::MaxItem( m_data->begin, m_data->end, p );
    }
 
    /*! #
@@ -1509,101 +1575,212 @@ public:
 
    /*! #
     */
-   iterator Search( const T& v ) const noexcept
+   const_iterator Search( const T& v ) const noexcept
    {
-      return const_cast<iterator>( pcl::LinearSearch( m_data->begin, m_data->end, v ) );
+      return pcl::LinearSearch( m_data->begin, m_data->end, v );
+   }
+
+   /*! #
+    */
+   iterator Search( const T& v )
+   {
+      EnsureUnique();
+      return pcl::LinearSearch( m_data->begin, m_data->end, v );
    }
 
    /*! #
     */
    template <class BP>
-   iterator Search( const T& v, BP p ) const noexcept( noexcept( p ) )
+   const_iterator Search( const T& v, BP p ) const noexcept( noexcept( p ) )
    {
-      return const_cast<iterator>( pcl::LinearSearch( m_data->begin, m_data->end, v, p ) );
-   }
-
-   /*! #
-    */
-   iterator SearchLast( const T& v ) const noexcept
-   {
-      return const_cast<iterator>( pcl::LinearSearchLast( m_data->begin, m_data->end, v ) );
+      return pcl::LinearSearch( m_data->begin, m_data->end, v, p );
    }
 
    /*! #
     */
    template <class BP>
-   iterator SearchLast( const T& v, BP p ) const noexcept( noexcept( p ) )
+   iterator Search( const T& v, BP p )
    {
-      return const_cast<iterator>( pcl::LinearSearchLast( m_data->begin, m_data->end, v, p ) );
+      EnsureUnique();
+      return pcl::LinearSearch( m_data->begin, m_data->end, v, p );
+   }
+
+   /*! #
+    */
+   const_iterator SearchLast( const T& v ) const noexcept
+   {
+      return pcl::LinearSearchLast( m_data->begin, m_data->end, v );
+   }
+
+   /*! #
+    */
+   iterator SearchLast( const T& v )
+   {
+      EnsureUnique();
+      return pcl::LinearSearchLast( m_data->begin, m_data->end, v );
+   }
+
+   /*! #
+    */
+   template <class BP>
+   const_iterator SearchLast( const T& v, BP p ) const noexcept( noexcept( p ) )
+   {
+      return pcl::LinearSearchLast( m_data->begin, m_data->end, v, p );
+   }
+
+   /*! #
+    */
+   template <class BP>
+   iterator SearchLast( const T& v, BP p )
+   {
+      EnsureUnique();
+      return pcl::LinearSearchLast( m_data->begin, m_data->end, v, p );
    }
 
    /*! #
     */
    template <class FI>
-   iterator SearchSubset( FI i, FI j ) const noexcept
+   const_iterator SearchSubset( FI i, FI j ) const noexcept
    {
-      return const_cast<iterator>( pcl::Search( m_data->begin, m_data->end, i, j ) );
+      return pcl::Search( m_data->begin, m_data->end, i, j );
+   }
+
+   /*! #
+    */
+   template <class FI>
+   iterator SearchSubset( FI i, FI j )
+   {
+      EnsureUnique();
+      return pcl::Search( m_data->begin, m_data->end, i, j );
    }
 
    /*! #
     */
    template <class FI, class BP>
-   iterator SearchSubset( FI i, FI j, BP p ) const noexcept( noexcept( p ) )
+   const_iterator SearchSubset( FI i, FI j, BP p ) const noexcept( noexcept( p ) )
    {
-      return const_cast<iterator>( pcl::Search( m_data->begin, m_data->end, i, j, p ) );
+      return pcl::Search( m_data->begin, m_data->end, i, j, p );
+   }
+
+   /*! #
+    */
+   template <class FI, class BP>
+   iterator SearchSubset( FI i, FI j, BP p )
+   {
+      EnsureUnique();
+      return pcl::Search( m_data->begin, m_data->end, i, j, p );
    }
 
    /*! #
     */
    template <class C>
-   iterator SearchSubset( const C& x ) const noexcept
+   const_iterator SearchSubset( const C& x ) const noexcept
    {
       PCL_ASSERT_DIRECT_CONTAINER( C, T );
-      return const_cast<iterator>( pcl::Search( m_data->begin, m_data->end, x.Begin(), x.End() ) );
+      return pcl::Search( m_data->begin, m_data->end, x.Begin(), x.End() );
+   }
+
+   /*! #
+    */
+   template <class C>
+   iterator SearchSubset( const C& x )
+   {
+      PCL_ASSERT_DIRECT_CONTAINER( C, T );
+      EnsureUnique();
+      return pcl::Search( m_data->begin, m_data->end, x.Begin(), x.End() );
    }
 
    /*! #
     */
    template <class C, class BP>
-   iterator SearchSubset( const C& x, BP p ) const noexcept( noexcept( p ) )
+   const_iterator SearchSubset( const C& x, BP p ) const noexcept( noexcept( p ) )
    {
       PCL_ASSERT_DIRECT_CONTAINER( C, T );
-      return const_cast<iterator>( pcl::Search( m_data->begin, m_data->end, x.Begin(), x.End(), p ) );
+      return pcl::Search( m_data->begin, m_data->end, x.Begin(), x.End(), p );
+   }
+
+   /*! #
+    */
+   template <class C, class BP>
+   iterator SearchSubset( const C& x, BP p )
+   {
+      PCL_ASSERT_DIRECT_CONTAINER( C, T );
+      EnsureUnique();
+      return pcl::Search( m_data->begin, m_data->end, x.Begin(), x.End(), p );
    }
 
    /*! #
     */
    template <class BI>
-   iterator SearchLastSubset( BI i, BI j ) const noexcept
+   const_iterator SearchLastSubset( BI i, BI j ) const noexcept
    {
-      return const_cast<iterator>( pcl::SearchLast( m_data->begin, m_data->end, i, j ) );
+      return pcl::SearchLast( m_data->begin, m_data->end, i, j );
+   }
+
+   /*! #
+    */
+   template <class BI>
+   iterator SearchLastSubset( BI i, BI j )
+   {
+      EnsureUnique();
+      return pcl::SearchLast( m_data->begin, m_data->end, i, j );
    }
 
    /*! #
     */
    template <class BI, class BP>
-   iterator SearchLastSubset( BI i, BI j, BP p ) const noexcept( noexcept( p ) )
+   const_iterator SearchLastSubset( BI i, BI j, BP p ) const noexcept( noexcept( p ) )
    {
-      return const_cast<iterator>( pcl::SearchLast( m_data->begin, m_data->end, i, j, p ) );
+      return pcl::SearchLast( m_data->begin, m_data->end, i, j, p );
+   }
+
+   /*! #
+    */
+   template <class BI, class BP>
+   iterator SearchLastSubset( BI i, BI j, BP p )
+   {
+      EnsureUnique();
+      return pcl::SearchLast( m_data->begin, m_data->end, i, j, p );
    }
 
    /*! #
     */
    template <class C>
-   iterator SearchLastSubset( const C& x ) const noexcept
+   const_iterator SearchLastSubset( const C& x ) const noexcept
    {
       PCL_ASSERT_DIRECT_CONTAINER( C, T );
-      return const_cast<iterator>( pcl::SearchLast( m_data->begin, m_data->end, x.Begin(), x.End() ) );
+      return pcl::SearchLast( m_data->begin, m_data->end, x.Begin(), x.End() );
+   }
+
+   /*! #
+    */
+   template <class C>
+   iterator SearchLastSubset( const C& x )
+   {
+      PCL_ASSERT_DIRECT_CONTAINER( C, T );
+      EnsureUnique();
+      return pcl::SearchLast( m_data->begin, m_data->end, x.Begin(), x.End() );
    }
 
    /*! #
     */
    template <class C, class BP>
-   iterator SearchLastSubset( const C& x, BP p ) const noexcept( noexcept( p ) )
+   const_iterator SearchLastSubset( const C& x, BP p ) const noexcept( noexcept( p ) )
    {
       PCL_ASSERT_DIRECT_CONTAINER( C, T );
-      return const_cast<iterator>( pcl::SearchLast( m_data->begin, m_data->end, x.Begin(), x.End(), p ) );
+      return pcl::SearchLast( m_data->begin, m_data->end, x.Begin(), x.End(), p );
    }
+
+   /*! #
+    */
+   template <class C, class BP>
+   iterator SearchLastSubset( const C& x, BP p )
+   {
+      PCL_ASSERT_DIRECT_CONTAINER( C, T );
+      EnsureUnique();
+      return pcl::SearchLast( m_data->begin, m_data->end, x.Begin(), x.End(), p );
+   }
+
 
    /*! #
     */
@@ -2166,4 +2343,4 @@ Array<T,A>& operator <<( Array<T,A>&& x1, const Array<T,A>& x2 )
 #endif  // __PCL_Array_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Array.h - Released 2024-05-07T15:27:32Z
+// EOF pcl/Array.h - Released 2024-06-18T15:48:54Z

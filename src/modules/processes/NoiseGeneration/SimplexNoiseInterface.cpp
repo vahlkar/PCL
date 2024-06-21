@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
 // Standard NoiseGeneration Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// SimplexNoiseInterface.cpp - Released 2024-05-07T15:28:00Z
+// SimplexNoiseInterface.cpp - Released 2024-06-18T15:49:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NoiseGeneration PixInsight module.
 //
@@ -379,4 +379,4 @@ SimplexNoiseInterface::GUIData::GUIData( SimplexNoiseInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SimplexNoiseInterface.cpp - Released 2024-05-07T15:28:00Z
+// EOF SimplexNoiseInterface.cpp - Released 2024-06-18T15:49:25Z

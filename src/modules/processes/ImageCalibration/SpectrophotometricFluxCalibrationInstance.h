@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 2.1.0
 // ----------------------------------------------------------------------------
-// SpectrophotometricFluxCalibrationInstance.h - Released 2024-05-07T15:28:00Z
+// SpectrophotometricFluxCalibrationInstance.h - Released 2024-06-18T15:49:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -117,12 +117,13 @@ private:
     */
    float    p_broadbandIntegrationStepSize;
    int32    p_narrowbandIntegrationSteps;
-   float    p_trimmingFraction;
+   float    p_rejectionLimit;
 
    /*
     * Catalog search parameters
     */
    String   p_catalogId;
+   float    p_minMagnitude;
    float    p_limitMagnitude;
    pcl_bool p_autoLimitMagnitude;
 
@@ -145,6 +146,15 @@ private:
    float    p_psfSearchTolerance;
    float    p_psfChannelSearchTolerance;
 
+   /*
+    * Generation of control data
+    */
+   pcl_bool p_generateGraphs;
+   pcl_bool p_generateStarMaps;
+   pcl_bool p_generateTextFiles;
+   String   p_outputDirectory;
+
+   friend class ScalingMetadata;
    friend class SpectrophotometricFluxCalibrationInterface;
 };
 
@@ -155,4 +165,4 @@ private:
 #endif   // __SpectrophotometricFluxCalibrationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF SpectrophotometricFluxCalibrationInstance.h - Released 2024-05-07T15:28:00Z
+// EOF SpectrophotometricFluxCalibrationInstance.h - Released 2024-06-18T15:49:25Z

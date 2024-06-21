@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
-// Standard FindingChart Process Module Version 1.1.0
+// Standard FindingChart Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// FindingChartInterface.h - Released 2024-05-07T15:28:00Z
+// FindingChartInterface.h - Released 2024-06-18T15:49:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FindingChart PixInsight module.
 //
@@ -125,6 +125,10 @@ private:
       VerticalSizer     Contents_Sizer;
          HorizontalSizer   DrawGrid_Sizer;
             CheckBox          DrawGrid_CheckBox;
+         HorizontalSizer   DrawEcliptic_Sizer;
+            CheckBox          DrawEcliptic_CheckBox;
+         HorizontalSizer   DrawGalacticEquator_Sizer;
+            CheckBox          DrawGalacticEquator_CheckBox;
          HorizontalSizer   DrawConstellationBorders_Sizer;
             CheckBox          DrawConstellationBorders_CheckBox;
          HorizontalSizer   DrawConstellationLines_Sizer;
@@ -159,6 +163,22 @@ private:
             Label             GridTextColor_Label;
             ColorComboBox     GridTextColor_ComboBox;
             Control           GridTextColor_Control;
+         HorizontalSizer   EclipticColor_Sizer;
+            Label             EclipticColor_Label;
+            ColorComboBox     EclipticColor_ComboBox;
+            Control           EclipticColor_Control;
+         HorizontalSizer   EclipticTextColor_Sizer;
+            Label             EclipticTextColor_Label;
+            ColorComboBox     EclipticTextColor_ComboBox;
+            Control           EclipticTextColor_Control;
+         HorizontalSizer   GalacticEquatorColor_Sizer;
+            Label             GalacticEquatorColor_Label;
+            ColorComboBox     GalacticEquatorColor_ComboBox;
+            Control           GalacticEquatorColor_Control;
+         HorizontalSizer   GalacticEquatorTextColor_Sizer;
+            Label             GalacticEquatorTextColor_Label;
+            ColorComboBox     GalacticEquatorTextColor_ComboBox;
+            Control           GalacticEquatorTextColor_Control;
          HorizontalSizer   ConstellationBorderColor_Sizer;
             Label             ConstellationBorderColor_Label;
             ColorComboBox     ConstellationBorderColor_ComboBox;
@@ -216,4 +236,4 @@ PCL_END_LOCAL
 #endif   // __FindingChartInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF FindingChartInterface.h - Released 2024-05-07T15:28:00Z
+// EOF FindingChartInterface.h - Released 2024-06-18T15:49:25Z

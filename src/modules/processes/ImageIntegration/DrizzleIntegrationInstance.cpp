@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.5.3
+// Standard ImageIntegration Process Module Version 1.6.0
 // ----------------------------------------------------------------------------
-// DrizzleIntegrationInstance.cpp - Released 2024-05-07T15:28:00Z
+// DrizzleIntegrationInstance.cpp - Released 2024-06-18T15:49:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -1469,6 +1469,9 @@ void DrizzleIntegrationEngine::Perform()
    {
       Rect roi( 0 );
       double totalOutputData = 0;
+      Array<double> exposureTimes;
+      Array<DVector> weights;
+      bool validExposureTimes = true;
       Array<IntegrationMetadata> inputMetadata;
 
       Console console;
@@ -1718,7 +1721,20 @@ void DrizzleIntegrationEngine::Perform()
                   sourceImage -= m_decoder.Pedestal();
             }
 
-            inputMetadata << IntegrationMetadata( m_decoder.Metadata() );
+            IntegrationMetadata metadata( m_decoder.Metadata() );
+            inputMetadata << metadata;
+            if ( validExposureTimes )
+               if ( metadata.expTime.IsDefined() )
+               {
+                  exposureTimes << metadata.expTime();
+                  weights << m_decoder.Weight();
+               }
+               else
+               {
+                  validExposureTimes = false;
+                  exposureTimes.Clear();
+                  weights.Clear();
+               }
 
             console.Write( "<end><cbr>Scale factors : " );
             for ( int c = 0; c < m_numberOfChannels; ++c )
@@ -2007,6 +2023,24 @@ void DrizzleIntegrationEngine::Perform()
       resultWindow.SetKeywords( keywords );
       resultWindow.MainView().SetStorablePermanentProperties( properties, false/*notify*/ );
 
+      if ( !exposureTimes.IsEmpty() )
+      {
+         for ( int c = 0; c < m_numberOfChannels; ++c )
+         {
+            double maxWeight = 0;
+            for ( const DVector& w : weights )
+               if ( w[c] > maxWeight )
+                  maxWeight = w[c];
+            for ( DVector& w : weights )
+               w[c] /= maxWeight;
+         }
+         DVector totalExposureTime( 0.0, m_numberOfChannels );
+         for ( size_type i = 0; i < exposureTimes.Length(); ++i )
+            for ( int c = 0; c < m_numberOfChannels; ++c )
+               totalExposureTime[c] += exposureTimes[i] * weights[i][c];
+         resultWindow.MainView().SetStorablePermanentPropertyValue( "PCL:TotalExposureTime", totalExposureTime );
+      }
+
       resultWindow.Show();
       weightWindow.Show();
 
@@ -2282,4 +2316,4 @@ size_type DrizzleIntegrationInstance::ParameterLength( const MetaParameter* p, s
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DrizzleIntegrationInstance.cpp - Released 2024-05-07T15:28:00Z
+// EOF DrizzleIntegrationInstance.cpp - Released 2024-06-18T15:49:25Z

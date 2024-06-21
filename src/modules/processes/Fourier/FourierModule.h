@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
 // Standard Fourier Process Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// FourierModule.h - Released 2024-05-07T15:28:00Z
+// FourierModule.h - Released 2024-06-18T15:49:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Fourier PixInsight module.
 //
@@ -84,4 +84,4 @@ public:
 #endif   // __FourierModule_h
 
 // ----------------------------------------------------------------------------
-// EOF FourierModule.h - Released 2024-05-07T15:28:00Z
+// EOF FourierModule.h - Released 2024-06-18T15:49:25Z

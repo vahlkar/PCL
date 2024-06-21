@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// quantize.c - Released 2024-05-07T15:27:52Z
+// quantize.c - Released 2024-06-18T15:49:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -4005,4 +4005,4 @@ static double quick_select_double(double arr[], int n)
 #undef ELEM_SWAP
 
 // ----------------------------------------------------------------------------
-// EOF quantize.c - Released 2024-05-07T15:27:52Z
+// EOF quantize.c - Released 2024-06-18T15:49:17Z

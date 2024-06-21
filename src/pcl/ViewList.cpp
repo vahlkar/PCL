@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
-// pcl/ViewList.cpp - Released 2024-05-07T15:27:40Z
+// pcl/ViewList.cpp - Released 2024-06-18T15:49:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -208,4 +208,4 @@ void ViewList::OnCurrentViewUpdated( view_event_handler f, Control& receiver )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ViewList.cpp - Released 2024-05-07T15:27:40Z
+// EOF pcl/ViewList.cpp - Released 2024-06-18T15:49:06Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
-// pcl/Position.cpp - Released 2024-05-07T15:27:40Z
+// pcl/Position.cpp - Released 2024-06-18T15:49:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -658,7 +658,7 @@ Vector Position::Geometric( const StarPosition& S )
       // Space motion vector in radians/day.
       Vector m( f*s*S.muAlpha, f*s*S.muDelta, f*k*S.v*p );
       Vector v( -sa*m[0] - sd*ca*m[1] + cd*ca*m[2],
-               ca*m[0] - sd*sa*m[1] + cd*sa*m[2],
+                 ca*m[0] - sd*sa*m[1] + cd*sa*m[2],
                               cd*m[1] +    sd*m[2] );
 
       // Time of observation corrected for the Roemer delay.
@@ -1302,4 +1302,4 @@ Optional<double> Position::CometApparentVisualNuclearMagnitude( EphemerisFile::H
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Position.cpp - Released 2024-05-07T15:27:40Z
+// EOF pcl/Position.cpp - Released 2024-06-18T15:49:06Z

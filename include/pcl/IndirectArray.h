@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
-// pcl/IndirectArray.h - Released 2024-05-07T15:27:32Z
+// pcl/IndirectArray.h - Released 2024-06-18T15:48:54Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -767,22 +767,11 @@ public:
 
    /*!
     * Removes a contiguous trailing sequence of \a n existing pointers from
-    * this indirect array. This operation is equivalent to:
-    *
-    * \code Truncate( End() - n ) \endcode
-    *
-    * If the specified count \a n is greater than or equal to the length of
-    * this array, this function calls Clear() to yield an empty array.
-    *
-    * Only pointers are removed by this function; the pointed objects are not
-    * affected in any way.
+    * this indirect array. This function is a synonym for RemoveLast().
     */
    void Shrink( size_type n = 1 )
    {
-      if ( n < Length() )
-         Truncate( ConstEnd() - n );
-      else
-         Clear();
+      m_array.Shrink( n );
    }
 
    /*!
@@ -976,6 +965,40 @@ public:
    {
       m_array.Remove( (array_iterator)const_cast<iterator>( i ),
                       (array_iterator)const_cast<iterator>( j ) );
+   }
+
+   /*!
+    * Removes a contiguous leading sequence of \a n existing pointers from this
+    * indirect array. This operation is equivalent to:
+    *
+    * \code Remove( Begin(), At( n ) ); \endcode
+    *
+    * If the specified count \a n is greater than or equal to the length of
+    * this array, this function calls Clear() to yield an empty array.
+    *
+    * Only pointers are removed by this function; the pointed objects are not
+    * affected in any way.
+    */
+   void RemoveFirst( size_type n = 1 )
+   {
+      m_array.RemoveFirst( n );
+   }
+
+   /*!
+    * Removes a contiguous trailing sequence of \a n existing pointers from
+    * this indirect array. This operation is equivalent to:
+    *
+    * \code Truncate( End() - n ); \endcode
+    *
+    * If the specified count \a n is greater than or equal to the length of
+    * this array, this function calls Clear() to yield an empty array.
+    *
+    * Only pointers are removed by this function; the pointed objects are not
+    * affected in any way.
+    */
+   void RemoveLast( size_type n = 1 )
+   {
+      m_array.RemoveLast( n );
    }
 
    /*!
@@ -1399,20 +1422,42 @@ public:
     * End() if such pointer does not exist.
     */
    template <class F>
-   iterator FirstThat( F f ) const
+   const_iterator FirstThat( F f ) const
    {
-      return const_cast<iterator>( pcl::FirstThat( Begin(), End(), IndirectUnaryPredicate<const T*, F>( f ) ) );
+      return pcl::FirstThat( Begin(), End(), IndirectUnaryPredicate<const T*, F>( f ) );
    }
 
    /*!
-    * Returns an iterator pointing to the last non-null pointer in this array
+    * Returns an iterator pointing to the first non-null pointer in this array
     * that points to an object x such that f( const T& x ) is true. Returns
     * End() if such pointer does not exist.
     */
    template <class F>
-   iterator LastThat( F f ) const
+   iterator FirstThat( F f )
    {
-      return const_cast<iterator>( pcl::LastThat( Begin(), End(), IndirectUnaryPredicate<const T*, F>( f ) ) );
+      return pcl::FirstThat( Begin(), End(), IndirectUnaryPredicate<const T*, F>( f ) );
+   }
+
+   /*!
+    * Returns an immutable iterator pointing to the last non-null pointer in
+    * this indirect array that points to an object x such that f( const T& x )
+    * is true. Returns End() if such pointer does not exist.
+    */
+   template <class F>
+   const_iterator LastThat( F f ) const
+   {
+      return pcl::LastThat( Begin(), End(), IndirectUnaryPredicate<const T*, F>( f ) );
+   }
+
+   /*!
+    * Returns a mutable iterator pointing to the last non-null pointer in this
+    * indirect array that points to an object x such that f( const T& x ) is
+    * true. Returns End() if such pointer does not exist.
+    */
+   template <class F>
+   iterator LastThat( F f )
+   {
+      return pcl::LastThat( Begin(), End(), IndirectUnaryPredicate<const T*, F>( f ) );
    }
 
    /*!
@@ -1457,34 +1502,62 @@ public:
 
    /*! #
     */
-   iterator MinItem() const
+   const_iterator MinItem() const
    {
-      return const_cast<iterator>( pcl::MinItem( Begin(), End(), less() ) );
+      return pcl::MinItem( Begin(), End(), less() );
+   }
+
+   /*! #
+    */
+   iterator MinItem()
+   {
+      return pcl::MinItem( Begin(), End(), less() );
    }
 
    /*! #
     */
    template <class BP>
-   iterator MinItem( BP p ) const
+   const_iterator MinItem( BP p ) const
    {
-      return const_cast<iterator>( pcl::MinItem( Begin(), End(),
-                                                 IndirectBinaryPredicate<const T*, const T*, BP>( p ) ) );
-   }
-
-   /*! #
-    */
-   iterator MaxItem() const
-   {
-      return const_cast<iterator>( pcl::MaxItem( Begin(), End(), less() ) );
+      return pcl::MinItem( Begin(), End(), IndirectBinaryPredicate<const T*, const T*, BP>( p ) );
    }
 
    /*! #
     */
    template <class BP>
-   iterator MaxItem( BP p ) const
+   iterator MinItem( BP p )
    {
-      return const_cast<iterator>( pcl::MaxItem( Begin(), End(),
-                                                 IndirectBinaryPredicate<const T*, const T*, BP>( p ) ) );
+      return pcl::MinItem( Begin(), End(), IndirectBinaryPredicate<const T*, const T*, BP>( p ) );
+   }
+
+   /*! #
+    */
+   const_iterator MaxItem() const
+   {
+      return pcl::MaxItem( Begin(), End(), less() );
+   }
+
+   /*! #
+    */
+   iterator MaxItem()
+   {
+      return pcl::MaxItem( Begin(), End(), less() );
+   }
+
+   /*! #
+    */
+   template <class BP>
+   const_iterator MaxItem( BP p ) const
+   {
+      return pcl::MaxItem( Begin(), End(), IndirectBinaryPredicate<const T*, const T*, BP>( p ) );
+   }
+
+   /*! #
+    */
+   template <class BP>
+   iterator MaxItem( BP p )
+   {
+      return pcl::MaxItem( Begin(), End(), IndirectBinaryPredicate<const T*, const T*, BP>( p ) );
    }
 
    /*! #
@@ -1517,14 +1590,28 @@ public:
 
    /*! #
     */
-   iterator Search( const T& v ) const
+   const_iterator Search( const T& v ) const
    {
-      return const_cast<iterator>( pcl::LinearSearch( Begin(), End(), &v, equal() ) );
+      return pcl::LinearSearch( Begin(), End(), &v, equal() );
    }
 
    /*! #
     */
-   iterator Search( const T* p ) const
+   iterator Search( const T& v )
+   {
+      return pcl::LinearSearch( Begin(), End(), &v, equal() );
+   }
+
+   /*! #
+    */
+   const_iterator Search( const T* p ) const
+   {
+      return const_iterator( m_array.Search( (void*)p ) );
+   }
+
+   /*! #
+    */
+   iterator Search( const T* p )
    {
       return iterator( m_array.Search( (void*)p ) );
    }
@@ -1532,22 +1619,43 @@ public:
    /*! #
     */
    template <class BP>
-   iterator Search( const T& v, BP p ) const
+   const_iterator Search( const T& v, BP p ) const
    {
-      return const_cast<iterator>( pcl::LinearSearch( Begin(), End(), &v,
-                                                      IndirectBinaryPredicate<const T*, const T*, BP>( p ) ) );
+      return pcl::LinearSearch( Begin(), End(), &v, IndirectBinaryPredicate<const T*, const T*, BP>( p ) );
    }
 
    /*! #
     */
-   iterator SearchLast( const T& v ) const
+   template <class BP>
+   iterator Search( const T& v, BP p )
    {
-      return const_cast<iterator>( pcl::LinearSearchLast( Begin(), End(), &v, equal() ) );
+      return pcl::LinearSearch( Begin(), End(), &v, IndirectBinaryPredicate<const T*, const T*, BP>( p ) );
    }
 
    /*! #
     */
-   iterator SearchLast( const T* p ) const
+   const_iterator SearchLast( const T& v ) const
+   {
+      return pcl::LinearSearchLast( Begin(), End(), &v, equal() );
+   }
+
+   /*! #
+    */
+   iterator SearchLast( const T& v )
+   {
+      return pcl::LinearSearchLast( Begin(), End(), &v, equal() );
+   }
+
+   /*! #
+    */
+   const_iterator SearchLast( const T* p ) const
+   {
+      return const_iterator( m_array.SearchLast( (void*)p ) );
+   }
+
+   /*! #
+    */
+   iterator SearchLast( const T* p )
    {
       return iterator( m_array.SearchLast( (void*)p ) );
    }
@@ -1555,78 +1663,145 @@ public:
    /*! #
     */
    template <class BP>
-   iterator SearchLast( const T& v, BP p ) const
+   const_iterator SearchLast( const T& v, BP p ) const
    {
-      return const_cast<iterator>( pcl::LinearSearchLast( Begin(), End(), &v,
-                                                          IndirectBinaryPredicate<const T*, const T*, BP>( p ) ) );
+      return pcl::LinearSearchLast( Begin(), End(), &v, IndirectBinaryPredicate<const T*, const T*, BP>( p ) );
+   }
+
+   /*! #
+    */
+   template <class BP>
+   iterator SearchLast( const T& v, BP p )
+   {
+      return pcl::LinearSearchLast( Begin(), End(), &v, IndirectBinaryPredicate<const T*, const T*, BP>( p ) );
    }
 
    /*! #
     */
    template <class FI>
-   iterator SearchSubset( FI i, FI j ) const
+   const_iterator SearchSubset( FI i, FI j ) const
    {
-      return const_cast<iterator>( pcl::Search( Begin(), End(), i, j, equal() ) );
+      return pcl::Search( Begin(), End(), i, j, equal() );
+   }
+
+   /*! #
+    */
+   template <class FI>
+   iterator SearchSubset( FI i, FI j )
+   {
+      return pcl::Search( Begin(), End(), i, j, equal() );
    }
 
    /*! #
     */
    template <class FI, class BP>
-   iterator SearchSubset( FI i, FI j, BP p ) const
+   const_iterator SearchSubset( FI i, FI j, BP p ) const
    {
-      return const_cast<iterator>( pcl::Search( Begin(), End(), i, j,
-                                                IndirectBinaryPredicate<const T*, const T*, BP>( p ) ) );
+      return pcl::Search( Begin(), End(), i, j, IndirectBinaryPredicate<const T*, const T*, BP>( p ) );
+   }
+
+   /*! #
+    */
+   template <class FI, class BP>
+   iterator SearchSubset( FI i, FI j, BP p )
+   {
+      return pcl::Search( Begin(), End(), i, j, IndirectBinaryPredicate<const T*, const T*, BP>( p ) );
    }
 
    /*! #
     */
    template <class C>
-   iterator SearchSubset( const C& c ) const
+   const_iterator SearchSubset( const C& c ) const
    {
-      return const_cast<iterator>( pcl::Search( Begin(), End(), c.Begin(), c.End(), equal() ) );
+      return pcl::Search( Begin(), End(), c.Begin(), c.End(), equal() );
+   }
+
+   /*! #
+    */
+   template <class C>
+   iterator SearchSubset( const C& c )
+   {
+      return pcl::Search( Begin(), End(), c.Begin(), c.End(), equal() );
    }
 
    /*! #
     */
    template <class C, class BP>
-   iterator SearchSubset( const C& c, BP p ) const
+   const_iterator SearchSubset( const C& c, BP p ) const
    {
-      return const_cast<iterator>( pcl::Search( Begin(), End(), c.Begin(), c.End(),
-                                                IndirectBinaryPredicate<const T*, const T*, BP>( p ) ) );
+      return pcl::Search( Begin(), End(), c.Begin(), c.End(), IndirectBinaryPredicate<const T*, const T*, BP>( p ) );
+   }
+
+   /*! #
+    */
+   template <class C, class BP>
+   iterator SearchSubset( const C& c, BP p )
+   {
+      return pcl::Search( Begin(), End(), c.Begin(), c.End(), IndirectBinaryPredicate<const T*, const T*, BP>( p ) );
    }
 
    /*! #
     */
    template <class BI>
-   iterator SearchLastSubset( BI i, BI j ) const
+   const_iterator SearchLastSubset( BI i, BI j ) const
    {
-      return const_cast<iterator>( pcl::SearchLast( Begin(), End(), i, j, equal() ) );
+      return pcl::SearchLast( Begin(), End(), i, j, equal() );
+   }
+
+   /*! #
+    */
+   template <class BI>
+   iterator SearchLastSubset( BI i, BI j )
+   {
+      return pcl::SearchLast( Begin(), End(), i, j, equal() );
    }
 
    /*! #
     */
    template <class BI, class BP>
-   iterator SearchLastSubset( BI i, BI j, BP p ) const
+   const_iterator SearchLastSubset( BI i, BI j, BP p ) const
    {
-      return const_cast<iterator>( pcl::SearchLast( Begin(), End(), i, j,
-                                                    IndirectBinaryPredicate<const T*, const T*, BP>( p ) ) );
+      return pcl::SearchLast( Begin(), End(), i, j, IndirectBinaryPredicate<const T*, const T*, BP>( p ) );
+   }
+
+   /*! #
+    */
+   template <class BI, class BP>
+   iterator SearchLastSubset( BI i, BI j, BP p )
+   {
+      return pcl::SearchLast( Begin(), End(), i, j, IndirectBinaryPredicate<const T*, const T*, BP>( p ) );
    }
 
    /*! #
     */
    template <class C>
-   iterator SearchLastSubset( const C& c ) const
+   const_iterator SearchLastSubset( const C& c ) const
    {
-      return const_cast<iterator>( pcl::SearchLast( Begin(), End(), c.Begin(), c.End(), equal() ) );
+      return pcl::SearchLast( Begin(), End(), c.Begin(), c.End(), equal() );
+   }
+
+   /*! #
+    */
+   template <class C>
+   iterator SearchLastSubset( const C& c )
+   {
+      return pcl::SearchLast( Begin(), End(), c.Begin(), c.End(), equal() );
    }
 
    /*! #
     */
    template <class C, class BP>
-   iterator SearchLastSubset( const C& c, BP p ) const
+   const_iterator SearchLastSubset( const C& c, BP p ) const
    {
-      return const_cast<iterator>( pcl::SearchLast( Begin(), End(), c.Begin(), c.End(),
-                                                    IndirectBinaryPredicate<const T*, const T*, BP>( p ) ) );
+      return pcl::SearchLast( Begin(), End(), c.Begin(), c.End(), IndirectBinaryPredicate<const T*, const T*, BP>( p ) );
+   }
+
+   /*! #
+    */
+   template <class C, class BP>
+   iterator SearchLastSubset( const C& c, BP p )
+   {
+      return pcl::SearchLast( Begin(), End(), c.Begin(), c.End(), IndirectBinaryPredicate<const T*, const T*, BP>( p ) );
    }
 
    /*! #
@@ -2016,4 +2191,4 @@ IndirectArray<T,A>& operator <<( IndirectArray<T,A>&& x1, const IndirectArray<T,
 #endif  // __PCL_IndirectArray_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/IndirectArray.h - Released 2024-05-07T15:27:32Z
+// EOF pcl/IndirectArray.h - Released 2024-06-18T15:48:54Z

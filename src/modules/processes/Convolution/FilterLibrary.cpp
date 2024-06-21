@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// FilterLibrary.cpp - Released 2024-05-07T15:28:00Z
+// FilterLibrary.cpp - Released 2024-06-18T15:49:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -580,4 +580,4 @@ void FilterParser::CaptureParameterValueTokens( token_list::const_iterator& i, t
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FilterLibrary.cpp - Released 2024-05-07T15:28:00Z
+// EOF FilterLibrary.cpp - Released 2024-06-18T15:49:25Z

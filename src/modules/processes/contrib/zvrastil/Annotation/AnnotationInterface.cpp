@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
 // Standard Annotation Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// AnnotationInterface.cpp - Released 2024-05-07T15:28:01Z
+// AnnotationInterface.cpp - Released 2024-06-18T15:49:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Annotation PixInsight module.
 //
@@ -954,4 +954,4 @@ AnnotationInterface::GUIData::GUIData( AnnotationInterface& w )
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF AnnotationInterface.cpp - Released 2024-05-07T15:28:01Z
+// EOF AnnotationInterface.cpp - Released 2024-06-18T15:49:25Z

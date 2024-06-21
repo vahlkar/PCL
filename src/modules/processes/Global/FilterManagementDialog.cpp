@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.6.0
 // ----------------------------------------------------------------------------
-// FilterManagementDialog.cpp - Released 2024-05-07T15:28:00Z
+// FilterManagementDialog.cpp - Released 2024-06-18T15:49:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -447,4 +447,4 @@ void FilterManagementDialog::e_EditCompleted( Edit& sender )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FilterManagementDialog.cpp - Released 2024-05-07T15:28:00Z
+// EOF FilterManagementDialog.cpp - Released 2024-06-18T15:49:25Z

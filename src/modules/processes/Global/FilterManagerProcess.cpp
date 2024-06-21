@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.6.0
 // ----------------------------------------------------------------------------
-// FilterManagerProcess.cpp - Released 2024-05-07T15:28:00Z
+// FilterManagerProcess.cpp - Released 2024-06-18T15:49:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -141,4 +141,4 @@ bool FilterManagerProcess::PrefersGlobalExecution() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FilterManagerProcess.cpp - Released 2024-05-07T15:28:00Z
+// EOF FilterManagerProcess.cpp - Released 2024-06-18T15:49:25Z

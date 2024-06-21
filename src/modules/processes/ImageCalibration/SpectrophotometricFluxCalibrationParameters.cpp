@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 2.1.0
 // ----------------------------------------------------------------------------
-// SpectrophotometricFluxCalibrationParameters.cpp - Released 2024-05-07T15:28:00Z
+// SpectrophotometricFluxCalibrationParameters.cpp - Released 2024-06-18T15:49:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -85,7 +85,7 @@ SPFCDeviceQECurveName*             TheSPFCDeviceQECurveNameParameter = nullptr;
 
 SPFCBroadbandIntegrationStepSize*  TheSPFCBroadbandIntegrationStepSizeParameter = nullptr;
 SPFCNarrowbandIntegrationSteps*    TheSPFCNarrowbandIntegrationStepsParameter = nullptr;
-SPFCTrimmingFraction*              TheSPFCTrimmingFractionParameter = nullptr;
+SPFCRejectionLimit*                TheSPFCRejectionLimitParameter = nullptr;
 
 SPFCCatalogId*                     TheSPFCCatalogIdParameter = nullptr;
 SPFCLimitMagnitude*                TheSPFCLimitMagnitudeParameter = nullptr;
@@ -94,6 +94,7 @@ SPFCAutoLimitMagnitude*            TheSPFCAutoLimitMagnitudeParameter = nullptr;
 SPFCStructureLayers*               TheSPFCStructureLayersParameter = nullptr;
 SPFCSaturationThreshold*           TheSPFCSaturationThresholdParameter = nullptr;
 SPFCSaturationRelative*            TheSPFCSaturationRelativeParameter = nullptr;
+SPFCMinMagnitude*                  TheSPFCMinMagnitudeParameter = nullptr;
 SPFCSaturationShrinkFactor*        TheSPFCSaturationShrinkFactorParameter = nullptr;
 SPFCPSFNoiseLayers*                TheSPFCPSFNoiseLayersParameter = nullptr;
 SPFCPSFHotPixelFilterRadius*       TheSPFCPSFHotPixelFilterRadiusParameter = nullptr;
@@ -106,6 +107,11 @@ SPFCPSFGrowth*                     TheSPFCPSFGrowthParameter = nullptr;
 SPFCPSFMaxStars*                   TheSPFCPSFMaxStarsParameter = nullptr;
 SPFCPSFSearchTolerance*            TheSPFCPSFSearchToleranceParameter = nullptr;
 SPFCPSFChannelSearchTolerance*     TheSPFCPSFChannelSearchToleranceParameter = nullptr;
+
+SPFCGenerateGraphs*                TheSPFCGenerateGraphsParameter = nullptr;
+SPFCGenerateStarMaps*              TheSPFCGenerateStarMapsParameter = nullptr;
+SPFCGenerateTextFiles*             TheSPFCGenerateTextFilesParameter = nullptr;
+SPFCOutputDirectory*               TheSPFCOutputDirectoryParameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -582,35 +588,35 @@ double SPFCNarrowbandIntegrationSteps::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-SPFCTrimmingFraction::SPFCTrimmingFraction( MetaProcess* P )
+SPFCRejectionLimit::SPFCRejectionLimit( MetaProcess* P )
    : MetaFloat( P )
 {
-   TheSPFCTrimmingFractionParameter = this;
+   TheSPFCRejectionLimitParameter = this;
 }
 
-IsoString SPFCTrimmingFraction::Id() const
+IsoString SPFCRejectionLimit::Id() const
 {
-   return "trimmingFraction";
+   return "rejectionLimit";
 }
 
-int SPFCTrimmingFraction::Precision() const
+int SPFCRejectionLimit::Precision() const
 {
    return 2;
 }
 
-double SPFCTrimmingFraction::DefaultValue() const
+double SPFCRejectionLimit::DefaultValue() const
 {
-   return 0.20;
+   return 0.3;
 }
 
-double SPFCTrimmingFraction::MinimumValue() const
+double SPFCRejectionLimit::MinimumValue() const
 {
-   return 0.01;
+   return 0;
 }
 
-double SPFCTrimmingFraction::MaximumValue() const
+double SPFCRejectionLimit::MaximumValue() const
 {
-   return 0.50;
+   return 1;
 }
 
 // ----------------------------------------------------------------------------
@@ -629,6 +635,39 @@ IsoString SPFCCatalogId::Id() const
 String SPFCCatalogId::DefaultValue() const
 {
    return "GaiaDR3SP";
+}
+
+// ----------------------------------------------------------------------------
+
+SPFCMinMagnitude::SPFCMinMagnitude( MetaProcess* P )
+   : MetaFloat( P )
+{
+   TheSPFCMinMagnitudeParameter = this;
+}
+
+IsoString SPFCMinMagnitude::Id() const
+{
+   return "minMagnitude";
+}
+
+int SPFCMinMagnitude::Precision() const
+{
+   return 2;
+}
+
+double SPFCMinMagnitude::DefaultValue() const
+{
+   return 0;
+}
+
+double SPFCMinMagnitude::MinimumValue() const
+{
+   return 0;
+}
+
+double SPFCMinMagnitude::MaximumValue() const
+{
+   return 30;
 }
 
 // ----------------------------------------------------------------------------
@@ -1035,7 +1074,7 @@ int SPFCPSFGrowth::Precision() const
 
 double SPFCPSFGrowth::DefaultValue() const
 {
-   return 1.25;
+   return 1.75;
 }
 
 double SPFCPSFGrowth::MinimumValue() const
@@ -1144,7 +1183,79 @@ double SPFCPSFChannelSearchTolerance::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
+SPFCGenerateGraphs::SPFCGenerateGraphs( MetaProcess* P )
+   : MetaBoolean( P )
+{
+   TheSPFCGenerateGraphsParameter = this;
+}
+
+IsoString SPFCGenerateGraphs::Id() const
+{
+   return "generateGraphs";
+}
+
+bool SPFCGenerateGraphs::DefaultValue() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+SPFCGenerateStarMaps::SPFCGenerateStarMaps( MetaProcess* P )
+   : MetaBoolean( P )
+{
+   TheSPFCGenerateStarMapsParameter = this;
+}
+
+IsoString SPFCGenerateStarMaps::Id() const
+{
+   return "generateStarMaps";
+}
+
+bool SPFCGenerateStarMaps::DefaultValue() const
+{
+   return false;
+}
+
+// ----------------------------------------------------------------------------
+
+SPFCGenerateTextFiles::SPFCGenerateTextFiles( MetaProcess* P )
+   : MetaBoolean( P )
+{
+   TheSPFCGenerateTextFilesParameter = this;
+}
+
+IsoString SPFCGenerateTextFiles::Id() const
+{
+   return "generateTextFiles";
+}
+
+bool SPFCGenerateTextFiles::DefaultValue() const
+{
+   return false;
+}
+
+// ----------------------------------------------------------------------------
+
+SPFCOutputDirectory::SPFCOutputDirectory( MetaProcess* P )
+   : MetaString( P )
+{
+   TheSPFCOutputDirectoryParameter = this;
+}
+
+IsoString SPFCOutputDirectory::Id() const
+{
+   return "outputDirectory";
+}
+
+String SPFCOutputDirectory::DefaultValue() const
+{
+   return String(); // = File::SystemTempDirectory()
+}
+
+// ----------------------------------------------------------------------------
+
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SpectrophotometricFluxCalibrationParameters.cpp - Released 2024-05-07T15:28:00Z
+// EOF SpectrophotometricFluxCalibrationParameters.cpp - Released 2024-06-18T15:49:25Z

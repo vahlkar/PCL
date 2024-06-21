@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 2.1.0
 // ----------------------------------------------------------------------------
-// SpectrophotometricFluxCalibrationProcess.cpp - Released 2024-05-07T15:28:00Z
+// SpectrophotometricFluxCalibrationProcess.cpp - Released 2024-06-18T15:49:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -88,8 +88,9 @@ SpectrophotometricFluxCalibrationProcess::SpectrophotometricFluxCalibrationProce
    new SPFCDeviceQECurveName( this );
    new SPFCBroadbandIntegrationStepSize( this );
    new SPFCNarrowbandIntegrationSteps( this );
-   new SPFCTrimmingFraction( this );
+   new SPFCRejectionLimit( this );
    new SPFCCatalogId( this );
+   new SPFCMinMagnitude( this );
    new SPFCLimitMagnitude( this );
    new SPFCAutoLimitMagnitude( this );
    new SPFCStructureLayers( this );
@@ -107,6 +108,10 @@ SpectrophotometricFluxCalibrationProcess::SpectrophotometricFluxCalibrationProce
    new SPFCPSFMaxStars( this );
    new SPFCPSFSearchTolerance( this );
    new SPFCPSFChannelSearchTolerance( this );
+   new SPFCGenerateGraphs( this );
+   new SPFCGenerateStarMaps( this );
+   new SPFCGenerateTextFiles( this );
+   new SPFCOutputDirectory( this );
 }
 
 // ----------------------------------------------------------------------------
@@ -171,4 +176,4 @@ ProcessImplementation* SpectrophotometricFluxCalibrationProcess::Clone( const Pr
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SpectrophotometricFluxCalibrationProcess.cpp - Released 2024-05-07T15:28:00Z
+// EOF SpectrophotometricFluxCalibrationProcess.cpp - Released 2024-06-18T15:49:25Z

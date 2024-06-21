@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
-// Standard FindingChart Process Module Version 1.1.0
+// Standard FindingChart Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// FindingChartParameters.h - Released 2024-05-07T15:28:00Z
+// FindingChartParameters.h - Released 2024-06-18T15:49:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FindingChart PixInsight module.
 //
@@ -153,6 +153,34 @@ public:
 };
 
 extern FCDrawGrid* TheFCDrawGridParameter;
+
+// ----------------------------------------------------------------------------
+
+class FCDrawEcliptic : public MetaBoolean
+{
+public:
+
+   FCDrawEcliptic( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern FCDrawEcliptic* TheFCDrawEclipticParameter;
+
+// ----------------------------------------------------------------------------
+
+class FCDrawGalacticEquator : public MetaBoolean
+{
+public:
+
+   FCDrawGalacticEquator( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern FCDrawGalacticEquator* TheFCDrawGalacticEquatorParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -365,6 +393,62 @@ extern FCGridTextColor* TheFCGridTextColorParameter;
 
 // ----------------------------------------------------------------------------
 
+class FCEclipticColor : public MetaUInt32
+{
+public:
+
+   FCEclipticColor( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+};
+
+extern FCEclipticColor* TheFCEclipticColorParameter;
+
+// ----------------------------------------------------------------------------
+
+class FCEclipticTextColor : public MetaUInt32
+{
+public:
+
+   FCEclipticTextColor( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+};
+
+extern FCEclipticTextColor* TheFCEclipticTextColorParameter;
+
+// ----------------------------------------------------------------------------
+
+class FCGalacticEquatorColor : public MetaUInt32
+{
+public:
+
+   FCGalacticEquatorColor( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+};
+
+extern FCGalacticEquatorColor* TheFCGalacticEquatorColorParameter;
+
+// ----------------------------------------------------------------------------
+
+class FCGalacticEquatorTextColor : public MetaUInt32
+{
+public:
+
+   FCGalacticEquatorTextColor( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+};
+
+extern FCGalacticEquatorTextColor* TheFCGalacticEquatorTextColorParameter;
+
+// ----------------------------------------------------------------------------
+
 class FCConstellationBorderColor : public MetaUInt32
 {
 public:
@@ -458,4 +542,4 @@ PCL_END_LOCAL
 #endif   // __FindingChartParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF FindingChartParameters.h - Released 2024-05-07T15:28:00Z
+// EOF FindingChartParameters.h - Released 2024-06-18T15:49:25Z

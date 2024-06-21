@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.6.11
+// /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.9.0
 // ----------------------------------------------------------------------------
-// SubframeSelectorExpressionsInterface.h - Released 2024-05-07T15:28:00Z
+// SubframeSelectorExpressionsInterface.h - Released 2024-06-18T15:49:25Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -138,4 +138,4 @@ PCL_END_LOCAL
 #endif   // e_SubframeSelectorExpressionsInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorExpressionsInterface.h - Released 2024-05-07T15:28:00Z
+// EOF SubframeSelectorExpressionsInterface.h - Released 2024-06-18T15:49:25Z
