@@ -559,22 +559,22 @@ bool Variant::CanConvertToDouble() const noexcept
 {
    switch ( m_type )
    {
-   case VariantType::Bool:      return double( m_data.boolValue );
-   case VariantType::Int8:      return double( m_data.int8Value );
-   case VariantType::Int16:     return double( m_data.int16Value );
-   case VariantType::Int32:     return double( m_data.int32Value );
-   case VariantType::Int64:     return double( m_data.int64Value );
-   case VariantType::UInt8:     return double( m_data.uint8Value );
-   case VariantType::UInt16:    return double( m_data.uint16Value );
-   case VariantType::UInt32:    return double( m_data.uint32Value );
-   case VariantType::UInt64:    return double( m_data.uint64Value );
-   case VariantType::Float32:   return double( m_data.float32Value );
-   case VariantType::Float64:   return m_data.float64Value;
-   case VariantType::Complex32: return double( m_data.complex32Value->Mag() );
-   case VariantType::Complex64: return double( m_data.complex64Value->Mag() );
-   case VariantType::TimePoint: return double( m_data.timePointValue->JD() );
-   case VariantType::String:    return m_data.stringValue->ToDouble();
-   case VariantType::IsoString: return m_data.isoStringValue->ToDouble();
+   case VariantType::Bool:
+   case VariantType::Int8:
+   case VariantType::Int16:
+   case VariantType::Int32:
+   case VariantType::Int64:
+   case VariantType::UInt8:
+   case VariantType::UInt16:
+   case VariantType::UInt32:
+   case VariantType::UInt64:
+   case VariantType::Float32:
+   case VariantType::Float64:
+   case VariantType::Complex32:
+   case VariantType::Complex64:
+   case VariantType::TimePoint:
+   case VariantType::String:
+   case VariantType::IsoString:
       return true;
    case VariantType::ByteArray:
       return m_data.byteArrayValue->Length() == sizeof( double );
