@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 2.1.0
+// Standard ImageCalibration Process Module Version 2.2.4
 // ----------------------------------------------------------------------------
-// DefectMapInstance.cpp - Released 2024-06-18T15:49:25Z
+// DefectMapInstance.cpp - Released 2024-08-02T18:17:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -541,4 +541,4 @@ size_type DefectMapInstance::ParameterLength( const MetaParameter* p, size_type 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DefectMapInstance.cpp - Released 2024-06-18T15:49:25Z
+// EOF DefectMapInstance.cpp - Released 2024-08-02T18:17:26Z

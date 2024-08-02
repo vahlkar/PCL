@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 2.1.0
+// Standard ImageCalibration Process Module Version 2.2.4
 // ----------------------------------------------------------------------------
-// ImageCalibrationProcess.cpp - Released 2024-06-18T15:49:25Z
+// ImageCalibrationProcess.cpp - Released 2024-08-02T18:17:27Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -110,6 +110,13 @@ ImageCalibrationProcess::ImageCalibrationProcess()
    new ICDarkCFADetectionMode( this );
    new ICSeparateCFAFlatScalingFactors( this );
    new ICFlatScaleClippingFactor( this );
+   new ICCosmeticCorrectionLow( this );
+   new ICCosmeticLowSigma( this );
+   new ICCosmeticCorrectionHigh( this );
+   new ICCosmeticHighSigma( this );
+   new ICCosmeticKernelRadius( this );
+   new ICCosmeticShowMap( this );
+   new ICCosmeticShowMapAndStop( this );
    new ICEvaluateNoise( this );
    new ICNoiseEvaluationAlgorithm( this );
    new ICEvaluateSignal( this );
@@ -180,6 +187,14 @@ ImageCalibrationProcess::ImageCalibrationProcess()
    new ICNoiseAlgorithmRK( TheICOutputDataParameter );
    new ICNoiseAlgorithmG( TheICOutputDataParameter );
    new ICNoiseAlgorithmB( TheICOutputDataParameter );
+   new ICCosmeticCorrectionLowCountRK( TheICOutputDataParameter );
+   new ICCosmeticCorrectionLowCountG( TheICOutputDataParameter );
+   new ICCosmeticCorrectionLowCountB( TheICOutputDataParameter );
+   new ICCosmeticCorrectionHighCountRK( TheICOutputDataParameter );
+   new ICCosmeticCorrectionHighCountG( TheICOutputDataParameter );
+   new ICCosmeticCorrectionHighCountB( TheICOutputDataParameter );
+
+   new ICCosmeticCorrectionMapId( this );
 }
 
 // ----------------------------------------------------------------------------
@@ -237,4 +252,4 @@ ProcessImplementation* ImageCalibrationProcess::Clone( const ProcessImplementati
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationProcess.cpp - Released 2024-06-18T15:49:25Z
+// EOF ImageCalibrationProcess.cpp - Released 2024-08-02T18:17:27Z

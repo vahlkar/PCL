@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 2.1.0
+// Standard ImageCalibration Process Module Version 2.2.4
 // ----------------------------------------------------------------------------
-// ImageCalibrationInstance.cpp - Released 2024-06-18T15:49:25Z
+// ImageCalibrationInstance.cpp - Released 2024-08-02T18:17:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -61,6 +61,7 @@
 #include <pcl/IntegerResample.h>
 #include <pcl/MessageBox.h>
 #include <pcl/MetaModule.h>
+#include <pcl/MorphologicalTransformation.h>
 #include <pcl/MuteStatus.h>
 #include <pcl/PSFSignalEstimator.h>
 #include <pcl/RobustChauvenetRejection.h>
@@ -148,6 +149,13 @@ ImageCalibrationInstance::ImageCalibrationInstance( const MetaProcess* m )
    , p_darkCFADetectionMode( ICDarkCFADetectionMode::Default ) // ### DEPRECATED
    , p_separateCFAFlatScalingFactors( TheICSeparateCFAFlatScalingFactorsParameter->DefaultValue() )
    , p_flatScaleClippingFactor( TheICFlatScaleClippingFactorParameter->DefaultValue() )
+   , p_cosmeticCorrectionLow( TheICCosmeticCorrectionLowParameter->DefaultValue() )
+   , p_cosmeticLowSigma( TheICCosmeticLowSigmaParameter->DefaultValue() )
+   , p_cosmeticCorrectionHigh( TheICCosmeticCorrectionHighParameter->DefaultValue() )
+   , p_cosmeticHighSigma( TheICCosmeticHighSigmaParameter->DefaultValue() )
+   , p_cosmeticKernelRadius( TheICCosmeticKernelRadiusParameter->DefaultValue() )
+   , p_cosmeticShowMap( TheICCosmeticShowMapParameter->DefaultValue() )
+   , p_cosmeticShowMapAndStop( TheICCosmeticShowMapAndStopParameter->DefaultValue() )
    , p_evaluateNoise( TheICEvaluateNoiseParameter->DefaultValue() )
    , p_noiseEvaluationAlgorithm( ICNoiseEvaluationAlgorithm::Default )
    , p_evaluateSignal( TheICEvaluateSignalParameter->DefaultValue() )
@@ -216,6 +224,13 @@ void ImageCalibrationInstance::Assign( const ProcessImplementation& p )
       p_darkCFADetectionMode          = x->p_darkCFADetectionMode;
       p_separateCFAFlatScalingFactors = x->p_separateCFAFlatScalingFactors;
       p_flatScaleClippingFactor       = x->p_flatScaleClippingFactor;
+      p_cosmeticCorrectionLow         = x->p_cosmeticCorrectionLow;
+      p_cosmeticLowSigma              = x->p_cosmeticLowSigma;
+      p_cosmeticCorrectionHigh        = x->p_cosmeticCorrectionHigh;
+      p_cosmeticHighSigma             = x->p_cosmeticHighSigma;
+      p_cosmeticKernelRadius          = x->p_cosmeticKernelRadius;
+      p_cosmeticShowMap               = x->p_cosmeticShowMap;
+      p_cosmeticShowMapAndStop        = x->p_cosmeticShowMapAndStop;
       p_evaluateNoise                 = x->p_evaluateNoise;
       p_noiseEvaluationAlgorithm      = x->p_noiseEvaluationAlgorithm;
       p_evaluateSignal                = x->p_evaluateSignal;
@@ -246,6 +261,7 @@ void ImageCalibrationInstance::Assign( const ProcessImplementation& p )
       p_maxFileWriteThreads           = x->p_maxFileWriteThreads;
 
       o_output                        = x->o_output;
+      o_cosmeticCorrectionMapId       = x->o_cosmeticCorrectionMapId;
    }
 }
 
@@ -268,11 +284,14 @@ bool ImageCalibrationInstance::IsHistoryUpdater( const View& view ) const
 
 bool ImageCalibrationInstance::CanExecuteGlobal( String& whyNot ) const
 {
-   if ( p_targetFrames.IsEmpty() )
-   {
-      whyNot = "No target frames have been specified.";
-      return false;
-   }
+   bool ccMapOnly = (p_cosmeticCorrectionHigh || p_cosmeticCorrectionLow) && p_cosmeticShowMap && p_cosmeticShowMapAndStop;
+
+   if ( !ccMapOnly )
+      if ( p_targetFrames.IsEmpty() )
+      {
+         whyNot = "No target frames have been specified.";
+         return false;
+      }
 
    if ( !p_overscan.IsValid() )
    {
@@ -280,11 +299,12 @@ bool ImageCalibrationInstance::CanExecuteGlobal( String& whyNot ) const
       return false;
    }
 
-   if ( !p_masterBias.IsValid() )
-   {
-      whyNot = "Missing or invalid master bias frame.";
-      return false;
-   }
+   if ( !ccMapOnly || p_calibrateDark )
+      if ( !p_masterBias.IsValid() )
+      {
+         whyNot = "Missing or invalid master bias frame.";
+         return false;
+      }
 
    if ( !p_masterDark.IsValid() )
    {
@@ -292,17 +312,25 @@ bool ImageCalibrationInstance::CanExecuteGlobal( String& whyNot ) const
       return false;
    }
 
-   if ( !p_masterFlat.IsValid() )
-   {
-      whyNot = "Missing or invalid master flat frame.";
-      return false;
-   }
+   if ( !ccMapOnly )
+      if ( !p_masterFlat.IsValid() )
+      {
+         whyNot = "Missing or invalid master flat frame.";
+         return false;
+      }
 
    if ( !p_overscan.enabled && !p_masterBias.enabled && !p_masterDark.enabled && !p_masterFlat.enabled )
    {
       whyNot = "No master calibration frames or overscan regions have been specified.";
       return false;
    }
+
+   if ( p_cosmeticCorrectionLow || p_cosmeticCorrectionHigh )
+      if ( !p_masterDark.enabled )
+      {
+         whyNot = "Cosmetic correction requires a master dark frame.";
+         return false;
+      }
 
    return true;
 }
@@ -923,6 +951,49 @@ static FVector OptimizeDark( const Image& target, const Image& optimizingDark, c
 }
 
 // ----------------------------------------------------------------------------
+
+UInt8Image* ImageCalibrationInstance::BuildCosmeticCorrectionMap( const Image& dark ) const
+{
+   UInt8Image* map = new UInt8Image( dark.Width(), dark.Height(), dark.IsColor() ? ColorSpace::RGB : ColorSpace::Gray );
+   map->Zero();
+
+   Console console;
+   console.WriteLn( "<end><cbr><br>* Building cosmetic correction map." );
+
+   for ( int c = 0; c < map->NumberOfChannels(); ++c )
+   {
+      Image H( dark, Rect( 0 ), c, c );
+      MorphologicalTransformation( MedianFilter(), CircularStructure( 7 ) ) >> H;
+      {
+         Image::sample_iterator h( H );
+         for ( Image::const_sample_iterator d( dark, c ); d; ++d, ++h )
+            *h = *d - *h;
+      }
+      double median = H.Median();
+      TwoSidedEstimate sigma = Sqrt( H.TwoSidedBiweightMidvariance( median, H.TwoSidedMAD( median ) ) );
+      float t0 = median - p_cosmeticLowSigma * sigma.low;
+      float t1 = median + p_cosmeticHighSigma * sigma.high;
+      uint64 n0 = 0, n1 = 0;
+      UInt8Image::sample_iterator m( *map, c );
+      for ( Image::const_sample_iterator h( H ); h; ++h, ++m )
+         if ( likely( p_cosmeticCorrectionHigh ) && *h >= t1 )
+         {
+            *m = uint8( 2 );
+            ++n1;
+         }
+         else if ( p_cosmeticCorrectionLow && *h <= t0 )
+         {
+            *m = uint8( 1 );
+            ++n0;
+         }
+
+      console.WriteLn( String().Format( "ch %d : count_low = %lu, count_high = %lu", c, n0, n1 ) );
+   }
+
+   return map;
+}
+
+// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 // Image Calibration Thread
 // ----------------------------------------------------------------------------
@@ -943,34 +1014,39 @@ struct CalibrationThreadData
    /*
     * Master bias frame, overscan corrected.
     */
-   Image*    bias;
+   Image*      bias = nullptr;
 
    /*
     * Master dark frame, overscan+bias corrected.
     */
-   Image*    dark;
+   Image*      dark = nullptr;
 
    /*
     * Calibrated dark frame, central window for dark optimization, maybe
     * thresholded, maybe binned 2x2 (Bayer) or 3x3 (X-Trans).
     */
-   Image*    optimizingDark;
+   Image*      optimizingDark = nullptr;
 
    /*
     * If nonempty, the master dark frame is a CFA and we must apply it after
     * binning targets 2x2 (Bayer) or 3x3 (X-Trans) for optimization.
     */
-   IsoString darkCFAPattern;
+   IsoString   darkCFAPattern;
 
    /*
     * Master flat frame, overscan+bias+dark corrected and scaled.
     */
-   Image*    flat;
+   Image*      flat = nullptr;
 
    /*
     * Per-channel master flat scaling factors.
     */
-   FVector   flatScalingFactors;
+   FVector     flatScalingFactors;
+
+   /*
+    * Cold/hot pixel map. Pixel values: 0=ignore 1=cold 2=hot
+    */
+   UInt8Image* cosmeticCorrectionMap = nullptr;
 };
 
 class CalibrationThread : public Thread
@@ -1047,6 +1123,12 @@ public:
             o.noiseScaleHigh[i] = m_noiseScaleHigh[i];
             o.noiseAlgorithms[i] = String( m_noiseAlgorithms[i] );
          }
+      if ( m_data.instance->p_cosmeticCorrectionLow )
+         for ( int i = 0; i < Min( 3, m_cosmeticCorrectionLowCounts.Length() ); ++i )
+            o.cosmeticCorrectionLowCounts[i] = m_cosmeticCorrectionLowCounts[i];
+      if ( m_data.instance->p_cosmeticCorrectionHigh )
+         for ( int i = 0; i < Min( 3, m_cosmeticCorrectionHighCounts.Length() ); ++i )
+            o.cosmeticCorrectionHighCounts[i] = m_cosmeticCorrectionHighCounts[i];
    }
 
    const String& TargetFilePath() const
@@ -1097,6 +1179,10 @@ private:
 
    // Automatic or prescribed pedestal, in 16-bit DN.
    int        m_outputPedestal = 0;
+
+   // Cosmetic correction pixel counts
+   UI64Vector m_cosmeticCorrectionLowCounts;
+   UI64Vector m_cosmeticCorrectionHighCounts;
 
    // Signal estimates
    Vector     m_psfTotalFluxEstimates;
@@ -1224,6 +1310,17 @@ private:
        */
       console.WriteLn( "<end><cbr>* Performing image calibration." );
       Calibrate( TargetImage(), m_data.bias, m_data.dark, m_K, m_data.flat );
+
+      /*
+       * Cosmetic correction.
+       */
+      m_cosmeticCorrectionLowCounts = UI64Vector( uint64( 0 ), m_target->NumberOfChannels() );
+      m_cosmeticCorrectionHighCounts = UI64Vector( uint64( 0 ), m_target->NumberOfChannels() );
+      if ( m_data.cosmeticCorrectionMap != nullptr )
+      {
+         console.WriteLn( "<end><cbr>* Performing cosmetic correction." );
+         CosmeticCorrection( TargetImage() );
+      }
 
       /*
        * Optional pedestal to enforce positivity.
@@ -1771,6 +1868,72 @@ private:
    }
 
    /*
+    * Cosmetic correction with a precalculated defect map.
+    */
+   void CosmeticCorrection( Image& target )
+   {
+      const int delta = m_data.darkCFAPattern.IsEmpty() ? 1 : ((m_data.darkCFAPattern.Length() > 4)/*XTrans?*/ ? 3 : 2);
+      const int radius = m_data.instance->p_cosmeticKernelRadius * delta;
+      const int size = (m_data.instance->p_cosmeticKernelRadius << 1) + 1;
+      Array<float> P( size * size - 1 );
+
+      for ( int c = 0; c < target.NumberOfNominalChannels(); ++c )
+      {
+         UInt8Image::const_sample_iterator m( *m_data.cosmeticCorrectionMap, c );
+         Image::sample_iterator t( target, c );
+
+         for ( int y = 0; y < target.Height(); ++y )
+            for ( int x = 0; x < target.Width(); ++x, ++t, ++m )
+               if ( *m != 0 )
+               {
+                  int n = 0;
+                  for ( int i = y - radius, i1 = y + radius; ; i += delta )
+                     if ( i >= 0 )
+                     {
+                        for ( ; i <= i1 && i < target.Height(); i += delta )
+                           for ( int j = x - radius, j1 = x + radius; ; j += delta )
+                              if ( j >= 0 )
+                              {
+                                 const float* __restrict__ v = target.PixelAddress( j, i, c );
+                                 for ( ; j <= j1 && j < target.Width(); j += delta, v += delta )
+                                    if ( likely( v != t.Position() ) )
+                                       P[n++] = *v;
+                                 break;
+                              }
+                        break;
+                     }
+
+                  *t = pcl::Median( P.Begin(), P.At( n ) );
+
+                  if ( *m == 1 )
+                     m_cosmeticCorrectionLowCounts[c]++;
+                  else
+                     m_cosmeticCorrectionHighCounts[c]++;
+               }
+
+//          target.SelectChannel( c );
+//          Image clean( target );
+//          MorphologicalTransformation M( MedianFilter(), BoxStructure( 1 + 2*m_data.instance->p_cosmeticKernelRadius ) );
+//          if ( !m_data.darkCFAPattern.IsEmpty() )
+//             M.SetInterlacingDistance( (m_data.darkCFAPattern.Length() > 4)/*XTrans?*/ ? 3 : 2 );
+//          M >> clean;
+//          target.ResetSelections();
+//
+//          UInt8Image::const_sample_iterator m( *m_data.cosmeticCorrectionMap, c );
+//          Image::const_sample_iterator n( clean );
+//          for ( Image::sample_iterator t( target, c ); t; ++t, ++n, ++m )
+//             if ( *m != 0 )
+//             {
+//                *t = *n;
+//                if ( *m == 1 )
+//                   m_cosmeticCorrectionLowCounts[c]++;
+//                else
+//                   m_cosmeticCorrectionHighCounts[c]++;
+//             }
+      }
+   }
+
+   /*
     * * Signal evaluation by PSF photometry.
     *
     * * Estimation of the standard deviation of the noise, assuming a Gaussian
@@ -2236,6 +2399,13 @@ bool ImageCalibrationInstance::ExecuteGlobal()
     * Reset output data.
     */
    o_output = Array<OutputData>( p_targetFrames.Length() );
+   o_cosmeticCorrectionMapId.Clear();
+
+   /*
+    * If we are only building and showing the cosmetic correction map, some
+    * tasks can be overlooked.
+    */
+   bool ccMapOnly = (p_cosmeticCorrectionHigh || p_cosmeticCorrectionLow) && p_cosmeticShowMap && p_cosmeticShowMapAndStop;
 
    /*
     * Start with a general validation of working parameters.
@@ -2245,28 +2415,31 @@ bool ImageCalibrationInstance::ExecuteGlobal()
       if ( !CanExecuteGlobal( why ) )
          throw Error( why );
 
-      if ( !p_outputDirectory.IsEmpty() )
-         if ( !File::DirectoryExists( p_outputDirectory ) )
-            throw Error( "The specified output directory does not exist: " + p_outputDirectory );
+      if ( !ccMapOnly )
+      {
+         if ( !p_outputDirectory.IsEmpty() )
+            if ( !File::DirectoryExists( p_outputDirectory ) )
+               throw Error( "The specified output directory does not exist: " + p_outputDirectory );
 
-      StringList fileNames;
-      for ( const auto& target : p_targetFrames )
-         if ( target.enabled )
-         {
-            if ( !File::Exists( target.path ) )
-               throw Error( "No such file exists on the local filesystem: " + target.path );
-            fileNames << File::ExtractNameAndSuffix( target.path );
-         }
-      fileNames.Sort();
-      for ( size_type i = 1; i < fileNames.Length(); ++i )
-         if ( fileNames[i].CompareIC( fileNames[i-1] ) == 0 )
-         {
-            if ( p_overwriteExistingFiles )
-               throw Error( "The target frames list contains duplicate file names (case-insensitive). "
-                            "This is not allowed when the 'Overwrite existing files' option is enabled." );
-            console.WarningLn( "<end><cbr><br>** Warning: The target frames list contains duplicate file names (case-insensitive)." );
-            break;
-         }
+         StringList fileNames;
+         for ( const auto& target : p_targetFrames )
+            if ( target.enabled )
+            {
+               if ( !File::Exists( target.path ) )
+                  throw Error( "No such file exists on the local filesystem: " + target.path );
+               fileNames << File::ExtractNameAndSuffix( target.path );
+            }
+         fileNames.Sort();
+         for ( size_type i = 1; i < fileNames.Length(); ++i )
+            if ( fileNames[i].CompareIC( fileNames[i-1] ) == 0 )
+            {
+               if ( p_overwriteExistingFiles )
+                  throw Error( "The target frames list contains duplicate file names (case-insensitive). "
+                              "This is not allowed when the 'Overwrite existing files' option is enabled." );
+               console.WarningLn( "<end><cbr><br>** Warning: The target frames list contains duplicate file names (case-insensitive)." );
+               break;
+            }
+      }
    }
 
    /*
@@ -2319,11 +2492,12 @@ bool ImageCalibrationInstance::ExecuteGlobal()
       /*
        * Load master bias, dark and flat frames, and validate their geometries.
        */
-      if ( p_masterBias.enabled )
-      {
-         console.NoteLn( "<end><cbr><br>* Loading master bias frame: <raw>" + p_masterBias.path + "</raw>" );
-         bias = LoadMasterCalibrationFrame( p_masterBias.path, p_calibrateBias );
-      }
+      if ( !ccMapOnly || p_calibrateDark )
+         if ( p_masterBias.enabled )
+         {
+            console.NoteLn( "<end><cbr><br>* Loading master bias frame: <raw>" + p_masterBias.path + "</raw>" );
+            bias = LoadMasterCalibrationFrame( p_masterBias.path, p_calibrateBias );
+         }
 
       if ( p_masterDark.enabled )
       {
@@ -2331,15 +2505,16 @@ bool ImageCalibrationInstance::ExecuteGlobal()
          dark = LoadMasterCalibrationFrame( p_masterDark.path, p_calibrateDark, p_enableCFA ? &darkCFAPattern : nullptr );
       }
 
-      if ( p_masterFlat.enabled )
-      {
-         console.NoteLn( "<end><cbr><br>* Loading master flat frame: <raw>" + p_masterFlat.path + "</raw>" );
-         flat = LoadMasterCalibrationFrame( p_masterFlat.path, p_calibrateFlat, p_enableCFA ? &flatCFAPattern : nullptr );
-         if ( p_enableCFA )
-            if ( p_masterDark.enabled )
-               if ( darkCFAPattern != flatCFAPattern )
-                  throw Error( "Mismatched CFA patterns between the master dark and flat frames: '" + darkCFAPattern + "', '" + flatCFAPattern + "'" );
-      }
+      if ( !ccMapOnly )
+         if ( p_masterFlat.enabled )
+         {
+            console.NoteLn( "<end><cbr><br>* Loading master flat frame: <raw>" + p_masterFlat.path + "</raw>" );
+            flat = LoadMasterCalibrationFrame( p_masterFlat.path, p_calibrateFlat, p_enableCFA ? &flatCFAPattern : nullptr );
+            if ( p_enableCFA )
+               if ( p_masterDark.enabled )
+                  if ( darkCFAPattern != flatCFAPattern )
+                     throw Error( "Mismatched CFA patterns between the master dark and flat frames: '" + darkCFAPattern + "', '" + flatCFAPattern + "'" );
+         }
 
       Module->ProcessEvents();
 
@@ -2348,24 +2523,26 @@ bool ImageCalibrationInstance::ExecuteGlobal()
        */
       if ( p_overscan.enabled )
       {
-         if ( p_calibrateBias )
-            if ( p_masterBias.enabled )
-            {
-               console.NoteLn( "<end><cbr><br>* Applying overscan correction: master bias frame." );
-               SubtractOverscan( *bias, O, p_overscan.imageRect );
-            }
+         if ( !ccMapOnly || p_calibrateDark )
+            if ( p_calibrateBias )
+               if ( p_masterBias.enabled )
+               {
+                  console.NoteLn( "<end><cbr><br>* Applying overscan correction: master bias frame." );
+                  SubtractOverscan( *bias, O, p_overscan.imageRect );
+               }
          if ( p_calibrateDark )
             if ( p_masterDark.enabled )
             {
                console.NoteLn( "<end><cbr><br>* Applying overscan correction: master dark frame." );
                SubtractOverscan( *dark, O, p_overscan.imageRect );
             }
-         if ( p_calibrateFlat )
-            if ( p_masterFlat.enabled )
-            {
-               console.NoteLn( "<end><cbr><br>* Applying overscan correction: master flat frame." );
-               SubtractOverscan( *flat, O, p_overscan.imageRect );
-            }
+         if ( !ccMapOnly )
+            if ( p_calibrateFlat )
+               if ( p_masterFlat.enabled )
+               {
+                  console.NoteLn( "<end><cbr><br>* Applying overscan correction: master flat frame." );
+                  SubtractOverscan( *flat, O, p_overscan.imageRect );
+               }
       }
 
       Module->ProcessEvents();
@@ -2386,64 +2563,65 @@ bool ImageCalibrationInstance::ExecuteGlobal()
           * If necessary, create the dark optimization window image.
           * NB: This must be done after calibrating the master dark frame.
           */
-         if ( p_optimizeDarks )
-         {
-            dark->ResetSelections();
-            optimizingDark = new Image( *dark );
-            if ( !darkCFAPattern.IsEmpty() )
-               IntegerResample( -DownsamplingFactorForCFAPattern( darkCFAPattern ) ) >> *optimizingDark;
-
-            console.NoteLn( "<end><cbr><br>* Computing dark frame optimization thresholds." );
-            for ( int c = 0; c < optimizingDark->NumberOfChannels(); ++c )
+         if ( !ccMapOnly )
+            if ( p_optimizeDarks )
             {
-               optimizingDark->SelectChannel( c );
-               double location = optimizingDark->Median();
-               double scale = 1.4826*optimizingDark->MAD( location );
-               double t;
-               if ( p_darkOptimizationThreshold > 0 ) // ### be backwards-compatible
+               dark->ResetSelections();
+               optimizingDark = new Image( *dark );
+               if ( !darkCFAPattern.IsEmpty() )
+                  IntegerResample( -DownsamplingFactorForCFAPattern( darkCFAPattern ) ) >> *optimizingDark;
+
+               console.NoteLn( "<end><cbr><br>* Computing dark frame optimization thresholds." );
+               for ( int c = 0; c < optimizingDark->NumberOfChannels(); ++c )
                {
-                  t = Range( p_darkOptimizationThreshold, 0.0F, 1.0F );
-                  p_darkOptimizationLow = (t - location)/scale;
-                  p_darkOptimizationThreshold = 0;
-               }
-               else
-               {
-                  t = Range( location + p_darkOptimizationLow*scale, 0.0, 1.0 );
-               }
-               size_type N = optimizingDark->NumberOfPixels();
-               for ( Image::sample_iterator i( *optimizingDark, c ); i; ++i )
-                  if ( *i < t )
+                  optimizingDark->SelectChannel( c );
+                  double location = optimizingDark->Median();
+                  double scale = 1.4826*optimizingDark->MAD( location );
+                  double t;
+                  if ( p_darkOptimizationThreshold > 0 ) // ### be backwards-compatible
                   {
-                     *i = 0;
-                     --N;
+                     t = Range( p_darkOptimizationThreshold, 0.0F, 1.0F );
+                     p_darkOptimizationLow = (t - location)/scale;
+                     p_darkOptimizationThreshold = 0;
                   }
-               console.WriteLn( String().Format( "<end><cbr>ch %d : Td = %.8f (%llu px = %.3f%%)",
-                                                   c, t, N, 100.0*N/optimizingDark->NumberOfPixels() ) );
-               if ( N < DARK_COUNT_LOW*optimizingDark->NumberOfPixels() )
-                  console.WarningLn( "** Warning: The dark frame optimization threshold is probably too high (channel " + String( c ) + "), "
-                                     "or the master dark frame is not valid or is not being calibrated correctly." );
-               if ( N < DARK_COUNT_SMALL )
+                  else
+                  {
+                     t = Range( location + p_darkOptimizationLow*scale, 0.0, 1.0 );
+                  }
+                  size_type N = optimizingDark->NumberOfPixels();
+                  for ( Image::sample_iterator i( *optimizingDark, c ); i; ++i )
+                     if ( *i < t )
+                     {
+                        *i = 0;
+                        --N;
+                     }
+                  console.WriteLn( String().Format( "<end><cbr>ch %d : Td = %.8f (%llu px = %.3f%%)",
+                                                      c, t, N, 100.0*N/optimizingDark->NumberOfPixels() ) );
+                  if ( N < DARK_COUNT_LOW*optimizingDark->NumberOfPixels() )
+                     console.WarningLn( "** Warning: The dark frame optimization threshold is probably too high (channel " + String( c ) + "), "
+                                       "or the master dark frame is not valid or is not being calibrated correctly." );
+                  if ( N < DARK_COUNT_SMALL )
+                  {
+                     console.WarningLn( "** Warning: The selected pixel set for dark frame optimization is too small "
+                                       "- disabling dark frame optimization for channel " + String( c ) + "." );
+                     optimizingDark.Destroy();
+                     break;
+                  }
+               }
+
+               if ( optimizingDark )
                {
-                  console.WarningLn( "** Warning: The selected pixel set for dark frame optimization is too small "
-                                     "- disabling dark frame optimization for channel " + String( c ) + "." );
-                  optimizingDark.Destroy();
-                  break;
+                  optimizingDark->ResetSelections();
+
+                  if ( p_darkOptimizationWindow > 0 )
+                     if ( p_darkOptimizationWindow < dark->Width() || p_darkOptimizationWindow < dark->Height() )
+                     {
+                        optimizingDark->SelectRectangle( OptimizingRect( *optimizingDark, p_darkOptimizationWindow ) );
+                        optimizingDark->Crop();
+                        optimizingDark->ResetSelections();
+                     }
                }
             }
-
-            if ( optimizingDark )
-            {
-               optimizingDark->ResetSelections();
-
-               if ( p_darkOptimizationWindow > 0 )
-                  if ( p_darkOptimizationWindow < dark->Width() || p_darkOptimizationWindow < dark->Height() )
-                  {
-                     optimizingDark->SelectRectangle( OptimizingRect( *optimizingDark, p_darkOptimizationWindow ) );
-                     optimizingDark->Crop();
-                     optimizingDark->ResetSelections();
-                  }
-            }
-         }
       }
 
       Module->ProcessEvents();
@@ -2451,93 +2629,115 @@ bool ImageCalibrationInstance::ExecuteGlobal()
       /*
        * Calibrate and scale the master flat frame.
        */
-      if ( p_masterFlat.enabled )
-      {
-         /*
-          * Calibrate the master flat frame by subtracting the bias and dark
-          * master frames. If selected, perform a dark frame optimization for
-          * the master flat.
-          */
-         if ( p_calibrateFlat )
-            if ( p_masterBias.enabled || p_masterDark.enabled )
-            {
-               console.NoteLn( "<end><cbr><br>* Calibrating master flat frame." );
+      if ( !ccMapOnly )
+         if ( p_masterFlat.enabled )
+         {
+            /*
+             * Calibrate the master flat frame by subtracting the bias and dark
+             * master frames. If selected, perform a dark frame optimization
+             * for the master flat.
+             */
+            if ( p_calibrateFlat )
+               if ( p_masterBias.enabled || p_masterDark.enabled )
+               {
+                  console.NoteLn( "<end><cbr><br>* Calibrating master flat frame." );
 
-               FVector K;
-               if ( p_masterDark.enabled )
-                  if ( p_optimizeDarks && optimizingDark )
-                  {
-                     console.NoteLn( "<end><cbr><br>* Computing dark frame optimization factors: master flat frame." );
-                     K = OptimizeDark( *flat, *optimizingDark, darkCFAPattern );
-                     for ( int c = 0; c < flat->NumberOfChannels(); ++c )
+                  FVector K;
+                  if ( p_masterDark.enabled )
+                     if ( p_optimizeDarks && optimizingDark )
                      {
-                        console.WriteLn( String().Format( "<end><cbr>ch %d : k = %.3f", c, K[c] ) );
-                        if ( K[c] <= NO_DARK_CORRELATION )
-                           console.WarningLn( String().Format( "** Warning: No correlation between "
-                                             "the master dark and master flat frames (channel %d).", c ) );
+                        console.NoteLn( "<end><cbr><br>* Computing dark frame optimization factors: master flat frame." );
+                        K = OptimizeDark( *flat, *optimizingDark, darkCFAPattern );
+                        for ( int c = 0; c < flat->NumberOfChannels(); ++c )
+                        {
+                           console.WriteLn( String().Format( "<end><cbr>ch %d : k = %.3f", c, K[c] ) );
+                           if ( K[c] <= NO_DARK_CORRELATION )
+                              console.WarningLn( String().Format( "** Warning: No correlation between "
+                                                                  "the master dark and master flat frames (channel %d).", c ) );
+                        }
                      }
-                  }
-                  else
-                     K = FVector( 1.0F, flat->NumberOfChannels() );
+                     else
+                        K = FVector( 1.0F, flat->NumberOfChannels() );
 
-               Module->ProcessEvents();
-               Calibrate( *flat, bias, dark, K, nullptr/*flat*/ );
+                  Module->ProcessEvents();
+                  Calibrate( *flat, bias, dark, K, nullptr/*flat*/ );
+               }
+
+            Module->ProcessEvents();
+
+            /*
+             * - Compute master flat scaling factors as per-channel robust mean
+             *   pixel values.
+             * - Apply scaling factors to the m. flat by pixelwise division.
+             */
+            console.NoteLn( "<end><cbr><br>* Computing master flat scaling factors." );
+
+            if ( flatCFAPattern.IsEmpty() || !p_separateCFAFlatScalingFactors )
+            {
+               flatScalingFactors = FVector( flat->NumberOfChannels() );
+               for ( int c = 0; c < flat->NumberOfChannels(); ++c )
+               {
+                  int t = Max( 1, TruncInt( p_flatScaleClippingFactor * flat->NumberOfPixels() ) );
+                  double s = TrimmedMean( flat->PixelData( c ), flat->PixelData( c )+flat->NumberOfPixels(), t, t );
+                  if ( 1 + s == 1 )
+                     throw Error( String().Format( "Zero or insignificant scaling factor for flat frame channel %d. "
+                                                   "(empty or marginal master flat frame data?)", c ) );
+                  flat->Apply( s, ImageOp::Div, Rect( 0 ), c/*firstChannel*/, c/*lastChannel*/ );
+                  console.WriteLn( String().Format( "ch %d : f = %.6f", c, s ) );
+                  flatScalingFactors[c] = s;
+               }
             }
+            else
+            {
+               CFAIndex cfa( flatCFAPattern );
+               Array<float> F[ 3 ];
+               {
+                  Image::const_sample_iterator i( *flat );
+                  for ( int y = 0; y < flat->Height(); ++y )
+                     for ( int x = 0; x < flat->Width(); ++x, ++i )
+                        F[cfa( x, y )] << *i;
+               }
 
-         Module->ProcessEvents();
+               flatScalingFactors = FVector( 3 );
+               for ( int c = 0; c < 3; ++c )
+               {
+                  int t = Max( 1, TruncInt( p_flatScaleClippingFactor * F[c].Length() ) );
+                  double s = TrimmedMean( F[c].Begin(), F[c].End(), t, t );
+                  if ( 1 + s == 1 )
+                     throw Error( String().Format( "Zero or insignificant scaling factor for flat frame CFA component %d. "
+                                                   "(empty or marginal master flat frame data?)", c ) );
+                  Image::sample_iterator i( *flat );
+                  for ( int y = 0; y < flat->Height(); ++y )
+                     for ( int x = 0; x < flat->Width(); ++x, ++i )
+                        if ( cfa( x, y ) == c )
+                           *i /= s;
+                  console.WriteLn( String().Format( "ch %d : f = %.6f", c, s ) );
+                  flatScalingFactors[c] = s;
+               }
+            }
+         } // if flat
+   } // if bias or dark or flat
 
-         /*
-          * - Compute master flat scaling factors as per-channel robust mean
-          *   pixel values.
-          * - Apply scaling factors to the master flat by pixelwise division.
-          */
-         console.NoteLn( "<end><cbr><br>* Computing master flat scaling factors." );
-
-         if ( flatCFAPattern.IsEmpty() || !p_separateCFAFlatScalingFactors )
+   /*
+    * If cosmetic correction is enabled, compute the cold/hot pixel map.
+    */
+   AutoPointer<UInt8Image> cosmeticCorrectionMap;
+   if ( p_masterDark.enabled )
+      if ( p_cosmeticCorrectionLow || p_cosmeticCorrectionHigh )
+      {
+         cosmeticCorrectionMap = ImageCalibrationInstance::BuildCosmeticCorrectionMap( *dark );
+         if ( p_cosmeticShowMap )
          {
-            flatScalingFactors = FVector( flat->NumberOfChannels() );
-            for ( int c = 0; c < flat->NumberOfChannels(); ++c )
-            {
-               int t = Max( 1, TruncInt( p_flatScaleClippingFactor * flat->NumberOfPixels() ) );
-               double s = TrimmedMean( flat->PixelData( c ), flat->PixelData( c )+flat->NumberOfPixels(), t, t );
-               if ( 1 + s == 1 )
-                  throw Error( String().Format( "Zero or insignificant scaling factor for flat frame channel %d. "
-                                                "(empty or marginal master flat frame data?)", c ) );
-               flat->Apply( s, ImageOp::Div, Rect( 0 ), c/*firstChannel*/, c/*lastChannel*/ );
-               console.WriteLn( String().Format( "ch %d : f = %.6f", c, s ) );
-               flatScalingFactors[c] = s;
-            }
-         }
-         else
-         {
-            CFAIndex cfa( flatCFAPattern );
-            Array<float> F[ 3 ];
-            {
-               Image::const_sample_iterator i( *flat );
-               for ( int y = 0; y < flat->Height(); ++y )
-                  for ( int x = 0; x < flat->Width(); ++x, ++i )
-                     F[cfa( x, y )] << *i;
-            }
-
-            flatScalingFactors = FVector( 3 );
-            for ( int c = 0; c < 3; ++c )
-            {
-               int t = Max( 1, TruncInt( p_flatScaleClippingFactor * F[c].Length() ) );
-               double s = TrimmedMean( F[c].Begin(), F[c].End(), t, t );
-               if ( 1 + s == 1 )
-                  throw Error( String().Format( "Zero or insignificant scaling factor for flat frame CFA component %d. "
-                                                "(empty or marginal master flat frame data?)", c ) );
-               Image::sample_iterator i( *flat );
-               for ( int y = 0; y < flat->Height(); ++y )
-                  for ( int x = 0; x < flat->Width(); ++x, ++i )
-                     if ( cfa( x, y ) == c )
-                        *i /= s;
-               console.WriteLn( String().Format( "ch %d : f = %.6f", c, s ) );
-               flatScalingFactors[c] = s;
-            }
+            ImageWindow window( 1, 1, 1, 8/*bitsPerSample*/, false/*floatSample*/, false/*color*/, true/*processing*/, "IC_CC_map" );
+            window.MainView().Image().CopyImage( *cosmeticCorrectionMap );
+            window.MainView().Image().Rescale();
+            window.Show();
+            o_cosmeticCorrectionMapId = window.MainView().Id();
+            Module->ProcessEvents();
+            if ( p_cosmeticShowMapAndStop )
+               return true;
          }
       }
-   } // if bias or dark or flat
 
    /*
     * Prepare working thread data.
@@ -2551,6 +2751,7 @@ bool ImageCalibrationInstance::ExecuteGlobal()
    threadData.darkCFAPattern = darkCFAPattern;
    threadData.flat = flat;
    threadData.flatScalingFactors = flatScalingFactors;
+   threadData.cosmeticCorrectionMap = cosmeticCorrectionMap;
 
    int succeeded = 0;
    int failed = 0;
@@ -2880,6 +3081,21 @@ void* ImageCalibrationInstance::LockParameter( const MetaParameter* p, size_type
    if ( p == TheICFlatScaleClippingFactorParameter )
       return &p_flatScaleClippingFactor;
 
+   if ( p == TheICCosmeticCorrectionLowParameter )
+      return &p_cosmeticCorrectionLow;
+   if ( p == TheICCosmeticLowSigmaParameter )
+      return &p_cosmeticLowSigma;
+   if ( p == TheICCosmeticCorrectionHighParameter )
+      return &p_cosmeticCorrectionHigh;
+   if ( p == TheICCosmeticHighSigmaParameter )
+      return &p_cosmeticHighSigma;
+   if ( p == TheICCosmeticKernelRadiusParameter )
+      return &p_cosmeticKernelRadius;
+   if ( p == TheICCosmeticShowMapParameter )
+      return &p_cosmeticShowMap;
+   if ( p == TheICCosmeticShowMapAndStopParameter )
+      return &p_cosmeticShowMapAndStop;
+
    if ( p == TheICEvaluateNoiseParameter )
       return &p_evaluateNoise;
    if ( p == TheICNoiseEvaluationAlgorithmParameter )
@@ -3034,6 +3250,23 @@ void* ImageCalibrationInstance::LockParameter( const MetaParameter* p, size_type
    if ( p == TheICNoiseAlgorithmBParameter )
       return o_output[tableRow].noiseAlgorithms[2].Begin();
 
+   if ( p == TheICCosmeticCorrectionLowCountRKParameter )
+      return o_output[tableRow].cosmeticCorrectionLowCounts.At( 0 );
+   if ( p == TheICCosmeticCorrectionLowCountGParameter )
+      return o_output[tableRow].cosmeticCorrectionLowCounts.At( 1 );
+   if ( p == TheICCosmeticCorrectionLowCountBParameter )
+      return o_output[tableRow].cosmeticCorrectionLowCounts.At( 2 );
+
+   if ( p == TheICCosmeticCorrectionHighCountRKParameter )
+      return o_output[tableRow].cosmeticCorrectionHighCounts.At( 0 );
+   if ( p == TheICCosmeticCorrectionHighCountGParameter )
+      return o_output[tableRow].cosmeticCorrectionHighCounts.At( 1 );
+   if ( p == TheICCosmeticCorrectionHighCountBParameter )
+      return o_output[tableRow].cosmeticCorrectionHighCounts.At( 2 );
+
+   if ( p == TheICCosmeticCorrectionMapIdParameter )
+      return o_cosmeticCorrectionMapId.Begin();
+
    return nullptr;
 }
 
@@ -3147,6 +3380,12 @@ bool ImageCalibrationInstance::AllocateParameter( size_type sizeOrLength, const 
       if ( sizeOrLength > 0 )
          o_output[tableRow].noiseAlgorithms[2].SetLength( sizeOrLength );
    }
+   else if ( p == TheICCosmeticCorrectionMapIdParameter )
+   {
+      o_cosmeticCorrectionMapId.Clear();
+      if ( sizeOrLength > 0 )
+         o_cosmeticCorrectionMapId.SetLength( sizeOrLength );
+   }
    else
       return false;
 
@@ -3193,6 +3432,9 @@ size_type ImageCalibrationInstance::ParameterLength( const MetaParameter* p, siz
       return o_output[tableRow].noiseAlgorithms[1].Length();
    if ( p == TheICNoiseAlgorithmBParameter )
       return o_output[tableRow].noiseAlgorithms[2].Length();
+   if ( p == TheICCosmeticCorrectionMapIdParameter )
+      return o_cosmeticCorrectionMapId.Length();
+
    return 0;
 }
 
@@ -3201,4 +3443,4 @@ size_type ImageCalibrationInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInstance.cpp - Released 2024-06-18T15:49:25Z
+// EOF ImageCalibrationInstance.cpp - Released 2024-08-02T18:17:26Z

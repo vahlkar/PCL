@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 2.1.0
+// Standard ImageCalibration Process Module Version 2.2.4
 // ----------------------------------------------------------------------------
-// ImageCalibrationInstance.h - Released 2024-06-18T15:49:25Z
+// ImageCalibrationInstance.h - Released 2024-08-02T18:17:27Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -212,6 +212,15 @@ private:
    pcl_bool        p_separateCFAFlatScalingFactors;
    float           p_flatScaleClippingFactor;
 
+   // Cosmetic correction options
+   pcl_bool        p_cosmeticCorrectionLow;
+   int32           p_cosmeticLowSigma;
+   pcl_bool        p_cosmeticCorrectionHigh;
+   int32           p_cosmeticHighSigma;
+   int32           p_cosmeticKernelRadius;
+   pcl_bool        p_cosmeticShowMap;
+   pcl_bool        p_cosmeticShowMapAndStop;
+
    // Noise estimates
    pcl_bool        p_evaluateNoise;
    pcl_enum        p_noiseEvaluationAlgorithm;
@@ -267,8 +276,11 @@ private:
       Vector     noiseScaleLow = Vector( 0.0, 3 );
       Vector     noiseScaleHigh = Vector( 0.0, 3 );
       StringList noiseAlgorithms = StringList( size_type( 3 ) );
+      UI64Vector cosmeticCorrectionLowCounts = UI64Vector( uint64( 0 ), 3 );
+      UI64Vector cosmeticCorrectionHighCounts = UI64Vector( uint64( 0 ), 3 );
    };
    Array<OutputData> o_output;
+   String            o_cosmeticCorrectionMapId;
 
    // -------------------------------------------------------------------------
 
@@ -290,6 +302,9 @@ private:
    // CFA pattern identification.
    IsoString CFAPatternFromTarget( FileFormatInstance& ) const;
 
+   // Cosmetic correction
+   UInt8Image* BuildCosmeticCorrectionMap( const Image& dark ) const;
+
    void ApplyErrorPolicy();
 
    friend class CalibrationThread;
@@ -303,4 +318,4 @@ private:
 #endif   // __ImageCalibrationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInstance.h - Released 2024-06-18T15:49:25Z
+// EOF ImageCalibrationInstance.h - Released 2024-08-02T18:17:27Z

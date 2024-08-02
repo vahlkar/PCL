@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 2.1.0
+// Standard ImageCalibration Process Module Version 2.2.4
 // ----------------------------------------------------------------------------
-// SpectrophotometricFluxCalibrationInterface.h - Released 2024-06-18T15:49:25Z
+// SpectrophotometricFluxCalibrationInterface.h - Released 2024-08-02T18:17:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -230,4 +230,4 @@ PCL_END_LOCAL
 #endif   // __SpectrophotometricFluxCalibrationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF SpectrophotometricFluxCalibrationInterface.h - Released 2024-06-18T15:49:25Z
+// EOF SpectrophotometricFluxCalibrationInterface.h - Released 2024-08-02T18:17:26Z

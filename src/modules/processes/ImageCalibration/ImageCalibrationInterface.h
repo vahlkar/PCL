@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 2.1.0
+// Standard ImageCalibration Process Module Version 2.2.4
 // ----------------------------------------------------------------------------
-// ImageCalibrationInterface.h - Released 2024-06-18T15:49:25Z
+// ImageCalibrationInterface.h - Released 2024-08-02T18:17:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -272,6 +272,23 @@ private:
             NumericEdit          Overscan4TargetWidth_NumericEdit;
             NumericEdit          Overscan4TargetHeight_NumericEdit;
 
+      SectionBar        CosmeticCorrection_SectionBar;
+      Control           CosmeticCorrection_Control;
+      VerticalSizer     CosmeticCorrection_Sizer;
+         HorizontalSizer   CosmeticCorrectionLow_Sizer;
+            CheckBox          CosmeticCorrectionLow_CheckBox;
+         NumericControl    CosmeticLowSigma_NumericControl;
+         HorizontalSizer   CosmeticCorrectionHigh_Sizer;
+            CheckBox          CosmeticCorrectionHigh_CheckBox;
+         NumericControl    CosmeticHighSigma_NumericControl;
+         HorizontalSizer   CosmeticKernelRadius_Sizer;
+            Label             CosmeticKernelRadius_Label;
+            SpinBox           CosmeticKernelRadius_SpinBox;
+         HorizontalSizer   CosmeticShowMap_Sizer;
+            CheckBox          CosmeticShowMap_CheckBox;
+         HorizontalSizer   CosmeticShowMapAndStop_Sizer;
+            CheckBox          CosmeticShowMapAndStop_CheckBox;
+
       SectionBar        MasterBias_SectionBar;
       Control           MasterBias_Control;
       VerticalSizer     MasterBias_Sizer;
@@ -325,6 +342,7 @@ private:
    void UpdatePedestalControls();
    void UpdateMasterFrameControls();
    void UpdateOverscanControls();
+   void UpdateCosmeticCorrectionControls();
 
    /*
     * Event Handlers
@@ -359,4 +377,4 @@ PCL_END_LOCAL
 #endif   // __ImageCalibrationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInterface.h - Released 2024-06-18T15:49:25Z
+// EOF ImageCalibrationInterface.h - Released 2024-08-02T18:17:26Z

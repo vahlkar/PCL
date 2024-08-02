@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 2.1.0
+// Standard ImageCalibration Process Module Version 2.2.4
 // ----------------------------------------------------------------------------
-// ImageCalibrationParameters.h - Released 2024-06-18T15:49:25Z
+// ImageCalibrationParameters.h - Released 2024-08-02T18:17:27Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -686,6 +686,110 @@ public:
 };
 
 extern ICFlatScaleClippingFactor* TheICFlatScaleClippingFactorParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICCosmeticCorrectionLow : public MetaBoolean
+{
+public:
+
+   ICCosmeticCorrectionLow( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern ICCosmeticCorrectionLow* TheICCosmeticCorrectionLowParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICCosmeticLowSigma : public MetaInt32
+{
+public:
+
+   ICCosmeticLowSigma( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern ICCosmeticLowSigma* TheICCosmeticLowSigmaParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICCosmeticCorrectionHigh : public MetaBoolean
+{
+public:
+
+   ICCosmeticCorrectionHigh( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern ICCosmeticCorrectionHigh* TheICCosmeticCorrectionHighParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICCosmeticHighSigma : public MetaInt32
+{
+public:
+
+   ICCosmeticHighSigma( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern ICCosmeticHighSigma* TheICCosmeticHighSigmaParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICCosmeticKernelRadius : public MetaInt32
+{
+public:
+
+   ICCosmeticKernelRadius( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern ICCosmeticKernelRadius* TheICCosmeticKernelRadiusParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICCosmeticShowMap : public MetaBoolean
+{
+public:
+
+   ICCosmeticShowMap( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern ICCosmeticShowMap* TheICCosmeticShowMapParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICCosmeticShowMapAndStop : public MetaBoolean
+{
+public:
+
+   ICCosmeticShowMapAndStop( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern ICCosmeticShowMapAndStop* TheICCosmeticShowMapAndStopParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -1818,6 +1922,104 @@ extern ICNoiseAlgorithmB* TheICNoiseAlgorithmBParameter;
 
 // ----------------------------------------------------------------------------
 
+class ICCosmeticCorrectionLowCountRK : public MetaUInt64
+{
+public:
+
+   ICCosmeticCorrectionLowCountRK( MetaTable* );
+
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
+};
+
+extern ICCosmeticCorrectionLowCountRK* TheICCosmeticCorrectionLowCountRKParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICCosmeticCorrectionLowCountG : public MetaUInt64
+{
+public:
+
+   ICCosmeticCorrectionLowCountG( MetaTable* );
+
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
+};
+
+extern ICCosmeticCorrectionLowCountG* TheICCosmeticCorrectionLowCountGParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICCosmeticCorrectionLowCountB : public MetaUInt64
+{
+public:
+
+   ICCosmeticCorrectionLowCountB( MetaTable* );
+
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
+};
+
+extern ICCosmeticCorrectionLowCountB* TheICCosmeticCorrectionLowCountBParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICCosmeticCorrectionHighCountRK : public MetaUInt64
+{
+public:
+
+   ICCosmeticCorrectionHighCountRK( MetaTable* );
+
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
+};
+
+extern ICCosmeticCorrectionHighCountRK* TheICCosmeticCorrectionHighCountRKParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICCosmeticCorrectionHighCountG : public MetaUInt64
+{
+public:
+
+   ICCosmeticCorrectionHighCountG( MetaTable* );
+
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
+};
+
+extern ICCosmeticCorrectionHighCountG* TheICCosmeticCorrectionHighCountGParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICCosmeticCorrectionHighCountB : public MetaUInt64
+{
+public:
+
+   ICCosmeticCorrectionHighCountB( MetaTable* );
+
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
+};
+
+extern ICCosmeticCorrectionHighCountB* TheICCosmeticCorrectionHighCountBParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICCosmeticCorrectionMapId : public MetaString
+{
+public:
+
+   ICCosmeticCorrectionMapId( MetaProcess* );
+
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
+};
+
+extern ICCosmeticCorrectionMapId* TheICCosmeticCorrectionMapIdParameter;
+
+// ----------------------------------------------------------------------------
+
 PCL_END_LOCAL
 
 } // pcl
@@ -1825,4 +2027,4 @@ PCL_END_LOCAL
 #endif   // __ImageCalibrationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationParameters.h - Released 2024-06-18T15:49:25Z
+// EOF ImageCalibrationParameters.h - Released 2024-08-02T18:17:27Z

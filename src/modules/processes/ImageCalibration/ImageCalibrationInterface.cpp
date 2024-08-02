@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 2.1.0
+// Standard ImageCalibration Process Module Version 2.2.4
 // ----------------------------------------------------------------------------
-// ImageCalibrationInterface.cpp - Released 2024-06-18T15:49:25Z
+// ImageCalibrationInterface.cpp - Released 2024-08-02T18:17:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -202,6 +202,7 @@ void ImageCalibrationInterface::UpdateControls()
    UpdatePedestalControls();
    UpdateMasterFrameControls();
    UpdateOverscanControls();
+   UpdateCosmeticCorrectionControls();
 }
 
 // ----------------------------------------------------------------------------
@@ -505,6 +506,33 @@ void ImageCalibrationInterface::UpdateOverscanControls()
 }
 
 // ----------------------------------------------------------------------------
+
+void ImageCalibrationInterface::UpdateCosmeticCorrectionControls()
+{
+   GUI->CosmeticCorrection_Control.Enable( m_instance.p_masterDark.enabled );
+
+   GUI->CosmeticCorrectionLow_CheckBox.SetChecked( m_instance.p_cosmeticCorrectionLow );
+
+   GUI->CosmeticLowSigma_NumericControl.Enable( m_instance.p_cosmeticCorrectionLow );
+   GUI->CosmeticLowSigma_NumericControl.SetValue( m_instance.p_cosmeticLowSigma );
+
+   GUI->CosmeticCorrectionHigh_CheckBox.SetChecked( m_instance.p_cosmeticCorrectionHigh );
+
+   GUI->CosmeticHighSigma_NumericControl.Enable( m_instance.p_cosmeticCorrectionHigh );
+   GUI->CosmeticHighSigma_NumericControl.SetValue( m_instance.p_cosmeticHighSigma );
+
+   GUI->CosmeticKernelRadius_SpinBox.Enable( m_instance.p_cosmeticCorrectionLow || m_instance.p_cosmeticCorrectionHigh );
+   GUI->CosmeticKernelRadius_SpinBox.SetValue( m_instance.p_cosmeticKernelRadius );
+
+   GUI->CosmeticShowMap_CheckBox.Enable( m_instance.p_cosmeticCorrectionLow || m_instance.p_cosmeticCorrectionHigh );
+   GUI->CosmeticShowMap_CheckBox.SetChecked( m_instance.p_cosmeticShowMap );
+
+   GUI->CosmeticShowMapAndStop_CheckBox.Enable( (m_instance.p_cosmeticCorrectionLow || m_instance.p_cosmeticCorrectionHigh)
+                                                && m_instance.p_cosmeticShowMap );
+   GUI->CosmeticShowMapAndStop_CheckBox.SetChecked( m_instance.p_cosmeticShowMapAndStop );
+}
+
+// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 void ImageCalibrationInterface::e_CurrentNodeUpdated( TreeBox& sender, TreeBox::Node& current, TreeBox::Node& oldCurrent )
@@ -640,6 +668,25 @@ void ImageCalibrationInterface::e_Click( Button& sender, bool checked )
    else if ( sender == GUI->SaturationRelative_CheckBox )
    {
       m_instance.p_saturationRelative = checked;
+   }
+   else if ( sender == GUI->CosmeticCorrectionLow_CheckBox )
+   {
+      m_instance.p_cosmeticCorrectionLow = checked;
+      UpdateCosmeticCorrectionControls();
+   }
+   else if ( sender == GUI->CosmeticCorrectionHigh_CheckBox )
+   {
+      m_instance.p_cosmeticCorrectionHigh = checked;
+      UpdateCosmeticCorrectionControls();
+   }
+   else if ( sender == GUI->CosmeticShowMap_CheckBox )
+   {
+      m_instance.p_cosmeticShowMap = checked;
+      UpdateCosmeticCorrectionControls();
+   }
+   else if ( sender == GUI->CosmeticShowMapAndStop_CheckBox )
+   {
+      m_instance.p_cosmeticShowMapAndStop = checked;
    }
    else if ( sender == GUI->MasterBiasPath_ToolButton )
    {
@@ -799,6 +846,8 @@ void ImageCalibrationInterface::e_SpinValueUpdated( SpinBox& sender, int value )
       m_instance.p_noiseReductionFilterRadius = value;
    else if ( sender == GUI->MaxStars_SpinBox )
       m_instance.p_maxStars = value;
+   else if ( sender == GUI->CosmeticKernelRadius_SpinBox )
+      m_instance.p_cosmeticKernelRadius = value;
 }
 
 // ----------------------------------------------------------------------------
@@ -818,6 +867,10 @@ void ImageCalibrationInterface::e_ValueUpdated( NumericEdit& sender, double valu
    }
    else if ( sender == GUI->FlatScaleClippingFactor_NumericControl )
       m_instance.p_flatScaleClippingFactor = value;
+   else if ( sender == GUI->CosmeticLowSigma_NumericControl )
+      m_instance.p_cosmeticLowSigma = int32( value );
+   else if ( sender == GUI->CosmeticHighSigma_NumericControl )
+      m_instance.p_cosmeticHighSigma = int32( value );
 }
 
 // ----------------------------------------------------------------------------
@@ -925,7 +978,10 @@ void ImageCalibrationInterface::e_CheckSection( SectionBar& sender, bool checked
    else if ( sender == GUI->MasterBias_SectionBar )
       m_instance.p_masterBias.enabled = checked;
    else if ( sender == GUI->MasterDark_SectionBar )
+   {
       m_instance.p_masterDark.enabled = checked;
+      UpdateCosmeticCorrectionControls();
+   }
    else if ( sender == GUI->MasterFlat_SectionBar )
       m_instance.p_masterFlat.enabled = checked;
    else if ( sender == GUI->Overscan_SectionBar )
@@ -2195,6 +2251,109 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
 
    //
 
+   CosmeticCorrection_SectionBar.SetTitle( "Cosmetic Correction" );
+   CosmeticCorrection_SectionBar.SetSection( CosmeticCorrection_Control );
+   CosmeticCorrection_SectionBar.SetToolTip( "<p>Cosmetic correction detects pixels with abnormally "
+      "high or low values in the master dark frame using statistical analysis techniques. These "
+      "pixels are then replaced with plausible values calculated from their local neighborhoods "
+      "during the image calibration task.</p>" );
+   CosmeticCorrection_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&ImageCalibrationInterface::e_ToggleSection, w );
+
+   CosmeticCorrectionLow_CheckBox.SetText( "Correct cold pixels" );
+   CosmeticCorrectionLow_CheckBox.SetToolTip( "<p>Apply cosmetic correction to <i>cold pixels</i>. Cold "
+      "pixels have values below a threshold defined by the <i>low sigma</i> parameter.</p>" );
+   CosmeticCorrectionLow_CheckBox.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::e_Click, w );
+
+   CosmeticCorrectionLow_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   CosmeticCorrectionLow_Sizer.Add( CosmeticCorrectionLow_CheckBox );
+   CosmeticCorrectionLow_Sizer.AddStretch();
+
+   CosmeticLowSigma_NumericControl.label.SetText( "Low sigma:" );
+   CosmeticLowSigma_NumericControl.label.SetFixedWidth( labelWidth1 );
+   CosmeticLowSigma_NumericControl.slider.SetRange( 0, 400 );
+   CosmeticLowSigma_NumericControl.SetInteger();
+   CosmeticLowSigma_NumericControl.SetRange( TheICCosmeticLowSigmaParameter->MinimumValue(), TheICCosmeticLowSigmaParameter->MaximumValue() );
+   CosmeticLowSigma_NumericControl.edit.SetFixedWidth( editWidth1 );
+   CosmeticLowSigma_NumericControl.SetToolTip( "<p>This parameter defines a threshold in sigma units "
+      "below the median of a high-pass filtered master dark frame. Pixels below this threshold are considered "
+      "<i>cold pixels</i> and tagged for cosmetic correction during the image calibration task. Increase the "
+      "value of this parameter to select more potential cold pixels. The default value is 5.</p>" );
+   CosmeticLowSigma_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_ValueUpdated, w );
+
+   CosmeticCorrectionHigh_CheckBox.SetText( "Correct hot pixels" );
+   CosmeticCorrectionHigh_CheckBox.SetToolTip( "<p>Apply cosmetic correction to <i>hot pixels</i>. Hot "
+      "pixels have values above a threshold defined by the <i>high sigma</i> parameter.</p>" );
+   CosmeticCorrectionHigh_CheckBox.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::e_Click, w );
+
+   CosmeticCorrectionHigh_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   CosmeticCorrectionHigh_Sizer.Add( CosmeticCorrectionHigh_CheckBox );
+   CosmeticCorrectionHigh_Sizer.AddStretch();
+
+   CosmeticHighSigma_NumericControl.label.SetText( "High sigma:" );
+   CosmeticHighSigma_NumericControl.label.SetFixedWidth( labelWidth1 );
+   CosmeticHighSigma_NumericControl.slider.SetRange( 0, 400 );
+   CosmeticHighSigma_NumericControl.SetInteger();
+   CosmeticHighSigma_NumericControl.SetRange( TheICCosmeticHighSigmaParameter->MinimumValue(), TheICCosmeticHighSigmaParameter->MaximumValue() );
+   CosmeticHighSigma_NumericControl.edit.SetFixedWidth( editWidth1 );
+   CosmeticHighSigma_NumericControl.SetToolTip( "<p>This parameter defines a threshold in sigma units "
+      "above the median of a high-pass filtered master dark frame. Pixels above this threshold are considered "
+      "<i>hot pixels</i> and tagged for cosmetic correction during the image calibration task. Increase the "
+      "value of this parameter to select more potential hot pixels. The default value is 10.</p>" );
+   CosmeticHighSigma_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_ValueUpdated, w );
+
+   const char* cosmeticKernelRadiusToolTip =
+      "<p>This parameter is the radius in pixels of the local neighborhoods used to calculate plausible values "
+      "to replace cold and hot pixels. This radius defines a square region of size 1 + 2*radius centered on "
+      "each defective pixel. The value used for replacement is the median of the pixel values in this region, "
+      "excluding the corrected pixel.</p>";
+
+   CosmeticKernelRadius_Label.SetText( "Kernel radius:" );
+   CosmeticKernelRadius_Label.SetFixedWidth( labelWidth1 );
+   CosmeticKernelRadius_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   CosmeticKernelRadius_Label.SetToolTip( cosmeticKernelRadiusToolTip );
+
+   CosmeticKernelRadius_SpinBox.SetRange( int( TheICCosmeticKernelRadiusParameter->MinimumValue() ), int( TheICCosmeticKernelRadiusParameter->MaximumValue() ) );
+   CosmeticKernelRadius_SpinBox.SetToolTip( cosmeticKernelRadiusToolTip );
+   CosmeticKernelRadius_SpinBox.SetFixedWidth( editWidth2 );
+   CosmeticKernelRadius_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&ImageCalibrationInterface::e_SpinValueUpdated, w );
+
+   CosmeticKernelRadius_Sizer.SetSpacing( 4 );
+   CosmeticKernelRadius_Sizer.Add( CosmeticKernelRadius_Label );
+   CosmeticKernelRadius_Sizer.Add( CosmeticKernelRadius_SpinBox );
+   CosmeticKernelRadius_Sizer.AddStretch();
+
+   CosmeticShowMap_CheckBox.SetText( "Show cosmetic correction map" );
+   CosmeticShowMap_CheckBox.SetToolTip( "<p>Generate the map of detected cold and hot pixels as a new image window.</p>" );
+   CosmeticShowMap_CheckBox.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::e_Click, w );
+
+   CosmeticShowMap_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   CosmeticShowMap_Sizer.Add( CosmeticShowMap_CheckBox );
+   CosmeticShowMap_Sizer.AddStretch();
+
+   CosmeticShowMapAndStop_CheckBox.SetText( "Only show cosmetic correction map" );
+   CosmeticShowMapAndStop_CheckBox.SetToolTip( "<p>Generate the map of detected cold/hot pixels as a "
+      "new image window, then stop ImageCalibration execution. When this option is enabled, only the "
+      "tasks strictly necessary for the statistical analysis of the master dark frame will be executed.</p>" );
+   CosmeticShowMapAndStop_CheckBox.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::e_Click, w );
+
+   CosmeticShowMapAndStop_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   CosmeticShowMapAndStop_Sizer.Add( CosmeticShowMapAndStop_CheckBox );
+   CosmeticShowMapAndStop_Sizer.AddStretch();
+
+
+   CosmeticCorrection_Sizer.SetSpacing( 4 );
+   CosmeticCorrection_Sizer.Add( CosmeticCorrectionLow_Sizer );
+   CosmeticCorrection_Sizer.Add( CosmeticLowSigma_NumericControl );
+   CosmeticCorrection_Sizer.Add( CosmeticCorrectionHigh_Sizer );
+   CosmeticCorrection_Sizer.Add( CosmeticHighSigma_NumericControl );
+   CosmeticCorrection_Sizer.Add( CosmeticKernelRadius_Sizer );
+   CosmeticCorrection_Sizer.Add( CosmeticShowMap_Sizer );
+   CosmeticCorrection_Sizer.Add( CosmeticShowMapAndStop_Sizer );
+
+   CosmeticCorrection_Control.SetSizer( CosmeticCorrection_Sizer );
+
+   //
+
    MasterBias_SectionBar.SetTitle( "Master Bias" );
    MasterBias_SectionBar.SetSection( MasterBias_Control );
    MasterBias_SectionBar.EnableTitleCheckBox();
@@ -2413,6 +2572,8 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    Global_Sizer.Add( Pedestal_Control );
    Global_Sizer.Add( Overscan_SectionBar );
    Global_Sizer.Add( Overscan_Control );
+   Global_Sizer.Add( CosmeticCorrection_SectionBar );
+   Global_Sizer.Add( CosmeticCorrection_Control );
    Global_Sizer.Add( MasterBias_SectionBar );
    Global_Sizer.Add( MasterBias_Control );
    Global_Sizer.Add( MasterDark_SectionBar );
@@ -2427,6 +2588,7 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    NoiseEvaluation_Control.Hide();
    Pedestal_Control.Hide();
    Overscan_Control.Hide();
+   CosmeticCorrection_Control.Hide();
 
    w.EnsureLayoutUpdated();
    w.AdjustToContents();
@@ -2438,4 +2600,4 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInterface.cpp - Released 2024-06-18T15:49:25Z
+// EOF ImageCalibrationInterface.cpp - Released 2024-08-02T18:17:26Z

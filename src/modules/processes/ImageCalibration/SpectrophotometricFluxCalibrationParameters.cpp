@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 2.1.0
+// Standard ImageCalibration Process Module Version 2.2.4
 // ----------------------------------------------------------------------------
-// SpectrophotometricFluxCalibrationParameters.cpp - Released 2024-06-18T15:49:25Z
+// SpectrophotometricFluxCalibrationParameters.cpp - Released 2024-08-02T18:17:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -1258,4 +1258,4 @@ String SPFCOutputDirectory::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SpectrophotometricFluxCalibrationParameters.cpp - Released 2024-06-18T15:49:25Z
+// EOF SpectrophotometricFluxCalibrationParameters.cpp - Released 2024-08-02T18:17:26Z

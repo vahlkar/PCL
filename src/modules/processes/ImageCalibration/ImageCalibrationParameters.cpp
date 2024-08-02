@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.7.0
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 2.1.0
+// Standard ImageCalibration Process Module Version 2.2.4
 // ----------------------------------------------------------------------------
-// ImageCalibrationParameters.cpp - Released 2024-06-18T15:49:25Z
+// ImageCalibrationParameters.cpp - Released 2024-08-02T18:17:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -116,6 +116,14 @@ ICDarkCFADetectionMode*            TheICDarkCFADetectionModeParameter = nullptr;
 ICSeparateCFAFlatScalingFactors*   TheICSeparateCFAFlatScalingFactorsParameter = nullptr;
 ICFlatScaleClippingFactor*         TheICFlatScaleClippingFactorParameter = nullptr;
 
+ICCosmeticCorrectionLow*           TheICCosmeticCorrectionLowParameter = nullptr;
+ICCosmeticLowSigma*                TheICCosmeticLowSigmaParameter = nullptr;
+ICCosmeticCorrectionHigh*          TheICCosmeticCorrectionHighParameter = nullptr;
+ICCosmeticHighSigma*               TheICCosmeticHighSigmaParameter = nullptr;
+ICCosmeticKernelRadius*            TheICCosmeticKernelRadiusParameter = nullptr;
+ICCosmeticShowMap*                 TheICCosmeticShowMapParameter = nullptr;
+ICCosmeticShowMapAndStop*          TheICCosmeticShowMapAndStopParameter = nullptr;
+
 ICEvaluateNoise*                   TheICEvaluateNoiseParameter = nullptr;
 ICNoiseEvaluationAlgorithm*        TheICNoiseEvaluationAlgorithmParameter = nullptr;
 
@@ -138,7 +146,7 @@ ICOutputPostfix*                   TheICOutputPostfixParameter = nullptr;
 ICOutputSampleFormat*              TheICOutputSampleFormatParameter = nullptr;
 ICOutputPedestal*                  TheICOutputPedestalParameter = nullptr;
 ICOutputPedestalMode*              TheICOutputPedestalModeParameter = nullptr;
-ICAutoPedestalLimit*         TheICAutoPedestalLimitParameter = nullptr;
+ICAutoPedestalLimit*               TheICAutoPedestalLimitParameter = nullptr;
 ICOverwriteExistingFiles*          TheICOverwriteExistingFilesParameter = nullptr;
 ICOnError*                         TheICOnErrorParameter = nullptr;
 ICNoGUIMessages*                   TheICNoGUIMessagesParameter = nullptr;
@@ -192,9 +200,19 @@ ICNoiseAlgorithmRK*                TheICNoiseAlgorithmRKParameter = nullptr;
 ICNoiseAlgorithmG*                 TheICNoiseAlgorithmGParameter = nullptr;
 ICNoiseAlgorithmB*                 TheICNoiseAlgorithmBParameter = nullptr;
 
+ICCosmeticCorrectionLowCountRK*    TheICCosmeticCorrectionLowCountRKParameter = nullptr;
+ICCosmeticCorrectionLowCountG*     TheICCosmeticCorrectionLowCountGParameter = nullptr;
+ICCosmeticCorrectionLowCountB*     TheICCosmeticCorrectionLowCountBParameter = nullptr;
+ICCosmeticCorrectionHighCountRK*   TheICCosmeticCorrectionHighCountRKParameter = nullptr;
+ICCosmeticCorrectionHighCountG*    TheICCosmeticCorrectionHighCountGParameter = nullptr;
+ICCosmeticCorrectionHighCountB*    TheICCosmeticCorrectionHighCountBParameter = nullptr;
+
+ICCosmeticCorrectionMapId*         TheICCosmeticCorrectionMapIdParameter = nullptr;
+
 // ----------------------------------------------------------------------------
 
-ICTargetFrames::ICTargetFrames( MetaProcess* P ) : MetaTable( P )
+ICTargetFrames::ICTargetFrames( MetaProcess* P )
+   : MetaTable( P )
 {
    TheICTargetFramesParameter = this;
 }
@@ -206,7 +224,8 @@ IsoString ICTargetFrames::Id() const
 
 // ----------------------------------------------------------------------------
 
-ICTargetFrameEnabled::ICTargetFrameEnabled( MetaTable* T ) : MetaBoolean( T )
+ICTargetFrameEnabled::ICTargetFrameEnabled( MetaTable* T )
+   : MetaBoolean( T )
 {
    TheICTargetFrameEnabledParameter = this;
 }
@@ -223,7 +242,8 @@ bool ICTargetFrameEnabled::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-ICTargetFramePath::ICTargetFramePath( MetaTable* T ) : MetaString( T )
+ICTargetFramePath::ICTargetFramePath( MetaTable* T )
+   : MetaString( T )
 {
    TheICTargetFramePathParameter = this;
 }
@@ -235,7 +255,8 @@ IsoString ICTargetFramePath::Id() const
 
 // ----------------------------------------------------------------------------
 
-ICEnableCFA::ICEnableCFA( MetaProcess* P ) : MetaBoolean( P )
+ICEnableCFA::ICEnableCFA( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheICEnableCFAParameter = this;
 }
@@ -252,7 +273,8 @@ bool ICEnableCFA::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-ICCFAPattern::ICCFAPattern( MetaProcess* P ) : MetaEnumeration( P )
+ICCFAPattern::ICCFAPattern( MetaProcess* P )
+   : MetaEnumeration( P )
 {
    TheICCFAPatternParameter = this;
 }
@@ -296,7 +318,8 @@ size_type ICCFAPattern::DefaultValueIndex() const
 
 // ----------------------------------------------------------------------------
 
-ICInputHints::ICInputHints( MetaProcess* P ) : MetaString( P )
+ICInputHints::ICInputHints( MetaProcess* P )
+   : MetaString( P )
 {
    TheICInputHintsParameter = this;
 }
@@ -317,7 +340,8 @@ String ICInputHints::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-ICOutputHints::ICOutputHints( MetaProcess* P ) : MetaString( P )
+ICOutputHints::ICOutputHints( MetaProcess* P )
+   : MetaString( P )
 {
    TheICOutputHintsParameter = this;
 }
@@ -336,7 +360,8 @@ String ICOutputHints::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-ICPedestal::ICPedestal( MetaProcess* P ) : MetaInt32( P )
+ICPedestal::ICPedestal( MetaProcess* P )
+   : MetaInt32( P )
 {
    TheICPedestalParameter = this;
 }
@@ -363,7 +388,8 @@ double ICPedestal::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-ICPedestalMode::ICPedestalMode( MetaProcess* P ) : MetaEnumeration( P )
+ICPedestalMode::ICPedestalMode( MetaProcess* P )
+   : MetaEnumeration( P )
 {
    TheICPedestalModeParameter = this;
 }
@@ -401,7 +427,8 @@ size_type ICPedestalMode::DefaultValueIndex() const
 
 // ----------------------------------------------------------------------------
 
-ICPedestalKeyword::ICPedestalKeyword( MetaProcess* P ) : MetaString( P )
+ICPedestalKeyword::ICPedestalKeyword( MetaProcess* P )
+   : MetaString( P )
 {
    TheICPedestalKeywordParameter = this;
 }
@@ -413,7 +440,8 @@ IsoString ICPedestalKeyword::Id() const
 
 // ----------------------------------------------------------------------------
 
-ICOverscanEnabled::ICOverscanEnabled( MetaProcess* P ) : MetaBoolean( P )
+ICOverscanEnabled::ICOverscanEnabled( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheICOverscanEnabledParameter = this;
 }
@@ -430,7 +458,8 @@ bool ICOverscanEnabled::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-ICOverscanImageX0::ICOverscanImageX0( MetaProcess* P ) : MetaInt32( P )
+ICOverscanImageX0::ICOverscanImageX0( MetaProcess* P )
+   : MetaInt32( P )
 {
    TheICOverscanImageX0Parameter = this;
 }
@@ -452,7 +481,8 @@ double ICOverscanImageX0::MinimumValue() const
 
 // ----------------------------------------------------------------------------
 
-ICOverscanImageY0::ICOverscanImageY0( MetaProcess* P ) : MetaInt32( P )
+ICOverscanImageY0::ICOverscanImageY0( MetaProcess* P )
+   : MetaInt32( P )
 {
    TheICOverscanImageY0Parameter = this;
 }
@@ -474,7 +504,8 @@ double ICOverscanImageY0::MinimumValue() const
 
 // ----------------------------------------------------------------------------
 
-ICOverscanImageX1::ICOverscanImageX1( MetaProcess* P ) : MetaInt32( P )
+ICOverscanImageX1::ICOverscanImageX1( MetaProcess* P )
+   : MetaInt32( P )
 {
    TheICOverscanImageX1Parameter = this;
 }
@@ -496,7 +527,8 @@ double ICOverscanImageX1::MinimumValue() const
 
 // ----------------------------------------------------------------------------
 
-ICOverscanImageY1::ICOverscanImageY1( MetaProcess* P ) : MetaInt32( P )
+ICOverscanImageY1::ICOverscanImageY1( MetaProcess* P )
+   : MetaInt32( P )
 {
    TheICOverscanImageY1Parameter = this;
 }
@@ -518,7 +550,8 @@ double ICOverscanImageY1::MinimumValue() const
 
 // ----------------------------------------------------------------------------
 
-ICOverscanRegions::ICOverscanRegions( MetaProcess* P ) : MetaTable( P )
+ICOverscanRegions::ICOverscanRegions( MetaProcess* P )
+   : MetaTable( P )
 {
    TheICOverscanRegionsParameter = this;
 }
@@ -530,7 +563,8 @@ IsoString ICOverscanRegions::Id() const
 
 // ----------------------------------------------------------------------------
 
-ICOverscanRegionEnabled::ICOverscanRegionEnabled( MetaTable* T ) : MetaBoolean( T )
+ICOverscanRegionEnabled::ICOverscanRegionEnabled( MetaTable* T )
+   : MetaBoolean( T )
 {
    TheICOverscanRegionEnabledParameter = this;
 }
@@ -547,7 +581,8 @@ bool ICOverscanRegionEnabled::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-ICOverscanSourceX0::ICOverscanSourceX0( MetaTable* T ) : MetaInt32( T )
+ICOverscanSourceX0::ICOverscanSourceX0( MetaTable* T )
+   : MetaInt32( T )
 {
    TheICOverscanSourceX0Parameter = this;
 }
@@ -569,7 +604,8 @@ double ICOverscanSourceX0::MinimumValue() const
 
 // ----------------------------------------------------------------------------
 
-ICOverscanSourceY0::ICOverscanSourceY0( MetaTable* T ) : MetaInt32( T )
+ICOverscanSourceY0::ICOverscanSourceY0( MetaTable* T )
+   : MetaInt32( T )
 {
    TheICOverscanSourceY0Parameter = this;
 }
@@ -591,7 +627,8 @@ double ICOverscanSourceY0::MinimumValue() const
 
 // ----------------------------------------------------------------------------
 
-ICOverscanSourceX1::ICOverscanSourceX1( MetaTable* T ) : MetaInt32( T )
+ICOverscanSourceX1::ICOverscanSourceX1( MetaTable* T )
+   : MetaInt32( T )
 {
    TheICOverscanSourceX1Parameter = this;
 }
@@ -613,7 +650,8 @@ double ICOverscanSourceX1::MinimumValue() const
 
 // ----------------------------------------------------------------------------
 
-ICOverscanSourceY1::ICOverscanSourceY1( MetaTable* T ) : MetaInt32( T )
+ICOverscanSourceY1::ICOverscanSourceY1( MetaTable* T )
+   : MetaInt32( T )
 {
    TheICOverscanSourceY1Parameter = this;
 }
@@ -635,7 +673,8 @@ double ICOverscanSourceY1::MinimumValue() const
 
 // ----------------------------------------------------------------------------
 
-ICOverscanTargetX0::ICOverscanTargetX0( MetaTable* T ) : MetaInt32( T )
+ICOverscanTargetX0::ICOverscanTargetX0( MetaTable* T )
+   : MetaInt32( T )
 {
    TheICOverscanTargetX0Parameter = this;
 }
@@ -657,7 +696,8 @@ double ICOverscanTargetX0::MinimumValue() const
 
 // ----------------------------------------------------------------------------
 
-ICOverscanTargetY0::ICOverscanTargetY0( MetaTable* T ) : MetaInt32( T )
+ICOverscanTargetY0::ICOverscanTargetY0( MetaTable* T )
+   : MetaInt32( T )
 {
    TheICOverscanTargetY0Parameter = this;
 }
@@ -679,7 +719,8 @@ double ICOverscanTargetY0::MinimumValue() const
 
 // ----------------------------------------------------------------------------
 
-ICOverscanTargetX1::ICOverscanTargetX1( MetaTable* T ) : MetaInt32( T )
+ICOverscanTargetX1::ICOverscanTargetX1( MetaTable* T )
+   : MetaInt32( T )
 {
    TheICOverscanTargetX1Parameter = this;
 }
@@ -701,7 +742,8 @@ double ICOverscanTargetX1::MinimumValue() const
 
 // ----------------------------------------------------------------------------
 
-ICOverscanTargetY1::ICOverscanTargetY1( MetaTable* T ) : MetaInt32( T )
+ICOverscanTargetY1::ICOverscanTargetY1( MetaTable* T )
+   : MetaInt32( T )
 {
    TheICOverscanTargetY1Parameter = this;
 }
@@ -723,7 +765,8 @@ double ICOverscanTargetY1::MinimumValue() const
 
 // ----------------------------------------------------------------------------
 
-ICMasterBiasEnabled::ICMasterBiasEnabled( MetaProcess* P ) : MetaBoolean( P )
+ICMasterBiasEnabled::ICMasterBiasEnabled( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheICMasterBiasEnabledParameter = this;
 }
@@ -740,7 +783,8 @@ bool ICMasterBiasEnabled::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-ICMasterBiasPath::ICMasterBiasPath( MetaProcess* P ) : MetaString( P )
+ICMasterBiasPath::ICMasterBiasPath( MetaProcess* P )
+   : MetaString( P )
 {
    TheICMasterBiasPathParameter = this;
 }
@@ -752,7 +796,8 @@ IsoString ICMasterBiasPath::Id() const
 
 // ----------------------------------------------------------------------------
 
-ICMasterDarkEnabled::ICMasterDarkEnabled( MetaProcess* P ) : MetaBoolean( P )
+ICMasterDarkEnabled::ICMasterDarkEnabled( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheICMasterDarkEnabledParameter = this;
 }
@@ -769,7 +814,8 @@ bool ICMasterDarkEnabled::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-ICMasterDarkPath::ICMasterDarkPath( MetaProcess* P ) : MetaString( P )
+ICMasterDarkPath::ICMasterDarkPath( MetaProcess* P )
+   : MetaString( P )
 {
    TheICMasterDarkPathParameter = this;
 }
@@ -781,7 +827,8 @@ IsoString ICMasterDarkPath::Id() const
 
 // ----------------------------------------------------------------------------
 
-ICMasterFlatEnabled::ICMasterFlatEnabled( MetaProcess* P ) : MetaBoolean( P )
+ICMasterFlatEnabled::ICMasterFlatEnabled( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheICMasterFlatEnabledParameter = this;
 }
@@ -798,7 +845,8 @@ bool ICMasterFlatEnabled::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-ICMasterFlatPath::ICMasterFlatPath( MetaProcess* P ) : MetaString( P )
+ICMasterFlatPath::ICMasterFlatPath( MetaProcess* P )
+   : MetaString( P )
 {
    TheICMasterFlatPathParameter = this;
 }
@@ -810,7 +858,8 @@ IsoString ICMasterFlatPath::Id() const
 
 // ----------------------------------------------------------------------------
 
-ICCalibrateBias::ICCalibrateBias( MetaProcess* P ) : MetaBoolean( P )
+ICCalibrateBias::ICCalibrateBias( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheICCalibrateBiasParameter = this;
 }
@@ -827,7 +876,8 @@ bool ICCalibrateBias::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-ICCalibrateDark::ICCalibrateDark( MetaProcess* P ) : MetaBoolean( P )
+ICCalibrateDark::ICCalibrateDark( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheICCalibrateDarkParameter = this;
 }
@@ -844,7 +894,8 @@ bool ICCalibrateDark::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-ICCalibrateFlat::ICCalibrateFlat( MetaProcess* P ) : MetaBoolean( P )
+ICCalibrateFlat::ICCalibrateFlat( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheICCalibrateFlatParameter = this;
 }
@@ -861,7 +912,8 @@ bool ICCalibrateFlat::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-ICOptimizeDarks::ICOptimizeDarks( MetaProcess* P ) : MetaBoolean( P )
+ICOptimizeDarks::ICOptimizeDarks( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheICOptimizeDarksParameter = this;
 }
@@ -878,7 +930,8 @@ bool ICOptimizeDarks::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-ICDarkOptimizationThreshold::ICDarkOptimizationThreshold( MetaProcess* P ) : MetaFloat( P )
+ICDarkOptimizationThreshold::ICDarkOptimizationThreshold( MetaProcess* P )
+   : MetaFloat( P )
 {
    TheICDarkOptimizationThresholdParameter = this;
 }
@@ -910,7 +963,8 @@ double ICDarkOptimizationThreshold::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-ICDarkOptimizationLow::ICDarkOptimizationLow( MetaProcess* P ) : MetaFloat( P )
+ICDarkOptimizationLow::ICDarkOptimizationLow( MetaProcess* P )
+   : MetaFloat( P )
 {
    TheICDarkOptimizationLowParameter = this;
 }
@@ -942,7 +996,8 @@ double ICDarkOptimizationLow::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-ICDarkOptimizationWindow::ICDarkOptimizationWindow( MetaProcess* P ) : MetaInt32( P )
+ICDarkOptimizationWindow::ICDarkOptimizationWindow( MetaProcess* P )
+   : MetaInt32( P )
 {
    TheICDarkOptimizationWindowParameter = this;
 }
@@ -969,7 +1024,8 @@ double ICDarkOptimizationWindow::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-ICDarkCFADetectionMode::ICDarkCFADetectionMode( MetaProcess* P ) : MetaEnumeration( P )
+ICDarkCFADetectionMode::ICDarkCFADetectionMode( MetaProcess* P )
+   : MetaEnumeration( P )
 {
    TheICDarkCFADetectionModeParameter = this;
 }
@@ -1007,7 +1063,8 @@ size_type ICDarkCFADetectionMode::DefaultValueIndex() const
 
 // ----------------------------------------------------------------------------
 
-ICSeparateCFAFlatScalingFactors::ICSeparateCFAFlatScalingFactors( MetaProcess* P ) : MetaBoolean( P )
+ICSeparateCFAFlatScalingFactors::ICSeparateCFAFlatScalingFactors( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheICSeparateCFAFlatScalingFactorsParameter = this;
 }
@@ -1024,7 +1081,8 @@ bool ICSeparateCFAFlatScalingFactors::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-ICFlatScaleClippingFactor::ICFlatScaleClippingFactor( MetaProcess* P ) : MetaFloat( P )
+ICFlatScaleClippingFactor::ICFlatScaleClippingFactor( MetaProcess* P )
+   : MetaFloat( P )
 {
    TheICFlatScaleClippingFactorParameter = this;
 }
@@ -1056,7 +1114,164 @@ double ICFlatScaleClippingFactor::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-ICEvaluateNoise::ICEvaluateNoise( MetaProcess* P ) : MetaBoolean( P )
+ICCosmeticCorrectionLow::ICCosmeticCorrectionLow( MetaProcess* P )
+   : MetaBoolean( P )
+{
+   TheICCosmeticCorrectionLowParameter = this;
+}
+
+IsoString ICCosmeticCorrectionLow::Id() const
+{
+   return "cosmeticCorrectionLow";
+}
+
+bool ICCosmeticCorrectionLow::DefaultValue() const
+{
+   return false;
+}
+
+// ----------------------------------------------------------------------------
+
+ICCosmeticLowSigma::ICCosmeticLowSigma( MetaProcess* P )
+   : MetaInt32( P )
+{
+   TheICCosmeticLowSigmaParameter = this;
+}
+
+IsoString ICCosmeticLowSigma::Id() const
+{
+   return "cosmeticLowSigma";
+}
+
+double ICCosmeticLowSigma::DefaultValue() const
+{
+   return 5;
+}
+
+double ICCosmeticLowSigma::MinimumValue() const
+{
+   return 1;
+}
+
+double ICCosmeticLowSigma::MaximumValue() const
+{
+   return 100;
+}
+
+// ----------------------------------------------------------------------------
+
+ICCosmeticCorrectionHigh::ICCosmeticCorrectionHigh( MetaProcess* P )
+   : MetaBoolean( P )
+{
+   TheICCosmeticCorrectionHighParameter = this;
+}
+
+IsoString ICCosmeticCorrectionHigh::Id() const
+{
+   return "cosmeticCorrectionHigh";
+}
+
+bool ICCosmeticCorrectionHigh::DefaultValue() const
+{
+   return false;
+}
+
+// ----------------------------------------------------------------------------
+
+ICCosmeticHighSigma::ICCosmeticHighSigma( MetaProcess* P )
+   : MetaInt32( P )
+{
+   TheICCosmeticHighSigmaParameter = this;
+}
+
+IsoString ICCosmeticHighSigma::Id() const
+{
+   return "cosmeticHighSigma";
+}
+
+double ICCosmeticHighSigma::DefaultValue() const
+{
+   return 10;
+}
+
+double ICCosmeticHighSigma::MinimumValue() const
+{
+   return 1;
+}
+
+double ICCosmeticHighSigma::MaximumValue() const
+{
+   return 100;
+}
+
+// ----------------------------------------------------------------------------
+
+ICCosmeticKernelRadius::ICCosmeticKernelRadius( MetaProcess* P )
+   : MetaInt32( P )
+{
+   TheICCosmeticKernelRadiusParameter = this;
+}
+
+IsoString ICCosmeticKernelRadius::Id() const
+{
+   return "cosmeticKernelRadius";
+}
+
+double ICCosmeticKernelRadius::DefaultValue() const
+{
+   return 1;
+}
+
+double ICCosmeticKernelRadius::MinimumValue() const
+{
+   return 1;
+}
+
+double ICCosmeticKernelRadius::MaximumValue() const
+{
+   return 5;
+}
+
+// ----------------------------------------------------------------------------
+
+ICCosmeticShowMap::ICCosmeticShowMap( MetaProcess* P )
+   : MetaBoolean( P )
+{
+   TheICCosmeticShowMapParameter = this;
+}
+
+IsoString ICCosmeticShowMap::Id() const
+{
+   return "cosmeticShowMap";
+}
+
+bool ICCosmeticShowMap::DefaultValue() const
+{
+   return false;
+}
+
+// ----------------------------------------------------------------------------
+
+ICCosmeticShowMapAndStop::ICCosmeticShowMapAndStop( MetaProcess* P )
+   : MetaBoolean( P )
+{
+   TheICCosmeticShowMapAndStopParameter = this;
+}
+
+IsoString ICCosmeticShowMapAndStop::Id() const
+{
+   return "cosmeticShowMapAndStop";
+}
+
+bool ICCosmeticShowMapAndStop::DefaultValue() const
+{
+   return false;
+}
+
+// ----------------------------------------------------------------------------
+
+ICEvaluateNoise::ICEvaluateNoise( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheICEvaluateNoiseParameter = this;
 }
@@ -1073,7 +1288,8 @@ bool ICEvaluateNoise::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-ICNoiseEvaluationAlgorithm::ICNoiseEvaluationAlgorithm( MetaProcess* P ) : MetaEnumeration( P )
+ICNoiseEvaluationAlgorithm::ICNoiseEvaluationAlgorithm( MetaProcess* P )
+   : MetaEnumeration( P )
 {
    TheICNoiseEvaluationAlgorithmParameter = this;
 }
@@ -1111,7 +1327,8 @@ size_type ICNoiseEvaluationAlgorithm::DefaultValueIndex() const
 
 // ----------------------------------------------------------------------------
 
-ICEvaluateSignal::ICEvaluateSignal( MetaProcess* P ) : MetaBoolean( P )
+ICEvaluateSignal::ICEvaluateSignal( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheICEvaluateSignalParameter = this;
 }
@@ -1128,7 +1345,8 @@ bool ICEvaluateSignal::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-ICStructureLayers::ICStructureLayers( MetaProcess* p ) : MetaInt32( p )
+ICStructureLayers::ICStructureLayers( MetaProcess* p )
+   : MetaInt32( p )
 {
    TheICStructureLayersParameter = this;
 }
@@ -1155,7 +1373,8 @@ double ICStructureLayers::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-ICSaturationThreshold::ICSaturationThreshold( MetaProcess* P ) : MetaFloat( P )
+ICSaturationThreshold::ICSaturationThreshold( MetaProcess* P )
+   : MetaFloat( P )
 {
    TheICSaturationThresholdParameter = this;
 }
@@ -1187,7 +1406,8 @@ double ICSaturationThreshold::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-ICSaturationRelative::ICSaturationRelative( MetaProcess* P ) : MetaBoolean( P )
+ICSaturationRelative::ICSaturationRelative( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheICSaturationRelativeParameter = this;
 }
@@ -1204,7 +1424,8 @@ bool ICSaturationRelative::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-ICNoiseLayers::ICNoiseLayers( MetaProcess* p ) : MetaInt32( p )
+ICNoiseLayers::ICNoiseLayers( MetaProcess* p )
+   : MetaInt32( p )
 {
    TheICNoiseLayersParameter = this;
 }
@@ -1231,7 +1452,8 @@ double ICNoiseLayers::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-ICHotPixelFilterRadius::ICHotPixelFilterRadius( MetaProcess* p ) : MetaInt32( p )
+ICHotPixelFilterRadius::ICHotPixelFilterRadius( MetaProcess* p )
+   : MetaInt32( p )
 {
    TheICHotPixelFilterRadiusParameter = this;
 }
@@ -1258,7 +1480,8 @@ double ICHotPixelFilterRadius::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-ICNoiseReductionFilterRadius::ICNoiseReductionFilterRadius( MetaProcess* p ) : MetaInt32( p )
+ICNoiseReductionFilterRadius::ICNoiseReductionFilterRadius( MetaProcess* p )
+   : MetaInt32( p )
 {
    TheICNoiseReductionFilterRadiusParameter = this;
 }
@@ -1285,7 +1508,8 @@ double ICNoiseReductionFilterRadius::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-ICMinStructureSize::ICMinStructureSize( MetaProcess* p ) : MetaInt32( p )
+ICMinStructureSize::ICMinStructureSize( MetaProcess* p )
+   : MetaInt32( p )
 {
    TheICMinStructureSizeParameter = this;
 }
@@ -1312,7 +1536,8 @@ double ICMinStructureSize::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-ICPSFType::ICPSFType( MetaProcess* P ) : MetaEnumeration( P )
+ICPSFType::ICPSFType( MetaProcess* P )
+   : MetaEnumeration( P )
 {
    TheICPSFTypeParameter = this;
 }
@@ -1369,7 +1594,8 @@ size_type ICPSFType::DefaultValueIndex() const
 
 // ----------------------------------------------------------------------------
 
-ICPSFGrowth::ICPSFGrowth( MetaProcess* P ) : MetaFloat( P )
+ICPSFGrowth::ICPSFGrowth( MetaProcess* P )
+   : MetaFloat( P )
 {
    TheICPSFGrowthParameter = this;
 }
@@ -1401,7 +1627,8 @@ double ICPSFGrowth::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-ICMaxStars::ICMaxStars( MetaProcess* p ) : MetaInt32( p )
+ICMaxStars::ICMaxStars( MetaProcess* p )
+   : MetaInt32( p )
 {
    TheICMaxStarsParameter = this;
 }
@@ -1428,7 +1655,8 @@ double ICMaxStars::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-ICOutputDirectory::ICOutputDirectory( MetaProcess* P ) : MetaString( P )
+ICOutputDirectory::ICOutputDirectory( MetaProcess* P )
+   : MetaString( P )
 {
    TheICOutputDirectoryParameter = this;
 }
@@ -1440,7 +1668,8 @@ IsoString ICOutputDirectory::Id() const
 
 // ----------------------------------------------------------------------------
 
-ICOutputExtension::ICOutputExtension( MetaProcess* P ) : MetaString( P )
+ICOutputExtension::ICOutputExtension( MetaProcess* P )
+   : MetaString( P )
 {
    TheICOutputExtensionParameter = this;
 }
@@ -1457,7 +1686,8 @@ String ICOutputExtension::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-ICOutputPrefix::ICOutputPrefix( MetaProcess* P ) : MetaString( P )
+ICOutputPrefix::ICOutputPrefix( MetaProcess* P )
+   : MetaString( P )
 {
    TheICOutputPrefixParameter = this;
 }
@@ -1474,7 +1704,8 @@ String ICOutputPrefix::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-ICOutputPostfix::ICOutputPostfix( MetaProcess* P ) : MetaString( P )
+ICOutputPostfix::ICOutputPostfix( MetaProcess* P )
+   : MetaString( P )
 {
    TheICOutputPostfixParameter = this;
 }
@@ -1491,7 +1722,8 @@ String ICOutputPostfix::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-ICOutputSampleFormat::ICOutputSampleFormat( MetaProcess* P ) : MetaEnumeration( P )
+ICOutputSampleFormat::ICOutputSampleFormat( MetaProcess* P )
+   : MetaEnumeration( P )
 {
    TheICOutputSampleFormatParameter = this;
 }
@@ -1530,7 +1762,8 @@ size_type ICOutputSampleFormat::DefaultValueIndex() const
 
 // ----------------------------------------------------------------------------
 
-ICOutputPedestal::ICOutputPedestal( MetaProcess* P ) : MetaInt32( P )
+ICOutputPedestal::ICOutputPedestal( MetaProcess* P )
+   : MetaInt32( P )
 {
    TheICOutputPedestalParameter = this;
 }
@@ -1557,7 +1790,8 @@ double ICOutputPedestal::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-ICOutputPedestalMode::ICOutputPedestalMode( MetaProcess* P ) : MetaEnumeration( P )
+ICOutputPedestalMode::ICOutputPedestalMode( MetaProcess* P )
+   : MetaEnumeration( P )
 {
    TheICOutputPedestalModeParameter = this;
 }
@@ -1594,7 +1828,8 @@ size_type ICOutputPedestalMode::DefaultValueIndex() const
 
 // ----------------------------------------------------------------------------
 
-ICAutoPedestalLimit::ICAutoPedestalLimit( MetaProcess* P ) : MetaFloat( P )
+ICAutoPedestalLimit::ICAutoPedestalLimit( MetaProcess* P )
+   : MetaFloat( P )
 {
    TheICAutoPedestalLimitParameter = this;
 }
@@ -1626,7 +1861,8 @@ double ICAutoPedestalLimit::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-ICOverwriteExistingFiles::ICOverwriteExistingFiles( MetaProcess* P ) : MetaBoolean( P )
+ICOverwriteExistingFiles::ICOverwriteExistingFiles( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheICOverwriteExistingFilesParameter = this;
 }
@@ -1643,7 +1879,8 @@ bool ICOverwriteExistingFiles::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-ICOnError::ICOnError( MetaProcess* P ) : MetaEnumeration( P )
+ICOnError::ICOnError( MetaProcess* P )
+   : MetaEnumeration( P )
 {
    TheICOnErrorParameter = this;
 }
@@ -1682,7 +1919,8 @@ size_type ICOnError::DefaultValueIndex() const
 // ----------------------------------------------------------------------------
 
 // ### DEPRECATED
-ICNoGUIMessages::ICNoGUIMessages( MetaProcess* p ) : MetaBoolean( p )
+ICNoGUIMessages::ICNoGUIMessages( MetaProcess* p )
+   : MetaBoolean( p )
 {
    TheICNoGUIMessagesParameter = this;
 }
@@ -1699,7 +1937,8 @@ bool ICNoGUIMessages::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-ICUseFileThreads::ICUseFileThreads( MetaProcess* p ) : MetaBoolean( p )
+ICUseFileThreads::ICUseFileThreads( MetaProcess* p )
+   : MetaBoolean( p )
 {
    TheICUseFileThreadsParameter = this;
 }
@@ -1716,7 +1955,8 @@ bool ICUseFileThreads::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-ICFileThreadOverload::ICFileThreadOverload( MetaProcess* p ) : MetaFloat( p )
+ICFileThreadOverload::ICFileThreadOverload( MetaProcess* p )
+   : MetaFloat( p )
 {
    TheICFileThreadOverloadParameter = this;
 }
@@ -1748,7 +1988,8 @@ double ICFileThreadOverload::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-ICMaxFileReadThreads::ICMaxFileReadThreads( MetaProcess* p ) : MetaInt32( p )
+ICMaxFileReadThreads::ICMaxFileReadThreads( MetaProcess* p )
+   : MetaInt32( p )
 {
    TheICMaxFileReadThreadsParameter = this;
 }
@@ -1775,7 +2016,8 @@ double ICMaxFileReadThreads::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-ICMaxFileWriteThreads::ICMaxFileWriteThreads( MetaProcess* p ) : MetaInt32( p )
+ICMaxFileWriteThreads::ICMaxFileWriteThreads( MetaProcess* p )
+   : MetaInt32( p )
 {
    TheICMaxFileWriteThreadsParameter = this;
 }
@@ -1803,7 +2045,8 @@ double ICMaxFileWriteThreads::MaximumValue() const
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-ICOutputData::ICOutputData( MetaProcess* P ) : MetaTable( P )
+ICOutputData::ICOutputData( MetaProcess* P )
+   : MetaTable( P )
 {
    TheICOutputDataParameter = this;
 }
@@ -1820,7 +2063,8 @@ bool ICOutputData::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICOutputFilePath::ICOutputFilePath( MetaTable* T ) : MetaString( T )
+ICOutputFilePath::ICOutputFilePath( MetaTable* T )
+   : MetaString( T )
 {
    TheICOutputFilePathParameter = this;
 }
@@ -1837,7 +2081,8 @@ bool ICOutputFilePath::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICDarkScalingFactorRK::ICDarkScalingFactorRK( MetaTable* T ) : MetaFloat( T )
+ICDarkScalingFactorRK::ICDarkScalingFactorRK( MetaTable* T )
+   : MetaFloat( T )
 {
    TheICDarkScalingFactorRKParameter = this;
 }
@@ -1859,7 +2104,8 @@ bool ICDarkScalingFactorRK::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICDarkScalingFactorG::ICDarkScalingFactorG( MetaTable* T ) : MetaFloat( T )
+ICDarkScalingFactorG::ICDarkScalingFactorG( MetaTable* T )
+   : MetaFloat( T )
 {
    TheICDarkScalingFactorGParameter = this;
 }
@@ -1881,7 +2127,8 @@ bool ICDarkScalingFactorG::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICDarkScalingFactorB::ICDarkScalingFactorB( MetaTable* T ) : MetaFloat( T )
+ICDarkScalingFactorB::ICDarkScalingFactorB( MetaTable* T )
+   : MetaFloat( T )
 {
    TheICDarkScalingFactorBParameter = this;
 }
@@ -1903,7 +2150,8 @@ bool ICDarkScalingFactorB::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICPSFTotalFluxEstimateRK::ICPSFTotalFluxEstimateRK( MetaTable* T ) : MetaDouble( T )
+ICPSFTotalFluxEstimateRK::ICPSFTotalFluxEstimateRK( MetaTable* T )
+   : MetaDouble( T )
 {
    TheICPSFTotalFluxEstimateRKParameter = this;
 }
@@ -1930,7 +2178,8 @@ bool ICPSFTotalFluxEstimateRK::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICPSFTotalFluxEstimateG::ICPSFTotalFluxEstimateG( MetaTable* T ) : MetaDouble( T )
+ICPSFTotalFluxEstimateG::ICPSFTotalFluxEstimateG( MetaTable* T )
+   : MetaDouble( T )
 {
    TheICPSFTotalFluxEstimateGParameter = this;
 }
@@ -1957,7 +2206,8 @@ bool ICPSFTotalFluxEstimateG::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICPSFTotalFluxEstimateB::ICPSFTotalFluxEstimateB( MetaTable* T ) : MetaDouble( T )
+ICPSFTotalFluxEstimateB::ICPSFTotalFluxEstimateB( MetaTable* T )
+   : MetaDouble( T )
 {
    TheICPSFTotalFluxEstimateBParameter = this;
 }
@@ -1984,7 +2234,8 @@ bool ICPSFTotalFluxEstimateB::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICPSFTotalPowerFluxEstimateRK::ICPSFTotalPowerFluxEstimateRK( MetaTable* T ) : MetaDouble( T )
+ICPSFTotalPowerFluxEstimateRK::ICPSFTotalPowerFluxEstimateRK( MetaTable* T )
+   : MetaDouble( T )
 {
    TheICPSFTotalPowerFluxEstimateRKParameter = this;
 }
@@ -2016,7 +2267,8 @@ bool ICPSFTotalPowerFluxEstimateRK::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICPSFTotalPowerFluxEstimateG::ICPSFTotalPowerFluxEstimateG( MetaTable* T ) : MetaDouble( T )
+ICPSFTotalPowerFluxEstimateG::ICPSFTotalPowerFluxEstimateG( MetaTable* T )
+   : MetaDouble( T )
 {
    TheICPSFTotalPowerFluxEstimateGParameter = this;
 }
@@ -2048,7 +2300,8 @@ bool ICPSFTotalPowerFluxEstimateG::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICPSFTotalPowerFluxEstimateB::ICPSFTotalPowerFluxEstimateB( MetaTable* T ) : MetaDouble( T )
+ICPSFTotalPowerFluxEstimateB::ICPSFTotalPowerFluxEstimateB( MetaTable* T )
+   : MetaDouble( T )
 {
    TheICPSFTotalPowerFluxEstimateBParameter = this;
 }
@@ -2080,7 +2333,8 @@ bool ICPSFTotalPowerFluxEstimateB::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICPSFTotalMeanFluxEstimateRK::ICPSFTotalMeanFluxEstimateRK( MetaTable* T ) : MetaDouble( T )
+ICPSFTotalMeanFluxEstimateRK::ICPSFTotalMeanFluxEstimateRK( MetaTable* T )
+   : MetaDouble( T )
 {
    TheICPSFTotalMeanFluxEstimateRKParameter = this;
 }
@@ -2107,7 +2361,8 @@ bool ICPSFTotalMeanFluxEstimateRK::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICPSFTotalMeanFluxEstimateG::ICPSFTotalMeanFluxEstimateG( MetaTable* T ) : MetaDouble( T )
+ICPSFTotalMeanFluxEstimateG::ICPSFTotalMeanFluxEstimateG( MetaTable* T )
+   : MetaDouble( T )
 {
    TheICPSFTotalMeanFluxEstimateGParameter = this;
 }
@@ -2134,7 +2389,8 @@ bool ICPSFTotalMeanFluxEstimateG::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICPSFTotalMeanFluxEstimateB::ICPSFTotalMeanFluxEstimateB( MetaTable* T ) : MetaDouble( T )
+ICPSFTotalMeanFluxEstimateB::ICPSFTotalMeanFluxEstimateB( MetaTable* T )
+   : MetaDouble( T )
 {
    TheICPSFTotalMeanFluxEstimateBParameter = this;
 }
@@ -2161,7 +2417,8 @@ bool ICPSFTotalMeanFluxEstimateB::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICPSFTotalMeanPowerFluxEstimateRK::ICPSFTotalMeanPowerFluxEstimateRK( MetaTable* T ) : MetaDouble( T )
+ICPSFTotalMeanPowerFluxEstimateRK::ICPSFTotalMeanPowerFluxEstimateRK( MetaTable* T )
+   : MetaDouble( T )
 {
    TheICPSFTotalMeanPowerFluxEstimateRKParameter = this;
 }
@@ -2188,7 +2445,8 @@ bool ICPSFTotalMeanPowerFluxEstimateRK::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICPSFTotalMeanPowerFluxEstimateG::ICPSFTotalMeanPowerFluxEstimateG( MetaTable* T ) : MetaDouble( T )
+ICPSFTotalMeanPowerFluxEstimateG::ICPSFTotalMeanPowerFluxEstimateG( MetaTable* T )
+   : MetaDouble( T )
 {
    TheICPSFTotalMeanPowerFluxEstimateGParameter = this;
 }
@@ -2215,7 +2473,8 @@ bool ICPSFTotalMeanPowerFluxEstimateG::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICPSFTotalMeanPowerFluxEstimateB::ICPSFTotalMeanPowerFluxEstimateB( MetaTable* T ) : MetaDouble( T )
+ICPSFTotalMeanPowerFluxEstimateB::ICPSFTotalMeanPowerFluxEstimateB( MetaTable* T )
+   : MetaDouble( T )
 {
    TheICPSFTotalMeanPowerFluxEstimateBParameter = this;
 }
@@ -2242,7 +2501,8 @@ bool ICPSFTotalMeanPowerFluxEstimateB::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICPSFMStarEstimateRK::ICPSFMStarEstimateRK( MetaTable* T ) : MetaDouble( T )
+ICPSFMStarEstimateRK::ICPSFMStarEstimateRK( MetaTable* T )
+   : MetaDouble( T )
 {
    TheICPSFMStarEstimateRKParameter = this;
 }
@@ -2269,7 +2529,8 @@ bool ICPSFMStarEstimateRK::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICPSFMStarEstimateG::ICPSFMStarEstimateG( MetaTable* T ) : MetaDouble( T )
+ICPSFMStarEstimateG::ICPSFMStarEstimateG( MetaTable* T )
+   : MetaDouble( T )
 {
    TheICPSFMStarEstimateGParameter = this;
 }
@@ -2296,7 +2557,8 @@ bool ICPSFMStarEstimateG::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICPSFMStarEstimateB::ICPSFMStarEstimateB( MetaTable* T ) : MetaDouble( T )
+ICPSFMStarEstimateB::ICPSFMStarEstimateB( MetaTable* T )
+   : MetaDouble( T )
 {
    TheICPSFMStarEstimateBParameter = this;
 }
@@ -2323,7 +2585,8 @@ bool ICPSFMStarEstimateB::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICPSFNStarEstimateRK::ICPSFNStarEstimateRK( MetaTable* T ) : MetaDouble( T )
+ICPSFNStarEstimateRK::ICPSFNStarEstimateRK( MetaTable* T )
+   : MetaDouble( T )
 {
    TheICPSFNStarEstimateRKParameter = this;
 }
@@ -2350,7 +2613,8 @@ bool ICPSFNStarEstimateRK::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICPSFNStarEstimateG::ICPSFNStarEstimateG( MetaTable* T ) : MetaDouble( T )
+ICPSFNStarEstimateG::ICPSFNStarEstimateG( MetaTable* T )
+   : MetaDouble( T )
 {
    TheICPSFNStarEstimateGParameter = this;
 }
@@ -2377,7 +2641,8 @@ bool ICPSFNStarEstimateG::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICPSFNStarEstimateB::ICPSFNStarEstimateB( MetaTable* T ) : MetaDouble( T )
+ICPSFNStarEstimateB::ICPSFNStarEstimateB( MetaTable* T )
+   : MetaDouble( T )
 {
    TheICPSFNStarEstimateBParameter = this;
 }
@@ -2404,7 +2669,8 @@ bool ICPSFNStarEstimateB::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICPSFCountRK::ICPSFCountRK( MetaTable* T ) : MetaInt32( T )
+ICPSFCountRK::ICPSFCountRK( MetaTable* T )
+   : MetaInt32( T )
 {
    TheICPSFCountRKParameter = this;
 }
@@ -2421,7 +2687,8 @@ bool ICPSFCountRK::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICPSFCountG::ICPSFCountG( MetaTable* T ) : MetaInt32( T )
+ICPSFCountG::ICPSFCountG( MetaTable* T )
+   : MetaInt32( T )
 {
    TheICPSFCountGParameter = this;
 }
@@ -2438,7 +2705,8 @@ bool ICPSFCountG::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICPSFCountB::ICPSFCountB( MetaTable* T ) : MetaInt32( T )
+ICPSFCountB::ICPSFCountB( MetaTable* T )
+   : MetaInt32( T )
 {
    TheICPSFCountBParameter = this;
 }
@@ -2455,7 +2723,8 @@ bool ICPSFCountB::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICNoiseEstimateRK::ICNoiseEstimateRK( MetaTable* T ) : MetaDouble( T )
+ICNoiseEstimateRK::ICNoiseEstimateRK( MetaTable* T )
+   : MetaDouble( T )
 {
    TheICNoiseEstimateRKParameter = this;
 }
@@ -2482,7 +2751,8 @@ bool ICNoiseEstimateRK::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICNoiseEstimateG::ICNoiseEstimateG( MetaTable* T ) : MetaDouble( T )
+ICNoiseEstimateG::ICNoiseEstimateG( MetaTable* T )
+   : MetaDouble( T )
 {
    TheICNoiseEstimateGParameter = this;
 }
@@ -2509,7 +2779,8 @@ bool ICNoiseEstimateG::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICNoiseEstimateB::ICNoiseEstimateB( MetaTable* T ) : MetaDouble( T )
+ICNoiseEstimateB::ICNoiseEstimateB( MetaTable* T )
+   : MetaDouble( T )
 {
    TheICNoiseEstimateBParameter = this;
 }
@@ -2536,7 +2807,8 @@ bool ICNoiseEstimateB::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICNoiseFractionRK::ICNoiseFractionRK( MetaTable* T ) : MetaDouble( T )
+ICNoiseFractionRK::ICNoiseFractionRK( MetaTable* T )
+   : MetaDouble( T )
 {
    TheICNoiseFractionRKParameter = this;
 }
@@ -2558,7 +2830,8 @@ bool ICNoiseFractionRK::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICNoiseFractionG::ICNoiseFractionG( MetaTable* T ) : MetaDouble( T )
+ICNoiseFractionG::ICNoiseFractionG( MetaTable* T )
+   : MetaDouble( T )
 {
    TheICNoiseFractionGParameter = this;
 }
@@ -2580,7 +2853,8 @@ bool ICNoiseFractionG::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICNoiseFractionB::ICNoiseFractionB( MetaTable* T ) : MetaDouble( T )
+ICNoiseFractionB::ICNoiseFractionB( MetaTable* T )
+   : MetaDouble( T )
 {
    TheICNoiseFractionBParameter = this;
 }
@@ -2602,7 +2876,8 @@ bool ICNoiseFractionB::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICNoiseScaleLowRK::ICNoiseScaleLowRK( MetaTable* T ) : MetaDouble( T )
+ICNoiseScaleLowRK::ICNoiseScaleLowRK( MetaTable* T )
+   : MetaDouble( T )
 {
    TheICNoiseScaleLowRKParameter = this;
 }
@@ -2629,7 +2904,8 @@ bool ICNoiseScaleLowRK::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICNoiseScaleLowG::ICNoiseScaleLowG( MetaTable* T ) : MetaDouble( T )
+ICNoiseScaleLowG::ICNoiseScaleLowG( MetaTable* T )
+   : MetaDouble( T )
 {
    TheICNoiseScaleLowGParameter = this;
 }
@@ -2656,7 +2932,8 @@ bool ICNoiseScaleLowG::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICNoiseScaleLowB::ICNoiseScaleLowB( MetaTable* T ) : MetaDouble( T )
+ICNoiseScaleLowB::ICNoiseScaleLowB( MetaTable* T )
+   : MetaDouble( T )
 {
    TheICNoiseScaleLowBParameter = this;
 }
@@ -2683,7 +2960,8 @@ bool ICNoiseScaleLowB::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICNoiseScaleHighRK::ICNoiseScaleHighRK( MetaTable* T ) : MetaDouble( T )
+ICNoiseScaleHighRK::ICNoiseScaleHighRK( MetaTable* T )
+   : MetaDouble( T )
 {
    TheICNoiseScaleHighRKParameter = this;
 }
@@ -2710,7 +2988,8 @@ bool ICNoiseScaleHighRK::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICNoiseScaleHighG::ICNoiseScaleHighG( MetaTable* T ) : MetaDouble( T )
+ICNoiseScaleHighG::ICNoiseScaleHighG( MetaTable* T )
+   : MetaDouble( T )
 {
    TheICNoiseScaleHighGParameter = this;
 }
@@ -2737,7 +3016,8 @@ bool ICNoiseScaleHighG::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICNoiseScaleHighB::ICNoiseScaleHighB( MetaTable* T ) : MetaDouble( T )
+ICNoiseScaleHighB::ICNoiseScaleHighB( MetaTable* T )
+   : MetaDouble( T )
 {
    TheICNoiseScaleHighBParameter = this;
 }
@@ -2764,7 +3044,8 @@ bool ICNoiseScaleHighB::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICNoiseAlgorithmRK::ICNoiseAlgorithmRK( MetaTable* T ) : MetaString( T )
+ICNoiseAlgorithmRK::ICNoiseAlgorithmRK( MetaTable* T )
+   : MetaString( T )
 {
    TheICNoiseAlgorithmRKParameter = this;
 }
@@ -2781,7 +3062,8 @@ bool ICNoiseAlgorithmRK::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICNoiseAlgorithmG::ICNoiseAlgorithmG( MetaTable* T ) : MetaString( T )
+ICNoiseAlgorithmG::ICNoiseAlgorithmG( MetaTable* T )
+   : MetaString( T )
 {
    TheICNoiseAlgorithmGParameter = this;
 }
@@ -2798,7 +3080,8 @@ bool ICNoiseAlgorithmG::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICNoiseAlgorithmB::ICNoiseAlgorithmB( MetaTable* T ) : MetaString( T )
+ICNoiseAlgorithmB::ICNoiseAlgorithmB( MetaTable* T )
+   : MetaString( T )
 {
    TheICNoiseAlgorithmBParameter = this;
 }
@@ -2815,7 +3098,133 @@ bool ICNoiseAlgorithmB::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
+ICCosmeticCorrectionLowCountRK::ICCosmeticCorrectionLowCountRK( MetaTable* T )
+   : MetaUInt64( T )
+{
+   TheICCosmeticCorrectionLowCountRKParameter = this;
+}
+
+IsoString ICCosmeticCorrectionLowCountRK::Id() const
+{
+   return "cosmeticCorrectionLowCountRK";
+}
+
+bool ICCosmeticCorrectionLowCountRK::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+ICCosmeticCorrectionLowCountG::ICCosmeticCorrectionLowCountG( MetaTable* T )
+   : MetaUInt64( T )
+{
+   TheICCosmeticCorrectionLowCountGParameter = this;
+}
+
+IsoString ICCosmeticCorrectionLowCountG::Id() const
+{
+   return "cosmeticCorrectionLowCountG";
+}
+
+bool ICCosmeticCorrectionLowCountG::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+ICCosmeticCorrectionLowCountB::ICCosmeticCorrectionLowCountB( MetaTable* T )
+   : MetaUInt64( T )
+{
+   TheICCosmeticCorrectionLowCountBParameter = this;
+}
+
+IsoString ICCosmeticCorrectionLowCountB::Id() const
+{
+   return "cosmeticCorrectionLowCountB";
+}
+
+bool ICCosmeticCorrectionLowCountB::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+ICCosmeticCorrectionHighCountRK::ICCosmeticCorrectionHighCountRK( MetaTable* T )
+   : MetaUInt64( T )
+{
+   TheICCosmeticCorrectionHighCountRKParameter = this;
+}
+
+IsoString ICCosmeticCorrectionHighCountRK::Id() const
+{
+   return "cosmeticCorrectionHighCountRK";
+}
+
+bool ICCosmeticCorrectionHighCountRK::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+ICCosmeticCorrectionHighCountG::ICCosmeticCorrectionHighCountG( MetaTable* T )
+   : MetaUInt64( T )
+{
+   TheICCosmeticCorrectionHighCountGParameter = this;
+}
+
+IsoString ICCosmeticCorrectionHighCountG::Id() const
+{
+   return "cosmeticCorrectionHighCountG";
+}
+
+bool ICCosmeticCorrectionHighCountG::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+ICCosmeticCorrectionHighCountB::ICCosmeticCorrectionHighCountB( MetaTable* T )
+   : MetaUInt64( T )
+{
+   TheICCosmeticCorrectionHighCountBParameter = this;
+}
+
+IsoString ICCosmeticCorrectionHighCountB::Id() const
+{
+   return "cosmeticCorrectionHighCountB";
+}
+
+bool ICCosmeticCorrectionHighCountB::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+ICCosmeticCorrectionMapId::ICCosmeticCorrectionMapId( MetaProcess* P )
+   : MetaString( P )
+{
+   TheICCosmeticCorrectionMapIdParameter = this;
+}
+
+IsoString ICCosmeticCorrectionMapId::Id() const
+{
+   return "cosmeticCorrectionMapId";
+}
+
+bool ICCosmeticCorrectionMapId::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationParameters.cpp - Released 2024-06-18T15:49:25Z
+// EOF ImageCalibrationParameters.cpp - Released 2024-08-02T18:17:26Z
