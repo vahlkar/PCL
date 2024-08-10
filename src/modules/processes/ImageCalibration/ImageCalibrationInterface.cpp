@@ -2276,7 +2276,7 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    CosmeticLowSigma_NumericControl.edit.SetFixedWidth( editWidth1 );
    CosmeticLowSigma_NumericControl.SetToolTip( "<p>This parameter defines a threshold in sigma units "
       "below the median of a high-pass filtered master dark frame. Pixels below this threshold are considered "
-      "<i>cold pixels</i> and tagged for cosmetic correction during the image calibration task. Increase the "
+      "<i>cold pixels</i> and tagged for cosmetic correction during the image calibration task. Decrease the "
       "value of this parameter to select more potential cold pixels. The default value is 5.</p>" );
    CosmeticLowSigma_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_ValueUpdated, w );
 
@@ -2297,7 +2297,7 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    CosmeticHighSigma_NumericControl.edit.SetFixedWidth( editWidth1 );
    CosmeticHighSigma_NumericControl.SetToolTip( "<p>This parameter defines a threshold in sigma units "
       "above the median of a high-pass filtered master dark frame. Pixels above this threshold are considered "
-      "<i>hot pixels</i> and tagged for cosmetic correction during the image calibration task. Increase the "
+      "<i>hot pixels</i> and tagged for cosmetic correction during the image calibration task. Decrease the "
       "value of this parameter to select more potential hot pixels. The default value is 10.</p>" );
    CosmeticHighSigma_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_ValueUpdated, w );
 
