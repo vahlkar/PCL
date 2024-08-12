@@ -525,14 +525,47 @@ public:
    double Rotation( bool& flipped ) const;
 
    /*!
-    * Returns the resolution of the image in degrees per pixel.
+    * Returns the image resolution in degrees per pixel.
     *
-    * This value usually is an approximation since it changes across the image.
-    * It should only be used for informative purposes.
+    * The returned value is calculated using an approximate linear
+    * transformation. Hence, it is usually a rough estimate since the actual
+    * resolution changes across the image as a function of local distortions.
+    * This member function should only be used for informative purposes.
+    *
+    * \sa ResolutionAt()
     */
    double Resolution() const
    {
       return m_resolution;
+   }
+
+   /*!
+    * Returns the image resolution at the specified image coordinates in
+    * degrees per pixel.
+    *
+    * The value returned by this function is calculated using the complete
+    * astrometric solution, including spline-based distortion corrections when
+    * appropriate, as the mean of the estimated resolution in the horizontal
+    * and vertical directions. It is the actual resolution in degrees per pixel
+    * at the specified location in image coordinates, accurate at least at the
+    * centipixel level.
+    *
+    * \sa Resolution()
+    */
+   template <typename T>
+   double ResolutionAt( const GenericPoint<T>& pI )
+   {
+      if ( !IsValid() )
+         throw Error( "Invalid call to AstrometricMetadata::ResolutionAt(): No astrometric solution." );
+      DPoint pRD1, pRD2, pRD3, pRD4;
+      if ( !ImageToCelestial( pRD1, DPoint( pI.x, pI.y - 0.5 ) )
+        || !ImageToCelestial( pRD2, DPoint( pI.x, pI.y + 0.5 ) )
+        || !ImageToCelestial( pRD3, DPoint( pI.x - 0.5, pI.y ) )
+        || !ImageToCelestial( pRD4, DPoint( pI.x + 0.5, pI.y ) ) )
+      {
+         throw Error( "Failed to perform ImageToCelestial() coordinate transformation(s)." );
+      }
+      return 0.5*(m_projection->Distance( pRD1, pRD2 ) + m_projection->Distance( pRD3, pRD4 ));
    }
 
    /*!
@@ -548,7 +581,7 @@ public:
          throw Error( "Invalid call to AstrometricMetadata::SearchRadius(): No astrometric solution." );
       DPoint cRD;
       if ( !ImageToCelestial( cRD, DPoint( 0.5*m_width, 0.5*m_height ) ) )
-         throw Error( "Failed to perform ImageToCelestial() coordinate transformation for the image center" );
+         throw Error( "Failed to perform ImageToCelestial() coordinate transformation for the image center." );
       DPoint pRD1, pRD2, pRD3, pRD4;
       if ( !ImageToCelestial( pRD1, DPoint( 0,       0 ) )
         || !ImageToCelestial( pRD2, DPoint( m_width, 0 ) )
