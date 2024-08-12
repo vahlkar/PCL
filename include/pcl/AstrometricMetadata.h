@@ -553,7 +553,7 @@ public:
     * \sa Resolution()
     */
    template <typename T>
-   double ResolutionAt( const GenericPoint<T>& pI )
+   double ResolutionAt( const GenericPoint<T>& pI ) const
    {
       if ( !IsValid() )
          throw Error( "Invalid call to AstrometricMetadata::ResolutionAt(): No astrometric solution." );
