@@ -158,6 +158,11 @@ public:
    LocalNormalizationData( LocalNormalizationData&& ) = default;
 
    /*!
+    * Copy assignment operator.
+    */
+   LocalNormalizationData& operator =( const LocalNormalizationData& ) = default;
+
+   /*!
     * Constructs a new %LocalNormalizationData instance by loading and parsing
     * a file in XNML format.
     *
