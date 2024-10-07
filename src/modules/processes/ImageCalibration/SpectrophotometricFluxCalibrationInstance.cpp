@@ -161,6 +161,7 @@ void SpectrophotometricFluxCalibrationInstance::Assign( const ProcessImplementat
       p_blueFilterBandwidth           = x->p_blueFilterBandwidth;
       p_deviceQECurve                 = x->p_deviceQECurve;
       p_deviceQECurveName             = x->p_deviceQECurveName;
+      p_narrowbandMode                = x->p_narrowbandMode;
       p_broadbandIntegrationStepSize  = x->p_broadbandIntegrationStepSize;
       p_narrowbandIntegrationSteps    = x->p_narrowbandIntegrationSteps;
       p_rejectionLimit                = x->p_rejectionLimit;
@@ -957,7 +958,7 @@ bool SpectrophotometricFluxCalibrationInstance::ExecuteOn( View& view )
 
    // Search tree
    QuadTree<StarSPData> T( catalogStars );
-
+   
    /*
     * Spectrum samples.
     */
@@ -1129,8 +1130,8 @@ bool SpectrophotometricFluxCalibrationInstance::ExecuteOn( View& view )
             sampleValues[c][i] = samples[c][i].value;
       }
 
-      String redFilterName, greenFilterName, blueFilterName;
-      if ( image.IsColor() )
+      String grayFilterName, redFilterName, greenFilterName, blueFilterName;
+      if ( image.IsColor() ) {
          if ( p_narrowbandMode )
          {
             redFilterName   = String().Format( "&lambda; = %.2f nm, B = %.2f nm", p_redFilterWavelength, p_redFilterBandwidth );
@@ -1143,11 +1144,22 @@ bool SpectrophotometricFluxCalibrationInstance::ExecuteOn( View& view )
             greenFilterName = p_greenFilterName;
             blueFilterName  = p_blueFilterName;
          }
-
+      } 
+      else 
+      {
+          if ( p_narrowbandMode )
+          {
+              grayFilterName = String().Format( "&lambda; = %.2f nm, B = %.2f nm", p_grayFilterWavelength, p_grayFilterBandwidth );
+           }
+          else
+          {
+              grayFilterName = p_grayFilterName;
+          }
+      }
       if ( !TheSpectrophotometricFluxCalibrationGraphInterface->IsVisible() )
          TheSpectrophotometricFluxCalibrationGraphInterface->Launch();
       TheSpectrophotometricFluxCalibrationGraphInterface->UpdateGraphs( view.FullId(), catalogName,
-                                    p_grayFilterName, redFilterName, greenFilterName, blueFilterName,
+                                    grayFilterName, redFilterName, greenFilterName, blueFilterName,
                                     p_deviceQECurveName,
                                     sampleValues[0], sampleValues[1], sampleValues[2],
                                     K, S );
