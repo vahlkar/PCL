@@ -1131,7 +1131,8 @@ bool SpectrophotometricFluxCalibrationInstance::ExecuteOn( View& view )
       }
 
       String grayFilterName, redFilterName, greenFilterName, blueFilterName;
-      if ( image.IsColor() ) {
+      if ( image.IsColor() )
+      {
          if ( p_narrowbandMode )
          {
             redFilterName   = String().Format( "&lambda; = %.2f nm, B = %.2f nm", p_redFilterWavelength, p_redFilterBandwidth );
@@ -1147,14 +1148,9 @@ bool SpectrophotometricFluxCalibrationInstance::ExecuteOn( View& view )
       } 
       else 
       {
-          if ( p_narrowbandMode )
-          {
-              grayFilterName = String().Format( "&lambda; = %.2f nm, B = %.2f nm", p_grayFilterWavelength, p_grayFilterBandwidth );
-           }
-          else
-          {
-              grayFilterName = p_grayFilterName;
-          }
+         grayFilterName = p_narrowbandMode ?
+            String().Format( "&lambda; = %.2f nm, B = %.2f nm", p_grayFilterWavelength, p_grayFilterBandwidth )
+            : p_grayFilterName;
       }
       if ( !TheSpectrophotometricFluxCalibrationGraphInterface->IsVisible() )
          TheSpectrophotometricFluxCalibrationGraphInterface->Launch();
