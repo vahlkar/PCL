@@ -67,10 +67,6 @@ cd $BASEDIR/ImageCalibration/macosx/g++
 make clean
 make -j $NPROC
 
-cd $BASEDIR/ImageIntegration/macosx/g++
-make clean
-make -j $NPROC
-
 cd $BASEDIR/IntensityTransformations/macosx/g++
 make clean
 make -j $NPROC

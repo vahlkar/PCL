@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// Standard Gaia Process Module Version 1.2.5
+// Standard Gaia Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// GaiaModule.cpp - Released 2024-06-18T15:49:25Z
+// GaiaModule.cpp - Released 2024-12-11T17:43:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Gaia PixInsight module.
 //
@@ -52,13 +52,13 @@
 
 #define MODULE_VERSION_MAJOR     1
 #define MODULE_VERSION_MINOR     2
-#define MODULE_VERSION_REVISION  5
+#define MODULE_VERSION_REVISION  6
 #define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2024
-#define MODULE_RELEASE_MONTH     6
-#define MODULE_RELEASE_DAY       18
+#define MODULE_RELEASE_MONTH     12
+#define MODULE_RELEASE_DAY       11
 
 #include "GaiaInterface.h"
 #include "GaiaModule.h"
@@ -191,4 +191,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF GaiaModule.cpp - Released 2024-06-18T15:49:25Z
+// EOF GaiaModule.cpp - Released 2024-12-11T17:43:17Z

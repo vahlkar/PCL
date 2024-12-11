@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 2.2.4
+// Standard ImageCalibration Process Module Version 2.2.7
 // ----------------------------------------------------------------------------
-// ImageCalibrationInstance.cpp - Released 2024-08-02T18:17:26Z
+// ImageCalibrationInstance.cpp - Released 2024-12-11T17:43:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -284,7 +284,8 @@ bool ImageCalibrationInstance::IsHistoryUpdater( const View& view ) const
 
 bool ImageCalibrationInstance::CanExecuteGlobal( String& whyNot ) const
 {
-   bool ccMapOnly = (p_cosmeticCorrectionHigh || p_cosmeticCorrectionLow) && p_cosmeticShowMap && p_cosmeticShowMapAndStop;
+   bool ccMapOnly = p_masterDark.enabled &&
+      (p_cosmeticCorrectionHigh || p_cosmeticCorrectionLow) && p_cosmeticShowMap && p_cosmeticShowMapAndStop;
 
    if ( !ccMapOnly )
       if ( p_targetFrames.IsEmpty() )
@@ -324,13 +325,6 @@ bool ImageCalibrationInstance::CanExecuteGlobal( String& whyNot ) const
       whyNot = "No master calibration frames or overscan regions have been specified.";
       return false;
    }
-
-   if ( p_cosmeticCorrectionLow || p_cosmeticCorrectionHigh )
-      if ( !p_masterDark.enabled )
-      {
-         whyNot = "Cosmetic correction requires a master dark frame.";
-         return false;
-      }
 
    return true;
 }
@@ -1100,9 +1094,17 @@ public:
    {
       o.outputFilePath = m_outputFilePath;
       if ( m_data.instance->p_masterDark.enabled )
+      {
          if ( m_data.instance->p_optimizeDarks )
             for ( int i = 0; i < Min( 3, m_K.Length() ); ++i )
                o.darkScalingFactors[i] = m_K[i];
+         if ( m_data.instance->p_cosmeticCorrectionLow )
+            for ( int i = 0; i < Min( 3, m_cosmeticCorrectionLowCounts.Length() ); ++i )
+               o.cosmeticCorrectionLowCounts[i] = m_cosmeticCorrectionLowCounts[i];
+         if ( m_data.instance->p_cosmeticCorrectionHigh )
+            for ( int i = 0; i < Min( 3, m_cosmeticCorrectionHighCounts.Length() ); ++i )
+               o.cosmeticCorrectionHighCounts[i] = m_cosmeticCorrectionHighCounts[i];
+      }
       if ( m_data.instance->p_evaluateSignal )
          for ( int i = 0; i < Min( 3, m_noiseEstimates.Length() ); ++i )
          {
@@ -1123,12 +1125,6 @@ public:
             o.noiseScaleHigh[i] = m_noiseScaleHigh[i];
             o.noiseAlgorithms[i] = String( m_noiseAlgorithms[i] );
          }
-      if ( m_data.instance->p_cosmeticCorrectionLow )
-         for ( int i = 0; i < Min( 3, m_cosmeticCorrectionLowCounts.Length() ); ++i )
-            o.cosmeticCorrectionLowCounts[i] = m_cosmeticCorrectionLowCounts[i];
-      if ( m_data.instance->p_cosmeticCorrectionHigh )
-         for ( int i = 0; i < Min( 3, m_cosmeticCorrectionHighCounts.Length() ); ++i )
-            o.cosmeticCorrectionHighCounts[i] = m_cosmeticCorrectionHighCounts[i];
    }
 
    const String& TargetFilePath() const
@@ -2405,7 +2401,8 @@ bool ImageCalibrationInstance::ExecuteGlobal()
     * If we are only building and showing the cosmetic correction map, some
     * tasks can be overlooked.
     */
-   bool ccMapOnly = (p_cosmeticCorrectionHigh || p_cosmeticCorrectionLow) && p_cosmeticShowMap && p_cosmeticShowMapAndStop;
+   bool ccMapOnly = p_masterDark.enabled &&
+      (p_cosmeticCorrectionHigh || p_cosmeticCorrectionLow) && p_cosmeticShowMap && p_cosmeticShowMapAndStop;
 
    /*
     * Start with a general validation of working parameters.
@@ -3443,4 +3440,4 @@ size_type ImageCalibrationInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInstance.cpp - Released 2024-08-02T18:17:26Z
+// EOF ImageCalibrationInstance.cpp - Released 2024-12-11T17:43:17Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/SurfaceSpline.h - Released 2024-06-18T15:48:54Z
+// pcl/SurfaceSpline.h - Released 2024-12-11T17:42:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -107,7 +107,7 @@ namespace pcl
 /*!
  * \namespace pcl::RadialBasisFunction
  * \brief     Implemented radial basis functions (RBFs) for surface spline
- *            interpolation.
+ *            interpolation/approximation.
  *
  * The symbols used in the following table are:
  *
@@ -124,26 +124,78 @@ namespace pcl
  * <tr><td>RadialBasisFunction::Multiquadric</td>        <td>phi(r) = Sqrt( 1 + (eps*r)^2 )</td></tr>
  * <tr><td>RadialBasisFunction::InverseMultiquadric</td> <td>phi(r) = 1/Sqrt( 1 + (eps*r)^2 )</td></tr>
  * <tr><td>RadialBasisFunction::InverseQuadratic</td>    <td>phi(r) = 1/( 1 + (eps*r)^2 )</td></tr>
+ * <tr><td>RadialBasisFunction::DDMVariableOrder</td>    <td>Variable-order polyharmonic DDM-RBF.</td></tr>
+ * <tr><td>RadialBasisFunction::DDMThinPlateSpline</td>  <td>Thin plate spline DDM-RBF.</td></tr>
+ * <tr><td>RadialBasisFunction::DDMMultiquadric</td>     <td>Multiquadric DDM-RBF.</td></tr>
  * </table>
+ *
+ * DDM (Domain Decomposition Method) RBF interpolation/approximation algorithms
+ * require O(n^2) time for spline construction, in contrast to standard
+ * implementations, which have O(n^3) time complexity. This makes the DDM-RBF
+ * algorithms capable of handling large-scale problems with tens of thousands
+ * of data points, while standard algorithms are limited to less than about
+ * 3000 points with current hardware. DDM-RBF algorithms require a running
+ * PixInsight core application. Standard algorithms are directly implemented in
+ * PCL, so they are suitable for standalone applications.
  */
 namespace RadialBasisFunction
 {
    enum value_type
    {
       Unknown = -1,
-      VariableOrder = 0,   // phi(r) = (r^2)^(m-1) * Ln( r^2 )
-      ThinPlateSpline,     // phi(r) = r^2 * Ln( r )
-      Gaussian,            // phi(r) = Exp( -(eps*r)^2 )
-      Multiquadric,        // phi(r) = Sqrt( 1 + (eps*r)^2 )
-      InverseMultiquadric, // phi(r) = 1/Sqrt( 1 + (eps*r)^2 )
-      InverseQuadratic,    // phi(r) = 1/( 1 + (eps*r)^2 )
-      __number_of_items__,
+      VariableOrder = 0,        // phi(r) = (r^2)^(m-1) * Ln( r^2 )
+      ThinPlateSpline,          // phi(r) = r^2 * Ln( r )
+      Gaussian,                 // phi(r) = Exp( -(eps*r)^2 )
+      Multiquadric,             // phi(r) = Sqrt( 1 + (eps*r)^2 )
+      InverseMultiquadric,      // phi(r) = 1/Sqrt( 1 + (eps*r)^2 )
+      InverseQuadratic,         // phi(r) = 1/( 1 + (eps*r)^2 )
+      __number_of_pcl_implemented_rbfs__,
+      DDMVariableOrder   = 100, // Variable-order polyharmonic DDM-RBF
+      DDMThinPlateSpline = 101, // Thin plate spline DDM-RBF
+      DDMMultiquadric    = 102, // Multiquadric DDM-RBF
       Default = ThinPlateSpline
    };
 
+   /*!
+    * Returns true iff the specified \a rbf enumeration value corresponds to a
+    * supported radial basis function.
+    */
    inline static bool Validate( int rbf )
    {
-      return rbf >= 0 && rbf < __number_of_items__;
+      return rbf >= 0 && rbf < __number_of_pcl_implemented_rbfs__
+          || rbf == DDMThinPlateSpline
+          || rbf == DDMVariableOrder
+          || rbf == DDMMultiquadric;
+   }
+
+   /*!
+    * Returns true iff the specified \a rbf enumeration value corresponds to a
+    * radial basis function requiring a running PixInsight core application.
+    */
+   inline static bool HasCoreImplementation( int rbf )
+   {
+      return rbf > __number_of_pcl_implemented_rbfs__;
+   }
+
+   /*!
+    * Returns true iff the specified \a rbf enumeration value corresponds to a
+    * radial basis function with DDM (Domain Decomposition Method)
+    * implementation, requiring O(n^2) spline construction time.
+    */
+   inline static bool HasDDMImplementation( int rbf )
+   {
+      return rbf == DDMThinPlateSpline
+          || rbf == DDMVariableOrder
+          || rbf == DDMMultiquadric;
+   }
+
+   /*!
+    * Returns true iff the specified \a rbf enumeration value corresponds to a
+    * variable-order radial basis function.
+    */
+   inline static bool IsVariableOrder( int rbf )
+   {
+      return rbf == DDMVariableOrder || rbf == VariableOrder;
    }
 }
 
@@ -200,7 +252,7 @@ protected:
    /*!
     * Surface spline generation, 32-bit floating point data.
     */
-   static void Generate( float* __restrict__ c,
+   static void Generate( float* __restrict__ c, void** handle,
                          rbf_type, double e2, bool polynomial,
                          const float* __restrict__ x, const float* __restrict__ y, const float* __restrict__ z,
                          int n, int m, float r, const float* __restrict__ w );
@@ -208,10 +260,49 @@ protected:
    /*!
     * Surface spline generation, 64-bit floating point data.
     */
-   static void Generate( double* __restrict__ c,
+   static void Generate( double* __restrict__ c, void** handle,
                          rbf_type, double e2, bool polynomial,
                          const double* __restrict__ x, const double* __restrict__ y, const double* __restrict__ z,
                          int n, int m, float r, const float* __restrict__ w );
+
+   /*!
+    * Evaluate a core surface spline object.
+    */
+   static double EvaluateHandle( const void* handle, double x, double y );
+
+   /*!
+    * Evaluate a core surface spline object for a set of 32-bit floating point
+    * coordinates.
+    */
+   static void EvaluateHandle( const void* handle, float* z, const float* x, const float* y, double x0, double y0, double r, size_type n );
+
+   /*!
+    * Evaluate a core surface spline object for a set of 64-bit floating point
+    * coordinates.
+    */
+   static void EvaluateHandle( const void* handle, double* z, const double* x, const double* y, double x0, double y0, double r, size_type n );
+
+   /*!
+    * Generate a plain text serialization of a core surface spline object.
+    */
+   static void SerializeHandle( IsoString& data, const void* handle );
+
+   /*!
+    * Reconstruct a core surface spline object from a plain text serialization.
+    */
+   static void* DeserializeHandle( const IsoString& data );
+
+   /*!
+    * Destroy a core surface spline object.
+    */
+   static void DestroyHandle( void* handle );
+
+   /*!
+    * Duplicates a core surface spline object.
+    */
+   static void* DuplicateHandle( const void* handle );
+
+   friend class SplineWorldTransformation;
 };
 
 // ----------------------------------------------------------------------------
@@ -306,29 +397,115 @@ public:
    /*!
     * Copy constructor.
     */
-   SurfaceSpline( const SurfaceSpline& ) = default;
+   SurfaceSpline( const SurfaceSpline& S )
+      : m_rbf( S.m_rbf )
+      , m_havePolynomial( S.m_havePolynomial )
+      , m_eps( S.m_eps )
+      , m_eps2( S.m_eps2 )
+      , m_x( S.m_x )
+      , m_y( S.m_y )
+      , m_z( S.m_z )
+      , m_r0( S.m_r0 )
+      , m_x0( S.m_x0 )
+      , m_y0( S.m_y0 )
+      , m_order( S.m_order )
+      , m_smoothing( S.m_smoothing )
+      , m_weights( S.m_weights )
+      , m_spline( S.m_spline )
+      , m_serialization( S.m_serialization )
+   {
+      m_handle = DuplicateHandle( S.m_handle );
+   }
 
    /*!
     * Move constructor.
     */
-   SurfaceSpline( SurfaceSpline&& ) = default;
+   SurfaceSpline( SurfaceSpline&& S )
+      : m_rbf( S.m_rbf )
+      , m_havePolynomial( S.m_havePolynomial )
+      , m_eps( S.m_eps )
+      , m_eps2( S.m_eps2 )
+      , m_x( std::move( S.m_x ) )
+      , m_y( std::move( S.m_y ) )
+      , m_z( std::move( S.m_z ) )
+      , m_r0( S.m_r0 )
+      , m_x0( S.m_x0 )
+      , m_y0( S.m_y0 )
+      , m_order( S.m_order )
+      , m_smoothing( S.m_smoothing )
+      , m_weights( std::move( S.m_weights ) )
+      , m_spline( std::move( S.m_spline ) )
+      , m_serialization( S.m_serialization )
+   {
+      m_handle = S.m_handle;
+      S.m_handle = 0;
+   }
 
    /*!
     * Destroys a %SurfaceSpline object.
     */
    ~SurfaceSpline() override
    {
+      DestroyHandle( m_handle );
+      m_handle = 0;
    }
 
    /*!
     * Copy assignment operator. Returns a reference to this object.
     */
-   SurfaceSpline& operator =( const SurfaceSpline& ) = default;
+   SurfaceSpline& operator =( const SurfaceSpline& S )
+   {
+      if ( &S != this )
+      {
+         Clear();
+         m_rbf = S.m_rbf;
+         m_havePolynomial = S.m_havePolynomial;
+         m_eps = S.m_eps;
+         m_eps2 = S.m_eps2;
+         m_x = S.m_x;
+         m_y = S.m_y;
+         m_z = S.m_z;
+         m_r0 = S.m_r0;
+         m_x0 = S.m_x0;
+         m_y0 = S.m_y0;
+         m_order = S.m_order;
+         m_smoothing = S.m_smoothing;
+         m_weights = S.m_weights;
+         m_spline = S.m_spline;
+         m_serialization = S.m_serialization;
+         m_handle = DuplicateHandle( S.m_handle );
+      }
+      return *this;
+   }
 
    /*!
     * Move assignment operator. Returns a reference to this object.
     */
-   SurfaceSpline& operator =( SurfaceSpline&& ) = default;
+   SurfaceSpline& operator =( SurfaceSpline&& S )
+   {
+      if ( &S != this )
+      {
+         Clear();
+         m_rbf = S.m_rbf;
+         m_havePolynomial = S.m_havePolynomial;
+         m_eps = S.m_eps;
+         m_eps2 = S.m_eps2;
+         m_x = std::move( S.m_x );
+         m_y = std::move( S.m_y );
+         m_z = std::move( S.m_z );
+         m_r0 = S.m_r0;
+         m_x0 = S.m_x0;
+         m_y0 = S.m_y0;
+         m_order = S.m_order;
+         m_smoothing = S.m_smoothing;
+         m_weights = std::move( S.m_weights );
+         m_spline = std::move( S.m_spline );
+         m_serialization = S.m_serialization;
+         m_handle = S.m_handle;
+         S.m_handle = 0;
+      }
+      return *this;
+   }
 
    /*!
     * Returns true iff this surface spline is valid. A valid surface spline has
@@ -336,7 +513,7 @@ public:
     */
    bool IsValid() const
    {
-      return m_x.Length() >= 3 && m_x.Length() == m_y.Length();
+      return m_handle != 0 || !m_spline.IsEmpty();
    }
 
    /*!
@@ -471,18 +648,20 @@ public:
     * Calling this member function implicitly resets this %SurfaceSpline object
     * and destroys all internal working structures.
     *
-    * Specifying a derivability order &ge; 2 is really useful for variable
-    * order radial basis functions (RadialBasisFunction::VariableOrder). Other
-    * RBFs are implicitly of second order, so when they are selected the order
-    * specified by calling this function will only change the polynomial part
-    * of the surface spline.
+    * Specifying a derivability order is only useful for variable-order radial
+    * basis functions (RadialBasisFunction::VariableOrder). Other RBFs are
+    * implicitly of second order, so when they are selected the order specified
+    * by calling this function will only change the polynomial part of the
+    * surface spline.
     *
     * Only when a variable order RBF is selected, the surface spline will be
     * continuously differentiable up to the specified \a order after a
     * subsequent initialization. If the order is too high, an ill-conditioned
     * linear system may result even for a set of valid interpolation nodes.
     *
-    * The default order is 2. Recommended values are 2 and 3.
+    * The default order is 2. Recommended values are 2, 3 and 4. Orders greater
+    * than 6 should not be used under normal conditions, as they are prone to
+    * generate ill-conditioned systems with unstable behavior.
     */
    void SetOrder( int order )
    {
@@ -572,7 +751,7 @@ public:
     * \param z       Node function values.
     *
     * \param n       Number of nodes. Must be &ge; 3
-    *                (3 nodes * 2 coordinates = six degrees of freedom).
+    *                (3 nodes * 2 coordinates = 6 degrees of freedom).
     *
     * \param w       When the smoothing factor of this spline is > 0, this is a
     *                vector of positive weights > 0 corresponding to the
@@ -732,9 +911,10 @@ public:
                m_weights[k] = P[i].w;
          }
 
-         m_spline = vector( scalar( 0 ), N + (m_havePolynomial ? ((m_order*(m_order + 1)) >> 1) : 0) );
+         if ( !RadialBasisFunction::HasCoreImplementation( m_rbf ) )
+            m_spline = vector( scalar( 0 ), N + (m_havePolynomial ? ((m_order*(m_order + 1)) >> 1) : 0) );
 
-         Generate( m_spline.Begin(), m_rbf, m_eps2, m_havePolynomial,
+         Generate( m_spline.Begin(), &m_handle, m_rbf, m_eps2, m_havePolynomial,
                    m_x.Begin(), m_y.Begin(), m_z.Begin(), N, m_order,
                    m_smoothing, m_weights.Begin() );
       }
@@ -756,6 +936,28 @@ public:
       m_z.Clear();
       m_weights.Clear();
       m_spline.Clear();
+      DestroyHandle( m_handle );
+      m_handle = 0;
+   }
+
+   /*!
+    * Returns a plain text serialization of the internal core surface spline
+    * structures.
+    *
+    * If this object uses a core surface spline implementation (such as
+    * RadialBasisFunction::DDMThinPlateSpline) and has been correctly
+    * initialized, this function returns an implementation-specific plain text
+    * serialization. Otherwise, an empty string is returned.
+    *
+    * The plain text serialization returned by this function can be used to
+    * recreate the internal core surface spline structures without requiring a
+    * reinitialization from data points.
+    */
+   IsoString CoreSerialization() const
+   {
+      IsoString data;
+      SerializeHandle( data, m_handle );
+      return data;
    }
 
    /*!
@@ -771,13 +973,19 @@ public:
    {
       PCL_PRECONDITION( !m_x.IsEmpty() && !m_y.IsEmpty() )
       PCL_CHECK( m_order >= 2 )
-      PCL_CHECK( !m_spline.IsEmpty() )
+      PCL_CHECK( !m_spline.IsEmpty() || m_handle != 0 )
 
       /*
        * Normalized interpolation coordinates.
        */
       x = m_r0*(x - m_x0);
       y = m_r0*(y - m_y0);
+
+      /*
+       * Core RBF implementations
+       */
+      if ( m_handle != 0 )
+         return scalar( EvaluateHandle( m_handle, x, y ) );
 
       /*
        * Add polynomial part of the surface spline.
@@ -893,6 +1101,69 @@ public:
       return operator ()( double( p.x ), double( p.y ) );
    }
 
+   /*!
+    * Evaluates the surface spline for a set of points in 2-D space specified
+    * as the \a X and \a Y contiguous sequences of \a n coordinates, and
+    * stores the corresponding function values in the specified array \a Z.
+    *
+    * For core DDM-RBF interpolation/approximation, this is a support function
+    * for fast multithreaded evaluation of the surface spline at large-scale
+    * sets of interpolation points. For PCL RBF implementations this function
+    * can be convenient, but it does not provide any significant performance
+    * improvement.
+    *
+    * \note This function provides compatibility with the GridInterpolation and
+    * PointGridInterpolation classes.
+    */
+   void Evaluate( scalar* Z, const scalar* X, const scalar* Y, size_type n ) const
+   {
+      PCL_PRECONDITION( !m_x.IsEmpty() && !m_y.IsEmpty() )
+      PCL_PRECONDITION( X != nullptr && Y != nullptr && Z != nullptr )
+      PCL_PRECONDITION( n > 0 )
+      PCL_CHECK( m_order >= 2 )
+      PCL_CHECK( !m_spline.IsEmpty() || m_handle != 0 )
+
+      if ( m_handle != 0 )
+         EvaluateHandle( m_handle, Z, X, Y, m_x0, m_y0, m_r0, n );
+      else
+         for ( size_type i = 0; i < n; ++i )
+            Z[i] = operator()( X[i], Y[i] );
+   }
+
+   /*!
+    * Evaluates the surface spline for a set of points in 2-D space specified
+    * as the \a X and \a Y vectors of coordinates, and returns the
+    * corresponding function values as a vector.
+    *
+    * See Evaluate( const scalar*, const scalar*, int ) const for more
+    * information.
+    */
+   vector Evaluate( const vector& X, const vector& Y ) const
+   {
+      PCL_PRECONDITION( !m_x.IsEmpty() && !m_y.IsEmpty() )
+      PCL_CHECK( m_order >= 2 )
+      PCL_CHECK( !m_spline.IsEmpty() || m_handle != 0 )
+
+      int n = Min( X.Length(), Y.Length() );
+      vector Z( n );
+      Evaluate( Z.Begin(), X.Begin(), Y.Begin(), size_type( n ) );
+      return Z;
+   }
+
+   /*!
+    * Returns true iff this object can be evaluated for vectors of points in
+    * 2-D space efficiently by calling the Evaluate() member functions. In
+    * current PCL versions, this member function only returns true for RBF
+    * interpolation/approximation algorithms with core implementations.
+    *
+    * \note This function provides compatibility with the GridInterpolation and
+    * PointGridInterpolation classes.
+    */
+   bool HasFastVectorEvaluation() const
+   {
+      return m_handle != 0;
+   }
+
 protected:
 
    rbf_type      m_rbf = RadialBasisFunction::Default;
@@ -909,6 +1180,8 @@ protected:
    float         m_smoothing = 0; // <= 0 -> interpolating spline, > 0 -> smoothing factor of approximating spline
    weight_vector m_weights;       // optional node weights for approximating spline
    vector        m_spline;        // coefficients of the 2-D surface spline, polynomial coeffs. at tail
+   IsoString     m_serialization; // internal use: SplineWorldTransformation for delayed deserialization
+   void*         m_handle = 0;    // handle to a core-implemented RBF interpolation/smoothing object
 
    /*!
     * \struct NodeData
@@ -1006,7 +1279,7 @@ public:
    }
 
    /*!
-    * Constructs a %PointSurfaceSpline object initialized with prescribed point
+    * Constructs a %PointSurfaceSpline object initialized with prescribed
     * surface splines.
     *
     * See the corresponding Initialize() member function for a more detailed
@@ -1180,7 +1453,7 @@ public:
          // Simplified surface, X axis.
          DVector XXS, YXS, ZXS;
          m_epsX = (zxMax - zxMin)/100;
-         double epsLow = 0, epsHigh = (zxMax - zxMin)/10;
+         double epsLow = 0, epsHigh = 10*m_epsX;
          for ( int i = 0; i < 200; ++i )
          {
             SS.SetTolerance( m_epsX );
@@ -1210,7 +1483,7 @@ public:
          // Simplified surface, Y axis.
          DVector XYS, YYS, ZYS;
          m_epsY = (zyMax - zyMin)/100;
-         epsLow = 0, epsHigh = (zyMax - zyMin)/10;
+         epsLow = 0, epsHigh = 10*m_epsY;
          for ( int i = 0; i < 200; ++i )
          {
             SS.SetTolerance( m_epsY );
@@ -1261,14 +1534,14 @@ public:
    }
 
    /*!
-    * Initializes this %PointSurfaceSpline object with prescribed point surface
+    * Initializes this %PointSurfaceSpline object with prescribed surface
     * splines.
     *
-    * \param Sx   2-D point surface spline for interpolation of function values
-    *             in the X direction.
+    * \param Sx   2-D surface spline for interpolation of function values in
+    *             the X direction.
     *
-    * \param Sy   2-D point surface spline for interpolation of function values
-    *             in the Y direction.
+    * \param Sy   2-D surface spline for interpolation of function values in
+    *             the Y direction.
     *
     * Both surface splines must be valid. If one or both splines are invalid,
     * calling this member function is equivalent to Clear().
@@ -1522,6 +1795,7 @@ public:
     */
    DPoint operator ()( double x, double y ) const
    {
+      PCL_PRECONDITION( ISValid() )
       DPoint p( m_Sx( x, y ), m_Sy( x, y ) );
       if ( m_incremental )
          p += m_H( x, y );
@@ -1537,6 +1811,103 @@ public:
       return operator ()( double( p.x ), double( p.y ) );
    }
 
+   /*!
+    * Evaluates the point surface spline for a set of points in 2-D space
+    * specified as the \a X and \a Y contiguous sequences of \a n coordinates,
+    * and stores the corresponding function values in the specified \a ZX and
+    * \a ZY arrays.
+    *
+    * For core DDM-RBF interpolation/approximation, this is a support function
+    * for fast multithreaded evaluation of the point surface spline at
+    * large-scale sets of interpolation points. For PCL RBF implementations
+    * this function can be convenient, but it does not provide any significant
+    * performance improvement.
+    *
+    * \note This function provides compatibility with the
+    * PointGridInterpolation class.
+    */
+   template <typename T>
+   void Evaluate( T* ZX, T* ZY, const T* X, const T* Y, size_type n ) const
+   {
+      PCL_PRECONDITION( ISValid() )
+      m_Sx.Evaluate( ZX, X, Y, n );
+      m_Sy.Evaluate( ZY, X, Y, n );
+      if ( m_incremental )
+         for ( size_type i = 0; i < n; ++i )
+         {
+            DPoint dxy = m_H( X[i], Y[i] );
+            ZX[i] += dxy.x;
+            ZY[i] += dxy.y;
+         }
+   }
+
+   /*!
+    * Evaluates the point surface spline for a set of points in 2-D space
+    * specified as the \a X and \a Y lists of \a n coordinates, and returns the
+    * corresponding function values as an array of points in 64-bit floating
+    * point format.
+    *
+    * The type V must be a PCL array or vector with numeric scalar components.
+    *
+    * See Evaluate( T*, T*, const T*, const T*, int ) const for more
+    * information.
+    */
+   template <class V>
+   Array<DPoint> Evaluate( const V& X, const V& Y ) const
+   {
+      PCL_PRECONDITION( ISValid() )
+      size_type n = Min( X.Length(), Y.Length() );
+      Array<double> ZX( n ), ZY( n );
+      Evaluate( ZX.Begin(), ZY.Begin(), X.Begin(), Y.Begin(), n );
+      Array<DPoint> Z( n );
+      for ( size_type i = 0; i < n; ++i )
+      {
+         Z[i].x = ZX[i];
+         Z[i].y = ZY[i];
+      }
+      return Z;
+   }
+
+   /*!
+    * Evaluates the surface spline for a list \a P of points in 2-D space, and
+    * returns the corresponding function values as an array of points in 64-bit
+    * floating point format.
+    *
+    * The type PV must be a PCL array or vector of point structures, where each
+    * \a P[i] is expected to have public \a x and \a y members of numeric
+    * scalar type.
+    *
+    * See Evaluate( T*, T*, const T*, const T*, int ) const for more
+    * information.
+    */
+   template <class PV>
+   Array<DPoint> Evaluate( const PV& P ) const
+   {
+      PCL_PRECONDITION( ISValid() )
+      size_type n = P.Length();
+      Array<double> X( n ), Y( n );
+      for ( size_type i = 0; i < n; ++i )
+      {
+         X[i] = P[i].x;
+         Y[i] = P[i].y;
+      }
+      return Evaluate( X, Y );
+   }
+
+   /*!
+    * Returns true iff this object can be evaluated for vectors of points in
+    * 2-D space efficiently by calling the Evaluate() member functions. In
+    * current PCL versions, this member function only returns true for RBF
+    * interpolation/approximation algorithms with core implementations.
+    *
+    * \note This function provides compatibility with the
+    * PointGridInterpolation class.
+    */
+   bool HasFastVectorEvaluation() const
+   {
+      return m_Sx.HasFastVectorEvaluation() && m_Sy.HasFastVectorEvaluation();
+   }
+
 private:
 
    /*
@@ -1548,7 +1919,7 @@ private:
    /*
     * Incremental surface splines.
     */
-   bool        m_incremental = false;  // true => fit differences w.r.t a projective transformation
+   bool        m_incremental = false;  // true => fit differences w.r.t. a projective transformation
    Homography  m_H;                    // base projective transformation when m_incremental = true
 
    /*
@@ -2280,4 +2651,4 @@ private:
 #endif   // __PCL_SurfaceSpline_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SurfaceSpline.h - Released 2024-06-18T15:48:54Z
+// EOF pcl/SurfaceSpline.h - Released 2024-12-11T17:42:29Z

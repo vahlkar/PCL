@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/APIInterface.h - Released 2024-06-18T15:48:54Z
+// pcl/APIInterface.h - Released 2024-12-11T17:42:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -56,7 +56,7 @@
 
 // Global namespace
 
-#define PCL_API_Version 0x0180
+#define PCL_API_Version 0x0182
 
 extern "C"
 {
@@ -2264,20 +2264,28 @@ struct api_context NumericalContext
    api_bool       (api_func* NaturalGridCubicSplineInterpolateUI32)( double* y, const uint32* fy, const double* dy2, int32 n, double x );
 
    /*
-    * Two-Dimensional Surface Splines (Thin Plates)
-    * ### DEPRECATED - Retained for compatibility with existing modules.
+    * Two-Dimensional Surface Splines (with core implementation).
     */
-   api_bool       (api_func* SurfaceSplineGenerateF)( float* cv, double* rm, double* xm, double* ym,
-                                                      float* fx, float* fy, const float* fz, int32 n, int32 m,
-                                                      float rho, const float* w );
-   api_bool       (api_func* SurfaceSplineGenerateD)( double* cv, double* rm, double* xm, double* ym,
-                                                      double* fx, double* fy, const double* fz, int32 n, int32 m,
-                                                      float rho, const float* w );
+   api_bool       (api_func* SurfaceSplineCreateF)( sspline_handle* hSS, int32 rbf, double e2, api_bool polynomial,
+                                                    const float* x, const float* y, const float* z, int32 n, int32 m,
+                                                    float rho, const float* w );
+   api_bool       (api_func* SurfaceSplineCreateD)( sspline_handle* hSS, int32 rbf, double e2, api_bool polynomial,
+                                                    const double* x, const double* y, const double* z, int32 n, int32 m,
+                                                    float rho, const float* w );
 
-   api_bool       (api_func* SurfaceSplineInterpolateF)( float* z, const float* fx, const float* fy, const float* cv, int32 n, int32 m,
-                                                         double x, double y );
-   api_bool       (api_func* SurfaceSplineInterpolateD)( double* z, const double* fx, const double* fy, const double* cv, int32 n, int32 m,
-                                                         double x, double y );
+   api_bool       (api_func* SurfaceSplineEvaluate)( const_sspline_handle hSS, double* z, double x, double y );
+   api_bool       (api_func* SurfaceSplineEvaluateVectorF)( const_sspline_handle hSS, float* z, const float *x, const float *y,
+                                                            double x0, double y0, double r, size_type n );
+   api_bool       (api_func* SurfaceSplineEvaluateVectorD)( const_sspline_handle hSS, double* z, const double *x, const double *y,
+                                                            double x0, double y0, double r, size_type n );
+
+   api_bool       (api_func* SurfaceSplineDestroy)( sspline_handle hSS );
+
+   // ### The following function returns a null-terminated string allocated by the caller module.
+   char*          (api_func* SurfaceSplineSerialize)( api_handle hModule, const_sspline_handle hSS, uint32 flags );
+   api_bool       (api_func* SurfaceSplineDeserialize)( sspline_handle* hSS, const char* data, size_type len, uint32 flags );
+
+   api_bool       (api_func* SurfaceSplineDuplicate)( sspline_handle* hSS1, const_sspline_handle hSS );
 
    /*
     * Fast Fourier Transforms (one-dimensional)
@@ -2304,6 +2312,9 @@ struct api_context NumericalContext
 
    api_bool       (api_func* FFTComplexTransformF)( fft_handle hFFT, void* y, const void* x ); // void* = fcomplex*
    api_bool       (api_func* FFTComplexTransformD)( fft_handle hFFT, void* y, const void* x ); // void* = dcomplex*
+
+   api_bool       (api_func* FFTComplexInverseTransformF)( fft_handle hFFT, void* y, const void* x ); // void* = fcomplex*
+   api_bool       (api_func* FFTComplexInverseTransformD)( fft_handle hFFT, void* y, const void* x ); // void* = dcomplex*
 
    api_bool       (api_func* FFTRealTransformF)( fft_handle hFFT, void* y, const float* x );   // void* = fcomplex*
    api_bool       (api_func* FFTRealTransformD)( fft_handle hFFT, void* y, const double* x );  // void* = dcomplex*
@@ -3097,4 +3108,4 @@ extern "C" void* api_func APIFunctionResolver( const char* );
 #endif   // __PCL_API_APIInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/APIInterface.h - Released 2024-06-18T15:48:54Z
+// EOF pcl/APIInterface.h - Released 2024-12-11T17:42:29Z

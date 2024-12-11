@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// Standard Gaia Process Module Version 1.2.5
+// Standard Gaia Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// GaiaInterface.cpp - Released 2024-06-18T15:49:25Z
+// GaiaInterface.cpp - Released 2024-12-11T17:43:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Gaia PixInsight module.
 //
@@ -977,7 +977,6 @@ void GaiaInterface::UpdateControls()
       bool generateOutput = m_instance.p_generateTextOutput || m_instance.p_generateBinaryOutput;
       bool generateTextOutput = m_instance.p_generateTextOutput && !m_instance.p_generateBinaryOutput;
 
-      GUI->GenerateTextOutput_CheckBox.Enable( generateTextOutput );
       GUI->TextFormat_Label.Enable( generateTextOutput );
       GUI->TextFormat_ComboBox.Enable( generateTextOutput );
       GUI->TextHeaders_Label.Enable( generateTextOutput );
@@ -1725,4 +1724,4 @@ GaiaInterface::GUIData::GUIData( GaiaInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GaiaInterface.cpp - Released 2024-06-18T15:49:25Z
+// EOF GaiaInterface.cpp - Released 2024-12-11T17:43:17Z

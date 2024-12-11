@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/GridInterpolation.h - Released 2024-06-18T15:48:54Z
+// pcl/GridInterpolation.h - Released 2024-12-11T17:42:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -64,6 +64,12 @@
 #include <pcl/Rectangle.h>
 #include <pcl/ReferenceArray.h>
 #include <pcl/Thread.h>
+
+
+#include <pcl/File.h>
+#include <pcl/TimePoint.h>
+
+
 
 #ifndef __PCL_BUILDING_PIXINSIGHT_APPLICATION
 #  include <pcl/Console.h>
@@ -139,17 +145,41 @@ public:
     *                the user during the (potentially long) initialization
     *                process. If false, no feedback will be provided.
     *
-    * The template parameter SI must provide a member function of the form:
+    * The template parameter SI must implement the following member functions:
     *
-    * double SI::operator ()( int x, int y ) const
+    * 1. Function evaluation operator:
+    *
+    * double SI::operator ()( double x, double y ) const
     *
     * or an equivalent operator member function whose return value can be
     * statically casted to double, with two by-value parameters that can be
-    * statically casted from the int type. This function will be called
-    * multiple times to evaluate the approximated surface at discrete grid
-    * coordinate pairs {x,y}. The implementation of this member function must
-    * be thread-safe if parallel processing has been enabled and allowed for
+    * statically casted from the double type. This function will be called
+    * multiple times for the \a S object to evaluate the approximated surface
+    * at discrete grid coordinate pairs {x,y}, respectively on the X and Y
+    * plane directions. The implementation of this member function must be
+    * thread-safe if parallel processing has been enabled and is allowed for
     * this object.
+    *
+    * 2. Vector evaluation function:
+    *
+    * void SI::Evaluate( double* Z,\n
+    *                    const double* X, const double* Y, size_type n ) const
+    *
+    * This function will be called multiple times for the \a S object for fast
+    * multithreaded surface evaluation at a set of points in 2-D space
+    * specified as the \a X and \a Y contiguous sequences of \a n coordinates.
+    * The function must store the corresponding function values in the \a Z
+    * array. The implementation of this member function must be thread-safe if
+    * parallel processing has been enabled and is allowed for this object.
+    *
+    * 3. Information function:
+    *
+    * bool SI::HasFastVectorEvaluation() const
+    *
+    * This member function must return true if the \a S object provides fast
+    * surface evaluation for vectors of points with the Evaluate() function. If
+    * this function returns false for \a S, the operator ()() described above
+    * will be called exclusively from grid generation threads.
     *
     * If parallel processing is allowed, this function executes the
     * initialization process using multiple concurrent threads. See
@@ -325,9 +355,9 @@ public:
 private:
 
    /*!
-    * N.B.: Here we need a smooth interpolation function without negative
-    * lobes, in order to prevent small-scale oscillations. Other options are
-    * BilinearInterpolation and CubicBSplineFilter.
+    * N.B.: ** Critical requirement ** We need a smooth interpolation function
+    * without negative lobes here to prevent small-scale oscillations. Other
+    * options are BilinearInterpolation and CubicBSplineFilter.
     */
    using grid_interpolation = BicubicBSplineInterpolation<double>;
 
@@ -349,20 +379,67 @@ private:
          , m_startRow( startRow )
          , m_endRow( endRow )
       {
+         if ( m_surface.HasFastVectorEvaluation() )
+         {
+            m_N = int( Min( size_type( 4096 ), size_type( m_endRow - m_startRow )*m_grid.m_G.Cols() ) );
+            m_X = DVector( m_N );
+            m_Y = DVector( m_N );
+            m_Z = DVector( m_N );
+         }
       }
 
       PCL_HOT_FUNCTION void Run() override
       {
          INIT_THREAD_MONITOR()
 
-         double y = m_grid.m_rect.y0 + m_startRow*m_grid.m_delta;
-         for ( int i = m_startRow; i < m_endRow; ++i, y += m_grid.m_delta )
+         if ( m_surface.HasFastVectorEvaluation() )
          {
-            double x = m_grid.m_rect.x0;
-            for ( int j = 0; j < m_grid.m_G.Cols(); ++j, x += m_grid.m_delta )
-               m_grid.m_G[i][j] = m_surface( x, y );
+            int i0 = m_startRow, j0 = 0, n = 0;
+            double y = m_grid.m_rect.y0 + m_startRow*m_grid.m_delta;
+            for ( int i = m_startRow; i < m_endRow; ++i, y += m_grid.m_delta )
+            {
+               double x = m_grid.m_rect.x0;
+               for ( int j = 0; j < m_grid.m_G.Cols(); ++j, ++n, x += m_grid.m_delta )
+               {
+                  if ( n == m_N )
+                  {
+                     m_surface.Evaluate( m_Z.Begin(), m_X.Begin(), m_Y.Begin(), n );
+                     for ( int i1 = i0, k1 = 0; i1 <= i && k1 < n; ++i1, j0 = 0 )
+                        for ( int j1 = j0; j1 < m_grid.m_G.Cols() && k1 < n; ++j1, ++k1 )
+                           m_grid.m_G[i1][j1] = m_Z[k1];
+                     i0 = i;
+                     j0 = j;
+                     n = 0;
+                  }
 
-            UPDATE_THREAD_MONITOR( 32 )
+                  m_X[n] = x;
+                  m_Y[n] = y;
+               }
+
+               UPDATE_THREAD_MONITOR( 1 )
+            }
+
+            if ( n > 0 )
+            {
+               m_surface.Evaluate( m_Z.Begin(), m_X.Begin(), m_Y.Begin(), n );
+               for ( int i1 = i0, k1 = 0; i1 < m_endRow; ++i1, j0 = 0 )
+                  for ( int j1 = j0; j1 < m_grid.m_G.Cols(); ++j1, ++k1 )
+                     m_grid.m_G[i1][j1] = m_Z[k1];
+
+               UPDATE_THREAD_MONITOR( 1 )
+            }
+         }
+         else
+         {
+            double y = m_grid.m_rect.y0 + m_startRow*m_grid.m_delta;
+            for ( int i = m_startRow; i < m_endRow; ++i, y += m_grid.m_delta )
+            {
+               double x = m_grid.m_rect.x0;
+               for ( int j = 0; j < m_grid.m_G.Cols(); ++j, x += m_grid.m_delta )
+                  m_grid.m_G[i][j] = m_surface( x, y );
+
+               UPDATE_THREAD_MONITOR( 32 )
+            }
          }
       }
 
@@ -371,7 +448,8 @@ private:
       const AbstractImage::ThreadData& m_data;
             GridInterpolation& m_grid;
       const SI&                m_surface;
-            int                m_startRow, m_endRow;
+            int                m_startRow, m_endRow, m_N;
+            DVector            m_X, m_Y, m_Z;
    };
 };
 
@@ -441,17 +519,42 @@ public:
     *                the user during the (potentially long) initialization
     *                process. If false, no feedback will be provided.
     *
-    * The template parameter PSI must provide a member function of the form:
+    * The template parameter SI must implement the following member functions:
     *
-    * DPoint PSI::operator ()( int x, int y ) const
+    * 1. Function evaluation operator:
+    *
+    * DPoint PSI::operator ()( double x, double y ) const
     *
     * or an equivalent operator member function whose return value can be
     * statically casted to DPoint, with two by-value parameters that can be
-    * statically casted from the int type. This function will be called
-    * multiple times to evaluate the approximated surface at discrete grid
-    * coordinate pairs {x,y}. The implementation of this member function must
-    * be thread-safe if parallel processing has been enabled and allowed for
+    * statically casted from the double type. This function will be called
+    * multiple times for the \a PS object to evaluate the approximated surface
+    * at discrete grid coordinate pairs {x,y}, respectively on the X and Y
+    * plane directions. The implementation of this member function must be
+    * thread-safe if parallel processing has been enabled and is allowed for
     * this object.
+    *
+    * 2. Vector evaluation function:
+    *
+    * void PSI::Evaluate( double* ZX, double* ZY,\n
+    *                    const double* X, const double* Y, size_type n ) const
+    *
+    * This function will be called multiple times for the \a PS object for fast
+    * multithreaded surface evaluation at a set of points in 2-D space
+    * specified as the \a X and \a Y contiguous sequences of \a n coordinates.
+    * The function must store the corresponding function values in the \a ZX
+    * and \a ZY arrays. The implementation of this member function must be
+    * thread-safe if parallel processing has been enabled and is allowed for
+    * this object.
+    *
+    * 3. Information function:
+    *
+    * bool PSI::HasFastVectorEvaluation() const
+    *
+    * This member function must return true if the \a PS object provides fast
+    * surface evaluation for vectors of points with the Evaluate() function. If
+    * this function returns false, the operator ()() described above will be
+    * called exclusively from grid generation threads.
     *
     * If parallel processing is allowed, this function executes the
     * initialization process using multiple concurrent threads. See
@@ -528,18 +631,43 @@ public:
     *                the user during the (potentially long) initialization
     *                process. If false, no feedback will be provided.
     *
-    * The template parameter SI must provide a member function of the form:
+    * The template parameter SI must implement the following member functions:
     *
-    * double SI::operator ()( int x, int y ) const
+    * 1. Function evaluation operator:
+    *
+    * double SI::operator ()( double x, double y ) const
     *
     * or an equivalent operator member function whose return value can be
     * statically casted to double, with two by-value parameters that can be
-    * statically casted from the int type. This function will be called
+    * statically casted from the double type. This function will be called
     * multiple times for the \a Sx and \a Sy objects to evaluate the
     * approximated surface at discrete grid coordinate pairs {x,y},
     * respectively on the X and Y plane directions. The implementation of this
     * member function must be thread-safe if parallel processing has been
-    * enabled and allowed for this object.
+    * enabled and is allowed for this object.
+    *
+    * 2. Vector evaluation function:
+    *
+    * void SI::Evaluate( double* Z,\n
+    *                    const double* X, const double* Y, size_type n ) const
+    *
+    * This function will be called multiple times for the \a Sx and \a Sy
+    * objects for fast multithreaded surface evaluation at a set of points in
+    * 2-D space specified as the \a X and \a Y contiguous sequences of \a n
+    * coordinates. The function must store the corresponding function values in
+    * the \a Z array. The implementation of this member function must be
+    * thread-safe if parallel processing has been enabled and is allowed for
+    * this object.
+    *
+    * 3. Information function:
+    *
+    * bool SI::HasFastVectorEvaluation() const
+    *
+    * This member function must return true if each of the \a Sx and \a Sy
+    * objects provides fast surface evaluation for vectors of points with the
+    * Evaluate() function. If this function returns false for one or both
+    * objects, the operator ()() described above will be called exclusively
+    * from grid generation threads.
     *
     * If parallel processing is allowed, this function executes the
     * initialization process using multiple concurrent threads. See
@@ -804,9 +932,9 @@ public:
 private:
 
    /*!
-    * N.B.: Here we need a smooth interpolation function without negative
-    * lobes, in order to prevent small-scale oscillations. Other options are
-    * BilinearInterpolation and CubicBSplineFilter.
+    * N.B.: ** Critical requirement ** We need a smooth interpolation function
+    * without negative lobes here to prevent small-scale oscillations. Other
+    * options are BilinearInterpolation and CubicBSplineFilter.
     */
    using grid_interpolation = BicubicBSplineInterpolation<double>;
 
@@ -828,24 +956,78 @@ private:
          , m_startRow( startRow )
          , m_endRow( endRow )
       {
+         if ( m_surface.HasFastVectorEvaluation() )
+         {
+            m_N = int( Min( size_type( 4096 ), size_type( m_endRow - m_startRow )*m_grid.m_Gx.Cols() ) );
+            m_X = DVector( m_N );
+            m_Y = DVector( m_N );
+            m_ZX = DVector( m_N );
+            m_ZY = DVector( m_N );
+         }
       }
 
       PCL_HOT_FUNCTION void Run() override
       {
          INIT_THREAD_MONITOR()
 
-         double y = m_grid.m_rect.y0 + m_startRow*m_grid.m_delta;
-         for ( int i = m_startRow; i < m_endRow; ++i, y += m_grid.m_delta )
+         if ( m_surface.HasFastVectorEvaluation() )
          {
-            double x = m_grid.m_rect.x0;
-            for ( int j = 0; j < m_grid.m_Gx.Cols(); ++j, x += m_grid.m_delta )
+            int i0 = m_startRow, j0 = 0, n = 0;
+            double y = m_grid.m_rect.y0 + m_startRow*m_grid.m_delta;
+            for ( int i = m_startRow; i < m_endRow; ++i, y += m_grid.m_delta )
             {
-               DPoint p = m_surface( x, y );
-               m_grid.m_Gx[i][j] = p.x;
-               m_grid.m_Gy[i][j] = p.y;
+               double x = m_grid.m_rect.x0;
+               for ( int j = 0; j < m_grid.m_Gx.Cols(); ++j, ++n, x += m_grid.m_delta )
+               {
+                  if ( n == m_N )
+                  {
+                     m_surface.Evaluate( m_ZX.Begin(), m_ZY.Begin(), m_X.Begin(), m_Y.Begin(), n );
+                     for ( int i1 = i0, k1 = 0; i1 <= i && k1 < n; ++i1, j0 = 0 )
+                        for ( int j1 = j0; j1 < m_grid.m_Gx.Cols() && k1 < n; ++j1, ++k1 )
+                        {
+                           m_grid.m_Gx[i1][j1] = m_ZX[k1];
+                           m_grid.m_Gy[i1][j1] = m_ZY[k1];
+                        }
+                     i0 = i;
+                     j0 = j;
+                     n = 0;
+                  }
+
+                  m_X[n] = x;
+                  m_Y[n] = y;
+               }
+
+               UPDATE_THREAD_MONITOR( 1 )
             }
 
-            UPDATE_THREAD_MONITOR( 32 )
+            if ( n > 0 )
+            {
+               m_surface.Evaluate( m_ZX.Begin(), m_ZY.Begin(), m_X.Begin(), m_Y.Begin(), n );
+               for ( int i1 = i0, k1 = 0; i1 < m_endRow; ++i1, j0 = 0 )
+                  for ( int j1 = j0; j1 < m_grid.m_Gx.Cols(); ++j1, ++k1 )
+                  {
+                     m_grid.m_Gx[i1][j1] = m_ZX[k1];
+                     m_grid.m_Gy[i1][j1] = m_ZY[k1];
+                  }
+
+               UPDATE_THREAD_MONITOR( 1 )
+            }
+         }
+         else
+         {
+            double y = m_grid.m_rect.y0 + m_startRow*m_grid.m_delta;
+            for ( int i = m_startRow; i < m_endRow; ++i, y += m_grid.m_delta )
+            {
+               double x = m_grid.m_rect.x0;
+               for ( int j = 0; j < m_grid.m_Gx.Cols(); ++j, x += m_grid.m_delta )
+               {
+                  DPoint p = m_surface( x, y );
+                  m_grid.m_Gx[i][j] = p.x;
+                  m_grid.m_Gy[i][j] = p.y;
+               }
+
+               UPDATE_THREAD_MONITOR( 32 )
+            }
          }
       }
 
@@ -854,7 +1036,8 @@ private:
       const AbstractImage::ThreadData& m_data;
             PointGridInterpolation&    m_grid;
       const PSI&                       m_surface;
-            int                        m_startRow, m_endRow;
+            int                        m_startRow, m_endRow, m_N;
+            DVector                    m_X, m_Y, m_ZX, m_ZY;
    };
 
    template <class SI>
@@ -872,23 +1055,78 @@ private:
          , m_startRow( startRow )
          , m_endRow( endRow )
       {
+         if ( m_surfaceX.HasFastVectorEvaluation() && m_surfaceY.HasFastVectorEvaluation() )
+         {
+            m_N = int( Min( size_type( 4096 ), size_type( m_endRow - m_startRow )*m_grid.m_Gx.Cols() ) );
+            m_X = DVector( m_N );
+            m_Y = DVector( m_N );
+            m_Z = DVector( m_N );
+         }
       }
 
       PCL_HOT_FUNCTION void Run() override
       {
          INIT_THREAD_MONITOR()
 
-         double y = m_grid.m_rect.y0 + m_startRow*m_grid.m_delta;
-         for ( int i = m_startRow; i < m_endRow; ++i, y += m_grid.m_delta )
+         if ( m_surfaceX.HasFastVectorEvaluation() && m_surfaceY.HasFastVectorEvaluation() )
          {
-            double x = m_grid.m_rect.x0;
-            for ( int j = 0; j < m_grid.m_Gx.Cols(); ++j, x += m_grid.m_delta )
+            int i0 = m_startRow, j0 = 0, n = 0;
+            double y = m_grid.m_rect.y0 + m_startRow*m_grid.m_delta;
+            for ( int i = m_startRow; i < m_endRow; ++i, y += m_grid.m_delta )
             {
-               m_grid.m_Gx[i][j] = m_surfaceX( x, y );
-               m_grid.m_Gy[i][j] = m_surfaceY( x, y );
+               double x = m_grid.m_rect.x0;
+               for ( int j = 0; j < m_grid.m_Gx.Cols(); ++j, ++n, x += m_grid.m_delta )
+               {
+                  if ( n == m_N )
+                  {
+                     m_surfaceX.Evaluate( m_Z.Begin(), m_X.Begin(), m_Y.Begin(), n );
+                     for ( int i1 = i0, jj0 = j0, k1 = 0; i1 <= i && k1 < n; ++i1, jj0 = 0 )
+                        for ( int j1 = jj0; j1 < m_grid.m_Gx.Cols() && k1 < n; ++j1, ++k1 )
+                           m_grid.m_Gx[i1][j1] = m_Z[k1];
+                     m_surfaceY.Evaluate( m_Z.Begin(), m_X.Begin(), m_Y.Begin(), n );
+                     for ( int i1 = i0, jj0 = j0, k1 = 0; i1 <= i && k1 < n; ++i1, jj0 = 0 )
+                        for ( int j1 = jj0; j1 < m_grid.m_Gx.Cols() && k1 < n; ++j1, ++k1 )
+                           m_grid.m_Gy[i1][j1] = m_Z[k1];
+                     i0 = i;
+                     j0 = j;
+                     n = 0;
+                  }
+
+                  m_X[n] = x;
+                  m_Y[n] = y;
+               }
+
+               UPDATE_THREAD_MONITOR( 1 )
             }
 
-            UPDATE_THREAD_MONITOR( 32 )
+            if ( n > 0 )
+            {
+               m_surfaceX.Evaluate( m_Z.Begin(), m_X.Begin(), m_Y.Begin(), n );
+               for ( int i1 = i0, jj0 = j0, k1 = 0; i1 < m_endRow; ++i1, jj0 = 0 )
+                  for ( int j1 = jj0; j1 < m_grid.m_Gx.Cols(); ++j1, ++k1 )
+                     m_grid.m_Gx[i1][j1] = m_Z[k1];
+               m_surfaceY.Evaluate( m_Z.Begin(), m_X.Begin(), m_Y.Begin(), n );
+               for ( int i1 = i0, jj0 = j0, k1 = 0; i1 < m_endRow; ++i1, jj0 = 0 )
+                  for ( int j1 = jj0; j1 < m_grid.m_Gx.Cols(); ++j1, ++k1 )
+                     m_grid.m_Gy[i1][j1] = m_Z[k1];
+
+               UPDATE_THREAD_MONITOR( 1 )
+            }
+         }
+         else
+         {
+            double y = m_grid.m_rect.y0 + m_startRow*m_grid.m_delta;
+            for ( int i = m_startRow; i < m_endRow; ++i, y += m_grid.m_delta )
+            {
+               double x = m_grid.m_rect.x0;
+               for ( int j = 0; j < m_grid.m_Gx.Cols(); ++j, x += m_grid.m_delta )
+               {
+                  m_grid.m_Gx[i][j] = m_surfaceX( x, y );
+                  m_grid.m_Gy[i][j] = m_surfaceY( x, y );
+               }
+
+               UPDATE_THREAD_MONITOR( 32 )
+            }
          }
       }
 
@@ -898,7 +1136,8 @@ private:
             PointGridInterpolation&    m_grid;
       const SI&                        m_surfaceX;
       const SI&                        m_surfaceY;
-            int                        m_startRow, m_endRow;
+            int                        m_startRow, m_endRow, m_N;
+            DVector                    m_X, m_Y, m_Z;
    };
 
    template <class PSI>
@@ -995,4 +1234,4 @@ private:
 #endif   // __PCL_GridInterpolation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/GridInterpolation.h - Released 2024-06-18T15:48:54Z
+// EOF pcl/GridInterpolation.h - Released 2024-12-11T17:42:29Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.6.0
+// Standard Global Process Module Version 1.6.1
 // ----------------------------------------------------------------------------
-// PreferencesInterface.cpp - Released 2024-06-18T15:49:25Z
+// PreferencesInterface.cpp - Released 2024-12-11T17:43:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -2182,7 +2182,14 @@ SecurityPreferencesPage::SecurityPreferencesPage( PreferencesInstance& instance 
    AllowUnsignedModuleInstallation_Flag.SetToolTip(
       "<p>Allow installation of modules without code signature files.</p>"
       "<p><b>Important:</b> Installation of modules with invalid code signatures is always forbidden, "
-      "regardless of this option.</p>" );
+      "regardless of this option.</p>"
+#ifndef __PCL_ALLOW_UNSIGNED_MODULE_INSTALLATION
+      "<p><b>Note:</b> Module signatures are required since PixInsight core version 1.9.0.</p>"
+#endif
+   );
+#ifndef __PCL_ALLOW_UNSIGNED_MODULE_INSTALLATION
+   AllowUnsignedModuleInstallation_Flag.Disable();
+#endif
 
    AllowUnsignedRepositories_Flag.checkBox.SetText( "Allow unsigned update repositories" );
    AllowUnsignedRepositories_Flag.item = &instance.security.allowUnsignedRepositories;
@@ -3135,4 +3142,4 @@ void PreferencesInterface::GUIData::InitializeCategories()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInterface.cpp - Released 2024-06-18T15:49:25Z
+// EOF PreferencesInterface.cpp - Released 2024-12-11T17:43:17Z

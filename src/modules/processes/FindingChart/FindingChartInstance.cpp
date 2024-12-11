@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// Standard FindingChart Process Module Version 1.2.0
+// Standard FindingChart Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// FindingChartInstance.cpp - Released 2024-06-18T15:49:25Z
+// FindingChartInstance.cpp - Released 2024-12-11T17:43:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FindingChart PixInsight module.
 //
@@ -202,77 +202,6 @@ bool FindingChartInstance::CanExecuteOn( const View& view, String& whyNot ) cons
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-/*
- * Predicate class for sorting a set of points in clockwise direction.
- */
-class PointsClockwisePredicate
-{
-public:
-
-   /*
-    * Initialize point sorting with respect to the barycenter of the specified
-    * set of points.
-    */
-   PointsClockwisePredicate( const Array<DPoint>& P )
-   {
-      // Compute the polygon's barycenter
-      PCL_PRECONDITION( P.Length() > 2 )
-      for ( const DPoint& p : P )
-         m_c += p;
-      m_c /= P.Length();
-   }
-
-   /*
-    * Predicate function: Returns true iff the point a precedes the point b in
-    * clockwise sorting order.
-    */
-   bool operator()( const DPoint& a, const DPoint& b ) const
-   {
-      /*
-       * Points on different sides of the vertical line passing through c.
-       *
-       * - a to the right and b to the left: a < b
-       * - a to the left and b to the right: a > b
-       */
-      if ( a.x >= m_c.x )
-      {
-         if ( b.x < m_c.x )
-            return true;
-      }
-      else
-      {
-         if ( b.x >= m_c.x )
-            return false;
-      }
-
-      /*
-       * If the points are not collinear, sort in clockwise direction.
-       *
-       * d:  > 0 if b is to the left of the line c-a
-       *     < 0 if b is to the right of the line c-a
-       *    == 0 if b is on the line c-a
-       */
-      double d = (a.x - m_c.x)*(b.y - m_c.y) - (b.x - m_c.x)*(a.y - m_c.y);
-      if ( likely( d != 0 ) )
-         return d < 0;
-
-      /*
-       * Sort collinear points by their distance to the center.
-       */
-      double dxa = a.x - m_c.x;
-      double dxb = b.x - m_c.x;
-      if ( dxa != dxb )
-         return Abs( dxa ) < Abs( dxb );
-      double dya = a.y - m_c.y;
-      double dyb = b.y - m_c.y;
-      return Abs( dya ) < Abs( dyb );
-   }
-
-private:
-
-   DPoint m_c = 0.0; // reference center point
-};
-
 bool FindingChartInstance::ExecuteOn( View& view )
 {
    {
@@ -461,12 +390,15 @@ bool FindingChartInstance::ExecuteOn( View& view )
        * Annotate the synthetic star field.
        */
       arguments = StringKeyValueList()
-                  << StringKeyValue( "engine_vizierServer", "http://cdsarc.u-strasbg.fr/" )
+                  << StringKeyValue( "non_interactive", "true" )
+                  << StringKeyValue( "engine_layers", "Grid|Ecliptic|Galactic Equator|Constellation Borders|Constellation Lines|Messier|NamedStars|NGC-IC" )
+                  << StringKeyValue( "engine_vizierServer", "https://vizier.cds.unistra.fr/" )
                   << StringKeyValue( "engine_removeDuplicates", "true" )
                   << StringKeyValue( "engine_outputMode", "0" ) // raster
                   << StringKeyValue( "engine_applySTF", "false" )
                   << StringKeyValue( "engine_textScale", "1.5" )
                   << StringKeyValue( "engine_graphicsScale", "1" )
+                  << StringKeyValue( "engine_smallSizeThreshold", "2" )
                   << StringKeyValue( "engine_writeObjects", "false" )
                   << StringKeyValue( "engine_optimizeLabelPlacement", "true" )
                   << StringKeyValue( "engine_dropShadow", "false" )
@@ -576,10 +508,7 @@ bool FindingChartInstance::ExecuteOn( View& view )
                   << StringKeyValue( "ly7_labelColor", String( p_ngcTextColor ) )
                   << StringKeyValue( "ly7_labelFace", "DejaVu Sans" )
                   << StringKeyValue( "ly7_labelFields", "||||Name|||Common name" )
-                  << StringKeyValue( "ly7_maxObjects", "4294967295" )
-                  //
-                  << StringKeyValue( "engine_layers", "Grid|Ecliptic|Galactic Equator|Constellation Borders|Constellation Lines|Messier|NamedStars|NGC-IC" )
-                  << StringKeyValue( "non_interactive", "true" );
+                  << StringKeyValue( "ly7_maxObjects", "4294967295" );
 
       Console().ExecuteScriptOn( starFieldWindow.MainView(), coreSrcDir + "/scripts/AdP/AnnotateImage.js", arguments );
 
@@ -741,4 +670,4 @@ size_type FindingChartInstance::ParameterLength( const MetaParameter* p, size_ty
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FindingChartInstance.cpp - Released 2024-06-18T15:49:25Z
+// EOF FindingChartInstance.cpp - Released 2024-12-11T17:43:17Z

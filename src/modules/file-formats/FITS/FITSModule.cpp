@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// Standard FITS File Format Module Version 1.2.0
+// Standard FITS File Format Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// FITSModule.cpp - Released 2024-06-18T15:49:17Z
+// FITSModule.cpp - Released 2024-12-11T17:43:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -52,13 +52,13 @@
 
 #define MODULE_VERSION_MAJOR     1
 #define MODULE_VERSION_MINOR     2
-#define MODULE_VERSION_REVISION  0
+#define MODULE_VERSION_REVISION  1
 #define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2024
-#define MODULE_RELEASE_MONTH     6
-#define MODULE_RELEASE_DAY       18
+#define MODULE_RELEASE_MONTH     12
+#define MODULE_RELEASE_DAY       11
 
 #include "FITSModule.h"
 #include "FITSFormat.h"
@@ -167,4 +167,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF FITSModule.cpp - Released 2024-06-18T15:49:17Z
+// EOF FITSModule.cpp - Released 2024-12-11T17:43:04Z

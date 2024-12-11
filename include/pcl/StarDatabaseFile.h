@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/StarDatabaseFile.h - Released 2024-06-18T15:48:54Z
+// pcl/StarDatabaseFile.h - Released 2024-12-11T17:42:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -97,7 +97,7 @@ public:
     * database files (current XPSD format version 1.0). For an existing
     * database file, available metadata are extracted directly from %XML file
     * headers. Currently all items are optional, so all data members of this
-    * structure can be empty strings.
+    * structure can legally be empty strings.
     *
     * For generation of new XPSD files, the creationTime and creatorOS members
     * of this structure will be ignored, since the corresponding metadata items
@@ -144,7 +144,7 @@ public:
    };
 
    /*!
-    * \struct SearchDataBase
+    * \struct pcl::XPSD::SearchDataBase
     * \brief Parameters and output instrumentation data for catalog search
     * operations.
     *
@@ -180,7 +180,7 @@ public:
    };
 
    /*!
-    * \struct SearchData
+    * \struct pcl::XPSD::SearchData
     * \brief Data items and parameters for catalog search operations.
     *
     * The StarData template parameter represents a catalog-specific structure
@@ -561,13 +561,13 @@ public:
     * database file in XPSD format.
     *
     * This member function opens an existing file at the specified \a filePath,
-    * loads and parses its XML header, and loads the file indexes ready for
+    * loads and parses its %XML header, and loads the file indexes ready for
     * fast access to point source data. The file will remain open until this
     * object is destroyed, or until a new call to this function is made.
     *
-    * If a previous file was already opened by this instance, it will be closed
-    * and all associated control and file indexing structures will be destroyed
-    * and deallocated, before accessing the new file.
+    * If an existing file was already opened by this instance, it will be
+    * closed and all its associated control and file indexing structures will
+    * be destroyed and deallocated before accessing the new file.
     */
    void Open( const String& filePath );
 
@@ -575,10 +575,10 @@ public:
     * Closes the point source database file represented by this object and
     * resets all internal structures to a default, uninitialized state.
     *
-    * If a previous file was already opened by this instance, it will be closed
-    * and all associated control and file indexing structures will be destroyed
-    * and deallocated. If no file is currently open, calling this member has no
-    * effect.
+    * If an existing file was already opened by this instance, it will be
+    * closed and all its associated control and file indexing structures will
+    * be destroyed and deallocated. If no file is currently open, calling this
+    * member has no effect.
     */
    void Close();
 
@@ -676,7 +676,7 @@ public:
     *                      and parameters used, \e not to compress any data.
     *
     * \param parameters    Special parameters for interpretation of the
-    *                      serialized point source data. Is a nonempty string
+    *                      serialized point source data. If a nonempty string
     *                      is specified, it will be set as the value of the
     *                      \c "parameters" attribute of the \c Data element,
     *                      and will be available as the \c m_parameters
@@ -685,8 +685,8 @@ public:
     * In the event of invalid, incongruent or malformed data, or if an I/O
     * error occurs, this function will throw an Error exception.
     *
-    * \warning If a file already exists at the specified path, its previous
-    * contents will be lost after calling this function.
+    * \warning If a file already exists at the specified \a filePath, its
+    * previous contents will be lost after calling this function.
     */
    static void Serialize( const String& filePath,
                           const XPSD::Metadata& metadata,
@@ -770,4 +770,4 @@ XPSD::IndexTree::SearchRecursive( uint32 nodeIndex, double ra, double dec, doubl
 #endif  // __PCL_StarDatabaseFile_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/StarDatabaseFile.h - Released 2024-06-18T15:48:54Z
+// EOF pcl/StarDatabaseFile.h - Released 2024-12-11T17:42:29Z

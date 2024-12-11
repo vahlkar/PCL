@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/FFT2D.cpp - Released 2024-06-18T15:49:06Z
+// pcl/FFT2D.cpp - Released 2024-12-11T17:42:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -117,7 +117,7 @@ protected:
  * 2-D transforms of complex data
  */
 template <typename T>
-class PCL_FFT2DEngine : public PCL_FFT2DEngineBase<Complex<T>,Complex<T> >
+class PCL_FFT2DEngine : public PCL_FFT2DEngineBase<Complex<T>,Complex<T>>
 {
 public:
 
@@ -149,7 +149,7 @@ public:
       }
    }
 
-   virtual ~PCL_FFT2DEngine()
+   ~PCL_FFT2DEngine() override
    {
    }
 
@@ -183,7 +183,10 @@ private:
             {
                int d = i*m_engine.m_cols;
                memcpy( *irow, m_engine.m_input + d, m_engine.m_cols*sizeof( complex ) );
-               this->Transform( h, m_engine.m_output + d, *irow );
+               if ( m_engine.m_dir == PCL_FFT_FORWARD )
+                  this->Transform( h, m_engine.m_output + d, *irow );
+               else
+                  this->InverseTransform( h, m_engine.m_output + d, *irow );
             }
          }
          else
@@ -191,7 +194,10 @@ private:
             for ( int i = m_firstRow; i < m_endRow; ++i )
             {
                int d = i*m_engine.m_cols;
-               this->Transform( h, m_engine.m_output + d, m_engine.m_input + d );
+               if ( m_engine.m_dir == PCL_FFT_FORWARD )
+                  this->Transform( h, m_engine.m_output + d, m_engine.m_input + d );
+               else
+                  this->InverseTransform( h, m_engine.m_output + d, m_engine.m_input + d );
             }
          }
 
@@ -231,7 +237,10 @@ private:
             for ( int i = 0, k = j; i < m_engine.m_rows; ++i, k += m_engine.m_cols )
                icol[i] = m_engine.m_output[k];
 
-            this->Transform( h, *ocol, *icol );
+            if ( m_engine.m_dir == PCL_FFT_FORWARD )
+               this->Transform( h, *ocol, *icol );
+            else
+               this->InverseTransform( h, *ocol, *icol );
 
             for ( int i = 0, k = j; i < m_engine.m_rows; ++i, k += m_engine.m_cols )
                m_engine.m_output[k] = ocol[i];
@@ -264,7 +273,7 @@ public:
    {
    }
 
-   virtual ~PCL_FFT2DRealEngineBase()
+   ~PCL_FFT2DRealEngineBase() override
    {
    }
 
@@ -305,7 +314,7 @@ public:
       }
    }
 
-   virtual ~PCL_FFT2DRealEngine()
+   ~PCL_FFT2DRealEngine() override
    {
    }
 
@@ -415,7 +424,7 @@ public:
       }
    }
 
-   virtual ~PCL_FFT2DRealInverseEngine()
+   ~PCL_FFT2DRealInverseEngine() override
    {
    }
 
@@ -448,7 +457,7 @@ private:
             for ( int i = 0, k = j; i < m_engine.m_rows; ++i, k += m_engine.m_transformCols )
                icol[i] = m_engine.m_input[k];
 
-            this->Transform( h, *ocol, *icol );
+            this->InverseTransform( h, *ocol, *icol );
 
             for ( int i = 0; i < m_engine.m_rows; ++i )
                m_engine.m_colTransform[i][j] = ocol[i];
@@ -481,7 +490,7 @@ private:
       {
          void* h = this->CreateInv( m_engine.m_cols, (scalar*)0 );
          for ( int i = m_firstRow; i < m_endRow; ++i )
-            this->Transform( h, m_engine.m_output + i*m_engine.m_cols, m_engine.m_colTransform[i] );
+            this->InverseTransform( h, m_engine.m_output + i*m_engine.m_cols, m_engine.m_colTransform[i] );
          this->Destroy( h );
       }
 
@@ -515,12 +524,12 @@ void FFT2DBase::Transform( int rows, int cols, dcomplex* y, const double* x, Sta
    PCL_FFT2DRealEngine<double>( rows, cols, y, x, monitor, parallel, maxProcessors );
 }
 
-void FFT2DBase::Transform( int rows, int cols, float* y, const fcomplex* x, StatusMonitor* monitor, bool parallel, int maxProcessors )
+void FFT2DBase::InverseTransform( int rows, int cols, float* y, const fcomplex* x, StatusMonitor* monitor, bool parallel, int maxProcessors )
 {
    PCL_FFT2DRealInverseEngine<float>( rows, cols, y, x, monitor, parallel, maxProcessors );
 }
 
-void FFT2DBase::Transform( int rows, int cols, double* y, const dcomplex* x, StatusMonitor* monitor, bool parallel, int maxProcessors )
+void FFT2DBase::InverseTransform( int rows, int cols, double* y, const dcomplex* x, StatusMonitor* monitor, bool parallel, int maxProcessors )
 {
    PCL_FFT2DRealInverseEngine<double>( rows, cols, y, x, monitor, parallel, maxProcessors );
 }
@@ -530,4 +539,4 @@ void FFT2DBase::Transform( int rows, int cols, double* y, const dcomplex* x, Sta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FFT2D.cpp - Released 2024-06-18T15:49:06Z
+// EOF pcl/FFT2D.cpp - Released 2024-12-11T17:42:39Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/DrizzleData.cpp - Released 2024-06-18T15:49:06Z
+// pcl/DrizzleData.cpp - Released 2024-12-11T17:42:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -55,6 +55,8 @@
 #include <pcl/DrizzleData.h>
 #include <pcl/XML.h>
 
+#include <pcl/api/APIInterface.h>
+
 #include <errno.h>
 
 namespace pcl
@@ -75,8 +77,6 @@ void DrizzleData::Clear()
    m_LP2.Clear();
    m_LD1.Clear();
    m_LW.Clear();
-   m_Sx = m_Sy = m_Sxinv = m_Syinv = spline();
-   m_SH = m_SinvH = Matrix();
    ClearIntegrationData();
 }
 
@@ -93,7 +93,6 @@ void DrizzleData::ClearIntegrationData()
    m_adaptiveZeroOffsetHigh.Clear();
    m_rejectionLowCount = m_rejectionHighCount = UI64Vector();
    m_rejectionMap.FreeData();
-   m_rejectLowData = m_rejectHighData = rejection_data();
 }
 
 // ----------------------------------------------------------------------------
@@ -237,6 +236,7 @@ void DrizzleData::SerializeToFile( const String& path ) const
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 static void WarnOnUnexpectedChildNode( const XMLNode& node, const String& parsingWhatElement )
 {
@@ -296,7 +296,7 @@ static Vector ParseListOfRealValues( IsoString& text, size_type start, size_type
       text[j] = '\0';
       double x;
       if ( !TryToDouble( x, text.At( i ) ) )
-         throw Error( "Parsing real numeric list: Invalid floating point numeric literal \'" + IsoString( text.At( i ) ) + "\'" );
+         throw Error( "Parsing real numeric list: Invalid floating point numeric literal \'" + IsoString( text.At( i ) ) + "\' at offset " + IsoString( start ) );
       if ( v.Length() == maxCount )
          throw Error( "Parsing real numeric list: Too many items." );
       v << x;
@@ -366,9 +366,9 @@ static int ParseIntegerValue( const IsoString& s, size_type start, size_type end
 // ----------------------------------------------------------------------------
 
 template <typename T>
-static GenericVector<T> ParseBase64EncodedVector( const XMLElement& element, size_type minCount = 0, size_type maxCount = ~size_type( 0 ) )
+GenericVector<T> DrizzleData::ParseMaybeCompressedVector( const XMLElement& element, size_type minCount, size_type maxCount )
 {
-   ByteArray data = IsoString( element.Text().Trimmed() ).FromBase64();
+   ByteArray data = DrizzleData::ParseMaybeCompressedData( element );
    if ( data.IsEmpty() )
       throw Error( "Missing encoded vector data in " + element.Name() + " element." );
    if ( data.Size() % sizeof( T ) != 0 )
@@ -379,6 +379,42 @@ static GenericVector<T> ParseBase64EncodedVector( const XMLElement& element, siz
    if ( n > maxCount )
       throw Error( "Too many vector components in " + element.Name() + " element." );
    return GenericVector<T>( reinterpret_cast<const T*>( data.Begin() ), int( n ) );
+}
+
+// ----------------------------------------------------------------------------
+
+static SurfaceSplineBase::rbf_type RBFTypeFromAttributeValue( const String& value )
+{
+   if ( value == "DDMThinPlateSpline" )
+      return RadialBasisFunction::DDMThinPlateSpline;
+   if ( value == "DDMVariableOrder" )
+      return RadialBasisFunction::DDMVariableOrder;
+   if ( value == "ThinPlateSpline" )
+      return RadialBasisFunction::ThinPlateSpline;
+   if ( value == "VariableOrder" )
+      return RadialBasisFunction::VariableOrder;
+   if ( value == "DDMMultiquadric" )
+      return RadialBasisFunction::DDMMultiquadric;
+
+   throw Error( "Unknown or unsupported radial basis function type '" + value + "'" );
+}
+
+static String RBFTypeToAttributeValue( SurfaceSplineBase::rbf_type rbf )
+{
+   switch ( rbf )
+   {
+   default: // ?!
+   case RadialBasisFunction::DDMThinPlateSpline:
+      return "DDMThinPlateSpline";
+   case RadialBasisFunction::DDMVariableOrder:
+      return "DDMVariableOrder";
+   case RadialBasisFunction::ThinPlateSpline:
+      return "ThinPlateSpline";
+   case RadialBasisFunction::VariableOrder:
+      return "VariableOrder";
+   case RadialBasisFunction::DDMMultiquadric:
+      return "DDMMultiquadric";
+   }
 }
 
 // ----------------------------------------------------------------------------
@@ -402,30 +438,6 @@ void DrizzleData::Parse( const String& filePath, DrizzleParserOptions options )
       {
          Clear();
          PlainTextDecoder( this, options.IsFlagSet( DrizzleParserOption::IgnoreIntegrationData ) ).Decode( text );
-
-         // Build rejection map from rejection coordinate lists.
-         if ( !m_rejectHighData.IsEmpty() || !m_rejectLowData.IsEmpty() )
-         {
-            m_rejectionMap.AllocateData( m_referenceWidth, m_referenceHeight, NumberOfChannels() );
-            m_rejectionMap.Zero();
-
-            if ( !m_rejectHighData.IsEmpty() )
-            {
-               for ( int c = 0; c < NumberOfChannels(); ++c )
-                  for ( const Point& p : m_rejectHighData[c] )
-                     m_rejectionMap( p, c ) = uint8( 1 );
-               m_rejectHighData.Clear();
-            }
-
-            if ( !m_rejectLowData.IsEmpty() )
-            {
-               for ( int c = 0; c < NumberOfChannels(); ++c )
-                  for ( const Point& p : m_rejectLowData[c] )
-                     m_rejectionMap( p, c ) |= uint8( 2 );
-               m_rejectLowData.Clear();
-            }
-         }
-
          return;
       }
    }
@@ -452,6 +464,9 @@ void DrizzleData::Parse( const XMLElement& root, DrizzleParserOptions options )
 
    bool ignoreIntegrationData = options.IsFlagSet( DrizzleParserOption::IgnoreIntegrationData );
    bool requireIntegrationData = options.IsFlagSet( DrizzleParserOption::RequireIntegrationData );
+
+   spline Sx, Sy, Sxinv, Syinv;
+   Matrix SH, SinvH;
 
    for ( const XMLNode& node : root )
    {
@@ -512,29 +527,29 @@ void DrizzleData::Parse( const XMLElement& root, DrizzleParserOptions options )
          }
          else if ( element.Name() == "AlignmentSplineX" )
          {
-            ParseSpline( m_Sx, element );
+            ParseSpline( Sx, element );
          }
          else if ( element.Name() == "AlignmentSplineY" )
          {
-            ParseSpline( m_Sy, element );
+            ParseSpline( Sy, element );
          }
          else if ( element.Name() == "AlignmentReferenceMatrix" )
          {
             Vector v = ParseListOfRealValues( element, 9, 9 );
-            m_SH = Matrix( v.Begin(), 3, 3 );
+            SH = Matrix( v.Begin(), 3, 3 );
          }
          else if ( element.Name() == "AlignmentInverseSplineX" )
          {
-            ParseSpline( m_Sxinv, element );
+            ParseSpline( Sxinv, element );
          }
          else if ( element.Name() == "AlignmentInverseSplineY" )
          {
-            ParseSpline( m_Syinv, element );
+            ParseSpline( Syinv, element );
          }
          else if ( element.Name() == "AlignmentInverseReferenceMatrix" )
          {
             Vector v = ParseListOfRealValues( element, 9, 9 );
-            m_SinvH = Matrix( v.Begin(), 3, 3 );
+            SinvH = Matrix( v.Begin(), 3, 3 );
          }
          else if ( element.Name() == "LocalDistortionModel" )
          {
@@ -736,16 +751,16 @@ void DrizzleData::Parse( const XMLElement& root, DrizzleParserOptions options )
    if ( m_referenceWidth < 1 || m_referenceHeight < 1 )
       throw Error( "Missing required ReferenceGeometry element." );
 
-   if ( m_H.IsEmpty() && !m_Sx.IsValid() )
+   if ( m_H.IsEmpty() && !Sx.IsValid() )
       throw Error( "Missing required AlignmentMatrix or AlignmentSplineX/AlignmentSplineY element(s)." );
 
-   if ( m_Sx.IsValid() != m_Sy.IsValid() )
+   if ( Sx.IsValid() != Sy.IsValid() )
       throw Error( "Missing required AlignmentSplineX/AlignmentSplineY element." );
 
-   if ( m_Sxinv.IsValid() != m_Syinv.IsValid() )
+   if ( Sxinv.IsValid() != Syinv.IsValid() )
       throw Error( "Missing required inverse AlignmentSplineX/AlignmentSplineY element." );
 
-   if ( m_Sxinv.IsValid() && !m_Sx.IsValid() )
+   if ( Sxinv.IsValid() && !Sx.IsValid() )
       throw Error( "Missing required AlignmentSplineX and AlignmentSplineY elements." );
 
    if ( !ignoreIntegrationData )
@@ -790,32 +805,26 @@ void DrizzleData::Parse( const XMLElement& root, DrizzleParserOptions options )
             throw Error( "Incongruent adaptive normalization data." );
    }
 
-   if ( m_Sx.IsValid() )
+   if ( Sx.IsValid() )
    {
-      m_S.m_Sx = m_Sx;
-      m_S.m_Sy = m_Sy;
-      m_Sx.Clear();
-      m_Sy.Clear();
+      m_S.m_Sx = std::move( Sx );
+      m_S.m_Sy = std::move( Sy );
 
-      if ( !m_SH.IsEmpty() )
+      if ( !SH.IsEmpty() )
       {
          m_S.m_incremental = true;
-         m_S.m_H = m_SH;
-         m_SH = Matrix();
+         m_S.m_H = std::move( SH );
       }
 
-      if ( m_Sxinv.IsValid() )
+      if ( Sxinv.IsValid() )
       {
-         m_Sinv.m_Sx = m_Sxinv;
-         m_Sinv.m_Sy = m_Syinv;
-         m_Sxinv.Clear();
-         m_Syinv.Clear();
+         m_Sinv.m_Sx = std::move( Sxinv );
+         m_Sinv.m_Sy = std::move( Syinv );
 
-         if ( !m_SinvH.IsEmpty() )
+         if ( !SinvH.IsEmpty() )
          {
             m_Sinv.m_incremental = true;
-            m_Sinv.m_H = m_SinvH;
-            m_SinvH = Matrix();
+            m_Sinv.m_H = std::move( SinvH );
          }
       }
    }
@@ -924,12 +933,21 @@ void DrizzleData::ParseSpline( DrizzleData::spline& S, const XMLElement& root )
 
    // Derivative order > 0
    s = root.AttributeValue( "order" );
-   if ( s.IsEmpty() )
-      throw Error( "Missing surface spline order attribute." );
-   S.m_order = s.ToInt();
-   if ( S.m_order < 2 )
-      throw Error( "Invalid surface spline derivative order '" + s + '\'' );
-   S.m_rbf = (S.m_order == 2) ? RadialBasisFunction::ThinPlateSpline : RadialBasisFunction::VariableOrder;
+   if ( !s.IsEmpty() )
+   {
+      S.m_order = s.ToInt();
+      if ( S.m_order < 2 )
+         throw Error( "Invalid surface spline derivative order '" + s + '\'' );
+   }
+   else
+      S.m_order = 2;
+
+   // RBF type
+   s = root.AttributeValue( "rbfType" );
+   if ( !s.IsEmpty() )
+      S.m_rbf = RBFTypeFromAttributeValue( s );
+   else // be compatible with older versions
+      S.m_rbf = (S.m_order == 2) ? RadialBasisFunction::ThinPlateSpline : RadialBasisFunction::VariableOrder;
 
    // Smoothing factor, or interpolating 2-D spline if m_smoothing == 0
    s = root.AttributeValue( "smoothing" );
@@ -946,6 +964,7 @@ void DrizzleData::ParseSpline( DrizzleData::spline& S, const XMLElement& root )
    S.m_y.Clear();
    S.m_weights.Clear();
    S.m_spline.Clear();
+   S.m_serialization.Clear();
 
    for ( const XMLNode& node : root )
    {
@@ -958,49 +977,75 @@ void DrizzleData::ParseSpline( DrizzleData::spline& S, const XMLElement& root )
       const XMLElement& element = static_cast<const XMLElement&>( node );
 
       if ( element.Name() == "NodeXCoordinates" )
-         S.m_x = ParseBase64EncodedVector<vector_spline::spline::scalar>( element, 3 );
+         S.m_x = ParseMaybeCompressedVector<vector_spline::spline::scalar>( element, 3 );
       else if ( element.Name() == "NodeYCoordinates" )
-         S.m_y = ParseBase64EncodedVector<vector_spline::spline::scalar>( element, 3 );
+         S.m_y = ParseMaybeCompressedVector<vector_spline::spline::scalar>( element, 3 );
       else if ( element.Name() == "Coefficients" )
-         S.m_spline = ParseBase64EncodedVector<vector_spline::spline::scalar>( element, 3 );
+         S.m_spline = ParseMaybeCompressedVector<vector_spline::spline::scalar>( element, 3 );
+      else if ( element.Name() == "Serialization" )
+         S.m_serialization = IsoString( ParseMaybeCompressedData( element ) );
       else if ( element.Name() == "NodeWeights" )
-         S.m_weights = ParseBase64EncodedVector<FVector::scalar>( element, 3 );
+         S.m_weights = ParseMaybeCompressedVector<FVector::scalar>( element, 3 );
       else
          WarnOnUnknownChildElement( element, root.Name() );
    }
 
-   if ( S.m_x.Length() < 3 )
+   if ( S.m_x.IsEmpty() )
       throw Error( "Missing surface spline NodeXCoordinates child element." );
-   if ( S.m_y.Length() < 3 )
+   if ( S.m_y.IsEmpty() )
       throw Error( "Missing surface spline NodeYCoordinates child element." );
-   if ( S.m_spline.Length() < 3 )
-      throw Error( "Missing surface spline Coefficients child element." );
+   if ( S.m_x.Length() != S.m_y.Length() )
+      throw Error( "Mismatched surface spline data vector lengths." );
 
-   if ( S.m_x.Length() != S.m_y.Length() ||
-       !S.m_weights.IsEmpty() && S.m_weights.Length() != S.m_x.Length() ||
-        S.m_spline.Length() != S.m_x.Length() + ((S.m_order*(S.m_order + 1)) >> 1) )
+   if ( !S.m_weights.IsEmpty() )
+      if ( S.m_weights.Length() != S.m_x.Length() )
+         throw Error( "Mismatched surface spline weights vector length." );
+
+   if ( RadialBasisFunction::HasCoreImplementation( S.m_rbf ) )
    {
-      throw Error( "Invalid surface spline definition." );
+      if ( S.m_serialization.IsEmpty() )
+         throw Error( "Missing required surface spline Serialization child element." );
+      if ( API == nullptr )
+         throw Error( "Cannot deserialize RBF data of " + RBFTypeToAttributeValue( S.m_rbf )
+                     + " type: a running PixInsight core application is required." );
+      S.m_handle = S.DeserializeHandle( S.m_serialization );
+      S.m_serialization.Clear();
+   }
+   else
+   {
+      if ( S.m_spline.IsEmpty() )
+         throw Error( "Missing required surface spline Coefficients child element." );
+      if ( S.m_spline.Length() != S.m_x.Length() + ((S.m_order*(S.m_order + 1)) >> 1) )
+         throw Error( "Invalid surface spline coefficient vector length." );
    }
 }
 
 // ----------------------------------------------------------------------------
 
-void DrizzleData::SerializeSpline( XMLElement* root, const DrizzleData::spline& S )
+void DrizzleData::SerializeSpline( XMLElement* root, const DrizzleData::spline& S ) const
 {
    root->SetAttribute( "scalingFactor", String( S.m_r0 ) );
    root->SetAttribute( "zeroOffsetX", String( S.m_x0 ) );
    root->SetAttribute( "zeroOffsetY", String( S.m_y0 ) );
+   root->SetAttribute( "rbfType", RBFTypeToAttributeValue( S.m_rbf ) );
    root->SetAttribute( "order", String( S.m_order ) );
-   *(new XMLElement( *root, "NodeXCoordinates" )) << new XMLText( IsoString::ToBase64( S.m_x ) );
-   *(new XMLElement( *root, "NodeYCoordinates" )) << new XMLText( IsoString::ToBase64( S.m_y ) );
-   *(new XMLElement( *root, "Coefficients" ))     << new XMLText( IsoString::ToBase64( S.m_spline ) );
+   SerializeMaybeCompressedVector( new XMLElement( *root, "NodeXCoordinates" ), S.m_x );
+   SerializeMaybeCompressedVector( new XMLElement( *root, "NodeYCoordinates" ), S.m_y );
+
    if ( S.m_smoothing > 0 )
    {
       root->SetAttribute( "smoothing", String( S.m_smoothing ) );
       if ( !S.m_weights.IsEmpty() )
-         *(new XMLElement( *root, "NodeWeights" )) << new XMLText( IsoString::ToBase64( S.m_weights ) );
+         SerializeMaybeCompressedVector( new XMLElement( *root, "NodeWeights" ), S.m_weights );
    }
+
+   if ( S.m_handle != 0 )
+   {
+      IsoString cs = S.CoreSerialization();
+      SerializeMaybeCompressedData( new XMLElement( *root, "Serialization" ), cs.Begin(), cs.Size() );
+   }
+   else
+      SerializeMaybeCompressedVector( new XMLElement( *root, "Coefficients" ), S.m_spline );
 }
 
 // ----------------------------------------------------------------------------
@@ -1189,6 +1234,9 @@ void DrizzleData::PlainTextDecoder::Decode( IsoString& s, size_type start, size_
 
 void DrizzleData::PlainTextDecoder::ProcessBlock( IsoString& s, const IsoString& itemId, size_type start, size_type end )
 {
+   rejection_data rejectLowData;
+   rejection_data rejectHighData;
+
    if ( itemId == "P" ) // drizzle source image
    {
       m_data->m_sourceFilePath = s.Substring( start, end-start ).Trimmed().UTF8ToUTF16();
@@ -1216,11 +1264,11 @@ void DrizzleData::PlainTextDecoder::ProcessBlock( IsoString& s, const IsoString&
    }
    else if ( itemId == "Sx" ) // registration thin plates, X-axis
    {
-      m_data->m_Sx = ParseSurfaceSpline( s, start, end );
+      m_data->m_S.m_Sx = ParseSurfaceSpline( s, start, end );
    }
    else if ( itemId == "Sy" ) // registration thin plates, Y-axis
    {
-      m_data->m_Sy = ParseSurfaceSpline( s, start, end );
+      m_data->m_S.m_Sy = ParseSurfaceSpline( s, start, end );
    }
    else if ( itemId == "m" ) // location vector
    {
@@ -1245,20 +1293,41 @@ void DrizzleData::PlainTextDecoder::ProcessBlock( IsoString& s, const IsoString&
    else if ( itemId == "Rl" ) // rejection pixel coordinates, low values
    {
       if ( !m_ignoreIntegrationData )
-         m_data->m_rejectLowData = ParseRejectionData( s, start, end );
+         rejectLowData = ParseRejectionData( s, start, end );
    }
    else if ( itemId == "Rh" ) // rejection pixel coordinates, high values
    {
       if ( !m_ignoreIntegrationData )
-         m_data->m_rejectHighData = ParseRejectionData( s, start, end );
+         rejectHighData = ParseRejectionData( s, start, end );
    }
    else
       throw Error( "At offset=" + String( start ) + ": Unknown item identifier \'" + itemId + '\'' );
+
+   // Build rejection map from rejection coordinate lists.
+   if ( !rejectHighData.IsEmpty() || !rejectLowData.IsEmpty() )
+   {
+      m_data->m_rejectionMap.AllocateData( m_data->m_referenceWidth, m_data->m_referenceHeight, m_data->NumberOfChannels() );
+      m_data->m_rejectionMap.Zero();
+
+      if ( !rejectHighData.IsEmpty() )
+      {
+         for ( int c = 0; c < m_data->NumberOfChannels(); ++c )
+            for ( const Point& p : rejectHighData[c] )
+               m_data->m_rejectionMap( p, c ) = uint8( 1 );
+      }
+
+      if ( !rejectLowData.IsEmpty() )
+      {
+         for ( int c = 0; c < m_data->NumberOfChannels(); ++c )
+            for ( const Point& p : rejectLowData[c] )
+               m_data->m_rejectionMap( p, c ) |= uint8( 2 );
+      }
+   }
 }
 
 // ----------------------------------------------------------------------------
 
-DrizzleData::rejection_coordinates
+DrizzleData::PlainTextDecoder::rejection_coordinates
 DrizzleData::PlainTextDecoder::ParseRejectionCoordinates( IsoString& s, size_type start, size_type end )
 {
    IVector v = ParseListOfIntegerValues( s, start, end );
@@ -1272,7 +1341,7 @@ DrizzleData::PlainTextDecoder::ParseRejectionCoordinates( IsoString& s, size_typ
 
 // ----------------------------------------------------------------------------
 
-DrizzleData::rejection_data
+DrizzleData::PlainTextDecoder::rejection_data
 DrizzleData::PlainTextDecoder::ParseRejectionData( IsoString& s, size_type start, size_type end )
 {
    rejection_data R;
@@ -1331,4 +1400,4 @@ void DrizzleData::PlainTextSplineDecoder::ProcessBlock( IsoString& s, const IsoS
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/DrizzleData.cpp - Released 2024-06-18T15:49:06Z
+// EOF pcl/DrizzleData.cpp - Released 2024-12-11T17:42:39Z

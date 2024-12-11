@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/Median.cpp - Released 2024-06-18T15:49:06Z
+// pcl/Median.cpp - Released 2024-12-11T17:42:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -66,6 +66,9 @@
 #define CMPXCHG( a, b ) \
    if ( t[b] < t[a] ) Swap( t[a], t[b] )
 
+// #include <pcl/ElapsedTime.h>
+// #include <iostream>
+
 namespace pcl
 {
 
@@ -86,31 +89,12 @@ public:
       , m_low( low )
       , m_high( high )
    {
-
    }
 
    PCL_HOT_FUNCTION void Run() override
    {
       H = size_type( 0 );
-      double range = m_high - m_low;
-// Workaround for clang compiler bug on macOS:
-// https://pixinsight.com/forum/index.php?threads/pi-always-crash-when-stf.15830/
-#ifdef __PCL_MACOSX
-      if ( 1 + range != 1 )
-      {
-#endif
-      const T* __restrict__ a = m_A + m_start;
-      const T* __restrict__ b = m_A + m_stop;
-      do
-      {
-         if ( *a >= m_low )
-            if ( *a <= m_high )
-               ++H[int( (__PCL_MEDIAN_HISTOGRAM_LENGTH - 1) * (*a - m_low)/range )];
-      }
-      while ( ++a < b );
-#ifdef __PCL_MACOSX
-      }
-#endif
+      Build( H, m_A + m_start, m_stop - m_start, m_low, m_high );
    }
 
 private:
@@ -120,6 +104,130 @@ private:
    size_type     m_stop;
    const double& m_low;
    const double& m_high;
+
+   template <typename T1>
+   static void Build( SzVector& H, const T1* __restrict__ A, size_type N, double low, double high )
+   {
+      const double range = high - low;
+      if ( 1 + range != 1 )
+      {
+         const double scale = (__PCL_MEDIAN_HISTOGRAM_LENGTH - 1)/range;
+         PCL_IVDEP
+         for ( size_type i = 0; i < N; ++i )
+         {
+            const int k = TruncInt( scale*(A[i] - low) );
+            if ( k >= 0 && k < __PCL_MEDIAN_HISTOGRAM_LENGTH )
+               ++H[k];
+         }
+      }
+   }
+
+#ifdef __PCL_AVX2
+
+   PCL_HOT_FUNCTION
+   static void Build( SzVector& H, const float* __restrict__ A, size_type N, double low, double high )
+   {
+      const double range = high - low;
+      if ( 1 + range == 1 )
+         return;
+
+      const float s = float( (__PCL_MEDIAN_HISTOGRAM_LENGTH - 1)/range );
+      const float l = float( low );
+      const __m256 S = _mm256_set1_ps( s );
+      const __m256 L = _mm256_set1_ps( l );
+      const size_type stepLength = 0x40000000u;
+
+      for ( size_type p = 0; p < N; p += stepLength )
+      {
+         const float* __restrict__ V = A + p;
+         const int n = int( Min( stepLength, N - p ) );
+         const int n8 = n >> 3;
+
+         if ( ((ptrdiff_t)V) & 31 )
+            for ( int i = 0; i < n8; ++i )
+            {
+               __m256 v = _mm256_loadu_ps( (const float* __restrict__)(V + i*8) );
+               __m256i K = _mm256_cvttps_epi32( _mm256_mul_ps( _mm256_sub_ps( v, L ), S ) );
+               for ( int j = 0; j < 8; ++j )
+               {
+                  const int k = ((const int* __restrict__)&K)[j];
+                  if ( k >= 0 && k < __PCL_MEDIAN_HISTOGRAM_LENGTH )
+                     ++H[k];
+               }
+            }
+         else
+            for ( int i = 0; i < n8; ++i )
+            {
+               __m256i K = _mm256_cvttps_epi32( _mm256_mul_ps( _mm256_sub_ps( ((const __m256* __restrict__)V)[i], L ), S ) );
+               for ( int j = 0; j < 8; ++j )
+               {
+                  const int k = ((const int* __restrict__)&K)[j];
+                  if ( k >= 0 && k < __PCL_MEDIAN_HISTOGRAM_LENGTH )
+                     ++H[k];
+               }
+            }
+
+         for ( int i = n8 << 3; i < n; ++i )
+         {
+            const int k = TruncInt( s * (V[i] - l) );
+            if ( k >= 0 && k < __PCL_MEDIAN_HISTOGRAM_LENGTH )
+               ++H[k];
+         }
+      }
+   }
+
+   PCL_HOT_FUNCTION
+   static void Build( SzVector& H, const double* __restrict__ A, size_type N, double low, double high )
+   {
+      const double range = high - low;
+      if ( 1 + range == 1 )
+         return;
+
+      const double s = (__PCL_MEDIAN_HISTOGRAM_LENGTH - 1)/range;
+      const __m256d S = _mm256_set1_pd( s );
+      const __m256d L = _mm256_set1_pd( low );
+      const size_type stepLength = 0x40000000u;
+
+      for ( size_type p = 0; p < N; p += stepLength )
+      {
+         const double* __restrict__ V = A + p;
+         const int n = int( Min( stepLength, N - p ) );
+         const int n4 = n >> 2;
+
+         if ( ((ptrdiff_t)V) & 31 )
+            for ( int i = 0; i < n4; ++i )
+            {
+               __m256d v = _mm256_loadu_pd( (const double* __restrict__)(V + i*4) );
+               __m128i K = _mm256_cvttpd_epi32( _mm256_mul_pd( _mm256_sub_pd( v, L ), S ) );
+               for ( int j = 0; j < 4; ++j )
+               {
+                  const int k = ((const int* __restrict__)&K)[j];
+                  if ( k >= 0 && k < __PCL_MEDIAN_HISTOGRAM_LENGTH )
+                     ++H[k];
+               }
+            }
+         else
+            for ( int i = 0; i < n4; ++i )
+            {
+               __m128i K = _mm256_cvttpd_epi32( _mm256_mul_pd( _mm256_sub_pd( ((const __m256d* __restrict__)V)[i], L ), S ) );
+               for ( int j = 0; j < 4; ++j )
+               {
+                  const int k = ((const int* __restrict__)&K)[j];
+                  if ( k >= 0 && k < __PCL_MEDIAN_HISTOGRAM_LENGTH )
+                     ++H[k];
+               }
+            }
+
+         for ( int i = n4 << 2; i < n; ++i )
+         {
+            const int k = TruncInt( s * (V[i] - low) );
+            if ( k >= 0 && k < __PCL_MEDIAN_HISTOGRAM_LENGTH )
+               ++H[k];
+         }
+      }
+   }
+
+#endif // __PCL_AVX2
 };
 
 template <typename T>
@@ -139,14 +247,7 @@ public:
 
    PCL_HOT_FUNCTION void Run() override
    {
-      const T* __restrict__ a = m_A + m_start;
-      const T* __restrict__ b = m_A + m_stop;
-      min = max = *a;
-      while ( ++a < b )
-         if ( *a < min )
-            min = *a;
-         else if ( *a > max )
-            max = *a;
+      Build( min, max, m_A + m_start, m_stop - m_start );
    }
 
 private:
@@ -154,15 +255,147 @@ private:
    const T*  m_A;
    size_type m_start;
    size_type m_stop;
+
+   template <typename T1>
+   static void Build( T1& min, T1& max, const T1* __restrict__ A, size_type N )
+   {
+      min = max = A[0];
+      PCL_IVDEP
+      for ( size_type i = 1; i < N; ++i )
+         if ( A[i] < min )
+            min = A[i];
+         else if ( max < A[i] )
+            max = A[i];
+   }
+
+#ifdef __PCL_AVX2
+
+   PCL_HOT_FUNCTION
+   static void Build( float& min, float& max, const float* __restrict__ A, size_type N )
+   {
+      min = max = A[0];
+      const size_type stepLength = 0x40000000u;
+      if ( N >= 8 )
+      {
+         __m256 vmin = _mm256_loadu_ps( A );
+         __m256 vmax = vmin;
+         for ( size_type p = 0; p < N; p += stepLength )
+         {
+            const float* __restrict__ V = A + p;
+            const int n = int( Min( stepLength, N - p ) );
+            const int n8 = n >> 3;
+            if ( n8 > 0 )
+            {
+               if ( ((ptrdiff_t)V) & 31 )
+                  for ( int i = 0; i < n8; ++i )
+                  {
+                     __m256 v = _mm256_loadu_ps( (const float* __restrict__)(V + (i << 3)) );
+                     vmin = _mm256_min_ps( vmin, v );
+                     vmax = _mm256_max_ps( vmax, v );
+                  }
+               else
+                  for ( int i = 0; i < n8; ++i )
+                  {
+                     __m256 v = ((const __m256* __restrict__)V)[i];
+                     vmin = _mm256_min_ps( vmin, v );
+                     vmax = _mm256_max_ps( vmax, v );
+                  }
+
+               for ( int i = 0; i < 8; ++i )
+               {
+                  float vn = ((const float* __restrict__)&vmin)[i];
+                  float vx = ((const float* __restrict__)&vmax)[i];
+                  if ( vn < min )
+                     min = vn;
+                  if ( max < vx )
+                     max = vx;
+               }
+            }
+            for ( int i = n8 << 3; i < n; ++i )
+               if ( A[i] < min )
+                  min = A[i];
+               else if ( max < A[i] )
+                  max = A[i];
+         }
+      }
+      else
+      {
+         for ( size_type i = 1; i < N; ++i )
+            if ( A[i] < min )
+               min = A[i];
+            else if ( max < A[i] )
+               max = A[i];
+      }
+   }
+
+   PCL_HOT_FUNCTION
+   static void Build( double& min, double& max, const double* __restrict__ A, size_type N )
+   {
+      min = max = A[0];
+      const size_type stepLength = 0x40000000u;
+      if ( N >= 4 )
+      {
+         __m256d vmin = _mm256_loadu_pd( A );
+         __m256d vmax = vmin;
+         for ( size_type p = 0; p < N; p += stepLength )
+         {
+            const double* __restrict__ V = A + p;
+            const int n = int( Min( stepLength, N - p ) );
+            const int n4 = n >> 2;
+            if ( n4 > 0 )
+            {
+               if ( ((ptrdiff_t)V) & 31 )
+                  for ( int i = 0; i < n4; ++i )
+                  {
+                     __m256d v = _mm256_loadu_pd( (const double* __restrict__)(V + (i << 2)) );
+                     vmin = _mm256_min_pd( vmin, v );
+                     vmax = _mm256_max_pd( vmax, v );
+                  }
+               else
+                  for ( int i = 0; i < n4; ++i )
+                  {
+                     __m256d v = ((const __m256d* __restrict__)V)[i];
+                     vmin = _mm256_min_pd( vmin, v );
+                     vmax = _mm256_max_pd( vmax, v );
+                  }
+
+               for ( int i = 0; i < 4; ++i )
+               {
+                  double vn = ((const double* __restrict__)&vmin)[i];
+                  double vx = ((const double* __restrict__)&vmax)[i];
+                  if ( vn < min )
+                     min = vn;
+                  if ( max < vx )
+                     max = vx;
+               }
+            }
+            for ( int i = n4 << 2; i < n; ++i )
+               if ( A[i] < min )
+                  min = A[i];
+               else if ( max < A[i] )
+                  max = A[i];
+         }
+      }
+      else
+      {
+         for ( size_type i = 1; i < N; ++i )
+            if ( A[i] < min )
+               min = A[i];
+            else if ( max < A[i] )
+               max = A[i];
+      }
+   }
+
+#endif // __PCL_AVX2
 };
 
 // ----------------------------------------------------------------------------
 
 template <typename T>
-static double PCL_FastMedian( const T* __restrict__ begin, const T* __restrict__ end )
+static double PCL_FastMedian( const T* __restrict__ begin, const T* __restrict__ end, double eps )
 {
    distance_type N = end - begin;
-   if ( N <= 2560000 )
+   if ( N <= __PCL_MEDIAN_HISTOGRAM_OVERHEAD )
    {
       Array<T> A( begin, end );
       double m = double( *pcl::Select( A.Begin(), A.End(), N >> 1 ) );
@@ -171,7 +404,7 @@ static double PCL_FastMedian( const T* __restrict__ begin, const T* __restrict__
       return (m + double( *pcl::Select( A.Begin(), A.End(), (N >> 1)-1 ) ))/2;
    }
 
-   Array<size_type> L = Thread::OptimalThreadLoads( N, 160*1024/*overheadLimit*/ );
+   Array<size_type> L = Thread::OptimalThreadLoads( N, __PCL_MEDIAN_HISTOGRAM_OVERHEAD );
 
    double low, high;
    {
@@ -206,8 +439,9 @@ static double PCL_FastMedian( const T* __restrict__ begin, const T* __restrict__
       threads.Destroy();
    }
 
-   const double eps = std::is_floating_point<T>::value ?
-                        2*std::numeric_limits<T>::epsilon() : 0.5/Pow2( double( sizeof( T ) << 3 ) );
+   if ( eps <= 0 )
+      eps = std::is_floating_point<T>::value ?
+                        2*std::numeric_limits<T>::epsilon() : 1/Pow2( double( sizeof( T ) << 3 ) );
    if ( high - low < eps )
       return low;
 
@@ -216,9 +450,9 @@ static double PCL_FastMedian( const T* __restrict__ begin, const T* __restrict__
       threads << new PCL_HistogramThread<T>( begin, n, n + L[i], low, high );
 
    /*
-    * High median, extremes and initial histogram saved for even length.
+    * High median, low bound, and initial histogram saved for even length.
     */
-   double mh = 0, l0 = low, h0 = high;
+   double mh = 0, l0 = low;
    SzVector H0;
 
    for ( size_type count = 0, n2 = N >> 1, step = 0, it = 0;; ++it )
@@ -267,7 +501,6 @@ static double PCL_FastMedian( const T* __restrict__ begin, const T* __restrict__
                }
                mh = low;
                low = l0;
-               high = h0;
                count = 0;
                --n2;
                ++step;
@@ -1063,11 +1296,11 @@ static double PCL_SmallMedian( T* t, distance_type n )
 // ----------------------------------------------------------------------------
 
 template <typename T>
-static double PCL_Median( const T* __restrict__ i, const T* __restrict__ j )
+static double PCL_Median( const T* __restrict__ i, const T* __restrict__ j, double eps )
 {
    distance_type n = j - i;
    if ( n > 32 )
-      return PCL_FastMedian( i, j );
+      return PCL_FastMedian( i, j, eps );
    if ( n < 1 )
       return 0;
    if ( n == 1 )
@@ -1079,94 +1312,191 @@ static double PCL_Median( const T* __restrict__ i, const T* __restrict__ j )
    return PCL_SmallMedian( A.Begin(), n );
 }
 
-double PCL_FUNC Median( const unsigned char* __restrict__ i, const unsigned char* __restrict__ j )
+double PCL_FUNC Median( const unsigned char* __restrict__ i, const unsigned char* __restrict__ j, double eps )
 {
-   return PCL_Median( i, j );
+   return PCL_Median( i, j, eps );
 }
 
-double PCL_FUNC Median( const signed char* __restrict__ i, const signed char* __restrict__ j )
+double PCL_FUNC Median( const signed char* __restrict__ i, const signed char* __restrict__ j, double eps )
 {
-   return PCL_Median( i, j );
+   return PCL_Median( i, j, eps );
 }
 
-double PCL_FUNC Median( const wchar_t* __restrict__ i, const wchar_t* __restrict__ j )
+double PCL_FUNC Median( const wchar_t* __restrict__ i, const wchar_t* __restrict__ j, double eps )
 {
-   return PCL_Median( i, j );
+   return PCL_Median( i, j, eps );
 }
 
-double PCL_FUNC Median( const unsigned short* __restrict__ i, const unsigned short* __restrict__ j )
+double PCL_FUNC Median( const unsigned short* __restrict__ i, const unsigned short* __restrict__ j, double eps )
 {
-   return PCL_Median( i, j );
+   return PCL_Median( i, j, eps );
 }
 
-double PCL_FUNC Median( const signed short* __restrict__ i, const signed short* __restrict__ j )
+double PCL_FUNC Median( const signed short* __restrict__ i, const signed short* __restrict__ j, double eps )
 {
-   return PCL_Median( i, j );
+   return PCL_Median( i, j, eps );
 }
 
-double PCL_FUNC Median( const unsigned int* __restrict__ i, const unsigned int* __restrict__ j )
+double PCL_FUNC Median( const unsigned int* __restrict__ i, const unsigned int* __restrict__ j, double eps )
 {
-   return PCL_Median( i, j );
+   return PCL_Median( i, j, eps );
 }
 
-double PCL_FUNC Median( const signed int* __restrict__ i, const signed int* __restrict__ j )
+double PCL_FUNC Median( const signed int* __restrict__ i, const signed int* __restrict__ j, double eps )
 {
-   return PCL_Median( i, j );
+   return PCL_Median( i, j, eps );
 }
 
-double PCL_FUNC Median( const unsigned long* __restrict__ i, const unsigned long* __restrict__ j )
+double PCL_FUNC Median( const unsigned long* __restrict__ i, const unsigned long* __restrict__ j, double eps )
 {
-   return PCL_Median( i, j );
+   return PCL_Median( i, j, eps );
 }
 
-double PCL_FUNC Median( const signed long* __restrict__ i, const signed long* __restrict__ j )
+double PCL_FUNC Median( const signed long* __restrict__ i, const signed long* __restrict__ j, double eps )
 {
-   return PCL_Median( i, j );
+   return PCL_Median( i, j, eps );
 }
 
-double PCL_FUNC Median( const unsigned long long* __restrict__ i, const unsigned long long* __restrict__ j )
+double PCL_FUNC Median( const unsigned long long* __restrict__ i, const unsigned long long* __restrict__ j, double eps )
 {
-   return PCL_Median( i, j );
+   return PCL_Median( i, j, eps );
 }
 
-double PCL_FUNC Median( const signed long long* __restrict__ i, const signed long long* __restrict__ j )
+double PCL_FUNC Median( const signed long long* __restrict__ i, const signed long long* __restrict__ j, double eps )
 {
-   return PCL_Median( i, j );
+   return PCL_Median( i, j, eps );
 }
 
-double PCL_FUNC Median( const float* __restrict__ i, const float* __restrict__ j )
+double PCL_FUNC Median( const float* __restrict__ i, const float* __restrict__ j, double eps )
 {
-   return PCL_Median( i, j );
+   return PCL_Median( i, j, eps );
 }
 
-double PCL_FUNC Median( const double* __restrict__ i, const double* __restrict__ j )
+double PCL_FUNC Median( const double* __restrict__ i, const double* __restrict__ j, double eps )
 {
-   return PCL_Median( i, j );
+// int n = j - i;
+// FVector F( n );
+// for ( int k = 0; k < n; ++k )
+//    F[k] = i[k];
+//
+// ElapsedTime ET1;
+//
+// double m = PCL_Median( F.Begin(), F.End(), eps );
+
+// ElapsedTime ET1;
+//
+// double m = PCL_Median( i, j, eps );
+//
+// IsoString ts1 = ET1.ToIsoString();
+// std::cout << IsoString().Format( "(MED) N = %lu", j - i ) << " " << ts1 << '\n';
+//
+// return m;
+
+   return PCL_Median( i, j, eps );
 }
 
-double PCL_FUNC Median( const long double* __restrict__ i, const long double* __restrict__ j )
+double PCL_FUNC Median( const long double* __restrict__ i, const long double* __restrict__ j, double eps )
 {
-   return PCL_Median( i, j );
+   return PCL_Median( i, j, eps );
 }
 
 // ----------------------------------------------------------------------------
 
 template <typename T>
-static double PCL_OrderStatistic( const T* __restrict__ begin, const T* __restrict__ end, distance_type k )
+static double PCL_SmallMedianDestructive( T* __restrict__ i, T* __restrict__ j )
+{
+   distance_type n = j - i;
+   if ( likely( n <= 32 ) )
+      return PCL_SmallMedian( i, n );
+   return PCL_FastMedian( i, j, 0/*eps*/ );
+}
+
+double PCL_FUNC SmallMedianDestructive( unsigned char* __restrict__ i, unsigned char* __restrict__ j )
+{
+   return PCL_SmallMedianDestructive( i, j );
+}
+
+double PCL_FUNC SmallMedianDestructive( signed char* __restrict__ i, signed char* __restrict__ j )
+{
+   return PCL_SmallMedianDestructive( i, j );
+}
+
+double PCL_FUNC SmallMedianDestructive( wchar_t* __restrict__ i, wchar_t* __restrict__ j )
+{
+   return PCL_SmallMedianDestructive( i, j );
+}
+
+double PCL_FUNC SmallMedianDestructive( unsigned short* __restrict__ i, unsigned short* __restrict__ j )
+{
+   return PCL_SmallMedianDestructive( i, j );
+}
+
+double PCL_FUNC SmallMedianDestructive( signed short* __restrict__ i, signed short* __restrict__ j )
+{
+   return PCL_SmallMedianDestructive( i, j );
+}
+
+double PCL_FUNC SmallMedianDestructive( unsigned int* __restrict__ i, unsigned int* __restrict__ j )
+{
+   return PCL_SmallMedianDestructive( i, j );
+}
+
+double PCL_FUNC SmallMedianDestructive( signed int* __restrict__ i, signed int* __restrict__ j )
+{
+   return PCL_SmallMedianDestructive( i, j );
+}
+
+double PCL_FUNC SmallMedianDestructive( unsigned long* __restrict__ i, unsigned long* __restrict__ j )
+{
+   return PCL_SmallMedianDestructive( i, j );
+}
+
+double PCL_FUNC SmallMedianDestructive( signed long* __restrict__ i, signed long* __restrict__ j )
+{
+   return PCL_SmallMedianDestructive( i, j );
+}
+
+double PCL_FUNC SmallMedianDestructive( unsigned long long* __restrict__ i, unsigned long long* __restrict__ j )
+{
+   return PCL_SmallMedianDestructive( i, j );
+}
+
+double PCL_FUNC SmallMedianDestructive( signed long long* __restrict__ i, signed long long* __restrict__ j )
+{
+   return PCL_SmallMedianDestructive( i, j );
+}
+
+double PCL_FUNC SmallMedianDestructive( float* __restrict__ i, float* __restrict__ j )
+{
+   return PCL_SmallMedianDestructive( i, j );
+}
+
+double PCL_FUNC SmallMedianDestructive( double* __restrict__ i, double* __restrict__ j )
+{
+   return PCL_SmallMedianDestructive( i, j );
+}
+
+double PCL_FUNC SmallMedianDestructive( long double* __restrict__ i, long double* __restrict__ j )
+{
+   return PCL_SmallMedianDestructive( i, j );
+}
+
+// ----------------------------------------------------------------------------
+
+template <typename T>
+static double PCL_OrderStatistic( const T* __restrict__ begin, const T* __restrict__ end, distance_type k, double eps )
 {
    distance_type N = end - begin;
-   if ( k < 0 )
-      return 0;
-   if ( k >= N )
+   if ( k < 0 || k >= N )
       return 0;
 
-   if ( N <= 2560000 )
+   if ( N <= __PCL_MEDIAN_HISTOGRAM_OVERHEAD )
    {
       Array<T> A( begin, end );
       return double( *pcl::Select( A.Begin(), A.End(), k ) );
    }
 
-   Array<size_type> L = Thread::OptimalThreadLoads( N, 160*1024/*overheadLimit*/ );
+   Array<size_type> L = Thread::OptimalThreadLoads( N, __PCL_MEDIAN_HISTOGRAM_OVERHEAD );
 
    double low, high;
    {
@@ -1206,8 +1536,9 @@ static double PCL_OrderStatistic( const T* __restrict__ begin, const T* __restri
    if ( k == N-1 )
       return high;
 
-   const double eps = std::is_floating_point<T>::value ?
-                        2*std::numeric_limits<T>::epsilon() : 0.5/Pow2( double( sizeof( T ) << 3 ) );
+   if ( eps <= 0 )
+      eps = std::is_floating_point<T>::value ?
+                        2*std::numeric_limits<T>::epsilon() : 1/Pow2( double( sizeof( T ) << 3 ) );
    if ( high - low < eps )
       return low;
 
@@ -1248,74 +1579,74 @@ static double PCL_OrderStatistic( const T* __restrict__ begin, const T* __restri
    }
 }
 
-double PCL_FUNC OrderStatistic( const unsigned char* __restrict__ i, const unsigned char* __restrict__ j, distance_type k )
+double PCL_FUNC OrderStatistic( const unsigned char* __restrict__ i, const unsigned char* __restrict__ j, distance_type k, double eps )
 {
-   return PCL_OrderStatistic( i, j, k );
+   return PCL_OrderStatistic( i, j, k, eps );
 }
 
-double PCL_FUNC OrderStatistic( const signed char* __restrict__ i, const signed char* __restrict__ j, distance_type k )
+double PCL_FUNC OrderStatistic( const signed char* __restrict__ i, const signed char* __restrict__ j, distance_type k, double eps )
 {
-   return PCL_OrderStatistic( i, j, k );
+   return PCL_OrderStatistic( i, j, k, eps );
 }
 
-double PCL_FUNC OrderStatistic( const wchar_t* __restrict__ i, const wchar_t* __restrict__ j, distance_type k )
+double PCL_FUNC OrderStatistic( const wchar_t* __restrict__ i, const wchar_t* __restrict__ j, distance_type k, double eps )
 {
-   return PCL_OrderStatistic( i, j, k );
+   return PCL_OrderStatistic( i, j, k, eps );
 }
 
-double PCL_FUNC OrderStatistic( const unsigned short* __restrict__ i, const unsigned short* __restrict__ j, distance_type k )
+double PCL_FUNC OrderStatistic( const unsigned short* __restrict__ i, const unsigned short* __restrict__ j, distance_type k, double eps )
 {
-   return PCL_OrderStatistic( i, j, k );
+   return PCL_OrderStatistic( i, j, k, eps );
 }
 
-double PCL_FUNC OrderStatistic( const signed short* __restrict__ i, const signed short* __restrict__ j, distance_type k )
+double PCL_FUNC OrderStatistic( const signed short* __restrict__ i, const signed short* __restrict__ j, distance_type k, double eps )
 {
-   return PCL_OrderStatistic( i, j, k );
+   return PCL_OrderStatistic( i, j, k, eps );
 }
 
-double PCL_FUNC OrderStatistic( const unsigned int* __restrict__ i, const unsigned int* __restrict__ j, distance_type k )
+double PCL_FUNC OrderStatistic( const unsigned int* __restrict__ i, const unsigned int* __restrict__ j, distance_type k, double eps )
 {
-   return PCL_OrderStatistic( i, j, k );
+   return PCL_OrderStatistic( i, j, k, eps );
 }
 
-double PCL_FUNC OrderStatistic( const signed int* __restrict__ i, const signed int* __restrict__ j, distance_type k )
+double PCL_FUNC OrderStatistic( const signed int* __restrict__ i, const signed int* __restrict__ j, distance_type k, double eps )
 {
-   return PCL_OrderStatistic( i, j, k );
+   return PCL_OrderStatistic( i, j, k, eps );
 }
 
-double PCL_FUNC OrderStatistic( const unsigned long* __restrict__ i, const unsigned long* __restrict__ j, distance_type k )
+double PCL_FUNC OrderStatistic( const unsigned long* __restrict__ i, const unsigned long* __restrict__ j, distance_type k, double eps )
 {
-   return PCL_OrderStatistic( i, j, k );
+   return PCL_OrderStatistic( i, j, k, eps );
 }
 
-double PCL_FUNC OrderStatistic( const signed long* __restrict__ i, const signed long* __restrict__ j, distance_type k )
+double PCL_FUNC OrderStatistic( const signed long* __restrict__ i, const signed long* __restrict__ j, distance_type k, double eps )
 {
-   return PCL_OrderStatistic( i, j, k );
+   return PCL_OrderStatistic( i, j, k, eps );
 }
 
-double PCL_FUNC OrderStatistic( const unsigned long long* __restrict__ i, const unsigned long long* __restrict__ j, distance_type k )
+double PCL_FUNC OrderStatistic( const unsigned long long* __restrict__ i, const unsigned long long* __restrict__ j, distance_type k, double eps )
 {
-   return PCL_OrderStatistic( i, j, k );
+   return PCL_OrderStatistic( i, j, k, eps );
 }
 
-double PCL_FUNC OrderStatistic( const signed long long* __restrict__ i, const signed long long* __restrict__ j, distance_type k )
+double PCL_FUNC OrderStatistic( const signed long long* __restrict__ i, const signed long long* __restrict__ j, distance_type k, double eps )
 {
-   return PCL_OrderStatistic( i, j, k );
+   return PCL_OrderStatistic( i, j, k, eps );
 }
 
-double PCL_FUNC OrderStatistic( const float* __restrict__ i, const float* __restrict__ j, distance_type k )
+double PCL_FUNC OrderStatistic( const float* __restrict__ i, const float* __restrict__ j, distance_type k, double eps )
 {
-   return PCL_OrderStatistic( i, j, k );
+   return PCL_OrderStatistic( i, j, k, eps );
 }
 
-double PCL_FUNC OrderStatistic( const double* __restrict__ i, const double* __restrict__ j, distance_type k )
+double PCL_FUNC OrderStatistic( const double* __restrict__ i, const double* __restrict__ j, distance_type k, double eps )
 {
-   return PCL_OrderStatistic( i, j, k );
+   return PCL_OrderStatistic( i, j, k, eps );
 }
 
-double PCL_FUNC OrderStatistic( const long double* __restrict__ i, const long double* __restrict__ j, distance_type k )
+double PCL_FUNC OrderStatistic( const long double* __restrict__ i, const long double* __restrict__ j, distance_type k, double eps )
 {
-   return PCL_OrderStatistic( i, j, k );
+   return PCL_OrderStatistic( i, j, k, eps );
 }
 
 // ----------------------------------------------------------------------------
@@ -1343,26 +1674,7 @@ public:
    PCL_HOT_FUNCTION void Run() override
    {
       H = size_type( 0 );
-      double range = m_high - m_low;
-// Workaround for clang compiler bug on macOS:
-// https://pixinsight.com/forum/index.php?threads/pi-always-crash-when-stf.15830/
-#ifdef __PCL_MACOSX
-      if ( 1 + range != 1 )
-      {
-#endif
-      const T* __restrict__ a = m_A + m_start;
-      const T* __restrict__ b = m_A + m_stop;
-      do
-      {
-         double d = pcl::Abs( double( *a ) - m_center );
-         if ( d >= m_low )
-            if ( d <= m_high )
-               ++H[TruncInt( (__PCL_MEDIAN_HISTOGRAM_LENGTH - 1) * (d - m_low)/range )];
-      }
-      while ( ++a < b );
-#ifdef __PCL_MACOSX
-      }
-#endif
+      Build( H, m_A + m_start, m_stop - m_start, m_center, m_low, m_high );
    }
 
 private:
@@ -1373,6 +1685,139 @@ private:
    double        m_center;
    const double& m_low;
    const double& m_high;
+
+   template <typename T1>
+   static void Build( SzVector& H, const T1* __restrict__ A, size_type N, double center, double low, double high )
+   {
+      const double range = high - low;
+      if ( 1 + range != 1 )
+      {
+         const double scale = (__PCL_MEDIAN_HISTOGRAM_LENGTH - 1)/range;
+         PCL_IVDEP
+         for ( size_type i = 0; i < N; ++i )
+         {
+            const int k = TruncInt( scale * (Abs( double( A[i] ) - center ) - low) );
+            if ( k >= 0 && k < __PCL_MEDIAN_HISTOGRAM_LENGTH )
+               ++H[k];
+         }
+      }
+   }
+
+#ifdef __PCL_AVX2
+
+   PCL_HOT_FUNCTION
+   static void Build( SzVector& H, const float* __restrict__ A, size_type N, double center, double low, double high )
+   {
+      const double range = high - low;
+      if ( 1 + range == 1 )
+         return;
+
+      const float s = float( (__PCL_MEDIAN_HISTOGRAM_LENGTH - 1)/range );
+      const float l = float( low );
+      const float c = float( center );
+      const __m256 S = _mm256_set1_ps( s );
+      const __m256 L = _mm256_set1_ps( l );
+      const __m256 C = _mm256_set1_ps( c );
+      union { float f; uint32 u; } m; m.u = 0x7FFFFFFFu;
+      const __m256 M = _mm256_set1_ps( m.f );
+      const size_type stepLength = 0x40000000u;
+
+      for ( size_type p = 0; p < N; p += stepLength )
+      {
+         const float* __restrict__ V = A + p;
+         const int n = int( Min( stepLength, N - p ) );
+         const int n8 = n >> 3;
+
+         if ( ((ptrdiff_t)V) & 31 )
+            for ( int i = 0; i < n8; ++i )
+            {
+               __m256 v = _mm256_loadu_ps( (const float* __restrict__)(V + (i << 3)) );
+               __m256i K = _mm256_cvttps_epi32( _mm256_mul_ps( _mm256_sub_ps( _mm256_and_ps( _mm256_sub_ps( v, C ), M ), L ), S ) );
+               for ( int j = 0; j < 8; ++j )
+               {
+                  const int k = ((const int* __restrict__)&K)[j];
+                  if ( k >= 0 && k < __PCL_MEDIAN_HISTOGRAM_LENGTH )
+                     ++H[k];
+               }
+            }
+         else
+            for ( int i = 0; i < n8; ++i )
+            {
+               __m256i K = _mm256_cvttps_epi32( _mm256_mul_ps( _mm256_sub_ps( _mm256_and_ps(
+                                 _mm256_sub_ps( ((const __m256* __restrict__)V)[i], C ), M ), L ), S ) );
+               for ( int j = 0; j < 8; ++j )
+               {
+                  const int k = ((const int* __restrict__)&K)[j];
+                  if ( k >= 0 && k < __PCL_MEDIAN_HISTOGRAM_LENGTH )
+                     ++H[k];
+               }
+            }
+
+         for ( int i = n8 << 3; i < n; ++i )
+         {
+            const int k = TruncInt( s * (Abs( V[i] - c ) - l) );
+            if ( k >= 0 && k < __PCL_MEDIAN_HISTOGRAM_LENGTH )
+               ++H[k];
+         }
+      }
+   }
+
+   PCL_HOT_FUNCTION
+   static void Build( SzVector& H, const double* __restrict__ A, size_type N, double center, double low, double high )
+   {
+      const double range = high - low;
+      if ( 1 + range == 1 )
+         return;
+
+      const double s = (__PCL_MEDIAN_HISTOGRAM_LENGTH - 1)/range;
+      const __m256d S = _mm256_set1_pd( s );
+      const __m256d L = _mm256_set1_pd( low );
+      const __m256d C = _mm256_set1_pd( center );
+      union { double f; uint64 u; } m; m.u = 0x7FFFFFFFFFFFFFFFull;
+      const __m256d M = _mm256_set1_pd( m.f );
+      const size_type stepLength = 0x40000000u;
+
+      for ( size_type p = 0; p < N; p += stepLength )
+      {
+         const double* __restrict__ V = A + p;
+         const int n = int( Min( stepLength, N - p ) );
+         const int n4 = n >> 2;
+
+         if ( ((ptrdiff_t)V) & 31 )
+            for ( int i = 0; i < n4; ++i )
+            {
+               __m256d v = _mm256_loadu_pd( (const double* __restrict__)(V + (i << 2)) );
+               __m128i K = _mm256_cvttpd_epi32( _mm256_mul_pd( _mm256_sub_pd( _mm256_and_pd( _mm256_sub_pd( v, C ), M ), L ), S ) );
+               for ( int j = 0; j < 4; ++j )
+               {
+                  const int k = ((const int* __restrict__)&K)[j];
+                  if ( k >= 0 && k < __PCL_MEDIAN_HISTOGRAM_LENGTH )
+                     ++H[k];
+               }
+            }
+         else
+            for ( int i = 0; i < n4; ++i )
+            {
+               __m128i K = _mm256_cvttpd_epi32( _mm256_mul_pd( _mm256_sub_pd( _mm256_and_pd(
+                                 _mm256_sub_pd( ((const __m256d* __restrict__)V)[i], C ), M ), L ), S ) );
+               for ( int j = 0; j < 4; ++j )
+               {
+                  const int k = ((const int* __restrict__)&K)[j];
+                  if ( k >= 0 && k < __PCL_MEDIAN_HISTOGRAM_LENGTH )
+                     ++H[k];
+               }
+            }
+
+         for ( int i = n4 << 2; i < n; ++i )
+         {
+            const int k = TruncInt( s * (Abs( V[i] - center ) - low) );
+            if ( k >= 0 && k < __PCL_MEDIAN_HISTOGRAM_LENGTH )
+               ++H[k];
+         }
+      }
+   }
+
+#endif // __PCL_AVX2
 };
 
 template <typename T>
@@ -1393,17 +1838,7 @@ public:
 
    PCL_HOT_FUNCTION void Run() override
    {
-      const T* __restrict__ a = m_A + m_start;
-      const T* __restrict__ b = m_A + m_stop;
-      min = max = pcl::Abs( double( *a ) - m_center );
-      while ( ++a < b )
-      {
-         double d = pcl::Abs( double( *a ) - m_center );
-         if ( d < min )
-            min = d;
-         else if ( d > max )
-            max = d;
-      }
+      Build( min, max, m_A + m_start, m_stop - m_start, m_center );
    }
 
 private:
@@ -1412,13 +1847,28 @@ private:
    size_type m_start;
    size_type m_stop;
    double    m_center;
+
+   template <typename T1>
+   static void Build( double& min, double& max, const T1* __restrict__ A, size_type N, double center )
+   {
+      min = max = Abs( double( A[0] ) - center );
+      PCL_IVDEP
+      for ( size_type i = 1; i < N; ++i )
+      {
+         double d = Abs( double( A[i] ) - center );
+         if ( d < min )
+            min = d;
+         else if ( max < d )
+            max = d;
+      }
+   }
 };
 
 template <typename T>
-static double PCL_FastMAD( const T* __restrict__ begin, const T* __restrict__ end, double center )
+static double PCL_FastMAD( const T* __restrict__ begin, const T* __restrict__ end, double center, double eps )
 {
    distance_type N = end - begin;
-   if ( N <= 2560000 )
+   if ( N <= __PCL_MEDIAN_HISTOGRAM_OVERHEAD )
    {
       double* d = new double[ N ];
       double* __restrict__ p = d;
@@ -1431,7 +1881,7 @@ static double PCL_FastMAD( const T* __restrict__ begin, const T* __restrict__ en
       return m;
    }
 
-   Array<size_type> L = Thread::OptimalThreadLoads( N, 160*1024/*overheadLimit*/ );
+   Array<size_type> L = Thread::OptimalThreadLoads( N, __PCL_MEDIAN_HISTOGRAM_OVERHEAD );
 
    double low, high;
    {
@@ -1463,7 +1913,8 @@ static double PCL_FastMAD( const T* __restrict__ begin, const T* __restrict__ en
       threads.Destroy();
    }
 
-   const double eps = 2*std::numeric_limits<double>::epsilon();
+   if ( eps <= 0 )
+      eps = 2*std::numeric_limits<double>::epsilon();
    if ( high - low < eps )
       return 0;
 
@@ -1472,9 +1923,9 @@ static double PCL_FastMAD( const T* __restrict__ begin, const T* __restrict__ en
       threads << new PCL_AbsDevHistogramThread<T>( begin, n, n + L[i], center, low, high );
 
    /*
-    * High median, extremes and initial histogram saved for odd length.
+    * High median, low bound, and initial histogram saved for even length.
     */
-   double mh = 0, l0 = low, h0 = high;
+   double mh = 0, l0 = low;
    SzVector H0;
 
    for ( size_type count = 0, n2 = N >> 1, step = 0, it = 0;; ++it )
@@ -1523,7 +1974,6 @@ static double PCL_FastMAD( const T* __restrict__ begin, const T* __restrict__ en
                }
                mh = low;
                low = l0;
-               high = h0;
                count = 0;
                --n2;
                ++step;
@@ -1537,11 +1987,11 @@ static double PCL_FastMAD( const T* __restrict__ begin, const T* __restrict__ en
 // ----------------------------------------------------------------------------
 
 template <typename T>
-static double PCL_MAD( const T* __restrict__ i, const T* __restrict__ j, double center )
+static double PCL_MAD( const T* __restrict__ i, const T* __restrict__ j, double center, double eps )
 {
    distance_type n = j - i;
    if ( n > 32 )
-      return PCL_FastMAD( i, j, center );
+      return PCL_FastMAD( i, j, center, eps );
    if ( n < 2 )
       return 0;
 
@@ -1554,74 +2004,83 @@ static double PCL_MAD( const T* __restrict__ i, const T* __restrict__ j, double 
    return m;
 }
 
-double PCL_FUNC MAD( const unsigned char* __restrict__ i, const unsigned char* __restrict__ j, double center )
+double PCL_FUNC MAD( const unsigned char* __restrict__ i, const unsigned char* __restrict__ j, double center, double eps )
 {
-   return PCL_MAD( i, j, center );
+   return PCL_MAD( i, j, center, eps );
 }
 
-double PCL_FUNC MAD( const signed char* __restrict__ i, const signed char* __restrict__ j, double center )
+double PCL_FUNC MAD( const signed char* __restrict__ i, const signed char* __restrict__ j, double center, double eps )
 {
-   return PCL_MAD( i, j, center );
+   return PCL_MAD( i, j, center, eps );
 }
 
-double PCL_FUNC MAD( const wchar_t* __restrict__ i, const wchar_t* __restrict__ j, double center )
+double PCL_FUNC MAD( const wchar_t* __restrict__ i, const wchar_t* __restrict__ j, double center, double eps )
 {
-   return PCL_MAD( i, j, center );
+   return PCL_MAD( i, j, center, eps );
 }
 
-double PCL_FUNC MAD( const unsigned short* __restrict__ i, const unsigned short* __restrict__ j, double center )
+double PCL_FUNC MAD( const unsigned short* __restrict__ i, const unsigned short* __restrict__ j, double center, double eps )
 {
-   return PCL_MAD( i, j, center );
+   return PCL_MAD( i, j, center, eps );
 }
 
-double PCL_FUNC MAD( const signed short* __restrict__ i, const signed short* __restrict__ j, double center )
+double PCL_FUNC MAD( const signed short* __restrict__ i, const signed short* __restrict__ j, double center, double eps )
 {
-   return PCL_MAD( i, j, center );
+   return PCL_MAD( i, j, center, eps );
 }
 
-double PCL_FUNC MAD( const unsigned int* __restrict__ i, const unsigned int* __restrict__ j, double center )
+double PCL_FUNC MAD( const unsigned int* __restrict__ i, const unsigned int* __restrict__ j, double center, double eps )
 {
-   return PCL_MAD( i, j, center );
+   return PCL_MAD( i, j, center, eps );
 }
 
-double PCL_FUNC MAD( const signed int* __restrict__ i, const signed int* __restrict__ j, double center )
+double PCL_FUNC MAD( const signed int* __restrict__ i, const signed int* __restrict__ j, double center, double eps )
 {
-   return PCL_MAD( i, j, center );
+   return PCL_MAD( i, j, center, eps );
 }
 
-double PCL_FUNC MAD( const unsigned long* __restrict__ i, const unsigned long* __restrict__ j, double center )
+double PCL_FUNC MAD( const unsigned long* __restrict__ i, const unsigned long* __restrict__ j, double center, double eps )
 {
-   return PCL_MAD( i, j, center );
+   return PCL_MAD( i, j, center, eps );
 }
 
-double PCL_FUNC MAD( const signed long* __restrict__ i, const signed long* __restrict__ j, double center )
+double PCL_FUNC MAD( const signed long* __restrict__ i, const signed long* __restrict__ j, double center, double eps )
 {
-   return PCL_MAD( i, j, center );
+   return PCL_MAD( i, j, center, eps );
 }
 
-double PCL_FUNC MAD( const unsigned long long* __restrict__ i, const unsigned long long* __restrict__ j, double center )
+double PCL_FUNC MAD( const unsigned long long* __restrict__ i, const unsigned long long* __restrict__ j, double center, double eps )
 {
-   return PCL_MAD( i, j, center );
+   return PCL_MAD( i, j, center, eps );
 }
 
-double PCL_FUNC MAD( const signed long long* __restrict__ i, const signed long long* __restrict__ j, double center )
+double PCL_FUNC MAD( const signed long long* __restrict__ i, const signed long long* __restrict__ j, double center, double eps )
 {
-   return PCL_MAD( i, j, center );
+   return PCL_MAD( i, j, center, eps );
 }
 
-double PCL_FUNC MAD( const float* __restrict__ i, const float* __restrict__ j, double center )
+double PCL_FUNC MAD( const float* __restrict__ i, const float* __restrict__ j, double center, double eps )
 {
-   return PCL_MAD( i, j, center );
+   return PCL_MAD( i, j, center, eps );
 }
 
-double PCL_FUNC MAD( const double* __restrict__ i, const double* __restrict__ j, double center )
+double PCL_FUNC MAD( const double* __restrict__ i, const double* __restrict__ j, double center, double eps )
 {
-   return PCL_MAD( i, j, center );
+// ElapsedTime ET1;
+//
+// double m = PCL_MAD( i, j, center, eps );
+//
+// IsoString ts1 = ET1.ToIsoString();
+// std::cout << IsoString().Format( "(MAD) N = %lu", j - i ) << " " << ts1 << '\n';
+//
+// return m;
+
+   return PCL_MAD( i, j, center, eps );
 }
 
-double PCL_FUNC MAD( const long double* __restrict__ i, const long double* __restrict__ j, double center )
+double PCL_FUNC MAD( const long double* __restrict__ i, const long double* __restrict__ j, double center, double eps )
 {
-   return PCL_MAD( i, j, center );
+   return PCL_MAD( i, j, center, eps );
 }
 
 // ----------------------------------------------------------------------------
@@ -1649,30 +2108,10 @@ public:
    PCL_HOT_FUNCTION void Run() override
    {
       H = size_type( 0 );
-      double range = m_high - m_low;
-// Workaround for clang compiler bug on macOS:
-// https://pixinsight.com/forum/index.php?threads/pi-always-crash-when-stf.15830/
-#ifdef __PCL_MACOSX
-      if ( 1 + range != 1 )
-      {
-#endif
-      const T* __restrict__ a = m_A + m_start;
-      const T* __restrict__ b = m_A + m_stop;
-      do
-      {
-         double x = double( *a );
-         if ( m_side > 0 == x > m_center )
-         {
-            double d = m_side ? x - m_center : m_center - x;
-            if ( d >= m_low )
-               if ( d <= m_high )
-                  ++H[TruncInt( (__PCL_MEDIAN_HISTOGRAM_LENGTH - 1) * (d - m_low)/range )];
-         }
-      }
-      while ( ++a < b );
-#ifdef __PCL_MACOSX
-      }
-#endif
+      if ( m_side == 0 )
+         BuildLow( H, m_A + m_start, m_stop - m_start, m_center, m_low, m_high );
+      else
+         BuildHigh( H, m_A + m_start, m_stop - m_start, m_center, m_low, m_high );
    }
 
 private:
@@ -1684,6 +2123,252 @@ private:
    const int&    m_side;
    const double& m_low;
    const double& m_high;
+
+   template <typename T1>
+   static void BuildLow( SzVector& H, const T1* __restrict__ A, size_type N, double center, double low, double high )
+   {
+      const double range = high - low;
+      if ( 1 + range != 1 )
+      {
+         const double scale = (__PCL_MEDIAN_HISTOGRAM_LENGTH - 1)/range;
+         center -= low;
+         PCL_IVDEP
+         for ( size_type i = 0; i < N; ++i )
+         {
+            const int k = TruncInt( scale * (center - double( A[i] )) );
+            if ( k >= 0 && k < __PCL_MEDIAN_HISTOGRAM_LENGTH )
+               ++H[k];
+         }
+      }
+   }
+
+   template <typename T1>
+   static void BuildHigh( SzVector& H, const T1* __restrict__ A, size_type N, double center, double low, double high )
+   {
+      const double range = high - low;
+      if ( 1 + range != 1 )
+      {
+         const double scale = (__PCL_MEDIAN_HISTOGRAM_LENGTH - 1)/range;
+         center += low;
+         PCL_IVDEP
+         for ( size_type i = 0; i < N; ++i )
+         {
+            const int k = TruncInt( scale * (double( A[i] ) - center) );
+            if ( k >= 0 && k < __PCL_MEDIAN_HISTOGRAM_LENGTH )
+               ++H[k];
+         }
+      }
+   }
+
+#ifdef __PCL_AVX2
+
+   PCL_HOT_FUNCTION
+   static void BuildLow( SzVector& H, const float* __restrict__ A, size_type N, double center, double low, double high )
+   {
+      const double range = high - low;
+      if ( 1 + range == 1 )
+         return;
+
+      const float s = float( (__PCL_MEDIAN_HISTOGRAM_LENGTH - 1)/range );
+      const float c = float( center - low );
+      const __m256 S = _mm256_set1_ps( s );
+      const __m256 C = _mm256_set1_ps( c );
+      const size_type stepLength = 0x40000000u;
+
+      for ( size_type p = 0; p < N; p += stepLength )
+      {
+         const float* __restrict__ V = A + p;
+         const int n = int( Min( stepLength, N - p ) );
+         const int n8 = n >> 3;
+
+         if ( ((ptrdiff_t)V) & 31 )
+            for ( int i = 0; i < n8; ++i )
+            {
+               __m256 v = _mm256_loadu_ps( (const float* __restrict__)(V + (i << 3)) );
+               __m256i K = _mm256_cvttps_epi32( _mm256_mul_ps( _mm256_sub_ps( C, v ), S ) );
+               for ( int j = 0; j < 8; ++j )
+               {
+                  const int k = ((const int* __restrict__)&K)[j];
+                  if ( k >= 0 && k < __PCL_MEDIAN_HISTOGRAM_LENGTH )
+                     ++H[k];
+               }
+            }
+         else
+            for ( int i = 0; i < n8; ++i )
+            {
+               __m256i K = _mm256_cvttps_epi32( _mm256_mul_ps( _mm256_sub_ps( C, ((const __m256* __restrict__)V)[i] ), S ) );
+               for ( int j = 0; j < 8; ++j )
+               {
+                  const int k = ((const int* __restrict__)&K)[j];
+                  if ( k >= 0 && k < __PCL_MEDIAN_HISTOGRAM_LENGTH )
+                     ++H[k];
+               }
+            }
+
+         for ( int i = n8 << 3; i < n; ++i )
+         {
+            const int k = TruncInt( s * (c - V[i]) );
+            if ( k >= 0 && k < __PCL_MEDIAN_HISTOGRAM_LENGTH )
+               ++H[k];
+         }
+      }
+   }
+
+   PCL_HOT_FUNCTION
+   static void BuildLow( SzVector& H, const double* __restrict__ A, size_type N, double center, double low, double high )
+   {
+      const double range = high - low;
+      if ( 1 + range == 1 )
+         return;
+
+      const double s = (__PCL_MEDIAN_HISTOGRAM_LENGTH - 1)/range;
+      const __m256d S = _mm256_set1_pd( s );
+      const __m256d C = _mm256_set1_pd( center - low );
+      const size_type stepLength = 0x40000000u;
+
+      for ( size_type p = 0; p < N; p += stepLength )
+      {
+         const double* __restrict__ V = A + p;
+         const int n = int( Min( stepLength, N - p ) );
+         const int n4 = n >> 2;
+
+         if ( ((ptrdiff_t)V) & 31 )
+            for ( int i = 0; i < n4; ++i )
+            {
+               __m256d v = _mm256_loadu_pd( (const double* __restrict__)(V + (i << 2)) );
+               __m128i K = _mm256_cvttpd_epi32( _mm256_mul_pd( _mm256_sub_pd( C, v ), S ) );
+               for ( int j = 0; j < 4; ++j )
+               {
+                  const int k = ((const int* __restrict__)&K)[j];
+                  if ( k >= 0 && k < __PCL_MEDIAN_HISTOGRAM_LENGTH )
+                     ++H[k];
+               }
+            }
+         else
+            for ( int i = 0; i < n4; ++i )
+            {
+               __m128i K = _mm256_cvttpd_epi32( _mm256_mul_pd( _mm256_sub_pd( C, ((const __m256d* __restrict__)V)[i] ), S ) );
+               for ( int j = 0; j < 4; ++j )
+               {
+                  const int k = ((const int* __restrict__)&K)[j];
+                  if ( k >= 0 && k < __PCL_MEDIAN_HISTOGRAM_LENGTH )
+                     ++H[k];
+               }
+            }
+
+         for ( int i = n4 << 2; i < n; ++i )
+         {
+            const int k = TruncInt( s * (center - V[i]) );
+            if ( k >= 0 && k < __PCL_MEDIAN_HISTOGRAM_LENGTH )
+               ++H[k];
+         }
+      }
+   }
+
+   PCL_HOT_FUNCTION
+   static void BuildHigh( SzVector& H, const float* __restrict__ A, size_type N, double center, double low, double high )
+   {
+      const double range = high - low;
+      if ( 1 + range == 1 )
+         return;
+
+      const float s = float( (__PCL_MEDIAN_HISTOGRAM_LENGTH - 1)/range );
+      const float c = float( center + low );
+      const __m256 S = _mm256_set1_ps( s );
+      const __m256 C = _mm256_set1_ps( c );
+      const size_type stepLength = 0x40000000u;
+
+      for ( size_type p = 0; p < N; p += stepLength )
+      {
+         const float* __restrict__ V = A + p;
+         const int n = int( Min( stepLength, N - p ) );
+         const int n8 = n >> 3;
+
+         if ( ((ptrdiff_t)V) & 31 )
+            for ( int i = 0; i < n8; ++i )
+            {
+               __m256 v = _mm256_loadu_ps( (const float* __restrict__)(V + (i << 3)) );
+               __m256i K = _mm256_cvttps_epi32( _mm256_mul_ps( _mm256_sub_ps( v, C ), S ) );
+               for ( int j = 0; j < 8; ++j )
+               {
+                  const int k = ((const int* __restrict__)&K)[j];
+                  if ( k >= 0 && k < __PCL_MEDIAN_HISTOGRAM_LENGTH )
+                     ++H[k];
+               }
+            }
+         else
+            for ( int i = 0; i < n8; ++i )
+            {
+               __m256i K = _mm256_cvttps_epi32( _mm256_mul_ps( _mm256_sub_ps( ((const __m256* __restrict__)V)[i], C ), S ) );
+               for ( int j = 0; j < 8; ++j )
+               {
+                  const int k = ((const int* __restrict__)&K)[j];
+                  if ( k >= 0 && k < __PCL_MEDIAN_HISTOGRAM_LENGTH )
+                     ++H[k];
+               }
+            }
+
+         for ( int i = n8 << 3; i < n; ++i )
+         {
+            const int k = TruncInt( s * (V[i] - c) );
+            if ( k >= 0 && k < __PCL_MEDIAN_HISTOGRAM_LENGTH )
+               ++H[k];
+         }
+      }
+   }
+
+   PCL_HOT_FUNCTION
+   static void BuildHigh( SzVector& H, const double* __restrict__ A, size_type N, double center, double low, double high )
+   {
+      const double range = high - low;
+      if ( 1 + range == 1 )
+         return;
+
+      const double s = (__PCL_MEDIAN_HISTOGRAM_LENGTH - 1)/range;
+      const __m256d S = _mm256_set1_pd( s );
+      const __m256d C = _mm256_set1_pd( center + low );
+      const size_type stepLength = 0x40000000u;
+
+      for ( size_type p = 0; p < N; p += stepLength )
+      {
+         const double* __restrict__ V = A + p;
+         const int n = int( Min( stepLength, N - p ) );
+         const int n4 = n >> 2;
+
+         if ( ((ptrdiff_t)V) & 31 )
+            for ( int i = 0; i < n4; ++i )
+            {
+               __m256d v = _mm256_loadu_pd( (const double* __restrict__)(V + (i << 2)) );
+               __m128i K = _mm256_cvttpd_epi32( _mm256_mul_pd( _mm256_sub_pd( v, C ), S ) );
+               for ( int j = 0; j < 4; ++j )
+               {
+                  const int k = ((const int* __restrict__)&K)[j];
+                  if ( k >= 0 && k < __PCL_MEDIAN_HISTOGRAM_LENGTH )
+                     ++H[k];
+               }
+            }
+         else
+            for ( int i = 0; i < n4; ++i )
+            {
+               __m128i K = _mm256_cvttpd_epi32( _mm256_mul_pd( _mm256_sub_pd( ((const __m256d* __restrict__)V)[i], C ), S ) );
+               for ( int j = 0; j < 4; ++j )
+               {
+                  const int k = ((const int* __restrict__)&K)[j];
+                  if ( k >= 0 && k < __PCL_MEDIAN_HISTOGRAM_LENGTH )
+                     ++H[k];
+               }
+            }
+
+         for ( int i = n4 << 2; i < n; ++i )
+         {
+            const int k = TruncInt( s * (V[i] - center) );
+            if ( k >= 0 && k < __PCL_MEDIAN_HISTOGRAM_LENGTH )
+               ++H[k];
+         }
+      }
+   }
+
+#endif // __PCL_AVX2
 };
 
 template <typename T>
@@ -1706,39 +2391,8 @@ public:
 
    PCL_HOT_FUNCTION void Run() override
    {
-      const T* __restrict__ a = m_A + m_start;
-      const T* __restrict__ b = m_A + m_stop;
-      do
-      {
-         double x = double( *a );
-         if ( x <= m_center )
-         {
-            double d = m_center - x;
-            if ( nLow++ > 0 )
-            {
-               if ( d < minLow )
-                  minLow = d;
-               else if ( d > maxLow )
-                  maxLow = d;
-            }
-            else
-               minLow = maxLow = d;
-         }
-         else
-         {
-            double d = x - m_center;
-            if ( nHigh++ > 0 )
-            {
-               if ( d < minHigh )
-                  minHigh = d;
-               else if ( d > maxHigh )
-                  maxHigh = d;
-            }
-            else
-               minHigh = maxHigh = d;
-         }
-      }
-      while ( ++a < b );
+      BuildLow( minLow, maxLow, nLow, m_A + m_start, m_stop - m_start, m_center );
+      BuildHigh( minHigh, maxHigh, nHigh, m_A + m_start, m_stop - m_start, m_center );
    }
 
 private:
@@ -1747,13 +2401,61 @@ private:
    size_type m_start;
    size_type m_stop;
    double    m_center;
+
+   template <typename T1>
+   static void BuildLow( double& min, double& max, size_type& count, const T1* __restrict__ A, double center, size_type N )
+   {
+      for ( size_type i = 0; i < N; ++i )
+      {
+         double d = center - double( A[i] );
+         if ( d >= 0 )
+         {
+            min = max = d;
+            ++count;
+            for ( ; ++i < N; )
+               if ( (d = center - double( A[i] )) >= 0 )
+               {
+                  if ( d < min )
+                     min = d;
+                  else if ( max < d )
+                     max = d;
+                  ++count;
+               }
+            break;
+         }
+      }
+   }
+
+   template <typename T1>
+   static void BuildHigh( double& min, double& max, size_type& count, const T1* __restrict__ A, double center, size_type N )
+   {
+      for ( size_type i = 0; i < N; ++i )
+      {
+         double d = double( A[i] ) - center;
+         if ( d > 0 )
+         {
+            min = max = d;
+            ++count;
+            for ( ; ++i < N; )
+               if ( (d = double( A[i] ) - center) > 0 )
+               {
+                  if ( d < min )
+                     min = d;
+                  else if ( max < d )
+                     max = d;
+                  ++count;
+               }
+            break;
+         }
+      }
+   }
 };
 
 template <typename T>
-static TwoSidedEstimate PCL_TwoSidedFastMAD( const T* __restrict__ begin, const T* __restrict__ end, double center )
+static TwoSidedEstimate PCL_TwoSidedFastMAD( const T* __restrict__ begin, const T* __restrict__ end, double center, double eps )
 {
    distance_type N = end - begin;
-   if ( N <= 2560000 )
+   if ( N <= __PCL_MEDIAN_HISTOGRAM_OVERHEAD )
    {
       double* d = new double[ N ];
       double* __restrict__ p = d;
@@ -1773,7 +2475,7 @@ static TwoSidedEstimate PCL_TwoSidedFastMAD( const T* __restrict__ begin, const 
       return { l, h };
    }
 
-   Array<size_type> L = Thread::OptimalThreadLoads( N, 160*1024/*overheadLimit*/ );
+   Array<size_type> L = Thread::OptimalThreadLoads( N, __PCL_MEDIAN_HISTOGRAM_OVERHEAD );
 
    double minLow = 0, minHigh = 0, maxLow = 0, maxHigh = 0;
    size_type nLow = 0, nHigh = 0;
@@ -1838,7 +2540,8 @@ static TwoSidedEstimate PCL_TwoSidedFastMAD( const T* __restrict__ begin, const 
    for ( size_type i = 0, n = 0; i < L.Length(); n += L[i++] )
       threads << new PCL_TwoSidedAbsDevHistogramThread<T>( begin, n, n + L[i], center, side, sideLow, sideHigh );
 
-   const double eps = 2*std::numeric_limits<double>::epsilon();
+   if ( eps <= 0 )
+      eps = 2*std::numeric_limits<double>::epsilon();
    double mad[ 2 ];
    for ( side = 0; side < 2; ++side )
    {
@@ -1858,9 +2561,9 @@ static TwoSidedEstimate PCL_TwoSidedFastMAD( const T* __restrict__ begin, const 
       }
 
       /*
-       * High median, extremes and initial histogram saved for odd length.
+       * High median, low bound, and initial histogram saved for even length.
        */
-      double mh = 0, h0 = sideHigh;
+      double mh = 0, l0 = sideLow;
       SzVector H0;
 
       for ( size_type count = 0, n2 = n >> 1, step = 0, it = 0;; ++it )
@@ -1908,8 +2611,7 @@ static TwoSidedEstimate PCL_TwoSidedFastMAD( const T* __restrict__ begin, const 
                      goto __madNextSide;
                   }
                   mh = sideLow;
-                  sideLow = 0;
-                  sideHigh = h0;
+                  sideLow = l0;
                   count = 0;
                   --n2;
                   ++step;
@@ -1928,82 +2630,82 @@ __madNextSide:
 }
 
 template <typename T>
-static TwoSidedEstimate PCL_TwoSidedMAD( const T* __restrict__ i, const T* __restrict__ j, double center )
+static TwoSidedEstimate PCL_TwoSidedMAD( const T* __restrict__ i, const T* __restrict__ j, double center, double eps )
 {
    distance_type n = j - i;
    if ( n >= 2 )
-      return PCL_TwoSidedFastMAD( i, j, center );
+      return PCL_TwoSidedFastMAD( i, j, center, eps );
    return { 0, 0 };
 }
 
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned char* __restrict__ i, const unsigned char* __restrict__ j, double center )
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned char* __restrict__ i, const unsigned char* __restrict__ j, double center, double eps )
 {
-   return PCL_TwoSidedMAD( i, j, center );
+   return PCL_TwoSidedMAD( i, j, center, eps );
 }
 
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed char* __restrict__ i, const signed char* __restrict__ j, double center )
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed char* __restrict__ i, const signed char* __restrict__ j, double center, double eps )
 {
-   return PCL_TwoSidedMAD( i, j, center );
+   return PCL_TwoSidedMAD( i, j, center, eps );
 }
 
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const wchar_t* __restrict__ i, const wchar_t* __restrict__ j, double center )
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const wchar_t* __restrict__ i, const wchar_t* __restrict__ j, double center, double eps )
 {
-   return PCL_TwoSidedMAD( i, j, center );
+   return PCL_TwoSidedMAD( i, j, center, eps );
 }
 
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned short* __restrict__ i, const unsigned short* __restrict__ j, double center )
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned short* __restrict__ i, const unsigned short* __restrict__ j, double center, double eps )
 {
-   return PCL_TwoSidedMAD( i, j, center );
+   return PCL_TwoSidedMAD( i, j, center, eps );
 }
 
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed short* __restrict__ i, const signed short* __restrict__ j, double center )
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed short* __restrict__ i, const signed short* __restrict__ j, double center, double eps )
 {
-   return PCL_TwoSidedMAD( i, j, center );
+   return PCL_TwoSidedMAD( i, j, center, eps );
 }
 
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned int* __restrict__ i, const unsigned int* __restrict__ j, double center )
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned int* __restrict__ i, const unsigned int* __restrict__ j, double center, double eps )
 {
-   return PCL_TwoSidedMAD( i, j, center );
+   return PCL_TwoSidedMAD( i, j, center, eps );
 }
 
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed int* __restrict__ i, const signed int* __restrict__ j, double center )
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed int* __restrict__ i, const signed int* __restrict__ j, double center, double eps )
 {
-   return PCL_TwoSidedMAD( i, j, center );
+   return PCL_TwoSidedMAD( i, j, center, eps );
 }
 
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned long* __restrict__ i, const unsigned long* __restrict__ j, double center )
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned long* __restrict__ i, const unsigned long* __restrict__ j, double center, double eps )
 {
-   return PCL_TwoSidedMAD( i, j, center );
+   return PCL_TwoSidedMAD( i, j, center, eps );
 }
 
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed long* __restrict__ i, const signed long* __restrict__ j, double center )
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed long* __restrict__ i, const signed long* __restrict__ j, double center, double eps )
 {
-   return PCL_TwoSidedMAD( i, j, center );
+   return PCL_TwoSidedMAD( i, j, center, eps );
 }
 
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned long long* __restrict__ i, const unsigned long long* __restrict__ j, double center )
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned long long* __restrict__ i, const unsigned long long* __restrict__ j, double center, double eps )
 {
-   return PCL_TwoSidedMAD( i, j, center );
+   return PCL_TwoSidedMAD( i, j, center, eps );
 }
 
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed long long* __restrict__ i, const signed long long* __restrict__ j, double center )
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed long long* __restrict__ i, const signed long long* __restrict__ j, double center, double eps )
 {
-   return PCL_TwoSidedMAD( i, j, center );
+   return PCL_TwoSidedMAD( i, j, center, eps );
 }
 
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const float* __restrict__ i, const float* __restrict__ j, double center )
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const float* __restrict__ i, const float* __restrict__ j, double center, double eps )
 {
-   return PCL_TwoSidedMAD( i, j, center );
+   return PCL_TwoSidedMAD( i, j, center, eps );
 }
 
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const double* __restrict__ i, const double* __restrict__ j, double center )
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const double* __restrict__ i, const double* __restrict__ j, double center, double eps )
 {
-   return PCL_TwoSidedMAD( i, j, center );
+   return PCL_TwoSidedMAD( i, j, center, eps );
 }
 
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const long double* __restrict__ i, const long double* __restrict__ j, double center )
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const long double* __restrict__ i, const long double* __restrict__ j, double center, double eps )
 {
-   return PCL_TwoSidedMAD( i, j, center );
+   return PCL_TwoSidedMAD( i, j, center, eps );
 }
 
 // ----------------------------------------------------------------------------
@@ -2011,4 +2713,4 @@ TwoSidedEstimate PCL_FUNC TwoSidedMAD( const long double* __restrict__ i, const 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Median.cpp - Released 2024-06-18T15:49:06Z
+// EOF pcl/Median.cpp - Released 2024-12-11T17:42:39Z

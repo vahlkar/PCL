@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/FFTConvolution.cpp - Released 2024-06-18T15:49:06Z
+// pcl/FFTConvolution.cpp - Released 2024-12-11T17:42:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -54,6 +54,103 @@
 
 namespace pcl
 {
+
+// ----------------------------------------------------------------------------
+
+template <typename C, typename T> inline static
+void __pcl_cconv( C* __restrict__ x, const C* __restrict__ y, T k, size_type N )
+{
+   PCL_IVDEP
+   for ( size_type i = 0; i < N; ++i )
+      x[i] *= k * y[i];
+}
+
+#ifdef __PCL_AVX2
+
+inline static
+void __pcl_cconv( fcomplex* __restrict__ x, const fcomplex* __restrict__ y, float k, size_type N )
+{
+   size_type nf = N << 1;
+   const size_type n8 = nf >> 3;
+   const __m256 r = _mm256_set1_ps( k );
+   size_type i;
+
+   if ( ((ptrdiff_t)x) & 31 || ((ptrdiff_t)y) & 31 )
+      for ( i = 0; i < n8; ++i )
+      {
+         __m256 a = _mm256_loadu_ps( (const float* __restrict__)(x + i*8) );
+         __m256 b = _mm256_loadu_ps( (const float* __restrict__)(y + i*8) );
+         __m256 b_swap = _mm256_shuffle_ps( b, b, 0xb1 );
+         __m256 a_im = _mm256_shuffle_ps( a, a, 0xf5 );
+         __m256 a_re = _mm256_shuffle_ps( a, a, 0xa0 );
+         __m256 a_im_b_swap = _mm256_mul_ps( a_im, b_swap );
+         __m256 k_y = _mm256_fmaddsub_ps( a_re, b, a_im_b_swap );
+         _mm256_storeu_ps( (float* __restrict__)(x + (i << 3)), _mm256_mul_ps( r, k_y ) );
+      }
+   else
+      for ( i = 0; i < n8; ++i )
+      {
+         __m256 a = ((const __m256* __restrict__)x)[i];
+         __m256 b = ((const __m256* __restrict__)y)[i];
+         __m256 b_swap = _mm256_shuffle_ps( b, b, 0xb1 );
+         __m256 a_im = _mm256_shuffle_ps( a, a, 0xf5 );
+         __m256 a_re = _mm256_shuffle_ps( a, a, 0xa0 );
+         __m256 a_im_b_swap = _mm256_mul_ps( a_im, b_swap );
+         __m256 k_y = _mm256_fmaddsub_ps( a_re, b, a_im_b_swap );
+         ((__m256* __restrict__)x)[i] = _mm256_mul_ps( r, k_y );
+      }
+
+   switch ( N % 4 )
+   {
+   case 3:
+      x[N-3] *= k * y[N-3];
+   case 2:
+      x[N-2] *= k * y[N-2];
+   case 1:
+      x[N-1] *= k * y[N-1];
+   default:
+      break;
+   }
+}
+
+inline static
+void __pcl_cconv( complex* __restrict__ x, const complex* __restrict__ y, double k, size_type N )
+{
+   size_type nd = N << 1;
+   const size_type n4 = nd >> 2;
+   const __m256d r = _mm256_set1_pd( k );
+   size_type i;
+
+   if ( ((ptrdiff_t)x) & 31 || ((ptrdiff_t)y) & 31 )
+      for ( i = 0; i < n4; ++i )
+      {
+         __m256d a = _mm256_loadu_pd( (const double* __restrict__)(x + i*4) );
+         __m256d b = _mm256_loadu_pd( (const double* __restrict__)(y + i*4) );
+         __m256d b_swap = _mm256_shuffle_pd( b, b, 5 );
+         __m256d a_im = _mm256_shuffle_pd( a, a, 15 );
+         __m256d a_re = _mm256_shuffle_pd( a, a, 0 );
+         __m256d a_im_b_swap = _mm256_mul_pd( a_im, b_swap );
+         __m256d k_y = _mm256_fmaddsub_pd( a_re, b, a_im_b_swap );
+         _mm256_storeu_pd( (double* __restrict__)(x + (i << 2)), _mm256_mul_pd( r, k_y ) );
+      }
+   else
+      for ( i = 0; i < n4; ++i )
+      {
+         __m256d a = ((const __m256d* __restrict__)x)[i];
+         __m256d b = ((const __m256d* __restrict__)y)[i];
+         __m256d b_swap = _mm256_shuffle_pd( b, b, 5 );
+         __m256d a_im = _mm256_shuffle_pd( a, a, 15 );
+         __m256d a_re = _mm256_shuffle_pd( a, a, 0 );
+         __m256d a_im_b_swap = _mm256_mul_pd( a_im, b_swap );
+         __m256d k_y = _mm256_fmaddsub_pd( a_re, b, a_im_b_swap );
+         ((__m256d* __restrict__)x)[i] = _mm256_mul_pd( r, k_y );
+      }
+
+   if ( N & 1 )
+      x[N-1] *= k * y[N-1];
+}
+
+#endif
 
 // ----------------------------------------------------------------------------
 
@@ -171,12 +268,7 @@ private:
             C.Status() += dN;
 
             double k = 1.0/w/h; // FFT scaling factor
-                  ComplexImage::sample* c  = *C;
-            const ComplexImage::sample* cN = c + C.NumberOfPixels();
-            const ComplexImage::sample* p  = *psfFFT;
-            for ( ; c < cN; ++c, ++p )
-               *c *= k * *p;
-
+            __pcl_cconv( *C, *psfFFT, k, C.NumberOfPixels() );
             C.Status() += dN;
 
             InPlaceInverseFourierTransform IFFT;
@@ -475,4 +567,4 @@ void FFTConvolution::ValidateFilter() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FFTConvolution.cpp - Released 2024-06-18T15:49:06Z
+// EOF pcl/FFTConvolution.cpp - Released 2024-12-11T17:42:39Z

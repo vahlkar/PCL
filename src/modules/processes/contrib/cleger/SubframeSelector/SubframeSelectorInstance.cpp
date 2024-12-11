@@ -2,15 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.9.0
+// Standard SubframeSelector Process Module Version 1.9.1
 // ----------------------------------------------------------------------------
-// SubframeSelectorInstance.cpp - Released 2024-06-18T15:49:25Z
+// SubframeSelectorInstance.cpp - Released 2024-12-11T17:43:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
 // Copyright (c) 2017-2021 Cameron Leger
+// Copyright (c) 2020-2024 Juan Conejero, PTeam
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -129,6 +130,7 @@ SubframeSelectorInstance::SubframeSelectorInstance( const MetaProcess* m )
    , p_psfFit( SSPSFFit::Default )
    , p_psfFitCircular( TheSSPSFFitCircularParameter->DefaultValue() )
    , p_maxPSFFits( int32( TheSSMaxPSFFitsParameter->DefaultValue() ) )
+   , p_noNoiseAndSignalWarnings( TheSSNoNoiseAndSignalWarningsParameter->DefaultValue() )
    , p_pedestal( TheSSPedestalParameter->DefaultValue() )
    , p_pedestalMode( SSPedestalMode::Default )
    , p_inputHints( TheSSInputHintsParameter->DefaultValue() )
@@ -208,6 +210,7 @@ void SubframeSelectorInstance::Assign( const ProcessImplementation& p )
       p_psfFitCircular             = x->p_psfFitCircular;
       p_maxPSFFits                 = x->p_maxPSFFits;
       p_roi                        = x->p_roi;
+      p_noNoiseAndSignalWarnings   = x->p_noNoiseAndSignalWarnings;
       p_pedestal                   = x->p_pedestal;
       p_pedestalMode               = x->p_pedestalMode;
       p_pedestalKeyword            = x->p_pedestalKeyword;
@@ -603,8 +606,9 @@ private:
               psfTotalMeanFlux <= 0 || psfTotalMeanPowerFlux <= 0 ||
               MStar <= 0 || NStar <= 0 || psfCount < 1 )
          {
-            Console().WarningLn( "<end><cbr>** Warning: PSF signal estimates are not available in the image metadata and are being "
-                                 "calculated from possibly non-raw or uncalibrated data. Image weights can be inaccurate." );
+            if ( !m_instance.p_noNoiseAndSignalWarnings )
+               Console().WarningLn( "<end><cbr>** Warning: PSF signal estimates are not available in the image metadata and are being "
+                                    "calculated from possibly non-raw or uncalibrated data. Image weights can be inaccurate." );
             PSFSignalEstimator E;
             E.Detector().EnableClusteredSources();
             E.Detector().DisableLocalMaximaDetection();
@@ -636,8 +640,9 @@ private:
           */
          if ( noiseScaleLow == 0 || noiseScaleHigh == 0 )
          {
-            Console().WarningLn( "<end><cbr>** Warning: Noise scaling factors are not available in the image metadata and are being "
-                                 "calculated from possibly non-raw or uncalibrated data. Image weights can be inaccurate." );
+            if ( !m_instance.p_noNoiseAndSignalWarnings )
+               Console().WarningLn( "<end><cbr>** Warning: Noise scaling factors are not available in the image metadata and are being "
+                                    "calculated from possibly non-raw or uncalibrated data. Image weights can be inaccurate." );
 
             const double clipLow = 2.0/65535;
             const double clipHigh = 1.0 - 2.0/65535;
@@ -816,8 +821,9 @@ private:
       }
       else
       {
-         Console().WarningLn( "<end><cbr>** Warning: Noise estimates are not available in the image metadata and are being "
-                              "calculated from possibly non-raw or uncalibrated data. Image weights can be inaccurate." );
+         if ( !m_instance.p_noNoiseAndSignalWarnings )
+            Console().WarningLn( "<end><cbr>** Warning: Noise estimates are not available in the image metadata and are being "
+                                 "calculated from possibly non-raw or uncalibrated data. Image weights can be inaccurate." );
          double noiseEstimate = 0;
          double noiseFraction = 0;
          double noiseEstimateKS = 0;
@@ -868,8 +874,9 @@ private:
       }
       else
       {
-         Console().WarningLn( "<end><cbr>** Warning: PSF signal estimates are not available in the image metadata and are being "
-                              "calculated from possibly non-raw or uncalibrated data. Image weights can be inaccurate." );
+         if ( !m_instance.p_noNoiseAndSignalWarnings )
+            Console().WarningLn( "<end><cbr>** Warning: PSF signal estimates are not available in the image metadata and are being "
+                                 "calculated from possibly non-raw or uncalibrated data. Image weights can be inaccurate." );
          PSFSignalEstimator E;
          E.Detector().EnableClusteredSources();
          E.Detector().DisableLocalMaximaDetection();
@@ -894,8 +901,9 @@ private:
          /*
           * Noise scaling factors
           */
-         Console().WarningLn( "<end><cbr>** Warning: Noise scaling factors are not available in the image metadata and are being "
-                              "calculated from possibly non-raw or uncalibrated data. Image weights can be inaccurate." );
+         if ( !m_instance.p_noNoiseAndSignalWarnings )
+            Console().WarningLn( "<end><cbr>** Warning: Noise scaling factors are not available in the image metadata and are being "
+                                 "calculated from possibly non-raw or uncalibrated data. Image weights can be inaccurate." );
 
          const double clipLow = 2.0/65535;
          const double clipHigh = 1 - 2.0/65535;
@@ -2466,6 +2474,8 @@ void* SubframeSelectorInstance::LockParameter( const MetaParameter* p, size_type
       return &p_roi.x1;
    if ( p == TheSSROIY1Parameter )
       return &p_roi.y1;
+   if ( p == TheSSNoNoiseAndSignalWarningsParameter )
+      return &p_noNoiseAndSignalWarnings;
 
    if ( p == TheSSPedestalParameter )
       return &p_pedestal;
@@ -2738,4 +2748,4 @@ size_type SubframeSelectorInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInstance.cpp - Released 2024-06-18T15:49:25Z
+// EOF SubframeSelectorInstance.cpp - Released 2024-12-11T17:43:17Z

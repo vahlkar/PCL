@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/SeparableConvolution.cpp - Released 2024-06-18T15:49:06Z
+// pcl/SeparableConvolution.cpp - Released 2024-12-11T17:42:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -57,6 +57,188 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
+template <typename T> inline static
+double __pcl_dp_3( const T* __restrict__ x, const T* __restrict__ y )
+{
+   return double( x[0] ) * double( y[0] )
+        + double( x[1] ) * double( y[1] )
+        + double( x[2] ) * double( y[2] );
+}
+
+template <typename T> inline static
+double __pcl_dp_3_i( const T* __restrict__ x, const T* __restrict__ y, const int* __restrict__ index )
+{
+   return double( x[index[0]] ) * double( y[0] )
+        + double( x[index[1]] ) * double( y[1] )
+        + double( x[index[2]] ) * double( y[2] );
+}
+
+template <typename T> inline static
+double __pcl_dp_5( const T* __restrict__ x, const T* __restrict__ y )
+{
+   return double( x[0] ) * double( y[0] )
+        + double( x[1] ) * double( y[1] )
+        + double( x[2] ) * double( y[2] )
+        + double( x[3] ) * double( y[3] )
+        + double( x[4] ) * double( y[4] );
+}
+
+template <typename T> inline static
+double __pcl_dp_5_i( const T* __restrict__ x, const T* __restrict__ y, const int* __restrict__ index )
+{
+   return double( x[index[0]] ) * double( y[0] )
+        + double( x[index[1]] ) * double( y[1] )
+        + double( x[index[2]] ) * double( y[2] )
+        + double( x[index[3]] ) * double( y[3] )
+        + double( x[index[4]] ) * double( y[4] );
+}
+
+template <typename T> inline static
+double __pcl_dp_7( const T* __restrict__ x, const T* __restrict__ y )
+{
+   return double( x[0] ) * double( y[0] )
+        + double( x[1] ) * double( y[1] )
+        + double( x[2] ) * double( y[2] )
+        + double( x[3] ) * double( y[3] )
+        + double( x[4] ) * double( y[4] )
+        + double( x[5] ) * double( y[5] )
+        + double( x[6] ) * double( y[6] );
+}
+
+template <typename T> inline static
+double __pcl_dp_7_i( const T* __restrict__ x, const T* __restrict__ y, const int* __restrict__ index )
+{
+   return double( x[index[0]] ) * double( y[0] )
+        + double( x[index[1]] ) * double( y[1] )
+        + double( x[index[2]] ) * double( y[2] )
+        + double( x[index[3]] ) * double( y[3] )
+        + double( x[index[4]] ) * double( y[4] )
+        + double( x[index[5]] ) * double( y[5] )
+        + double( x[index[6]] ) * double( y[6] );
+}
+
+template <typename T> inline static
+double __pcl_dp( const T* __restrict__ x, const T* __restrict__ y, int n )
+{
+   double r = 0;
+   PCL_IVDEP
+   for ( int i = 0; i < n; ++i )
+      r += double( x[i] ) * double( y[i] );
+   return r;
+}
+
+template <typename T> inline static
+double __pcl_dp_i( const T* __restrict__ x, const T* __restrict__ y, const int* __restrict__ index, int n )
+{
+   double r = 0;
+   PCL_IVDEP
+   for ( int i = 0; i < n; ++i )
+      r += double( x[index[i]] ) * double( y[i] );
+   return r;
+}
+
+#ifdef __PCL_AVX2
+
+inline static
+double __pcl_dp( const float* __restrict__ x, const float* __restrict__ y, int n )
+{
+   const int n8 = n >> 3;
+   __m256 d = _mm256_setzero_ps();
+   for ( int i = 0; i < n8; ++i )
+      d = _mm256_fmadd_ps( _mm256_loadu_ps( x + i*8 ), _mm256_loadu_ps( y + i*8 ), d );
+   float r = __pcl_hsum256_ps( d );
+   for ( int i = n8 << 3; i < n; ++i )
+      r += x[i] * y[i];
+   return r;
+}
+
+/*
+inline static
+double __pcl_dp( const float* __restrict__ x, const float* __restrict__ y, int n )
+{
+   const int n8 = n >> 3;
+   __m256d d = _mm256_setzero_pd();
+   for ( int i = 0; i < n8; ++i )
+   {
+      // Accumulate all sums in double precision to avoid roundoff errors.
+      __m256 p = _mm256_mul_ps( ((const __m256* __restrict__)x)[i],
+                                ((const __m256* __restrict__)y)[i] );
+      d = _mm256_add_pd( d, _mm256_add_pd( _mm256_cvtps_pd( ((const __m128* __restrict__)&p)[0] ),
+                                           _mm256_cvtps_pd( ((const __m128* __restrict__)&p)[1] ) ) );
+   }
+   double r = __pcl_hsum256_pd( d );
+   for ( int i = n8 << 3; i < n; ++i )
+      r += x[i] * y[i];
+   return r;
+}
+*/
+
+inline static
+double __pcl_dp_i( const float* __restrict__ x, const float* __restrict__ y, const int* __restrict__ index, int n )
+{
+   const int n8 = n >> 3;
+   __m256 d = _mm256_setzero_ps();
+   for ( int i = 0; i < n8; ++i )
+      d = _mm256_fmadd_ps( _mm256_i32gather_ps( x, ((const __m256i* __restrict__)index)[i], 4 ),
+                           _mm256_loadu_ps( y + i*8 ),
+                           d );
+   float r = __pcl_hsum256_ps( d );
+   for ( int i = n8 << 3; i < n; ++i )
+      r += x[index[i]] * y[i];
+   return r;
+}
+
+// inline static
+// double __pcl_dp_i( const float* __restrict__ x, const float* __restrict__ y, const int* __restrict__ index, int n )
+// {
+//    const int n8 = n >> 3;
+//    __m256d d = _mm256_setzero_pd();
+//    for ( int i = 0; i < n8; ++i )
+//    {
+//       // Accumulate all sums in double precision to avoid roundoff errors.
+//       __m256 p = _mm256_mul_ps( _mm256_i32gather_ps( x, ((const __m256i* __restrict__)index)[i], 4 ),
+//                                 ((const __m256* __restrict__)y)[i] );
+//       d = _mm256_add_pd( d, _mm256_add_pd( _mm256_cvtps_pd( ((const __m128* __restrict__)&p)[0] ),
+//                                            _mm256_cvtps_pd( ((const __m128* __restrict__)&p)[1] ) ) );
+//    }
+//    double r = __pcl_hsum256_pd( d );
+//    for ( int i = n8 << 3; i < n; ++i )
+//       r += x[index[i]] * y[i];
+//    return r;
+// }
+
+inline static
+double __pcl_dp( const double* __restrict__ x, const double* __restrict__ y, int n )
+{
+   const int n4 = n >> 2;
+   __m256d d = _mm256_setzero_pd();
+   for ( int i = 0; i < n4; ++i )
+      d = _mm256_fmadd_pd( _mm256_loadu_pd( x + i*4 ), _mm256_loadu_pd( y + i*4 ), d );
+   double r = __pcl_hsum256_pd( d );
+   for ( int i = n4 << 2; i < n; ++i )
+      r += x[i] * y[i];
+   return r;
+}
+
+inline static
+double __pcl_dp_i( const double* __restrict__ x, const double* __restrict__ y, const int* __restrict__ index, int n )
+{
+   const int n4 = n >> 2;
+   __m256d d = _mm256_setzero_pd();
+   for ( int i = 0; i < n4; ++i )
+      d = _mm256_fmadd_pd( _mm256_i32gather_pd( x, ((const __m128i* __restrict__)index)[i], 8 ),
+                           _mm256_loadu_pd( y + i*4 ),
+                           d );
+   double r = __pcl_hsum256_pd( d );
+   for ( int i = n4 << 2; i < n; ++i )
+      r += x[index[i]] * y[i];
+   return r;
+}
+
+#endif
+
+// ----------------------------------------------------------------------------
+
 class PCL_SeparableConvolutionEngine
 {
 public:
@@ -81,9 +263,6 @@ public:
    }
 
 private:
-
-   using coefficient = SeparableFilter::coefficient;
-   using coefficient_vector = SeparableFilter::coefficient_vector;
 
    template <class P> static
    void DoApply( GenericImage<P>& image, const SeparableConvolution& convolution )
@@ -188,10 +367,19 @@ private:
          , image( a_image )
          , convolution( a_convolution )
       {
+         if ( convolution.IsInterlaced() )
+         {
+            int n = convolution.Filter().Size();
+            int d = convolution.InterlacingDistance();
+            index = IVector( n );
+            for ( int i = 0, l = 0; i < n; ++i, l += d )
+               index[i] = l;
+         }
       }
 
             GenericImage<P>&      image;
       const SeparableConvolution& convolution;
+            IVector               index;
    };
 
    template <class P>
@@ -199,7 +387,7 @@ private:
    {
       static PCL_HOT_FUNCTION
       void Convolve1D( typename P::sample* __restrict__ f, typename P::sample* __restrict__ t, int N, int d, int dn2,
-                       const SeparableFilter::coefficient* H, int n ) noexcept
+                       const typename P::sample* __restrict__ h, const int* __restrict__ index, int n ) noexcept
       {
          // dn2 = (N + (N - 1)*(d - 1)) >> 1;
 
@@ -214,15 +402,24 @@ private:
             /*
              * Compact separable convolution
              */
-            for ( int i = 0; i < N; ++i, ++f, ++t )
+            switch ( n )
             {
-               const typename P::sample* __restrict__ u = t;
-               const SeparableFilter::coefficient* __restrict__ h = H;
-               double r = 0;
-               PCL_UNROLL( 8 )
-               for ( int k = 0; k < n; ++k, ++h, ++u )
-                  r += *u * *h;
-               *f = P::FloatToSample( r );
+            case 3:
+               for ( int i = 0; i < N; ++i, ++f, ++t )
+                  *f = P::FloatToSample( __pcl_dp_3( t, h ) );
+               break;
+            case 5:
+               for ( int i = 0; i < N; ++i, ++f, ++t )
+                  *f = P::FloatToSample( __pcl_dp_5( t, h ) );
+               break;
+            case 7:
+               for ( int i = 0; i < N; ++i, ++f, ++t )
+                  *f = P::FloatToSample( __pcl_dp_7( t, h ) );
+               break;
+            default:
+               for ( int i = 0; i < N; ++i, ++f, ++t )
+                  *f = P::FloatToSample( __pcl_dp( t, h, n ) );
+               break;
             }
          }
          else
@@ -230,30 +427,25 @@ private:
             /*
              * Interlaced separable convolution (e.g., the à trous algorithm)
              */
-            alignas( 32 ) typename P::sample* __restrict__ v =
-               reinterpret_cast<typename P::sample*>( PCL_ALIGNED_MALLOC( n*P::BytesPerSample(), 32 ) );
-            for ( int i = 0; i < N; ++i, ++f, ++t )
+            switch ( n )
             {
-               // Gather all sparse samples into a contiguous array.
-               PCL_UNROLL( 8 )
-               for ( int k = 0, l = 0; k < n; ++k, l += d )
-                  v[k] = t[l];
-               // The convolution loop is now vectorizable just as in the
-               // compact case.
-               const typename P::sample* __restrict__ u = v;
-               const SeparableFilter::coefficient* __restrict__ h = H;
-               double r = 0;
-               PCL_UNROLL( 8 )
-               for ( int k = 0; k < n; ++k, ++h, ++u )
-                  r += *u * *h;
-               *f = P::FloatToSample( r );
-
-               // The original, not vectorizable loop.
-//                for ( int k = 0; k < n; ++k, ++h, u += d )
-//                   r += *u * *h;
-//                *f = P::FloatToSample( r );
+            case 3:
+               for ( int i = 0; i < N; ++i, ++f, ++t )
+                  *f = P::FloatToSample( __pcl_dp_3_i( t, h, index ) );
+               break;
+            case 5:
+               for ( int i = 0; i < N; ++i, ++f, ++t )
+                  *f = P::FloatToSample( __pcl_dp_5_i( t, h, index ) );
+               break;
+            case 7:
+               for ( int i = 0; i < N; ++i, ++f, ++t )
+                  *f = P::FloatToSample( __pcl_dp_7_i( t, h, index ) );
+               break;
+            default:
+               for ( int i = 0; i < N; ++i, ++f, ++t )
+                  *f = P::FloatToSample( __pcl_dp_i( t, h, index, n ) );
+               break;
             }
-            PCL_ALIGNED_FREE( v );
          }
       }
    };
@@ -274,27 +466,25 @@ private:
       {
          INIT_THREAD_MONITOR()
 
-         Rect r = m_data.image.SelectedRectangle();
-         int width = r.Width();
+         const Rect rect = m_data.image.SelectedRectangle();
+         const int width = rect.Width();
 
-         int d = m_data.convolution.InterlacingDistance();
-         int dn = m_data.convolution.OverlappingDistance();
-         int dn2 = dn >> 1;
+         const int d = m_data.convolution.InterlacingDistance();
+         const int dn = m_data.convolution.OverlappingDistance();
+         const int dn2 = dn >> 1;
 
          GenericVector<typename P::sample> tv( width + dn2+dn2 );
-
-         coefficient_vector hv = m_data.convolution.Filter( 0 );
-
+         GenericVector<typename P::sample> hv = m_data.convolution.FilterAs( 0, (typename P::sample*)0 );
          typename P::sample* t = tv.DataPtr();
-         const SeparableFilter::coefficient* h = hv.DataPtr();
-         int n = hv.Length();
+         const typename P::sample* h = hv.DataPtr();
+         const int n = hv.Length();
 
          for ( int c = m_data.image.FirstSelectedChannel(); c <= m_data.image.LastSelectedChannel(); ++c )
          {
-            typename P::sample* f = m_data.image.PixelAddress( r.x0, m_firstRow, c );
+            typename P::sample* f = m_data.image.PixelAddress( rect.x0, m_firstRow, c );
             for ( int i = m_firstRow; i < m_endRow; ++i, f += m_data.image.Width() )
             {
-               this->Convolve1D( f, t, width, d, dn2, h, n );
+               this->Convolve1D( f, t, width, d, dn2, h, m_data.index.Begin(), n );
                UPDATE_THREAD_MONITOR_CHUNK( 65536, width )
             }
          }
@@ -323,33 +513,31 @@ private:
       {
          INIT_THREAD_MONITOR()
 
-         Rect r = m_data.image.SelectedRectangle();
-         int width = r.Width();
-         int height = r.Height();
+         const Rect rect = m_data.image.SelectedRectangle();
+         const int width = rect.Width();
+         const int height = rect.Height();
 
-         int d = m_data.convolution.InterlacingDistance();
-         int dn = m_data.convolution.OverlappingDistance();
-         int dn2 = dn >> 1;
+         const int d = m_data.convolution.InterlacingDistance();
+         const int dn = m_data.convolution.OverlappingDistance();
+         const int dn2 = dn >> 1;
 
          GenericVector<typename P::sample> gv( height );
          GenericVector<typename P::sample> tv( height + dn2+dn2 );
-
-         coefficient_vector hv = m_data.convolution.Filter( 1 );
-
+         GenericVector<typename P::sample> hv = m_data.convolution.FilterAs( 1, (typename P::sample*)0 );
          typename P::sample* __restrict__ g = gv.DataPtr();
          typename P::sample* t = tv.DataPtr();
-         const SeparableFilter::coefficient* h = hv.DataPtr();
-         int n = hv.Length();
+         const typename P::sample* h = hv.DataPtr();
+         const int n = hv.Length();
 
          for ( int c = m_data.image.FirstSelectedChannel(); c <= m_data.image.LastSelectedChannel(); ++c )
          {
-            typename P::sample* __restrict__ f = m_data.image.PixelAddress( m_firstCol, r.y0, c );
+            typename P::sample* __restrict__ f = m_data.image.PixelAddress( m_firstCol, rect.y0, c );
             for ( int i = m_firstCol; i < m_endCol; ++i, ++f )
             {
                for ( int i = 0, j = 0; i < height; ++i, j += width )
                   g[i] = f[j];
 
-               this->Convolve1D( g, t, height, d, dn2, h, n );
+               this->Convolve1D( g, t, height, d, dn2, h, m_data.index.Begin(), n );
 
                for ( int i = 0, j = 0; i < height; ++i, j += width )
                   f[j] = g[i];
@@ -417,4 +605,4 @@ void SeparableConvolution::ValidateFilter() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SeparableConvolution.cpp - Released 2024-06-18T15:49:06Z
+// EOF pcl/SeparableConvolution.cpp - Released 2024-12-11T17:42:39Z

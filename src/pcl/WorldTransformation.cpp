@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/WorldTransformation.cpp - Released 2024-06-18T15:49:06Z
+// pcl/WorldTransformation.cpp - Released 2024-12-11T17:42:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -51,6 +51,8 @@
 
 #include <pcl/WorldTransformation.h>
 
+#include <pcl/api/APIInterface.h>
+
 /*
  * Based on original work contributed by Andrés del Pozo.
  */
@@ -66,7 +68,43 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-SplineWorldTransformation::SplineWorldTransformation( const PropertyArray& properties, const LinearTransformation& linearIW )
+static SplineWorldTransformation::rbf_type RBFTypeFromPropertyValue( const Property& property )
+{
+   // When feasible, favor the use of DDM RBF implementations.
+   String value = property.Value().ToString();
+   if ( value == "DDMThinPlateSpline" )
+      return RadialBasisFunction::DDMThinPlateSpline;
+   if ( value == "DDMVariableOrder" )
+      return RadialBasisFunction::DDMVariableOrder;
+   if ( value == "ThinPlateSpline" )
+      return RadialBasisFunction::ThinPlateSpline;
+   if ( value == "VariableOrder" )
+      return RadialBasisFunction::VariableOrder;
+   if ( value == "DDMMultiquadric" )
+      return RadialBasisFunction::DDMMultiquadric;
+
+   throw Error( "Unknown or unsupported radial basis function type '" + value + "'" );
+}
+
+static String RBFTypeToPropertyValue( SplineWorldTransformation::rbf_type rbf )
+{
+   switch ( rbf )
+   {
+   default: // ?!
+   case RadialBasisFunction::DDMThinPlateSpline:
+      return "DDMThinPlateSpline";
+   case RadialBasisFunction::DDMVariableOrder:
+      return "DDMVariableOrder";
+   case RadialBasisFunction::ThinPlateSpline:
+      return "ThinPlateSpline";
+   case RadialBasisFunction::VariableOrder:
+      return "VariableOrder";
+   case RadialBasisFunction::DDMMultiquadric:
+      return "DDMMultiquadric";
+   }
+}
+
+SplineWorldTransformation::SplineWorldTransformation( const PropertyArray& properties, const LinearTransformation& linearIW, bool regenerate )
 {
    try
    {
@@ -78,14 +116,20 @@ SplineWorldTransformation::SplineWorldTransformation( const PropertyArray& prope
            || property.Id() == "Transformation_ImageToProjection" )                // core < 1.8.9-2
          {
             Deserialize( property.Value().ToByteArray() );
+            m_rbf = (m_order > 2) ? RadialBasisFunction::VariableOrder : RadialBasisFunction::ThinPlateSpline;
+            m_maxSplinePoints = __PCL_WCS_DEFAULT_SPLINE_MAX_DENSE_POINTS;
             InitializeSplines();
             if ( linearIW.IsSingularMatrix() )
                CalculateLinearApproximation();
             else
                m_linearIW = linearIW;
+
             return;
          }
 
+      /*
+       * Serializations as XISF properties.
+       */
       const IsoString prefix = PropertyPrefix();
       const IsoString splinePrefixWI = "PointSurfaceSpline:NativeToImage:";
       const IsoString splinePrefixIW = "PointSurfaceSpline:ImageToNative:";
@@ -106,8 +150,13 @@ SplineWorldTransformation::SplineWorldTransformation( const PropertyArray& prope
          if ( id == "Version" )
          {
             m_version = property.Value().ToIsoString();
-            if ( m_version != "1.3" )
-               throw Error( "Unsupported/unknown serialization version '" + m_version + "'" );
+            if ( m_version != __PCL_WCS_SPLINE_VERSION_CURRENT )
+               if ( m_version != __PCL_WCS_SPLINE_VERSION_OLD )
+                  throw Error( "Unsupported/unknown serialization version '" + m_version + "'" );
+         }
+         else if ( id == "RBFType" )
+         {
+            m_rbf = RBFTypeFromPropertyValue( property );
          }
          else if ( id == "SplineOrder" )
          {
@@ -121,8 +170,16 @@ SplineWorldTransformation::SplineWorldTransformation( const PropertyArray& prope
             if ( m_smoothness < 0 )
                throw Error( "Invalid surface spline smoothness parameter" );
          }
+         else if ( id == "MaxSplinePoints" )
+         {
+            m_maxSplinePoints = property.Value().ToInt();
+            if ( m_maxSplinePoints < 3 )
+               throw Error( "Invalid surface spline maximum control points parameter" );
+         }
          else if ( id == "UseSimplifiers" )
+         {
             m_useSimplifiers = property.Value().ToBoolean();
+         }
          else if ( id == "SimplifierRejectFraction" )
          {
             m_simplifierRejectFraction = property.Value().ToFloat();
@@ -130,7 +187,9 @@ SplineWorldTransformation::SplineWorldTransformation( const PropertyArray& prope
                throw Error( "Invalid simplifier reject fraction parameter" );
          }
          else if ( id == "Truncated" )
+         {
             m_truncated = property.Value().ToBoolean();
+         }
          else if ( id == "ControlPoints:World" )
          {
             Vector coordinates = property.Value().ToVector();
@@ -146,7 +205,9 @@ SplineWorldTransformation::SplineWorldTransformation( const PropertyArray& prope
                   m_controlPointsI << DPoint( coordinates[i], coordinates[i+1] );
          }
          else if ( id == "Weights" )
+         {
             m_weights = property.Value().ToFVector();
+         }
          else if ( id == "Projective:NativeToImage" )
          {
             Matrix H = property.Value().ToMatrix();
@@ -168,13 +229,21 @@ SplineWorldTransformation::SplineWorldTransformation( const PropertyArray& prope
             }
          }
          else if ( id.StartsWith( splinePrefixWI ) )
+         {
             splineWIProperties << Property( id.Substring( splinePrefixWI.Length() ), property.Value() );
+         }
          else if ( id.StartsWith( splinePrefixIW ) )
+         {
             splineIWProperties << Property( id.Substring( splinePrefixIW.Length() ), property.Value() );
+         }
          else if ( id.StartsWith( gridPrefixWI ) )
+         {
             gridWIProperties << Property( id.Substring( gridPrefixWI.Length() ), property.Value() );
+         }
          else if ( id.StartsWith( gridPrefixIW ) )
+         {
             gridIWProperties << Property( id.Substring( gridPrefixIW.Length() ), property.Value() );
+         }
          else if ( id == "LinearApproximation" )
          {
             // Ignore the LinearApproximation property if a linear
@@ -190,7 +259,7 @@ SplineWorldTransformation::SplineWorldTransformation( const PropertyArray& prope
                }
             }
          }
-      }
+      } // for each property
 
       if ( m_controlPointsW.IsEmpty() || m_controlPointsI.IsEmpty() )
          throw Error( "Missing control point vector(s)" );
@@ -201,21 +270,88 @@ SplineWorldTransformation::SplineWorldTransformation( const PropertyArray& prope
       if ( !m_weights.IsEmpty() && size_type( m_weights.Length() ) != m_controlPointsW.Length() )
          throw Error( "Mismatched weights vector length" );
 
+      EnsureValidRBFParameters();
+
       if ( !splineWIProperties.IsEmpty() )
       {
          if ( splineIWProperties.IsEmpty() )
             throw Error( "Missing image-to-native surface spline definition properties" );
 
-         m_splineWI = PointSurfaceSplineFromProperties( splineWIProperties );
-         m_splineIW = PointSurfaceSplineFromProperties( splineIWProperties );
+         m_splineWI = PointSurfaceSplineFromProperties( splineWIProperties, m_version );
+         m_splineIW = PointSurfaceSplineFromProperties( splineIWProperties, m_version );
 
+         if ( m_version == __PCL_WCS_SPLINE_VERSION_OLD )
+         {
+            /*
+             * Be compatible with previous versions, where spline generation
+             * parameters were not defined as global properties of the WCS
+             * transformation, but in the surface spline serializations.
+             */
+            m_rbf = m_splineWI.m_Sx.m_rbf;
+            m_order = m_splineWI.m_Sx.m_order;
+            m_smoothness = m_splineWI.m_Sx.m_smoothing;
+            m_weights = m_splineWI.m_Sx.m_weights;
+         }
+         else
+         {
+            /*
+             * For current versions we no longer store redundant metadata.
+             */
+            m_splineWI.m_Sx.m_rbf = m_splineWI.m_Sy.m_rbf =
+            m_splineIW.m_Sx.m_rbf = m_splineIW.m_Sy.m_rbf = m_rbf;
+
+            m_splineWI.m_Sx.m_order = m_splineWI.m_Sy.m_order =
+            m_splineIW.m_Sx.m_order = m_splineIW.m_Sy.m_order = m_order;
+
+            m_splineWI.m_Sx.m_smoothing = m_splineWI.m_Sy.m_smoothing =
+            m_splineIW.m_Sx.m_smoothing = m_splineIW.m_Sy.m_smoothing = m_smoothness;
+
+            /*
+             * Delayed deserialization of core surface splines.
+             */
+            if ( RadialBasisFunction::HasCoreImplementation( m_rbf ) )
+            {
+               if ( API != nullptr )
+                  if ( !m_splineWI.m_Sx.m_serialization.IsEmpty() && !m_splineWI.m_Sy.m_serialization.IsEmpty() )
+                     if ( !m_splineIW.m_Sx.m_serialization.IsEmpty() && !m_splineIW.m_Sy.m_serialization.IsEmpty() )
+                     {
+                        m_splineWI.m_Sx.m_handle = SurfaceSplineBase::DeserializeHandle( m_splineWI.m_Sx.m_serialization );
+                        m_splineWI.m_Sx.m_serialization.Clear();
+                        m_splineWI.m_Sy.m_handle = SurfaceSplineBase::DeserializeHandle( m_splineWI.m_Sy.m_serialization );
+                        m_splineWI.m_Sy.m_serialization.Clear();
+
+                        m_splineIW.m_Sx.m_handle = SurfaceSplineBase::DeserializeHandle( m_splineIW.m_Sx.m_serialization );
+                        m_splineIW.m_Sx.m_serialization.Clear();
+                        m_splineIW.m_Sy.m_handle = SurfaceSplineBase::DeserializeHandle( m_splineIW.m_Sy.m_serialization );
+                        m_splineIW.m_Sy.m_serialization.Clear();
+                     }
+            }
+            else
+            {
+               int n = ((m_order*(m_order + 1)) >> 1);
+               if (  m_splineWI.m_Sx.m_spline.Length() != m_splineWI.m_Sx.m_x.Length() + n
+                  || m_splineWI.m_Sy.m_spline.Length() != m_splineWI.m_Sy.m_x.Length() + n
+                  || m_splineIW.m_Sx.m_spline.Length() != m_splineIW.m_Sx.m_x.Length() + n
+                  || m_splineIW.m_Sy.m_spline.Length() != m_splineIW.m_Sy.m_x.Length() + n )
+               {
+                  throw Error( "Invalid length(s) of surface spline coefficient vector(s)" );
+               }
+            }
+         }
+
+         /*
+          * Grid interpolations.
+          */
          if ( !gridWIProperties.IsEmpty() )
          {
             if ( gridIWProperties.IsEmpty() )
                throw Error( "Missing image-to-native grid interpolation definition properties" );
 
-            m_gridWI = PointGridInterpolationFromProperties( gridWIProperties );
-            m_gridIW = PointGridInterpolationFromProperties( gridIWProperties );
+            if ( !regenerate )
+            {
+               m_gridWI = PointGridInterpolationFromProperties( gridWIProperties, m_version );
+               m_gridIW = PointGridInterpolationFromProperties( gridIWProperties, m_version );
+            }
          }
          else
          {
@@ -227,10 +363,21 @@ SplineWorldTransformation::SplineWorldTransformation( const PropertyArray& prope
       {
          if ( !splineIWProperties.IsEmpty() )
             throw Error( "Missing native-to-image surface spline definition properties" );
-
-         InitializeSplines();
       }
 
+      /*
+       * Generate surface splines.
+       *
+       * Do not force a regeneration of surface splines if we already have
+       * valid coefficients or have performed a core deserialization.
+       */
+      if ( regenerate || !m_splineWI.IsValid() || !m_splineIW.IsValid() )
+         InitializeSplines();
+
+      /*
+       * Calculate the approximate linear transformation if not already
+       * available.
+       */
       if ( m_linearIW.IsSingularMatrix() )
          CalculateLinearApproximation();
    }
@@ -248,7 +395,7 @@ SplineWorldTransformation::SplineWorldTransformation( const PropertyArray& prope
    }
 }
 
-PointSurfaceSpline SplineWorldTransformation::PointSurfaceSplineFromProperties( const PropertyArray& properties )
+PointSurfaceSpline SplineWorldTransformation::PointSurfaceSplineFromProperties( const PropertyArray& properties, const IsoString& version )
 {
    const IsoString splineXPrefix = "SurfaceSplineX:";
    const IsoString splineYPrefix = "SurfaceSplineY:";
@@ -256,9 +403,7 @@ PointSurfaceSpline SplineWorldTransformation::PointSurfaceSplineFromProperties( 
    PointSurfaceSpline S;
    PropertyArray splineXProperties, splineYProperties;
    for ( const Property& property : properties )
-      if ( property.Id() == "MaxSplinePoints" )
-         S.m_maxSplinePoints = property.Value().ToInt();
-      else if ( property.Id() == "SimplificationErrorX" )
+      if ( property.Id() == "SimplificationErrorX" )
          S.m_epsX = property.Value().ToDouble();
       else if ( property.Id() == "SimplificationErrorY" )
          S.m_epsY = property.Value().ToDouble();
@@ -285,17 +430,29 @@ PointSurfaceSpline SplineWorldTransformation::PointSurfaceSplineFromProperties( 
    if ( splineXProperties.IsEmpty() || splineYProperties.IsEmpty() )
       throw Error( "Missing surface spline definition properties" );
 
-   S.m_Sx = SurfaceSplineFromProperties( splineXProperties );
-   S.m_Sy = SurfaceSplineFromProperties( splineYProperties );
+   S.m_Sx = SurfaceSplineFromProperties( splineXProperties, version );
+   S.m_Sy = SurfaceSplineFromProperties( splineYProperties, version );
 
    return S;
 }
 
-SurfaceSpline<double> SplineWorldTransformation::SurfaceSplineFromProperties( const PropertyArray& properties )
+SurfaceSpline<double> SplineWorldTransformation::SurfaceSplineFromProperties( const PropertyArray& properties, const IsoString& version )
 {
    SurfaceSpline<double> S;
    for ( const Property& property : properties )
-      if ( property.Id() == "ScalingFactor" )
+      if ( property.Id() == "Order" ) // version 1.3
+      {
+         S.m_order = property.Value().ToInt();
+         if ( S.m_order < 2 )
+            throw Error( "Invalid surface spline order parameter" );
+      }
+      else if ( property.Id() == "Smoothness" ) // version 1.3
+      {
+         S.m_smoothing = property.Value().ToDouble();
+         if ( S.m_smoothing < 0 )
+            throw Error( "Invalid surface spline smoothness parameter" );
+      }
+      else if ( property.Id() == "ScalingFactor" )
       {
          S.m_r0 = property.Value().ToDouble();
          if ( S.m_r0 < 0 || 1 + S.m_r0 == 1 )
@@ -305,25 +462,15 @@ SurfaceSpline<double> SplineWorldTransformation::SurfaceSplineFromProperties( co
          S.m_x0 = property.Value().ToDouble();
       else if ( property.Id() == "ZeroOffsetY" )
          S.m_y0 = property.Value().ToDouble();
-      else if ( property.Id() == "Order" )
-      {
-         S.m_order = property.Value().ToInt();
-         if ( S.m_order < 2 )
-            throw Error( "Invalid surface spline order parameter" );
-      }
       else if ( property.Id() == "NodeXCoordinates" )
          S.m_x = property.Value().ToVector();
       else if ( property.Id() == "NodeYCoordinates" )
          S.m_y = property.Value().ToVector();
       else if ( property.Id() == "Coefficients" )
          S.m_spline = property.Value().ToVector();
-      else if ( property.Id() == "Smoothness" )
-      {
-         S.m_smoothing = property.Value().ToDouble();
-         if ( S.m_smoothing < 0 )
-            throw Error( "Invalid surface spline smoothness parameter" );
-      }
-      else if ( property.Id() == "NodeWeights" )
+      else if ( property.Id() == "Serialization" )
+         S.m_serialization = property.Value().ToIsoString().Trimmed();
+      else if ( property.Id() == "NodeWeights" ) // version 1.3
          S.m_weights = property.Value().ToFVector();
 
    if ( S.m_x.IsEmpty() || S.m_y.IsEmpty() )
@@ -332,20 +479,29 @@ SurfaceSpline<double> SplineWorldTransformation::SurfaceSplineFromProperties( co
       throw Error( "Insufficient surface spline node coordinates" );
    if ( S.m_y.Length() != S.m_x.Length() )
       throw Error( "Mismatched surface spline node vector lengths" );
-   if ( S.m_spline.IsEmpty() )
-      throw Error( "Missing surface spline coefficients" );
-   if ( S.m_spline.Length() != S.m_x.Length() + ((S.m_order*(S.m_order + 1)) >> 1) )
-      throw Error( "Invalid surface spline coefficient vector length" );
-   if ( !S.m_weights.IsEmpty() && S.m_weights.Length() != S.m_x.Length() )
-      throw Error( "Mismatched surface spline weights vector length" );
 
-   S.m_rbf = (S.m_order > 2) ? RadialBasisFunction::VariableOrder : RadialBasisFunction::ThinPlateSpline;
+   if ( version == __PCL_WCS_SPLINE_VERSION_OLD )
+   {
+      if ( S.m_spline.IsEmpty() )
+         throw Error( "Missing surface spline coefficient vector" );
+      if ( S.m_spline.Length() != S.m_x.Length() + ((S.m_order*(S.m_order + 1)) >> 1) )
+         throw Error( "Invalid surface spline coefficient vector length" );
+   }
+
+   if ( !S.m_weights.IsEmpty() )
+      if ( S.m_weights.Length() != S.m_x.Length() )
+         throw Error( "Mismatched surface spline weights vector length" );
+
    S.m_havePolynomial = true;
+
+   // Old versions don't serialize the RBF type, but we know it for sure.
+   if ( version == __PCL_WCS_SPLINE_VERSION_OLD )
+      S.m_rbf = (S.m_order > 2) ? RadialBasisFunction::VariableOrder : RadialBasisFunction::ThinPlateSpline;
 
    return S;
 }
 
-PointGridInterpolation SplineWorldTransformation::PointGridInterpolationFromProperties( const PropertyArray& properties )
+PointGridInterpolation SplineWorldTransformation::PointGridInterpolationFromProperties( const PropertyArray& properties, const IsoString& /*version*/ )
 {
    DRect rect = 0;
    double delta = 0;
@@ -411,9 +567,11 @@ PropertyArray SplineWorldTransformation::ToProperties() const
    const IsoString prefix = PropertyPrefix();
 
    PropertyArray properties = PropertyArray()
-      << Property( prefix + "Version", m_version )
+      << Property( prefix + "Version", __PCL_WCS_SPLINE_VERSION_CURRENT )
+      << Property( prefix + "RBFType", RBFTypeToPropertyValue( m_rbf ) )
       << Property( prefix + "SplineOrder", m_order )
       << Property( prefix + "SplineSmoothness", m_smoothness )
+      << Property( prefix + "MaxSplinePoints", m_maxSplinePoints )
       << Property( prefix + "UseSimplifiers", m_useSimplifiers )
       << Property( prefix + "SimplifierRejectFraction", m_simplifierRejectFraction )
       << Property( prefix + "Truncated", m_truncated )
@@ -447,7 +605,6 @@ PropertyArray SplineWorldTransformation::ToProperties() const
 PropertyArray SplineWorldTransformation::PointSurfaceSplineToProperties( const PointSurfaceSpline& S, const IsoString& prefix )
 {
    PropertyArray properties = PropertyArray()
-      << Property( prefix + "MaxSplinePoints", S.m_maxSplinePoints )
       << Property( prefix + "SimplificationErrorX", S.m_epsX )
       << Property( prefix + "SimplificationErrorY", S.m_epsY )
       << Property( prefix + "TruncatedX", S.m_truncatedX )
@@ -468,15 +625,17 @@ PropertyArray SplineWorldTransformation::SurfaceSplineToProperties( const Surfac
       << Property( prefix + "ScalingFactor", S.m_r0 )
       << Property( prefix + "ZeroOffsetX", S.m_x0 )
       << Property( prefix + "ZeroOffsetY", S.m_y0 )
-      << Property( prefix + "Order", S.m_order )
       << Property( prefix + "NodeXCoordinates", S.m_x )
-      << Property( prefix + "NodeYCoordinates", S.m_y )
-      << Property( prefix + "Coefficients", S.m_spline );
+      << Property( prefix + "NodeYCoordinates", S.m_y );
 
-   if ( S.m_smoothing > 0 )
-      properties << Property( prefix + "Smoothness", S.m_smoothing );
-   if ( !S.m_weights.IsEmpty() )
-      properties << Property( prefix + "NodeWeights", S.m_weights );
+   if ( S.m_handle != 0 )
+   {
+      IsoString data;
+      SurfaceSplineBase::SerializeHandle( data, S.m_handle );
+      properties << Property( prefix + "Serialization", data );
+   }
+   else
+      properties << Property( prefix + "Coefficients", S.m_spline );
 
    return properties;
 }
@@ -488,6 +647,43 @@ PropertyArray SplineWorldTransformation::PointGridInterpolationToProperties( con
       << Property( prefix + "Delta", G.m_delta )
       << Property( prefix + "GridX", G.m_Gx )
       << Property( prefix + "GridY", G.m_Gy );
+}
+
+// ----------------------------------------------------------------------------
+
+IsoString SplineWorldTransformation::RBFTypeName() const
+{
+   IsoString name;
+   switch ( m_rbf )
+   {
+   default: // ?!
+   case RadialBasisFunction::ThinPlateSpline:
+      name = "Thin plate spline";
+      break;
+   case RadialBasisFunction::DDMThinPlateSpline:
+      name = "DDM thin plate spline";
+      break;
+   case RadialBasisFunction::DDMMultiquadric:
+      name = "DDM multiquadric";
+      break;
+   case RadialBasisFunction::DDMVariableOrder:
+      name = "DDM "; // fall through
+   case RadialBasisFunction::VariableOrder:
+      switch ( m_order )
+      {
+      case 2:
+         name << "2nd order surface spline";
+         break;
+      case 3:
+         name << "3rd order surface spline";
+         break;
+      default:
+         name.AppendFormat( "%dth order surface spline", m_order );
+         break;
+      }
+      break;
+   }
+   return name;
 }
 
 // ----------------------------------------------------------------------------
@@ -554,7 +750,7 @@ void SplineWorldTransformation::Deserialize( const ByteArray& data )
          if ( tokens.Length() < 2 )
             continue;
          if ( tokens[0] == "ORDER" )
-            m_order = tokens[1].ToInt();
+            m_order = Range( tokens[1].ToInt(), 2L, 6L );
          else if ( tokens[0] == "SMOOTHING" )
             m_smoothness = tokens[1].ToFloat();
          else if ( tokens[0] == "SIMPLIFIER" )
@@ -607,15 +803,55 @@ void SplineWorldTransformation::Deserialize( const ByteArray& data )
 
 // ----------------------------------------------------------------------------
 
+void SplineWorldTransformation::EnsureValidRBFParameters()
+{
+   /*
+    * Constrain function order to a reasonable maximum.
+    */
+   m_order = Range( m_order, 2, 6 );
+
+   /*
+    * If running as a standalone unit, use the 'traditional' PCL implementation
+    * based on dense linear systems with O(n^3) time complexity.
+    */
+   if ( RadialBasisFunction::HasCoreImplementation( m_rbf ) )
+      if ( API == nullptr )
+         m_rbf = ((m_rbf == RadialBasisFunction::DDMVariableOrder)) ?
+               RadialBasisFunction::VariableOrder : RadialBasisFunction::ThinPlateSpline;
+
+   /*
+    * With DDM surface splines we have a pretty high practical limit on the
+    * number of control points, since the spline generation process uses 'only'
+    * O(N^2) time. With the traditional PCL implementation based on the
+    * solution of dense linear systems spline generation requires O(N^3) time,
+    * which imposes a much smaller maximum with current hardware.
+    */
+   m_maxSplinePoints = Range( m_maxSplinePoints,
+                              __PCL_WCS_MIN_SPLINE_MAX_POINTS,
+                              RadialBasisFunction::HasDDMImplementation( m_rbf ) ?
+                                    __PCL_WCS_MAX_SPLINE_MAX_DDM_POINTS :
+                                    __PCL_WCS_MAX_SPLINE_MAX_DENSE_POINTS );
+}
+
+// ----------------------------------------------------------------------------
+
 namespace pcl_SWT
 {
    class SplineGenerationThread : public Thread
    {
    public:
 
-      SplineGenerationThread( PointSurfaceSpline& S, const Array<DPoint>& P1, const Array<DPoint>& P2, float smoothness, int order,
-                              const FVector& W = FVector() )
-         : m_S( S ), m_P1( P1 ), m_P2( P2 ), m_smoothness( smoothness ), m_order( order ), m_W( W )
+      SplineGenerationThread( PointSurfaceSpline& S,
+                              const Array<DPoint>& P1, const Array<DPoint>& P2, float smoothness, int order,
+                              const FVector& W,
+                              SplineWorldTransformation::rbf_type rbf )
+         : m_S( S )
+         , m_P1( P1 )
+         , m_P2( P2 )
+         , m_smoothness( smoothness )
+         , m_order( order )
+         , m_W( W )
+         , m_rbf( rbf )
       {
       }
 
@@ -623,9 +859,7 @@ namespace pcl_SWT
       {
          try
          {
-            SurfaceSplineBase::rbf_type rbfType =
-               (m_order == 2) ? RadialBasisFunction::ThinPlateSpline : RadialBasisFunction::VariableOrder;
-            m_S.Initialize( m_P1, m_P2, m_smoothness, m_W, m_order, rbfType );
+            m_S.Initialize( m_P1, m_P2, m_smoothness, m_W, m_order, m_rbf );
             return;
          }
          catch ( const Exception& x )
@@ -647,13 +881,14 @@ namespace pcl_SWT
 
    private:
 
-      PointSurfaceSpline&  m_S;
-      const Array<DPoint>& m_P1;
-      const Array<DPoint>& m_P2;
-      float                m_smoothness;
-      int                  m_order;
-      FVector              m_W; // ### N.B. do not use a reference: the W ctor. argument can be a temporary object.
-      Exception            m_exception;
+      PointSurfaceSpline&                 m_S;
+      const Array<DPoint>&                m_P1;
+      const Array<DPoint>&                m_P2;
+      float                               m_smoothness;
+      int                                 m_order;
+      FVector                             m_W; // ### N.B. do not use a reference: the W ctor. argument can be a temporary object.
+      SplineWorldTransformation::rbf_type m_rbf;
+      Exception                           m_exception;
    };
 }
 
@@ -679,6 +914,23 @@ void SplineWorldTransformation::InitializeSplines()
       m_splineIW.SetLinearFunction( m_projectiveIW );
       m_splineIW.EnableIncrementalFunction();
 
+      /*
+       * If running as a standalone executable, we can only use our standard
+       * surface splines (with O(n^3) time complexity).
+       */
+      if ( API == nullptr )
+         m_rbf = (m_order > 2) ? RadialBasisFunction::VariableOrder : RadialBasisFunction::ThinPlateSpline;
+
+      /*
+       * Ensure that the maximum number of control points is within the
+       * acceptable limits.
+       */
+      m_maxSplinePoints = Range( m_maxSplinePoints,
+                                 __PCL_WCS_MIN_SPLINE_MAX_POINTS,
+                                 RadialBasisFunction::HasDDMImplementation( m_rbf ) ?
+                                       __PCL_WCS_MAX_SPLINE_MAX_DDM_POINTS :
+                                       __PCL_WCS_MAX_SPLINE_MAX_DENSE_POINTS );
+
       if ( m_useSimplifiers )
       {
          /*
@@ -690,14 +942,14 @@ void SplineWorldTransformation::InitializeSplines()
           */
          m_splineWI.EnableSimplifiers();
          m_splineWI.SetSimplifierRejectFraction( m_simplifierRejectFraction );
-         m_splineWI.SetMaxSplinePoints( __PCL_WCS_MAX_SPLINE_POINTS );
+         m_splineWI.SetMaxSplinePoints( m_maxSplinePoints );
 
          m_splineIW.EnableSimplifiers();
          m_splineIW.SetSimplifierRejectFraction( m_simplifierRejectFraction );
-         m_splineIW.SetMaxSplinePoints( __PCL_WCS_MAX_SPLINE_POINTS );
+         m_splineIW.SetMaxSplinePoints( m_maxSplinePoints );
 
-         pcl_SWT::SplineGenerationThread TWI( m_splineWI, m_controlPointsW, m_controlPointsI, m_smoothness, m_order );
-         pcl_SWT::SplineGenerationThread TIW( m_splineIW, m_controlPointsI, m_controlPointsW, m_smoothness, m_order );
+         pcl_SWT::SplineGenerationThread TWI( m_splineWI, m_controlPointsW, m_controlPointsI, m_smoothness, m_order, FVector(), m_rbf );
+         pcl_SWT::SplineGenerationThread TIW( m_splineIW, m_controlPointsI, m_controlPointsW, m_smoothness, m_order, FVector(), m_rbf );
          TWI.Start( ThreadPriority::DefaultMax );
          TIW.Start( ThreadPriority::DefaultMax );
          TWI.Wait();
@@ -712,17 +964,18 @@ void SplineWorldTransformation::InitializeSplines()
          /*
           * When no surface simplification is used, build surface splines with
           * the specified metadata: The (possibly truncated) sets of control
-          * points and weights, spline smoothness, and order.
+          * points and weights, spline smoothness, order, and RBF.
           */
-         if ( n > __PCL_WCS_MAX_SPLINE_POINTS )
+         if ( n > m_maxSplinePoints )
          {
             m_truncated = true;
-            Array<DPoint> PW( m_controlPointsW.Begin(), m_controlPointsW.At( __PCL_WCS_MAX_SPLINE_POINTS ) );
-            Array<DPoint> PI( m_controlPointsI.Begin(), m_controlPointsI.At( __PCL_WCS_MAX_SPLINE_POINTS ) );
-            FVector W = m_weights.IsEmpty() ? FVector() : FVector( m_weights.Begin(), __PCL_WCS_MAX_SPLINE_POINTS );
 
-            pcl_SWT::SplineGenerationThread TWI( m_splineWI, PW, PI, m_smoothness, m_order, W );
-            pcl_SWT::SplineGenerationThread TIW( m_splineIW, PI, PW, m_smoothness, m_order, W );
+            Array<DPoint> PW( m_controlPointsW.Begin(), m_controlPointsW.At( m_maxSplinePoints ) );
+            Array<DPoint> PI( m_controlPointsI.Begin(), m_controlPointsI.At( m_maxSplinePoints ) );
+            FVector W = m_weights.IsEmpty() ? FVector() : FVector( m_weights.Begin(), m_maxSplinePoints );
+
+            pcl_SWT::SplineGenerationThread TWI( m_splineWI, PW, PI, m_smoothness, m_order, W, m_rbf );
+            pcl_SWT::SplineGenerationThread TIW( m_splineIW, PI, PW, m_smoothness, m_order, W, m_rbf );
             TWI.Start( ThreadPriority::DefaultMax );
             TIW.Start( ThreadPriority::DefaultMax );
             TWI.Wait();
@@ -732,8 +985,8 @@ void SplineWorldTransformation::InitializeSplines()
          }
          else
          {
-            pcl_SWT::SplineGenerationThread TWI( m_splineWI, m_controlPointsW, m_controlPointsI, m_smoothness, m_order, m_weights );
-            pcl_SWT::SplineGenerationThread TIW( m_splineIW, m_controlPointsI, m_controlPointsW, m_smoothness, m_order, m_weights );
+            pcl_SWT::SplineGenerationThread TWI( m_splineWI, m_controlPointsW, m_controlPointsI, m_smoothness, m_order, m_weights, m_rbf );
+            pcl_SWT::SplineGenerationThread TIW( m_splineIW, m_controlPointsI, m_controlPointsW, m_smoothness, m_order, m_weights, m_rbf );
             TWI.Start( ThreadPriority::DefaultMax );
             TIW.Start( ThreadPriority::DefaultMax );
             TWI.Wait();
@@ -805,4 +1058,4 @@ void SplineWorldTransformation::CalculateLinearApproximation()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/WorldTransformation.cpp - Released 2024-06-18T15:49:06Z
+// EOF pcl/WorldTransformation.cpp - Released 2024-12-11T17:42:39Z

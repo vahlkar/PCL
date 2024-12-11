@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/SurfacePolynomial.h - Released 2024-06-18T15:48:54Z
+// pcl/SurfacePolynomial.h - Released 2024-12-11T17:42:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -325,6 +325,40 @@ public:
       m_polynomial.Clear();
    }
 
+   /*!
+    * Surface polynomial interpolation for a set of points in 2-D space
+    * specified as the \a X and \a Y contiguous sequences of \a n coordinates.
+    * Stores the corresponding function values in the specified array \a Z.
+    *
+    * \note This function exists for compatibility with the GridInterpolation
+    * and PointGridInterpolation classes. Calling this function can be
+    * convenient, but it does not provide any performance improvement over the
+    * function call operator.
+    */
+   template <typename T1>
+   void Evaluate( T1* Z, const T1* X, const T1* Y, size_type n ) const
+   {
+      PCL_PRECONDITION( !m_polynomial.IsEmpty() )
+      PCL_PRECONDITION( X != nullptr && Y != nullptr && Z != nullptr )
+      PCL_PRECONDITION( n > 0 )
+      for ( size_type i = 0; i < n; ++i )
+         Z[i] = T1( operator()( double( X[i] ), double( Y[i] ) ) );
+   }
+
+   /*!
+    * Returns true iff this object can be evaluated for vectors of points in
+    * 2-D space efficiently by calling the Evaluate() member functions. This
+    * function always returns false for this class.
+    *
+    * \note This function exists for compatibility with the GridInterpolation
+    * and PointGridInterpolation classes. It always returns false because no
+    * fast vector evaluation is available for this class.
+    */
+   bool HasFastVectorEvaluation() const
+   {
+      return false;
+   }
+
 protected:
 
    double      m_r0 = 1;     // scaling factor for normalization of node coordinates
@@ -528,6 +562,39 @@ public:
       return operator ()( p.x, p.y );
    }
 
+   /*!
+    * Point interpolation/approximation for a set of points in 2-D space
+    * specified as the \a X and \a Y contiguous sequences of \a n coordinates.
+    * On output, stores the corresponding function values in the specified
+    * \a ZX and \a ZY arrays.
+    *
+    * \note This function exists for compatibility with the
+    * PointGridInterpolation class. Calling this function can be convenient,
+    * but it does not provide any performance improvement over the function
+    * call operator.
+    */
+   template <typename T>
+   void Evaluate( T* ZX, T* ZY, const T* X, const T* Y, size_type n ) const
+   {
+      PCL_PRECONDITION( ISValid() )
+      m_Sx.Evaluate( ZX, X, Y, n );
+      m_Sy.Evaluate( ZY, X, Y, n );
+   }
+
+   /*!
+    * Returns true iff this object can be evaluated for vectors of points in
+    * 2-D space efficiently by calling the Evaluate() member functions. This
+    * function always returns false for this class.
+    *
+    * \note This function exists for compatibility with the
+    * PointGridInterpolation class. It always returns false because no fast
+    * vector evaluation is available for this class.
+    */
+   bool HasFastVectorEvaluation() const
+   {
+      return false;
+   }
+
 private:
 
    /*
@@ -543,4 +610,4 @@ private:
 #endif   // __PCL_SurfacePolynomial_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SurfacePolynomial.h - Released 2024-06-18T15:48:54Z
+// EOF pcl/SurfacePolynomial.h - Released 2024-12-11T17:42:29Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.2
 // ----------------------------------------------------------------------------
-// STFSliders.h - Released 2024-06-18T15:49:25Z
+// STFSliders.h - Released 2024-12-11T17:43:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -171,4 +171,4 @@ private:
 #endif   // __STFSliders_h
 
 // ----------------------------------------------------------------------------
-// EOF STFSliders.h - Released 2024-06-18T15:49:25Z
+// EOF STFSliders.h - Released 2024-12-11T17:43:17Z

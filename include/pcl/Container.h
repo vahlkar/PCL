@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/Container.h - Released 2024-06-18T15:48:54Z
+// pcl/Container.h - Released 2024-12-11T17:42:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -78,7 +78,15 @@ class PCL_CLASS DirectContainer : public Container
 {
 public:
 
+   /*!
+    * The type of contained objects.
+    */
    using item_type = T;
+
+   /*!
+    * The type of contained immutable objects.
+    */
+   using const_item_type = const T;
 };
 
 /*!
@@ -90,7 +98,15 @@ class PCL_CLASS IndirectContainer : public Container
 {
 public:
 
+   /*!
+    * The type of contained pointers.
+    */
    using item_type = T*;
+
+   /*!
+    * The type of contained pointers to immutable objects.
+    */
+   using const_item_type = const T*;
 };
 
 /*!
@@ -100,6 +116,17 @@ public:
 template <typename T>
 class PCL_CLASS DirectSortedContainer: public DirectContainer<T>
 {
+public:
+
+   /*!
+    * The type of contained objects.
+    */
+   using item_type = typename DirectContainer<T>::item_type;
+
+   /*!
+    * The type of contained immutable objects.
+    */
+   using const_item_type = typename DirectContainer<T>::const_item_type;
 };
 
 /*!
@@ -109,6 +136,17 @@ class PCL_CLASS DirectSortedContainer: public DirectContainer<T>
 template <typename T>
 class PCL_CLASS IndirectSortedContainer : public IndirectContainer<T>
 {
+public:
+
+   /*!
+    * The type of contained pointers.
+    */
+   using item_type = typename IndirectContainer<T>::item_type;
+
+   /*!
+    * The type of contained pointers to immutable objects.
+    */
+   using const_item_type = typename IndirectContainer<T>::const_item_type;
 };
 
 #define PCL_ASSERT_DIRECT_CONTAINER( C, T )                                   \
@@ -131,4 +169,4 @@ class PCL_CLASS IndirectSortedContainer : public IndirectContainer<T>
 #endif  // __PCL_Container_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Container.h - Released 2024-06-18T15:48:54Z
+// EOF pcl/Container.h - Released 2024-12-11T17:42:29Z

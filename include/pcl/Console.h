@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/Console.h - Released 2024-06-18T15:48:54Z
+// pcl/Console.h - Released 2024-12-11T17:42:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -143,8 +143,9 @@ class PCL_CLASS View;
  * <h2>%Console Tags</h2>
  *
  * Here is a comprehensive list of supported console tags at the time of
- * publishing this documentation. New functionality implemented through console
- * tags will be documented here as new versions are released.
+ * publishing this documentation (November 2024, core version 1.9.0 Lockhart).
+ * New functionality implemented through console tags will be documented here
+ * as new versions are released.
  *
  * <table border="1" cellpadding="4" cellspacing="0">
  *
@@ -193,7 +194,8 @@ class PCL_CLASS View;
  *
  * <tr><td>\<show\></td>    <td>If this console corresponds to the processing console window, shows it if it's currently hidden and docked in the PixInsight core application window; otherwise this tag is ignored. Equivalent to calling the Console::Show() member function.</td></tr>
  * <tr><td>\<hide\></td>    <td>If this console corresponds to the processing console window, hides it if it's currently visible and docked in the PixInsight core application window; otherwise this tag is ignored. Equivalent to calling the Console::Hide() member function.</td></tr>
- * <tr><td>\<flush\></td>   <td>Causes any pending data to be written immediately to the console. If there is no unwritten data for this console, this tag has no effect. Equivalent to calling the Console::Flush() member function.</td></tr>
+ * <tr><td>\<update\></td>  <td>Processes pending events and updates console contents. Equivalent to calling the MetaModule::ProcessEvents() member function followed by an update of the Process Console window.</td></tr>
+ * <tr><td>\<flush\></td>   <td>Causes any pending data to be written immediately to the console. If a log file is currently enabled, it is also updated by flushing all pending text output. Equivalent to calling the Console::Flush() member function.</td></tr>
  *
  * <tr><td>\<html\>\</html\></td> <td>Enables/disables HTML mode. In HTML mode, the console interprets and renders a comprehensive set of HTML 4 tags, including full support of tables, as well as a significant part of Level 2 CSS (Cascading Style Sheets) directives. In HTML mode, PixInsight console tags are either ignored or interpreted with their corresponding meaning in HTML 4.</td></tr>
  *
@@ -607,8 +609,10 @@ public:
    bool IsCurrentThreadConsole() const;
 
    /*!
-    * Causes any pending data to be written immediately to this console. If
-    * there is no unwritten data for this console, this function has no effect.
+    * Causes any pending data to be written immediately to this console and
+    * forces an immediate repaint of the console's parent window and its
+    * contents. If a console log file is currently enabled and active, it will
+    * also be updated by flushing all pending text output.
     */
    void Flush();
 
@@ -826,4 +830,4 @@ inline Console& operator >>( Console& o, String& s )
 #endif   // __PCL_Console_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Console.h - Released 2024-06-18T15:48:54Z
+// EOF pcl/Console.h - Released 2024-12-11T17:42:29Z

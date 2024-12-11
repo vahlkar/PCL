@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// RgbPreserve.h - Released 2024-06-18T15:49:25Z
+// RgbPreserve.h - Released 2024-12-11T17:43:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
@@ -79,4 +79,4 @@ public:
 #endif
 
 // ----------------------------------------------------------------------------
-// EOF RgbPreserve.h - Released 2024-06-18T15:49:25Z
+// EOF RgbPreserve.h - Released 2024-12-11T17:43:17Z

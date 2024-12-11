@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.6.0
+// Standard Global Process Module Version 1.6.1
 // ----------------------------------------------------------------------------
-// FilterManagerParameters.cpp - Released 2024-06-18T15:49:25Z
+// FilterManagerParameters.cpp - Released 2024-12-11T17:43:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -142,4 +142,4 @@ bool FMNoGUIMessages::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FilterManagerParameters.cpp - Released 2024-06-18T15:49:25Z
+// EOF FilterManagerParameters.cpp - Released 2024-12-11T17:43:17Z

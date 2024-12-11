@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
 // Standard Fourier Process Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// FourierTransformParameters.h - Released 2024-06-18T15:49:25Z
+// FourierTransformParameters.h - Released 2024-12-11T17:43:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Fourier PixInsight module.
 //
@@ -93,4 +93,4 @@ extern FTCentered* TheFTCenteredParameter;
 #endif   // __FourierTransformParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF FourierTransformParameters.h - Released 2024-06-18T15:49:25Z
+// EOF FourierTransformParameters.h - Released 2024-12-11T17:43:17Z

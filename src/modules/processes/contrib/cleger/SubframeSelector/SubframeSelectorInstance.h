@@ -2,15 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.9.0
+// Standard SubframeSelector Process Module Version 1.9.1
 // ----------------------------------------------------------------------------
-// SubframeSelectorInstance.h - Released 2024-06-18T15:49:25Z
+// SubframeSelectorInstance.h - Released 2024-12-11T17:43:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
 // Copyright (c) 2017-2021 Cameron Leger
+// Copyright (c) 2020-2024 Juan Conejero, PTeam
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -148,14 +149,12 @@ private:
    pcl_bool           p_psfFitCircular;
    int32              p_maxPSFFits;
    Rect               p_roi = 0;
+   pcl_bool           p_noNoiseAndSignalWarnings; // hidden
 
    // Subtractive pedestal.
    int32              p_pedestal;      // in 16-bit DN
    pcl_enum           p_pedestalMode;  // literal | default keyword | custom keyword
    String             p_pedestalKeyword;
-
-   // Noise evaluation.
-   pcl_enum           p_noiseEvaluationAlgorithm;
 
    // Format hints.
    String             p_inputHints;
@@ -222,4 +221,4 @@ private:
 #endif   // __SubframeSelectorInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInstance.h - Released 2024-06-18T15:49:25Z
+// EOF SubframeSelectorInstance.h - Released 2024-12-11T17:43:17Z

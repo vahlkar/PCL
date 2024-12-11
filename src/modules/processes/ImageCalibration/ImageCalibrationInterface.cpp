@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 2.2.4
+// Standard ImageCalibration Process Module Version 2.2.7
 // ----------------------------------------------------------------------------
-// ImageCalibrationInterface.cpp - Released 2024-08-02T18:17:26Z
+// ImageCalibrationInterface.cpp - Released 2024-12-11T17:43:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -2277,7 +2277,7 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    CosmeticLowSigma_NumericControl.SetToolTip( "<p>This parameter defines a threshold in sigma units "
       "below the median of a high-pass filtered master dark frame. Pixels below this threshold are considered "
       "<i>cold pixels</i> and tagged for cosmetic correction during the image calibration task. Decrease the "
-      "value of this parameter to select more potential cold pixels. The default value is 5.</p>" );
+      "value of this parameter to select more potential cold pixels. The default value is 5 sigma.</p>" );
    CosmeticLowSigma_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_ValueUpdated, w );
 
    CosmeticCorrectionHigh_CheckBox.SetText( "Correct hot pixels" );
@@ -2298,7 +2298,7 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    CosmeticHighSigma_NumericControl.SetToolTip( "<p>This parameter defines a threshold in sigma units "
       "above the median of a high-pass filtered master dark frame. Pixels above this threshold are considered "
       "<i>hot pixels</i> and tagged for cosmetic correction during the image calibration task. Decrease the "
-      "value of this parameter to select more potential hot pixels. The default value is 10.</p>" );
+      "value of this parameter to select more potential hot pixels. The default value is 10 sigma.</p>" );
    CosmeticHighSigma_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_ValueUpdated, w );
 
    const char* cosmeticKernelRadiusToolTip =
@@ -2600,4 +2600,4 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInterface.cpp - Released 2024-08-02T18:17:26Z
+// EOF ImageCalibrationInterface.cpp - Released 2024-12-11T17:43:17Z

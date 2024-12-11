@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/UCUppercase.cpp - Released 2024-06-18T15:49:06Z
+// pcl/UCUppercase.cpp - Released 2024-12-11T17:42:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -51,7 +51,7 @@
 
 /*
  * PCL Unicode uppercase character mapping routine.
- * Automatically generated on Fri, 10 Mar 2023 17:12:55 GMT
+ * Automatically generated on Mon, 28 Oct 2024 18:44:11 GMT
  */
 
 #include <pcl/Defs.h>
@@ -131,17 +131,19 @@ char16_type PCL_FUNC PCL_ToUppercase( char16_type c )
                }
                else
                {
-                  if ( c < 410 )
+                  if ( c < 411 )
                   {
                      if ( c == 402 || c == 409 )
                         return c - 1;
                      if ( c == 405 )
                         return 502;
+                     if ( c == 410 )
+                        return 573;
                   }
                   else
                   {
-                     if ( c == 410 )
-                        return 573;
+                     if ( c == 411 )
+                        return 42972;
                      if ( c == 414 || c == 891 )
                         return c + 130;
                      if ( c == 417 || c == 419 || c == 421 )
@@ -240,9 +242,9 @@ char16_type PCL_FUNC PCL_ToUppercase( char16_type c )
       }
       else
       {
-         if ( c < 649 )
+         if ( c < 648 )
          {
-            if ( c < 617 )
+            if ( c < 616 )
             {
                if ( c < 609 )
                {
@@ -265,7 +267,7 @@ char16_type PCL_FUNC PCL_ToUppercase( char16_type c )
                }
                else
                {
-                  if ( c < 613 )
+                  if ( c < 612 )
                   {
                      if ( c == 609 )
                         return 42924;
@@ -274,55 +276,55 @@ char16_type PCL_FUNC PCL_ToUppercase( char16_type c )
                   }
                   else
                   {
+                     if ( c == 612 )
+                        return 42955;
                      if ( c == 613 )
                         return 42893;
                      if ( c == 614 || c == 618 )
                         return c + 42308;
-                     if ( c == 616 )
-                        return 407;
                   }
                }
             }
             else
             {
-               if ( c < 629 )
+               if ( c < 626 )
                {
-                  if ( c < 620 )
+                  if ( c < 619 )
                   {
+                     if ( c == 616 )
+                        return 407;
                      if ( c == 617 || c == 623 )
                         return c - 211;
-                     if ( c == 619 )
-                        return 11362;
                   }
                   else
                   {
+                     if ( c == 619 )
+                        return 11362;
                      if ( c == 620 )
                         return 42925;
                      if ( c == 625 )
                         return 11374;
-                     if ( c == 626 )
-                        return 413;
                   }
                }
                else
                {
-                  if ( c < 642 )
+                  if ( c < 640 )
                   {
+                     if ( c == 626 )
+                        return 413;
                      if ( c == 629 )
                         return 415;
                      if ( c == 637 )
                         return 11364;
-                     if ( c == 640 || c == 643 )
-                        return c - 218;
                   }
                   else
                   {
+                     if ( c == 640 || c == 643 )
+                        return c - 218;
                      if ( c == 642 )
                         return 42949;
                      if ( c == 647 )
                         return 42929;
-                     if ( c == 648 )
-                        return 430;
                   }
                }
             }
@@ -331,29 +333,31 @@ char16_type PCL_FUNC PCL_ToUppercase( char16_type c )
          {
             if ( c < 941 )
             {
-               if ( c < 670 )
+               if ( c < 669 )
                {
-                  if ( c < 652 )
+                  if ( c < 650 )
                   {
+                     if ( c == 648 )
+                        return 430;
                      if ( c == 649 )
                         return 580;
-                     if ( c == 650 || c == 651 )
-                        return c - 217;
                   }
                   else
                   {
+                     if ( c == 650 || c == 651 )
+                        return c - 217;
                      if ( c == 652 )
                         return 581;
                      if ( c == 658 )
                         return 439;
-                     if ( c == 669 )
-                        return 42930;
                   }
                }
                else
                {
                   if ( c < 887 )
                   {
+                     if ( c == 669 )
+                        return 42930;
                      if ( c == 670 )
                         return 42928;
                      if ( c == 881 || c == 883 )
@@ -420,7 +424,7 @@ char16_type PCL_FUNC PCL_ToUppercase( char16_type c )
    {
       if ( c < 8054 )
       {
-         if ( c < 7298 )
+         if ( c < 7299 )
          {
             if ( c < 1163 )
             {
@@ -486,21 +490,23 @@ char16_type PCL_FUNC PCL_ToUppercase( char16_type c )
                }
                else
                {
-                  if ( c < 5113 )
+                  if ( c < 7296 )
                   {
                      if ( c >= 4304 && c <= 4346 )
                         return c + 3008;
                      if ( c == 4349 || c == 4350 || c == 4351 )
                         return c + 3008;
+                     if ( c >= 5113 && c <= 5117 )
+                        return c - 8;
                   }
                   else
                   {
-                     if ( c >= 5113 && c <= 5117 )
-                        return c - 8;
                      if ( c == 7296 )
                         return 1042;
                      if ( c == 7297 )
                         return 1044;
+                     if ( c == 7298 )
+                        return 1054;
                   }
                }
             }
@@ -509,31 +515,31 @@ char16_type PCL_FUNC PCL_ToUppercase( char16_type c )
          {
             if ( c < 7835 )
             {
-               if ( c < 7304 )
+               if ( c < 7306 )
                {
-                  if ( c < 7301 )
+                  if ( c < 7302 )
                   {
-                     if ( c == 7298 )
-                        return 1054;
                      if ( c == 7299 || c == 7300 )
                         return c - 6242;
+                     if ( c == 7301 )
+                        return 1058;
                   }
                   else
                   {
-                     if ( c == 7301 )
-                        return 1058;
                      if ( c == 7302 )
                         return 1066;
                      if ( c == 7303 )
                         return 1122;
+                     if ( c == 7304 )
+                        return 42570;
                   }
                }
                else
                {
                   if ( c < 7549 )
                   {
-                     if ( c == 7304 )
-                        return 42570;
+                     if ( c == 7306 || c == 7681 )
+                        return c - 1;
                      if ( c == 7545 )
                         return 42877;
                   }
@@ -543,7 +549,7 @@ char16_type PCL_FUNC PCL_ToUppercase( char16_type c )
                         return 11363;
                      if ( c == 7566 )
                         return 42950;
-                     if ( c >= 7681 && c <= 7829 && (c & 1) != 0 )
+                     if ( c >= 7683 && c <= 7829 && (c & 1) != 0 )
                         return c - 1;
                   }
                }
@@ -684,7 +690,7 @@ char16_type PCL_FUNC PCL_ToUppercase( char16_type c )
          }
          else
          {
-            if ( c < 42892 )
+            if ( c < 42899 )
             {
                if ( c < 42625 )
                {
@@ -707,42 +713,44 @@ char16_type PCL_FUNC PCL_ToUppercase( char16_type c )
                }
                else
                {
-                  if ( c < 42803 )
+                  if ( c < 42874 )
                   {
                      if ( c >= 42625 && c <= 42651 && (c & 1) != 0 )
                         return c - 1;
                      if ( c >= 42787 && c <= 42799 && (c & 1) != 0 )
                         return c - 1;
+                     if ( c >= 42803 && c <= 42863 && (c & 1) != 0 )
+                        return c - 1;
                   }
                   else
                   {
-                     if ( c >= 42803 && c <= 42863 && (c & 1) != 0 )
-                        return c - 1;
                      if ( c == 42874 || c == 42876 )
                         return c - 1;
                      if ( c >= 42879 && c <= 42887 && (c & 1) != 0 )
+                        return c - 1;
+                     if ( c == 42892 || c == 42897 )
                         return c - 1;
                   }
                }
             }
             else
             {
-               if ( c < 42952 )
+               if ( c < 42957 )
                {
-                  if ( c < 42900 )
+                  if ( c < 42905 )
                   {
-                     if ( c == 42892 || c == 42897 )
-                        return c - 1;
                      if ( c == 42899 || c == 42903 )
                         return c - 1;
+                     if ( c == 42900 )
+                        return 42948;
                   }
                   else
                   {
-                     if ( c == 42900 )
-                        return 42948;
                      if ( c >= 42905 && c <= 42921 && (c & 1) != 0 )
                         return c - 1;
                      if ( c >= 42933 && c <= 42947 && (c & 1) != 0 )
+                        return c - 1;
+                     if ( c == 42952 || c == 42954 )
                         return c - 1;
                   }
                }
@@ -750,12 +758,12 @@ char16_type PCL_FUNC PCL_ToUppercase( char16_type c )
                {
                   if ( c < 43859 )
                   {
-                     if ( c == 42952 || c == 42954 )
+                     if ( c == 42957 || c == 42961 )
                         return c - 1;
-                     if ( c == 42961 || c == 42967 )
+                     if ( c == 42967 || c == 42969 || c == 42971 )
                         return c - 1;
-                     if ( c == 42969 || c == 42998 )
-                        return c - 1;
+                     if ( c == 42998 )
+                        return 42997;
                   }
                   else
                   {
@@ -777,4 +785,4 @@ char16_type PCL_FUNC PCL_ToUppercase( char16_type c )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/UCUppercase.cpp - Released 2024-06-18T15:49:06Z
+// EOF pcl/UCUppercase.cpp - Released 2024-12-11T17:42:39Z

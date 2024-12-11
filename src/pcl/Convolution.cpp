@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/Convolution.cpp - Released 2024-06-18T15:49:06Z
+// pcl/Convolution.cpp - Released 2024-12-11T17:42:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -58,7 +58,7 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-class PCL_CorrelationEngine
+class PCL_ConvolutionEngine
 {
 public:
 
@@ -113,9 +113,8 @@ private:
       }
 
       /*
-       * We implement a correlation algorithm, so make sure that the
-       * convolution filter is rotated by 180 degrees. We'll unrotate it once
-       * convolution has finished.
+       * We implement a correlation algorithm: ensure the convolution filter is
+       * rotated by 180 degrees. We'll unrotate it once the task has finished.
        */
       bool didFlip = false;
       if ( !convolution.Filter().IsFlipped() )
@@ -242,93 +241,68 @@ private:
       {
          INIT_THREAD_MONITOR()
 
-         Rect r = m_data.image.SelectedRectangle();
-         int w = r.Width();
-         int dw = m_data.image.Width() - w;
+         const Rect rect = m_data.image.SelectedRectangle();
+         const int width = rect.Width();
+         const int hdelta = m_data.image.Width() - width;
 
-         int m = m_data.convolution.Filter().Size();
-         int n = m_data.convolution.OverlappingDistance();
-         int n2 = n >> 1;
-         int nf0 = w + (n2 << 1);
+         const int filterSize = m_data.convolution.Filter().Size();
+         const int bufRows = m_data.convolution.OverlappingDistance();
+         const int idist = m_data.convolution.InterlacingDistance();
+         const int n2 = bufRows >> 1;
+         const int bufCols = width + (n2 << 1);
 
          int o0 = m_firstRow;
          if ( m_haveUpperOvRgn )
          {
-            m_upperOvRgn.AllocateData( w, n2, m_data.image.NumberOfSelectedChannels() );
+            m_upperOvRgn.AllocateData( width, n2, m_data.image.NumberOfSelectedChannels() );
             o0 += n2;
          }
 
          int o1 = m_endRow;
          if ( m_haveLowerOvRgn )
          {
-            m_lowerOvRgn.AllocateData( w, n2, m_data.image.NumberOfSelectedChannels() );
+            m_lowerOvRgn.AllocateData( width, n2, m_data.image.NumberOfSelectedChannels() );
             o1 -= n2;
          }
 
-         typename P::sample th0 = P::ToSample( m_data.convolution.LowThreshold() );
-         typename P::sample th1 = P::ToSample( m_data.convolution.HighThreshold() );
+         const typename P::sample lowThreshold = P::ToSample( m_data.convolution.LowThreshold() );
+         const typename P::sample highThreshold = P::ToSample( m_data.convolution.HighThreshold() );
 
-         bool tz0 = 1 + th0 == 1;
-         bool tz1 = 1 + th1 == 1;
-         bool tz = tz0 && tz1;
-         bool unitWeight = m_data.convolution.FilterWeight() == 1;
+         const bool haveLowThreshold = 1 + lowThreshold != 1;
+         const bool haveHighThreshold = 1 + highThreshold != 1;
+         const bool noThreshold = !(haveLowThreshold || haveHighThreshold);
+
+         const bool unitWeight = m_data.convolution.FilterWeight() == 1;
 
          double (*innerLoop)( typename raw_data::const_iterator, typename raw_data::const_iterator,
                               const KernelFilter::coefficient* __restrict__, int, int, int ) noexcept;
-         if ( m_data.convolution.IsInterlaced() )
-         {
-            switch ( m )
-            {
-            case 3:
-               innerLoop = InnerLoop_Interlaced_3x3;
-               break;
-            case 5:
-               innerLoop = InnerLoop_Interlaced_5x5;
-               break;
-            default:
-               innerLoop = InnerLoop_Interlaced;
-               break;
-            }
-         }
-         else
-         {
-            switch ( m )
-            {
-            case 3:
-               innerLoop = InnerLoop_Compact_3x3;
-               break;
-            case 5:
-               innerLoop = InnerLoop_Compact_5x5;
-               break;
-            default:
-               innerLoop = InnerLoop_Compact;
-               break;
-            }
-         }
+         innerLoop = m_data.convolution.IsInterlaced() ? InnerLoop_Interlaced : InnerLoop_Compact;
 
-         raw_data f0( P::MinSampleValue(), n, nf0 );
+         raw_data buffer( P::MinSampleValue(), bufRows, bufCols );
+
+         const KernelFilter::coefficient* kernel = m_data.convolution.Filter().Begin();
 
          for ( int c = m_data.image.FirstSelectedChannel(), cn = 0; c <= m_data.image.LastSelectedChannel(); ++c, ++cn )
          {
-            typename P::sample* f = m_data.image.PixelAddress( r.x0, m_firstRow, c );
+            typename P::sample* f = m_data.image.PixelAddress( rect.x0, m_firstRow, c );
             typename P::sample* g = m_haveUpperOvRgn ? m_upperOvRgn[cn] : nullptr;
 
             for ( int i = 0, i0 = m_firstRow-n2, i1 = m_firstRow+n2-1; i < n2; ++i, ++i0, --i1 )
-               ::memcpy( f0[i].At( n2 ), m_data.image.PixelAddress( r.x0, (i0 < 0) ? i1 : i0, c ), w*P::BytesPerSample() );
+               ::memcpy( buffer[i].At( n2 ), m_data.image.PixelAddress( rect.x0, (i0 < 0) ? i1 : i0, c ), width*P::BytesPerSample() );
 
-            for ( int i = n2, i1 = m_firstRow; i < n; ++i, ++i1 )
-               ::memcpy( f0[i].At( n2 ), m_data.image.PixelAddress( r.x0, i1, c ), w*P::BytesPerSample() );
+            for ( int i = n2, i1 = m_firstRow; i < bufRows; ++i, ++i1 )
+               ::memcpy( buffer[i].At( n2 ), m_data.image.PixelAddress( rect.x0, i1, c ), width*P::BytesPerSample() );
 
-            for ( int i = 0; i < n; ++i )
+            for ( int i = 0; i < bufRows; ++i )
             {
-               typename raw_data::vector_iterator f0i = *f0[i];
+               typename raw_data::vector_iterator f0i = *buffer[i];
                typename raw_data::vector_iterator f1i = f0i + n2+n2;
                PCL_UNROLL( 8 )
                do
                   *f0i++ = *f1i--;
                while ( f0i < f1i );
 
-               f0i = f0[i].At( w-1 );
+               f0i = buffer[i].At( width-1 );
                f1i = f0i + n2+n2;
                PCL_UNROLL( 8 )
                do
@@ -338,12 +312,11 @@ private:
 
             for ( int y = m_firstRow;; )
             {
-               if ( likely( tz ) )
+               if ( likely( noThreshold ) )
                {
-                  for ( int x = 0; x < w; ++x, ++f )
+                  for ( int x = 0; x < width; ++x, ++f )
                   {
-                     double r = (*innerLoop)( f0.Begin(), f0.End(), m_data.convolution.Filter().Begin(),
-                                              x, m, m_data.convolution.InterlacingDistance() );
+                     double r = (*innerLoop)( buffer.Begin(), buffer.End(), kernel, x, filterSize, idist );
                      if ( !unitWeight )
                         r /= m_data.convolution.FilterWeight();
 
@@ -355,33 +328,32 @@ private:
                }
                else
                {
-                  for ( int x = 0; x < w; ++x, ++f )
+                  for ( int x = 0; x < width; ++x, ++f )
                   {
-                     double r = (*innerLoop)( f0.Begin(), f0.End(), m_data.convolution.Filter().Begin(),
-                                              x, m, m_data.convolution.InterlacingDistance() );
+                     double r = (*innerLoop)( buffer.Begin(), buffer.End(), kernel, x, filterSize, idist );
                      if ( !unitWeight )
                         r /= m_data.convolution.FilterWeight();
 
                      if ( r < *f )
                      {
-                        if ( !tz0 )
+                        if ( haveLowThreshold )
                         {
                            double k = *f - r;
-                           if ( k < th0 )
+                           if ( k < lowThreshold )
                            {
-                              k /= th0;
+                              k /= lowThreshold;
                               r = k*r + (1 - k)*(*f);
                            }
                         }
                      }
                      else
                      {
-                        if ( !tz1 )
+                        if ( haveHighThreshold )
                         {
                            double k = r - *f;
-                           if ( k < th1 )
+                           if ( k < highThreshold )
                            {
-                              k /= th1;
+                              k /= highThreshold;
                               r = k*r + (1 - k)*(*f);
                            }
                         }
@@ -397,7 +369,7 @@ private:
                if ( ++y == m_endRow )
                   break;
 
-               f += dw;
+               f += hdelta;
 
                if ( g == nullptr )
                {
@@ -411,21 +383,21 @@ private:
                      g = nullptr;
                }
 
-               for ( int i = 1; i < n; ++i )
-                  pcl::Swap( f0[i-1], f0[i] );
+               for ( int i = 1; i < bufRows; ++i )
+                  pcl::Swap( buffer[i-1], buffer[i] );
 
                if ( y+n2 < m_data.image.Height() )
                {
-                  ::memcpy( f0[n-1].At( n2 ), m_data.image.PixelAddress( r.x0, y+n2, c ), w*P::BytesPerSample() );
+                  ::memcpy( buffer[bufRows-1].At( n2 ), m_data.image.PixelAddress( rect.x0, y+n2, c ), width*P::BytesPerSample() );
 
-                  typename raw_data::vector_iterator f0n = *f0[n-1];
+                  typename raw_data::vector_iterator f0n = *buffer[bufRows-1];
                   typename raw_data::vector_iterator f1n = f0n + n2+n2;
                   PCL_UNROLL( 8 )
                   do
                      *f0n++ = *f1n--;
                   while ( f0n < f1n );
 
-                  f0n = f0[n-1].At( w-1 );
+                  f0n = buffer[bufRows-1].At( width-1 );
                   f1n = f0n + n2+n2;
                   PCL_UNROLL( 8 )
                   do
@@ -434,12 +406,12 @@ private:
                }
                else
                {
-                  ::memcpy( *f0[n-1], *f0[n-2], nf0*P::BytesPerSample() );
+                  ::memcpy( *buffer[bufRows-1], *buffer[bufRows-2], bufCols*P::BytesPerSample() );
                   /*
                    * ### N.B.: Cannot use an assignment operator here because
-                   * all of the f0 vectors must be unique.
+                   * all of the buffer vectors must be unique.
                    */
-                  //f0[n-1] = f0[n-2];
+                  //buffer[bufRows-1] = buffer[bufRows-2];
                }
             }
 
@@ -468,7 +440,7 @@ private:
       bool           m_haveLowerOvRgn;
 
       /*
-       * Compact convolution.
+       * Compact correlation.
        */
       static double InnerLoop_Compact( typename raw_data::const_iterator i,
                                        typename raw_data::const_iterator j,
@@ -485,44 +457,8 @@ private:
          return r;
       }
 
-      static double InnerLoop_Compact_3x3( typename raw_data::const_iterator i,
-                                           typename raw_data::const_iterator /*j*/,
-                                           const KernelFilter::coefficient* __restrict__ h,
-                                           int x, int/*n*/, int/*d*/ ) noexcept
-      {
-         typename P::sample f[ 9 ] =
-            {
-               i[0][x  ], i[1][x  ], i[2][x  ],
-               i[0][x+1], i[1][x+1], i[2][x+1],
-               i[0][x+2], i[1][x+2], i[2][x+2]
-            };
-         double r = 0;
-         for ( int k = 0; k < 9; ++k )
-            r += *h++ * f[k];
-         return r;
-      }
-
-      static double InnerLoop_Compact_5x5( typename raw_data::const_iterator i,
-                                           typename raw_data::const_iterator /*j*/,
-                                           const KernelFilter::coefficient* __restrict__ h,
-                                           int x, int/*n*/, int/*d*/ ) noexcept
-      {
-         typename P::sample f[ 25 ] =
-            {
-               i[0][x  ], i[1][x  ], i[2][x  ], i[3][x  ], i[4][x  ],
-               i[0][x+1], i[1][x+1], i[2][x+1], i[3][x+1], i[4][x+1],
-               i[0][x+2], i[1][x+2], i[2][x+2], i[3][x+2], i[4][x+2],
-               i[0][x+3], i[1][x+3], i[2][x+3], i[3][x+3], i[4][x+3],
-               i[0][x+4], i[1][x+4], i[2][x+4], i[3][x+4], i[4][x+4]
-            };
-         double r = 0;
-         for ( int k = 0; k < 25; ++k )
-            r += *h++ * f[k];
-         return r;
-      }
-
       /*
-       * Interlaced convolution (e.g., the à trous algorithm).
+       * Interlaced correlation (e.g., the à trous algorithm).
        */
       static double InnerLoop_Interlaced( typename raw_data::const_iterator i,
                                           typename raw_data::const_iterator j,
@@ -538,44 +474,6 @@ private:
          }
          return r;
       }
-
-      static double InnerLoop_Interlaced_3x3( typename raw_data::const_iterator i,
-                                              typename raw_data::const_iterator /*j*/,
-                                              const KernelFilter::coefficient* __restrict__ h,
-                                              int x, int/*n*/, int d ) noexcept
-      {
-         int d2 = 2*d;
-         typename P::sample f[ 9 ] =
-            {
-               i[0][x   ], i[d][x   ], i[d2][x   ],
-               i[0][x+d ], i[d][x+d ], i[d2][x+d ],
-               i[0][x+d2], i[d][x+d2], i[d2][x+d2]
-            };
-         double r = 0;
-         for ( int k = 0; k < 9; ++k )
-            r += *h++ * f[k];
-         return r;
-      }
-
-      static double InnerLoop_Interlaced_5x5( typename raw_data::const_iterator i,
-                                              typename raw_data::const_iterator /*j*/,
-                                              const KernelFilter::coefficient* __restrict__ h,
-                                              int x, int/*n*/, int d ) noexcept
-      {
-         int d2 = 2*d, d3 = 3*d, d4 = 4*d;
-         typename P::sample f[ 25 ] =
-            {
-               i[0][x   ], i[d][x   ], i[d2][x   ], i[d3][x   ], i[d4][x   ],
-               i[0][x+d ], i[d][x+d ], i[d2][x+d ], i[d3][x+d ], i[d4][x+d ],
-               i[0][x+d2], i[d][x+d2], i[d2][x+d2], i[d3][x+d2], i[d4][x+d2],
-               i[0][x+d3], i[d][x+d3], i[d2][x+d3], i[d3][x+d3], i[d4][x+d3],
-               i[0][x+d4], i[d][x+d4], i[d2][x+d4], i[d3][x+d4], i[d4][x+d4]
-            };
-         double r = 0;
-         for ( int k = 0; k < 25; ++k )
-            r += *h++ * f[k];
-         return r;
-      }
    };
 };
 
@@ -585,35 +483,35 @@ void Convolution::Apply( Image& image ) const
 {
    PCL_PRECONDITION( !m_filter.IsNull() )
    ValidateFilter();
-   PCL_CorrelationEngine::Apply( image, *this );
+   PCL_ConvolutionEngine::Apply( image, *this );
 }
 
 void Convolution::Apply( DImage& image ) const
 {
    PCL_PRECONDITION( !m_filter.IsNull() )
    ValidateFilter();
-   PCL_CorrelationEngine::Apply( image, *this );
+   PCL_ConvolutionEngine::Apply( image, *this );
 }
 
 void Convolution::Apply( UInt8Image& image ) const
 {
    PCL_PRECONDITION( !m_filter.IsNull() )
    ValidateFilter();
-   PCL_CorrelationEngine::Apply( image, *this );
+   PCL_ConvolutionEngine::Apply( image, *this );
 }
 
 void Convolution::Apply( UInt16Image& image ) const
 {
    PCL_PRECONDITION( !m_filter.IsNull() )
    ValidateFilter();
-   PCL_CorrelationEngine::Apply( image, *this );
+   PCL_ConvolutionEngine::Apply( image, *this );
 }
 
 void Convolution::Apply( UInt32Image& image ) const
 {
    PCL_PRECONDITION( !m_filter.IsNull() )
    ValidateFilter();
-   PCL_CorrelationEngine::Apply( image, *this );
+   PCL_ConvolutionEngine::Apply( image, *this );
 }
 
 // ----------------------------------------------------------------------------
@@ -629,4 +527,4 @@ void Convolution::ValidateFilter() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Convolution.cpp - Released 2024-06-18T15:49:06Z
+// EOF pcl/Convolution.cpp - Released 2024-12-11T17:42:39Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 2.2.4
+// Standard ImageCalibration Process Module Version 2.2.7
 // ----------------------------------------------------------------------------
-// ImageCalibrationInstance.h - Released 2024-08-02T18:17:27Z
+// ImageCalibrationInstance.h - Released 2024-12-11T17:43:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -69,7 +69,7 @@ class FileFormatInstance;
 class CalibrationThread;
 struct CalibrationThreadData;
 
-typedef IndirectArray<CalibrationThread>  thread_list;
+using thread_list = IndirectArray<CalibrationThread>;
 
 class ImageCalibrationInstance : public ProcessImplementation
 {
@@ -147,8 +147,8 @@ public:
       }
    };
 
-   typedef Array<OverscanRegions> overscan_list;
-   typedef Array<overscan_list>   overscan_table;
+   using overscan_list = Array<OverscanRegions>;
+   using overscan_table = Array<overscan_list>;
 
 private:
 
@@ -170,7 +170,7 @@ private:
       }
    };
 
-   typedef Array<ImageItem>  image_list;
+   using image_list = Array<ImageItem>;
 
    // The set of target frames to be calibrated
    image_list      p_targetFrames;
@@ -318,4 +318,4 @@ private:
 #endif   // __ImageCalibrationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInstance.h - Released 2024-08-02T18:17:27Z
+// EOF ImageCalibrationInstance.h - Released 2024-12-11T17:43:17Z

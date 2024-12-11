@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/Image.h - Released 2024-06-18T15:48:54Z
+// pcl/Image.h - Released 2024-12-11T17:42:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -11641,7 +11641,7 @@ public:
       if ( m_status.IsInitializationEnabled() )
          m_status.Initialize( "Computing median pixel sample value", N );
 
-      if ( N <= 2560000 )
+      if ( N <= __PCL_MEDIAN_HISTOGRAM_OVERHEAD )
       {
          SmpThread S( *this, r, firstChannel, lastChannel, 0, r.Height() );
          S.Run();
@@ -11661,7 +11661,7 @@ public:
          return m;
       }
 
-      Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors, 160*1024/*overheadLimitPx*/ );
+      Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors, __PCL_MEDIAN_HISTOGRAM_OVERHEAD );
       bool useAffinity = m_parallel && Thread::IsRootThread();
 
       double low, high;
@@ -11725,7 +11725,7 @@ public:
       for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
          threads << new HistogramThread( *this, r, firstChannel, lastChannel, n, n + int( L[i] ), low, high );
 
-      double mh = 0, l0 = low, h0 = high;
+      double mh = 0, l0 = low;
       SzVector H0;
 
       for ( size_type n = 0, n2 = count >> 1, step = 0, it = 0;; ++it )
@@ -11776,7 +11776,6 @@ public:
                   }
                   mh = low;
                   low = l0;
-                  high = h0;
                   n = 0;
                   --n2;
                   ++step;
@@ -11833,7 +11832,7 @@ public:
       if ( m_status.IsInitializationEnabled() )
          m_status.Initialize( "Computing order statistic", N );
 
-      if ( N <= 2560000 )
+      if ( N <= __PCL_MEDIAN_HISTOGRAM_OVERHEAD )
       {
          SmpThread S( *this, r, firstChannel, lastChannel, 0, r.Height() );
          S.Run();
@@ -11843,7 +11842,7 @@ public:
          return double( *pcl::Select( S.samples.Begin(), S.samples.At( S.n ), distance_type( k*(S.n - 1) ) ) )/double( P::MaxSampleValue() );
       }
 
-      Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors, 160*1024/*overheadLimitPx*/ );
+      Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors, __PCL_MEDIAN_HISTOGRAM_OVERHEAD/*overheadLimitPx*/ );
       bool useAffinity = m_parallel && Thread::IsRootThread();
 
       double low, high;
@@ -12295,7 +12294,7 @@ public:
       if ( m_status.IsInitializationEnabled() )
          m_status.Initialize( "Computing median absolute deviation", N );
 
-      if ( N <= 2560000 )
+      if ( N <= __PCL_MEDIAN_HISTOGRAM_OVERHEAD )
       {
          AbsDevSmpThread S( *this, center, r, firstChannel, lastChannel, 0, r.Height() );
          S.Run();
@@ -12315,7 +12314,7 @@ public:
          return m;
       }
 
-      Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors, 160*1024/*overheadLimitPx*/ );
+      Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors, __PCL_MEDIAN_HISTOGRAM_OVERHEAD/*overheadLimitPx*/ );
       bool useAffinity = m_parallel && Thread::IsRootThread();
 
       double low, high;
@@ -12368,7 +12367,7 @@ public:
       for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
          threads << new AbsDevHistogramThread( *this, r, firstChannel, lastChannel, n, n + int( L[i] ), center, low, high );
 
-      double mh = 0, l0 = low, h0 = high;
+      double mh = 0, l0 = low;
       SzVector H0;
 
       for ( size_type n = 0, n2 = count >> 1, step = 0, it = 0;; ++it )
@@ -12419,7 +12418,6 @@ public:
                   }
                   mh = low;
                   low = l0;
-                  high = h0;
                   n = 0;
                   --n2;
                   ++step;
@@ -12462,7 +12460,7 @@ public:
       if ( m_status.IsInitializationEnabled() )
          m_status.Initialize( "Computing two-sided median absolute deviation", N );
 
-      if ( N <= 2560000 )
+      if ( N <= __PCL_MEDIAN_HISTOGRAM_OVERHEAD )
       {
          TwoSidedAbsDevSmpThread S( *this, center, r, firstChannel, lastChannel, 0, r.Height() );
          S.Run();
@@ -12471,7 +12469,7 @@ public:
                   pcl::Median( S.q, S.values.End() ) };
       }
 
-      Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors, 160*1024/*overheadLimitPx*/ );
+      Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors, __PCL_MEDIAN_HISTOGRAM_OVERHEAD/*overheadLimitPx*/ );
       bool useAffinity = m_parallel && Thread::IsRootThread();
 
       double minLow = 0, minHigh = 0, maxLow = 0, maxHigh = 0;
@@ -15444,15 +15442,111 @@ private:
             int           m_ch1, m_ch2;
             int           m_firstRow, m_endRow;
 
+      bool HasSimpleSelection() const
+      {
+         return m_rect.Width() == m_image.Width()
+               && !m_image.IsLowRangeClippingEnabled()
+               && !m_image.IsHighRangeClippingEnabled();
+      }
+
       template <class F> void Execute( F process ) noexcept
       {
          int w = m_rect.Width();
          int dw = m_image.Width() - w;
 
-         if ( m_image.IsLowRangeClippingEnabled() )
+         if ( dw == 0 )
          {
-            sample clipLow = P::ToSample( m_image.RangeClipLow() );
-            if ( m_image.IsHighRangeClippingEnabled() )
+            size_type n = size_type( m_endRow - m_firstRow ) * size_type( w );
+
+            if ( m_image.IsLowRangeClippingEnabled() )
+            {
+               sample clipLow = P::ToSample( m_image.RangeClipLow() );
+               if ( m_image.IsHighRangeClippingEnabled() )
+               {
+                  sample clipHigh = P::ToSample( m_image.RangeClipHigh() );
+                  for ( int i = m_ch1; i <= m_ch2; ++i )
+                  {
+                     const sample* __restrict__ f = m_image.PixelAddress( 0, m_rect.y0+m_firstRow, i );
+                     PCL_IVDEP
+                     for ( size_type j = 0; j < n; ++j, ++f )
+                        if ( clipLow < *f )
+                           if ( *f < clipHigh )
+                              process( f );
+                  }
+               }
+               else
+               {
+                  for ( int i = m_ch1; i <= m_ch2; ++i )
+                  {
+                     const sample* __restrict__ f = m_image.PixelAddress( 0, m_rect.y0+m_firstRow, i );
+                     PCL_IVDEP
+                     for ( size_type j = 0; j < n; ++j, ++f )
+                        if ( clipLow < *f )
+                           process( f );
+                  }
+               }
+            }
+            else if ( m_image.IsHighRangeClippingEnabled() )
+            {
+               sample clipHigh = P::ToSample( m_image.RangeClipHigh() );
+               for ( int i = m_ch1; i <= m_ch2; ++i )
+               {
+                  const sample* __restrict__ f = m_image.PixelAddress( 0, m_rect.y0+m_firstRow, i );
+                  PCL_IVDEP
+                  for ( size_type j = 0; j < n; ++j, ++f )
+                     if ( *f < clipHigh )
+                        process( f );
+               }
+            }
+            else
+            {
+               // Simple selection
+               for ( int i = m_ch1; i <= m_ch2; ++i )
+               {
+                  const sample* __restrict__ f = m_image.PixelAddress( 0, m_rect.y0+m_firstRow, i );
+                  PCL_IVDEP
+                  for ( size_type j = 0; j < n; ++j, ++f )
+                     process( f );
+               }
+            }
+         }
+         else
+         {
+            if ( m_image.IsLowRangeClippingEnabled() )
+            {
+               sample clipLow = P::ToSample( m_image.RangeClipLow() );
+               if ( m_image.IsHighRangeClippingEnabled() )
+               {
+                  sample clipHigh = P::ToSample( m_image.RangeClipHigh() );
+                  for ( int i = m_ch1; i <= m_ch2; ++i )
+                  {
+                     const sample* __restrict__ f = m_image.PixelAddress( m_rect.x0, m_rect.y0+m_firstRow, i );
+                     for ( int j = m_firstRow; j < m_endRow; ++j, f += dw )
+                     {
+                        PCL_IVDEP
+                        for ( int k = 0; k < w; ++k, ++f )
+                           if ( clipLow < *f )
+                              if ( *f < clipHigh )
+                                 process( f );
+                     }
+                  }
+               }
+               else
+               {
+                  for ( int i = m_ch1; i <= m_ch2; ++i )
+                  {
+                     const sample* __restrict__ f = m_image.PixelAddress( m_rect.x0, m_rect.y0+m_firstRow, i );
+                     for ( int j = m_firstRow; j < m_endRow; ++j, f += dw )
+                     {
+                        PCL_IVDEP
+                        for ( int k = 0; k < w; ++k, ++f )
+                           if ( clipLow < *f )
+                              process( f );
+                     }
+                  }
+               }
+            }
+            else if ( m_image.IsHighRangeClippingEnabled() )
             {
                sample clipHigh = P::ToSample( m_image.RangeClipHigh() );
                for ( int i = m_ch1; i <= m_ch2; ++i )
@@ -15462,9 +15556,8 @@ private:
                   {
                      PCL_IVDEP
                      for ( int k = 0; k < w; ++k, ++f )
-                        if ( clipLow < *f )
-                           if ( *f < clipHigh )
-                              process( f );
+                        if ( *f < clipHigh )
+                           process( f );
                   }
                }
             }
@@ -15477,37 +15570,8 @@ private:
                   {
                      PCL_IVDEP
                      for ( int k = 0; k < w; ++k, ++f )
-                        if ( clipLow < *f )
-                           process( f );
-                  }
-               }
-            }
-         }
-         else if ( m_image.IsHighRangeClippingEnabled() )
-         {
-            sample clipHigh = P::ToSample( m_image.RangeClipHigh() );
-            for ( int i = m_ch1; i <= m_ch2; ++i )
-            {
-               const sample* __restrict__ f = m_image.PixelAddress( m_rect.x0, m_rect.y0+m_firstRow, i );
-               for ( int j = m_firstRow; j < m_endRow; ++j, f += dw )
-               {
-                  PCL_IVDEP
-                  for ( int k = 0; k < w; ++k, ++f )
-                     if ( *f < clipHigh )
                         process( f );
-               }
-            }
-         }
-         else
-         {
-            for ( int i = m_ch1; i <= m_ch2; ++i )
-            {
-               const sample* __restrict__ f = m_image.PixelAddress( m_rect.x0, m_rect.y0+m_firstRow, i );
-               for ( int j = m_firstRow; j < m_endRow; ++j, f += dw )
-               {
-                  PCL_IVDEP
-                  for ( int k = 0; k < w; ++k, ++f )
-                     process( f );
+                  }
                }
             }
          }
@@ -15607,7 +15671,7 @@ private:
       {
          min = P::HighestSampleValue();
          count = 0;
-         this->Execute( [=]( const sample* f )
+         this->Execute( [=]( const sample* __restrict__ f )
             {
                if ( *f < min )
                   min = *f;
@@ -15634,7 +15698,7 @@ private:
       {
          max = P::LowestSampleValue();
          count = 0;
-         this->Execute( [=]( const sample* f )
+         this->Execute( [=]( const sample* __restrict__ f )
             {
                if ( max < *f )
                   max = *f;
@@ -15663,7 +15727,7 @@ private:
          min = P::HighestSampleValue();
          max = P::LowestSampleValue();
          count = 0;
-         this->Execute( [=]( const sample* f )
+         this->Execute( [=]( const sample* __restrict__ f )
             {
                if ( *f < min )
                   min = *f;
@@ -15744,7 +15808,7 @@ private:
       void DoExecute() override
       {
          min = P::HighestSampleValue();
-         this->Execute( [=]( const sample* f )
+         this->Execute( [=]( const sample* __restrict__ f )
             {
                if ( *f < min )
                   min = *(this->m_amin = f);
@@ -15771,7 +15835,7 @@ private:
       void DoExecute() override
       {
          max = P::LowestSampleValue();
-         this->Execute( [=]( const sample* f )
+         this->Execute( [=]( const sample* __restrict__ f )
             {
                if ( max < *f )
                   max = *(this->m_amax = f);
@@ -15799,7 +15863,7 @@ private:
       {
          min = P::HighestSampleValue();
          max = P::LowestSampleValue();
-         this->Execute( [=]( const sample* f )
+         this->Execute( [=]( const sample* __restrict__ f )
             {
                if ( *f < min )
                   min = *(this->m_amin = f);
@@ -15846,7 +15910,7 @@ private:
 
       virtual void DoExecute()
       {
-         this->Execute( [=]( const sample* f )
+         this->Execute( [=]( const sample* __restrict__ f )
             {
                double v; P::FromSample( v, *f );
                SumStep( v );
@@ -15869,7 +15933,7 @@ private:
 
       void DoExecute() override
       {
-         this->Execute( [=]( const sample* f )
+         this->Execute( [=]( const sample* __restrict__ f )
             {
                double v; P::FromSample( v, *f );
                this->SumStep( v*v );
@@ -15892,7 +15956,7 @@ private:
 
       void DoExecute() override
       {
-         this->Execute( [=]( const sample* f )
+         this->Execute( [=]( const sample* __restrict__ f )
             {
                double v; P::FromSample( v, *f );
                this->SumStep( pcl::Abs( v ) );
@@ -15920,7 +15984,7 @@ private:
       {
          R = e = 0.0;
          n = 0;
-         this->Execute( [=]( const sample* f )
+         this->Execute( [=]( const sample* __restrict__ f )
             {
                double v; P::FromSample( v, *f );
                for ( int i = 0;; )
@@ -15967,18 +16031,27 @@ private:
       void Run() final
       {
          H = size_type( 0 );
-         m_range = m_high - m_low;
-// Workaround for clang compiler bug on macOS:
-// https://pixinsight.com/forum/index.php?threads/pi-always-crash-when-stf.15830/
-#ifdef __PCL_MACOSX
-         if ( 1 + m_range != 1 )
-#endif
-         this->Execute( [=]( const sample* f )
+
+         if ( this->HasSimpleSelection() )
+         {
+            size_type n = size_type( this->m_endRow - this->m_firstRow ) * size_type( this->m_rect.Width() );
+            for ( int i = this->m_ch1; i <= this->m_ch2; ++i )
+               Build( H, this->m_image.PixelAddress( 0, this->m_rect.y0+this->m_firstRow, i ), n, m_low, m_high );
+         }
+         else
+         {
+            m_range = m_high - m_low;
+            if ( 1 + m_range != 1 )
             {
-               if ( *f >= m_low )
-                  if ( *f <= m_high )
-                     ++H[TruncInt( (__PCL_MEDIAN_HISTOGRAM_LENGTH - 1) * (double( *f ) - m_low)/m_range )];
-            } );
+               const double scale = (__PCL_MEDIAN_HISTOGRAM_LENGTH - 1)/m_range;
+               this->Execute( [=]( const sample* __restrict__ f )
+                  {
+                     const int k = TruncInt( scale*(*f - m_low) );
+                     if ( k >= 0 && k < __PCL_MEDIAN_HISTOGRAM_LENGTH )
+                        ++H[k];
+                  } );
+            }
+         }
       }
 
    private:
@@ -15986,6 +16059,130 @@ private:
       const double& m_low;
       const double& m_high;
       double        m_range;
+
+      template <typename T1>
+      static void Build( SzVector& H, const T1* __restrict__ A, size_type N, double low, double high )
+      {
+         const double range = high - low;
+         if ( 1 + range != 1 )
+         {
+            const double scale = (__PCL_MEDIAN_HISTOGRAM_LENGTH - 1)/range;
+            PCL_IVDEP
+            for ( size_type i = 0; i < N; ++i )
+            {
+               const int k = TruncInt( scale*(A[i] - low) );
+               if ( k >= 0 && k < __PCL_MEDIAN_HISTOGRAM_LENGTH )
+                  ++H[k];
+            }
+         }
+      }
+
+#ifdef __PCL_AVX2
+
+      PCL_HOT_FUNCTION
+      static void Build( SzVector& H, const float* __restrict__ A, size_type N, double low, double high )
+      {
+         const double range = high - low;
+         if ( 1 + range == 1 )
+            return;
+
+         const float s = float( (__PCL_MEDIAN_HISTOGRAM_LENGTH - 1)/range );
+         const float l = float( low );
+         const __m256 S = _mm256_set1_ps( s );
+         const __m256 L = _mm256_set1_ps( l );
+         const size_type stepLength = 0x40000000u;
+
+         for ( size_type p = 0; p < N; p += stepLength )
+         {
+            const float* __restrict__ V = A + p;
+            const int n = int( pcl::Min( stepLength, N - p ) );
+            const int n8 = n >> 3;
+
+            if ( ((ptrdiff_t)V) & 31 )
+               for ( int i = 0; i < n8; ++i )
+               {
+                  __m256 v = _mm256_loadu_ps( (const float* __restrict__)(V + i*8) );
+                  __m256i K = _mm256_cvttps_epi32( _mm256_mul_ps( _mm256_sub_ps( v, L ), S ) );
+                  for ( int j = 0; j < 8; ++j )
+                  {
+                     const int k = ((const int* __restrict__)&K)[j];
+                     if ( k >= 0 && k < __PCL_MEDIAN_HISTOGRAM_LENGTH )
+                        ++H[k];
+                  }
+               }
+            else
+               for ( int i = 0; i < n8; ++i )
+               {
+                  __m256i K = _mm256_cvttps_epi32( _mm256_mul_ps( _mm256_sub_ps( ((const __m256* __restrict__)V)[i], L ), S ) );
+                  for ( int j = 0; j < 8; ++j )
+                  {
+                     const int k = ((const int* __restrict__)&K)[j];
+                     if ( k >= 0 && k < __PCL_MEDIAN_HISTOGRAM_LENGTH )
+                        ++H[k];
+                  }
+               }
+
+            for ( int i = n8 << 3; i < n; ++i )
+            {
+               const int k = TruncInt( s * (V[i] - l) );
+               if ( k >= 0 && k < __PCL_MEDIAN_HISTOGRAM_LENGTH )
+                  ++H[k];
+            }
+         }
+      }
+
+      PCL_HOT_FUNCTION
+      static void Build( SzVector& H, const double* __restrict__ A, size_type N, double low, double high )
+      {
+         const double range = high - low;
+         if ( 1 + range == 1 )
+            return;
+
+         const double s = (__PCL_MEDIAN_HISTOGRAM_LENGTH - 1)/range;
+         const __m256d S = _mm256_set1_pd( s );
+         const __m256d L = _mm256_set1_pd( low );
+         const size_type stepLength = 0x40000000u;
+
+         for ( size_type p = 0; p < N; p += stepLength )
+         {
+            const double* __restrict__ V = A + p;
+            const int n = int( pcl::Min( stepLength, N - p ) );
+            const int n4 = n >> 2;
+
+            if ( ((ptrdiff_t)V) & 31 )
+               for ( int i = 0; i < n4; ++i )
+               {
+                  __m256d v = _mm256_loadu_pd( (const double* __restrict__)(V + i*4) );
+                  __m128i K = _mm256_cvttpd_epi32( _mm256_mul_pd( _mm256_sub_pd( v, L ), S ) );
+                  for ( int j = 0; j < 4; ++j )
+                  {
+                     const int k = ((const int* __restrict__)&K)[j];
+                     if ( k >= 0 && k < __PCL_MEDIAN_HISTOGRAM_LENGTH )
+                        ++H[k];
+                  }
+               }
+            else
+               for ( int i = 0; i < n4; ++i )
+               {
+                  __m128i K = _mm256_cvttpd_epi32( _mm256_mul_pd( _mm256_sub_pd( ((const __m256d* __restrict__)V)[i], L ), S ) );
+                  for ( int j = 0; j < 4; ++j )
+                  {
+                     const int k = ((const int* __restrict__)&K)[j];
+                     if ( k >= 0 && k < __PCL_MEDIAN_HISTOGRAM_LENGTH )
+                        ++H[k];
+                  }
+               }
+
+            for ( int i = n4 << 2; i < n; ++i )
+            {
+               const int k = TruncInt( s * (V[i] - low) );
+               if ( k >= 0 && k < __PCL_MEDIAN_HISTOGRAM_LENGTH )
+                  ++H[k];
+            }
+         }
+      }
+
+#endif // __PCL_AVX2
    };
 
    // -------------------------------------------------------------------------
@@ -16008,7 +16205,7 @@ private:
          minAbsDev = std::numeric_limits<double>::max();
          maxAbsDev = 0;
          count = 0;
-         this->Execute( [=]( const sample* f )
+         this->Execute( [=]( const sample* __restrict__ f )
             {
                double d; P::FromSample( d, *f );
                d = pcl::Abs( d - m_center );
@@ -16046,7 +16243,7 @@ private:
          minAbsDevLow = minAbsDevHigh = std::numeric_limits<double>::max();
          maxAbsDevLow = maxAbsDevHigh = 0;
          nLow = nHigh = 0;
-         this->Execute( [=]( const sample* f )
+         this->Execute( [=]( const sample* __restrict__ f )
             {
                double x; P::FromSample( x, *f );
                if ( x <= m_center )
@@ -16102,7 +16299,7 @@ private:
 #ifdef __PCL_MACOSX
          if ( 1 + m_range != 1 )
 #endif
-         this->Execute( [=]( const sample* f )
+         this->Execute( [=]( const sample* __restrict__ f )
             {
                double d; P::FromSample( d, *f );
                d = pcl::Abs( d - m_center );
@@ -16148,7 +16345,7 @@ private:
 #ifdef __PCL_MACOSX
          if ( 1 + m_range != 1 )
 #endif
-         this->Execute( [=]( const sample* f )
+         this->Execute( [=]( const sample* __restrict__ f )
             {
                double x; P::FromSample( x, *f );
                if ( m_side > 0 == x > m_center )
@@ -16187,7 +16384,7 @@ private:
       void Run() final
       {
          var = eps = 0;
-         this->Execute( [=]( const sample* f )
+         this->Execute( [=]( const sample* __restrict__ f )
             {
                double d; P::FromSample( d, *f );
                d -= m_mean;
@@ -16219,7 +16416,7 @@ private:
 
       void DoExecute() override
       {
-         this->Execute( [=]( const sample* f )
+         this->Execute( [=]( const sample* __restrict__ f )
             {
                double v; P::FromSample( v, *f );
                this->SumStep( pcl::Abs( v - m_center ) );
@@ -16247,7 +16444,7 @@ private:
       {
          s0 = s1 = 0;
          n0 = n1 = 0;
-         this->Execute( [=]( const sample* f )
+         this->Execute( [=]( const sample* __restrict__ f )
             {
                double v; P::FromSample( v, *f );
                if ( v <= m_center )
@@ -16289,7 +16486,7 @@ private:
       {
          num = den = 0;
          n = nr = 0;
-         this->Execute( [=]( const sample* f )
+         this->Execute( [=]( const sample* __restrict__ f )
             {
                ++n;
                double xc; P::FromSample( xc, *f ); xc -= m_center;
@@ -16334,7 +16531,7 @@ private:
       {
          num0 = den0 = num1 = den1 = 0;
          n0 = n1 = nr0 = nr1 = 0;
-         this->Execute( [=]( const sample* f )
+         this->Execute( [=]( const sample* __restrict__ f )
             {
                double xc; P::FromSample( xc, *f ); xc -= m_center;
                bool low = xc <= 0;
@@ -16394,7 +16591,7 @@ private:
       void Run() final
       {
          n = 0;
-         this->Execute( [=]( const sample* f )
+         this->Execute( [=]( const sample* __restrict__ f )
             {
                samples[n++] = *f;
             } );
@@ -16429,7 +16626,7 @@ private:
 
       virtual void DoExecute()
       {
-         this->Execute( [=]( const sample* f )
+         this->Execute( [=]( const sample* __restrict__ f )
             {
                P::FromSample( values[n++], *f );
             } );
@@ -16454,7 +16651,7 @@ private:
 
       void DoExecute() override
       {
-         this->Execute( [=]( const sample* f )
+         this->Execute( [=]( const sample* __restrict__ f )
             {
                double d; P::FromSample( d, *f );
                this->values[this->n++] = pcl::Abs( d - m_center );
@@ -16484,7 +16681,7 @@ private:
       {
          p = this->values.Begin();
          q = this->values.End();
-         this->Execute( [=]( const sample* f )
+         this->Execute( [=]( const sample* __restrict__ f )
             {
                double x; P::FromSample( x, *f );
                if ( x <= m_center )
@@ -17800,4 +17997,4 @@ using ComplexImage = FComplexImage;
 #endif   // __PCL_Image_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Image.h - Released 2024-06-18T15:48:54Z
+// EOF pcl/Image.h - Released 2024-12-11T17:42:29Z

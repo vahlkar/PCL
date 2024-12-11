@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/XML.h - Released 2024-06-18T15:48:54Z
+// pcl/XML.h - Released 2024-12-11T17:42:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -537,6 +537,16 @@ public:
    }
 
    /*!
+    * Copy assignment operator. Returns a reference to this object.
+    */
+   XMLNode& operator =( const XMLNode& x )
+   {
+      m_type = x.NodeType();
+      m_location = x.m_location;
+      return *this;
+   }
+
+   /*!
     * Destroys an %XMLNode object.
     */
    ~XMLNode() override
@@ -593,6 +603,11 @@ public:
    {
       return m_location;
    }
+
+   /*!
+    * Returns a dynamically allocated copy of this %XML node.
+    */
+   virtual XMLNode* Clone() const = 0;
 
    /*!
     * Serializes this document node as an %XML fragment encoded in UTF-8.
@@ -1211,16 +1226,32 @@ public:
    }
 
    /*!
-    * Copy constructor. This constructor is disabled because %XMLElement
-    * represents unique objects.
+    * Copy constructor.
     */
-   XMLElement( const XMLElement& ) = delete;
+   XMLElement( const XMLElement& x )
+      : XMLNode( x )
+      , m_name( x.m_name )
+      , m_attributes( x.m_attributes )
+      , m_childTypes( x.m_childTypes )
+   {
+      for ( const XMLNode& node : x.m_childNodes )
+         m_childNodes << node.Clone();
+   }
 
    /*!
-    * Copy assignment. This operator is disabled because %XMLElement represents
-    * unique objects.
+    * Copy assignment operator. Returns a reference to this object.
     */
-   XMLElement& operator =( const XMLElement& ) = delete;
+   XMLElement& operator =( const XMLElement& x )
+   {
+      (void)XMLNode::operator =( x );
+      m_name = x.m_name;
+      m_attributes = x.m_attributes;
+      m_childTypes = x.m_childTypes;
+      m_childNodes.Destroy();
+      for ( const XMLNode& node : x.m_childNodes )
+         m_childNodes << node.Clone();
+      return *this;
+   }
 
    /*!
     * Destroys an %XMLElement object. If this element contains child nodes, all
@@ -1896,6 +1927,14 @@ public:
    }
 
    /*!
+    * Returns a dynamically allocated copy of this %XML node.
+    */
+   XMLNode* Clone() const override
+   {
+      return new XMLElement( *this );
+   }
+
+   /*!
     * Recursively serializes this %XML element and its contents. Appends the
     * generated %XML source code to the specified 8-bit \a text string, encoded
     * in UTF-8.
@@ -1991,6 +2030,11 @@ public:
    XMLText( const XMLText& ) = default;
 
    /*!
+    * Copy assignment operator. Returns a reference to this object.
+    */
+   XMLText& operator =( const XMLText& ) = default;
+
+   /*!
     * Returns a reference to the (immutable) text string contained by this %XML
     * text block. The returned string is encoded in UTF-16.
     */
@@ -2034,6 +2078,14 @@ public:
       if ( collapse )
          text = XML::CollapsedSpaces( text );
       return text;
+   }
+
+   /*!
+    * Returns a dynamically allocated copy of this %XML node.
+    */
+   XMLNode* Clone() const override
+   {
+      return new XMLText( *this );
    }
 
    /*!
@@ -2101,12 +2153,25 @@ public:
    XMLCDATA( const XMLCDATA& ) = default;
 
    /*!
+    * Copy assignment operator. Returns a reference to this object.
+    */
+   XMLCDATA& operator =( const XMLCDATA& ) = default;
+
+   /*!
     * Returns a reference to the (immutable) character data string, encoded as
     * UTF-16, contained by this CDATA section.
     */
    const String& CData() const
    {
       return m_cdata;
+   }
+
+   /*!
+    * Returns a dynamically allocated copy of this %XML node.
+    */
+   XMLNode* Clone() const override
+   {
+      return new XMLCDATA( *this );
    }
 
    /*!
@@ -2159,6 +2224,11 @@ public:
    XMLProcessingInstructions( const XMLProcessingInstructions& ) = default;
 
    /*!
+    * Copy assignment operator. Returns a reference to this object.
+    */
+   XMLProcessingInstructions& operator =( const XMLProcessingInstructions& ) = default;
+
+   /*!
     * Returns a reference to the (immutable) instructions target name.
     */
    const String& Target() const
@@ -2172,6 +2242,14 @@ public:
    const String& Instructions() const
    {
       return m_instructions;
+   }
+
+   /*!
+    * Returns a dynamically allocated copy of this %XML node.
+    */
+   XMLNode* Clone() const override
+   {
+      return new XMLProcessingInstructions( *this );
    }
 
    /*!
@@ -2223,11 +2301,24 @@ public:
    XMLComment( const XMLComment& ) = default;
 
    /*!
+    * Copy assignment operator. Returns a reference to this object.
+    */
+   XMLComment& operator =( const XMLComment& ) = default;
+
+   /*!
     * Returns a reference to the (immutable) comment string.
     */
    const String& Comment() const
    {
       return m_comment;
+   }
+
+   /*!
+    * Returns a dynamically allocated copy of this %XML node.
+    */
+   XMLNode* Clone() const override
+   {
+      return new XMLComment( *this );
    }
 
    /*!
@@ -2277,6 +2368,11 @@ public:
    XMLUnknownElement( const XMLUnknownElement& ) = default;
 
    /*!
+    * Copy assignment operator. Returns a reference to this object.
+    */
+   XMLUnknownElement& operator =( const XMLUnknownElement& ) = default;
+
+   /*!
     * Returns a reference to the (immutable) unknown element name.
     */
    const String& Name() const
@@ -2290,6 +2386,14 @@ public:
    const String& Parameters() const
    {
       return m_parameters;
+   }
+
+   /*!
+    * Returns a dynamically allocated copy of this %XML node.
+    */
+   XMLNode* Clone() const override
+   {
+      return new XMLUnknownElement( *this );
    }
 
    /*!
@@ -2529,10 +2633,10 @@ struct XMLElementFilter
  * \brief     %XML document parsing options
  *
  * <table border="1" cellpadding="4" cellspacing="0">
- * <tr><td>XMLParserOption::IgnoreComments</td>           <td>Do not add comment nodes to the DOM.</td></tr>
- * <tr><td>XMLParserOption::IgnoreUnknownElements</td>    <td>Do not add unknown/invalid elements to the DOM.</td></tr>
- * <tr><td>XMLParserOption::IgnoreStrayCharacters</td>    <td>Be tolerant of non-space characters outside markup.</td></tr>
- * <tr><td>XMLParserOption::NormalizeTextSpaces</td>      <td>Trim and collapse spaces in all child text nodes.</td></tr>
+ * <tr><td>XMLParserOption::IgnoreComments</td>        <td>Do not add comment nodes to the DOM.</td></tr>
+ * <tr><td>XMLParserOption::IgnoreUnknownElements</td> <td>Do not add unknown/invalid elements to the DOM.</td></tr>
+ * <tr><td>XMLParserOption::IgnoreStrayCharacters</td> <td>Be tolerant of non-space characters outside markup.</td></tr>
+ * <tr><td>XMLParserOption::NormalizeTextSpaces</td>   <td>Trim and collapse spaces in all child text nodes.</td></tr>
  * </table>
  *
  * \ingroup xml_parsing_and_generation
@@ -3198,4 +3302,4 @@ private:
 #endif   // __PCL_XML_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/XML.h - Released 2024-06-18T15:48:54Z
+// EOF pcl/XML.h - Released 2024-12-11T17:42:29Z

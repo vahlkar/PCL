@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// Standard APASS Process Module Version 1.1.4
+// Standard APASS Process Module Version 1.1.5
 // ----------------------------------------------------------------------------
-// APASSInterface.cpp - Released 2024-06-18T15:49:25Z
+// APASSInterface.cpp - Released 2024-12-11T17:43:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard APASS PixInsight module.
 //
@@ -673,7 +673,6 @@ void APASSInterface::UpdateControls()
       bool generateOutput = m_instance.p_generateTextOutput || m_instance.p_generateBinaryOutput;
       bool generateTextOutput = m_instance.p_generateTextOutput && !m_instance.p_generateBinaryOutput;
 
-      GUI->GenerateTextOutput_CheckBox.Enable( generateTextOutput );
       GUI->TextFormat_Label.Enable( generateTextOutput );
       GUI->TextFormat_ComboBox.Enable( generateTextOutput );
       GUI->TextHeaders_Label.Enable( generateTextOutput );
@@ -1419,4 +1418,4 @@ APASSInterface::GUIData::GUIData( APASSInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF APASSInterface.cpp - Released 2024-06-18T15:49:25Z
+// EOF APASSInterface.cpp - Released 2024-12-11T17:43:17Z

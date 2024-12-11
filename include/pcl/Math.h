@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/Math.h - Released 2024-06-18T15:48:54Z
+// pcl/Math.h - Released 2024-12-11T17:42:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -66,13 +66,23 @@
 #include <cstdlib>
 #include <limits>
 
-#ifdef _MSC_VER
+#ifdef __PCL_AVX2
+# ifdef __PCL_WINDOWS
+#  include <emmintrin.h>
+#  include <intrin.h>
+# else
+#  include <xmmintrin.h>
+#  include <immintrin.h>
+# endif
+# define __PCL_HAVE_SSE2   1
+#else
+# ifdef _MSC_VER
 #  include <intrin.h> // for __cpuid()
-#endif
-
-#if defined( __x86_64__ ) || defined( _M_X64 ) || defined( __PCL_MACOSX )
+# endif
+# if defined( __x86_64__ ) || defined( _M_X64 )
 #  define __PCL_HAVE_SSE2  1
 #  include <emmintrin.h>
+# endif
 #endif
 
 /*
@@ -95,7 +105,13 @@
  * Number of histogram bins used by fast histogram-based median calculation
  * algorithm implementations.
  */
-#define __PCL_MEDIAN_HISTOGRAM_LENGTH  8192
+#define __PCL_MEDIAN_HISTOGRAM_LENGTH     8192
+
+/*
+ * The minimum array length for efficient fast histogram generation. This is an
+ * empirical value to be replaced by automatic benchmarks.
+ */
+#define __PCL_MEDIAN_HISTOGRAM_OVERHEAD   (64*1024)
 
 namespace pcl
 {
@@ -309,6 +325,60 @@ inline bool IsNegativeZero( double x ) noexcept
 
 // ----------------------------------------------------------------------------
 
+#ifdef __PCL_AVX2
+
+/*
+ * Efficient horizontal SSE/AVX vector sum routines.
+ *
+ * See StackOverflow articles:
+ *
+ * Fastest way to do horizontal SSE vector sum (or other reduction)
+ * https://stackoverflow.com/questions/6996764/
+ *    fastest-way-to-do-horizontal-sse-vector-sum-or-other-reduction
+ *
+ * Get sum of values stored in __m256d with SSE/AVX
+ * https://stackoverflow.com/questions/49941645/
+ *    get-sum-of-values-stored-in-m256d-with-sse-avx
+ */
+
+inline float __pcl_hsum128_ps( __m128 v )
+{
+   __m128 shuf = _mm_movehdup_ps( v ); // broadcast elements 3,1 to 2,0
+   __m128 sums = _mm_add_ps( v, shuf );
+          shuf = _mm_movehl_ps( shuf, sums );
+          sums = _mm_add_ss( sums, shuf );
+   return _mm_cvtss_f32( sums );
+}
+
+inline float __pcl_hsum256_ps( __m256 v )
+{
+   __m128 vlow  = _mm256_castps256_ps128( v );
+   __m128 vhigh = _mm256_extractf128_ps( v, 1 );
+          vlow  = _mm_add_ps( vlow, vhigh );
+   return __pcl_hsum128_ps( vlow );
+}
+
+inline double __pcl_hsum128_pd( __m128d v )
+{
+   __m128 undef   = _mm_undefined_ps();
+   __m128 shuftmp = _mm_movehl_ps( undef, _mm_castpd_ps( v ) ); // there is no movhl_pd
+   __m128d shuf   = _mm_castps_pd( shuftmp );
+   return _mm_cvtsd_f64( _mm_add_sd( v, shuf ) );
+}
+
+inline double __pcl_hsum256_pd( __m256d v )
+{
+   __m128d vlow   = _mm256_castpd256_pd128( v );
+   __m128d vhigh  = _mm256_extractf128_pd( v, 1 );
+           vlow   = _mm_add_pd( vlow, vhigh );
+   __m128d high64 = _mm_unpackhi_pd( vlow, vlow );
+   return _mm_cvtsd_f64( _mm_add_sd( vlow, high64 ) );
+}
+
+#endif
+
+// ----------------------------------------------------------------------------
+
 /*!
  * \defgroup mathematical_functions Mathematical Functions
  */
@@ -475,7 +545,8 @@ inline constexpr long double TwoPi() noexcept
 // ----------------------------------------------------------------------------
 
 /*!
- * Merges a complex angle given by degrees and arcminutes into single degrees.
+ * Merges a compound angle given by degrees and arcminutes into a single scalar
+ * in degrees.
  * \ingroup mathematical_functions
  */
 template <typename T> inline constexpr T Angle( int d, T m ) noexcept
@@ -484,8 +555,8 @@ template <typename T> inline constexpr T Angle( int d, T m ) noexcept
 }
 
 /*!
- * Merges a complex angle given by degrees, arcminutes and arcseconds into
- * single degrees.
+ * Merges a compound angle given by degrees, arcminutes and arcseconds into
+ * a single scalar in degrees.
  * \ingroup mathematical_functions
  */
 template <typename T> inline constexpr T Angle( int d, int m, T s ) noexcept
@@ -997,17 +1068,17 @@ template <typename T> inline constexpr T Sinh( T x ) noexcept
 
 #ifdef __PCL_HAVE_SINCOS
 
-inline void __pcl_sincos__( float x, float& sx, float& cx ) noexcept
+inline void __pcl_sincos( float x, float& sx, float& cx ) noexcept
 {
    ::sincosf( x, &sx, &cx );
 }
 
-inline void __pcl_sincos__( double x, double& sx, double& cx ) noexcept
+inline void __pcl_sincos( double x, double& sx, double& cx ) noexcept
 {
    ::sincos( x, &sx, &cx );
 }
 
-inline void __pcl_sincos__( long double x, long double& sx, long double& cx ) noexcept
+inline void __pcl_sincos( long double x, long double& sx, long double& cx ) noexcept
 {
    ::sincosl( x, &sx, &cx );
 }
@@ -1030,7 +1101,7 @@ inline void __pcl_sincos__( long double x, long double& sx, long double& cx ) no
 template <typename T> inline void SinCos( T x, T& sx, T& cx ) noexcept
 {
 #ifdef __PCL_HAVE_SINCOS
-   __pcl_sincos__( x, sx, cx );
+   __pcl_sincos( x, sx, cx );
 #else
    sx = std::sin( x );
    cx = std::cos( x );
@@ -1100,21 +1171,21 @@ template <typename T> inline T Trunc( T x ) noexcept
 
 // ----------------------------------------------------------------------------
 
+template <typename T> inline int __pcl_trunc_i32( T x ) noexcept
+{
+   return int( x );
+}
+
 #ifdef __PCL_HAVE_SSE2
 
-inline int __pcl_trunci__( float x ) noexcept
+inline int __pcl_trunc_i32( float x ) noexcept
 {
    return _mm_cvtt_ss2si( _mm_load_ss( &x ) );
 }
 
-inline int __pcl_trunci__( double x ) noexcept
+inline int __pcl_trunc_i32( double x ) noexcept
 {
    return _mm_cvttsd_si32( _mm_load_sd( &x ) );
-}
-
-inline int __pcl_trunci__( long double x ) noexcept
-{
-   return int( x );
 }
 
 #endif
@@ -1135,11 +1206,7 @@ template <typename T> inline int TruncInt( T x ) noexcept
 #ifdef __PCL_NO_PERFORMANCE_CRITICAL_MATH_ROUTINES
    return int( x );
 #else
-# ifdef __PCL_HAVE_SSE2
-   return __pcl_trunci__( x );
-# else
-   return int( x );
-# endif
+   return __pcl_trunc_i32( x );
 #endif
 }
 
@@ -1161,37 +1228,21 @@ template <typename T> inline int TruncI( T x ) noexcept
 
 // ----------------------------------------------------------------------------
 
+template <typename T> inline int64 __pcl_trunc_i64( T x ) noexcept
+{
+   return int64( x );
+}
+
 #ifdef __PCL_HAVE_SSE2
 
-#if defined( __x86_64__ ) || defined( _M_X64 )
-
-inline int64 __pcl_trunci64__( float x ) noexcept
+inline int64 __pcl_trunc_i64( float x ) noexcept
 {
    return _mm_cvttss_si64( _mm_load_ss( &x ) );
 }
 
-inline int64 __pcl_trunci64__( double x ) noexcept
+inline int64 __pcl_trunc_i64( double x ) noexcept
 {
    return _mm_cvttsd_si64( _mm_load_sd( &x ) );
-}
-
-#else
-
-inline int64 __pcl_trunci64__( float x ) noexcept
-{
-   return int64( _mm_cvtt_ss2si( _mm_load_ss( &x ) ) );
-}
-
-inline int64 __pcl_trunci64__( double x ) noexcept
-{
-   return int64( x );
-}
-
-#endif
-
-inline int64 __pcl_trunci64__( long double x ) noexcept
-{
-   return int64( x );
 }
 
 #endif // __PCL_HAVE_SSE2
@@ -1210,13 +1261,9 @@ template <typename T> inline int64 TruncInt64( T x ) noexcept
 {
    PCL_PRECONDITION( x >= int64_min && x <= int64_max )
 #ifdef __PCL_NO_PERFORMANCE_CRITICAL_MATH_ROUTINES
-   return int64( Trunc( x ) );
+   return int64( x );
 #else
-# ifdef __PCL_HAVE_SSE2
-   return __pcl_trunci64__( x );
-# else
-   return int64( Trunc( x ) );
-# endif
+   return __pcl_trunc_i64( x );
 #endif
 }
 
@@ -1510,25 +1557,9 @@ template <typename T> inline int RoundInt( T x ) noexcept
 
 #else
 
-   volatile union { double d; int32 i; } v = { x + 6755399441055744.0 };
+   static const double magic = 6755399441055744.0;
+   volatile union { double d; int32 i; } v = { double( x ) + magic };
    return v.i; // ### NB: Assuming little-endian architecture.
-
-/*
-   ### Deprecated code - The above code based on magic numbers is faster and
-                         more portable across platforms and compilers.
-
-   // Default FPU rounding mode assumed to be nearest integer.
-   int r;
-
-#  ifdef _MSC_VER
-   __asm fld      x
-   __asm fistp    dword ptr r
-#  else
-   asm volatile( "fistpl %0\n" : "=m" (r) : "t" (x) : "st" );
-#  endif
-
-   return r;
-*/
 
 #endif
 }
@@ -1591,12 +1622,12 @@ template <typename T> inline int RoundIntArithmetic( T x ) noexcept
    if ( i < 0 )
    {
       if ( x - i <= T( -0.5 ) )
-         return i-1;
+         --i;
    }
    else
    {
       if ( x - i >= T( +0.5 ) )
-         return i+1;
+         ++i;
    }
    return i;
 }
@@ -2110,7 +2141,7 @@ inline void Rotate( T& x, T& y, T1 a, T2 xc, T2 yc ) noexcept
 // ----------------------------------------------------------------------------
 
 template <typename T, typename P, typename N> inline
-N __pcl_norm__( const T* i, const T* j, const P& p, N* ) noexcept
+N __pcl_norm( const T* i, const T* j, const P& p, N* ) noexcept
 {
    PCL_PRECONDITION( p > P( 0 ) )
    N n = N( 0 );
@@ -2134,50 +2165,50 @@ N __pcl_norm__( const T* i, const T* j, const P& p, N* ) noexcept
  */
 template <typename T, typename P> inline T Norm( const T* i, const T* j, const P& p ) noexcept
 {
-   return __pcl_norm__( i, j, p, (T*)( 0 ) );
+   return __pcl_norm( i, j, p, (T*)( 0 ) );
 }
 
 template <typename P> inline double Norm( const float* i, const float* j, const P& p ) noexcept
 {
-   return __pcl_norm__( i, j, p, (double*)( 0 ) );
+   return __pcl_norm( i, j, p, (double*)( 0 ) );
 }
 template <typename P> inline double Norm( const int* i, const int* j, const P& p ) noexcept
 {
-   return __pcl_norm__( i, j, p, (double*)( 0 ) );
+   return __pcl_norm( i, j, p, (double*)( 0 ) );
 }
 template <typename P> inline double Norm( const unsigned* i, const unsigned* j, const P& p ) noexcept
 {
-   return __pcl_norm__( i, j, p, (double*)( 0 ) );
+   return __pcl_norm( i, j, p, (double*)( 0 ) );
 }
 template <typename P> inline double Norm( const int8* i, const int8* j, const P& p ) noexcept
 {
-   return __pcl_norm__( i, j, p, (double*)( 0 ) );
+   return __pcl_norm( i, j, p, (double*)( 0 ) );
 }
 template <typename P> inline double Norm( const uint8* i, const uint8* j, const P& p ) noexcept
 {
-   return __pcl_norm__( i, j, p, (double*)( 0 ) );
+   return __pcl_norm( i, j, p, (double*)( 0 ) );
 }
 template <typename P> inline double Norm( const int16* i, const int16* j, const P& p ) noexcept
 {
-   return __pcl_norm__( i, j, p, (double*)( 0 ) );
+   return __pcl_norm( i, j, p, (double*)( 0 ) );
 }
 template <typename P> inline double Norm( const uint16* i, const uint16* j, const P& p ) noexcept
 {
-   return __pcl_norm__( i, j, p, (double*)( 0 ) );
+   return __pcl_norm( i, j, p, (double*)( 0 ) );
 }
 template <typename P> inline double Norm( const int64* i, const int64* j, const P& p ) noexcept
 {
-   return __pcl_norm__( i, j, p, (double*)( 0 ) );
+   return __pcl_norm( i, j, p, (double*)( 0 ) );
 }
 template <typename P> inline double Norm( const uint64* i, const uint64* j, const P& p ) noexcept
 {
-   return __pcl_norm__( i, j, p, (double*)( 0 ) );
+   return __pcl_norm( i, j, p, (double*)( 0 ) );
 }
 
 // ----------------------------------------------------------------------------
 
 template <typename T, typename N> inline
-N __pcl_l1norm__( const T* i, const T* j, N* ) noexcept
+N __pcl_l1norm( const T* i, const T* j, N* ) noexcept
 {
    N n = N( 0 );
    for ( ; i < j; ++i )
@@ -2193,50 +2224,50 @@ N __pcl_l1norm__( const T* i, const T* j, N* ) noexcept
  */
 template <typename T> inline T L1Norm( const T* i, const T* j ) noexcept
 {
-   return __pcl_l1norm__( i, j, (T*)( 0 ) );
+   return __pcl_l1norm( i, j, (T*)( 0 ) );
 }
 
 inline double L1Norm( const float* i, const float* j ) noexcept
 {
-   return __pcl_l1norm__( i, j, (double*)( 0 ) );
+   return __pcl_l1norm( i, j, (double*)( 0 ) );
 }
 inline double L1Norm( const int* i, const int* j ) noexcept
 {
-   return __pcl_l1norm__( i, j, (double*)( 0 ) );
+   return __pcl_l1norm( i, j, (double*)( 0 ) );
 }
 inline double L1Norm( const unsigned* i, const unsigned* j ) noexcept
 {
-   return __pcl_l1norm__( i, j, (double*)( 0 ) );
+   return __pcl_l1norm( i, j, (double*)( 0 ) );
 }
 inline double L1Norm( const int8* i, const int8* j ) noexcept
 {
-   return __pcl_l1norm__( i, j, (double*)( 0 ) );
+   return __pcl_l1norm( i, j, (double*)( 0 ) );
 }
 inline double L1Norm( const uint8* i, const uint8* j ) noexcept
 {
-   return __pcl_l1norm__( i, j, (double*)( 0 ) );
+   return __pcl_l1norm( i, j, (double*)( 0 ) );
 }
 inline double L1Norm( const int16* i, const int16* j ) noexcept
 {
-   return __pcl_l1norm__( i, j, (double*)( 0 ) );
+   return __pcl_l1norm( i, j, (double*)( 0 ) );
 }
 inline double L1Norm( const uint16* i, const uint16* j ) noexcept
 {
-   return __pcl_l1norm__( i, j, (double*)( 0 ) );
+   return __pcl_l1norm( i, j, (double*)( 0 ) );
 }
 inline double L1Norm( const int64* i, const int64* j ) noexcept
 {
-   return __pcl_l1norm__( i, j, (double*)( 0 ) );
+   return __pcl_l1norm( i, j, (double*)( 0 ) );
 }
 inline double L1Norm( const uint64* i, const uint64* j ) noexcept
 {
-   return __pcl_l1norm__( i, j, (double*)( 0 ) );
+   return __pcl_l1norm( i, j, (double*)( 0 ) );
 }
 
 // ----------------------------------------------------------------------------
 
 template <typename T, typename N> inline
-N __pcl_l2norm__( const T* i, const T* j, N* ) noexcept
+N __pcl_l2norm( const T* i, const T* j, N* ) noexcept
 {
    N n = N( 0 );
    for ( ; i < j; ++i )
@@ -2252,44 +2283,44 @@ N __pcl_l2norm__( const T* i, const T* j, N* ) noexcept
  */
 template <typename T> inline T L2Norm( const T* i, const T* j ) noexcept
 {
-   return __pcl_l2norm__( i, j, (T*)( 0 ) );
+   return __pcl_l2norm( i, j, (T*)( 0 ) );
 }
 
 inline double L2Norm( const float* i, const float* j ) noexcept
 {
-   return __pcl_l2norm__( i, j, (double*)( 0 ) );
+   return __pcl_l2norm( i, j, (double*)( 0 ) );
 }
 inline double L2Norm( const int* i, const int* j ) noexcept
 {
-   return __pcl_l2norm__( i, j, (double*)( 0 ) );
+   return __pcl_l2norm( i, j, (double*)( 0 ) );
 }
 inline double L2Norm( const unsigned* i, const unsigned* j ) noexcept
 {
-   return __pcl_l2norm__( i, j, (double*)( 0 ) );
+   return __pcl_l2norm( i, j, (double*)( 0 ) );
 }
 inline double L2Norm( const int8* i, const int8* j ) noexcept
 {
-   return __pcl_l2norm__( i, j, (double*)( 0 ) );
+   return __pcl_l2norm( i, j, (double*)( 0 ) );
 }
 inline double L2Norm( const uint8* i, const uint8* j ) noexcept
 {
-   return __pcl_l2norm__( i, j, (double*)( 0 ) );
+   return __pcl_l2norm( i, j, (double*)( 0 ) );
 }
 inline double L2Norm( const int16* i, const int16* j ) noexcept
 {
-   return __pcl_l2norm__( i, j, (double*)( 0 ) );
+   return __pcl_l2norm( i, j, (double*)( 0 ) );
 }
 inline double L2Norm( const uint16* i, const uint16* j ) noexcept
 {
-   return __pcl_l2norm__( i, j, (double*)( 0 ) );
+   return __pcl_l2norm( i, j, (double*)( 0 ) );
 }
 inline double L2Norm( const int64* i, const int64* j ) noexcept
 {
-   return __pcl_l2norm__( i, j, (double*)( 0 ) );
+   return __pcl_l2norm( i, j, (double*)( 0 ) );
 }
 inline double L2Norm( const uint64* i, const uint64* j ) noexcept
 {
-   return __pcl_l2norm__( i, j, (double*)( 0 ) );
+   return __pcl_l2norm( i, j, (double*)( 0 ) );
 }
 
 // ----------------------------------------------------------------------------
@@ -2307,39 +2338,39 @@ template <typename T> inline T Norm( const T* i, const T* j ) noexcept
 
 inline double Norm( const float* i, const float* j ) noexcept
 {
-   return __pcl_l2norm__( i, j, (double*)( 0 ) );
+   return __pcl_l2norm( i, j, (double*)( 0 ) );
 }
 inline double Norm( const int* i, const int* j ) noexcept
 {
-   return __pcl_l2norm__( i, j, (double*)( 0 ) );
+   return __pcl_l2norm( i, j, (double*)( 0 ) );
 }
 inline double Norm( const unsigned* i, const unsigned* j ) noexcept
 {
-   return __pcl_l2norm__( i, j, (double*)( 0 ) );
+   return __pcl_l2norm( i, j, (double*)( 0 ) );
 }
 inline double Norm( const int8* i, const int8* j ) noexcept
 {
-   return __pcl_l2norm__( i, j, (double*)( 0 ) );
+   return __pcl_l2norm( i, j, (double*)( 0 ) );
 }
 inline double Norm( const uint8* i, const uint8* j ) noexcept
 {
-   return __pcl_l2norm__( i, j, (double*)( 0 ) );
+   return __pcl_l2norm( i, j, (double*)( 0 ) );
 }
 inline double Norm( const int16* i, const int16* j ) noexcept
 {
-   return __pcl_l2norm__( i, j, (double*)( 0 ) );
+   return __pcl_l2norm( i, j, (double*)( 0 ) );
 }
 inline double Norm( const uint16* i, const uint16* j ) noexcept
 {
-   return __pcl_l2norm__( i, j, (double*)( 0 ) );
+   return __pcl_l2norm( i, j, (double*)( 0 ) );
 }
 inline double Norm( const int64* i, const int64* j ) noexcept
 {
-   return __pcl_l2norm__( i, j, (double*)( 0 ) );
+   return __pcl_l2norm( i, j, (double*)( 0 ) );
 }
 inline double Norm( const uint64* i, const uint64* j ) noexcept
 {
-   return __pcl_l2norm__( i, j, (double*)( 0 ) );
+   return __pcl_l2norm( i, j, (double*)( 0 ) );
 }
 
 // ----------------------------------------------------------------------------
@@ -2835,14 +2866,22 @@ template <typename T> inline double StdDev( const T* __restrict__ i, const T* __
  * \li Hard-coded, fast selection networks for small sequences of 32 or less
  * elements.
  *
- * \li A quick selection algorithm for sequences of up to about 2M elements.
- * The actual limit has been determined empirically and can vary across PCL
- * versions. This single-threaded algorithm can use up to 16 MiB of additional
- * memory allocated dynamically (for 8-byte types such as \c double).
+ * \li A quick selection algorithm for sequences of up to about 64K - 100K
+ * elements. The actual limit has been determined empirically and can vary
+ * across PCL versions and implementations. This single-threaded algorithm can
+ * use up to about 1 MiB of additional memory allocated dynamically (for 8-byte
+ * types such as \c double).
  *
  * \li A parallelized, fast histogram-based algorithm for sequences larger than
  * the limit described above. This algorithm has negligible additional memory
  * space requirements.
+ *
+ * When the fast histogram-based algorithm is used, the optional \a eps
+ * parameter specifies the accuracy of the computed median estimate. This can
+ * be useful to accelerate the calculation for applications where an
+ * approximation to the actual value is sufficient. When this parameter is not
+ * specified, or if a value &le; 0 is specified, the median is calculated to
+ * double machine epsilon accuracy by default.
  *
  * For non-scalar data types, this function requires the following type
  * conversion operator publicly defined for the type T:
@@ -2875,7 +2914,7 @@ template <typename T> inline double StdDev( const T* __restrict__ i, const T* __
  *
  * \ingroup statistical_functions
  */
-template <class T> inline double Median( const T* __restrict__ i, const T* __restrict__ j )
+template <class T> inline double Median( const T* __restrict__ i, const T* __restrict__ j, double eps = 0 )
 {
    distance_type n = j - i;
    if ( n < 1 )
@@ -2894,20 +2933,37 @@ template <class T> inline double Median( const T* __restrict__ i, const T* __res
    return m;
 }
 
-double PCL_FUNC Median( const unsigned char* __restrict__ i, const unsigned char* __restrict__ j );
-double PCL_FUNC Median( const signed char* __restrict__ i, const signed char* __restrict__ j );
-double PCL_FUNC Median( const wchar_t* __restrict__ i, const wchar_t* __restrict__ j );
-double PCL_FUNC Median( const unsigned short* __restrict__ i, const unsigned short* __restrict__ j );
-double PCL_FUNC Median( const signed short* __restrict__ i, const signed short* __restrict__ j );
-double PCL_FUNC Median( const unsigned int* __restrict__ i, const unsigned int* __restrict__ j );
-double PCL_FUNC Median( const signed int* __restrict__ i, const signed int* __restrict__ j );
-double PCL_FUNC Median( const unsigned long* __restrict__ i, const unsigned long* __restrict__ j );
-double PCL_FUNC Median( const signed long* __restrict__ i, const signed long* __restrict__ j );
-double PCL_FUNC Median( const unsigned long long* __restrict__ i, const unsigned long long* __restrict__ j );
-double PCL_FUNC Median( const signed long long* __restrict__ i, const signed long long* __restrict__ j );
-double PCL_FUNC Median( const float* __restrict__ i, const float* __restrict__ j );
-double PCL_FUNC Median( const double* __restrict__ i, const double* __restrict__ j );
-double PCL_FUNC Median( const long double* __restrict__ i, const long double* __restrict__ j );
+double PCL_FUNC Median( const unsigned char* __restrict__ i, const unsigned char* __restrict__ j, double eps = 0 );
+double PCL_FUNC Median( const signed char* __restrict__ i, const signed char* __restrict__ j, double eps = 0 );
+double PCL_FUNC Median( const wchar_t* __restrict__ i, const wchar_t* __restrict__ j, double eps = 0 );
+double PCL_FUNC Median( const unsigned short* __restrict__ i, const unsigned short* __restrict__ j, double eps = 0 );
+double PCL_FUNC Median( const signed short* __restrict__ i, const signed short* __restrict__ j, double eps = 0 );
+double PCL_FUNC Median( const unsigned int* __restrict__ i, const unsigned int* __restrict__ j, double eps = 0 );
+double PCL_FUNC Median( const signed int* __restrict__ i, const signed int* __restrict__ j, double eps = 0 );
+double PCL_FUNC Median( const unsigned long* __restrict__ i, const unsigned long* __restrict__ j, double eps = 0 );
+double PCL_FUNC Median( const signed long* __restrict__ i, const signed long* __restrict__ j, double eps = 0 );
+double PCL_FUNC Median( const unsigned long long* __restrict__ i, const unsigned long long* __restrict__ j, double eps = 0 );
+double PCL_FUNC Median( const signed long long* __restrict__ i, const signed long long* __restrict__ j, double eps = 0 );
+double PCL_FUNC Median( const float* __restrict__ i, const float* __restrict__ j, double eps = 0 );
+double PCL_FUNC Median( const double* __restrict__ i, const double* __restrict__ j, double eps = 0 );
+double PCL_FUNC Median( const long double* __restrict__ i, const long double* __restrict__ j, double eps = 0 );
+
+#define __PCL_SMALL_MEDIAN_MAX_LENGTH  32
+
+double PCL_FUNC SmallMedianDestructive( unsigned char* __restrict__ i, unsigned char* __restrict__ j );
+double PCL_FUNC SmallMedianDestructive( signed char* __restrict__ i, signed char* __restrict__ j );
+double PCL_FUNC SmallMedianDestructive( wchar_t* __restrict__ i, wchar_t* __restrict__ j );
+double PCL_FUNC SmallMedianDestructive( unsigned short* __restrict__ i, unsigned short* __restrict__ j );
+double PCL_FUNC SmallMedianDestructive( signed short* __restrict__ i, signed short* __restrict__ j );
+double PCL_FUNC SmallMedianDestructive( unsigned int* __restrict__ i, unsigned int* __restrict__ j );
+double PCL_FUNC SmallMedianDestructive( signed int* __restrict__ i, signed int* __restrict__ j );
+double PCL_FUNC SmallMedianDestructive( unsigned long* __restrict__ i, unsigned long* __restrict__ j );
+double PCL_FUNC SmallMedianDestructive( signed long* __restrict__ i, signed long* __restrict__ j );
+double PCL_FUNC SmallMedianDestructive( unsigned long long* __restrict__ i, unsigned long long* __restrict__ j );
+double PCL_FUNC SmallMedianDestructive( signed long long* __restrict__ i, signed long long* __restrict__ j );
+double PCL_FUNC SmallMedianDestructive( float* __restrict__ i, float* __restrict__ j );
+double PCL_FUNC SmallMedianDestructive( double* __restrict__ i, double* __restrict__ j );
+double PCL_FUNC SmallMedianDestructive( long double* __restrict__ i, long double* __restrict__ j );
 
 #define CMPXCHG( a, b )  \
    if ( i[b] < i[a] ) pcl::Swap( i[a], i[b] )
@@ -3107,14 +3163,22 @@ template <typename T, class BP> inline double MedianDestructive( T* __restrict__
  *
  * For scalar data types the following algorithms are used:
  *
- * \li A quick selection algorithm for sequences of up to about 2M elements.
- * The actual limit has been determined empirically and can vary across PCL
- * versions. This single-threaded algorithm can use up to 16 MiB of additional
- * memory allocated dynamically (for 8-byte types such as \c double).
+ * \li A quick selection algorithm for sequences of up to about 64K - 100K
+ * elements. The actual limit has been determined empirically and can vary
+ * across PCL versions and implementations. This single-threaded algorithm can
+ * use up to about 1 MiB of additional memory allocated dynamically (for 8-byte
+ * types such as \c double).
  *
  * \li A parallelized, fast histogram-based algorithm for sequences larger than
  * the limit described above. This algorithm has negligible additional memory
  * space requirements.
+ *
+ * When the fast histogram-based algorithm is used, the optional \a eps
+ * parameter specifies the accuracy of the computed order statistic estimate.
+ * This can be useful to accelerate the calculation for applications where an
+ * approximation to the actual value is sufficient. When this parameter is not
+ * specified, or if a value &le; 0 is specified, the order statistic is
+ * calculated to double machine epsilon accuracy by default.
  *
  * For non-scalar data types, this function requires the following type
  * conversion operator publicly defined for the type T:
@@ -3135,7 +3199,7 @@ template <typename T, class BP> inline double MedianDestructive( T* __restrict__
  *
  * \ingroup statistical_functions
  */
-template <typename T> inline double OrderStatistic( const T* __restrict__ i, const T* __restrict__ j, distance_type k )
+template <typename T> inline double OrderStatistic( const T* __restrict__ i, const T* __restrict__ j, distance_type k, double eps = 0 )
 {
    distance_type n = j - i;
    if ( n < 1 || k < 0 || k >= n )
@@ -3152,20 +3216,20 @@ template <typename T> inline double OrderStatistic( const T* __restrict__ i, con
    return s;
 }
 
-double PCL_FUNC OrderStatistic( const unsigned char* __restrict__ i, const unsigned char* __restrict__ j, distance_type k );
-double PCL_FUNC OrderStatistic( const signed char* __restrict__ i, const signed char* __restrict__ j, distance_type k );
-double PCL_FUNC OrderStatistic( const wchar_t* __restrict__ i, const wchar_t* __restrict__ j, distance_type k );
-double PCL_FUNC OrderStatistic( const unsigned short* __restrict__ i, const unsigned short* __restrict__ j, distance_type k );
-double PCL_FUNC OrderStatistic( const signed short* __restrict__ i, const signed short* __restrict__ j, distance_type k );
-double PCL_FUNC OrderStatistic( const unsigned int* __restrict__ i, const unsigned int* __restrict__ j, distance_type k );
-double PCL_FUNC OrderStatistic( const signed int* __restrict__ i, const signed int* __restrict__ j, distance_type k );
-double PCL_FUNC OrderStatistic( const unsigned long* __restrict__ i, const unsigned long* __restrict__ j, distance_type k );
-double PCL_FUNC OrderStatistic( const signed long* __restrict__ i, const signed long* __restrict__ j, distance_type k );
-double PCL_FUNC OrderStatistic( const unsigned long long* __restrict__ i, const unsigned long long* __restrict__ j, distance_type k );
-double PCL_FUNC OrderStatistic( const signed long long* __restrict__ i, const signed long long* __restrict__ j, distance_type k );
-double PCL_FUNC OrderStatistic( const float* __restrict__ i, const float* __restrict__ j, distance_type k );
-double PCL_FUNC OrderStatistic( const double* __restrict__ i, const double* __restrict__ j, distance_type k );
-double PCL_FUNC OrderStatistic( const long double* __restrict__ i, const long double* __restrict__ j, distance_type k );
+double PCL_FUNC OrderStatistic( const unsigned char* __restrict__ i, const unsigned char* __restrict__ j, distance_type k, double eps = 0 );
+double PCL_FUNC OrderStatistic( const signed char* __restrict__ i, const signed char* __restrict__ j, distance_type k, double eps = 0 );
+double PCL_FUNC OrderStatistic( const wchar_t* __restrict__ i, const wchar_t* __restrict__ j, distance_type k, double eps = 0 );
+double PCL_FUNC OrderStatistic( const unsigned short* __restrict__ i, const unsigned short* __restrict__ j, distance_type k, double eps = 0 );
+double PCL_FUNC OrderStatistic( const signed short* __restrict__ i, const signed short* __restrict__ j, distance_type k, double eps = 0 );
+double PCL_FUNC OrderStatistic( const unsigned int* __restrict__ i, const unsigned int* __restrict__ j, distance_type k, double eps = 0 );
+double PCL_FUNC OrderStatistic( const signed int* __restrict__ i, const signed int* __restrict__ j, distance_type k, double eps = 0 );
+double PCL_FUNC OrderStatistic( const unsigned long* __restrict__ i, const unsigned long* __restrict__ j, distance_type k, double eps = 0 );
+double PCL_FUNC OrderStatistic( const signed long* __restrict__ i, const signed long* __restrict__ j, distance_type k, double eps = 0 );
+double PCL_FUNC OrderStatistic( const unsigned long long* __restrict__ i, const unsigned long long* __restrict__ j, distance_type k, double eps = 0 );
+double PCL_FUNC OrderStatistic( const signed long long* __restrict__ i, const signed long long* __restrict__ j, distance_type k, double eps = 0 );
+double PCL_FUNC OrderStatistic( const float* __restrict__ i, const float* __restrict__ j, distance_type k, double eps = 0 );
+double PCL_FUNC OrderStatistic( const double* __restrict__ i, const double* __restrict__ j, distance_type k, double eps = 0 );
+double PCL_FUNC OrderStatistic( const long double* __restrict__ i, const long double* __restrict__ j, distance_type k, double eps = 0 );
 
 /*!
  * Returns the k-th order statistic of a sequence [i,j), altering the existing
@@ -3768,12 +3832,16 @@ template <typename T> inline TwoSidedEstimate TwoSidedAvgDev( const T* __restric
  *
  * For sequences of less than two elements, this function returns zero.
  *
+ * See Median( const T*, const T*, double ) for complete information on the
+ * implemented algorithms, special requirements for non-scalar data types, and
+ * references.
+ *
  * \note To make the MAD estimator consistent with the standard deviation of
  * a normal distribution, its result must be multiplied by the constant 1.4826.
  *
  * \ingroup statistical_functions
  */
-template <typename T> inline double MAD( const T* __restrict__ i, const T* __restrict__ j, double center )
+template <typename T> inline double MAD( const T* __restrict__ i, const T* __restrict__ j, double center, double eps = 0 )
 {
    distance_type n = j - i;
    if ( n < 2 )
@@ -3788,20 +3856,20 @@ template <typename T> inline double MAD( const T* __restrict__ i, const T* __res
    return m;
 }
 
-double PCL_FUNC MAD( const unsigned char* __restrict__ i, const unsigned char* __restrict__ j, double center );
-double PCL_FUNC MAD( const signed char* __restrict__ i, const signed char* __restrict__ j, double center );
-double PCL_FUNC MAD( const wchar_t* __restrict__ i, const wchar_t* __restrict__ j, double center );
-double PCL_FUNC MAD( const unsigned short* __restrict__ i, const unsigned short* __restrict__ j, double center );
-double PCL_FUNC MAD( const signed short* __restrict__ i, const signed short* __restrict__ j, double center );
-double PCL_FUNC MAD( const unsigned int* __restrict__ i, const unsigned int* __restrict__ j, double center );
-double PCL_FUNC MAD( const signed int* __restrict__ i, const signed int* __restrict__ j, double center );
-double PCL_FUNC MAD( const unsigned long* __restrict__ i, const unsigned long* __restrict__ j, double center );
-double PCL_FUNC MAD( const signed long* __restrict__ i, const signed long* __restrict__ j, double center );
-double PCL_FUNC MAD( const unsigned long long* __restrict__ i, const unsigned long long* __restrict__ j, double center );
-double PCL_FUNC MAD( const signed long long* __restrict__ i, const signed long long* __restrict__ j, double center );
-double PCL_FUNC MAD( const float* __restrict__ i, const float* __restrict__ j, double center );
-double PCL_FUNC MAD( const double* __restrict__ i, const double* __restrict__ j, double center );
-double PCL_FUNC MAD( const long double* __restrict__ i, const long double* __restrict__ j, double center );
+double PCL_FUNC MAD( const unsigned char* __restrict__ i, const unsigned char* __restrict__ j, double center, double eps = 0 );
+double PCL_FUNC MAD( const signed char* __restrict__ i, const signed char* __restrict__ j, double center, double eps = 0 );
+double PCL_FUNC MAD( const wchar_t* __restrict__ i, const wchar_t* __restrict__ j, double center, double eps = 0 );
+double PCL_FUNC MAD( const unsigned short* __restrict__ i, const unsigned short* __restrict__ j, double center, double eps = 0 );
+double PCL_FUNC MAD( const signed short* __restrict__ i, const signed short* __restrict__ j, double center, double eps = 0 );
+double PCL_FUNC MAD( const unsigned int* __restrict__ i, const unsigned int* __restrict__ j, double center, double eps = 0 );
+double PCL_FUNC MAD( const signed int* __restrict__ i, const signed int* __restrict__ j, double center, double eps = 0 );
+double PCL_FUNC MAD( const unsigned long* __restrict__ i, const unsigned long* __restrict__ j, double center, double eps = 0 );
+double PCL_FUNC MAD( const signed long* __restrict__ i, const signed long* __restrict__ j, double center, double eps = 0 );
+double PCL_FUNC MAD( const unsigned long long* __restrict__ i, const unsigned long long* __restrict__ j, double center, double eps = 0 );
+double PCL_FUNC MAD( const signed long long* __restrict__ i, const signed long long* __restrict__ j, double center, double eps = 0 );
+double PCL_FUNC MAD( const float* __restrict__ i, const float* __restrict__ j, double center, double eps = 0 );
+double PCL_FUNC MAD( const double* __restrict__ i, const double* __restrict__ j, double center, double eps = 0 );
+double PCL_FUNC MAD( const long double* __restrict__ i, const long double* __restrict__ j, double center, double eps = 0 );
 
 /*!
  * Returns the median absolute deviation from the median (MAD) for the values
@@ -3811,14 +3879,18 @@ double PCL_FUNC MAD( const long double* __restrict__ i, const long double* __res
  *
  * For sequences of less than two elements, this function returns zero.
  *
+ * See Median( const T*, const T*, double ) for complete information on the
+ * implemented algorithms, special requirements for non-scalar data types, and
+ * references.
+ *
  * \note To make the MAD estimator consistent with the standard deviation of
  * a normal distribution, its result must be multiplied by the constant 1.4826.
  *
  * \ingroup statistical_functions
  */
-template <typename T> inline double MAD( const T* __restrict__ i, const T* __restrict__ j )
+template <typename T> inline double MAD( const T* __restrict__ i, const T* __restrict__ j, double eps = 0 )
 {
-   return pcl::MAD( i, j, pcl::Median( i, j ) );
+   return pcl::MAD( i, j, pcl::Median( i, j, eps ), eps );
 }
 
 /*!
@@ -3829,12 +3901,16 @@ template <typename T> inline double MAD( const T* __restrict__ i, const T* __res
  *
  * For sequences of less than two elements, this function returns zero.
  *
+ * See Median( const T*, const T*, double ) for complete information on the
+ * implemented algorithms, special requirements for non-scalar data types, and
+ * references.
+ *
  * \note To make the MAD estimator consistent with the standard deviation of
  * a normal distribution, its result must be multiplied by the constant 1.4826.
  *
  * \ingroup statistical_functions
  */
-template <typename T> inline TwoSidedEstimate TwoSidedMAD( const T* __restrict__ i, const T* __restrict__ j, double center )
+template <typename T> inline TwoSidedEstimate TwoSidedMAD( const T* __restrict__ i, const T* __restrict__ j, double center, double eps = 0 )
 {
    distance_type n = j - i;
    if ( n < 2 )
@@ -3857,20 +3933,20 @@ template <typename T> inline TwoSidedEstimate TwoSidedMAD( const T* __restrict__
    return { l, h };
 }
 
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned char* __restrict__ i, const unsigned char* __restrict__ j, double center );
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed char* __restrict__ i, const signed char* __restrict__ j, double center );
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const wchar_t* __restrict__ i, const wchar_t* __restrict__ j, double center );
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned short* __restrict__ i, const unsigned short* __restrict__ j, double center );
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed short* __restrict__ i, const signed short* __restrict__ j, double center );
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned int* __restrict__ i, const unsigned int* __restrict__ j, double center );
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed int* __restrict__ i, const signed int* __restrict__ j, double center );
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned long* __restrict__ i, const unsigned long* __restrict__ j, double center );
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed long* __restrict__ i, const signed long* __restrict__ j, double center );
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned long long* __restrict__ i, const unsigned long long* __restrict__ j, double center );
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed long long* __restrict__ i, const signed long long* __restrict__ j, double center );
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const float* __restrict__ i, const float* __restrict__ j, double center );
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const double* __restrict__ i, const double* __restrict__ j, double center );
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const long double* __restrict__ i, const long double* __restrict__ j, double center );
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned char* __restrict__ i, const unsigned char* __restrict__ j, double center, double eps = 0 );
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed char* __restrict__ i, const signed char* __restrict__ j, double center, double eps = 0 );
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const wchar_t* __restrict__ i, const wchar_t* __restrict__ j, double center, double eps = 0 );
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned short* __restrict__ i, const unsigned short* __restrict__ j, double center, double eps = 0 );
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed short* __restrict__ i, const signed short* __restrict__ j, double center, double eps = 0 );
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned int* __restrict__ i, const unsigned int* __restrict__ j, double center, double eps = 0 );
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed int* __restrict__ i, const signed int* __restrict__ j, double center, double eps = 0 );
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned long* __restrict__ i, const unsigned long* __restrict__ j, double center, double eps = 0 );
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed long* __restrict__ i, const signed long* __restrict__ j, double center, double eps = 0 );
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned long long* __restrict__ i, const unsigned long long* __restrict__ j, double center, double eps = 0 );
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed long long* __restrict__ i, const signed long long* __restrict__ j, double center, double eps = 0 );
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const float* __restrict__ i, const float* __restrict__ j, double center, double eps = 0 );
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const double* __restrict__ i, const double* __restrict__ j, double center, double eps = 0 );
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const long double* __restrict__ i, const long double* __restrict__ j, double center, double eps = 0 );
 
 /*!
  * Returns the two-sided median absolute deviation from the median (MAD) for
@@ -3880,14 +3956,18 @@ TwoSidedEstimate PCL_FUNC TwoSidedMAD( const long double* __restrict__ i, const 
  *
  * For sequences of less than two elements, this function returns zero.
  *
+ * See Median( const T*, const T*, double ) for complete information on the
+ * implemented algorithms, special requirements for non-scalar data types, and
+ * references.
+ *
  * \note To make the MAD estimator consistent with the standard deviation of
  * a normal distribution, its result must be multiplied by the constant 1.4826.
  *
  * \ingroup statistical_functions
  */
-template <typename T> inline TwoSidedEstimate TwoSidedMAD( const T* __restrict__ i, const T* __restrict__ j )
+template <typename T> inline TwoSidedEstimate TwoSidedMAD( const T* __restrict__ i, const T* __restrict__ j, double eps = 0 )
 {
-   return pcl::TwoSidedMAD( i, j, pcl::Median( i, j ) );
+   return pcl::TwoSidedMAD( i, j, pcl::Median( i, j, eps ), eps );
 }
 
 /*!
@@ -4081,8 +4161,8 @@ template <typename T> double Sn( T* __restrict__ x, T* __restrict__ xn )
  * of the weights of all a[i] <= a[j] is strictly greater than half of the
  * total weight.
  */
-inline double __pcl_whimed__( double* a, distance_type* iw, distance_type n,
-                              double* acand, distance_type* iwcand )
+inline double __pcl_whimed( double* a, distance_type* iw, distance_type n,
+                            double* acand, distance_type* iwcand )
 {
    distance_type wtotal = 0;
    for ( distance_type i = 0; i < n; ++i )
@@ -4211,7 +4291,7 @@ template <typename T> double Qn( T* __restrict__ x, T* __restrict__ xn )
             work[j] = double( y[i] ) - y[n - left[i] - (weight[j] >> 1)];
             ++j;
          }
-      qn = __pcl_whimed__( work, weight, j, acand, iwcand );
+      qn = __pcl_whimed( work, weight, j, acand, iwcand );
 
       for ( distance_type i = n-1, j = 0; i >= 0; --i )                          // *
       {
@@ -4990,4 +5070,4 @@ inline uint32 Hash32( const void* data, size_type size, uint32 seed = 0 ) noexce
 #endif   // __PCL_Math_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Math.h - Released 2024-06-18T15:48:54Z
+// EOF pcl/Math.h - Released 2024-12-11T17:42:29Z

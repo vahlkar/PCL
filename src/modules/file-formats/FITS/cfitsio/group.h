@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// Standard FITS File Format Module Version 1.2.0
+// Standard FITS File Format Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// group.h - Released 2024-06-18T15:49:17Z
+// group.h - Released 2024-12-11T17:43:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -119,4 +119,4 @@ int fits_unencode_url(char *inpath, char *outpath, int *status);
 int fits_is_url_absolute(char *url);
 
 // ----------------------------------------------------------------------------
-// EOF group.h - Released 2024-06-18T15:49:17Z
+// EOF group.h - Released 2024-12-11T17:43:04Z

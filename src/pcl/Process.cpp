@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/Process.cpp - Released 2024-06-18T15:49:06Z
+// pcl/Process.cpp - Released 2024-12-11T17:42:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -453,4 +453,4 @@ Array<Process> Process::ProcessesByCategory( const IsoString& category )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Process.cpp - Released 2024-06-18T15:49:06Z
+// EOF pcl/Process.cpp - Released 2024-12-11T17:42:39Z

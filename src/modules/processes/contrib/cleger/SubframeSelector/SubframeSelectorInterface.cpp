@@ -2,15 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.9.0
+// Standard SubframeSelector Process Module Version 1.9.1
 // ----------------------------------------------------------------------------
-// SubframeSelectorInterface.cpp - Released 2024-06-18T15:49:25Z
+// SubframeSelectorInterface.cpp - Released 2024-12-11T17:43:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
 // Copyright (c) 2017-2021 Cameron Leger
+// Copyright (c) 2020-2024 Juan Conejero, PTeam
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -2005,4 +2006,4 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInterface.cpp - Released 2024-06-18T15:49:25Z
+// EOF SubframeSelectorInterface.cpp - Released 2024-12-11T17:43:17Z

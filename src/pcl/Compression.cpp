@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/Compression.cpp - Released 2024-06-18T15:49:06Z
+// pcl/Compression.cpp - Released 2024-12-11T17:42:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -847,4 +847,4 @@ size_type ZstdCompression::UncompressBlock( void* outputData, size_type maxOutpu
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Compression.cpp - Released 2024-06-18T15:49:06Z
+// EOF pcl/Compression.cpp - Released 2024-12-11T17:42:39Z

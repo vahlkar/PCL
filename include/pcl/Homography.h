@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/Homography.h - Released 2024-06-18T15:48:54Z
+// pcl/Homography.h - Released 2024-12-11T17:42:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -74,8 +74,8 @@ namespace pcl
  * A two-dimensional projective transformation, or \e homography, is a
  * line-preserving geometric transformation between two sets of points in the
  * plane. More formally, if P represents the set of points in the plane, a
- * homography is an invertible mapping H from P^2 to itself such that three
- * points p1, p2, p3 are collinear if and only if H(p1), H(p2), H(p3) do.
+ * homography is an invertible map H of P^2 to itself such that three points
+ * p1, p2, p3 are collinear if and only if H(p1), H(p2), H(p3) are collinear.
  *
  * Homographies have important practical applications in the field of computer
  * vision. On the PixInsight platform, this class is an essential component of
@@ -430,4 +430,4 @@ private:
 #endif   // __PCL_Homography_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Homography.h - Released 2024-06-18T15:48:54Z
+// EOF pcl/Homography.h - Released 2024-12-11T17:42:29Z

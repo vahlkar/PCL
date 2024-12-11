@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/Vector.h - Released 2024-06-18T15:48:54Z
+// pcl/Vector.h - Released 2024-12-11T17:42:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -106,6 +106,18 @@ template <typename T>
 class PCL_CLASS GenericVector : public DirectContainer<T>
 {
 public:
+
+   /*! #
+    */
+   using container_type = DirectContainer<T>;
+
+   /*! #
+    */
+   using item_type = typename container_type::item_type;
+
+   /*! #
+    */
+   using const_item_type = typename container_type::const_item_type;
 
    /*!
     * Represents a scalar.
@@ -353,9 +365,12 @@ public:
     */
    void Transfer( GenericVector& x )
    {
-      DetachFromData();
-      m_data = x.m_data;
-      x.m_data = nullptr;
+      if ( &x != this )
+      {
+         DetachFromData();
+         m_data = x.m_data;
+         x.m_data = nullptr;
+      }
    }
 
    /*!
@@ -372,9 +387,12 @@ public:
     */
    void Transfer( GenericVector&& x )
    {
-      DetachFromData();
-      m_data = x.m_data;
-      x.m_data = nullptr;
+      if ( &x != this )
+      {
+         DetachFromData();
+         m_data = x.m_data;
+         x.m_data = nullptr;
+      }
    }
 
    /*!
@@ -3347,4 +3365,4 @@ using LDVector = F80Vector;
 #endif   // __PCL_Vector_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Vector.h - Released 2024-06-18T15:48:54Z
+// EOF pcl/Vector.h - Released 2024-12-11T17:42:29Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 2.2.4
+// Standard ImageCalibration Process Module Version 2.2.7
 // ----------------------------------------------------------------------------
-// SpectrophotometricFluxCalibrationInstance.h - Released 2024-08-02T18:17:27Z
+// SpectrophotometricFluxCalibrationInstance.h - Released 2024-12-11T17:43:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -80,79 +80,105 @@ public:
 
 private:
 
-   pcl_bool p_narrowbandMode;
+   struct Item
+   {
+      pcl_bool enabled = true;
+      String   path;
+
+      Item() = default;
+      Item( const Item& ) = default;
+
+      Item( const String& path_ )
+         : path( path_ )
+      {
+      }
+
+      bool IsDefined() const
+      {
+         return !path.IsEmpty();
+      }
+   };
+
+   typedef Array<Item>  item_list;
+
+   pcl_bool  p_narrowbandMode;
 
    /*
     * Broadband filters
     */
-   String   p_grayFilterTrCurve;  // CSV
-   String   p_grayFilterName;
-   String   p_redFilterTrCurve;   // CSV
-   String   p_redFilterName;
-   String   p_greenFilterTrCurve; // CSV
-   String   p_greenFilterName;
-   String   p_blueFilterTrCurve;  // CSV
-   String   p_blueFilterName;
+   String    p_grayFilterTrCurve;  // CSV
+   String    p_grayFilterName;
+   String    p_redFilterTrCurve;   // CSV
+   String    p_redFilterName;
+   String    p_greenFilterTrCurve; // CSV
+   String    p_greenFilterName;
+   String    p_blueFilterTrCurve;  // CSV
+   String    p_blueFilterName;
 
    /*
     * Narrowband filters
     */
-   float    p_grayFilterWavelength;
-   float    p_grayFilterBandwidth;
-   float    p_redFilterWavelength;
-   float    p_redFilterBandwidth;
-   float    p_greenFilterWavelength;
-   float    p_greenFilterBandwidth;
-   float    p_blueFilterWavelength;
-   float    p_blueFilterBandwidth;
+   float     p_grayFilterWavelength;
+   float     p_grayFilterBandwidth;
+   float     p_redFilterWavelength;
+   float     p_redFilterBandwidth;
+   float     p_greenFilterWavelength;
+   float     p_greenFilterBandwidth;
+   float     p_blueFilterWavelength;
+   float     p_blueFilterBandwidth;
 
    /*
     * Quantum efficiency curve
     */
-   String   p_deviceQECurve; // CSV
-   String   p_deviceQECurveName;
+   String    p_deviceQECurve; // CSV
+   String    p_deviceQECurveName;
 
    /*
     * Numerical integration
     */
-   float    p_broadbandIntegrationStepSize;
-   int32    p_narrowbandIntegrationSteps;
-   float    p_rejectionLimit;
+   float     p_broadbandIntegrationStepSize;
+   int32     p_narrowbandIntegrationSteps;
+   float     p_rejectionLimit;
 
    /*
     * Catalog search parameters
     */
-   String   p_catalogId;
-   float    p_minMagnitude;
-   float    p_limitMagnitude;
-   pcl_bool p_autoLimitMagnitude;
+   String    p_catalogId;
+   float     p_minMagnitude;
+   float     p_limitMagnitude;
+   pcl_bool  p_autoLimitMagnitude;
 
    /*
     * Signal evaluation parameters
     */
-   int32    p_structureLayers;
-   float    p_saturationThreshold;
-   pcl_bool p_saturationRelative;
-   float    p_saturationShrinkFactor;
-   int32    p_psfNoiseLayers;
-   int32    p_psfHotPixelFilterRadius;
-   int32    p_psfNoiseReductionFilterRadius;
-   int32    p_psfMinStructureSize;
-   float    p_psfMinSNR;
-   pcl_bool p_psfAllowClusteredSources;
-   pcl_enum p_psfType;
-   float    p_psfGrowth;
-   int32    p_psfMaxStars;
-   float    p_psfSearchTolerance;
-   float    p_psfChannelSearchTolerance;
+   int32     p_structureLayers;
+   float     p_saturationThreshold;
+   pcl_bool  p_saturationRelative;
+   float     p_saturationShrinkFactor;
+   int32     p_psfNoiseLayers;
+   int32     p_psfHotPixelFilterRadius;
+   int32     p_psfNoiseReductionFilterRadius;
+   int32     p_psfMinStructureSize;
+   float     p_psfMinSNR;
+   pcl_bool  p_psfAllowClusteredSources;
+   pcl_enum  p_psfType;
+   float     p_psfGrowth;
+   int32     p_psfMaxStars;
+   float     p_psfSearchTolerance;
+   float     p_psfChannelSearchTolerance;
 
    /*
     * Generation of control data
     */
-   pcl_bool p_generateGraphs;
-   pcl_bool p_generateStarMaps;
-   pcl_bool p_generateTextFiles;
-   String   p_outputDirectory;
+   pcl_bool  p_generateGraphs;
+   pcl_bool  p_generateStarMaps;
+   pcl_bool  p_generateTextFiles;
+   String    p_outputDirectory;
+
+   /*
+    * Batch (= global) execution mode.
+    */
+   item_list p_targets;
 
    friend class ScalingMetadata;
    friend class SpectrophotometricFluxCalibrationInterface;
@@ -165,4 +191,4 @@ private:
 #endif   // __SpectrophotometricFluxCalibrationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF SpectrophotometricFluxCalibrationInstance.h - Released 2024-08-02T18:17:27Z
+// EOF SpectrophotometricFluxCalibrationInstance.h - Released 2024-12-11T17:43:17Z

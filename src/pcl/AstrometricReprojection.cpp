@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/AstrometricReprojection.cpp - Released 2024-06-18T15:49:06Z
+// pcl/AstrometricReprojection.cpp - Released 2024-12-11T17:42:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -56,49 +56,76 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-Rect AstrometricReprojection::TargetRect( const AstrometricMetadata& targetSolution,
-                                          const AstrometricMetadata& sourceSolution,
-                                          const Rect& sourceRect )
+DRect AstrometricReprojection::TargetRect( const AstrometricMetadata& targetSolution,
+                                           const AstrometricMetadata& sourceSolution,
+                                           const Rect& sourceRect )
 {
-   Rect targetRect( int_max, int_max, int_min, int_min );
-   for ( int x = 0; x < sourceRect.Width(); ++x )
-      for ( int p = 0; p < 2; ++p )
+   DRect rect( std::numeric_limits<double>::max(), std::numeric_limits<double>::max(),
+               std::numeric_limits<double>::min(), std::numeric_limits<double>::min() );
+   for ( int p = 0; p < 2; ++p )
+   {
+      for ( int x = 0, y = p*(sourceRect.Height() - 1); x < sourceRect.Width(); ++x )
       {
          DPoint pRD, pI;
-         if ( !sourceSolution.ImageToCelestial( pRD, DPoint( double( x ), p*(sourceRect.Height() - 1) ) ) )
-            throw Error( "Invalid source coordinate transformation" );
+         if ( !sourceSolution.ImageToCelestial( pRD, DPoint( x, y ) ) )
+            throw Error( "AstrometricReprojection::TargetRect(): Invalid source coordinate transformation (step 1)." );
          if ( !targetSolution.CelestialToImage( pI, pRD ) )
-            throw Error( "Invalid target coordinate transformation" );
+            throw Error( "AstrometricReprojection::TargetRect(): Invalid target coordinate transformation (step 1)." );
 
-         if ( pI.x < targetRect.x0 )
-            targetRect.x0 = TruncInt( pI.x );
-         if ( pI.x > targetRect.x1 )
-            targetRect.x1 = int( Ceil( pI.x ) );
-         if ( pI.y < targetRect.y0 )
-            targetRect.y0 = TruncInt( pI.y );
-         if ( pI.y > targetRect.y1 )
-            targetRect.y1 = int( Ceil( pI.y ) );
+         if ( pI.x < rect.x0 )
+            rect.x0 = pI.x;
+         if ( pI.x > rect.x1 )
+            rect.x1 = pI.x;
+         if ( pI.y < rect.y0 )
+            rect.y0 = pI.y;
+         if ( pI.y > rect.y1 )
+            rect.y1 = pI.y;
       }
-   for ( int y = 0; y < sourceRect.Height(); ++y )
-      for ( int p = 0; p < 2; ++p )
+      for ( int x = p*(sourceRect.Width() - 1), y = 0; y < sourceRect.Height(); ++y )
       {
          DPoint pRD, pI;
-         if ( !sourceSolution.ImageToCelestial( pRD, DPoint( p*(sourceRect.Width() - 1), double( y ) ) ) )
-            throw Error( "Invalid source coordinate transformation" );
+         if ( !sourceSolution.ImageToCelestial( pRD, DPoint( x, y ) ) )
+            throw Error( "AstrometricReprojection::TargetRect(): Invalid source coordinate transformation (step 2)." );
          if ( !targetSolution.CelestialToImage( pI, pRD ) )
-            throw Error( "Invalid target coordinate transformation" );
+            throw Error( "AstrometricReprojection::TargetRect(): Invalid target coordinate transformation (step 2)." );
 
-         if ( pI.x < targetRect.x0 )
-            targetRect.x0 = TruncInt( pI.x );
-         if ( pI.x > targetRect.x1 )
-            targetRect.x1 = int( Ceil( pI.x ) );
-         if ( pI.y < targetRect.y0 )
-            targetRect.y0 = TruncInt( pI.y );
-         if ( pI.y > targetRect.y1 )
-            targetRect.y1 = int( Ceil( pI.y ) );
+         if ( pI.x < rect.x0 )
+            rect.x0 = pI.x;
+         if ( pI.x > rect.x1 )
+            rect.x1 = pI.x;
+         if ( pI.y < rect.y0 )
+            rect.y0 = pI.y;
+         if ( pI.y > rect.y1 )
+            rect.y1 = pI.y;
       }
+   }
 
-   return targetRect;
+   return rect;
+}
+
+// ----------------------------------------------------------------------------
+
+bool AstrometricReprojection::TargetPointInsideSourceRect( const AstrometricMetadata& targetSolution,
+                                                           const AstrometricMetadata& sourceSolution,
+                                                           const DPoint& targetPt,
+                                                           const DRect& sourceRect )
+{
+   DPoint pRD, pIR;
+   if ( targetSolution.ImageToCelestial( pRD, targetPt ) )
+      if ( sourceSolution.CelestialToImage( pIR, pRD ) )
+         return sourceRect.Includes( pIR );
+   return false;
+}
+
+bool AstrometricReprojection::TargetRectInsideSourceRect( const AstrometricMetadata& targetSolution,
+                                                          const AstrometricMetadata& sourceSolution,
+                                                          const DRect& targetRect,
+                                                          const DRect& sourceRect )
+{
+   return TargetPointInsideSourceRect( targetSolution, sourceSolution, DPoint( 0, 0 ),                                    sourceRect )
+       && TargetPointInsideSourceRect( targetSolution, sourceSolution, DPoint( targetRect.Width(), 0 ),                   sourceRect )
+       && TargetPointInsideSourceRect( targetSolution, sourceSolution, DPoint( 0, targetRect.Height() ),                  sourceRect )
+       && TargetPointInsideSourceRect( targetSolution, sourceSolution, DPoint( targetRect.Width(), targetRect.Height() ), sourceRect );
 }
 
 // ----------------------------------------------------------------------------
@@ -113,20 +140,19 @@ public:
       if ( R.SourceImage() )
          if ( !R.SourceImage()->IsEmpty() )
             if ( !targetImage.IsEmpty() )
-               if ( R.TargetRect().IsRect() )
-                  if ( R.SourceImage().IsFloatSample() )
-                     switch ( R.SourceImage().BitsPerSample() )
-                     {
-                     case 32: Apply( targetImage, static_cast<const Image&>( *R.SourceImage() ), R ); break;
-                     case 64: Apply( targetImage, static_cast<const DImage&>( *R.SourceImage() ), R ); break;
-                     }
-                  else
-                     switch ( R.SourceImage().BitsPerSample() )
-                     {
-                     case  8: Apply( targetImage, static_cast<const UInt8Image&>( *R.SourceImage() ), R ); break;
-                     case 16: Apply( targetImage, static_cast<const UInt16Image&>( *R.SourceImage() ), R ); break;
-                     case 32: Apply( targetImage, static_cast<const UInt32Image&>( *R.SourceImage() ), R ); break;
-                     }
+               if ( R.SourceImage().IsFloatSample() )
+                  switch ( R.SourceImage().BitsPerSample() )
+                  {
+                  case 32: Apply( targetImage, static_cast<const Image&>( *R.SourceImage() ), R ); break;
+                  case 64: Apply( targetImage, static_cast<const DImage&>( *R.SourceImage() ), R ); break;
+                  }
+               else
+                  switch ( R.SourceImage().BitsPerSample() )
+                  {
+                  case  8: Apply( targetImage, static_cast<const UInt8Image&>( *R.SourceImage() ), R ); break;
+                  case 16: Apply( targetImage, static_cast<const UInt16Image&>( *R.SourceImage() ), R ); break;
+                  case 32: Apply( targetImage, static_cast<const UInt32Image&>( *R.SourceImage() ), R ); break;
+                  }
    }
 
 private:
@@ -134,22 +160,24 @@ private:
    template <class P1, class P2> static
    void Apply( GenericImage<P2>& targetImage, const GenericImage<P1>& sourceImage, const AstrometricReprojection& R )
    {
-      StatusMonitor& status = targetImage.Status();
-      Array<size_type> L = Thread::OptimalThreadLoads( R.TargetRect().Height(),
+      Array<size_type> L = Thread::OptimalThreadLoads( targetImage.Height(),
                                                        1/*overheadLimit*/,
                                                        R.IsParallelProcessingEnabled() ? R.MaxProcessors() : 1 );
+      if ( targetImage.Status().IsInitializationEnabled() )
+         targetImage.Status().Initialize( "Astrometric reprojection, " + R.Interpolation().Description(), targetImage.NumberOfPixels() );
 
-      size_type N = size_type( R.TargetRect().Width() ) * size_type( R.TargetRect().Height() );
-      if ( status.IsInitializationEnabled() )
-         status.Initialize( "Astrometric reprojection, " + R.Interpolation().Description(), N );
+      ReprojectionThreadData<P1,P2> data( targetImage, sourceImage, R );
 
-      ReprojectionThreadData<P1, P2> data( targetImage, sourceImage, R, status, N );
-
-      ReferenceArray<ReprojectionThread<P1, P2>> threads;
+      ReferenceArray<ReprojectionThread<P1,P2>> threads;
       for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
-         threads << new ReprojectionThread<P1, P2>( data, n, n + int( L[i] ) );
+         threads << new ReprojectionThread<P1,P2>( data, n, n + int( L[i] ) );
 
       AbstractImage::RunThreads( threads, data );
+
+      R.m_zeroCount = 0; // mutable m_zeroCount
+      for ( const auto& thread : threads )
+         R.m_zeroCount += thread.ZeroCount();
+
       threads.Destroy();
    }
 
@@ -157,8 +185,8 @@ private:
    struct ReprojectionThreadData : public AbstractImage::ThreadData
    {
       ReprojectionThreadData( GenericImage<P2>& a_targetImage, const GenericImage<P1>& a_sourceImage,
-                              const AstrometricReprojection& a_R, const StatusMonitor& a_status, size_type a_count )
-         : AbstractImage::ThreadData( a_status, a_count )
+                              const AstrometricReprojection& a_R )
+         : AbstractImage::ThreadData( a_targetImage, a_targetImage.NumberOfPixels() )
          , targetImage( a_targetImage )
          , sourceImage( a_sourceImage )
          , R( a_R )
@@ -177,7 +205,7 @@ private:
 
       using interpolator_type = PixelInterpolation::Interpolator<P1>;
 
-      ReprojectionThread( ReprojectionThreadData<P1, P2>& data, int firstRow, int endRow )
+      ReprojectionThread( ReprojectionThreadData<P1,P2>& data, int firstRow, int endRow )
          : m_data( data )
          , m_firstRow( firstRow )
          , m_endRow( endRow )
@@ -188,50 +216,85 @@ private:
       {
          INIT_THREAD_MONITOR()
 
-         Rect rect( m_data.R.TargetRect().x0,
-                    m_data.R.TargetRect().y0 + m_firstRow,
-                    m_data.R.TargetRect().x1,
-                    m_data.R.TargetRect().y0 + m_endRow );
+         m_zeroCount = 0;
 
-         if ( m_data.targetImage.Clip( rect ) )
+         ReferenceArray<interpolator_type> interpolators;
+         for ( int c = 0; c < m_data.sourceImage.NumberOfChannels(); ++c )
+            interpolators << m_data.R.Interpolation().template NewInterpolator<P1>(
+                                                                     m_data.sourceImage[c],
+                                                                     m_data.sourceImage.Width(),
+                                                                     m_data.sourceImage.Height(),
+                                                                     m_data.R.UsingUnclippedInterpolation() );
+
+         typename GenericImage<P2>::roi_pixel_iterator it( m_data.targetImage,
+                                          Rect( 0, m_firstRow, m_data.targetImage.Width(), m_endRow ) );
+
+         double sourceScaleX = 0, sourceScaleY = 0;
+         bool sourceResampled = m_data.sourceImage.Width() != m_data.R.SourceSolution().Width()
+                             || m_data.sourceImage.Height() != m_data.R.SourceSolution().Height();
+         if ( sourceResampled )
          {
-            ReferenceArray<interpolator_type> interpolators;
-            for ( int c = 0; c < m_data.sourceImage.NumberOfChannels(); ++c )
-               interpolators << m_data.R.Interpolation().template NewInterpolator<P1>(
-                                                                        m_data.sourceImage[c],
-                                                                        m_data.sourceImage.Width(),
-                                                                        m_data.sourceImage.Height(),
-                                                                        m_data.R.UsingUnclippedInterpolation() );
-
-            typename GenericImage<P2>::roi_pixel_iterator it( m_data.targetImage, rect );
-
-            for ( int y = rect.y0; y < rect.y1; ++y )
-               for ( int x = rect.x0; x < rect.x1; ++x, ++it )
-               {
-                  DPoint pRD, pI;
-                  if ( m_data.R.TargetSolution().ImageToCelestial( pRD, DPoint( x, y ) ) )
-                     if ( m_data.R.SourceSolution().CelestialToImage( pI, pRD ) )
-                        if (  pI.x >= 0
-                           && pI.x < m_data.sourceImage.Width()
-                           && pI.y >= 0
-                           && pI.y < m_data.sourceImage.Height() )
-                        {
-                           for ( int c = 0; c < m_data.sourceImage.NumberOfChannels(); ++c )
-                              it[c] = P2::ToSample( interpolators[c]( pI ) );
-                        }
-
-                  UPDATE_THREAD_MONITOR( 65536 )
-               }
-
-            interpolators.Destroy();
+            sourceScaleX = double( m_data.sourceImage.Width() )/m_data.R.SourceSolution().Width();
+            sourceScaleY = double( m_data.sourceImage.Height() )/m_data.R.SourceSolution().Height();
          }
+
+         double targetScaleX = 0, targetScaleY = 0;
+         bool targetResampled = m_data.targetImage.Width() != m_data.R.TargetSolution().Width()
+                             || m_data.targetImage.Height() != m_data.R.TargetSolution().Height();
+         if ( targetResampled )
+         {
+            targetScaleX = double( m_data.R.TargetSolution().Width() )/m_data.targetImage.Width();
+            targetScaleY = double( m_data.R.TargetSolution().Height() )/m_data.targetImage.Height();
+         }
+
+         for ( int y = m_firstRow; y < m_endRow; ++y )
+            for ( int x = 0; x < m_data.targetImage.Width(); ++x, ++it )
+            {
+               DPoint pRD, pI( x, y );
+               if ( targetResampled )
+               {
+                  pI.x *= targetScaleX;
+                  pI.y *= targetScaleY;
+               }
+               if ( m_data.R.TargetSolution().ImageToCelestial( pRD, pI ) )
+                  if ( m_data.R.SourceSolution().CelestialToImage( pI, pRD ) )
+                  {
+                     if ( sourceResampled )
+                     {
+                        pI.x *= sourceScaleX;
+                        pI.y *= sourceScaleY;
+                     }
+                     if (  pI.x >= 0
+                        && pI.x < m_data.sourceImage.Width()
+                        && pI.y >= 0
+                        && pI.y < m_data.sourceImage.Height() )
+                     {
+                        for ( int c = 0; c < m_data.sourceImage.NumberOfChannels(); ++c )
+                        {
+                           it[c] = P2::ToSample( interpolators[c]( pI ) );
+                           if ( m_data.sourceImage( pI.TruncatedToInt(), c ) == P1::MinSampleValue() )
+                              ++m_zeroCount;
+                        }
+                     }
+                  }
+
+               UPDATE_THREAD_MONITOR( 16 )
+            }
+
+         interpolators.Destroy();
+      }
+
+      size_type ZeroCount() const
+      {
+         return m_zeroCount;
       }
 
    private:
 
-      ReprojectionThreadData<P1, P2>& m_data;
-      int                             m_firstRow;
-      int                             m_endRow;
+      ReprojectionThreadData<P1,P2>& m_data;
+      size_type                      m_zeroCount = 0;
+      int                            m_firstRow;
+      int                            m_endRow;
    };
 };
 
@@ -267,4 +330,4 @@ void AstrometricReprojection::Apply( pcl::UInt32Image& image ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AstrometricReprojection.cpp - Released 2024-06-18T15:49:06Z
+// EOF pcl/AstrometricReprojection.cpp - Released 2024-12-11T17:42:39Z

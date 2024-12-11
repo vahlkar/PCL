@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// jquant2.c - Released 2024-06-18T15:49:17Z
+// jquant2.c - Released 2024-12-11T17:43:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -1363,4 +1363,4 @@ jinit_2pass_quantizer (j_decompress_ptr cinfo)
 #endif /* QUANT_2PASS_SUPPORTED */
 
 // ----------------------------------------------------------------------------
-// EOF jquant2.c - Released 2024-06-18T15:49:17Z
+// EOF jquant2.c - Released 2024-12-11T17:43:04Z

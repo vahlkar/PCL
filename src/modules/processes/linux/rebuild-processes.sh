@@ -67,10 +67,6 @@ cd $BASEDIR/ImageCalibration/linux/g++
 make clean
 make -j $NPROC
 
-cd $BASEDIR/ImageIntegration/linux/g++
-make clean
-make -j $NPROC
-
 cd $BASEDIR/IntensityTransformations/linux/g++
 make clean
 make -j $NPROC

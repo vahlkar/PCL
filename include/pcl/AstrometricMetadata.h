@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/AstrometricMetadata.h - Released 2024-06-18T15:48:54Z
+// pcl/AstrometricMetadata.h - Released 2024-12-11T17:42:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -89,9 +89,9 @@ namespace pcl
  * PixInsight platform.
  *
  * The original implementation of these classes has been contributed by Spanish
- * software developer and PTeam member Andrés del Pozo, who is also the author
- * of all astrometry scripts available in the standard PixInsight distribution,
- * including the ImageSolver and AnnotateImage scripts, among others.
+ * software developer Andrés del Pozo, who is also the original author of all
+ * astrometry scripts available in the standard PixInsight distribution,
+ * including ImageSolver, AnnotateImage, and MosaicByCoordinates, among others.
  */
 
 // ----------------------------------------------------------------------------
@@ -192,11 +192,11 @@ public:
     * \param worldTransformation Pointer to a dynamically allocated world
     *                            coordinate transformation.
     *
-    * \param width               Width in pixels of the image with which this
-    *                            astrometric solution is associated.
+    * \param width               Width in pixels of the image associated with
+    *                            this astrometric solution.
     *
-    * \param height              Height in pixels of the image with which this
-    *                            astrometric solution is associated.
+    * \param height              Height in pixels of the image associated with
+    *                            this astrometric solution.
     *
     * Ownership of the specified \a projection and \a worldTransformation
     * objects will be transferred to this object, which will destroy and
@@ -325,13 +325,21 @@ public:
 
    /*!
     * Returns true if this object uses a world transformation based on 2-D
-    * surface splines (or <em>thin plate splines</em>). Returns false if a
-    * standard WCS linear transformation is being used.
+    * surface splines (thin plate splines and other interpolation/approximation
+    * devices based on radial basis functions). Returns false if a linear
+    * transformation is being used.
     */
    bool HasSplineWorldTransformation() const
    {
       return dynamic_cast<const SplineWorldTransformation*>( m_transformWI.Pointer() ) != nullptr;
    }
+
+   /*!
+    * Calculates a new linear astrometric solution suitable for undistortion of
+    * the associated image by astrometric reprojection (e.g., using the
+    * AstrometricReprojection class).
+    */
+   AstrometricMetadata Undistorted() const;
 
 #ifdef __PCL_BUILDING_PIXINSIGHT_APPLICATION
    // Implemented in /core/Components/ImageWindow/ImageWindow.cpp
@@ -355,7 +363,7 @@ public:
 
    /*!
     * Updates the keywords and properties of the current image in an XISF
-    * \a writer to store the astrometric solution represented by this object.
+    * \a writer to serialize this astrometric solution.
     *
     * The caller must ensure that the pixel dimensions of the current image in
     * the target %XISF \a writer, that is, the width and height of the image
@@ -437,8 +445,8 @@ public:
    static IsoString ReferenceSystemFromMetadata( const PropertyArray& properties, const FITSKeywordArray& keywords );
 
    /*!
-    * Returns the width in pixels of the image associated with the astrometric
-    * solution represented by this object.
+    * Returns the width in pixels of the image associated with this astrometric
+    * solution.
     */
    int Width() const
    {
@@ -446,8 +454,8 @@ public:
    }
 
    /*!
-    * Returns the height in pixels of the image associated with the astrometric
-    * solution represented by this object.
+    * Returns the height in pixels of the image associated with this
+    * astrometric solution.
     */
    int Height() const
    {
@@ -455,8 +463,8 @@ public:
    }
 
    /*!
-    * Returns the bounding rectangle in pixels of the image associated with the
-    * astrometric solution represented by this object.
+    * Returns the bounding rectangle in pixels of the image associated with
+    * this astrometric solution.
     *
     * The returned rectangle is equivalent to:
     *
@@ -556,14 +564,14 @@ public:
    double ResolutionAt( const GenericPoint<T>& pI ) const
    {
       if ( !IsValid() )
-         throw Error( "Invalid call to AstrometricMetadata::ResolutionAt(): No astrometric solution." );
+         throw Error( "AstrometricMetadata::ResolutionAt(): No astrometric solution." );
       DPoint pRD1, pRD2, pRD3, pRD4;
       if ( !ImageToCelestial( pRD1, DPoint( pI.x, pI.y - 0.5 ) )
         || !ImageToCelestial( pRD2, DPoint( pI.x, pI.y + 0.5 ) )
         || !ImageToCelestial( pRD3, DPoint( pI.x - 0.5, pI.y ) )
         || !ImageToCelestial( pRD4, DPoint( pI.x + 0.5, pI.y ) ) )
       {
-         throw Error( "Failed to perform ImageToCelestial() coordinate transformation(s)." );
+         throw Error( "AstrometricMetadata::ResolutionAt(): Failed to perform coordinate transformation(s)." );
       }
       return 0.5*(m_projection->Distance( pRD1, pRD2 ) + m_projection->Distance( pRD3, pRD4 ));
    }
@@ -578,10 +586,10 @@ public:
    double SearchRadius() const
    {
       if ( !IsValid() )
-         throw Error( "Invalid call to AstrometricMetadata::SearchRadius(): No astrometric solution." );
+         throw Error( "AstrometricMetadata::SearchRadius(): No astrometric solution." );
       DPoint cRD;
       if ( !ImageToCelestial( cRD, DPoint( 0.5*m_width, 0.5*m_height ) ) )
-         throw Error( "Failed to perform ImageToCelestial() coordinate transformation for the image center." );
+         throw Error( "AstrometricMetadata::SearchRadius(): Failed to perform coordinate transformation." );
       DPoint pRD1, pRD2, pRD3, pRD4;
       if ( !ImageToCelestial( pRD1, DPoint( 0,       0 ) )
         || !ImageToCelestial( pRD2, DPoint( m_width, 0 ) )
@@ -718,6 +726,21 @@ public:
    }
 
    /*!
+    * Undefines observation location metadata.
+    *
+    * This function is intended for privacy protection purposes. It removes all
+    * metadata items that could be used to identify the observation location
+    * through its geographic coordinates, and possibly the observer's address
+    * and other sensitive information.
+    */
+   void UndefineObservationLocationMetadata()
+   {
+      m_geoLongitude.Undefine();
+      m_geoLatitude.Undefine();
+      m_geoHeight.Undefine();
+   }
+
+   /*!
     * Returns the physical pixel size in micrometers, if available.
     */
    Optional<double> PixelSize() const
@@ -808,12 +831,12 @@ public:
     * system of this astrometric solution, either ICRS or GCRS, as returned by
     * the ReferenceSystem() member function.
     *
-    * \sa RawImageToCelestial(), CelestialToImage()
+    * \sa RawImageToCelestial(), ImageCenterToCelestial(), CelestialToImage()
     */
    bool ImageToCelestial( DPoint& pRD, const DPoint& pI ) const
    {
       if ( !IsValid() )
-         throw Error( "Invalid call to AstrometricMetadata::ImageToCelestial(): No astrometric solution." );
+         throw Error( "AstrometricMetadata::ImageToCelestial(): No astrometric solution." );
       if ( m_projection->Inverse( pRD, m_transformWI->Inverse( pI ) ) )
       {
          // Constrain right ascension to the [0,360) range.
@@ -859,8 +882,36 @@ public:
    bool RawImageToCelestial( DPoint& pRD, const DPoint& pI ) const
    {
       if ( !IsValid() )
-         throw Error( "Invalid call to AstrometricMetadata::RawImageToCelestial(): No astrometric solution." );
+         throw Error( "AstrometricMetadata::RawImageToCelestial(): No astrometric solution." );
       return m_projection->Inverse( pRD, m_transformWI->Inverse( pI ) );
+   }
+
+   /*!
+    * Celestial coordinates of the geometric center of the image.
+    *
+    * \param[out] pRD   Reference to a point where the output equatorial
+    *                   spherical coordinates will be stored, expressed in
+    *                   degrees. \a pRD.x will be the right ascension and
+    *                   \a pRD.y the declination, respectively, calculated for
+    *                   the geometric center of the image. Output right
+    *                   ascensions are constrained to the [0,360) range. Output
+    *                   declinations are in the range [-90,+90].
+    *
+    * Returns true iff the center of the image can be projected on the
+    * celestial sphere using this astrometric solution. This function must
+    * always return true under normal conditions. A failure to calculate
+    * central celestial coordinates denotes a corrupted or invalid astrometric
+    * solution.
+    *
+    * The output coordinates stored in \a pRD will be referred to the reference
+    * system of this astrometric solution, either ICRS or GCRS, as returned by
+    * the ReferenceSystem() member function.
+    *
+    * \sa ImageToCelestial()
+    */
+   bool ImageCenterToCelestial( DPoint& pRD ) const
+   {
+      return ImageToCelestial( pRD, DPoint( 0.5*m_width, 0.5*m_height ) );
    }
 
    /*!
@@ -886,7 +937,7 @@ public:
    bool CelestialToImage( DPoint& pI, const DPoint& pRD ) const
    {
       if ( !IsValid() )
-         throw Error( "Invalid call to AstrometricMetadata::CelestialToImage(): No astrometric solution." );
+         throw Error( "AstrometricMetadata::CelestialToImage(): No astrometric solution." );
       DPoint pW;
       if ( m_projection->Direct( pW, pRD ) )
       {
@@ -897,7 +948,7 @@ public:
    }
 
    /*!
-    * Regenerates the astrometric solution from standardized metadata.
+    * Reconstructs the astrometric solution from standardized metadata.
     *
     * \param properties       A list of XISF image properties describing
     *                         critical astrometry-related metadata items.
@@ -910,11 +961,19 @@ public:
     *                         corresponding keywords contained by this object
     *                         will be ignored.
     *
-    * \param width            Width in pixels of the image with which this
-    *                         astrometric solution is associated.
+    * \param width            Width in pixels of the image associated with this
+    *                         astrometric solution.
     *
-    * \param height           Height in pixels of the image with which this
-    *                         astrometric solution is associated.
+    * \param height           Height in pixels of the image associated with
+    *                         this astrometric solution.
+    *
+    * \param regenerate       If true and the metadata defines a spline-based
+    *                         WCS transformation, the internal surface splines
+    *                         and other numerical devices will be recalculated,
+    *                         even if they can be reconstructed from existing
+    *                         serializations, and no grid interpolations will
+    *                         be loaded or calculated. This parameter is false
+    *                         by default.
     *
     * The following standard %XISF properties will be extracted from the
     * specified \a properties array, if available:
@@ -973,7 +1032,55 @@ public:
     * invalid data, or if the generated coordinate transformations are invalid
     * (in the numerical or geometric sense).
     */
-   void Build( const PropertyArray& properties, const FITSKeywordArray& keywords, int width, int height );
+   void Build( const PropertyArray& properties, const FITSKeywordArray& keywords, int width, int height, bool regenerate = false );
+
+   /*!
+    * Returns a list of XISF image properties serializing this astrometric
+    * solution.
+    *
+    * The returned list will include the following standard XISF properties if
+    * the corresponding metadata is available:
+    *
+    * <pre>
+    * Instrument:Sensor:XPixelSize
+    * Instrument:Sensor:YPixelSize
+    * Instrument:Telescope:FocalLength
+    * Observation:CelestialReferenceSystem
+    * Observation:Center:Dec
+    * Observation:Center:RA
+    * Observation:Equinox
+    * Observation:Location:Elevation
+    * Observation:Location:Latitude
+    * Observation:Location:Longitude
+    * Observation:Time:End
+    * Observation:Time:Start
+    * </pre>
+    *
+    * The following nonstandard properties, which support our native
+    * astrometric solutions since core version 1.8.9-2, will be included:
+    *
+    * <pre>
+    * PCL:AstrometricSolution:Catalog
+    * PCL:AstrometricSolution:CelestialPoleNativeCoordinates
+    * PCL:AstrometricSolution:CreationTime
+    * PCL:AstrometricSolution:CreatorApplication
+    * PCL:AstrometricSolution:CreatorModule
+    * PCL:AstrometricSolution:CreatorOS
+    * PCL:AstrometricSolution:Information
+    * PCL:AstrometricSolution:LinearTransformationMatrix
+    * PCL:AstrometricSolution:ProjectionSystem
+    * PCL:AstrometricSolution:ReferenceCelestialCoordinates
+    * PCL:AstrometricSolution:ReferenceImageCoordinates
+    * PCL:AstrometricSolution:ReferenceNativeCoordinates
+    * </pre>
+    *
+    * For spline-based astrometric solutions, an additional set of properties
+    * with the 'PCL:AstrometricSolution:SplineWorldTransformation:' identifier
+    * prefix will also be included.
+    *
+    * If this astrometric solution is not valid, an empty list is returned.
+    */
+   PropertyArray ToProperties() const;
 
    /*!
     * Updates the specified \a keywords array with basic astrometric FITS
@@ -1332,24 +1439,46 @@ public:
 
    /*!
     * Returns a printable textual representation of the metadata properties and
-    * parameters of the astrometric solution represented by this object.
+    * parameters defining this astrometric solution.
     */
    String Summary() const;
 
    /*!
     * Returns a collection of strings describing the metadata properties and
-    * parameters of this astrometric solution.
+    * parameters defining this astrometric solution.
     *
     * The returned object is a copy of an internal structure that is generated
     * automatically as necessary and cached between successive function calls.
-    * This allows for efficient real-time representations of astrometric
-    * metadata and parameters.
+    * This allows for efficient real-time representations of changing
+    * astrometric metadata and parameters.
     */
    DescriptionItems Description() const
    {
       UpdateDescription();
       return m_description.IsNull() ? DescriptionItems() : *m_description;
    }
+
+   /*!
+    * Removes all XISF properties in the 'Observation:Location' namespace from
+    * the specified \a properties array.
+    *
+    * This function is intended for privacy protection purposes. It removes all
+    * properties that could be used to identify the observation location
+    * through its geographic coordinates, and possibly the observer's address
+    * and other sensitive information.
+    */
+   static void RemoveObservationLocationProperties( PropertyArray& properties );
+
+   /*!
+    * Removes all XISF properties in the 'Observation:Location' namespace for
+    * the specified \a window's main view.
+    *
+    * This function is intended for privacy protection purposes. It removes all
+    * properties that could be used to identify the observation location
+    * through its geographic coordinates, and possibly the observer's address
+    * and other sensitive information.
+    */
+   static void RemoveObservationLocationProperties( ImageWindow& window );
 
    /*!
     * \internal
@@ -1399,4 +1528,4 @@ private:
 #endif // __AstrometricMetadata_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AstrometricMetadata.h - Released 2024-06-18T15:48:54Z
+// EOF pcl/AstrometricMetadata.h - Released 2024-12-11T17:42:29Z

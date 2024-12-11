@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// Standard FITS File Format Module Version 1.2.0
+// Standard FITS File Format Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// FITSFormat.cpp - Released 2024-06-18T15:49:17Z
+// FITSFormat.cpp - Released 2024-12-11T17:43:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -71,7 +71,18 @@ IsoString FITSFormat::Name() const
 
 StringList FITSFormat::FileExtensions() const
 {
+#ifdef __PCL_MACOSX
+   /*
+    * Qt 6.8.0 on macOS has problems with multiple file extensions in native
+    * file dialogs:
+    *
+    * https://pixinsight.com/forum/index.php?threads/
+    *                   cant-save-xisf-file-as-fit-on-latest-mac-version.24277/
+    */
+   return StringList() << ".fit" << ".fits" << ".fts";
+#else
    return StringList() << ".fit" << ".fits" << ".fts" << ".fits.fz";
+#endif
 }
 
 // ----------------------------------------------------------------------------
@@ -470,4 +481,4 @@ FITSFormat::FormatOptions* FITSFormat::FormatOptions::FromGenericDataBlock( cons
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITSFormat.cpp - Released 2024-06-18T15:49:17Z
+// EOF FITSFormat.cpp - Released 2024-12-11T17:43:04Z

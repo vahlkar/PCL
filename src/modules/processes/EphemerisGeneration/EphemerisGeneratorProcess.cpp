@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
 // Standard EphemerisGeneration Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// EphemerisGeneratorProcess.cpp - Released 2024-06-18T15:49:25Z
+// EphemerisGeneratorProcess.cpp - Released 2024-12-11T17:43:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -267,4 +267,4 @@ int EphemerisGeneratorProcess::FindDatabaseFormatByName( const String& name )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF EphemerisGeneratorProcess.cpp - Released 2024-06-18T15:49:25Z
+// EOF EphemerisGeneratorProcess.cpp - Released 2024-12-11T17:43:17Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/SeparableConvolution.h - Released 2024-06-18T15:48:54Z
+// pcl/SeparableConvolution.h - Released 2024-12-11T17:42:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -187,10 +187,10 @@ public:
    }
 
    /*!
-    * Returns a copy of the internal vector of filter coefficients
-    * corresponding to the specified \a phase. If \a phase is zero, the
-    * one-dimensional row filter is returned; otherwise the one-dimensional
-    * column filter is returned.
+    * Returns a copy of the internal one-dimensional filter vector
+    * corresponding to the specified \a phase. If \a phase is zero, a copy of
+    * the row filter vector is returned; otherwise a copy of the column filter
+    * vector is returned.
     *
     * \note If this object has not been initialized, this member function
     * throws an Error exception.
@@ -199,6 +199,19 @@ public:
    {
       PCL_PRECONDITION( !m_filter.IsNull() )
       return m_filter->Filter( phase );
+   }
+
+   /*!
+    * Returns a copy of the internal one-dimensional filter vector
+    * corresponding to the specified \a phase, with components converted to the
+    * scalar type T. If \a phase is zero, a copy of the row filter vector is
+    * returned; otherwise a copy of the column filter vector is returned.
+    */
+   template <typename T>
+   GenericVector<T> FilterAs( int phase, T* ) const
+   {
+      PCL_PRECONDITION( !m_filter.IsNull() )
+      return m_filter->FilterAs( phase, (T*)0 );
    }
 
    /*!
@@ -389,30 +402,12 @@ public:
     *
     * The values returned by this function have been determined experimentally
     * on reference hardware for optimized execution on machines and builds with
-    * and without AVX2/FMA3 processor instruction support.
+    * AVX2/FMA3 processor instruction support.
     *
     * \ingroup convolution_speed_limits
     */
    static constexpr int FasterThanNonseparableFilterSize( int numThreads )
    {
-#ifdef __PCL_COMPATIBILITY
-
-      // No vectorization
-
-      if ( numThreads >= 32 )
-         return 15;
-      if ( numThreads >= 16 )
-         return 11;
-      if ( numThreads >= 8 )
-         return 9;
-      if ( numThreads >= 4 )
-         return 7;
-      return 5;
-
-#else
-
-      // Vectorization with SSE4.2 / AVX2 and FMA instructions
-
       if ( numThreads >= 32 )
          return 29;
       if ( numThreads >= 28 )
@@ -428,8 +423,6 @@ public:
       if ( numThreads >= 2 )
          return 9;
       return 7;
-
-#endif
    }
 
 protected:
@@ -485,4 +478,4 @@ private:
 #endif   // __PCL_SeparableConvolution_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SeparableConvolution.h - Released 2024-06-18T15:48:54Z
+// EOF pcl/SeparableConvolution.h - Released 2024-12-11T17:42:29Z

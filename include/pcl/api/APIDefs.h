@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/APIDefs.h - Released 2024-06-18T15:48:54Z
+// pcl/APIDefs.h - Released 2024-12-11T17:42:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -632,6 +632,12 @@ typedef api_handle         action_handle;
 typedef const_api_handle   const_action_handle;
 
 /*
+ * Handle to a core surface spline object
+ */
+typedef api_handle         sspline_handle;
+typedef const_api_handle   const_sspline_handle;
+
+/*
  * Handle to a fast Fourier transform
  */
 typedef api_handle         fft_handle;
@@ -959,4 +965,4 @@ void PCL_FUNC PCLImageOptionsToAPI( api_image_options&, const ImageOptions& );
 #endif   // __PCL_API_APIDefs_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/APIDefs.h - Released 2024-06-18T15:48:54Z
+// EOF pcl/APIDefs.h - Released 2024-12-11T17:42:29Z

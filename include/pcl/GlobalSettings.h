@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/GlobalSettings.h - Released 2024-06-18T15:48:54Z
+// pcl/GlobalSettings.h - Released 2024-12-11T17:42:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -112,8 +112,8 @@ namespace GlobalVariableType
  * pcl::GlobalVariableType namespace for more details.
  *
  * Below is a complete list of all global settings available in current
- * versions of the PixInsight platform (up-to-date as of core version 1.8.9-2
- * build 1598, released January 2024).
+ * versions of the PixInsight platform (up-to-date as of core version 1.9.0
+ * Lockhart, released November 2024).
  *
  * <h3>PixInsight Public Global Variables</h3>
  *
@@ -155,6 +155,8 @@ namespace GlobalVariableType
  * <tr><td>ImageWindow/ShowCaptionFullPaths</td><td></td></tr>
  * <tr><td>ImageWindow/ShowCaptionIdentifiers</td><td></td></tr>
  * <tr><td>ImageWindow/ShowCaptionZoomRatios</td><td></td></tr>
+ * <tr><td>ImageWindow/ShowSynchronizationIndicators</td><td></td></tr>
+ * <tr><td>ImageWindow/ShowSynchronizationVectors</td><td></td></tr>
  * <tr><td>ImageWindow/ShowViewSelectorImageThumbnails</td><td></td></tr>
  * <tr><td>ImageWindow/StrictFileSaveMode</td><td></td></tr>
  * <tr><td>ImageWindow/SwapCompression</td><td></td></tr>
@@ -250,6 +252,7 @@ namespace GlobalVariableType
  * <tr><td>ImageWindow/WheelDirection</td><td>When &ge; 0, rotating forward zooms out. When &lt; 0, rotating forward zooms in.</td></tr>
  * <tr><td>MainWindow/MaxRecentFiles</td><td>Maximum length of recent file menu lists.</td></tr>
  * <tr><td>Process/AutoSavePSMPeriod</td><td>In seconds.</td></tr>
+ * <tr><td>Process/ConsoleCommandTruncationLimit</td><td>In characters.</td></tr>
  * <tr><td>Process/ConsoleDelay</td><td>In milliseconds.</td></tr>
  * <tr><td>Process/MaxConsoleLines</td><td>Maximum number of stored text lines on %Process %Console.</td></tr>
  * <tr><td>Process/MaxModuleThreadPriority</td><td>From 0=idle to 7=real-time.</td></tr>
@@ -547,4 +550,4 @@ public:
 #endif   // __PCL_GlobalSettings_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/GlobalSettings.h - Released 2024-06-18T15:48:54Z
+// EOF pcl/GlobalSettings.h - Released 2024-12-11T17:42:29Z

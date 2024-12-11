@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/Point.h - Released 2024-06-18T15:48:54Z
+// pcl/Point.h - Released 2024-12-11T17:42:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -1531,9 +1531,112 @@ using DPoint = F64Point;
 
 // ----------------------------------------------------------------------------
 
+/*!
+ * \class PointsClockwisePredicate
+ * \brief Predicate class for sorting a set of points in clockwise direction.
+ */
+class PCL_CLASS PointsClockwisePredicate
+{
+public:
+
+   /*!
+    * Default constructor.
+    */
+   PointsClockwisePredicate() = default;
+
+   /*!
+    * Copy constructor.
+    */
+   PointsClockwisePredicate( const PointsClockwisePredicate& ) = default;
+
+   /*!
+    * Constructor from a set of points.
+    *
+    * Initializes point sorting with respect to the barycenter coordinates of
+    * the specified set of points \a P.
+    */
+   template <class C>
+   PointsClockwisePredicate( const C& P )
+   {
+      PCL_PRECONDITION( P.Length() > 2 )
+      for ( const auto& p : P )
+      {
+         m_cx += double( p.x );
+         m_cy += double( p.y );
+      }
+      m_cx /= P.Length();
+      m_cy /= P.Length();
+   }
+
+   /*!
+    * Constructor with a prescribed barycenter point \a p.
+    */
+   template <typename T>
+   PointsClockwisePredicate( const GenericPoint<T>& p )
+      : m_cx( double( p.x ) )
+      , m_cy( double( p.y ) )
+   {
+   }
+
+   /*!
+    * Predicate function: Returns true iff the point \a a precedes the point
+    * \a b in clockwise sorting order.
+    */
+   template <class P1, class P2>
+   bool operator()( const P1& a, const P2& b ) const
+   {
+      /*
+       * Points on different sides of the vertical line passing through c.
+       *
+       * - a to the right and b to the left: a < b
+       * - a to the left and b to the right: a > b
+       */
+      if ( a.x >= m_cx )
+      {
+         if ( b.x < m_cx )
+            return true;
+      }
+      else
+      {
+         if ( b.x >= m_cx )
+            return false;
+      }
+
+      /*
+       * If the points are not collinear, sort in clockwise direction.
+       *
+       * d:  > 0 if b is to the left of the line c-a
+       *     < 0 if b is to the right of the line c-a
+       *    == 0 if b is on the line c-a
+       */
+      double d = (a.x - m_cx)*(b.y - m_cy) - (b.x - m_cx)*(a.y - m_cy);
+      if ( likely( d != 0 ) )
+         return d < 0;
+
+      /*
+       * Sort collinear points by their distance to the center.
+       */
+      double dxa = a.x - m_cx;
+      double dxb = b.x - m_cx;
+      if ( dxa != dxb )
+         return pcl::Abs( dxa ) < pcl::Abs( dxb );
+      double dya = a.y - m_cy;
+      double dyb = b.y - m_cy;
+      return pcl::Abs( dya ) < pcl::Abs( dyb );
+   }
+
+private:
+
+   // Reference center point
+   double m_cx = 0.0;
+   double m_cy = 0.0;
+};
+
+// ----------------------------------------------------------------------------
+
 } // pcl
 
 #endif  // __PCL_Point_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Point.h - Released 2024-06-18T15:48:54Z
+// EOF pcl/Point.h - Released 2024-12-11T17:42:29Z

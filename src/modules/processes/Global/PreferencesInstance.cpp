@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.6.0
+// Standard Global Process Module Version 1.6.1
 // ----------------------------------------------------------------------------
-// PreferencesInstance.cpp - Released 2024-06-18T15:49:25Z
+// PreferencesInstance.cpp - Released 2024-12-11T17:43:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -288,7 +288,9 @@ bool PreferencesInstance::ExecuteGlobal()
       PixInsightSettings::SetGlobalFlag    ( "Process/EnableLaunchStatistics",                  process.enableLaunchStatistics );
 
       PixInsightSettings::SetGlobalFlag    ( "Security/AllowUnsignedScriptExecution",           security.allowUnsignedScriptExecution );
+#ifdef __PCL_ALLOW_UNSIGNED_MODULE_INSTALLATION
       PixInsightSettings::SetGlobalFlag    ( "Security/AllowUnsignedModuleInstallation",        security.allowUnsignedModuleInstallation );
+#endif
       PixInsightSettings::SetGlobalFlag    ( "Security/AllowUnsignedRepositories",              security.allowUnsignedRepositories );
       PixInsightSettings::SetGlobalFlag    ( "Security/AllowInsecureRepositories",              security.allowInsecureRepositories );
       PixInsightSettings::SetGlobalFlag    ( "Security/ReportScriptSignatures",                 security.reportScriptSignatures );
@@ -1218,4 +1220,4 @@ String* PreferencesInstance::StringParameterFromMetaParameter( const MetaParamet
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInstance.cpp - Released 2024-06-18T15:49:25Z
+// EOF PreferencesInstance.cpp - Released 2024-12-11T17:43:17Z

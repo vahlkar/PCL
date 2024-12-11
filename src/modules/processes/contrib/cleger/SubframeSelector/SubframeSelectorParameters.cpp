@@ -2,15 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.9.0
+// Standard SubframeSelector Process Module Version 1.9.1
 // ----------------------------------------------------------------------------
-// SubframeSelectorParameters.cpp - Released 2024-06-18T15:49:25Z
+// SubframeSelectorParameters.cpp - Released 2024-12-11T17:43:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
 // Copyright (c) 2017-2021 Cameron Leger
+// Copyright (c) 2020-2024 Juan Conejero, PTeam
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -94,6 +95,8 @@ SSROIX0*                            TheSSROIX0Parameter = nullptr;
 SSROIY0*                            TheSSROIY0Parameter = nullptr;
 SSROIX1*                            TheSSROIX1Parameter = nullptr;
 SSROIY1*                            TheSSROIY1Parameter = nullptr;
+
+SSNoNoiseAndSignalWarnings*         TheSSNoNoiseAndSignalWarningsParameter = nullptr;
 
 SSPedestalMode*                     TheSSPedestalModeParameter = nullptr;
 SSPedestal*                         TheSSPedestalParameter = nullptr;
@@ -1319,6 +1322,23 @@ double SSROIY1::MinimumValue() const
 double SSROIY1::MaximumValue() const
 {
    return int32_max;
+}
+
+// ----------------------------------------------------------------------------
+
+SSNoNoiseAndSignalWarnings::SSNoNoiseAndSignalWarnings( MetaProcess* P ) : MetaBoolean( P )
+{
+   TheSSNoNoiseAndSignalWarningsParameter = this;
+}
+
+IsoString SSNoNoiseAndSignalWarnings::Id() const
+{
+   return "noNoiseAndSignalWarnings";
+}
+
+bool SSNoNoiseAndSignalWarnings::DefaultValue() const
+{
+   return false;
 }
 
 // ----------------------------------------------------------------------------
@@ -3076,4 +3096,4 @@ bool SSMeasurementUnused01::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorParameters.cpp - Released 2024-06-18T15:49:25Z
+// EOF SubframeSelectorParameters.cpp - Released 2024-12-11T17:43:17Z

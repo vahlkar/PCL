@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.4
 // ----------------------------------------------------------------------------
-// CreateAlphaChannelsParameters.h - Released 2024-06-18T15:49:25Z
+// CreateAlphaChannelsParameters.h - Released 2024-12-11T17:43:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -172,4 +172,4 @@ PCL_END_LOCAL
 #endif   // __CreateAlphaChannelsParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF CreateAlphaChannelsParameters.h - Released 2024-06-18T15:49:25Z
+// EOF CreateAlphaChannelsParameters.h - Released 2024-12-11T17:43:17Z

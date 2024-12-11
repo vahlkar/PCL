@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/FFT2D.h - Released 2024-06-18T15:48:54Z
+// pcl/FFT2D.h - Released 2024-12-11T17:42:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -54,42 +54,6 @@
 
 /// \file pcl/FFT2D.h
 
-/*
- * The FFT routines used in this PCL version are based on the KISS FFT library
- * by Mark Borgerding: http://sourceforge.net/projects/kissfft/
- *
- * KISS FFT LICENSE INFORMATION
- * ============================
- *
- * Copyright (c) 2003-2009 Mark Borgerding
- *
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * * Redistributions of source code must retain the above copyright notice,
- *   this list of conditions and the following disclaimer.
- * * Redistributions in binary form must reproduce the above copyright notice,
- *   this list of conditions and the following disclaimer in the documentation
- *   and/or other materials provided with the distribution.
- * * Neither the author nor the names of any contributors may be used to
- *   endorse or promote products derived from this software without specific
- *   prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- */
-
 #include <pcl/Defs.h>
 
 #include <pcl/FFT1D.h>
@@ -110,8 +74,8 @@ protected:
    static void Transform( int, int, dcomplex*, const dcomplex*, int, StatusMonitor*, bool, int );
    static void Transform( int, int, fcomplex*, const float*, StatusMonitor*, bool, int );
    static void Transform( int, int, dcomplex*, const double*, StatusMonitor*, bool, int );
-   static void Transform( int, int, float*, const fcomplex*, StatusMonitor*, bool, int );
-   static void Transform( int, int, double*, const dcomplex*, StatusMonitor*, bool, int );
+   static void InverseTransform( int, int, float*, const fcomplex*, StatusMonitor*, bool, int );
+   static void InverseTransform( int, int, double*, const dcomplex*, StatusMonitor*, bool, int );
 };
 
 // ----------------------------------------------------------------------------
@@ -664,7 +628,7 @@ public:
    {
       if ( m_dft.IsEmpty() )
          throw Error( "Invalid out-of-place inverse FFT: No FFT has been performed." );
-      this->Transform( m_rows, m_cols, y, *m_dft, m_monitor, m_parallel, m_maxProcessors );
+      this->InverseTransform( m_rows, m_cols, y, *m_dft, m_monitor, m_parallel, m_maxProcessors );
       return *this;
    }
 
@@ -765,7 +729,7 @@ public:
     */
    GenericRealFFT2D& operator()( scalar* y, const complex* x ) const
    {
-      this->Transform( m_rows, m_cols, y, x, m_monitor, m_parallel, m_maxProcessors );
+      this->InverseTransform( m_rows, m_cols, y, x, m_monitor, m_parallel, m_maxProcessors );
       return const_cast<GenericRealFFT2D&>( *this );
    }
 
@@ -864,4 +828,4 @@ using RealFFT2D = FRealFFT2D;
 #endif   // __PCL_FFT2D_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FFT2D.h - Released 2024-06-18T15:48:54Z
+// EOF pcl/FFT2D.h - Released 2024-12-11T17:42:29Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.9.5
 // ----------------------------------------------------------------------------
-// CalibrationUtility.h - Released 2024-06-18T15:49:25Z
+// CalibrationUtility.h - Released 2024-12-11T17:43:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -123,4 +123,4 @@ void CreateStarMapWindow( int width, int height, const IsoString& id, const Arra
 #endif   // __CalibrationUtility_h
 
 // ----------------------------------------------------------------------------
-// EOF CalibrationUtility.h - Released 2024-06-18T15:49:25Z
+// EOF CalibrationUtility.h - Released 2024-12-11T17:43:17Z

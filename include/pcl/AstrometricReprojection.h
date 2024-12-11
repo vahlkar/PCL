@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/AstrometricReprojection.h - Released 2024-06-18T15:48:54Z
+// pcl/AstrometricReprojection.h - Released 2024-12-11T17:42:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -107,7 +107,6 @@ public:
       , m_sourceSolution( sourceSolution )
       , m_sourceImage( sourceImage )
    {
-      m_targetRect = TargetRect( m_targetSolution, m_sourceSolution, m_sourceImage.Bounds() );
    }
 
    /*!
@@ -147,9 +146,9 @@ public:
     * Returns the rectangle in target image coordinates that encloses the
     * boundaries of the reprojected source image.
     */
-   Rect TargetRect() const
+   DRect TargetRect() const
    {
-      return m_targetRect;
+      return TargetRect( m_targetSolution, m_sourceSolution, m_sourceSolution.Bounds() );
    }
 
    /*!
@@ -164,9 +163,48 @@ public:
     * This function throws an Error exception in the event of invalid
     * coordinate transformations.
     */
-   static Rect TargetRect( const AstrometricMetadata& targetSolution,
-                           const AstrometricMetadata& sourceSolution,
-                           const Rect& sourceRect );
+   static DRect TargetRect( const AstrometricMetadata& targetSolution,
+                            const AstrometricMetadata& sourceSolution,
+                            const Rect& sourceRect );
+
+   /*!
+    * Returns true iff the specified point in target image coordinates lies
+    * inside the specified source image coordinates after astrometric
+    * reprojection.
+    *
+    * \param targetSolution   The target astrometric solution.
+    *
+    * \param sourceSolution   The source astrometric solution.
+    *
+    * \param targetPt         The target point in target image coordinates.
+    *
+    * \param sourceRect       The source rectangular region in source image
+    *                         coordinates.
+    */
+   static bool TargetPointInsideSourceRect( const AstrometricMetadata& targetSolution,
+                                            const AstrometricMetadata& sourceSolution,
+                                            const DPoint& targetPt,
+                                            const DRect& sourceRect );
+
+   /*!
+    * Returns true iff the specified rectangular region in target image
+    * coordinates lies inside the specified source image coordinates after
+    * astrometric reprojection.
+    *
+    * \param targetSolution   The target astrometric solution.
+    *
+    * \param sourceSolution   The source astrometric solution.
+    *
+    * \param targetRect       The target rectangular region in target image
+    *                         coordinates.
+    *
+    * \param sourceRect       The source rectangular region in source image
+    *                         coordinates.
+    */
+   static bool TargetRectInsideSourceRect( const AstrometricMetadata& targetSolution,
+                                           const AstrometricMetadata& sourceSolution,
+                                           const DRect& targetRect,
+                                           const DRect& sourceRect );
 
    /*!
     */
@@ -174,12 +212,24 @@ public:
    {
    }
 
+   /*!
+    * Returns the total number of black (zero) source pixels reprojected in the
+    * last process execution. This is useful to detect reprojection of empty
+    * source image regions.
+    *
+    * Returns zero if this instante has not yet been executed.
+    */
+   size_type ZeroCount() const
+   {
+      return m_zeroCount;
+   }
+
 protected:
 
-   const AstrometricMetadata& m_targetSolution;
-   const AstrometricMetadata& m_sourceSolution;
-   const ImageVariant&        m_sourceImage;
-         Rect                 m_targetRect = 0;
+   const   AstrometricMetadata& m_targetSolution;
+   const   AstrometricMetadata& m_sourceSolution;
+   const   ImageVariant&        m_sourceImage;
+   mutable size_type            m_zeroCount = 0;
 
    // Inherited from ImageTransformation.
    void Apply( pcl::Image& ) const override;
@@ -187,6 +237,8 @@ protected:
    void Apply( pcl::UInt8Image& ) const override;
    void Apply( pcl::UInt16Image& ) const override;
    void Apply( pcl::UInt32Image& ) const override;
+
+   friend class PCL_AstrometricReprojectionEngine;
 };
 
 // ----------------------------------------------------------------------------
@@ -196,4 +248,4 @@ protected:
 #endif   // __PCL_AstrometricReprojection_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AstrometricReprojection.h - Released 2024-06-18T15:48:54Z
+// EOF pcl/AstrometricReprojection.h - Released 2024-12-11T17:42:29Z

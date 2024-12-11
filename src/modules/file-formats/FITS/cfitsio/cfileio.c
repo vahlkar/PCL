@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// Standard FITS File Format Module Version 1.2.0
+// Standard FITS File Format Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// cfileio.c - Released 2024-06-18T15:49:17Z
+// cfileio.c - Released 2024-12-11T17:43:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -8064,4 +8064,4 @@ int ffstmo(int sec, int *status)
 }
 
 // ----------------------------------------------------------------------------
-// EOF cfileio.c - Released 2024-06-18T15:49:17Z
+// EOF cfileio.c - Released 2024-12-11T17:43:04Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/ReferenceSortedArray.h - Released 2024-06-18T15:48:54Z
+// pcl/ReferenceSortedArray.h - Released 2024-12-11T17:42:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -97,9 +97,21 @@ namespace pcl
  * \ingroup dynamic_arrays
  */
 template <typename T, class A = StandardAllocator>
-class PCL_CLASS ReferenceSortedArray : public DirectContainer<T>
+class PCL_CLASS ReferenceSortedArray : public DirectSortedContainer<T>
 {
 public:
+
+   /*! #
+    */
+   using container_type = DirectSortedContainer<T>;
+
+   /*! #
+    */
+   using item_type = typename container_type::item_type;
+
+   /*! #
+    */
+   using const_item_type = typename container_type::const_item_type;
 
    /*! #
     */
@@ -1541,4 +1553,4 @@ ReferenceSortedArray<T,A>& operator <<( ReferenceSortedArray<T,A>&& x1, const Re
 #endif   // __PCL_ReferenceSortedArray_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ReferenceSortedArray.h - Released 2024-06-18T15:48:54Z
+// EOF pcl/ReferenceSortedArray.h - Released 2024-12-11T17:42:29Z

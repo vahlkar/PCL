@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/StructuringElement.h - Released 2024-06-18T15:48:54Z
+// pcl/StructuringElement.h - Released 2024-12-11T17:42:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -776,9 +776,10 @@ public:
  * denoted as '·'.
  *
  * The standard three-way structure leads to ranking operations where data
- * from different spatial directions are ranked separately. When used to apply
- * morphological operators, standard three-way structures can preserve edges
- * better than box structures, especially when applied recursively.
+ * from different spatial directions and orientations are ranked separately.
+ * When used to apply morphological operators, standard three-way structures
+ * can preserve edges better than box structures, especially when the operators
+ * are applied recursively.
  *
  * \sa CircularStructure, OrthogonalStructure, DiagonalStructure, StarStructure
  */
@@ -953,4 +954,4 @@ protected:
 #endif   // __PCL_StructuringElement_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/StructuringElement.h - Released 2024-06-18T15:48:54Z
+// EOF pcl/StructuringElement.h - Released 2024-12-11T17:42:29Z

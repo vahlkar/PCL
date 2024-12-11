@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/Complex.h - Released 2024-06-18T15:48:54Z
+// pcl/Complex.h - Released 2024-12-11T17:42:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -365,6 +365,20 @@ public:
    explicit operator double() const noexcept
    {
       return double( Mag() );
+   }
+
+   /*!
+    * Explicit conversion operator to int.
+    *
+    * Returns the complex magnitude or modulus of this complex number truncated
+    * to an integer, so this operator is equivalent to int( Mag() ).
+    *
+    * \note This operator is necessary for compatibility with several template
+    * classes, most notably with GenericImage\<\>.
+    */
+   explicit operator int() const noexcept
+   {
+      return TruncInt( Mag() );
    }
 
    /*!
@@ -1107,4 +1121,4 @@ using complex = dcomplex;
 #endif   // __PCL_Complex_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Complex.h - Released 2024-06-18T15:48:54Z
+// EOF pcl/Complex.h - Released 2024-12-11T17:42:29Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/IntegerResample.h - Released 2024-06-18T15:48:54Z
+// pcl/IntegerResample.h - Released 2024-12-11T17:42:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -225,4 +225,4 @@ protected:
 #endif   // __PCL_IntegerResample_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/IntegerResample.h - Released 2024-06-18T15:48:54Z
+// EOF pcl/IntegerResample.h - Released 2024-12-11T17:42:29Z

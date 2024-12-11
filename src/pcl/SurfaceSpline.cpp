@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/SurfaceSpline.cpp - Released 2024-06-18T15:49:06Z
+// pcl/SurfaceSpline.cpp - Released 2024-12-11T17:42:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -49,7 +49,11 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
+#include <pcl/MetaModule.h>
 #include <pcl/SurfaceSpline.h>
+
+#include <pcl/api/APIInterface.h>
+#include <pcl/api/APIException.h>
 
 namespace pcl
 {
@@ -690,20 +694,101 @@ void GenerateSpline( T* __restrict__ cv,
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-void SurfaceSplineBase::Generate( float* __restrict__ cv,
+void SurfaceSplineBase::Generate( float* __restrict__ cv, void** handle,
                                   rbf_type rbf, double e2, bool polynomial,
                                   const float* __restrict__ x, const float* __restrict__ y, const float* __restrict__ z,
                                   int n, int m, float r, const float* __restrict__ w )
 {
-   GenerateSpline( cv, rbf, e2, polynomial, x, y, z, n, m, r, w );
+   if ( RadialBasisFunction::HasCoreImplementation( rbf ) )
+   {
+      if ( (*API->Numerical->SurfaceSplineCreateF)( handle, rbf, e2, polynomial, x, y, z, n, m, r, w ) == api_false )
+         throw APIFunctionError( "SurfaceSplineCreateF" );
+   }
+   else
+      GenerateSpline( cv, rbf, e2, polynomial, x, y, z, n, m, r, w );
 }
 
-void SurfaceSplineBase::Generate( double* __restrict__ cv,
+void SurfaceSplineBase::Generate( double* __restrict__ cv, void** handle,
                                   rbf_type rbf, double e2, bool polynomial,
                                   const double* __restrict__ x, const double* __restrict__ y, const double* __restrict__ z,
                                   int n, int m, float r, const float* __restrict__ w )
 {
-   GenerateSpline( cv, rbf, e2, polynomial, x, y, z, n, m, r, w );
+   if ( RadialBasisFunction::HasCoreImplementation( rbf ) )
+   {
+      if ( (*API->Numerical->SurfaceSplineCreateD)( handle, rbf, e2, polynomial, x, y, z, n, m, r, w ) == api_false )
+         throw APIFunctionError( "SurfaceSplineCreateD" );
+   }
+   else
+      GenerateSpline( cv, rbf, e2, polynomial, x, y, z, n, m, r, w );
+}
+
+// ----------------------------------------------------------------------------
+
+double SurfaceSplineBase::EvaluateHandle( const void* handle, double x, double y )
+{
+   double z;
+   if ( (*API->Numerical->SurfaceSplineEvaluate)( handle, &z, x, y ) == api_false )
+      throw APIFunctionError( "SurfaceSplineEvaluate" );
+   return z;
+}
+
+void SurfaceSplineBase::EvaluateHandle( const void* handle, float* z, const float* x, const float* y, double x0, double y0, double r, size_type n )
+{
+   if ( handle != 0 )
+      if ( (*API->Numerical->SurfaceSplineEvaluateVectorF)( handle, z, x, y, x0, y0, r, n ) == api_false )
+         throw APIFunctionError( "SurfaceSplineEvaluateVectorF" );
+}
+
+void SurfaceSplineBase::EvaluateHandle( const void* handle, double* z, const double* x, const double* y, double x0, double y0, double r, size_type n )
+{
+   if ( handle != 0 )
+      if ( (*API->Numerical->SurfaceSplineEvaluateVectorD)( handle, z, x, y, x0, y0, r, n ) == api_false )
+         throw APIFunctionError( "SurfaceSplineEvaluateVectorD" );
+}
+
+// ----------------------------------------------------------------------------
+
+void SurfaceSplineBase::SerializeHandle( IsoString& data, const void* handle )
+{
+   if ( handle != 0 )
+   {
+      char* s = (*API->Numerical->SurfaceSplineSerialize)( ModuleHandle(), handle, 0u/*flags*/ );
+      if ( s == nullptr || *s == '\0' )
+         throw APIFunctionError( "SurfaceSplineSerialize" );
+      data.Append( s );
+      if ( Module != nullptr )
+         Module->Deallocate( s );
+      else
+         delete [] s; // N.B. if running standalone, block was allocated by core API routines as new char[n]
+   }
+}
+
+void* SurfaceSplineBase::DeserializeHandle( const IsoString& data )
+{
+   void* handle;
+   if ( (*API->Numerical->SurfaceSplineDeserialize)( &handle, data.c_str(), data.Length(), 0u/*flags*/ ) == api_false )
+      throw APIFunctionError( "SurfaceSplineDeserialize" );
+   return handle;
+}
+
+// ----------------------------------------------------------------------------
+
+void SurfaceSplineBase::DestroyHandle( void* handle )
+{
+   if ( handle != 0 )
+      if ( (*API->Numerical->SurfaceSplineDestroy)( handle ) == api_false )
+         throw APIFunctionError( "SurfaceSplineDestroy" );
+}
+
+// ----------------------------------------------------------------------------
+
+void* SurfaceSplineBase::DuplicateHandle( const void* handle )
+{
+   void* newHandle = 0;
+   if ( handle != 0 )
+      if ( (*API->Numerical->SurfaceSplineDuplicate)( &newHandle, handle ) == api_false )
+         throw APIFunctionError( "SurfaceSplineDuplicate" );
+   return newHandle;
 }
 
 // ----------------------------------------------------------------------------
@@ -711,4 +796,4 @@ void SurfaceSplineBase::Generate( double* __restrict__ cv,
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SurfaceSpline.cpp - Released 2024-06-18T15:49:06Z
+// EOF pcl/SurfaceSpline.cpp - Released 2024-12-11T17:42:39Z

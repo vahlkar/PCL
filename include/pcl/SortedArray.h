@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/SortedArray.h - Released 2024-06-18T15:48:54Z
+// pcl/SortedArray.h - Released 2024-12-11T17:42:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -82,6 +82,18 @@ template <class T, class A = StandardAllocator>
 class PCL_CLASS SortedArray : public DirectSortedContainer<T>
 {
 public:
+
+   /*! #
+    */
+   using container_type = DirectSortedContainer<T>;
+
+   /*! #
+    */
+   using item_type = typename container_type::item_type;
+
+   /*! #
+    */
+   using const_item_type = typename container_type::const_item_type;
 
    /*! #
     */
@@ -1118,4 +1130,4 @@ SortedArray<T,A>& operator <<( SortedArray<T,A>&& x1, const Array<T,A>& x2 )
 #endif  // __PCL_SortedArray_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SortedArray.h - Released 2024-06-18T15:48:54Z
+// EOF pcl/SortedArray.h - Released 2024-12-11T17:42:29Z

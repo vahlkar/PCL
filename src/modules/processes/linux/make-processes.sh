@@ -51,9 +51,6 @@ make -j $NPROC
 cd $BASEDIR/ImageCalibration/linux/g++
 make -j $NPROC
 
-cd $BASEDIR/ImageIntegration/linux/g++
-make -j $NPROC
-
 cd $BASEDIR/IntensityTransformations/linux/g++
 make -j $NPROC
 

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/FFT1D.h - Released 2024-06-18T15:48:54Z
+// pcl/FFT1D.h - Released 2024-12-11T17:42:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -54,42 +54,6 @@
 
 /// \file pcl/FFT1D.h
 
-/*
- * The FFT routines used in this PCL version are based on the KISS FFT library
- * by Mark Borgerding: http://sourceforge.net/projects/kissfft/
- *
- * KISS FFT LICENSE INFORMATION
- * ============================
- *
- * Copyright (c) 2003-2013 Mark Borgerding
- *
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * * Redistributions of source code must retain the above copyright notice,
- *   this list of conditions and the following disclaimer.
- * * Redistributions in binary form must reproduce the above copyright notice,
- *   this list of conditions and the following disclaimer in the documentation
- *   and/or other materials provided with the distribution.
- * * Neither the author nor the names of any contributors may be used to
- *   endorse or promote products derived from this software without specific
- *   prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- */
-
 #include <pcl/Defs.h>
 
 #include <pcl/Complex.h>
@@ -123,10 +87,12 @@ protected:
 
    static void  Transform( void*, fcomplex*, const fcomplex* );
    static void  Transform( void*, dcomplex*, const dcomplex* );
+   static void  InverseTransform( void*, fcomplex*, const fcomplex* );
+   static void  InverseTransform( void*, dcomplex*, const dcomplex* );
    static void  Transform( void*, fcomplex*, const float* );
    static void  Transform( void*, dcomplex*, const double* );
-   static void  Transform( void*, float*,    const fcomplex* );
-   static void  Transform( void*, double*,   const dcomplex* );
+   static void  InverseTransform( void*, float*, const fcomplex* );
+   static void  InverseTransform( void*, double*, const dcomplex* );
 };
 
 // ----------------------------------------------------------------------------
@@ -424,7 +390,7 @@ public:
          throw Error( "Invalid out-of-place inverse FFT: No FFT has been performed." );
       if ( m_handleInv == nullptr )
          m_handleInv = this->CreateInv( m_length, static_cast<complex*>( nullptr ) );
-      this->Transform( m_handleInv, y, *m_dft );
+      this->InverseTransform( m_handleInv, y, *m_dft );
       return *this;
    }
 
@@ -499,9 +465,9 @@ public:
       {
          if ( m_handleInv == nullptr )
             m_handleInv = this->CreateInv( m_length, static_cast<complex*>( nullptr ) );
-         this->Transform( m_handleInv, y, x );
+         this->InverseTransform( m_handleInv, y, x );
       }
-      else
+      else // PCL_FFT_FORWARD
       {
          if ( m_handle == nullptr )
             m_handle = this->Create( m_length, static_cast<complex*>( nullptr ) );
@@ -511,11 +477,11 @@ public:
    }
 
    /*!
-    * Returns the <em>optimized complex %FFT length</em> larger than or equal to
-    * a given length \a n. The returned length will be optimal to perform a
+    * Returns the <em>optimized complex %FFT length</em> larger than or equal
+    * to a given length \a n. The returned length will be optimal to perform a
     * %FFT of complex data with the current PCL implementation. The optimized
-    * length can be used as the argument to the constructor of any %FFT class for
-    * complex data transforms.
+    * length can be used as the argument to the constructor of any %FFT class
+    * for complex data transforms.
     */
    static int OptimizedLength( int n )
    {
@@ -643,7 +609,7 @@ public:
          throw Error( "Invalid out-of-place inverse FFT: No FFT has been performed." );
       if ( m_handleInv == nullptr )
          m_handleInv = this->CreateInv( m_length, static_cast<scalar*>( nullptr ) );
-      this->Transform( m_handleInv, y, *m_dft );
+      this->InverseTransform( m_handleInv, y, *m_dft );
       return *this;
    }
 
@@ -736,7 +702,7 @@ public:
    {
       if ( m_handleInv == nullptr )
          m_handleInv = this->CreateInv( m_length, static_cast<scalar*>( nullptr ) );
-      this->Transform( m_handleInv, y, x );
+      this->InverseTransform( m_handleInv, y, x );
       return const_cast<GenericRealFFT&>( *this );
    }
 
@@ -833,4 +799,4 @@ using RealFFT = FRealFFT;
 #endif   // __PCL_FFT1D_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FFT1D.h - Released 2024-06-18T15:48:54Z
+// EOF pcl/FFT1D.h - Released 2024-12-11T17:42:29Z

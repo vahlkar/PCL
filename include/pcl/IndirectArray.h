@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/IndirectArray.h - Released 2024-06-18T15:48:54Z
+// pcl/IndirectArray.h - Released 2024-12-11T17:42:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -91,6 +91,18 @@ template <class T, class A = StandardAllocator>
 class PCL_CLASS IndirectArray : public IndirectContainer<T>
 {
 public:
+
+   /*! #
+    */
+   using container_type = IndirectContainer<T>;
+
+   /*! #
+    */
+   using item_type = typename container_type::item_type;
+
+   /*! #
+    */
+   using const_item_type = typename container_type::const_item_type;
 
    /*! #
     */
@@ -2191,4 +2203,4 @@ IndirectArray<T,A>& operator <<( IndirectArray<T,A>&& x1, const IndirectArray<T,
 #endif  // __PCL_IndirectArray_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/IndirectArray.h - Released 2024-06-18T15:48:54Z
+// EOF pcl/IndirectArray.h - Released 2024-12-11T17:42:29Z

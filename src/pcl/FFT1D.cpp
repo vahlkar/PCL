@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/FFT1D.cpp - Released 2024-06-18T15:49:06Z
+// pcl/FFT1D.cpp - Released 2024-12-11T17:42:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -161,6 +161,18 @@ void FFT1DBase::Transform( void* handle, dcomplex* y, const dcomplex* x )
       throw APIFunctionError( "FFTComplexTransformD" );
 }
 
+void FFT1DBase::InverseTransform( void* handle, fcomplex* y, const fcomplex* x )
+{
+   if ( (*API->Numerical->FFTComplexInverseTransformF)( handle, y, x ) == api_false )
+      throw APIFunctionError( "FFTComplexInverseTransformF" );
+}
+
+void FFT1DBase::InverseTransform( void* handle, dcomplex* y, const dcomplex* x )
+{
+   if ( (*API->Numerical->FFTComplexInverseTransformD)( handle, y, x ) == api_false )
+      throw APIFunctionError( "FFTComplexInverseTransformD" );
+}
+
 void FFT1DBase::Transform( void* handle, fcomplex* y, const float* x )
 {
    if ( (*API->Numerical->FFTRealTransformF)( handle, y, x ) == api_false )
@@ -173,13 +185,13 @@ void FFT1DBase::Transform( void* handle, dcomplex* y, const double* x )
       throw APIFunctionError( "FFTRealTransformD" );
 }
 
-void FFT1DBase::Transform( void* handle, float* y, const fcomplex* x )
+void FFT1DBase::InverseTransform( void* handle, float* y, const fcomplex* x )
 {
    if ( (*API->Numerical->FFTRealInverseTransformF)( handle, y, x ) == api_false )
       throw APIFunctionError( "FFTRealInverseTransformF" );
 }
 
-void FFT1DBase::Transform( void* handle, double* y, const dcomplex* x )
+void FFT1DBase::InverseTransform( void* handle, double* y, const dcomplex* x )
 {
    if ( (*API->Numerical->FFTRealInverseTransformD)( handle, y, x ) == api_false )
       throw APIFunctionError( "FFTRealInverseTransformD" );
@@ -190,4 +202,4 @@ void FFT1DBase::Transform( void* handle, double* y, const dcomplex* x )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FFT1D.cpp - Released 2024-06-18T15:49:06Z
+// EOF pcl/FFT1D.cpp - Released 2024-12-11T17:42:39Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/SeparableFilter.h - Released 2024-06-18T15:48:54Z
+// pcl/SeparableFilter.h - Released 2024-12-11T17:42:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -109,7 +109,7 @@ public:
     * Constructs an empty %SeparableFilter object with optional \a name.
     */
    SeparableFilter( const String& name = String() )
-      : filterName( name )
+      : m_filterName( name )
    {
    }
 
@@ -122,9 +122,9 @@ public:
     * (which yields an empty filter), or an odd size >= 3.
     */
    SeparableFilter( int n, const String& name = String() )
-      : rowFilter( PCL_VALID_KERNEL_SIZE( n ) )
-      , colFilter( PCL_VALID_KERNEL_SIZE( n ) )
-      , filterName( name )
+      : m_rowFilter( PCL_VALID_KERNEL_SIZE( n ) )
+      , m_colFilter( PCL_VALID_KERNEL_SIZE( n ) )
+      , m_filterName( name )
    {
       PCL_PRECONDITION( n == 0 || n >= 3 )
       PCL_PRECONDITION( n == 0 || (n & 1) )
@@ -139,9 +139,9 @@ public:
     */
    template <typename T>
    SeparableFilter( int n, const T& x, const String& name = String() )
-      : rowFilter( x, PCL_VALID_KERNEL_SIZE( n ) )
-      , colFilter( x, PCL_VALID_KERNEL_SIZE( n ) )
-      , filterName( name )
+      : m_rowFilter( x, PCL_VALID_KERNEL_SIZE( n ) )
+      , m_colFilter( x, PCL_VALID_KERNEL_SIZE( n ) )
+      , m_filterName( name )
    {
       PCL_PRECONDITION( n == 0 || n >= 3 )
       PCL_PRECONDITION( n == 0 || (n & 1) )
@@ -153,9 +153,9 @@ public:
     * optional \a name.
     */
    SeparableFilter( const coefficient_vector& h, const coefficient_vector& v, const String& name = String() )
-      : rowFilter( h )
-      , colFilter( v )
-      , filterName( name )
+      : m_rowFilter( h )
+      , m_colFilter( v )
+      , m_filterName( name )
    {
       PCL_PRECONDITION( v.Length() == h.Length() )
       PCL_PRECONDITION( v.IsEmpty() || v.Length() >= 3 )
@@ -170,9 +170,9 @@ public:
     */
    template <typename T>
    SeparableFilter( const T* h, const T* v, int n, const String& name = String() )
-      : rowFilter( h, PCL_VALID_KERNEL_SIZE( n ) )
-      , colFilter( v, PCL_VALID_KERNEL_SIZE( n ) )
-      , filterName( name )
+      : m_rowFilter( h, PCL_VALID_KERNEL_SIZE( n ) )
+      , m_colFilter( v, PCL_VALID_KERNEL_SIZE( n ) )
+      , m_filterName( name )
    {
       PCL_PRECONDITION( n == 0 || n >= 3 )
       PCL_PRECONDITION( n == 0 || (n & 1) )
@@ -223,8 +223,8 @@ public:
     */
    SeparableFilter& operator =( const coefficient& x )
    {
-      rowFilter = x;
-      colFilter = x;
+      m_rowFilter = x;
+      m_colFilter = x;
       return *this;
    }
 
@@ -243,7 +243,7 @@ public:
     */
    String Name() const
    {
-      return filterName;
+      return m_filterName;
    }
 
    /*!
@@ -251,7 +251,7 @@ public:
     */
    virtual void Rename( const String& newName )
    {
-      filterName = newName.Trimmed();
+      m_filterName = newName.Trimmed();
    }
 
    /*!
@@ -260,7 +260,7 @@ public:
     */
    int Size() const
    {
-      return rowFilter.Length(); // both 1D filters have the same length
+      return m_rowFilter.Length(); // both 1D filters have the same length
    }
 
    /*!
@@ -273,9 +273,9 @@ public:
       PCL_PRECONDITION( n == 0 || n >= 3 )
       PCL_PRECONDITION( n == 0 || (n & 1) )
       if ( n == 0 )
-         colFilter = rowFilter = coefficient_vector();
+         m_colFilter = m_rowFilter = coefficient_vector();
       else
-         colFilter = rowFilter = coefficient_vector( PCL_VALID_KERNEL_SIZE( n ) );
+         m_colFilter = m_rowFilter = coefficient_vector( PCL_VALID_KERNEL_SIZE( n ) );
    }
 
    /*!
@@ -283,7 +283,7 @@ public:
     */
    bool IsEmpty() const
    {
-      return rowFilter.IsEmpty(); // both 1D filters have the same length
+      return m_rowFilter.IsEmpty(); // both 1D filters have the same length
    }
 
    /*!
@@ -291,7 +291,7 @@ public:
     */
    coefficient_vector RowFilter() const
    {
-      return rowFilter;
+      return m_rowFilter;
    }
 
    /*!
@@ -299,7 +299,7 @@ public:
     */
    coefficient_vector ColumnFilter() const
    {
-      return colFilter;
+      return m_colFilter;
    }
 
    /*!
@@ -307,7 +307,36 @@ public:
     */
    coefficient_vector ColFilter() const
    {
-      return colFilter;
+      return ColumnFilter();
+   }
+
+   /*!
+    * Returns a copy of the row filter vector with components converted to the
+    * scalar type T.
+    */
+   template <typename T>
+   GenericVector<T> RowFilterAs( T* ) const
+   {
+      return GenericVector<T>( m_rowFilter.Begin(), m_rowFilter.Length() );
+   }
+
+   /*!
+    * Returns a copy of the column filter vector with components converted to
+    * the scalar type T.
+    */
+   template <typename T>
+   GenericVector<T> ColumnFilterAs( T* ) const
+   {
+      return GenericVector<T>( m_colFilter.Begin(), m_rowFilter.Length() );
+   }
+
+   /*!
+    * This member function is an alias to ColumnFilterAs().
+    */
+   template <typename T>
+   GenericVector<T> ColFilterAs( T* ) const
+   {
+      return ColumnFilterAs( (T*)0 );
    }
 
    /*!
@@ -317,7 +346,19 @@ public:
     */
    coefficient_vector Filter( int phase ) const
    {
-      return phase ? colFilter : rowFilter;
+      return phase ? m_colFilter : m_rowFilter;
+   }
+
+   /*!
+    * Returns a copy of the internal one-dimensional filter vector
+    * corresponding to the specified \a phase, with components converted to the
+    * scalar type T. If \a phase is zero, a copy of the row filter vector is
+    * returned; otherwise a copy of the column filter vector is returned.
+    */
+   template <typename T>
+   GenericVector<T> FilterAs( int phase, T* ) const
+   {
+      return phase ? ColumnFilterAs( (T*)0 ) : RowFilterAs( (T*)0 );
    }
 
    /*!
@@ -326,7 +367,7 @@ public:
     */
    double Weight() const
    {
-      return rowFilter.Sum() * colFilter.Sum();
+      return m_rowFilter.Sum() * m_colFilter.Sum();
    }
 
    /*!
@@ -343,14 +384,14 @@ public:
    bool IsHighPassFilter() const
    {
       int s = -1;
-      for ( coefficient_vector::const_iterator i = rowFilter.Begin(); i < rowFilter.End(); ++i )
+      for ( coefficient_vector::const_iterator i = m_rowFilter.Begin(); i < m_rowFilter.End(); ++i )
          if ( *i != 0 )
-            for ( s = *i < 0; ++i < rowFilter.End(); )
+            for ( s = *i < 0; ++i < m_rowFilter.End(); )
                if ( *i != 0 && (*i < 0) != s )
                   return true;
-      for ( coefficient_vector::const_iterator i = colFilter.Begin(); i < colFilter.End(); ++i )
+      for ( coefficient_vector::const_iterator i = m_colFilter.Begin(); i < m_colFilter.End(); ++i )
          if ( *i != 0 )
-            for ( s = (s < 0) ? *i++ < 0 : s; i < colFilter.End(); ++i )
+            for ( s = (s < 0) ? *i++ < 0 : s; i < m_colFilter.End(); ++i )
                if ( *i != 0 && (*i < 0) != s )
                   return true;
       return false;
@@ -362,7 +403,7 @@ public:
     */
    bool SameCoefficients( const SeparableFilter& f ) const
    {
-      return colFilter == f.colFilter && rowFilter == f.rowFilter;
+      return m_colFilter == f.m_colFilter && m_rowFilter == f.m_rowFilter;
    }
 
    /*!
@@ -371,7 +412,7 @@ public:
     */
    virtual void Clear()
    {
-      colFilter = rowFilter = coefficient_vector();
+      m_colFilter = m_rowFilter = coefficient_vector();
    }
 
 protected:
@@ -380,13 +421,13 @@ protected:
     * Horizontal and vertical one-dimensional filters. The 2D filter matrix is
     * equal to the product of these two vectors.
     */
-   coefficient_vector rowFilter;
-   coefficient_vector colFilter;
+   coefficient_vector m_rowFilter;
+   coefficient_vector m_colFilter;
 
    /*
     * Identifying name.
     */
-   String filterName;
+   String m_filterName;
 };
 
 // ----------------------------------------------------------------------------
@@ -396,4 +437,4 @@ protected:
 #endif   // __PCL_SeparableFilter_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SeparableFilter.h - Released 2024-06-18T15:48:54Z
+// EOF pcl/SeparableFilter.h - Released 2024-12-11T17:42:29Z

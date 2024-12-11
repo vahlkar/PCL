@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/LocalNormalizationData.h - Released 2024-06-18T15:48:54Z
+// pcl/LocalNormalizationData.h - Released 2024-12-11T17:42:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -79,11 +79,11 @@ class PCL_CLASS XMLElement;
  * An XNML file stores local normalization function data suitable for pixel
  * rejection and image integration tasks, including drizzle integration. The
  * %LocalNormalizationData class is a high-level interface for parsing and
- * generation of these special files.
+ * generating these special files.
  *
  * Local normalization functions are serialized as floating point real images,
  * where each channel stores scaling and zero offset coefficients, sampled at a
- * prescribed normalization scale, for a channel of a specific image.
+ * prescribed normalization scale for a channel of a specific image.
  *
  * For a channel index c and position vector i on a given input image, the
  * local normalization function is:
@@ -107,15 +107,15 @@ class PCL_CLASS XMLElement;
  * local and global normalization.
  *
  * Local normalization matrices are conveniently stored as multichannel,
- * two-dimensional images, which facilitates two-dimensional interpolation with
- * smooth pixel interpolation algorithms. Normalization matrices are normally
+ * two-dimensional images, facilitating two-dimensional interpolation with
+ * smooth pixel interpolation algorithms. Normalization matrices usually are
  * much smaller than the reference image dimensions. This happens because we
- * define local normalization functions at a specific dimensional scale, which
- * typically corresponds to a large dyadic scale of 64, 128, or 256 pixels. For
+ * define local normalization functions at a specific dimensional scale,
+ * typically corresponding to a large dyadic scale from 256 to 1024 pixels. For
  * this reason, normalization matrices require a smooth interpolation to
  * compute normalization coefficients at reference image coordinates.
  *
- * \sa DrizzleData
+ * \sa DrizzleData, FluxCalibrationData
  */
 class PCL_CLASS LocalNormalizationData
 {
@@ -143,7 +143,7 @@ public:
    using matrix_interpolations = Array<matrix_interpolation>;
 
    /*!
-    * Constructs an empty %LocalNormalizationData object.
+    * Default constructor. Constructs an empty %LocalNormalizationData object.
     */
    LocalNormalizationData() = default;
 
@@ -158,9 +158,14 @@ public:
    LocalNormalizationData( LocalNormalizationData&& ) = default;
 
    /*!
-    * Copy assignment operator.
+    * Copy assignment operator. Returns a reference to this object.
     */
    LocalNormalizationData& operator =( const LocalNormalizationData& ) = default;
+
+   /*!
+    * Move assignment operator. Returns a reference to this object.
+    */
+   LocalNormalizationData& operator =( LocalNormalizationData&& ) = default;
 
    /*!
     * Constructs a new %LocalNormalizationData instance by loading and parsing
@@ -608,7 +613,7 @@ public:
    }
 
    /*!
-    * Clears all of the image normalization data transported by this instance,
+    * Clears all image normalization data transported by this instance,
     * yielding an empty %LocalNormalizationData object.
     */
    void Clear();
@@ -627,8 +632,8 @@ public:
     *                   needs to retrieve information on file paths and
     *                   reference dimensions.
     *
-    * All of the previous data transported by this instance will be replaced
-    * with new data acquired from the specified file.
+    * All previous data transported by this instance will be replaced with new
+    * data acquired from the specified file.
     *
     * This function validates the data retrieved from the specified file. It
     * throws an Error exception in the event of parsing errors or invalid data.
@@ -649,8 +654,8 @@ public:
     *                   needs to retrieve information on file paths and
     *                   reference dimensions.
     *
-    * All of the previous data transported by this instance will be replaced
-    * with new data acquired from the specified %XML contents.
+    * All previous data transported by this instance will be replaced with new
+    * data acquired from the specified %XML contents.
     *
     * This function validates the data retrieved from the specified %XML
     * document. It throws an Error exception in the event of an invalid
@@ -673,8 +678,8 @@ public:
     *                   needs to retrieve information on file paths and
     *                   reference dimensions.
     *
-    * All of the previous data transported by this instance will be replaced
-    * with new data acquired from the specified %XML contents.
+    * All previous data transported by this instance will be replaced with new
+    * data acquired from the specified %XML contents.
     *
     * This function validates the data retrieved from the specified %XML
     * element. It throws an Error exception in the event of invalid data.
@@ -815,4 +820,4 @@ private:
 #endif   // __PCL_LocalNormalizationData_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/LocalNormalizationData.h - Released 2024-06-18T15:48:54Z
+// EOF pcl/LocalNormalizationData.h - Released 2024-12-11T17:42:29Z

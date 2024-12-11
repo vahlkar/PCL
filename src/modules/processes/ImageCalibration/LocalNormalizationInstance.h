@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 2.2.4
+// Standard ImageCalibration Process Module Version 2.2.7
 // ----------------------------------------------------------------------------
-// LocalNormalizationInstance.h - Released 2024-08-02T18:17:27Z
+// LocalNormalizationInstance.h - Released 2024-12-11T17:43:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -89,7 +89,8 @@ private:
       Item() = default;
       Item( const Item& ) = default;
 
-      Item( const String& path_ ) : path( path_ )
+      Item( const String& path_ )
+         : path( path_ )
       {
       }
 
@@ -204,4 +205,4 @@ private:
 #endif   // __LocalNormalizationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationInstance.h - Released 2024-08-02T18:17:27Z
+// EOF LocalNormalizationInstance.h - Released 2024-12-11T17:43:17Z

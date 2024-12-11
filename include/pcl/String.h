@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/String.h - Released 2024-06-18T15:48:54Z
+// pcl/String.h - Released 2024-12-11T17:42:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -492,6 +492,18 @@ template <class T, class R, class A = PCL_STRING_ALLOCATOR>
 class PCL_CLASS GenericString : public DirectContainer<T>
 {
 public:
+
+   /*! #
+    */
+   using container_type = DirectContainer<T>;
+
+   /*! #
+    */
+   using item_type = typename container_type::item_type;
+
+   /*! #
+    */
+   using const_item_type = typename container_type::const_item_type;
 
    /*!
     * Represents a string character.
@@ -1211,9 +1223,12 @@ public:
     */
    void Transfer( GenericString& s )
    {
-      DetachFromData();
-      m_data = s.m_data;
-      s.m_data = nullptr;
+      if ( &s != this )
+      {
+         DetachFromData();
+         m_data = s.m_data;
+         s.m_data = nullptr;
+      }
    }
 
    /*!
@@ -1223,9 +1238,12 @@ public:
     */
    void Transfer( GenericString&& s )
    {
-      DetachFromData();
-      m_data = s.m_data;
-      s.m_data = nullptr;
+      if ( &s != this )
+      {
+         DetachFromData();
+         m_data = s.m_data;
+         s.m_data = nullptr;
+      }
    }
 
    /*!
@@ -5431,6 +5449,21 @@ public:
    using string_base = GenericString<char, IsoCharTraits, PCL_STRING_ALLOCATOR>;
 
    /*!
+    * The container type of this string.
+    */
+   using container_type = string_base::container_type;
+
+   /*!
+    * The type of contained objects.
+    */
+   using item_type = string_base::item_type;
+
+   /*!
+    * The type of contained immutable objects.
+    */
+   using const_item_type = string_base::const_item_type;
+
+   /*!
     * Represents a character pertaining to an %IsoString object.
     */
    using char_type = string_base::char_type;
@@ -8117,6 +8150,21 @@ public:
     * Base class of %String.
     */
    using string_base = GenericString<char16_type, CharTraits, PCL_STRING_ALLOCATOR>;
+
+   /*!
+    * The container type of this string.
+    */
+   using container_type = string_base::container_type;
+
+   /*!
+    * The type of contained objects.
+    */
+   using item_type = string_base::item_type;
+
+   /*!
+    * The type of contained immutable objects.
+    */
+   using const_item_type = string_base::const_item_type;
 
    /*!
     * Represents a character pertaining to a %String object.
@@ -13986,4 +14034,4 @@ inline std::ostream& operator <<( std::ostream& o, const String& s )
 #endif   // __PCL_String_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/String.h - Released 2024-06-18T15:48:54Z
+// EOF pcl/String.h - Released 2024-12-11T17:42:29Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/AutoPointer.h - Released 2024-06-18T15:48:54Z
+// pcl/AutoPointer.h - Released 2024-12-11T17:42:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -58,6 +58,11 @@
 #include <pcl/Diagnostics.h>
 
 #include <pcl/Utility.h>
+
+#ifdef __PCL_QT_INTERFACE
+#  include <QtCore/QObject>
+#  include <QtGui/QAction>
+#endif
 
 namespace pcl
 {
@@ -236,7 +241,7 @@ public:
  *
  * \sa StandardDeleter, AutoPointerCloner
  */
-template <class T, class D = StandardDeleter<T> >
+template <class T, class D = StandardDeleter<T>>
 class PCL_CLASS AutoPointer
 {
 public:
@@ -524,8 +529,8 @@ public:
    }
 
    /*!
-    * Copy assignment operator. Transfers the pointer stored in another smart
-    * pointer to this object.
+    * Non-trivial copy assignment operator. Transfers the pointer stored in
+    * another smart pointer to this object.
     *
     * This assignment operator performs the following actions:
     *
@@ -671,6 +676,61 @@ protected:
    deleter m_deleter;
    bool    m_autoDelete = true;
 };
+
+// ----------------------------------------------------------------------------
+
+#ifdef __PCL_QT_INTERFACE
+
+/*!
+ * \class QObjectDeferredDeleter
+ * \brief A specialized deleter for deferred deletion of QObject instances.
+ *
+ * This class invokes the QObject::deleteLater() member function for deferred
+ * destruction. The object will be deleted when execution returns to the
+ * current event loop.
+ *
+ * \sa AutoPointer, StandardDeleter
+ */
+template <class Q>
+class PCL_CLASS QObjectDeferredDeleter
+{
+public:
+
+   /*!
+    * Represents the type of objects to destroy and deallocate.
+    */
+   using value_type = Q;
+
+   /*!
+    * Represents a pointer to an object to destroy and deallocate.
+    */
+   using pointer = Q*;
+
+   /*!
+    * Function call operator. Destroys and deallocates the object pointed to by
+    * the specified pointer \a p.
+    */
+   void operator()( pointer p ) const
+   {
+      PCL_PRECONDITION( p != nullptr )
+      if ( p != nullptr )
+         p->deleteLater();
+   }
+};
+
+/*!
+ * \class AutoQObjectPointer
+ * \brief A specialized smart pointer for QObject with deferred deletion.
+ *
+ * This class uses QObjectDeferredDeleter for deferred destruction of QObject
+ * instances via QObject::deleteLater().
+ */
+template <class Q>
+using AutoQObjectPointer = AutoPointer<Q, QObjectDeferredDeleter<Q>>;
+
+using AutoQActionPointer = AutoQObjectPointer<QAction>;
+
+#endif   // __PCL_QT_INTERFACE
 
 // ----------------------------------------------------------------------------
 
@@ -908,4 +968,4 @@ public:
 #endif  // __PCL_AutoPointer_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AutoPointer.h - Released 2024-06-18T15:48:54Z
+// EOF pcl/AutoPointer.h - Released 2024-12-11T17:42:29Z

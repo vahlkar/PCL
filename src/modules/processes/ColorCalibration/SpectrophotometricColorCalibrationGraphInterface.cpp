@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.9.5
 // ----------------------------------------------------------------------------
-// SpectrophotometricColorCalibrationGraphInterface.cpp - Released 2024-06-18T15:49:25Z
+// SpectrophotometricColorCalibrationGraphInterface.cpp - Released 2024-12-11T17:43:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -77,4 +77,4 @@ SpectrophotometricColorCalibrationGraphInterface::~SpectrophotometricColorCalibr
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SpectrophotometricColorCalibrationGraphInterface.cpp - Released 2024-06-18T15:49:25Z
+// EOF SpectrophotometricColorCalibrationGraphInterface.cpp - Released 2024-12-11T17:43:17Z

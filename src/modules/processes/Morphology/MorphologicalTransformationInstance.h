@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
 // Standard Morphology Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// MorphologicalTransformationInstance.h - Released 2024-06-18T15:49:25Z
+// MorphologicalTransformationInstance.h - Released 2024-12-11T17:43:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Morphology PixInsight module.
 //
@@ -145,4 +145,4 @@ private:
 #endif   // __MorphologicalTransformationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF MorphologicalTransformationInstance.h - Released 2024-06-18T15:49:25Z
+// EOF MorphologicalTransformationInstance.h - Released 2024-12-11T17:43:17Z

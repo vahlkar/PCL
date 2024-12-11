@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 2.2.4
+// Standard ImageCalibration Process Module Version 2.2.7
 // ----------------------------------------------------------------------------
-// SpectrophotometricFluxCalibrationInterface.cpp - Released 2024-08-02T18:17:26Z
+// SpectrophotometricFluxCalibrationInterface.cpp - Released 2024-12-11T17:43:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -988,9 +988,10 @@ SpectrophotometricFluxCalibrationInterface::GUIData::GUIData( Spectrophotometric
    MinMagnitude_NumericEdit.SetPrecision( TheSPFCMinMagnitudeParameter->Precision() );
    MinMagnitude_NumericEdit.edit.SetFixedWidth( editWidth1 );
    MinMagnitude_NumericEdit.sizer.AddStretch();
-   MinMagnitude_NumericEdit.SetToolTip( "<p>Minimum magnitude (G band) of extracted catalog stars. This parameter can be useful in "
-      "special cases where sampling too bright stars can lead to accuracy problems caused by contamination of signal estimates "
-      "in highly crowded fields. This may happen with wide-field images.</p>" );
+   MinMagnitude_NumericEdit.SetToolTip( "<p>Minimum magnitude (G band) of extracted catalog stars. This parameter can be useful "
+      "in cases where sampling too bright stars can lead to accuracy problems caused by contamination of signal estimates in "
+      "highly crowded fields. This parameter is also helpful in automatically achieving a good optimal limit magnitude when most "
+      "stars are saturated below a relatively high magnitude value. These issues often happen with wide-field images.</p>" );
    MinMagnitude_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&SpectrophotometricFluxCalibrationInterface::e_ValueUpdated, w );
 
    CatalogSearch_Sizer.SetSpacing( 4 );
@@ -1309,4 +1310,4 @@ SpectrophotometricFluxCalibrationInterface::GUIData::GUIData( Spectrophotometric
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SpectrophotometricFluxCalibrationInterface.cpp - Released 2024-08-02T18:17:26Z
+// EOF SpectrophotometricFluxCalibrationInterface.cpp - Released 2024-12-11T17:43:17Z

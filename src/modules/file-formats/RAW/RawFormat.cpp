@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// Standard RAW File Format Module Version 1.6.2
+// Standard RAW File Format Module Version 1.6.3
 // ----------------------------------------------------------------------------
-// RawFormat.cpp - Released 2024-06-18T15:49:17Z
+// RawFormat.cpp - Released 2024-12-11T17:43:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RAW PixInsight module.
 //
@@ -132,8 +132,8 @@ String RawFormat::Implementation() const
    "<html>"
    "<p>PixInsight Standard File Format Support Modules.</p>"
 
-   "<p>This implementation of digital camera raw format decoding uses LibRaw 0.21.2 "
-   "Release (official version released 19 December 2023).</p>"
+   "<p>This implementation of digital camera raw format decoding uses LibRaw 0.21.3 "
+   "Release (official version released 18 September 2024).</p>"
 
    "<p><b>LibRaw</b><br/>"
    "Copyright (C) 2008-2024 LibRaw LLC (https://www.libraw.org, info@libraw.org)</p>"
@@ -396,4 +396,4 @@ bool RawFormat::EditPreferences() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RawFormat.cpp - Released 2024-06-18T15:49:17Z
+// EOF RawFormat.cpp - Released 2024-12-11T17:43:04Z

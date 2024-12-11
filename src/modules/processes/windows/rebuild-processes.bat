@@ -46,9 +46,6 @@ msbuild Image.vcxproj /t:Clean,Build -m /p:Configuration=Release /p:Platform=x64
 cd %PCLSRCDIR%\modules\processes\ImageCalibration\windows\vc17
 msbuild ImageCalibration.vcxproj /t:Clean,Build -m /p:Configuration=Release /p:Platform=x64
 
-cd %PCLSRCDIR%\modules\processes\ImageIntegration\windows\vc17
-msbuild ImageIntegration.vcxproj /t:Clean,Build -m /p:Configuration=Release /p:Platform=x64
-
 cd %PCLSRCDIR%\modules\processes\IntensityTransformations\windows\vc17
 msbuild IntensityTransformations.vcxproj /t:Clean,Build -m /p:Configuration=Release /p:Platform=x64
 

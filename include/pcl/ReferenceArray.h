@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/ReferenceArray.h - Released 2024-06-18T15:48:54Z
+// pcl/ReferenceArray.h - Released 2024-12-11T17:42:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -95,6 +95,18 @@ template <typename T, class A = StandardAllocator>
 class PCL_CLASS ReferenceArray : public DirectContainer<T>
 {
 public:
+
+   /*! #
+    */
+   using container_type = DirectContainer<T>;
+
+   /*! #
+    */
+   using item_type = typename container_type::item_type;
+
+   /*! #
+    */
+   using const_item_type = typename container_type::const_item_type;
 
    /*! #
     */
@@ -2440,4 +2452,4 @@ ReferenceArray<T,A>& operator <<( ReferenceArray<T,A>&& x1, const ReferenceArray
 #endif   // __PCL_ReferenceArray_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ReferenceArray.h - Released 2024-06-18T15:48:54Z
+// EOF pcl/ReferenceArray.h - Released 2024-12-11T17:42:29Z

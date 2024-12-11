@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsHdrCompositionInstance.cpp - Released 2024-06-18T15:49:25Z
+// GradientsHdrCompositionInstance.cpp - Released 2024-12-11T17:43:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
@@ -259,4 +259,4 @@ size_type GradientsHdrCompositionInstance::ParameterLength( const MetaParameter*
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF GradientsHdrCompositionInstance.cpp - Released 2024-06-18T15:49:25Z
+// EOF GradientsHdrCompositionInstance.cpp - Released 2024-12-11T17:43:17Z

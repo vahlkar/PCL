@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/Cryptography.h - Released 2024-06-18T15:48:54Z
+// pcl/Cryptography.h - Released 2024-12-11T17:42:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -980,8 +980,8 @@ public:
     * \note For enhanced security, this constructor wipes out the specified
     * cipher \a key string, filling it with null characters. If you want to
     * preserve the original key (which in general is a <em>bad idea</em> for
-    * security reasons), make a copy and ensure it references its string data
-    * uniquely before invoking this constructor.
+    * security reasons), make a copy and ensure it uniquely references its
+    * string data before invoking this constructor.
     */
    AES256( IsoString& key )
    {
@@ -1100,4 +1100,4 @@ private:
 #endif   // __PCL_Cryptography_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Cryptography.h - Released 2024-06-18T15:48:54Z
+// EOF pcl/Cryptography.h - Released 2024-12-11T17:42:29Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.6.0
+// Standard Global Process Module Version 1.6.1
 // ----------------------------------------------------------------------------
-// PreferencesInstance.h - Released 2024-06-18T15:49:25Z
+// PreferencesInstance.h - Released 2024-12-11T17:43:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -260,7 +260,7 @@ struct ProcessPreferences
 struct SecurityPreferences
 {
    pcl_bool    allowUnsignedScriptExecution;
-   pcl_bool    allowUnsignedModuleInstallation;
+   pcl_bool    allowUnsignedModuleInstallation; // ### read-only since core version 1.9.0
    pcl_bool    allowUnsignedRepositories;
    pcl_bool    allowInsecureRepositories;
    pcl_bool    reportScriptSignatures;
@@ -331,4 +331,4 @@ private:
 #endif   // __PreferencesInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInstance.h - Released 2024-06-18T15:49:25Z
+// EOF PreferencesInstance.h - Released 2024-12-11T17:43:17Z

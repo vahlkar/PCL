@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// pcl/Rectangle.h - Released 2024-06-18T15:48:54Z
+// pcl/Rectangle.h - Released 2024-12-11T17:42:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -76,21 +76,23 @@ namespace pcl
 
 /*!
  * \namespace pcl::Clip
- * \brief     %Clip codes used by the Sutherland-Cohen line clipping algorithm.
+ * \brief     %Clip codes used by the Cohen-Sutherland line clipping algorithm.
  *
- * Sutherland-Cohen clip codes:
+ * Cohen-Sutherland clip codes:
  *
  * <table border="1" cellpadding="4" cellspacing="0">
- * <tr><td>Clip::Left</td>    <td>Clipping occurs at the left side of the clipping rectangle</td></tr>
- * <tr><td>Clip::Top</td>     <td>Clipping occurs at the top side of the clipping rectangle</td></tr>
- * <tr><td>Clip::Right</td>   <td>Clipping occurs at the right side of the clipping rectangle</td></tr>
- * <tr><td>Clip::Bottom</td>  <td>Clipping occurs at the bottom side of the clipping rectangle</td></tr>
+ * <tr><td>Clip::Inside</td>  <td>There is no clipping; the specified end point is inside the clipping rectangle.</td></tr>
+ * <tr><td>Clip::Left</td>    <td>Clipping occurs at the left side of the clipping rectangle.</td></tr>
+ * <tr><td>Clip::Top</td>     <td>Clipping occurs at the top side of the clipping rectangle.</td></tr>
+ * <tr><td>Clip::Right</td>   <td>Clipping occurs at the right side of the clipping rectangle.</td></tr>
+ * <tr><td>Clip::Bottom</td>  <td>Clipping occurs at the bottom side of the clipping rectangle.</td></tr>
  * </table>
  */
 namespace Clip
 {
    enum mask_type
    {
+      Inside = 0x00, // Unclipped: inside the clipping rectangle
       Left   = 0x01, // Clipped at the left side
       Top    = 0x02, // Clipped at the top side
       Right  = 0x04, // Clipped at the right side
@@ -99,7 +101,7 @@ namespace Clip
 }
 
 /*!
- * A collection of Sutherland-Cohen clip code flags.
+ * A collection of Cohen-Sutherland clip code flags.
  */
 using ClipFlags = Flags<Clip::mask_type>;
 
@@ -800,16 +802,18 @@ public:
 
    /*!
     * Given the coordinates \a x and \a y of a point in the plane, this
-    * function returns a clip code for the Sutherland-Cohen line clipping
+    * function returns a clip code for the Cohen-Sutherland line clipping
     * algorithm.
     *
     * The returned value is a combination of flags defined in the Clip
     * namespace.
+    *
+    * \sa ClipCodeFast( T1, T1 ) const
     */
    template <typename T1>
    ClipFlags ClipCode( T1 x, T1 y ) const noexcept
    {
-      ClipFlags clip; // defaults to zero
+      ClipFlags clip; // defaults to zero = Clip::Inside
 
       if ( x0 <= x1 )
       {
@@ -838,15 +842,237 @@ public:
 
    /*!
     * Given a point \a p in the plane, this function returns a clip code for
-    * the Sutherland-Cohen line clipping algorithm.
+    * the Cohen-Sutherland line clipping algorithm.
     *
     * The returned value is a combination of flags defined in the Clip
     * namespace.
+    *
+    * \sa ClipCodeFast( const pcl::GenericPoint<>& ) const
     */
    template <typename T1>
    ClipFlags ClipCode( const pcl::GenericPoint<T1>& p ) const noexcept
    {
       return ClipCode( p.x, p.y );
+   }
+
+   /*!
+    * Given the coordinates \a x and \a y of a point in the plane, this
+    * function returns a clip code for the Cohen-Sutherland line clipping
+    * algorithm.
+    *
+    * The returned value is a combination of flags defined in the Clip
+    * namespace.
+    *
+    * \note This function assumes an ordered rectangle. That is, it requires
+    * that the conditions x0 &le; x1 and y0 &le; y1 hold. Otherwise, this
+    * function will return a wrong result.
+    *
+    * \sa ClipCode( T1, T1 ) const
+    */
+   template <typename T1>
+   ClipFlags ClipCodeFast( T1 x, T1 y ) const noexcept
+   {
+      ClipFlags clip; // defaults to zero = Clip::Inside
+      if ( x < x0 ) clip |= Clip::Left;
+      if ( x > x1 ) clip |= Clip::Right;
+      if ( y < y0 ) clip |= Clip::Top;
+      if ( y > y1 ) clip |= Clip::Bottom;
+      return clip;
+   }
+
+   /*!
+    * Given a point \a p in the plane, this function returns a clip code for
+    * the Cohen-Sutherland line clipping algorithm.
+    *
+    * The returned value is a combination of flags defined in the Clip
+    * namespace.
+    *
+    * \note This function assumes an ordered rectangle. That is, it requires
+    * that the conditions x0 &le; x1 and y0 &le; y1 hold. Otherwise, this
+    * function will return a wrong result.
+    *
+    * \sa ClipCode( const pcl::GenericPoint<>& ) const
+    */
+   template <typename T1>
+   ClipFlags ClipCodeFast( const pcl::GenericPoint<T1>& p ) const noexcept
+   {
+      return ClipCodeFast( p.x, p.y );
+   }
+
+   /*!
+    * Computes the clipped line segment coordinates for the specified line
+    * endpoints \a lx0, \a ly0 and \a lx1, \a ly1 against this rectangle.
+    *
+    * Returns true if the specified line segment intersects this rectangle or
+    * is entirely contained by this rectangular region. If an endpoint lies
+    * outside this rectangle, its coordinates will be replaced, on output, with
+    * the intersection with the corresponding rectangle side or vertex.
+    *
+    * Returns false if the specified line segment lies outside this rectangle,
+    * in which case the line endpoint coordinates won't be changed.
+    *
+    * This function implements the Cohen-Sutherland line clipping algorithm.
+    *
+    * \sa ClipLineFast( T1&, T1&, T1&, T1& ) const
+    */
+   template <typename T1>
+   bool ClipLine( T1& lx0, T1& ly0, T1& lx1, T1& ly1 ) const noexcept
+   {
+      T x0_ = pcl::Min( x0, x1 );
+      T y0_ = pcl::Min( y0, y1 );
+      T x1_ = pcl::Max( x0, x1 );
+      T y1_ = pcl::Max( y0, y1 );
+      ClipFlags clip0 = ClipCode( lx0, ly0 );
+      ClipFlags clip1 = ClipCode( lx1, ly1 );
+      for ( ;; )
+      {
+         if ( !(clip0 | clip1) ) // both endpoints inside
+            return true;
+         if ( clip0 & clip1 )    // both endpoints at the same side
+            return false;
+
+         // Only one endpoint outside
+         ClipFlags clipOut = clip0 ? clip0 : clip1;
+         T1 x, y;
+         if ( clipOut & Clip::Left )
+         {
+            x = x0_;
+            y = ly1 - (lx1 - x0_) * (ly1 - ly0)/(lx1 - lx0);
+         }
+         else if ( clipOut & Clip::Top )
+         {
+            x = lx0 - (ly0 - y0_) * (lx1 - lx0)/(ly1 - ly0);
+            y = y0_;
+         }
+         else if ( clipOut & Clip::Right )
+         {
+            x = x1_;
+            y = ly0 - (lx0 - x1_) * (ly1 - ly0)/(lx1 - lx0);
+         }
+         else // if ( clipOut & Clip::Bottom )
+         {
+            x = lx1 - (ly1 - y1_) * (lx1 - lx0)/(ly1 - ly0);
+            y = y1_;
+         }
+
+         if ( clipOut == clip0 )
+         {
+            lx0 = x;
+            ly0 = y;
+            clip0 = ClipCode( lx0, ly0 );
+         }
+         else
+         {
+            lx1 = x;
+            ly1 = y;
+            clip1 = ClipCode( lx1, ly1 );
+         }
+      }
+   }
+
+   /*!
+    * Computes the clipped line segment coordinates for the specified line
+    * endpoints \a p0 and \a p1 against this rectangle.
+    *
+    * See ClipLine( T1&, T1&, T1&, T1& ) const for a complete description of
+    * this function.
+    *
+    * \sa ClipLineFast( pcl::GenericPoint<>&, pcl::GenericPoint<>& ) const
+    */
+   template <typename T1>
+   bool ClipLine( pcl::GenericPoint<T1>& p0, pcl::GenericPoint<T1>& p1 ) const noexcept
+   {
+      return ClipLine( p0.x, p0.y, p1.x, p1.y );
+   }
+
+   /*!
+    * Computes the clipped line segment coordinates for the specified line
+    * endpoints \a lx0, \a ly0 and \a lx1, \a ly1 against this rectangle.
+    *
+    * Returns true if the specified line segment intersects this rectangle or
+    * is entirely contained by this rectangular region. If an endpoint lies
+    * outside this rectangle, its coordinates will be replaced, on output, with
+    * the intersection with the corresponding rectangle side or vertex.
+    *
+    * Returns false if the specified line segment lies outside this rectangle,
+    * in which case the line endpoint coordinates won't be changed.
+    *
+    * This function implements the Cohen-Sutherland line clipping algorithm.
+    *
+    * \note This function assumes an ordered rectangle. That is, it requires
+    * that the conditions x0 &le; x1 and y0 &le; y1 hold. Otherwise, this
+    * function will return a wrong result.
+    *
+    * \sa ClipLine( T1&, T1&, T1&, T1& ) const
+    */
+   template <typename T1>
+   bool ClipLineFast( T1& lx0, T1& ly0, T1& lx1, T1& ly1 ) const noexcept
+   {
+      ClipFlags clip0 = ClipCodeFast( lx0, ly0 );
+      ClipFlags clip1 = ClipCodeFast( lx1, ly1 );
+      for ( ;; )
+      {
+         if ( !(clip0 | clip1) ) // both endpoints inside
+            return true;
+         if ( clip0 & clip1 )    // both endpoints at the same side
+            return false;
+
+         // Only one endpoint outside
+         ClipFlags clipOut = clip0 ? clip0 : clip1;
+         T1 x, y;
+         if ( clipOut & Clip::Left )
+         {
+            x = x0;
+            y = ly1 - (lx1 - x0) * (ly1 - ly0)/(lx1 - lx0);
+         }
+         else if ( clipOut & Clip::Top )
+         {
+            x = lx0 - (ly0 - y0) * (lx1 - lx0)/(ly1 - ly0);
+            y = y0;
+         }
+         else if ( clipOut & Clip::Right )
+         {
+            x = x1;
+            y = ly0 - (lx0 - x1) * (ly1 - ly0)/(lx1 - lx0);
+         }
+         else // if ( clipOut & Clip::Bottom )
+         {
+            x = lx1 - (ly1 - y1) * (lx1 - lx0)/(ly1 - ly0);
+            y = y1;
+         }
+
+         if ( clipOut == clip0 )
+         {
+            lx0 = x;
+            ly0 = y;
+            clip0 = ClipCodeFast( lx0, ly0 );
+         }
+         else
+         {
+            lx1 = x;
+            ly1 = y;
+            clip1 = ClipCodeFast( lx1, ly1 );
+         }
+      }
+   }
+
+   /*!
+    * Computes the clipped line segment coordinates for the specified line
+    * endpoints \a p0 and \a p1 against this rectangle.
+    *
+    * See ClipLineFast( T1&, T1&, T1&, T1& ) const for a complete description of
+    * this function.
+    *
+    * \note This function assumes an ordered rectangle. That is, it requires
+    * that the conditions x0 &le; x1 and y0 &le; y1 hold. Otherwise, this
+    * function will return a wrong result.
+    *
+    * \sa ClipLine( pcl::GenericPoint<>&, pcl::GenericPoint<>& ) const
+    */
+   template <typename T1>
+   bool ClipLineFast( pcl::GenericPoint<T1>& p0, pcl::GenericPoint<T1>& p1 ) const noexcept
+   {
+      return ClipLineFast( p0.x, p0.y, p1.x, p1.y );
    }
 
    /*!
@@ -894,9 +1120,9 @@ public:
     * Returns true iff this rectangle includes a point specified by its
     * separate \a x and \a y coordinates.
     *
-    * This function assumes an ordered rectangle, that is, it requires that the
-    * conditions x0 &le; x1 and y0 &le; y1 hold. Otherwise this function will
-    * return a wrong result.
+    * \note This function assumes an ordered rectangle. That is, it requires
+    * that the conditions x0 &le; x1 and y0 &le; y1 hold. Otherwise, this
+    * function will return a wrong result.
     */
    template <typename T1>
    bool IncludesFast( T1 x, T1 y ) const noexcept
@@ -907,9 +1133,9 @@ public:
    /*!
     * Returns true iff this rectangle includes a point \a p.
     *
-    * This function assumes an ordered rectangle, that is, it requires that the
-    * conditions x0 &le; x1 and y0 &le; y1 hold. Otherwise this function will
-    * return a wrong result.
+    * \note This function assumes an ordered rectangle. That is, it requires
+    * that the conditions x0 &le; x1 and y0 &le; y1 hold. Otherwise, this
+    * function will return a wrong result.
     */
    template <typename T1>
    bool IncludesFast( const pcl::GenericPoint<T1>& p ) const noexcept
@@ -964,10 +1190,10 @@ public:
     * For a valid result, this function assumes the following conditions:
     *
     * \li The specified set \a left, \a top, \a right and \a bottom must define
-    * an ordered rectangle, that is, the conditions \a left &le; \a right and
+    * an ordered rectangle. That is, the conditions \a left &le; \a right and
     * \a top &le; \a bottom must hold.
     *
-    * \li This rectangle must be ordered, that is, the conditions x0 &le; x1
+    * \li This rectangle must be ordered. That is, the conditions x0 &le; x1
     * and y0 &le; y1 must hold.
     */
    template <typename T1>
@@ -1043,8 +1269,8 @@ public:
     * Causes this rectangle to include a given rectangle \a r, by adjusting its
     * coordinates as necessary.
     *
-    * To produce a valid result, this function assumes that both this and the
-    * specified object \a r are ordered rectangles.
+    * \note To produce a valid result, this function assumes that both this and
+    * the specified object \a r are ordered rectangles.
     */
    template <typename T1>
    void UniteFast( const GenericRectangle<T1>& r ) noexcept
@@ -1065,10 +1291,10 @@ public:
     * For a valid result, this function assumes the following conditions:
     *
     * \li The specified set \a left, \a top, \a right and \a bottom must define
-    * an ordered rectangle, that is, the conditions \a left &le; \a right and
+    * an ordered rectangle. That is, the conditions \a left &le; \a right and
     * \a top &le; \a bottom must hold.
     *
-    * \li This rectangle must be ordered, that is, the conditions x0 &le; x1
+    * \li This rectangle must be ordered. That is, the conditions x0 &le; x1
     * and y0 &le; y1 must hold.
     */
    template <typename T1>
@@ -1094,8 +1320,8 @@ public:
    /*!
     * Returns a rectangle that includes this one and another rectangle \a r.
     *
-    * To give a valid result, this function assumes that both this and the
-    * specified object \a r are ordered rectangles.
+    * \note To give a valid result, this function assumes that both this and
+    * the specified object \a r are ordered rectangles.
     */
    template <typename T1>
    GenericRectangle UnionFast( const GenericRectangle<T1>& r ) const noexcept
@@ -1205,8 +1431,8 @@ public:
     * iff this->x0 != this->x1 and this->y0 != this->y1 after calling this
     * function.
     *
-    * To produce a valid result, this function assumes that both this and the
-    * specified object \a r are ordered rectangles.
+    * \note To produce a valid result, this function assumes that both this and
+    * the specified object \a r are ordered rectangles.
     */
    template <typename T1>
    bool IntersectFast( const GenericRectangle<T1>& r ) noexcept
@@ -1231,10 +1457,10 @@ public:
     * For a valid result, this function assumes the following conditions:
     *
     * \li The specified set \a left, \a top, \a right and \a bottom must define
-    * an ordered rectangle, that is, the conditions \a left &le; \a right and
+    * an ordered rectangle. That is, the conditions \a left &le; \a right and
     * \a top &le; \a bottom must hold.
     *
-    * \li This rectangle must be ordered, that is, the conditions x0 &le; x1
+    * \li This rectangle must be ordered. That is, the conditions x0 &le; x1
     * and y0 &le; y1 must hold.
     */
    template <typename T1>
@@ -1263,8 +1489,8 @@ public:
     * Returns a rectangle equal to the intersection of this rectangle and
     * another rectangle \a r.
     *
-    * To give a valid result, this function assumes that both this and the
-    * specified object \a r are ordered rectangles.
+    * \note To give a valid result, this function assumes that both this and
+    * the specified object \a r are ordered rectangles.
     */
    template <typename T1>
    GenericRectangle IntersectionFast( const GenericRectangle<T1>& r ) const noexcept
@@ -3068,4 +3294,4 @@ using DRect = F64Rect;
 #endif  // __PCL_Rectangle_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Rectangle.h - Released 2024-06-18T15:48:54Z
+// EOF pcl/Rectangle.h - Released 2024-12-11T17:42:29Z

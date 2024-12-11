@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.7.0
+// /_/     \____//_____/   PCL 2.8.3
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 2.2.4
+// Standard ImageCalibration Process Module Version 2.2.7
 // ----------------------------------------------------------------------------
-// SpectrophotometricFluxCalibrationInstance.cpp - Released 2024-08-02T18:17:27Z
+// SpectrophotometricFluxCalibrationInstance.cpp - Released 2024-12-11T17:43:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -81,7 +81,7 @@
  * generate scale factors within manageable ranges for typical deep-sky images,
  * i.e., in [100,0.001] instead of [1e-7,1e-12], for example.
  */
-#define SPFC_NORMALIZATION_FACTOR   1.0e+08
+#define __PCL_SPFC_NORMALIZATION_FACTOR   1.0e+08
 
 namespace pcl
 {
@@ -143,6 +143,7 @@ void SpectrophotometricFluxCalibrationInstance::Assign( const ProcessImplementat
    const SpectrophotometricFluxCalibrationInstance* x = dynamic_cast<const SpectrophotometricFluxCalibrationInstance*>( &p );
    if ( x != nullptr )
    {
+      p_narrowbandMode                = x->p_narrowbandMode;
       p_grayFilterTrCurve             = x->p_grayFilterTrCurve;
       p_grayFilterName                = x->p_grayFilterName;
       p_redFilterTrCurve              = x->p_redFilterTrCurve;
@@ -161,7 +162,6 @@ void SpectrophotometricFluxCalibrationInstance::Assign( const ProcessImplementat
       p_blueFilterBandwidth           = x->p_blueFilterBandwidth;
       p_deviceQECurve                 = x->p_deviceQECurve;
       p_deviceQECurveName             = x->p_deviceQECurveName;
-      p_narrowbandMode                = x->p_narrowbandMode;
       p_broadbandIntegrationStepSize  = x->p_broadbandIntegrationStepSize;
       p_narrowbandIntegrationSteps    = x->p_narrowbandIntegrationSteps;
       p_rejectionLimit                = x->p_rejectionLimit;
@@ -344,7 +344,7 @@ if ( (typeof Gaia) != 'undefined' )
 
 // ----------------------------------------------------------------------------
 
-static float GaiaSPAutoLimitMagnitude( const DPoint& centerRD, double radius, int targetCount )
+static float GaiaSPAutoLimitMagnitude( const DPoint& centerRD, double radius, double magnitudeLow, int targetCount )
 {
    float magnitudeHigh = -1;
    String scriptFilePath = File::UniqueFileName( File::SystemTempDirectory(), 12, "GM_", ".js" );
@@ -366,15 +366,15 @@ if ( xpsd )
       xpsd.centerRA = %.8f;
       xpsd.centerDec = %.8f;
       xpsd.radius = %.8f;
-      xpsd.magnitudeLow = -1.5;
+      xpsd.magnitudeLow = %.2f;
       xpsd.sourceLimit = 0; // do not retrieve objects, just count them.
       xpsd.exclusionFlags = 0x00000001; // GaiaFlag_NoPM
       xpsd.inclusionFlags = 0;
       xpsd.verbosity = 0; // work quietly
       xpsd.generateTextOutput = false;
 
-      let m = 10;
-      for ( let m0 = 7, m1 = xpsd.databaseMagnitudeHigh, i = 0; i < 100; ++i )
+      let m = 0.5*(xpsd.magnitudeLow + xpsd.databaseMagnitudeHigh);
+      for ( let m0 = xpsd.magnitudeLow, m1 = xpsd.databaseMagnitudeHigh, i = 0; i < 100; ++i )
       {
          xpsd.magnitudeHigh = m;
          xpsd.executeGlobal();
@@ -397,7 +397,7 @@ if ( xpsd )
       }
       __PJSR_Gaia_SP_limitMagnitude = m;
    }
-} )JS_SOURCE", targetCount, centerRD.x, centerRD.y, radius, targetCount, TruncInt( 1.05*targetCount ) ) );
+} )JS_SOURCE", targetCount, centerRD.x, centerRD.y, radius, magnitudeLow, targetCount, TruncInt( 1.05*targetCount ) ) );
 
       Console().ExecuteScript( scriptFilePath );
 
@@ -654,9 +654,11 @@ SPInterpolation ParseSpectrumParameter( const String& csv, const String& name )
 
 struct PSFSample
 {
-   DPoint pos;
-   DRect  bounds;
-   float  angle; // deg
+   DPoint pos;         // px
+   DRect  bounds;      // px, FWTM (for drawing)
+   float  angle;       // deg, green channel (for drawing)
+   float  fwhmx[ 3 ];  // px, FWHM, X-axis
+   float  fwhmy[ 3 ];  // px, FWHM, Y-axis
    float  signal[ 3 ]; // 0=L or 0=R,1=G,2=B
 };
 
@@ -723,6 +725,8 @@ void CreateStarMapWindow( int width, int height, const IsoString& id, const Arra
    window.Show();
 }
 
+// ----------------------------------------------------------------------------
+
 bool SpectrophotometricFluxCalibrationInstance::ExecuteOn( View& view )
 {
    {
@@ -749,6 +753,8 @@ bool SpectrophotometricFluxCalibrationInstance::ExecuteOn( View& view )
    /*
     * Astrometric solution.
     */
+   if ( !window.HasAstrometricSolution() )
+      throw Error( "The image has no astrometric solution: " + view.Id() );
    AstrometricMetadata A( window );
    if ( !A.IsValid() )
       throw Error( "The image has no valid astrometric solution: " + view.Id() );
@@ -831,6 +837,7 @@ bool SpectrophotometricFluxCalibrationInstance::ExecuteOn( View& view )
     * Perform photometry.
     */
    Array<PSFSample> psfSamples;
+   int targetStarCount = 0; // for GaiaSPAutoLimitMagnitude()
    {
       volatile AutoStatusCallbackRestorer saveStatus( image.Status() );
       StandardStatus status;
@@ -845,6 +852,8 @@ bool SpectrophotometricFluxCalibrationInstance::ExecuteOn( View& view )
             psfData[c] = E.FitStars( image );
             if ( psfData[c].IsEmpty() )
                throw Error( "No stars found (channel " + String( c ) + ")" );
+            if ( int( psfData[c].Length() ) > targetStarCount )
+               targetStarCount = int( psfData[c].Length() );
          }
          image.ResetSelections();
 
@@ -865,6 +874,12 @@ bool SpectrophotometricFluxCalibrationInstance::ExecuteOn( View& view )
                   s.pos = p1.c0;
                   s.bounds = p1.FWTMBounds( p_psfGrowth );
                   s.angle = p1.theta;
+                  s.fwhmx[0] = P0[0].FWHMx();
+                  s.fwhmx[1] = p1.FWHMx();
+                  s.fwhmx[2] = P2[0].FWHMx();
+                  s.fwhmy[0] = P0[0].FWHMy();
+                  s.fwhmy[1] = p1.FWHMy();
+                  s.fwhmy[2] = P2[0].FWHMy();
                   s.signal[0] = P0[0].signal;
                   s.signal[1] = p1.signal;
                   s.signal[2] = P2[0].signal;
@@ -880,6 +895,7 @@ bool SpectrophotometricFluxCalibrationInstance::ExecuteOn( View& view )
          psfData = E.FitStars( image );
          if ( psfData.IsEmpty() )
             throw Error( "No stars found" );
+         targetStarCount = int( psfData.Length() );
          image.ResetSelections();
 
          for ( const PSFData& p : psfData )
@@ -888,6 +904,8 @@ bool SpectrophotometricFluxCalibrationInstance::ExecuteOn( View& view )
             s.pos = p.c0;
             s.bounds = p.FWTMBounds();
             s.angle = p.theta;
+            s.fwhmx[0] = s.fwhmx[1] = s.fwhmx[2] = p.FWHMx();
+            s.fwhmy[0] = s.fwhmy[1] = s.fwhmy[2] = p.FWHMy();
             s.signal[0] = s.signal[1] = s.signal[2] = p.signal;
             psfSamples << s;
          }
@@ -945,7 +963,9 @@ bool SpectrophotometricFluxCalibrationInstance::ExecuteOn( View& view )
    double radius = A.SearchRadius();
 
    // Limit magnitude
-   float magnitudeHigh = p_autoLimitMagnitude ? GaiaSPAutoLimitMagnitude( centerRD, radius, psfSamples.Length() ) : p_limitMagnitude;
+   float magnitudeHigh = p_autoLimitMagnitude ?
+               GaiaSPAutoLimitMagnitude( centerRD, radius, p_minMagnitude, RoundInt( 1.25 * targetStarCount ) )
+               : p_limitMagnitude;
    float magnitudeLow = Min( p_minMagnitude, magnitudeHigh );
    console.WriteLn( String().Format( "<end><cbr>Magnitude range: %.2f -> %.2f", magnitudeLow, magnitudeHigh ) );
 
@@ -958,7 +978,7 @@ bool SpectrophotometricFluxCalibrationInstance::ExecuteOn( View& view )
 
    // Search tree
    QuadTree<StarSPData> T( catalogStars );
-   
+
    /*
     * Spectrum samples.
     */
@@ -1047,7 +1067,7 @@ bool SpectrophotometricFluxCalibrationInstance::ExecuteOn( View& view )
                if ( 1 + catalogFlux != 1 )
                {
                   SpectrumSample sample;
-                  sample.value = (SPFC_NORMALIZATION_FACTOR * psf.signal[c]) / catalogFlux;
+                  sample.value = (__PCL_SPFC_NORMALIZATION_FACTOR * psf.signal[c]) / catalogFlux;
                   sample.star = psf;
                   sample.magG = P[j].magG;
                   sample.magBP = P[j].magBP;
@@ -1059,11 +1079,13 @@ bool SpectrophotometricFluxCalibrationInstance::ExecuteOn( View& view )
    }
 
    /*
-    * Scale factors / sigmas / counts.
+    * Scale factors / sigmas / counts / FWHMx / FWHMy.
     */
    DVector K( image.NumberOfNominalChannels() );
    DVector S( image.NumberOfNominalChannels() );
    IVector N( image.NumberOfNominalChannels() );
+   FVector Wx( image.NumberOfNominalChannels() );
+   FVector Wy( image.NumberOfNominalChannels() );
    for ( int c = 0; c < image.NumberOfNominalChannels(); ++c )
    {
       if ( samples[c].Length() < 5 )
@@ -1078,9 +1100,9 @@ bool SpectrophotometricFluxCalibrationInstance::ExecuteOn( View& view )
       int i, j;
       RobustChauvenetRejection R;
       /*
-       * ### N.B. Should we detect a performance issue with large data sets in
-       * the RCR routine, we can force bulk rejection to accelerate the process
-       * by uncommenting the following line - with an accuracy loss, of course.
+       * N.B. Should we detect a performance issue with large data sets in the
+       * RCR routine, we can force bulk rejection to accelerate the process by
+       * uncommenting the following line - with an accuracy penalty, of course.
        */
       // R.SetLargeSampleSize( 1 );
       R.SetRejectionLimit( p_rejectionLimit );
@@ -1090,6 +1112,15 @@ bool SpectrophotometricFluxCalibrationInstance::ExecuteOn( View& view )
       K[c] = mean;
       S[c] = sigma;
       N[c] = j - i;
+
+      DVector wx( N[c] ), wy( N[c] );
+      for ( int i = 0; i < N[c]; ++i )
+      {
+         wx[i] = samples[c][i].star.fwhmx[c];
+         wy[i] = samples[c][i].star.fwhmy[c];
+      }
+      Wx[c] = wx.Median();
+      Wy[c] = wy.Median();
    }
 
    if ( p_generateStarMaps )
@@ -1099,14 +1130,15 @@ bool SpectrophotometricFluxCalibrationInstance::ExecuteOn( View& view )
    if ( p_generateTextFiles )
       for ( int c = 0; c < image.NumberOfNominalChannels(); ++c )
       {
-         IsoString text = "x,y,alpha,delta,mag_G,mag_BP,mag_RP,img_signal,scale\n";
+         IsoString text = "x,y,alpha,delta,mag_G,mag_BP,mag_RP,img_fwhmx,img_fwhmy,img_pangle,img_signal,scale\n";
          for ( const SpectrumSample& sample : samples[c] )
          {
             DPoint posRD = 0;
             A.ImageToCelestial( posRD, sample.star.pos );
-            text.AppendFormat( "%.2f,%.2f,%.7f,%.7f,%.2f,%.2f,%.2f,%.6e,%.4e\n",
+            text.AppendFormat( "%.2f,%.2f,%.7f,%.7f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.6e,%.4e\n",
                                sample.star.pos.x, sample.star.pos.y, posRD.x, posRD.y,
                                sample.magG, sample.magBP, sample.magRP,
+                               sample.star.fwhmx[c], sample.star.fwhmy[c], sample.star.angle,
                                sample.star.signal[c], sample.value );
          }
 
@@ -1131,26 +1163,19 @@ bool SpectrophotometricFluxCalibrationInstance::ExecuteOn( View& view )
       }
 
       String grayFilterName, redFilterName, greenFilterName, blueFilterName;
-      if ( image.IsColor() )
+      if ( p_narrowbandMode )
       {
-         if ( p_narrowbandMode )
-         {
-            redFilterName   = String().Format( "&lambda; = %.2f nm, B = %.2f nm", p_redFilterWavelength, p_redFilterBandwidth );
-            greenFilterName = String().Format( "&lambda; = %.2f nm, B = %.2f nm", p_greenFilterWavelength, p_greenFilterBandwidth );
-            blueFilterName  = String().Format( "&lambda; = %.2f nm, B = %.2f nm", p_blueFilterWavelength, p_blueFilterBandwidth );
-         }
-         else
-         {
-            redFilterName   = p_redFilterName;
-            greenFilterName = p_greenFilterName;
-            blueFilterName  = p_blueFilterName;
-         }
-      } 
-      else 
+         grayFilterName  = String().Format( "&lambda; = %.2f nm, B = %.2f nm", p_grayFilterWavelength, p_grayFilterBandwidth );
+         redFilterName   = String().Format( "&lambda; = %.2f nm, B = %.2f nm", p_redFilterWavelength, p_redFilterBandwidth );
+         greenFilterName = String().Format( "&lambda; = %.2f nm, B = %.2f nm", p_greenFilterWavelength, p_greenFilterBandwidth );
+         blueFilterName  = String().Format( "&lambda; = %.2f nm, B = %.2f nm", p_blueFilterWavelength, p_blueFilterBandwidth );
+      }
+      else
       {
-         grayFilterName = p_narrowbandMode ?
-            String().Format( "&lambda; = %.2f nm, B = %.2f nm", p_grayFilterWavelength, p_grayFilterBandwidth )
-            : p_grayFilterName;
+         grayFilterName  = p_grayFilterName;
+         redFilterName   = p_redFilterName;
+         greenFilterName = p_greenFilterName;
+         blueFilterName  = p_blueFilterName;
       }
       if ( !TheSpectrophotometricFluxCalibrationGraphInterface->IsVisible() )
          TheSpectrophotometricFluxCalibrationGraphInterface->Launch();
@@ -1173,8 +1198,10 @@ bool SpectrophotometricFluxCalibrationInstance::ExecuteOn( View& view )
     */
    window.MainView().SetStorablePermanentPropertyValue( "PCL:SPFC:ScaleFactors", K );
    window.MainView().SetStorablePermanentPropertyValue( "PCL:SPFC:Sigmas", S );
+   window.MainView().SetStorablePermanentPropertyValue( "PCL:SPFC:FWHMx", Wx );
+   window.MainView().SetStorablePermanentPropertyValue( "PCL:SPFC:FWHMy", Wy );
    window.MainView().SetStorablePermanentPropertyValue( "PCL:SPFC:Counts", N );
-   window.MainView().SetStorablePermanentPropertyValue( "PCL:SPFC:NormalizationFactor", SPFC_NORMALIZATION_FACTOR );
+   window.MainView().SetStorablePermanentPropertyValue( "PCL:SPFC:NormalizationFactor", __PCL_SPFC_NORMALIZATION_FACTOR );
    window.MainView().SetStorablePermanentPropertyValue( "PCL:SPFC:Version", TheSpectrophotometricFluxCalibrationProcess->Version() );
 
    return true;
@@ -1440,4 +1467,4 @@ void SpectrophotometricFluxCalibrationInstance::SetDefaultSpectrumData()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SpectrophotometricFluxCalibrationInstance.cpp - Released 2024-08-02T18:17:27Z
+// EOF SpectrophotometricFluxCalibrationInstance.cpp - Released 2024-12-11T17:43:17Z
