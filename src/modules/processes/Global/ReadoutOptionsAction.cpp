@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.8.3
+// /_/     \____//_____/   PCL 2.8.4
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.6.1
 // ----------------------------------------------------------------------------
-// ReadoutOptionsAction.cpp - Released 2024-12-11T17:43:17Z
+// ReadoutOptionsAction.cpp - Released 2024-12-17T18:15:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -84,4 +84,4 @@ void ReadoutOptionsAction::Execute()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ReadoutOptionsAction.cpp - Released 2024-12-11T17:43:17Z
+// EOF ReadoutOptionsAction.cpp - Released 2024-12-17T18:15:44Z

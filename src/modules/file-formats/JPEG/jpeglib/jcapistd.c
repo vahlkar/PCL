@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.8.3
+// /_/     \____//_____/   PCL 2.8.4
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// jcapistd.c - Released 2024-12-11T17:43:04Z
+// jcapistd.c - Released 2024-12-17T18:15:34Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -214,4 +214,4 @@ jpeg_write_raw_data (j_compress_ptr cinfo, JSAMPIMAGE data,
 }
 
 // ----------------------------------------------------------------------------
-// EOF jcapistd.c - Released 2024-12-11T17:43:04Z
+// EOF jcapistd.c - Released 2024-12-17T18:15:34Z

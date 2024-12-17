@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.8.3
+// /_/     \____//_____/   PCL 2.8.4
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// jmorecfg.h - Released 2024-12-11T17:43:04Z
+// jmorecfg.h - Released 2024-12-17T18:15:34Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -520,4 +520,4 @@ typedef enum { FALSE = 0, TRUE = 1 } boolean;
 #endif /* JPEG_INTERNAL_OPTIONS */
 
 // ----------------------------------------------------------------------------
-// EOF jmorecfg.h - Released 2024-12-11T17:43:04Z
+// EOF jmorecfg.h - Released 2024-12-17T18:15:34Z

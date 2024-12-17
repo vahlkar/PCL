@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.8.3
+// /_/     \____//_____/   PCL 2.8.4
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// region.h - Released 2024-12-11T17:43:04Z
+// region.h - Released 2024-12-17T18:15:34Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -132,4 +132,4 @@ int fits_read_fits_region ( fitsfile *fptr, WCSdata * wcs, SAORegion **Rgn, int 
 int fits_read_ascii_region ( const char *filename, WCSdata * wcs, SAORegion **Rgn, int *status);
 
 // ----------------------------------------------------------------------------
-// EOF region.h - Released 2024-12-11T17:43:04Z
+// EOF region.h - Released 2024-12-17T18:15:34Z

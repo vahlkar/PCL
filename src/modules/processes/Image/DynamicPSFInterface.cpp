@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.8.3
+// /_/     \____//_____/   PCL 2.8.4
 // ----------------------------------------------------------------------------
-// Standard Image Process Module Version 1.3.4
+// Standard Image Process Module Version 1.3.5
 // ----------------------------------------------------------------------------
-// DynamicPSFInterface.cpp - Released 2024-12-11T17:43:17Z
+// DynamicPSFInterface.cpp - Released 2024-12-17T18:15:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -416,6 +416,7 @@ public:
       , collection( c )
    {
       collection->node = this;
+      SetFirstColumnSpanned();
       Update();
       Expand();
    }
@@ -3235,4 +3236,4 @@ DynamicPSFInterface::GUIData::GUIData( DynamicPSFInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DynamicPSFInterface.cpp - Released 2024-12-11T17:43:17Z
+// EOF DynamicPSFInterface.cpp - Released 2024-12-17T18:15:44Z

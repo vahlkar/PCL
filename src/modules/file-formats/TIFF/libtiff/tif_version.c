@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.8.3
+// /_/     \____//_____/   PCL 2.8.4
 // ----------------------------------------------------------------------------
 // Standard TIFF File Format Module Version 1.0.10
 // ----------------------------------------------------------------------------
-// tif_version.c - Released 2024-12-11T17:43:04Z
+// tif_version.c - Released 2024-12-17T18:15:34Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard TIFF PixInsight module.
 //
@@ -80,4 +80,4 @@ static const char TIFFVersion[] = TIFFLIB_VERSION_STR;
 const char *TIFFGetVersion(void) { return (TIFFVersion); }
 
 // ----------------------------------------------------------------------------
-// EOF tif_version.c - Released 2024-12-11T17:43:04Z
+// EOF tif_version.c - Released 2024-12-17T18:15:34Z

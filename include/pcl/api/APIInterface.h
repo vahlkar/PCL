@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.8.3
+// /_/     \____//_____/   PCL 2.8.4
 // ----------------------------------------------------------------------------
-// pcl/APIInterface.h - Released 2024-12-11T17:42:29Z
+// pcl/APIInterface.h - Released 2024-12-17T18:15:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -56,7 +56,7 @@
 
 // Global namespace
 
-#define PCL_API_Version 0x0182
+#define PCL_API_Version 0x0183
 
 extern "C"
 {
@@ -1647,6 +1647,9 @@ struct api_context TreeBoxContext
    api_bool       (api_func* GetTreeBoxNodeEditable)( const_api_handle );
    void           (api_func* SetTreeBoxNodeEditable)( api_handle, api_bool );
 
+   api_bool       (api_func* GetTreeBoxNodeFirstColumnSpanned)( const_api_handle );
+   void           (api_func* SetTreeBoxNodeFirstColumnSpanned)( api_handle, api_bool );
+
    api_bool       (api_func* GetTreeBoxNodeColText)( const_api_handle, int32, char16_type*, size_type* );
    void           (api_func* SetTreeBoxNodeColText)( api_handle, int32, const char16_type* );
 
@@ -3108,4 +3111,4 @@ extern "C" void* api_func APIFunctionResolver( const char* );
 #endif   // __PCL_API_APIInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/APIInterface.h - Released 2024-12-11T17:42:29Z
+// EOF pcl/APIInterface.h - Released 2024-12-17T18:15:11Z

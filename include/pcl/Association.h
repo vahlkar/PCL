@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.8.3
+// /_/     \____//_____/   PCL 2.8.4
 // ----------------------------------------------------------------------------
-// pcl/Association.h - Released 2024-12-11T17:42:29Z
+// pcl/Association.h - Released 2024-12-17T18:15:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -161,4 +161,4 @@ bool operator <( const Association<T1,T2>& x1, const Association<T1,T2>& x2 )
 #endif  // __PCL_Association_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Association.h - Released 2024-12-11T17:42:29Z
+// EOF pcl/Association.h - Released 2024-12-17T18:15:11Z

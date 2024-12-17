@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.8.3
+// /_/     \____//_____/   PCL 2.8.4
 // ----------------------------------------------------------------------------
 // Standard APASS Process Module Version 1.1.5
 // ----------------------------------------------------------------------------
-// APASSInterface.cpp - Released 2024-12-11T17:43:17Z
+// APASSInterface.cpp - Released 2024-12-17T18:15:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard APASS PixInsight module.
 //
@@ -1418,4 +1418,4 @@ APASSInterface::GUIData::GUIData( APASSInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF APASSInterface.cpp - Released 2024-12-11T17:43:17Z
+// EOF APASSInterface.cpp - Released 2024-12-17T18:15:44Z

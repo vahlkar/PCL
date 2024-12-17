@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.8.3
+// /_/     \____//_____/   PCL 2.8.4
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// f77_wrap4.c - Released 2024-12-11T17:43:04Z
+// f77_wrap4.c - Released 2024-12-17T18:15:34Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -624,4 +624,4 @@ FCALLSCSUB5(ffgmtf,FTGMTF,ftgmtf,FITSUNIT,FITSUNIT,LONG,INT,PINT)
 FCALLSCSUB4(ffgmrm,FTGMRM,ftgmrm,FITSUNIT,LONG,INT,PINT)
 
 // ----------------------------------------------------------------------------
-// EOF f77_wrap4.c - Released 2024-12-11T17:43:04Z
+// EOF f77_wrap4.c - Released 2024-12-17T18:15:34Z

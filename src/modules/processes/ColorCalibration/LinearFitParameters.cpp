@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.8.3
+// /_/     \____//_____/   PCL 2.8.4
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.9.5
 // ----------------------------------------------------------------------------
-// LinearFitParameters.cpp - Released 2024-12-11T17:43:17Z
+// LinearFitParameters.cpp - Released 2024-12-17T18:15:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -142,4 +142,4 @@ double LFRejectHigh::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LinearFitParameters.cpp - Released 2024-12-11T17:43:17Z
+// EOF LinearFitParameters.cpp - Released 2024-12-17T18:15:44Z

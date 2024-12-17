@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.8.3
+// /_/     \____//_____/   PCL 2.8.4
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// Alignment.cpp - Released 2024-12-11T17:43:17Z
+// Alignment.cpp - Released 2024-12-17T18:15:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -939,4 +939,4 @@ void GeneralAnalyticalPointingModel::PrintParameters()
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF Alignment.cpp - Released 2024-12-11T17:43:17Z
+// EOF Alignment.cpp - Released 2024-12-17T18:15:44Z

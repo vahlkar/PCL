@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.8.3
+// /_/     \____//_____/   PCL 2.8.4
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// IIndigoProperty.cpp - Released 2024-12-11T17:43:17Z
+// IIndigoProperty.cpp - Released 2024-12-17T18:15:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -278,4 +278,4 @@ IProperty* PropertyFactory::Create( indigo_property* property )
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF IIndigoProperty.cpp - Released 2024-12-11T17:43:17Z
+// EOF IIndigoProperty.cpp - Released 2024-12-17T18:15:44Z

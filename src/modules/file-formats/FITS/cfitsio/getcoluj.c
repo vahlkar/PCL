@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.8.3
+// /_/     \____//_____/   PCL 2.8.4
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// getcoluj.c - Released 2024-12-11T17:43:04Z
+// getcoluj.c - Released 2024-12-17T18:15:34Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -3947,4 +3947,4 @@ int fffstru8(char *input,         /* I - array of values to be converted     */
 }
 
 // ----------------------------------------------------------------------------
-// EOF getcoluj.c - Released 2024-12-11T17:43:04Z
+// EOF getcoluj.c - Released 2024-12-17T18:15:34Z

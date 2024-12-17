@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.8.3
+// /_/     \____//_____/   PCL 2.8.4
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 2.2.7
 // ----------------------------------------------------------------------------
-// ImageCalibrationParameters.cpp - Released 2024-12-11T17:43:17Z
+// ImageCalibrationParameters.cpp - Released 2024-12-17T18:15:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -3227,4 +3227,4 @@ bool ICCosmeticCorrectionMapId::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationParameters.cpp - Released 2024-12-11T17:43:17Z
+// EOF ImageCalibrationParameters.cpp - Released 2024-12-17T18:15:44Z

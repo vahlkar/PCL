@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.8.3
+// /_/     \____//_____/   PCL 2.8.4
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// jfdctfst.c - Released 2024-12-11T17:43:04Z
+// jfdctfst.c - Released 2024-12-17T18:15:34Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -284,4 +284,4 @@ jpeg_fdct_ifast (DCTELEM * data, JSAMPARRAY sample_data, JDIMENSION start_col)
 #endif /* DCT_IFAST_SUPPORTED */
 
 // ----------------------------------------------------------------------------
-// EOF jfdctfst.c - Released 2024-12-11T17:43:04Z
+// EOF jfdctfst.c - Released 2024-12-17T18:15:34Z

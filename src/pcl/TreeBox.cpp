@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.8.3
+// /_/     \____//_____/   PCL 2.8.4
 // ----------------------------------------------------------------------------
-// pcl/TreeBox.cpp - Released 2024-12-11T17:42:39Z
+// pcl/TreeBox.cpp - Released 2024-12-17T18:15:21Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -798,6 +798,20 @@ void TreeBox::Node::Check( bool check )
 
 // ----------------------------------------------------------------------------
 
+bool TreeBox::Node::IsFirstColumnSpanned() const
+{
+   return (*API->TreeBox->GetTreeBoxNodeFirstColumnSpanned)( handle ) != api_false;
+}
+
+// ----------------------------------------------------------------------------
+
+void TreeBox::Node::SetFirstColumnSpanned( bool spanned )
+{
+   (*API->TreeBox->SetTreeBoxNodeFirstColumnSpanned)( handle, spanned );
+}
+
+// ----------------------------------------------------------------------------
+
 /*
  * ### TODO: Implement inline node editors.
  */
@@ -1108,4 +1122,4 @@ void TreeBox::OnNodeSelectionUpdated( tree_event_handler f, Control& receiver )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/TreeBox.cpp - Released 2024-12-11T17:42:39Z
+// EOF pcl/TreeBox.cpp - Released 2024-12-17T18:15:21Z

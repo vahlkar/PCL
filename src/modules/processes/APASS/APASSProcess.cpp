@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.8.3
+// /_/     \____//_____/   PCL 2.8.4
 // ----------------------------------------------------------------------------
 // Standard APASS Process Module Version 1.1.5
 // ----------------------------------------------------------------------------
-// APASSProcess.cpp - Released 2024-12-11T17:43:17Z
+// APASSProcess.cpp - Released 2024-12-17T18:15:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard APASS PixInsight module.
 //
@@ -702,4 +702,4 @@ void APASSProcess::SavePreferences( int dr )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF APASSProcess.cpp - Released 2024-12-11T17:43:17Z
+// EOF APASSProcess.cpp - Released 2024-12-17T18:15:44Z

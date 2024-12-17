@@ -26,4 +26,4 @@ Copy this file to your $PCLLIBDIR directory.
 Now you can build the RAW module on your platform.
 
 ******
-###### Copyright (C) 2003-2023 Pleiades Astrophoto
+###### Copyright (C) 2003-2024 Pleiades Astrophoto

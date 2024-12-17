@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.8.3
+// /_/     \____//_____/   PCL 2.8.4
 // ----------------------------------------------------------------------------
-// pcl/Thread.h - Released 2024-12-11T17:42:29Z
+// pcl/Thread.h - Released 2024-12-17T18:15:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -108,11 +108,7 @@ namespace ThreadPriority
       High,
       Highest,
       TimeCritical,  // Schedule as often as possible, taking precedence over any other threads.
-#ifdef __PCL_WINDOWS
-      DefaultMax = Normal // On Windows, anything above Normal is the same as TimeCritical ...
-#else
       DefaultMax = Highest
-#endif
    };
 }
 
@@ -750,4 +746,4 @@ void PCL_FUNC Sleep( unsigned ms );
 #endif   // __PCL_Thread_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Thread.h - Released 2024-12-11T17:42:29Z
+// EOF pcl/Thread.h - Released 2024-12-17T18:15:11Z

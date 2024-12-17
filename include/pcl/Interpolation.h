@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.8.3
+// /_/     \____//_____/   PCL 2.8.4
 // ----------------------------------------------------------------------------
-// pcl/Interpolation.h - Released 2024-12-11T17:42:29Z
+// pcl/Interpolation.h - Released 2024-12-17T18:15:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -109,4 +109,4 @@ namespace InterpolationAlgorithm
 #endif   // __PCL_Interpolation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Interpolation.h - Released 2024-12-11T17:42:29Z
+// EOF pcl/Interpolation.h - Released 2024-12-17T18:15:11Z

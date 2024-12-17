@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.8.3
+// /_/     \____//_____/   PCL 2.8.4
 // ----------------------------------------------------------------------------
-// pcl/ImageStatistics.h - Released 2024-12-11T17:42:29Z
+// pcl/ImageStatistics.h - Released 2024-12-17T18:15:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -997,4 +997,4 @@ protected:
 #endif   // __PCL_ImageStatistics_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ImageStatistics.h - Released 2024-12-11T17:42:29Z
+// EOF pcl/ImageStatistics.h - Released 2024-12-17T18:15:11Z

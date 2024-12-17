@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.8.3
+// /_/     \____//_____/   PCL 2.8.4
 // ----------------------------------------------------------------------------
 // Standard ColorManagement Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// ColorManagementModule.h - Released 2024-12-11T17:43:17Z
+// ColorManagementModule.h - Released 2024-12-17T18:15:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorManagement PixInsight module.
 //
@@ -84,4 +84,4 @@ public:
 #endif   // __ColorManagementModule_h
 
 // ----------------------------------------------------------------------------
-// EOF ColorManagementModule.h - Released 2024-12-11T17:43:17Z
+// EOF ColorManagementModule.h - Released 2024-12-17T18:15:44Z
