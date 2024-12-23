@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Gaia Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// GaiaInterface.cpp - Released 2024-12-17T18:15:44Z
+// GaiaInterface.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Gaia PixInsight module.
 //
@@ -1724,4 +1724,4 @@ GaiaInterface::GUIData::GUIData( GaiaInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GaiaInterface.cpp - Released 2024-12-17T18:15:44Z
+// EOF GaiaInterface.cpp - Released 2024-12-23T11:33:28Z

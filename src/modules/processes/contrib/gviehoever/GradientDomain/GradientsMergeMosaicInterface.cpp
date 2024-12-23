@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsMergeMosaicInterface.cpp - Released 2024-12-17T18:15:44Z
+// GradientsMergeMosaicInterface.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
@@ -722,4 +722,4 @@ GradientsMergeMosaicInterface::GUIData::GUIData( GradientsMergeMosaicInterface& 
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF GradientsMergeMosaicInterface.cpp - Released 2024-12-17T18:15:44Z
+// EOF GradientsMergeMosaicInterface.cpp - Released 2024-12-23T11:33:28Z

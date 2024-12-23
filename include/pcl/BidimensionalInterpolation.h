@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.8.4
 // ----------------------------------------------------------------------------
-// pcl/BidimensionalInterpolation.h - Released 2024-12-17T18:15:11Z
+// pcl/BidimensionalInterpolation.h - Released 2024-12-23T11:32:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -233,4 +233,4 @@ protected:
 #endif  // __PCL_BidimensionalInterpolation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/BidimensionalInterpolation.h - Released 2024-12-17T18:15:11Z
+// EOF pcl/BidimensionalInterpolation.h - Released 2024-12-23T11:32:56Z

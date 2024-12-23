@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard TIFF File Format Module Version 1.0.10
 // ----------------------------------------------------------------------------
-// tif_read.c - Released 2024-12-17T18:15:34Z
+// tif_read.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard TIFF PixInsight module.
 //
@@ -1676,4 +1676,4 @@ void _TIFFSwab64BitData(TIFF *tif, uint8_t *buf, tmsize_t cc)
 }
 
 // ----------------------------------------------------------------------------
-// EOF tif_read.c - Released 2024-12-17T18:15:34Z
+// EOF tif_read.c - Released 2024-12-23T11:33:12Z

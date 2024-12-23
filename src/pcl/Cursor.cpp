@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.8.4
 // ----------------------------------------------------------------------------
-// pcl/Cursor.cpp - Released 2024-12-17T18:15:21Z
+// pcl/Cursor.cpp - Released 2024-12-23T11:33:03Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -131,4 +131,4 @@ void* Cursor::CloneHandle() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Cursor.cpp - Released 2024-12-17T18:15:21Z
+// EOF pcl/Cursor.cpp - Released 2024-12-23T11:33:03Z

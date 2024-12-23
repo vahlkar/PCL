@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard TIFF File Format Module Version 1.0.10
 // ----------------------------------------------------------------------------
-// tiffio.h - Released 2024-12-17T18:15:34Z
+// tiffio.h - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard TIFF PixInsight module.
 //
@@ -705,4 +705,4 @@ extern int TIFFReadRGBAImageOriented(TIFF *, uint32_t, uint32_t, uint32_t *,
 #endif /* _TIFFIO_ */
 
 // ----------------------------------------------------------------------------
-// EOF tiffio.h - Released 2024-12-17T18:15:34Z
+// EOF tiffio.h - Released 2024-12-23T11:33:12Z

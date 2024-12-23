@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.8.4
 // ----------------------------------------------------------------------------
-// pcl/Sort.h - Released 2024-12-17T18:15:11Z
+// pcl/Sort.h - Released 2024-12-23T11:32:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -570,4 +570,4 @@ void Sort( BI i, BI j, BP p )
 #endif  // __PCL_Sort_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Sort.h - Released 2024-12-17T18:15:11Z
+// EOF pcl/Sort.h - Released 2024-12-23T11:32:56Z

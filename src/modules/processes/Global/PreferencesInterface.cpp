@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.8.4
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.6.1
+// Standard Global Process Module Version 1.6.2
 // ----------------------------------------------------------------------------
-// PreferencesInterface.cpp - Released 2024-12-17T18:15:44Z
+// PreferencesInterface.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -2471,13 +2471,12 @@ MiscImageWindowSettingsPreferencesPage::MiscImageWindowSettingsPreferencesPage( 
 
    PinchSensitivity_Real.label.SetText( "Pinch zoom sensitivity" );
    PinchSensitivity_Real.numericEdit.SetReal();
-   PinchSensitivity_Real.numericEdit.SetRange( 0, 200 );
-   PinchSensitivity_Real.numericEdit.SetPrecision( 3 );
+   PinchSensitivity_Real.numericEdit.SetRange( 1, 32 );
+   PinchSensitivity_Real.numericEdit.SetPrecision( 1 );
    PinchSensitivity_Real.item = &instance.imageWindow.pinchSensitivity;
    PinchSensitivity_Real.SetToolTip(
       "<p>Minimum distance variation between two touch points to trigger a pinch zoom event on an image view. "
-      "This value is expressed in normalized touch device coordinates, where one corresponds to the largest "
-      "device dimension.</p>" );
+      "This value is expressed in pixel units relative to the screen or virtual desktop.</p>" );
 
    FastScreenRenditions_Flag.checkBox.SetText( "Use fast screen renditions" );
    FastScreenRenditions_Flag.item = &instance.imageWindow.fastScreenRenditions;
@@ -3142,4 +3141,4 @@ void PreferencesInterface::GUIData::InitializeCategories()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInterface.cpp - Released 2024-12-17T18:15:44Z
+// EOF PreferencesInterface.cpp - Released 2024-12-23T11:33:28Z

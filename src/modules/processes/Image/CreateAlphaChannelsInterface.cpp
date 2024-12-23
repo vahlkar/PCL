@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.5
 // ----------------------------------------------------------------------------
-// CreateAlphaChannelsInterface.cpp - Released 2024-12-17T18:15:44Z
+// CreateAlphaChannelsInterface.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -387,4 +387,4 @@ CreateAlphaChannelsInterface::GUIData::GUIData( CreateAlphaChannelsInterface& w 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CreateAlphaChannelsInterface.cpp - Released 2024-12-17T18:15:44Z
+// EOF CreateAlphaChannelsInterface.cpp - Released 2024-12-23T11:33:28Z

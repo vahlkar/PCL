@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// drvrfile.c - Released 2024-12-17T18:15:34Z
+// drvrfile.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -1052,4 +1052,4 @@ int stream_write(int hdl, void *buffer, long nbytes)
 }
 
 // ----------------------------------------------------------------------------
-// EOF drvrfile.c - Released 2024-12-17T18:15:34Z
+// EOF drvrfile.c - Released 2024-12-23T11:33:12Z

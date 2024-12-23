@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// jcarith.c - Released 2024-12-17T18:15:34Z
+// jcarith.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -997,4 +997,4 @@ jinit_arith_encoder (j_compress_ptr cinfo)
 }
 
 // ----------------------------------------------------------------------------
-// EOF jcarith.c - Released 2024-12-17T18:15:34Z
+// EOF jcarith.c - Released 2024-12-23T11:33:12Z

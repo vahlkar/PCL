@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// fitsio2.h - Released 2024-12-17T18:15:34Z
+// fitsio2.h - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -1350,4 +1350,4 @@ int fits_strncasecmp(const char *s1, const char *s2, size_t n);
 #endif
 
 // ----------------------------------------------------------------------------
-// EOF fitsio2.h - Released 2024-12-17T18:15:34Z
+// EOF fitsio2.h - Released 2024-12-23T11:33:12Z

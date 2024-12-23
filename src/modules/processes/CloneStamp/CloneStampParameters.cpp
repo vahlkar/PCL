@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard CloneStamp Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// CloneStampParameters.cpp - Released 2024-12-17T18:15:44Z
+// CloneStampParameters.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CloneStamp PixInsight module.
 //
@@ -359,4 +359,4 @@ double CSBoundsColor::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CloneStampParameters.cpp - Released 2024-12-17T18:15:44Z
+// EOF CloneStampParameters.cpp - Released 2024-12-23T11:33:28Z

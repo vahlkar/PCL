@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard NoiseGeneration Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// SimplexNoiseInstance.h - Released 2024-12-17T18:15:44Z
+// SimplexNoiseInstance.h - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NoiseGeneration PixInsight module.
 //
@@ -94,4 +94,4 @@ private:
 #endif   // __SimplexNoiseInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF SimplexNoiseInstance.h - Released 2024-12-17T18:15:44Z
+// EOF SimplexNoiseInstance.h - Released 2024-12-23T11:33:28Z

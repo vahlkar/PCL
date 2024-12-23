@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.8.4
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.6.1
+// Standard Global Process Module Version 1.6.2
 // ----------------------------------------------------------------------------
-// PreferencesParameters.h - Released 2024-12-17T18:15:44Z
+// PreferencesParameters.h - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -355,7 +355,7 @@ DECLARE_BOOLEAN_METAPARAMETER ( ImageWindow, zoomAtCursor,                     t
 DECLARE_UINT32_METAPARAMETER  ( ImageWindow, wheelStepAngle,                   15, 1, 90 )
 DECLARE_INT32_METAPARAMETER   ( ImageWindow, wheelDirection,                   0, -1, 0 )
 DECLARE_BOOLEAN_METAPARAMETER ( ImageWindow, touchEvents,                      true )
-DECLARE_DOUBLE_METAPARAMETER  ( ImageWindow, pinchSensitivity,                 0.050, 0.0, 1.0 )
+DECLARE_DOUBLE_METAPARAMETER  ( ImageWindow, pinchSensitivity,                 8, 1, 32 )
 DECLARE_BOOLEAN_METAPARAMETER ( ImageWindow, fastScreenRenditions,             true )
 DECLARE_INT32_METAPARAMETER   ( ImageWindow, fastScreenRenditionThreshold,     6, 0, 64 )
 DECLARE_BOOLEAN_METAPARAMETER ( ImageWindow, highDPIRenditions,                true )
@@ -437,4 +437,4 @@ PCL_END_LOCAL
 #endif   // __PreferencesParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesParameters.h - Released 2024-12-17T18:15:44Z
+// EOF PreferencesParameters.h - Released 2024-12-23T11:33:28Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ArcsinhStretch Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// ArcsinhStretchInterface.h - Released 2024-12-17T18:15:44Z
+// ArcsinhStretchInterface.h - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ArcsinhStretch PixInsight module.
 //
@@ -176,4 +176,4 @@ PCL_END_LOCAL
 #endif   // __ArcsinhStretchInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF ArcsinhStretchInterface.h - Released 2024-12-17T18:15:44Z
+// EOF ArcsinhStretchInterface.h - Released 2024-12-23T11:33:28Z

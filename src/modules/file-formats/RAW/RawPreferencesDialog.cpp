@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard RAW File Format Module Version 1.6.3
 // ----------------------------------------------------------------------------
-// RawPreferencesDialog.cpp - Released 2024-12-17T18:15:34Z
+// RawPreferencesDialog.cpp - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RAW PixInsight module.
 //
@@ -707,4 +707,4 @@ void RawPreferencesDialog::Dialog_Return( Dialog& sender, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RawPreferencesDialog.cpp - Released 2024-12-17T18:15:34Z
+// EOF RawPreferencesDialog.cpp - Released 2024-12-23T11:33:12Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.9.5
 // ----------------------------------------------------------------------------
-// ColorCalibrationProcess.cpp - Released 2024-12-17T18:15:44Z
+// ColorCalibrationProcess.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -265,4 +265,4 @@ int ColorCalibrationProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ColorCalibrationProcess.cpp - Released 2024-12-17T18:15:44Z
+// EOF ColorCalibrationProcess.cpp - Released 2024-12-23T11:33:28Z

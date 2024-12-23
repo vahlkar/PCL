@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard GREYCstoration Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// GREYCstorationInterface.cpp - Released 2024-12-17T18:15:44Z
+// GREYCstorationInterface.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GREYCstoration PixInsight module.
 //
@@ -414,4 +414,4 @@ GREYCstorationInterface::GUIData::GUIData( GREYCstorationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GREYCstorationInterface.cpp - Released 2024-12-17T18:15:44Z
+// EOF GREYCstorationInterface.cpp - Released 2024-12-23T11:33:28Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG2000 File Format Module Version 1.0.3
 // ----------------------------------------------------------------------------
-// jas_icc.c - Released 2024-12-17T18:15:34Z
+// jas_icc.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG2000 PixInsight module.
 //
@@ -1774,4 +1774,4 @@ jas_iccprof_t *jas_iccprof_createfromclrspc(int clrspc)
 }
 
 // ----------------------------------------------------------------------------
-// EOF jas_icc.c - Released 2024-12-17T18:15:34Z
+// EOF jas_icc.c - Released 2024-12-23T11:33:12Z

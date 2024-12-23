@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// jcmainct.c - Released 2024-12-17T18:15:34Z
+// jcmainct.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -349,4 +349,4 @@ jinit_c_main_controller (j_compress_ptr cinfo, boolean need_full_buffer)
 }
 
 // ----------------------------------------------------------------------------
-// EOF jcmainct.c - Released 2024-12-17T18:15:34Z
+// EOF jcmainct.c - Released 2024-12-23T11:33:12Z

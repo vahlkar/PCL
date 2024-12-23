@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.5
 // ----------------------------------------------------------------------------
-// StatisticsInterface.cpp - Released 2024-12-17T18:15:44Z
+// StatisticsInterface.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -1413,4 +1413,4 @@ StatisticsInterface::GUIData::GUIData( StatisticsInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF StatisticsInterface.cpp - Released 2024-12-17T18:15:44Z
+// EOF StatisticsInterface.cpp - Released 2024-12-23T11:33:28Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// jmorecfg.h - Released 2024-12-17T18:15:34Z
+// jmorecfg.h - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -520,4 +520,4 @@ typedef enum { FALSE = 0, TRUE = 1 } boolean;
 #endif /* JPEG_INTERNAL_OPTIONS */
 
 // ----------------------------------------------------------------------------
-// EOF jmorecfg.h - Released 2024-12-17T18:15:34Z
+// EOF jmorecfg.h - Released 2024-12-23T11:33:12Z

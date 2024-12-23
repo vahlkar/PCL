@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.2
 // ----------------------------------------------------------------------------
-// BinarizeParameters.cpp - Released 2024-12-17T18:15:44Z
+// BinarizeParameters.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -180,4 +180,4 @@ bool BinarizeIsGlobal::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BinarizeParameters.cpp - Released 2024-12-17T18:15:44Z
+// EOF BinarizeParameters.cpp - Released 2024-12-23T11:33:28Z

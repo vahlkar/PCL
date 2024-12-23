@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// ChannelParameters.h - Released 2024-12-17T18:15:44Z
+// ChannelParameters.h - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -159,4 +159,4 @@ public:
 #endif   // __ChannelParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF ChannelParameters.h - Released 2024-12-17T18:15:44Z
+// EOF ChannelParameters.h - Released 2024-12-23T11:33:28Z

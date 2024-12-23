@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// histo.c - Released 2024-12-17T18:15:34Z
+// histo.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -2590,4 +2590,4 @@ int ffcalchist(long totalrows, long offset, long firstrow, long nrows,
 }
 
 // ----------------------------------------------------------------------------
-// EOF histo.c - Released 2024-12-17T18:15:34Z
+// EOF histo.c - Released 2024-12-23T11:33:12Z

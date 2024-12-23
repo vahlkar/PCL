@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// IntegerResampleProcess.h - Released 2024-12-17T18:15:44Z
+// IntegerResampleProcess.h - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -89,4 +89,4 @@ PCL_END_LOCAL
 #endif   // __IntegerResampleProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF IntegerResampleProcess.h - Released 2024-12-17T18:15:44Z
+// EOF IntegerResampleProcess.h - Released 2024-12-23T11:33:28Z

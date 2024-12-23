@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard NoiseGeneration Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// NoiseGeneratorInstance.cpp - Released 2024-12-17T18:15:44Z
+// NoiseGeneratorInstance.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NoiseGeneration PixInsight module.
 //
@@ -224,4 +224,4 @@ void* NoiseGeneratorInstance::LockParameter( const MetaParameter* p, size_type /
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF NoiseGeneratorInstance.cpp - Released 2024-12-17T18:15:44Z
+// EOF NoiseGeneratorInstance.cpp - Released 2024-12-23T11:33:28Z

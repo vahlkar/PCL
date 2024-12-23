@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard EphemerisGeneration Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// Integration.h - Released 2024-12-17T18:15:44Z
+// Integration.h - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -1345,4 +1345,4 @@ __recurse:
 #endif   // __Integration_h
 
 // ----------------------------------------------------------------------------
-// EOF Integration.h - Released 2024-12-17T18:15:44Z
+// EOF Integration.h - Released 2024-12-23T11:33:28Z

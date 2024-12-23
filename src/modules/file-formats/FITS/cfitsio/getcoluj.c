@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// getcoluj.c - Released 2024-12-17T18:15:34Z
+// getcoluj.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -3947,4 +3947,4 @@ int fffstru8(char *input,         /* I - array of values to be converted     */
 }
 
 // ----------------------------------------------------------------------------
-// EOF getcoluj.c - Released 2024-12-17T18:15:34Z
+// EOF getcoluj.c - Released 2024-12-23T11:33:12Z

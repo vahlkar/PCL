@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// jdsample.c - Released 2024-12-17T18:15:34Z
+// jdsample.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -393,4 +393,4 @@ jinit_upsampler (j_decompress_ptr cinfo)
 }
 
 // ----------------------------------------------------------------------------
-// EOF jdsample.c - Released 2024-12-17T18:15:34Z
+// EOF jdsample.c - Released 2024-12-23T11:33:12Z

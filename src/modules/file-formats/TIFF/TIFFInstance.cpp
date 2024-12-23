@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard TIFF File Format Module Version 1.0.10
 // ----------------------------------------------------------------------------
-// TIFFInstance.cpp - Released 2024-12-17T18:15:34Z
+// TIFFInstance.cpp - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard TIFF PixInsight module.
 //
@@ -705,4 +705,4 @@ void TIFFInstance::WriteImage( const UInt32Image& image )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF TIFFInstance.cpp - Released 2024-12-17T18:15:34Z
+// EOF TIFFInstance.cpp - Released 2024-12-23T11:33:12Z

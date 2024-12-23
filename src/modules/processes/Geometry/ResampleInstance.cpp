@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// ResampleInstance.cpp - Released 2024-12-17T18:15:44Z
+// ResampleInstance.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -291,4 +291,4 @@ void* ResampleInstance::LockParameter( const MetaParameter* p, size_type /*table
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ResampleInstance.cpp - Released 2024-12-17T18:15:44Z
+// EOF ResampleInstance.cpp - Released 2024-12-23T11:33:28Z

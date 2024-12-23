@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard APASS Process Module Version 1.1.5
 // ----------------------------------------------------------------------------
-// APASSProcess.cpp - Released 2024-12-17T18:15:44Z
+// APASSProcess.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard APASS PixInsight module.
 //
@@ -702,4 +702,4 @@ void APASSProcess::SavePreferences( int dr )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF APASSProcess.cpp - Released 2024-12-17T18:15:44Z
+// EOF APASSProcess.cpp - Released 2024-12-23T11:33:28Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// drvrmem.c - Released 2024-12-17T18:15:34Z
+// drvrmem.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -1353,4 +1353,4 @@ void bzip2uncompress2mem(char *filename, FILE *diskfile, int hdl,
 #endif
 
 // ----------------------------------------------------------------------------
-// EOF drvrmem.c - Released 2024-12-17T18:15:34Z
+// EOF drvrmem.c - Released 2024-12-23T11:33:12Z

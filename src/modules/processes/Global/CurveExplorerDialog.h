@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.8.4
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.6.1
+// Standard Global Process Module Version 1.6.2
 // ----------------------------------------------------------------------------
-// CurveExplorerDialog.h - Released 2024-12-17T18:15:44Z
+// CurveExplorerDialog.h - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -131,4 +131,4 @@ private:
 #endif   // __CurveExplorerDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF CurveExplorerDialog.h - Released 2024-12-17T18:15:44Z
+// EOF CurveExplorerDialog.h - Released 2024-12-23T11:33:28Z

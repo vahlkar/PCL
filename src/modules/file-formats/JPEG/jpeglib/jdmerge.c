@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// jdmerge.c - Released 2024-12-17T18:15:34Z
+// jdmerge.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -489,4 +489,4 @@ jinit_merged_upsampler (j_decompress_ptr cinfo)
 #endif /* UPSAMPLE_MERGING_SUPPORTED */
 
 // ----------------------------------------------------------------------------
-// EOF jdmerge.c - Released 2024-12-17T18:15:34Z
+// EOF jdmerge.c - Released 2024-12-23T11:33:12Z

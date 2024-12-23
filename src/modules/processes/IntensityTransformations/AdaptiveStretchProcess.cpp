@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.2
 // ----------------------------------------------------------------------------
-// AdaptiveStretchProcess.cpp - Released 2024-12-17T18:15:44Z
+// AdaptiveStretchProcess.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -141,4 +141,4 @@ ProcessImplementation* AdaptiveStretchProcess::Clone( const ProcessImplementatio
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF AdaptiveStretchProcess.cpp - Released 2024-12-17T18:15:44Z
+// EOF AdaptiveStretchProcess.cpp - Released 2024-12-23T11:33:28Z

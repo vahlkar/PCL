@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsHdrComposition.cpp - Released 2024-12-17T18:15:44Z
+// GradientsHdrComposition.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
@@ -406,4 +406,4 @@ void GradientsHdrComposition::hdrComposition( imageListType_t const& rImageList_
 }; // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF GradientsHdrComposition.cpp - Released 2024-12-17T18:15:44Z
+// EOF GradientsHdrComposition.cpp - Released 2024-12-23T11:33:28Z

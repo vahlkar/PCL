@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// jfdctflt.c - Released 2024-12-17T18:15:34Z
+// jfdctflt.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -228,4 +228,4 @@ jpeg_fdct_float (FAST_FLOAT * data, JSAMPARRAY sample_data, JDIMENSION start_col
 #endif /* DCT_FLOAT_SUPPORTED */
 
 // ----------------------------------------------------------------------------
-// EOF jfdctflt.c - Released 2024-12-17T18:15:34Z
+// EOF jfdctflt.c - Released 2024-12-23T11:33:12Z

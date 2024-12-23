@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsHdrCompression.cpp - Released 2024-12-17T18:15:44Z
+// GradientsHdrCompression.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
@@ -179,4 +179,4 @@ void GradientsHdrCompression::hdrCompression( realType_t maxGradient_p, realType
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF GradientsHdrCompression.cpp - Released 2024-12-17T18:15:44Z
+// EOF GradientsHdrCompression.cpp - Released 2024-12-23T11:33:28Z

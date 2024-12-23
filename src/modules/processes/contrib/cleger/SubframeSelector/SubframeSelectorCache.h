@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.9.1
 // ----------------------------------------------------------------------------
-// SubframeSelectorCache.h - Released 2024-12-17T18:15:44Z
+// SubframeSelectorCache.h - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -155,4 +155,4 @@ extern SubframeSelectorCache* TheSubframeSelectorCache;
 #endif   // __SubframeSelectorCache_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorCache.h - Released 2024-12-17T18:15:44Z
+// EOF SubframeSelectorCache.h - Released 2024-12-23T11:33:28Z

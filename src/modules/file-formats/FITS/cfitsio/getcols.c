@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// getcols.c - Released 2024-12-17T18:15:34Z
+// getcols.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -1043,4 +1043,4 @@ int ffgcls2 ( fitsfile *fptr,   /* I - FITS file pointer                       *
 }
 
 // ----------------------------------------------------------------------------
-// EOF getcols.c - Released 2024-12-17T18:15:34Z
+// EOF getcols.c - Released 2024-12-23T11:33:12Z

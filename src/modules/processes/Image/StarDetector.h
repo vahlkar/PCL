@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.5
 // ----------------------------------------------------------------------------
-// StarDetector.h - Released 2024-12-17T18:15:44Z
+// StarDetector.h - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -135,4 +135,4 @@ inline String StarData::StatusText() const
 #endif   // __StarDetector_h
 
 // ----------------------------------------------------------------------------
-// EOF StarDetector.h - Released 2024-12-17T18:15:44Z
+// EOF StarDetector.h - Released 2024-12-23T11:33:28Z

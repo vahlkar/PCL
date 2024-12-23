@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard GREYCstoration Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// GREYCstorationParameters.cpp - Released 2024-12-17T18:15:44Z
+// GREYCstorationParameters.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GREYCstoration PixInsight module.
 //
@@ -445,4 +445,4 @@ bool GREYCsCoupledChannels::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GREYCstorationParameters.cpp - Released 2024-12-17T18:15:44Z
+// EOF GREYCstorationParameters.cpp - Released 2024-12-23T11:33:28Z

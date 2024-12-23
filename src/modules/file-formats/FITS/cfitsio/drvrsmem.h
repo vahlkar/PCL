@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// drvrsmem.h - Released 2024-12-17T18:15:34Z
+// drvrsmem.h - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -231,4 +231,4 @@ int	smem_write(int driverhandle, void *buffer, long nbytes);
 #endif
 
 // ----------------------------------------------------------------------------
-// EOF drvrsmem.h - Released 2024-12-17T18:15:34Z
+// EOF drvrsmem.h - Released 2024-12-23T11:33:12Z

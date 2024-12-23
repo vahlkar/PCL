@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard XISF File Format Module Version 1.0.13
 // ----------------------------------------------------------------------------
-// XISFInstance.cpp - Released 2024-12-17T18:15:34Z
+// XISFInstance.cpp - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard XISF PixInsight module.
 //
@@ -1168,4 +1168,4 @@ void XISFInstance::CloseImage()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF XISFInstance.cpp - Released 2024-12-17T18:15:34Z
+// EOF XISFInstance.cpp - Released 2024-12-23T11:33:12Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard FindingChart Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// FindingChartInstance.h - Released 2024-12-17T18:15:44Z
+// FindingChartInstance.h - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FindingChart PixInsight module.
 //
@@ -125,4 +125,4 @@ private:
 #endif   // __FindingChartInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF FindingChartInstance.h - Released 2024-12-17T18:15:44Z
+// EOF FindingChartInstance.h - Released 2024-12-23T11:33:28Z

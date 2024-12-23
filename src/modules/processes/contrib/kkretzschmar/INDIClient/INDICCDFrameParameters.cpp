@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// INDICCDFrameParameters.cpp - Released 2024-12-17T18:15:44Z
+// INDICCDFrameParameters.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -822,4 +822,4 @@ DEFINE_STRING_PARAMETER_CLASS( ICFCCDMode, "ccdMode" );
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDICCDFrameParameters.cpp - Released 2024-12-17T18:15:44Z
+// EOF INDICCDFrameParameters.cpp - Released 2024-12-23T11:33:28Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// drvrnet.c - Released 2024-12-17T18:15:34Z
+// drvrnet.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -4497,4 +4497,4 @@ static int encode64(unsigned s_len, char *src, unsigned d_len, char *dst) {
 #endif
 
 // ----------------------------------------------------------------------------
-// EOF drvrnet.c - Released 2024-12-17T18:15:34Z
+// EOF drvrnet.c - Released 2024-12-23T11:33:12Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard NoOperation Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// NoOperationProcess.cpp - Released 2024-12-17T18:15:44Z
+// NoOperationProcess.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NoOperation PixInsight module.
 //
@@ -152,4 +152,4 @@ ProcessImplementation* NoOperationProcess::Clone( const ProcessImplementation& p
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF NoOperationProcess.cpp - Released 2024-12-17T18:15:44Z
+// EOF NoOperationProcess.cpp - Released 2024-12-23T11:33:28Z

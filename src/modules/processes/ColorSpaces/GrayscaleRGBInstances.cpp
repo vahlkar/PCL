@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// GrayscaleRGBInstances.cpp - Released 2024-12-17T18:15:44Z
+// GrayscaleRGBInstances.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -188,4 +188,4 @@ bool ConvertToRGBColorInstance::ExecuteOn( View& view )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GrayscaleRGBInstances.cpp - Released 2024-12-17T18:15:44Z
+// EOF GrayscaleRGBInstances.cpp - Released 2024-12-23T11:33:28Z

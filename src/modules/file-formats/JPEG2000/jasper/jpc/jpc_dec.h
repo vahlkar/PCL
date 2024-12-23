@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG2000 File Format Module Version 1.0.3
 // ----------------------------------------------------------------------------
-// jpc_dec.h - Released 2024-12-17T18:15:34Z
+// jpc_dec.h - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG2000 PixInsight module.
 //
@@ -748,4 +748,4 @@ void jpc_seglist_insert(jpc_dec_seglist_t *list, jpc_dec_seg_t *ins,
 #endif
 
 // ----------------------------------------------------------------------------
-// EOF jpc_dec.h - Released 2024-12-17T18:15:34Z
+// EOF jpc_dec.h - Released 2024-12-23T11:33:12Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// group.h - Released 2024-12-17T18:15:34Z
+// group.h - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -119,4 +119,4 @@ int fits_unencode_url(char *inpath, char *outpath, int *status);
 int fits_is_url_absolute(char *url);
 
 // ----------------------------------------------------------------------------
-// EOF group.h - Released 2024-12-17T18:15:34Z
+// EOF group.h - Released 2024-12-23T11:33:12Z

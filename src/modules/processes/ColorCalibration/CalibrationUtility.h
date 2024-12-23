@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.9.5
 // ----------------------------------------------------------------------------
-// CalibrationUtility.h - Released 2024-12-17T18:15:44Z
+// CalibrationUtility.h - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -123,4 +123,4 @@ void CreateStarMapWindow( int width, int height, const IsoString& id, const Arra
 #endif   // __CalibrationUtility_h
 
 // ----------------------------------------------------------------------------
-// EOF CalibrationUtility.h - Released 2024-12-17T18:15:44Z
+// EOF CalibrationUtility.h - Released 2024-12-23T11:33:28Z

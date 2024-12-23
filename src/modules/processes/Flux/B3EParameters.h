@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Flux Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// B3EParameters.h - Released 2024-12-17T18:15:44Z
+// B3EParameters.h - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Flux PixInsight module.
 //
@@ -576,4 +576,4 @@ PCL_END_LOCAL
 #endif   // __B3EParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF B3EParameters.h - Released 2024-12-17T18:15:44Z
+// EOF B3EParameters.h - Released 2024-12-23T11:33:28Z

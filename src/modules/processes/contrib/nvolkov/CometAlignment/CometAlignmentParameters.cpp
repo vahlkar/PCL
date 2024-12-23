@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard CometAlignment Process Module Version 1.3.8
 // ----------------------------------------------------------------------------
-// CometAlignmentParameters.cpp - Released 2024-12-17T18:15:44Z
+// CometAlignmentParameters.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CometAlignment PixInsight module.
 //
@@ -894,4 +894,4 @@ double CAMaxFileWriteThreads::MaximumValue() const
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF CometAlignmentParameters.cpp - Released 2024-12-17T18:15:44Z
+// EOF CometAlignmentParameters.cpp - Released 2024-12-23T11:33:28Z

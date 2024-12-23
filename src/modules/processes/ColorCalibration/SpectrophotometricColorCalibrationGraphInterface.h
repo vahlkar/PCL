@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.9.5
 // ----------------------------------------------------------------------------
-// SpectrophotometricColorCalibrationGraphInterface.h - Released 2024-12-17T18:15:44Z
+// SpectrophotometricColorCalibrationGraphInterface.h - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -88,4 +88,4 @@ extern SpectrophotometricColorCalibrationGraphInterface* TheSpectrophotometricCo
 #endif   // __SpectrophotometricColorCalibrationGraphInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF SpectrophotometricColorCalibrationGraphInterface.h - Released 2024-12-17T18:15:44Z
+// EOF SpectrophotometricColorCalibrationGraphInterface.h - Released 2024-12-23T11:33:28Z

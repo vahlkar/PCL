@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// putcoll.c - Released 2024-12-17T18:15:34Z
+// putcoll.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -423,4 +423,4 @@ int ffpclx( fitsfile *fptr,  /* I - FITS file pointer                       */
 }
 
 // ----------------------------------------------------------------------------
-// EOF putcoll.c - Released 2024-12-17T18:15:34Z
+// EOF putcoll.c - Released 2024-12-23T11:33:12Z

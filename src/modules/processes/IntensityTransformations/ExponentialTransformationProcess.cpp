@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.2
 // ----------------------------------------------------------------------------
-// ExponentialTransformationProcess.cpp - Released 2024-12-17T18:15:44Z
+// ExponentialTransformationProcess.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -136,4 +136,4 @@ ProcessImplementation* ExponentialTransformationProcess::Clone( const ProcessImp
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ExponentialTransformationProcess.cpp - Released 2024-12-17T18:15:44Z
+// EOF ExponentialTransformationProcess.cpp - Released 2024-12-23T11:33:28Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard RestorationFilters Process Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// RestorationFilterModule.h - Released 2024-12-17T18:15:44Z
+// RestorationFilterModule.h - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RestorationFilters PixInsight module.
 //
@@ -84,4 +84,4 @@ public:
 #endif   // __RestorationFilterModule_h
 
 // ----------------------------------------------------------------------------
-// EOF RestorationFilterModule.h - Released 2024-12-17T18:15:44Z
+// EOF RestorationFilterModule.h - Released 2024-12-23T11:33:28Z

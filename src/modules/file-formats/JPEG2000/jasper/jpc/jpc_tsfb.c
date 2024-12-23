@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG2000 File Format Module Version 1.0.3
 // ----------------------------------------------------------------------------
-// jpc_tsfb.c - Released 2024-12-17T18:15:34Z
+// jpc_tsfb.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG2000 PixInsight module.
 //
@@ -340,4 +340,4 @@ void jpc_tsfb_getbands2(jpc_tsfb_t *tsfb, int locxstart, int locystart,
 }
 
 // ----------------------------------------------------------------------------
-// EOF jpc_tsfb.c - Released 2024-12-17T18:15:34Z
+// EOF jpc_tsfb.c - Released 2024-12-23T11:33:12Z

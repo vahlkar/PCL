@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard TIFF File Format Module Version 1.0.10
 // ----------------------------------------------------------------------------
-// tif_extension.c - Released 2024-12-17T18:15:34Z
+// tif_extension.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard TIFF PixInsight module.
 //
@@ -162,4 +162,4 @@ void TIFFSetClientInfo(TIFF *tif, void *data, const char *name)
 }
 
 // ----------------------------------------------------------------------------
-// EOF tif_extension.c - Released 2024-12-17T18:15:34Z
+// EOF tif_extension.c - Released 2024-12-23T11:33:12Z

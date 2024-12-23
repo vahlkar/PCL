@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// buffers.c - Released 2024-12-17T18:15:34Z
+// buffers.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -1428,4 +1428,4 @@ int ffpr8b(fitsfile *fptr, /* I - FITS file pointer                         */
 }
 
 // ----------------------------------------------------------------------------
-// EOF buffers.c - Released 2024-12-17T18:15:34Z
+// EOF buffers.c - Released 2024-12-23T11:33:12Z

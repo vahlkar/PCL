@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.5
 // ----------------------------------------------------------------------------
-// NewImageProcess.cpp - Released 2024-12-17T18:15:44Z
+// NewImageProcess.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -375,4 +375,4 @@ int NewImageProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF NewImageProcess.cpp - Released 2024-12-17T18:15:44Z
+// EOF NewImageProcess.cpp - Released 2024-12-23T11:33:28Z

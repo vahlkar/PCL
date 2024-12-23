@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard NetworkService Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// NetworkServiceInterface.cpp - Released 2024-12-17T18:15:44Z
+// NetworkServiceInterface.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NetworkService PixInsight module.
 //
@@ -419,4 +419,4 @@ NetworkServiceInterface::GUIData::GUIData( NetworkServiceInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF NetworkServiceInterface.cpp - Released 2024-12-17T18:15:44Z
+// EOF NetworkServiceInterface.cpp - Released 2024-12-23T11:33:28Z

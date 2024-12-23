@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard FindingChart Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// FindingChartInterface.h - Released 2024-12-17T18:15:44Z
+// FindingChartInterface.h - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FindingChart PixInsight module.
 //
@@ -236,4 +236,4 @@ PCL_END_LOCAL
 #endif   // __FindingChartInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF FindingChartInterface.h - Released 2024-12-17T18:15:44Z
+// EOF FindingChartInterface.h - Released 2024-12-23T11:33:28Z

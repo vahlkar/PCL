@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// Pixel.h - Released 2024-12-17T18:15:44Z
+// Pixel.h - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -426,4 +426,4 @@ typedef Array<Pixel> PixelList;
 #endif   // __Pixel_h
 
 // ----------------------------------------------------------------------------
-// EOF Pixel.h - Released 2024-12-17T18:15:44Z
+// EOF Pixel.h - Released 2024-12-23T11:33:28Z

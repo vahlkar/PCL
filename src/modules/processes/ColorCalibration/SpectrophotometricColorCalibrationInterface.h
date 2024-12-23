@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.9.5
 // ----------------------------------------------------------------------------
-// SpectrophotometricColorCalibrationInterface.h - Released 2024-12-17T18:15:44Z
+// SpectrophotometricColorCalibrationInterface.h - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -256,4 +256,4 @@ PCL_END_LOCAL
 #endif   // __SpectrophotometricColorCalibrationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF SpectrophotometricColorCalibrationInterface.h - Released 2024-12-17T18:15:44Z
+// EOF SpectrophotometricColorCalibrationInterface.h - Released 2024-12-23T11:33:28Z

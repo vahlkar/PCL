@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// FastRotationActions.cpp - Released 2024-12-17T18:15:44Z
+// FastRotationActions.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -186,4 +186,4 @@ bool VerticalMirrorAction::IsEnabled( ActionInfo info ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FastRotationActions.cpp - Released 2024-12-17T18:15:44Z
+// EOF FastRotationActions.cpp - Released 2024-12-23T11:33:28Z

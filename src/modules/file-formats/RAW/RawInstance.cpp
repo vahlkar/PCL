@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard RAW File Format Module Version 1.6.3
 // ----------------------------------------------------------------------------
-// RawInstance.cpp - Released 2024-12-17T18:15:34Z
+// RawInstance.cpp - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RAW PixInsight module.
 //
@@ -1625,4 +1625,4 @@ UInt8Image RawInstance::ReadThumbnail()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RawInstance.cpp - Released 2024-12-17T18:15:34Z
+// EOF RawInstance.cpp - Released 2024-12-23T11:33:12Z

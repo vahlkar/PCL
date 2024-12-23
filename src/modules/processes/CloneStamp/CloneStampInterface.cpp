@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard CloneStamp Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// CloneStampInterface.cpp - Released 2024-12-17T18:15:44Z
+// CloneStampInterface.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CloneStamp PixInsight module.
 //
@@ -1915,4 +1915,4 @@ CloneStampInterface::GUIData::GUIData( CloneStampInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CloneStampInterface.cpp - Released 2024-12-17T18:15:44Z
+// EOF CloneStampInterface.cpp - Released 2024-12-23T11:33:28Z

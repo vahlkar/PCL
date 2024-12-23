@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.2
 // ----------------------------------------------------------------------------
-// CurvesTransformationInstance.cpp - Released 2024-12-17T18:15:44Z
+// CurvesTransformationInstance.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -935,4 +935,4 @@ size_type CurvesTransformationInstance::ParameterLength( const MetaParameter* p,
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CurvesTransformationInstance.cpp - Released 2024-12-17T18:15:44Z
+// EOF CurvesTransformationInstance.cpp - Released 2024-12-23T11:33:28Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard EphemerisGeneration Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// Ephemerides.h - Released 2024-12-17T18:15:44Z
+// Ephemerides.h - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard EphemerisGeneration PixInsight module.
 //
@@ -128,4 +128,4 @@ private:
 #endif   // __Ephemerides_h
 
 // ----------------------------------------------------------------------------
-// EOF Ephemerides.h - Released 2024-12-17T18:15:44Z
+// EOF Ephemerides.h - Released 2024-12-23T11:33:28Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// JPEGOptionsDialog.cpp - Released 2024-12-17T18:15:34Z
+// JPEGOptionsDialog.cpp - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -224,4 +224,4 @@ void JPEGOptionsDialog::Dialog_Return( Dialog& /*sender*/, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF JPEGOptionsDialog.cpp - Released 2024-12-17T18:15:34Z
+// EOF JPEGOptionsDialog.cpp - Released 2024-12-23T11:33:12Z

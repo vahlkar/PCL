@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// putcolsb.c - Released 2024-12-17T18:15:34Z
+// putcolsb.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -1041,4 +1041,4 @@ int ffs1fstr(signed char *input, /* I - array of values to be converted  */
 }
 
 // ----------------------------------------------------------------------------
-// EOF putcolsb.c - Released 2024-12-17T18:15:34Z
+// EOF putcolsb.c - Released 2024-12-23T11:33:12Z

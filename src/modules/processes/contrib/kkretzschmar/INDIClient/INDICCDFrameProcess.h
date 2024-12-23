@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// INDICCDFrameProcess.h - Released 2024-12-17T18:15:44Z
+// INDICCDFrameProcess.h - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -92,4 +92,4 @@ PCL_END_LOCAL
 #endif // __INDICCDFrameProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF INDICCDFrameProcess.h - Released 2024-12-17T18:15:44Z
+// EOF INDICCDFrameProcess.h - Released 2024-12-23T11:33:28Z

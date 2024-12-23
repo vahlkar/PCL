@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// jctrans.c - Released 2024-12-17T18:15:34Z
+// jctrans.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -451,4 +451,4 @@ transencode_coef_controller (j_compress_ptr cinfo,
 }
 
 // ----------------------------------------------------------------------------
-// EOF jctrans.c - Released 2024-12-17T18:15:34Z
+// EOF jctrans.c - Released 2024-12-23T11:33:12Z

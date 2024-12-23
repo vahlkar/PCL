@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// putcole.c - Released 2024-12-17T18:15:34Z
+// putcole.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -1150,4 +1150,4 @@ int ffr4fstr(float *input,     /* I - array of values to be converted  */
 }
 
 // ----------------------------------------------------------------------------
-// EOF putcole.c - Released 2024-12-17T18:15:34Z
+// EOF putcole.c - Released 2024-12-23T11:33:12Z

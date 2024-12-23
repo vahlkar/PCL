@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard TIFF File Format Module Version 1.0.10
 // ----------------------------------------------------------------------------
-// tif_error.c - Released 2024-12-17T18:15:34Z
+// tif_error.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard TIFF PixInsight module.
 //
@@ -184,4 +184,4 @@ void TIFFErrorExtR(TIFF *tif, const char *module, const char *fmt, ...)
 }
 
 // ----------------------------------------------------------------------------
-// EOF tif_error.c - Released 2024-12-17T18:15:34Z
+// EOF tif_error.c - Released 2024-12-23T11:33:12Z

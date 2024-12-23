@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.8.4
 // ----------------------------------------------------------------------------
-// pcl/Math.h - Released 2024-12-17T18:15:11Z
+// pcl/Math.h - Released 2024-12-23T11:32:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -5070,4 +5070,4 @@ inline uint32 Hash32( const void* data, size_type size, uint32 seed = 0 ) noexce
 #endif   // __PCL_Math_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Math.h - Released 2024-12-17T18:15:11Z
+// EOF pcl/Math.h - Released 2024-12-23T11:32:56Z

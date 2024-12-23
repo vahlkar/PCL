@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// jversion.h - Released 2024-12-17T18:15:34Z
+// jversion.h - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -66,4 +66,4 @@
 #define JCOPYRIGHT	"Copyright (C) 2024, Thomas G. Lane, Guido Vollbeding"
 
 // ----------------------------------------------------------------------------
-// EOF jversion.h - Released 2024-12-17T18:15:34Z
+// EOF jversion.h - Released 2024-12-23T11:33:12Z

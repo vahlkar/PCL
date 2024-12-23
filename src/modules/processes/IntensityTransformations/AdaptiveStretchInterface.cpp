@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.2
 // ----------------------------------------------------------------------------
-// AdaptiveStretchInterface.cpp - Released 2024-12-17T18:15:44Z
+// AdaptiveStretchInterface.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -581,4 +581,4 @@ AdaptiveStretchInterface::GUIData::GUIData( AdaptiveStretchInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF AdaptiveStretchInterface.cpp - Released 2024-12-17T18:15:44Z
+// EOF AdaptiveStretchInterface.cpp - Released 2024-12-23T11:33:28Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG2000 File Format Module Version 1.0.3
 // ----------------------------------------------------------------------------
-// jpc_t1dec.c - Released 2024-12-17T18:15:34Z
+// jpc_t1dec.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG2000 PixInsight module.
 //
@@ -974,4 +974,4 @@ static int dec_clnpass(jpc_dec_t *dec, register jpc_mqdec_t *mqdec, int bitpos, 
 }
 
 // ----------------------------------------------------------------------------
-// EOF jpc_t1dec.c - Released 2024-12-17T18:15:34Z
+// EOF jpc_t1dec.c - Released 2024-12-23T11:33:12Z

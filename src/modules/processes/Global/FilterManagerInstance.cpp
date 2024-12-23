@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.8.4
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.6.1
+// Standard Global Process Module Version 1.6.2
 // ----------------------------------------------------------------------------
-// FilterManagerInstance.cpp - Released 2024-12-17T18:15:44Z
+// FilterManagerInstance.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -350,4 +350,4 @@ size_type FilterManagerInstance::ParameterLength( const MetaParameter* p, size_t
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FilterManagerInstance.cpp - Released 2024-12-17T18:15:44Z
+// EOF FilterManagerInstance.cpp - Released 2024-12-23T11:33:28Z

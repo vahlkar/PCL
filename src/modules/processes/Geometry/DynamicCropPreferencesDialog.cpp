@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// DynamicCropPreferencesDialog.cpp - Released 2024-12-17T18:15:44Z
+// DynamicCropPreferencesDialog.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -179,4 +179,4 @@ void DynamicCropPreferencesDialog::__Return( Dialog& sender, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DynamicCropPreferencesDialog.cpp - Released 2024-12-17T18:15:44Z
+// EOF DynamicCropPreferencesDialog.cpp - Released 2024-12-23T11:33:28Z

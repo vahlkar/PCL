@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsModule.cpp - Released 2024-12-17T18:15:44Z
+// GradientsModule.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
@@ -36,7 +36,7 @@
 
 #define MODULE_RELEASE_YEAR      2024
 #define MODULE_RELEASE_MONTH     12
-#define MODULE_RELEASE_DAY       17
+#define MODULE_RELEASE_DAY       23
 
 #include "GradientsHdrCompositionInterface.h"
 #include "GradientsHdrCompositionProcess.h"
@@ -161,4 +161,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF GradientsModule.cpp - Released 2024-12-17T18:15:44Z
+// EOF GradientsModule.cpp - Released 2024-12-23T11:33:28Z

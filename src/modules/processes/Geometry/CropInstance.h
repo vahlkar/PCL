@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// CropInstance.h - Released 2024-12-17T18:15:44Z
+// CropInstance.h - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -102,4 +102,4 @@ private:
 #endif   // __CropInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF CropInstance.h - Released 2024-12-17T18:15:44Z
+// EOF CropInstance.h - Released 2024-12-23T11:33:28Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Debayer Process Module Version 1.12.0
 // ----------------------------------------------------------------------------
-// DebayerInterface.cpp - Released 2024-12-17T18:15:44Z
+// DebayerInterface.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -1223,4 +1223,4 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DebayerInterface.cpp - Released 2024-12-17T18:15:44Z
+// EOF DebayerInterface.cpp - Released 2024-12-23T11:33:28Z

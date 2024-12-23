@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Annotation Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// AnnotationProcess.cpp - Released 2024-12-17T18:15:44Z
+// AnnotationProcess.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Annotation PixInsight module.
 //
@@ -177,4 +177,4 @@ bool AnnotationProcess::CanProcessCommandLines() const
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF AnnotationProcess.cpp - Released 2024-12-17T18:15:44Z
+// EOF AnnotationProcess.cpp - Released 2024-12-23T11:33:28Z

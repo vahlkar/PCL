@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Morphology Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// StructureManagerDialog.cpp - Released 2024-12-17T18:15:44Z
+// StructureManagerDialog.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Morphology PixInsight module.
 //
@@ -416,4 +416,4 @@ void StructureManagerDialog::ControlShow( Control& sender )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF StructureManagerDialog.cpp - Released 2024-12-17T18:15:44Z
+// EOF StructureManagerDialog.cpp - Released 2024-12-23T11:33:28Z

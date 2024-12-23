@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.2
 // ----------------------------------------------------------------------------
-// AdaptiveStretchCurveGraphInterface.h - Released 2024-12-17T18:15:44Z
+// AdaptiveStretchCurveGraphInterface.h - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -151,4 +151,4 @@ PCL_END_LOCAL
 #endif   // __AdaptiveStretchCurveGraphInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF AdaptiveStretchCurveGraphInterface.h - Released 2024-12-17T18:15:44Z
+// EOF AdaptiveStretchCurveGraphInterface.h - Released 2024-12-23T11:33:28Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG2000 File Format Module Version 1.0.3
 // ----------------------------------------------------------------------------
-// jpc_t1enc.h - Released 2024-12-17T18:15:34Z
+// jpc_t1enc.h - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG2000 PixInsight module.
 //
@@ -145,4 +145,4 @@ int jpc_enc_enccblk(jpc_enc_t *enc, jas_stream_t *out, jpc_enc_tcmpt_t *comp,
 #endif
 
 // ----------------------------------------------------------------------------
-// EOF jpc_t1enc.h - Released 2024-12-17T18:15:34Z
+// EOF jpc_t1enc.h - Released 2024-12-23T11:33:12Z

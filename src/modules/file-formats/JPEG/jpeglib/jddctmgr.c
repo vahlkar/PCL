@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// jddctmgr.c - Released 2024-12-17T18:15:34Z
+// jddctmgr.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -436,4 +436,4 @@ jinit_inverse_dct (j_decompress_ptr cinfo)
 }
 
 // ----------------------------------------------------------------------------
-// EOF jddctmgr.c - Released 2024-12-17T18:15:34Z
+// EOF jddctmgr.c - Released 2024-12-23T11:33:12Z

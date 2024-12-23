@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Sandbox Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// SandboxInstance.cpp - Released 2024-12-17T18:15:44Z
+// SandboxInstance.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Sandbox PixInsight module.
 //
@@ -220,4 +220,4 @@ size_type SandboxInstance::ParameterLength( const MetaParameter* p, size_type ta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SandboxInstance.cpp - Released 2024-12-17T18:15:44Z
+// EOF SandboxInstance.cpp - Released 2024-12-23T11:33:28Z

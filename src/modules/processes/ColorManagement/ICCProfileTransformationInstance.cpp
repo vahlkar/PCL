@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorManagement Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// ICCProfileTransformationInstance.cpp - Released 2024-12-17T18:15:44Z
+// ICCProfileTransformationInstance.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorManagement PixInsight module.
 //
@@ -291,4 +291,4 @@ size_type ICCProfileTransformationInstance::ParameterLength( const MetaParameter
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ICCProfileTransformationInstance.cpp - Released 2024-12-17T18:15:44Z
+// EOF ICCProfileTransformationInstance.cpp - Released 2024-12-23T11:33:28Z

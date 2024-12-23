@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.2
 // ----------------------------------------------------------------------------
-// RescaleInstance.cpp - Released 2024-12-17T18:15:44Z
+// RescaleInstance.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -171,4 +171,4 @@ void* RescaleInstance::LockParameter( const MetaParameter* p, size_type /*tableR
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RescaleInstance.cpp - Released 2024-12-17T18:15:44Z
+// EOF RescaleInstance.cpp - Released 2024-12-23T11:33:28Z

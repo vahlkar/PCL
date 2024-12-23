@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.2
 // ----------------------------------------------------------------------------
-// ColorSaturationInstance.cpp - Released 2024-12-17T18:15:44Z
+// ColorSaturationInstance.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -367,4 +367,4 @@ size_type ColorSaturationInstance::ParameterLength( const MetaParameter* /*p*/, 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ColorSaturationInstance.cpp - Released 2024-12-17T18:15:44Z
+// EOF ColorSaturationInstance.cpp - Released 2024-12-23T11:33:28Z

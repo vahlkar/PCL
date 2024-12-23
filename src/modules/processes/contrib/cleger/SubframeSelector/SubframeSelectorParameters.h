@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.9.1
 // ----------------------------------------------------------------------------
-// SubframeSelectorParameters.h - Released 2024-12-17T18:15:44Z
+// SubframeSelectorParameters.h - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -1653,4 +1653,4 @@ PCL_END_LOCAL
 #endif   // __SubframeSelectorParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorParameters.h - Released 2024-12-17T18:15:44Z
+// EOF SubframeSelectorParameters.h - Released 2024-12-23T11:33:28Z

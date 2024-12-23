@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard CloneStamp Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// CloneStampInstance.cpp - Released 2024-12-17T18:15:44Z
+// CloneStampInstance.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CloneStamp PixInsight module.
 //
@@ -723,4 +723,4 @@ size_type CloneStampInstance::ParameterLength( const MetaParameter* p, size_type
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CloneStampInstance.cpp - Released 2024-12-17T18:15:44Z
+// EOF CloneStampInstance.cpp - Released 2024-12-23T11:33:28Z

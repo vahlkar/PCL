@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorManagement Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// AssignICCProfileInstance.h - Released 2024-12-17T18:15:44Z
+// AssignICCProfileInstance.h - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorManagement PixInsight module.
 //
@@ -93,4 +93,4 @@ private:
 #endif   // __AssignICCProfileInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF AssignICCProfileInstance.h - Released 2024-12-17T18:15:44Z
+// EOF AssignICCProfileInstance.h - Released 2024-12-23T11:33:28Z

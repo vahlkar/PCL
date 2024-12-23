@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// jquant1.c - Released 2024-12-17T18:15:34Z
+// jquant1.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -903,4 +903,4 @@ jinit_1pass_quantizer (j_decompress_ptr cinfo)
 #endif /* QUANT_1PASS_SUPPORTED */
 
 // ----------------------------------------------------------------------------
-// EOF jquant1.c - Released 2024-12-17T18:15:34Z
+// EOF jquant1.c - Released 2024-12-23T11:33:12Z

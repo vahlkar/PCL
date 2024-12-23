@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Morphology Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// MorphologicalTransformationParameters.cpp - Released 2024-12-17T18:15:44Z
+// MorphologicalTransformationParameters.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Morphology PixInsight module.
 //
@@ -366,4 +366,4 @@ IsoString MTStructureWayMask::Id() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF MorphologicalTransformationParameters.cpp - Released 2024-12-17T18:15:44Z
+// EOF MorphologicalTransformationParameters.cpp - Released 2024-12-23T11:33:28Z

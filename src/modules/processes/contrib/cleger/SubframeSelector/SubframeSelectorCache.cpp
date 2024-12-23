@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.9.1
 // ----------------------------------------------------------------------------
-// SubframeSelectorCache.cpp - Released 2024-12-17T18:15:44Z
+// SubframeSelectorCache.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -321,4 +321,4 @@ void SubframeSelectorCache::SetMaxItemDuration( int days )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorCache.cpp - Released 2024-12-17T18:15:44Z
+// EOF SubframeSelectorCache.cpp - Released 2024-12-23T11:33:28Z

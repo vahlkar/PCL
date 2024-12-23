@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.5
 // ----------------------------------------------------------------------------
-// SampleFormatConversionProcess.h - Released 2024-12-17T18:15:44Z
+// SampleFormatConversionProcess.h - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -91,4 +91,4 @@ PCL_END_LOCAL
 #endif   // __SampleFormatConversionProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF SampleFormatConversionProcess.h - Released 2024-12-17T18:15:44Z
+// EOF SampleFormatConversionProcess.h - Released 2024-12-23T11:33:28Z

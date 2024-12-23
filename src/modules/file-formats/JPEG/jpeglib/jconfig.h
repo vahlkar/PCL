@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// jconfig.h - Released 2024-12-17T18:15:34Z
+// jconfig.h - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -90,4 +90,4 @@ typedef unsigned char boolean;
 #endif /* JPEG_INTERNALS */
 
 // ----------------------------------------------------------------------------
-// EOF jconfig.h - Released 2024-12-17T18:15:34Z
+// EOF jconfig.h - Released 2024-12-23T11:33:12Z

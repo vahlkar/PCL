@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG2000 File Format Module Version 1.0.3
 // ----------------------------------------------------------------------------
-// jas_iccdata.c - Released 2024-12-17T18:15:34Z
+// jas_iccdata.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG2000 PixInsight module.
 //
@@ -569,4 +569,4 @@ uchar jas_iccprofdata_sgray[] = {
 int jas_iccprofdata_sgraylen = sizeof(jas_iccprofdata_sgray);
 
 // ----------------------------------------------------------------------------
-// EOF jas_iccdata.c - Released 2024-12-17T18:15:34Z
+// EOF jas_iccdata.c - Released 2024-12-23T11:33:12Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// INDICCDFrameInterface.cpp - Released 2024-12-17T18:15:44Z
+// INDICCDFrameInterface.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -1991,4 +1991,4 @@ void INDICCDFrameInterface::e_Click( Button& sender, bool checked )
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDICCDFrameInterface.cpp - Released 2024-12-17T18:15:44Z
+// EOF INDICCDFrameInterface.cpp - Released 2024-12-23T11:33:28Z

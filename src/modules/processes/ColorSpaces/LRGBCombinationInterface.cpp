@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// LRGBCombinationInterface.cpp - Released 2024-12-17T18:15:44Z
+// LRGBCombinationInterface.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -766,4 +766,4 @@ LRGBCombinationInterface::GUIData::GUIData( LRGBCombinationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LRGBCombinationInterface.cpp - Released 2024-12-17T18:15:44Z
+// EOF LRGBCombinationInterface.cpp - Released 2024-12-23T11:33:28Z

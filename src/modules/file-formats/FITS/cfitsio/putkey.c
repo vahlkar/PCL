@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// putkey.c - Released 2024-12-17T18:15:34Z
+// putkey.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -3329,4 +3329,4 @@ int ffd2e(double dval,  /* I - value to be converted to a string */
 }
 
 // ----------------------------------------------------------------------------
-// EOF putkey.c - Released 2024-12-17T18:15:34Z
+// EOF putkey.c - Released 2024-12-23T11:33:12Z

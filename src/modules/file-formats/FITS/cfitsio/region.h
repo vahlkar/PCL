@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// region.h - Released 2024-12-17T18:15:34Z
+// region.h - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -132,4 +132,4 @@ int fits_read_fits_region ( fitsfile *fptr, WCSdata * wcs, SAORegion **Rgn, int 
 int fits_read_ascii_region ( const char *filename, WCSdata * wcs, SAORegion **Rgn, int *status);
 
 // ----------------------------------------------------------------------------
-// EOF region.h - Released 2024-12-17T18:15:34Z
+// EOF region.h - Released 2024-12-23T11:33:12Z

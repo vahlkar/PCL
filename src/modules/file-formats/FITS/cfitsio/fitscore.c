@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// fitscore.c - Released 2024-12-17T18:15:34Z
+// fitscore.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -9866,4 +9866,4 @@ int fits_strncasecmp(const char *s1, const char *s2, size_t n)
 }
 
 // ----------------------------------------------------------------------------
-// EOF fitscore.c - Released 2024-12-17T18:15:34Z
+// EOF fitscore.c - Released 2024-12-23T11:33:12Z

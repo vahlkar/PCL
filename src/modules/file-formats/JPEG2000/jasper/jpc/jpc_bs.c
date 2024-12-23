@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG2000 File Format Module Version 1.0.3
 // ----------------------------------------------------------------------------
-// jpc_bs.c - Released 2024-12-17T18:15:34Z
+// jpc_bs.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG2000 PixInsight module.
 //
@@ -492,4 +492,4 @@ int jpc_bitstream_outalign(jpc_bitstream_t *bitstream, int filldata)
 }
 
 // ----------------------------------------------------------------------------
-// EOF jpc_bs.c - Released 2024-12-17T18:15:34Z
+// EOF jpc_bs.c - Released 2024-12-23T11:33:12Z

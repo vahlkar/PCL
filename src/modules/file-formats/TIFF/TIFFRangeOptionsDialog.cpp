@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard TIFF File Format Module Version 1.0.10
 // ----------------------------------------------------------------------------
-// TIFFRangeOptionsDialog.cpp - Released 2024-12-17T18:15:34Z
+// TIFFRangeOptionsDialog.cpp - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard TIFF PixInsight module.
 //
@@ -198,4 +198,4 @@ void TIFFRangeOptionsDialog::Dialog_Return( Dialog& sender, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF TIFFRangeOptionsDialog.cpp - Released 2024-12-17T18:15:34Z
+// EOF TIFFRangeOptionsDialog.cpp - Released 2024-12-23T11:33:12Z

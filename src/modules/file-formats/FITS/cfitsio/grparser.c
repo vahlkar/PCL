@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// grparser.c - Released 2024-12-17T18:15:34Z
+// grparser.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -1407,4 +1407,4 @@ int	fits_execute_template(fitsfile *ff, char *ngp_template, int *status)
  }
 
 // ----------------------------------------------------------------------------
-// EOF grparser.c - Released 2024-12-17T18:15:34Z
+// EOF grparser.c - Released 2024-12-23T11:33:12Z

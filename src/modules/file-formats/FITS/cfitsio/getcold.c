@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// getcold.c - Released 2024-12-17T18:15:34Z
+// getcold.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -1773,4 +1773,4 @@ int fffstrr8(char *input,         /* I - array of values to be converted     */
 }
 
 // ----------------------------------------------------------------------------
-// EOF getcold.c - Released 2024-12-17T18:15:34Z
+// EOF getcold.c - Released 2024-12-23T11:33:12Z

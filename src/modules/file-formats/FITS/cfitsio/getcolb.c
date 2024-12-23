@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// getcolb.c - Released 2024-12-17T18:15:34Z
+// getcolb.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -2098,4 +2098,4 @@ int fffstri1(char *input,         /* I - array of values to be converted     */
 }
 
 // ----------------------------------------------------------------------------
-// EOF getcolb.c - Released 2024-12-17T18:15:34Z
+// EOF getcolb.c - Released 2024-12-23T11:33:12Z

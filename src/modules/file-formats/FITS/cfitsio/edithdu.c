@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// edithdu.c - Released 2024-12-17T18:15:34Z
+// edithdu.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -975,4 +975,4 @@ int ffdhdu(fitsfile *fptr,      /* I - FITS file pointer                   */
 }
 
 // ----------------------------------------------------------------------------
-// EOF edithdu.c - Released 2024-12-17T18:15:34Z
+// EOF edithdu.c - Released 2024-12-23T11:33:12Z

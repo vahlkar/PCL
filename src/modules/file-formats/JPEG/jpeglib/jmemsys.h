@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// jmemsys.h - Released 2024-12-17T18:15:34Z
+// jmemsys.h - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -250,4 +250,4 @@ EXTERN(long) jpeg_mem_init JPP((j_common_ptr cinfo));
 EXTERN(void) jpeg_mem_term JPP((j_common_ptr cinfo));
 
 // ----------------------------------------------------------------------------
-// EOF jmemsys.h - Released 2024-12-17T18:15:34Z
+// EOF jmemsys.h - Released 2024-12-23T11:33:12Z

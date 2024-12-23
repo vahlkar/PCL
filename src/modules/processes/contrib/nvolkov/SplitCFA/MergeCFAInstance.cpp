@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard SplitCFA Process Module Version 1.0.6
 // ----------------------------------------------------------------------------
-// MergeCFAInstance.cpp - Released 2024-12-17T18:15:44Z
+// MergeCFAInstance.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SplitCFA PixInsight module.
 //
@@ -310,4 +310,4 @@ size_type MergeCFAInstance::ParameterLength( const MetaParameter* p, size_type /
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF MergeCFAInstance.cpp - Released 2024-12-17T18:15:44Z
+// EOF MergeCFAInstance.cpp - Released 2024-12-23T11:33:28Z

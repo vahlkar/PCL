@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.8.4
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.6.1
+// Standard Global Process Module Version 1.6.2
 // ----------------------------------------------------------------------------
-// ReadoutOptionsAction.h - Released 2024-12-17T18:15:44Z
+// ReadoutOptionsAction.h - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -76,4 +76,4 @@ public:
 #endif   // __ReadoutOptionsActions_h
 
 // ----------------------------------------------------------------------------
-// EOF ReadoutOptionsAction.h - Released 2024-12-17T18:15:44Z
+// EOF ReadoutOptionsAction.h - Released 2024-12-23T11:33:28Z

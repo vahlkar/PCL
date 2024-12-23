@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard NoiseGeneration Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// SimplexNoiseParameters.cpp - Released 2024-12-17T18:15:44Z
+// SimplexNoiseParameters.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NoiseGeneration PixInsight module.
 //
@@ -225,4 +225,4 @@ int SNOperator::ElementValue( size_type i ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SimplexNoiseParameters.cpp - Released 2024-12-17T18:15:44Z
+// EOF SimplexNoiseParameters.cpp - Released 2024-12-23T11:33:28Z

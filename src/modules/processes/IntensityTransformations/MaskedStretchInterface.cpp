@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.2
 // ----------------------------------------------------------------------------
-// MaskedStretchInterface.cpp - Released 2024-12-17T18:15:44Z
+// MaskedStretchInterface.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -640,4 +640,4 @@ MaskedStretchInterface::GUIData::GUIData( MaskedStretchInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF MaskedStretchInterface.cpp - Released 2024-12-17T18:15:44Z
+// EOF MaskedStretchInterface.cpp - Released 2024-12-23T11:33:28Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Gaia Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// GaiaModule.cpp - Released 2024-12-17T18:15:44Z
+// GaiaModule.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Gaia PixInsight module.
 //
@@ -58,7 +58,7 @@
 
 #define MODULE_RELEASE_YEAR      2024
 #define MODULE_RELEASE_MONTH     12
-#define MODULE_RELEASE_DAY       17
+#define MODULE_RELEASE_DAY       23
 
 #include "GaiaInterface.h"
 #include "GaiaModule.h"
@@ -191,4 +191,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF GaiaModule.cpp - Released 2024-12-17T18:15:44Z
+// EOF GaiaModule.cpp - Released 2024-12-23T11:33:28Z

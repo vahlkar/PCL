@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// jcapistd.c - Released 2024-12-17T18:15:34Z
+// jcapistd.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -214,4 +214,4 @@ jpeg_write_raw_data (j_compress_ptr cinfo, JSAMPIMAGE data,
 }
 
 // ----------------------------------------------------------------------------
-// EOF jcapistd.c - Released 2024-12-17T18:15:34Z
+// EOF jcapistd.c - Released 2024-12-23T11:33:12Z

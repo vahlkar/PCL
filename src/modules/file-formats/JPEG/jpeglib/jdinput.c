@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// jdinput.c - Released 2024-12-17T18:15:34Z
+// jdinput.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -709,4 +709,4 @@ jinit_input_controller (j_decompress_ptr cinfo)
 }
 
 // ----------------------------------------------------------------------------
-// EOF jdinput.c - Released 2024-12-17T18:15:34Z
+// EOF jdinput.c - Released 2024-12-23T11:33:12Z

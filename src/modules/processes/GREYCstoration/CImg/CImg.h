@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard GREYCstoration Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// CImg.h - Released 2024-12-17T18:15:44Z
+// CImg.h - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GREYCstoration PixInsight module.
 //
@@ -63907,4 +63907,4 @@ namespace cil = cimg_library_suffixed;
 #endif
 
 // ----------------------------------------------------------------------------
-// EOF CImg.h - Released 2024-12-17T18:15:44Z
+// EOF CImg.h - Released 2024-12-23T11:33:28Z

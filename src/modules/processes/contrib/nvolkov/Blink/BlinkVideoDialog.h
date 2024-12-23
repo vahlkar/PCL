@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Blink Process Module Version 1.2.5
 // ----------------------------------------------------------------------------
-// BlinkVideoDialog.h - Released 2024-12-17T18:15:44Z
+// BlinkVideoDialog.h - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Blink PixInsight module.
 //
@@ -140,4 +140,4 @@ private:
 #endif   // __BlinkVideoDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF BlinkVideoDialog.h - Released 2024-12-17T18:15:44Z
+// EOF BlinkVideoDialog.h - Released 2024-12-23T11:33:28Z

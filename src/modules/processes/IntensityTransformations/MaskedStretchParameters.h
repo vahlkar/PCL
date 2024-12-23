@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.2
 // ----------------------------------------------------------------------------
-// MaskedStretchParameters.h - Released 2024-12-17T18:15:44Z
+// MaskedStretchParameters.h - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -266,4 +266,4 @@ PCL_END_LOCAL
 #endif   // __MaskedStretchParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF MaskedStretchParameters.h - Released 2024-12-17T18:15:44Z
+// EOF MaskedStretchParameters.h - Released 2024-12-23T11:33:28Z

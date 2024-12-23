@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.8.4
 // ----------------------------------------------------------------------------
-// pcl/MD5.cpp - Released 2024-12-17T18:15:21Z
+// pcl/MD5.cpp - Released 2024-12-23T11:33:03Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -381,4 +381,4 @@ void MD5::DoFinalize( void* hash )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MD5.cpp - Released 2024-12-17T18:15:21Z
+// EOF pcl/MD5.cpp - Released 2024-12-23T11:33:03Z

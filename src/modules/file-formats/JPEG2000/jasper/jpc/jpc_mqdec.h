@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG2000 File Format Module Version 1.0.3
 // ----------------------------------------------------------------------------
-// jpc_mqdec.h - Released 2024-12-17T18:15:34Z
+// jpc_mqdec.h - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG2000 PixInsight module.
 //
@@ -323,4 +323,4 @@ int jpc_mqdec_lpsexchrenormd(jpc_mqdec_t *dec);
 #endif
 
 // ----------------------------------------------------------------------------
-// EOF jpc_mqdec.h - Released 2024-12-17T18:15:34Z
+// EOF jpc_mqdec.h - Released 2024-12-23T11:33:12Z

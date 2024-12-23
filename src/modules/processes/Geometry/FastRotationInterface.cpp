@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// FastRotationInterface.cpp - Released 2024-12-17T18:15:44Z
+// FastRotationInterface.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -248,4 +248,4 @@ FastRotationInterface::GUIData::GUIData( FastRotationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FastRotationInterface.cpp - Released 2024-12-17T18:15:44Z
+// EOF FastRotationInterface.cpp - Released 2024-12-23T11:33:28Z

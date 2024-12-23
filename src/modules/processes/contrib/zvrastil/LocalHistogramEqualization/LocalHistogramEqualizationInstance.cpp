@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard LocalHistogramEqualization Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// LocalHistogramEqualizationInstance.cpp - Released 2024-12-17T18:15:44Z
+// LocalHistogramEqualizationInstance.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard LocalHistogramEqualization PixInsight module.
 //
@@ -656,4 +656,4 @@ int LocalHistogramEqualizationInstance::GetHistogramSize() const
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalHistogramEqualizationInstance.cpp - Released 2024-12-17T18:15:44Z
+// EOF LocalHistogramEqualizationInstance.cpp - Released 2024-12-23T11:33:28Z

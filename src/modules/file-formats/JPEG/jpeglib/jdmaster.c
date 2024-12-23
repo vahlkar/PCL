@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// jdmaster.c - Released 2024-12-17T18:15:34Z
+// jdmaster.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -584,4 +584,4 @@ jinit_master_decompress (j_decompress_ptr cinfo)
 }
 
 // ----------------------------------------------------------------------------
-// EOF jdmaster.c - Released 2024-12-17T18:15:34Z
+// EOF jdmaster.c - Released 2024-12-23T11:33:12Z

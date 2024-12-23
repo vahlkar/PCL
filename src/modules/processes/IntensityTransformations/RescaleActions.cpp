@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.2
 // ----------------------------------------------------------------------------
-// RescaleActions.cpp - Released 2024-12-17T18:15:44Z
+// RescaleActions.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -158,4 +158,4 @@ bool RescaleCIEYAction::IsEnabled( ActionInfo info ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RescaleActions.cpp - Released 2024-12-17T18:15:44Z
+// EOF RescaleActions.cpp - Released 2024-12-23T11:33:28Z

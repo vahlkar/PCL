@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// INDIMountParameters.cpp - Released 2024-12-17T18:15:44Z
+// INDIMountParameters.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -165,4 +165,4 @@ DEFINE_UINT32_PARAMETER_CLASS( IMCAlignmentConfig, "alignmentConfig", 0, 1, 2047
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDIMountParameters.cpp - Released 2024-12-17T18:15:44Z
+// EOF INDIMountParameters.cpp - Released 2024-12-23T11:33:28Z

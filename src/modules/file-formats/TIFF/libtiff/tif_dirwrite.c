@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard TIFF File Format Module Version 1.0.10
 // ----------------------------------------------------------------------------
-// tif_dirwrite.c - Released 2024-12-17T18:15:34Z
+// tif_dirwrite.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard TIFF PixInsight module.
 //
@@ -3672,4 +3672,4 @@ int _TIFFRewriteField(TIFF *tif, uint16_t tag, TIFFDataType in_datatype,
 }
 
 // ----------------------------------------------------------------------------
-// EOF tif_dirwrite.c - Released 2024-12-17T18:15:34Z
+// EOF tif_dirwrite.c - Released 2024-12-23T11:33:12Z

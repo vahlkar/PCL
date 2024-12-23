@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// jdpostct.c - Released 2024-12-17T18:15:34Z
+// jdpostct.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -342,4 +342,4 @@ jinit_d_post_controller (j_decompress_ptr cinfo, boolean need_full_buffer)
 }
 
 // ----------------------------------------------------------------------------
-// EOF jdpostct.c - Released 2024-12-17T18:15:34Z
+// EOF jdpostct.c - Released 2024-12-23T11:33:12Z

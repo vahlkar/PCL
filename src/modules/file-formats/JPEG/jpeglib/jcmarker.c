@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// jcmarker.c - Released 2024-12-17T18:15:34Z
+// jcmarker.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -769,4 +769,4 @@ jinit_marker_writer (j_compress_ptr cinfo)
 }
 
 // ----------------------------------------------------------------------------
-// EOF jcmarker.c - Released 2024-12-17T18:15:34Z
+// EOF jcmarker.c - Released 2024-12-23T11:33:12Z

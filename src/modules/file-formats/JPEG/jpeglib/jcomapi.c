@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// jcomapi.c - Released 2024-12-17T18:15:34Z
+// jcomapi.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -296,4 +296,4 @@ jpeg_std_huff_table (j_common_ptr cinfo, boolean isDC, int tblno)
 }
 
 // ----------------------------------------------------------------------------
-// EOF jcomapi.c - Released 2024-12-17T18:15:34Z
+// EOF jcomapi.c - Released 2024-12-23T11:33:12Z

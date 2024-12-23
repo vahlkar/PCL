@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.8.4
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 2.2.7
+// Standard ImageCalibration Process Module Version 2.2.8
 // ----------------------------------------------------------------------------
-// LocalNormalizationInstance.cpp - Released 2024-12-17T18:15:44Z
+// LocalNormalizationInstance.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -2937,4 +2937,4 @@ size_type LocalNormalizationInstance::ParameterLength( const MetaParameter* p, s
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationInstance.cpp - Released 2024-12-17T18:15:44Z
+// EOF LocalNormalizationInstance.cpp - Released 2024-12-23T11:33:28Z

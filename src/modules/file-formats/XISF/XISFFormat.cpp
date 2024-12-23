@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard XISF File Format Module Version 1.0.13
 // ----------------------------------------------------------------------------
-// XISFFormat.cpp - Released 2024-12-17T18:15:34Z
+// XISFFormat.cpp - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard XISF PixInsight module.
 //
@@ -563,4 +563,4 @@ XISFFormat::FormatOptions* XISFFormat::FormatOptions::FromGenericDataBlock( cons
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF XISFFormat.cpp - Released 2024-12-17T18:15:34Z
+// EOF XISFFormat.cpp - Released 2024-12-23T11:33:12Z

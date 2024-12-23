@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard CosmeticCorrection Process Module Version 1.4.0
 // ----------------------------------------------------------------------------
-// CosmeticCorrectionInstance.h - Released 2024-12-17T18:15:44Z
+// CosmeticCorrectionInstance.h - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CosmeticCorrection PixInsight module.
 //
@@ -189,4 +189,4 @@ private:
 #endif // __CosmeticCorrectionInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF CosmeticCorrectionInstance.h - Released 2024-12-17T18:15:44Z
+// EOF CosmeticCorrectionInstance.h - Released 2024-12-23T11:33:28Z

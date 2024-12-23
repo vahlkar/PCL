@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Morphology Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// Structure.cpp - Released 2024-12-17T18:15:44Z
+// Structure.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Morphology PixInsight module.
 //
@@ -466,4 +466,4 @@ void StructureCollection::Save( const IsoString& key ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Structure.cpp - Released 2024-12-17T18:15:44Z
+// EOF Structure.cpp - Released 2024-12-23T11:33:28Z

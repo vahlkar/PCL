@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG2000 File Format Module Version 1.0.3
 // ----------------------------------------------------------------------------
-// jas_version.h - Released 2024-12-17T18:15:34Z
+// jas_version.h - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG2000 PixInsight module.
 //
@@ -172,4 +172,4 @@ const char *jas_getversion(void);
 #endif
 
 // ----------------------------------------------------------------------------
-// EOF jas_version.h - Released 2024-12-17T18:15:34Z
+// EOF jas_version.h - Released 2024-12-23T11:33:12Z

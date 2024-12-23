@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// f77_wrap3.c - Released 2024-12-17T18:15:34Z
+// f77_wrap3.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -910,4 +910,4 @@ FCALLSCSUB11(ffgbcl,FTGBCL,ftgbcl,FITSUNIT,INT,PSTRING,PSTRING,PSTRING,PLONG,PDO
 FCALLSCSUB3(ffgrsz,FTGRSZ,ftgrsz,FITSUNIT,PLONG,PINT)
 
 // ----------------------------------------------------------------------------
-// EOF f77_wrap3.c - Released 2024-12-17T18:15:34Z
+// EOF f77_wrap3.c - Released 2024-12-23T11:33:12Z

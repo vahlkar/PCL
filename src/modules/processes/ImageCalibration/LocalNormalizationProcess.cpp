@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.8.4
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 2.2.7
+// Standard ImageCalibration Process Module Version 2.2.8
 // ----------------------------------------------------------------------------
-// LocalNormalizationProcess.cpp - Released 2024-12-17T18:15:44Z
+// LocalNormalizationProcess.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -213,4 +213,4 @@ int LocalNormalizationProcess::NearestSupportedNormalizationScale( int scale )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationProcess.cpp - Released 2024-12-17T18:15:44Z
+// EOF LocalNormalizationProcess.cpp - Released 2024-12-23T11:33:28Z

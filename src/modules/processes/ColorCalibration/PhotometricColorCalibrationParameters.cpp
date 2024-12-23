@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.9.5
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationParameters.cpp - Released 2024-12-17T18:15:44Z
+// PhotometricColorCalibrationParameters.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -1178,4 +1178,4 @@ String PCCOutputDirectory::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationParameters.cpp - Released 2024-12-17T18:15:44Z
+// EOF PhotometricColorCalibrationParameters.cpp - Released 2024-12-23T11:33:28Z

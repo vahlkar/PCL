@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.2
 // ----------------------------------------------------------------------------
-// AdaptiveStretchInstance.cpp - Released 2024-12-17T18:15:44Z
+// AdaptiveStretchInstance.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -722,4 +722,4 @@ StretchCurve AdaptiveStretchInstance::Preview( UInt16Image& image, const View& v
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF AdaptiveStretchInstance.cpp - Released 2024-12-17T18:15:44Z
+// EOF AdaptiveStretchInstance.cpp - Released 2024-12-23T11:33:28Z

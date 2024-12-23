@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard TIFF File Format Module Version 1.0.10
 // ----------------------------------------------------------------------------
-// tif_color.c - Released 2024-12-17T18:15:34Z
+// tif_color.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard TIFF PixInsight module.
 //
@@ -374,4 +374,4 @@ int TIFFYCbCrToRGBInit(TIFFYCbCrToRGB *ycbcr, float *luma, float *refBlackWhite)
 #undef FIX
 
 // ----------------------------------------------------------------------------
-// EOF tif_color.c - Released 2024-12-17T18:15:34Z
+// EOF tif_color.c - Released 2024-12-23T11:33:12Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Gaia Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// GaiaInstance.h - Released 2024-12-17T18:15:44Z
+// GaiaInstance.h - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Gaia PixInsight module.
 //
@@ -133,4 +133,4 @@ struct GaiaBinaryHeader
 #endif   // __GaiaInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF GaiaInstance.h - Released 2024-12-17T18:15:44Z
+// EOF GaiaInstance.h - Released 2024-12-23T11:33:28Z

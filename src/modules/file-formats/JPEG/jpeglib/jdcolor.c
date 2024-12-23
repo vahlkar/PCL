@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// jdcolor.c - Released 2024-12-17T18:15:34Z
+// jdcolor.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -821,4 +821,4 @@ jinit_color_deconverter (j_decompress_ptr cinfo)
 }
 
 // ----------------------------------------------------------------------------
-// EOF jdcolor.c - Released 2024-12-17T18:15:34Z
+// EOF jdcolor.c - Released 2024-12-23T11:33:12Z

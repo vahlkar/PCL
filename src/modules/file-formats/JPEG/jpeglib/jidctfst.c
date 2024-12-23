@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// jidctfst.c - Released 2024-12-17T18:15:34Z
+// jidctfst.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -403,4 +403,4 @@ jpeg_idct_ifast (j_decompress_ptr cinfo, jpeg_component_info * compptr,
 #endif /* DCT_IFAST_SUPPORTED */
 
 // ----------------------------------------------------------------------------
-// EOF jidctfst.c - Released 2024-12-17T18:15:34Z
+// EOF jidctfst.c - Released 2024-12-23T11:33:12Z

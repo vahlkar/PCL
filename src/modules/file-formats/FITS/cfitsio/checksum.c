@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// checksum.c - Released 2024-12-17T18:15:34Z
+// checksum.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -559,4 +559,4 @@ int ffgcks(fitsfile *fptr,           /* I - FITS file pointer             */
 }
 
 // ----------------------------------------------------------------------------
-// EOF checksum.c - Released 2024-12-17T18:15:34Z
+// EOF checksum.c - Released 2024-12-23T11:33:12Z

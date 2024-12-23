@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// simplerng.h - Released 2024-12-17T18:15:34Z
+// simplerng.h - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -79,4 +79,4 @@ extern int simplerng_getpoisson(double lambda);
 extern double simplerng_logfactorial(int n);
 
 // ----------------------------------------------------------------------------
-// EOF simplerng.h - Released 2024-12-17T18:15:34Z
+// EOF simplerng.h - Released 2024-12-23T11:33:12Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// jpeglib.h - Released 2024-12-17T18:15:34Z
+// jpeglib.h - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -1235,4 +1235,4 @@ struct jpeg_color_quantizer { long dummy; };
 #endif /* JPEGLIB_H */
 
 // ----------------------------------------------------------------------------
-// EOF jpeglib.h - Released 2024-12-17T18:15:34Z
+// EOF jpeglib.h - Released 2024-12-23T11:33:12Z

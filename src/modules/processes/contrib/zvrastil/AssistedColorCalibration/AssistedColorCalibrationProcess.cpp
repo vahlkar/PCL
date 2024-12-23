@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard AssistedColorCalibration Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// AssistedColorCalibrationProcess.cpp - Released 2024-12-17T18:15:44Z
+// AssistedColorCalibrationProcess.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard AssistedColorCalibration PixInsight module.
 //
@@ -164,4 +164,4 @@ bool AssistedColorCalibrationProcess::CanProcessCommandLines() const
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF AssistedColorCalibrationProcess.cpp - Released 2024-12-17T18:15:44Z
+// EOF AssistedColorCalibrationProcess.cpp - Released 2024-12-23T11:33:28Z

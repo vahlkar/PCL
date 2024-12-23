@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// CropParameters.cpp - Released 2024-12-17T18:15:44Z
+// CropParameters.cpp - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -184,4 +184,4 @@ size_type CRMode::DefaultValueIndex() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CropParameters.cpp - Released 2024-12-17T18:15:44Z
+// EOF CropParameters.cpp - Released 2024-12-23T11:33:28Z

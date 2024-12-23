@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG2000 File Format Module Version 1.0.3
 // ----------------------------------------------------------------------------
-// jas_tvp.c - Released 2024-12-17T18:15:34Z
+// jas_tvp.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG2000 PixInsight module.
 //
@@ -289,4 +289,4 @@ jas_taginfo_t *jas_taginfo_nonull(jas_taginfo_t *taginfo)
 }
 
 // ----------------------------------------------------------------------------
-// EOF jas_tvp.c - Released 2024-12-17T18:15:34Z
+// EOF jas_tvp.c - Released 2024-12-23T11:33:12Z

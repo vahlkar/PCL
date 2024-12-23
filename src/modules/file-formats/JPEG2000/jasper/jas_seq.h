@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG2000 File Format Module Version 1.0.3
 // ----------------------------------------------------------------------------
-// jas_seq.h - Released 2024-12-17T18:15:34Z
+// jas_seq.h - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG2000 PixInsight module.
 //
@@ -353,4 +353,4 @@ void jas_seq2d_bindsub(jas_matrix_t *s, jas_matrix_t *s1, int xstart,
 #endif
 
 // ----------------------------------------------------------------------------
-// EOF jas_seq.h - Released 2024-12-17T18:15:34Z
+// EOF jas_seq.h - Released 2024-12-23T11:33:12Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// putcoluk.c - Released 2024-12-17T18:15:34Z
+// putcoluk.c - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -1059,4 +1059,4 @@ int ffuintfstr(unsigned int *input, /* I - array of values to be converted  */
 }
 
 // ----------------------------------------------------------------------------
-// EOF putcoluk.c - Released 2024-12-17T18:15:34Z
+// EOF putcoluk.c - Released 2024-12-23T11:33:12Z

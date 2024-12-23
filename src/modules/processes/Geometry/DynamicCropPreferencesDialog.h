@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// DynamicCropPreferencesDialog.h - Released 2024-12-17T18:15:44Z
+// DynamicCropPreferencesDialog.h - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -104,4 +104,4 @@ private:
 #endif   // __DynamicCropPreferencesDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF DynamicCropPreferencesDialog.h - Released 2024-12-17T18:15:44Z
+// EOF DynamicCropPreferencesDialog.h - Released 2024-12-23T11:33:28Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// LRGBCombinationInterface.h - Released 2024-12-17T18:15:44Z
+// LRGBCombinationInterface.h - Released 2024-12-23T11:33:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -184,4 +184,4 @@ PCL_END_LOCAL
 #endif   // __LRGBCombinationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF LRGBCombinationInterface.h - Released 2024-12-17T18:15:44Z
+// EOF LRGBCombinationInterface.h - Released 2024-12-23T11:33:28Z

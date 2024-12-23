@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG2000 File Format Module Version 1.0.3
 // ----------------------------------------------------------------------------
-// jas_getopt.h - Released 2024-12-17T18:15:34Z
+// jas_getopt.h - Released 2024-12-23T11:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG2000 PixInsight module.
 //
@@ -183,4 +183,4 @@ int jas_getopt(int argc, char **argv, jas_opt_t *opts);
 #endif
 
 // ----------------------------------------------------------------------------
-// EOF jas_getopt.h - Released 2024-12-17T18:15:34Z
+// EOF jas_getopt.h - Released 2024-12-23T11:33:12Z
