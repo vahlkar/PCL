@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.8.4
+// /_/     \____//_____/   PCL 2.8.5
 // ----------------------------------------------------------------------------
-// pcl/AstrometricMetadata.h - Released 2024-12-23T11:32:56Z
+// pcl/AstrometricMetadata.h - Released 2024-12-27T18:16:01Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -333,6 +333,19 @@ public:
    {
       return dynamic_cast<const SplineWorldTransformation*>( m_transformWI.Pointer() ) != nullptr;
    }
+
+   /*!
+    * Ensures that the spline-based world transformation has its grid
+    * interpolations properly intialized for the specified \a deltaI grid
+    * distance in pixel units.
+    *
+    * Returns true if this astrometric solution uses a spline world
+    * transformation and its grid interpolation devices are correctly
+    * initialized for the specified \a deltaI grid distance. Returns false if
+    * this astrometric solution uses a linear transformation, or if the grid
+    * interpolations couldn't be initialized.
+    */
+   bool EnsureSplineGridInterpolationsInitialized( int deltaI = 16 );
 
    /*!
     * Calculates a new linear astrometric solution suitable for undistortion of
@@ -1528,4 +1541,4 @@ private:
 #endif // __AstrometricMetadata_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AstrometricMetadata.h - Released 2024-12-23T11:32:56Z
+// EOF pcl/AstrometricMetadata.h - Released 2024-12-27T18:16:01Z

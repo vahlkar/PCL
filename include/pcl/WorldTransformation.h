@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.8.4
+// /_/     \____//_____/   PCL 2.8.5
 // ----------------------------------------------------------------------------
-// pcl/WorldTransformation.h - Released 2024-12-23T11:32:56Z
+// pcl/WorldTransformation.h - Released 2024-12-27T18:16:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -617,6 +617,18 @@ public:
    }
 
    /*!
+    * Returns the grid distance in pixels used for generation of grid
+    * interpolations, or zero if grid interpolations have not been initialized
+    * or are not valid in this %SplineWorldTransformation object.
+    *
+    * See InitializeGridInterpolations() for information on grid interpolation.
+    */
+   double GridInterpolationDelta() const
+   {
+      return HasGridInterpolations() ? m_gridIW.Delta() : 0.0;
+   }
+
+   /*!
     * Returns the identifier prefix of all XISF properties used to serialize a
     * %SplineWorldTransformation object.
     */
@@ -860,4 +872,4 @@ private:
 #endif   // __PCL_WorldTransformation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/WorldTransformation.h - Released 2024-12-23T11:32:56Z
+// EOF pcl/WorldTransformation.h - Released 2024-12-27T18:16:00Z
