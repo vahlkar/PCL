@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.8.4
+// /_/     \____//_____/   PCL 2.8.5
 // ----------------------------------------------------------------------------
-// pcl/AstrometricReprojection.h - Released 2024-12-23T11:32:56Z
+// pcl/AstrometricReprojection.h - Released 2024-12-27T18:16:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -107,6 +107,7 @@ public:
       , m_sourceSolution( sourceSolution )
       , m_sourceImage( sourceImage )
    {
+      m_targetRect = TargetRect( m_targetSolution, m_sourceSolution, m_sourceSolution.Bounds() );
    }
 
    /*!
@@ -143,16 +144,16 @@ public:
    }
 
    /*!
-    * Returns the rectangle in target image coordinates that encloses the
-    * boundaries of the reprojected source image.
+    * Returns the rectangle in target solution coordinates that encloses the
+    * boundaries of the reprojected source solution.
     */
-   DRect TargetRect() const
+   const DRect& TargetRect() const
    {
-      return TargetRect( m_targetSolution, m_sourceSolution, m_sourceSolution.Bounds() );
+      return m_targetRect;
    }
 
    /*!
-    * Returns a reprojected rectangle in target image coordinates.
+    * Returns a reprojected rectangle in source solution coordinates.
     *
     * \param targetSolution   The target astrometric solution.
     *
@@ -168,17 +169,17 @@ public:
                             const Rect& sourceRect );
 
    /*!
-    * Returns true iff the specified point in target image coordinates lies
-    * inside the specified source image coordinates after astrometric
+    * Returns true iff the specified point in target solution coordinates lies
+    * inside the specified source solution coordinates after astrometric
     * reprojection.
     *
     * \param targetSolution   The target astrometric solution.
     *
     * \param sourceSolution   The source astrometric solution.
     *
-    * \param targetPt         The target point in target image coordinates.
+    * \param targetPt         The target point in target solution coordinates.
     *
-    * \param sourceRect       The source rectangular region in source image
+    * \param sourceRect       The source rectangular region in source solution
     *                         coordinates.
     */
    static bool TargetPointInsideSourceRect( const AstrometricMetadata& targetSolution,
@@ -187,18 +188,18 @@ public:
                                             const DRect& sourceRect );
 
    /*!
-    * Returns true iff the specified rectangular region in target image
-    * coordinates lies inside the specified source image coordinates after
+    * Returns true iff the specified rectangular region in target solution
+    * coordinates lies inside the specified source solution coordinates after
     * astrometric reprojection.
     *
     * \param targetSolution   The target astrometric solution.
     *
     * \param sourceSolution   The source astrometric solution.
     *
-    * \param targetRect       The target rectangular region in target image
+    * \param targetRect       The target rectangular region in target solution
     *                         coordinates.
     *
-    * \param sourceRect       The source rectangular region in source image
+    * \param sourceRect       The source rectangular region in source solution
     *                         coordinates.
     */
    static bool TargetRectInsideSourceRect( const AstrometricMetadata& targetSolution,
@@ -229,6 +230,7 @@ protected:
    const   AstrometricMetadata& m_targetSolution;
    const   AstrometricMetadata& m_sourceSolution;
    const   ImageVariant&        m_sourceImage;
+           DRect                m_targetRect = 0;
    mutable size_type            m_zeroCount = 0;
 
    // Inherited from ImageTransformation.
@@ -248,4 +250,4 @@ protected:
 #endif   // __PCL_AstrometricReprojection_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AstrometricReprojection.h - Released 2024-12-23T11:32:56Z
+// EOF pcl/AstrometricReprojection.h - Released 2024-12-27T18:16:00Z

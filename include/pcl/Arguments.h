@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.8.4
+// /_/     \____//_____/   PCL 2.8.5
 // ----------------------------------------------------------------------------
-// pcl/Arguments.h - Released 2024-12-23T11:32:56Z
+// pcl/Arguments.h - Released 2024-12-27T18:16:01Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -678,4 +678,4 @@ String PCL_FUNC ReplaceEnvironmentVariables( const String& s );
 #endif   // __PCL_Arguments_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Arguments.h - Released 2024-12-23T11:32:56Z
+// EOF pcl/Arguments.h - Released 2024-12-27T18:16:01Z

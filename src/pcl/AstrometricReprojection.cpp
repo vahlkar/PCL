@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.8.4
+// /_/     \____//_____/   PCL 2.8.5
 // ----------------------------------------------------------------------------
-// pcl/AstrometricReprojection.cpp - Released 2024-12-23T11:33:03Z
+// pcl/AstrometricReprojection.cpp - Released 2024-12-27T18:16:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -160,13 +160,36 @@ private:
    template <class P1, class P2> static
    void Apply( GenericImage<P2>& targetImage, const GenericImage<P1>& sourceImage, const AstrometricReprojection& R )
    {
-      Array<size_type> L = Thread::OptimalThreadLoads( targetImage.Height(),
+      /*
+       * Limiting bounds of the reprojected target image in target image
+       * coordinates.
+       */
+      Rect rect = R.TargetRect().TruncatedToInt().InflatedBy( 1 );
+
+      if ( targetImage.Width() != R.TargetSolution().Width()
+        || targetImage.Height() != R.TargetSolution().Height() )
+      {
+         double sx = double( R.TargetSolution().Width() )/targetImage.Width();
+         double sy = double( R.TargetSolution().Height() )/targetImage.Height();
+         rect.x0 = TruncInt( rect.x0 * sx );
+         rect.y0 = TruncInt( rect.y0 * sy );
+         rect.x1 = TruncInt( rect.x1 * sx ) + 1;
+         rect.y1 = TruncInt( rect.y1 * sy ) + 1;
+      }
+
+      if ( !targetImage.Clip( rect ) )
+         return;
+
+      Array<size_type> L = Thread::OptimalThreadLoads( rect.Height(),
                                                        1/*overheadLimit*/,
                                                        R.IsParallelProcessingEnabled() ? R.MaxProcessors() : 1 );
       if ( targetImage.Status().IsInitializationEnabled() )
-         targetImage.Status().Initialize( "Astrometric reprojection, " + R.Interpolation().Description(), targetImage.NumberOfPixels() );
+      {
+         size_type N = size_type( rect.Width() ) * size_type( rect.Height() );
+         targetImage.Status().Initialize( "Astrometric reprojection, " + R.Interpolation().Description(), N );
+      }
 
-      ReprojectionThreadData<P1,P2> data( targetImage, sourceImage, R );
+      ReprojectionThreadData<P1,P2> data( targetImage, sourceImage, rect, R );
 
       ReferenceArray<ReprojectionThread<P1,P2>> threads;
       for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
@@ -185,16 +208,19 @@ private:
    struct ReprojectionThreadData : public AbstractImage::ThreadData
    {
       ReprojectionThreadData( GenericImage<P2>& a_targetImage, const GenericImage<P1>& a_sourceImage,
+                              const Rect& a_rect,
                               const AstrometricReprojection& a_R )
          : AbstractImage::ThreadData( a_targetImage, a_targetImage.NumberOfPixels() )
          , targetImage( a_targetImage )
          , sourceImage( a_sourceImage )
+         , rect( a_rect )
          , R( a_R )
       {
       }
 
             GenericImage<P2>&        targetImage;
       const GenericImage<P1>&        sourceImage;
+            Rect                     rect; // in target image coordinates
       const AstrometricReprojection& R;
    };
 
@@ -218,6 +244,11 @@ private:
 
          m_zeroCount = 0;
 
+         Rect rect( m_data.rect.x0,
+                    m_data.rect.y0 + m_firstRow,
+                    m_data.rect.x1,
+                    m_data.rect.y0 + m_endRow );
+
          ReferenceArray<interpolator_type> interpolators;
          for ( int c = 0; c < m_data.sourceImage.NumberOfChannels(); ++c )
             interpolators << m_data.R.Interpolation().template NewInterpolator<P1>(
@@ -226,8 +257,7 @@ private:
                                                                      m_data.sourceImage.Height(),
                                                                      m_data.R.UsingUnclippedInterpolation() );
 
-         typename GenericImage<P2>::roi_pixel_iterator it( m_data.targetImage,
-                                          Rect( 0, m_firstRow, m_data.targetImage.Width(), m_endRow ) );
+         typename GenericImage<P2>::roi_pixel_iterator it( m_data.targetImage, rect );
 
          double sourceScaleX = 0, sourceScaleY = 0;
          bool sourceResampled = m_data.sourceImage.Width() != m_data.R.SourceSolution().Width()
@@ -247,8 +277,8 @@ private:
             targetScaleY = double( m_data.R.TargetSolution().Height() )/m_data.targetImage.Height();
          }
 
-         for ( int y = m_firstRow; y < m_endRow; ++y )
-            for ( int x = 0; x < m_data.targetImage.Width(); ++x, ++it )
+         for ( int y = rect.y0; y < rect.y1; ++y )
+            for ( int x = rect.x0; x < rect.x1; ++x, ++it )
             {
                DPoint pRD, pI( x, y );
                if ( targetResampled )
@@ -330,4 +360,4 @@ void AstrometricReprojection::Apply( pcl::UInt32Image& image ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AstrometricReprojection.cpp - Released 2024-12-23T11:33:03Z
+// EOF pcl/AstrometricReprojection.cpp - Released 2024-12-27T18:16:14Z

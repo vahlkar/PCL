@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.8.4
+// /_/     \____//_____/   PCL 2.8.5
 // ----------------------------------------------------------------------------
-// pcl/Position.h - Released 2024-12-23T11:32:56Z
+// pcl/Position.h - Released 2024-12-27T18:16:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -1716,4 +1716,4 @@ private:
 #endif  // __PCL_Position_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Position.h - Released 2024-12-23T11:32:56Z
+// EOF pcl/Position.h - Released 2024-12-27T18:16:00Z
