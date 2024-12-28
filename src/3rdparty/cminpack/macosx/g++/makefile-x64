@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.142
+# PixInsight Makefile Generator Script v1.143
 # Copyright (C) 2009-2024 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2024-12-23T20:44:27.990Z
+# Generated on .... 2024-12-28T16:55:51.797Z
 # Project id ...... cminpack
 # Project type .... StaticLibrary
 # Platform ........ MacOSX/g++
@@ -198,6 +198,6 @@ post-build:
 	cp $(OBJ_DIR)/libcminpack-pxi.a $(PCLLIBDIR64)
 
 ./x64/Release/%.o: ../../%.c
-	clang -c -pipe -pthread -arch x86_64 -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12 -D_REENTRANT -D__PCL_MACOSX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -std=c99 -Wall -Wno-parentheses -Wno-error=implicit-function-declaration -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	clang -c -pipe -pthread -arch x86_64 -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -mmacosx-version-min=12 -D_REENTRANT -D__PCL_MACOSX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -msse4.2 -minline-all-stringops -O2 -ffunction-sections -fdata-sections -ffast-math -std=c99 -Wall -Wno-parentheses -Wno-error=implicit-function-declaration -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 

@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.8.5
 // ----------------------------------------------------------------------------
-// pcl/FileDataCache.cpp - Released 2024-12-27T18:16:14Z
+// pcl/FileDataCache.cpp - Released 2024-12-28T16:53:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -593,4 +593,4 @@ bool FileDataCacheItem::DeserializeMatrices( Array<DMatrix>& A, IsoStringList::c
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FileDataCache.cpp - Released 2024-12-27T18:16:14Z
+// EOF pcl/FileDataCache.cpp - Released 2024-12-28T16:53:56Z

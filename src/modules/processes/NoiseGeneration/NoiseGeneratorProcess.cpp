@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.8.4
+// /_/     \____//_____/   PCL 2.8.5
 // ----------------------------------------------------------------------------
 // Standard NoiseGeneration Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// NoiseGeneratorProcess.cpp - Released 2024-12-23T11:33:28Z
+// NoiseGeneratorProcess.cpp - Released 2024-12-28T16:54:15Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NoiseGeneration PixInsight module.
 //
@@ -136,4 +136,4 @@ ProcessImplementation* NoiseGeneratorProcess::Clone( const ProcessImplementation
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF NoiseGeneratorProcess.cpp - Released 2024-12-23T11:33:28Z
+// EOF NoiseGeneratorProcess.cpp - Released 2024-12-28T16:54:15Z

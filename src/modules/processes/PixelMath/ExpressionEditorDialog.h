@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.8.4
+// /_/     \____//_____/   PCL 2.8.5
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.9.3
 // ----------------------------------------------------------------------------
-// ExpressionEditorDialog.h - Released 2024-12-23T11:33:28Z
+// ExpressionEditorDialog.h - Released 2024-12-28T16:54:15Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -145,4 +145,4 @@ private:
 #endif   // __ExpressionEditorDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF ExpressionEditorDialog.h - Released 2024-12-23T11:33:28Z
+// EOF ExpressionEditorDialog.h - Released 2024-12-28T16:54:15Z

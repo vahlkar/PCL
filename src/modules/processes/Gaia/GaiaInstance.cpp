@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.8.4
+// /_/     \____//_____/   PCL 2.8.5
 // ----------------------------------------------------------------------------
 // Standard Gaia Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// GaiaInstance.cpp - Released 2024-12-23T11:33:28Z
+// GaiaInstance.cpp - Released 2024-12-28T16:54:15Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Gaia PixInsight module.
 //
@@ -859,4 +859,4 @@ int GaiaInstance::OutputDataRelease() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GaiaInstance.cpp - Released 2024-12-23T11:33:28Z
+// EOF GaiaInstance.cpp - Released 2024-12-28T16:54:15Z

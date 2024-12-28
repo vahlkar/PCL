@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.8.4
+// /_/     \____//_____/   PCL 2.8.5
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// DynamicCropProcess.h - Released 2024-12-23T11:33:28Z
+// DynamicCropProcess.h - Released 2024-12-28T16:54:15Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -89,4 +89,4 @@ PCL_END_LOCAL
 #endif   // __DynamicCropProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF DynamicCropProcess.h - Released 2024-12-23T11:33:28Z
+// EOF DynamicCropProcess.h - Released 2024-12-28T16:54:15Z

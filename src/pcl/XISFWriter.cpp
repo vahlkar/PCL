@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.8.5
 // ----------------------------------------------------------------------------
-// pcl/XISFWriter.cpp - Released 2024-12-27T18:16:14Z
+// pcl/XISFWriter.cpp - Released 2024-12-28T16:53:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -1842,4 +1842,4 @@ void XISFWriter::CheckClosedStream( const char* memberFunction ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/XISFWriter.cpp - Released 2024-12-27T18:16:14Z
+// EOF pcl/XISFWriter.cpp - Released 2024-12-28T16:53:56Z

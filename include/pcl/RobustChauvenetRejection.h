@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.8.5
 // ----------------------------------------------------------------------------
-// pcl/RobustChauvenetRejection.h - Released 2024-12-27T18:16:01Z
+// pcl/RobustChauvenetRejection.h - Released 2024-12-28T16:53:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -370,4 +370,4 @@ private:
 #endif   // __PCL_RobustChauvenetRejection_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/RobustChauvenetRejection.h - Released 2024-12-27T18:16:01Z
+// EOF pcl/RobustChauvenetRejection.h - Released 2024-12-28T16:53:48Z

@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.8.5
 // ----------------------------------------------------------------------------
-// pcl/FITSHeaderKeyword.h - Released 2024-12-27T18:16:00Z
+// pcl/FITSHeaderKeyword.h - Released 2024-12-28T16:53:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -287,4 +287,4 @@ inline bool operator <( const FITSHeaderKeyword& h1, const FITSHeaderKeyword& h2
 #endif   // __PCL_FITSHeaderKeyword_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FITSHeaderKeyword.h - Released 2024-12-27T18:16:00Z
+// EOF pcl/FITSHeaderKeyword.h - Released 2024-12-28T16:53:48Z

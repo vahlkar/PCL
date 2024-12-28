@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.8.4
+// /_/     \____//_____/   PCL 2.8.5
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// jidctflt.c - Released 2024-12-23T11:33:12Z
+// jidctflt.c - Released 2024-12-28T16:54:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -290,4 +290,4 @@ jpeg_idct_float (j_decompress_ptr cinfo, jpeg_component_info * compptr,
 #endif /* DCT_FLOAT_SUPPORTED */
 
 // ----------------------------------------------------------------------------
-// EOF jidctflt.c - Released 2024-12-23T11:33:12Z
+// EOF jidctflt.c - Released 2024-12-28T16:54:05Z

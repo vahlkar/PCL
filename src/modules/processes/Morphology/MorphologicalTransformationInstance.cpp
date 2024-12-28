@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.8.4
+// /_/     \____//_____/   PCL 2.8.5
 // ----------------------------------------------------------------------------
 // Standard Morphology Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// MorphologicalTransformationInstance.cpp - Released 2024-12-23T11:33:28Z
+// MorphologicalTransformationInstance.cpp - Released 2024-12-28T16:54:15Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Morphology PixInsight module.
 //
@@ -359,4 +359,4 @@ size_type MorphologicalTransformationInstance::ParameterLength( const MetaParame
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF MorphologicalTransformationInstance.cpp - Released 2024-12-23T11:33:28Z
+// EOF MorphologicalTransformationInstance.cpp - Released 2024-12-28T16:54:15Z

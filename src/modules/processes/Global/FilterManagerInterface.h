@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.8.4
+// /_/     \____//_____/   PCL 2.8.5
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.6.2
 // ----------------------------------------------------------------------------
-// FilterManagerInterface.h - Released 2024-12-23T11:33:28Z
+// FilterManagerInterface.h - Released 2024-12-28T16:54:15Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -137,4 +137,4 @@ PCL_END_LOCAL
 #endif   // __FilterManagerInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF FilterManagerInterface.h - Released 2024-12-23T11:33:28Z
+// EOF FilterManagerInterface.h - Released 2024-12-28T16:54:15Z

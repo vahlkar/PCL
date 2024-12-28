@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.8.5
 // ----------------------------------------------------------------------------
-// pcl/RealTimePreview.cpp - Released 2024-12-27T18:16:14Z
+// pcl/RealTimePreview.cpp - Released 2024-12-28T16:53:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -120,4 +120,4 @@ void RealTimePreview::SetProgressText( const String& text )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/RealTimePreview.cpp - Released 2024-12-27T18:16:14Z
+// EOF pcl/RealTimePreview.cpp - Released 2024-12-28T16:53:56Z

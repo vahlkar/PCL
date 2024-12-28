@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.8.5
 // ----------------------------------------------------------------------------
-// pcl/PSFFit.cpp - Released 2024-12-27T18:16:14Z
+// pcl/PSFFit.cpp - Released 2024-12-28T16:53:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -1628,4 +1628,4 @@ String PSFData::StatusText() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFFit.cpp - Released 2024-12-27T18:16:14Z
+// EOF pcl/PSFFit.cpp - Released 2024-12-28T16:53:56Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.8.4
+// /_/     \____//_____/   PCL 2.8.5
 // ----------------------------------------------------------------------------
-// Standard XISF File Format Module Version 1.0.13
+// Standard XISF File Format Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// XISFFormat.cpp - Released 2024-12-23T11:33:12Z
+// XISFFormat.cpp - Released 2024-12-28T16:54:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard XISF PixInsight module.
 //
@@ -150,6 +150,12 @@ String XISFFormat::Implementation() const
 "\n-------------------------------------------------------------------------------"
 "\nignore-non-finite       (r )  Do not replace NaNs, infinities and negative"
 "\n                              zeros with zeros in floating-point images."
+"\n-------------------------------------------------------------------------------"
+"\nonly-first-image        (r )  Only report information on the first image in the"
+"\n                              XISF unit. Ignore any additional images."
+"\n-------------------------------------------------------------------------------"
+"\nno-only-first-image     (r )  Report information on all images stored in the"
+"\n                              XISF unit (default = true)."
 "\n-------------------------------------------------------------------------------"
 "\nembedded-data           (rw)  Read/write embedded image data."
 "\n-------------------------------------------------------------------------------"
@@ -563,4 +569,4 @@ XISFFormat::FormatOptions* XISFFormat::FormatOptions::FromGenericDataBlock( cons
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF XISFFormat.cpp - Released 2024-12-23T11:33:12Z
+// EOF XISFFormat.cpp - Released 2024-12-28T16:54:05Z

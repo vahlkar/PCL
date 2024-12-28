@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.8.5
 // ----------------------------------------------------------------------------
-// pcl/ImageColor.h - Released 2024-12-27T18:16:01Z
+// pcl/ImageColor.h - Released 2024-12-28T16:53:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -255,4 +255,4 @@ protected:
 #endif   // __PCL_ImageColor_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ImageColor.h - Released 2024-12-27T18:16:01Z
+// EOF pcl/ImageColor.h - Released 2024-12-28T16:53:48Z

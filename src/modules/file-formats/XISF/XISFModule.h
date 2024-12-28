@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.8.4
+// /_/     \____//_____/   PCL 2.8.5
 // ----------------------------------------------------------------------------
-// Standard XISF File Format Module Version 1.0.13
+// Standard XISF File Format Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// XISFModule.h - Released 2024-12-23T11:33:12Z
+// XISFModule.h - Released 2024-12-28T16:54:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard XISF PixInsight module.
 //
@@ -64,7 +64,7 @@ class XISFModule : public MetaModule
 {
 public:
 
-   XISFModule();
+   XISFModule() = default;
 
    const char* Version() const override;
    IsoString Name() const override;
@@ -84,4 +84,4 @@ public:
 #endif   // __XISFModule_h
 
 // ----------------------------------------------------------------------------
-// EOF XISFModule.h - Released 2024-12-23T11:33:12Z
+// EOF XISFModule.h - Released 2024-12-28T16:54:05Z

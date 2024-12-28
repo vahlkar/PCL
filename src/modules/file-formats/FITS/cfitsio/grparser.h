@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.8.4
+// /_/     \____//_____/   PCL 2.8.5
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// grparser.h - Released 2024-12-23T11:33:12Z
+// grparser.h - Released 2024-12-28T16:54:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -235,4 +235,4 @@ int	ngp_read_group(fitsfile *ff, char *grpname, int parent_hn);
 #endif
 
 // ----------------------------------------------------------------------------
-// EOF grparser.h - Released 2024-12-23T11:33:12Z
+// EOF grparser.h - Released 2024-12-28T16:54:05Z
