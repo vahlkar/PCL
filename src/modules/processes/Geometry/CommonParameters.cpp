@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.8.4
+// /_/     \____//_____/   PCL 2.8.5
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// CommonParameters.cpp - Released 2024-12-23T11:33:28Z
+// CommonParameters.cpp - Released 2024-12-28T16:54:15Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -511,4 +511,4 @@ bool NoGUIMessages::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CommonParameters.cpp - Released 2024-12-23T11:33:28Z
+// EOF CommonParameters.cpp - Released 2024-12-28T16:54:15Z

@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.8.5
 // ----------------------------------------------------------------------------
-// pcl/AstrometricReprojection.h - Released 2024-12-27T18:16:00Z
+// pcl/AstrometricReprojection.h - Released 2024-12-28T16:53:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -95,19 +95,36 @@ public:
     *
     * \param sourceImage      The source image that will be reprojected.
     *
+    * \param onTargetBounds   If true, the reprojection will be calculated for
+    *                         the entire target image bounds. If false, the
+    *                         reprojection will be calculated exclusively
+    *                         within the reprojected rectangular region in
+    *                         target solution coordinates. The default value is
+    *                         false.
+    *
+    * Setting \a onTargetBounds=true can be useful to accelerate reprojections
+    * performed on entire images, avoiding the performance penalty caused by
+    * the calculation of reprojected regions, when one knows in advance that
+    * the target solution is contained by the source solution. However, with
+    * \a onTargetBounds=false (default value), partial reprojections can be
+    * significantly accelerated by avoiding unnecessary calculations for pixels
+    * outside reprojected regions. This is typically the case of mosaic frame
+    * reprojections.
+    *
     * All objects specified in a call to this constructor must remain valid
     * while this instance exists.
     */
    AstrometricReprojection( PixelInterpolation& interpolation,
                             const AstrometricMetadata& targetSolution,
                             const AstrometricMetadata& sourceSolution,
-                            const ImageVariant& sourceImage )
+                            const ImageVariant& sourceImage,
+                            bool onTargetBounds = false )
       : InterpolatingGeometricTransformation( interpolation )
       , m_targetSolution( targetSolution )
       , m_sourceSolution( sourceSolution )
       , m_sourceImage( sourceImage )
+      , m_onTargetBounds( onTargetBounds )
    {
-      m_targetRect = TargetRect( m_targetSolution, m_sourceSolution, m_sourceSolution.Bounds() );
    }
 
    /*!
@@ -144,11 +161,23 @@ public:
    }
 
    /*!
+    * Returns true iff this astrometric reprojection has been constructed to
+    * calculate reprojections on entire target images. See the class
+    * constructor for more information on partial and complete reprojections.
+    */
+   bool OnTargetBounds() const
+   {
+      return m_onTargetBounds;
+   }
+
+   /*!
     * Returns the rectangle in target solution coordinates that encloses the
     * boundaries of the reprojected source solution.
     */
    const DRect& TargetRect() const
    {
+      if ( !m_targetRect.IsRect() )
+         m_targetRect = TargetRect( m_targetSolution, m_sourceSolution, m_sourceSolution.Bounds() );
       return m_targetRect;
    }
 
@@ -230,7 +259,8 @@ protected:
    const   AstrometricMetadata& m_targetSolution;
    const   AstrometricMetadata& m_sourceSolution;
    const   ImageVariant&        m_sourceImage;
-           DRect                m_targetRect = 0;
+           bool                 m_onTargetBounds = false;
+   mutable DRect                m_targetRect = 0;
    mutable size_type            m_zeroCount = 0;
 
    // Inherited from ImageTransformation.
@@ -250,4 +280,4 @@ protected:
 #endif   // __PCL_AstrometricReprojection_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AstrometricReprojection.h - Released 2024-12-27T18:16:00Z
+// EOF pcl/AstrometricReprojection.h - Released 2024-12-28T16:53:48Z

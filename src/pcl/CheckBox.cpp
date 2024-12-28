@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.8.5
 // ----------------------------------------------------------------------------
-// pcl/CheckBox.cpp - Released 2024-12-27T18:16:14Z
+// pcl/CheckBox.cpp - Released 2024-12-28T16:53:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -85,4 +85,4 @@ void CheckBox::SetTristateMode( bool tristate )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/CheckBox.cpp - Released 2024-12-27T18:16:14Z
+// EOF pcl/CheckBox.cpp - Released 2024-12-28T16:53:56Z

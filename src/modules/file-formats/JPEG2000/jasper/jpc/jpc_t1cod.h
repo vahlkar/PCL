@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.8.4
+// /_/     \____//_____/   PCL 2.8.5
 // ----------------------------------------------------------------------------
 // Standard JPEG2000 File Format Module Version 1.0.3
 // ----------------------------------------------------------------------------
-// jpc_t1cod.h - Released 2024-12-23T11:33:12Z
+// jpc_t1cod.h - Released 2024-12-28T16:54:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG2000 PixInsight module.
 //
@@ -347,4 +347,4 @@ int JPC_ISTERMINATED(int passno, int firstpassno, int numpasses, int termall,
 #endif
 
 // ----------------------------------------------------------------------------
-// EOF jpc_t1cod.h - Released 2024-12-23T11:33:12Z
+// EOF jpc_t1cod.h - Released 2024-12-28T16:54:05Z

@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.8.5
 // ----------------------------------------------------------------------------
-// pcl/KeyCodes.h - Released 2024-12-27T18:16:01Z
+// pcl/KeyCodes.h - Released 2024-12-28T16:53:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -491,4 +491,4 @@ inline bool IsNoKeyboardModifierPressed()
 #endif   // __PCL_KeyCodes_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/KeyCodes.h - Released 2024-12-27T18:16:01Z
+// EOF pcl/KeyCodes.h - Released 2024-12-28T16:53:48Z

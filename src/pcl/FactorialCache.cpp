@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.8.5
 // ----------------------------------------------------------------------------
-// pcl/FactorialCache.cpp - Released 2024-12-27T18:16:14Z
+// pcl/FactorialCache.cpp - Released 2024-12-28T16:53:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -193,4 +193,4 @@ const double FactorialCache::s_lut[ FactorialCache::s_cacheSize+1 ] =
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FactorialCache.cpp - Released 2024-12-27T18:16:14Z
+// EOF pcl/FactorialCache.cpp - Released 2024-12-28T16:53:56Z

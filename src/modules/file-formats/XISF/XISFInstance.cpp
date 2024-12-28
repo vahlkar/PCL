@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.8.4
+// /_/     \____//_____/   PCL 2.8.5
 // ----------------------------------------------------------------------------
-// Standard XISF File Format Module Version 1.0.13
+// Standard XISF File Format Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// XISFInstance.cpp - Released 2024-12-23T11:33:12Z
+// XISFInstance.cpp - Released 2024-12-28T16:54:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard XISF PixInsight module.
 //
@@ -87,6 +87,8 @@ namespace pcl
  *    no-import-fits-keywords       r
  *    lower-bound <n>                w
  *    upper-bound <n>                w
+ *    only-first-image              r
+ *    no-only-first-image           r
  *    normalize                     r
  *    no-normalize                  r
  *    properties                    rw
@@ -115,9 +117,13 @@ public:
    {
    public:
 
-      typedef T value_type;
+      using value_type = T;
 
-      HintValue( value_type value = T() ) : m_value( value ), m_changed( false )
+      HintValue() = default;
+      HintValue( const HintValue& ) = default;
+
+      HintValue( value_type value )
+         : m_value( value )
       {
       }
 
@@ -146,7 +152,7 @@ public:
    private:
 
       value_type m_value;
-      bool       m_changed : 1;
+      bool       m_changed = false;
    };
 
    HintValue<bool>              properties;
@@ -160,6 +166,7 @@ public:
    HintValue<unsigned>          maxInlineBlockSize;
    HintValue<bool>              embeddedData;
    HintValue<IsoString>         cfa;
+   HintValue<bool>              onlyFirstImage;
    HintValue<bool>              normalize;
    HintValue<double>            resolution;
    HintValue<IsoString>         resolutionUnit;
@@ -167,12 +174,12 @@ public:
    HintValue<bool>              noWarnings;
    HintValue<bool>              warningsAreErrors;
    IsoStringList                imageIds;
-   int                          imageIdIndex;
+   int                          imageIdIndex = 0;
    HintValue<double>            outputLowerBound;
    HintValue<double>            outputUpperBound;
    HintValue<bool>              fixNonFinite;
 
-   XISFStreamHints( const IsoString& hints ) : imageIdIndex( 0 )
+   XISFStreamHints( const IsoString& hints )
    {
       IsoStringList theHints;
       hints.Break( theHints, ' ', true/*trim*/ );
@@ -267,6 +274,10 @@ public:
             if ( i->TryToInt( n ) )
                verbosity = Range( n, 0, 3 );
          }
+         else if ( *i == "only-first-image" )
+            onlyFirstImage = true;
+         else if ( *i == "no-only-first-image" )
+            onlyFirstImage = false;
          else if ( *i == "normalize" )
             normalize = true;
          else if ( *i == "no-normalize" )
@@ -370,6 +381,9 @@ public:
 
       if ( cfa.HasChanged() )
          hints << (cfa.Value().IsEmpty() ? "no-cfa" : "cfa " + cfa.Value());
+
+      if ( onlyFirstImage.HasChanged() )
+         hints << (onlyFirstImage.Value() ? "only-first-image" : "no-only-first-image");
 
       if ( normalize.HasChanged() )
          hints << (normalize.Value() ? "normalize" : "no-normalize");
@@ -558,11 +572,16 @@ ImageDescriptionArray XISFInstance::Open( const String& filePath, const IsoStrin
 
       XISFOptions xisfOptions = XISFFormat::DefaultOptions();
 
+      bool onlyFirstImage = false;
+
       if ( !hints.IsEmpty() )
       {
          m_readHints = new XISFStreamHints( hints );
          m_readHints->ApplyReadHints( xisfOptions );
          m_reader->SetHints( m_readHints->ToHintsString() );
+
+         if ( m_readHints->onlyFirstImage.HasChanged() )
+            onlyFirstImage = m_readHints->onlyFirstImage;
       }
 
       m_reader->SetOptions( xisfOptions );
@@ -576,7 +595,9 @@ ImageDescriptionArray XISFInstance::Open( const String& filePath, const IsoStrin
       for ( int i = 0; i < int( m_reader->NumberOfImages() ); ++i )
       {
          m_reader->SelectImage( i );
-         images.Append( ImageDescription( m_reader->ImageInfo(), m_reader->ImageOptions(), m_reader->ImageId() ) );
+         images << ImageDescription( m_reader->ImageInfo(), m_reader->ImageOptions(), m_reader->ImageId() );
+         if ( onlyFirstImage )
+            break;
       }
       m_reader->SelectImage( 0 );
 
@@ -886,9 +907,6 @@ bool XISFInstance::QueryOptions( Array<ImageOptions>& imageOptions, Array<void*>
 
    // Execute the XISF Options dialog
 
-
-
-
    XISFOptionsDialog dlg( options, xisfFormatOptions->options );
    if ( dlg.Execute() != StdDialogCode::Ok )
       return false;
@@ -1168,4 +1186,4 @@ void XISFInstance::CloseImage()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF XISFInstance.cpp - Released 2024-12-23T11:33:12Z
+// EOF XISFInstance.cpp - Released 2024-12-28T16:54:05Z

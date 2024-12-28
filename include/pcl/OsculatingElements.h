@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.8.5
 // ----------------------------------------------------------------------------
-// pcl/OsculatingElements.h - Released 2024-12-27T18:16:01Z
+// pcl/OsculatingElements.h - Released 2024-12-28T16:53:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -430,4 +430,4 @@ public:
 #endif   // __PCL_OsculatingElements_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/OsculatingElements.h - Released 2024-12-27T18:16:01Z
+// EOF pcl/OsculatingElements.h - Released 2024-12-28T16:53:48Z

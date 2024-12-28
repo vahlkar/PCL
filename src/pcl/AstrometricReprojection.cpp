@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.8.5
 // ----------------------------------------------------------------------------
-// pcl/AstrometricReprojection.cpp - Released 2024-12-27T18:16:14Z
+// pcl/AstrometricReprojection.cpp - Released 2024-12-28T16:53:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -160,25 +160,32 @@ private:
    template <class P1, class P2> static
    void Apply( GenericImage<P2>& targetImage, const GenericImage<P1>& sourceImage, const AstrometricReprojection& R )
    {
-      /*
-       * Limiting bounds of the reprojected target image in target image
-       * coordinates.
-       */
-      Rect rect = R.TargetRect().TruncatedToInt().InflatedBy( 1 );
+      Rect rect;
 
-      if ( targetImage.Width() != R.TargetSolution().Width()
-        || targetImage.Height() != R.TargetSolution().Height() )
+      if ( R.OnTargetBounds() )
+         rect = targetImage.Bounds();
+      else
       {
-         double sx = double( R.TargetSolution().Width() )/targetImage.Width();
-         double sy = double( R.TargetSolution().Height() )/targetImage.Height();
-         rect.x0 = TruncInt( rect.x0 * sx );
-         rect.y0 = TruncInt( rect.y0 * sy );
-         rect.x1 = TruncInt( rect.x1 * sx ) + 1;
-         rect.y1 = TruncInt( rect.y1 * sy ) + 1;
-      }
+         /*
+          * Limiting bounds of the reprojected target image in target image
+          * coordinates.
+          */
+         rect = R.TargetRect().TruncatedToInt().InflatedBy( 1 );
 
-      if ( !targetImage.Clip( rect ) )
-         return;
+         if ( targetImage.Width() != R.TargetSolution().Width()
+           || targetImage.Height() != R.TargetSolution().Height() )
+         {
+            double sx = double( targetImage.Width() )/R.TargetSolution().Width();
+            double sy = double( targetImage.Height() )/R.TargetSolution().Height();
+            rect.x0 = TruncInt( rect.x0 * sx );
+            rect.y0 = TruncInt( rect.y0 * sy );
+            rect.x1 = TruncInt( rect.x1 * sx ) + 1;
+            rect.y1 = TruncInt( rect.y1 * sy ) + 1;
+         }
+
+         if ( !targetImage.Clip( rect ) )
+            return;
+      }
 
       Array<size_type> L = Thread::OptimalThreadLoads( rect.Height(),
                                                        1/*overheadLimit*/,
@@ -360,4 +367,4 @@ void AstrometricReprojection::Apply( pcl::UInt32Image& image ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AstrometricReprojection.cpp - Released 2024-12-27T18:16:14Z
+// EOF pcl/AstrometricReprojection.cpp - Released 2024-12-28T16:53:56Z

@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.142
+# PixInsight Makefile Generator Script v1.143
 # Copyright (C) 2009-2024 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2024-12-23T20:44:36.258Z
+# Generated on .... 2024-12-28T16:56:00.080Z
 # Project id ...... BMP
 # Project type .... Module
 # Platform ........ MacOSX/g++

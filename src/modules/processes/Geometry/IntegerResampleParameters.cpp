@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.8.4
+// /_/     \____//_____/   PCL 2.8.5
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// IntegerResampleParameters.cpp - Released 2024-12-23T11:33:28Z
+// IntegerResampleParameters.cpp - Released 2024-12-28T16:54:15Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -142,4 +142,4 @@ size_type IRDownsamplingMode::DefaultValueIndex() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF IntegerResampleParameters.cpp - Released 2024-12-23T11:33:28Z
+// EOF IntegerResampleParameters.cpp - Released 2024-12-28T16:54:15Z

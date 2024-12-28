@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.8.5
 // ----------------------------------------------------------------------------
-// pcl/AdaptiveLocalFilter.cpp - Released 2024-12-27T18:16:14Z
+// pcl/AdaptiveLocalFilter.cpp - Released 2024-12-28T16:53:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -367,4 +367,4 @@ void AdaptiveLocalFilter::Apply( UInt32Image& image ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AdaptiveLocalFilter.cpp - Released 2024-12-27T18:16:14Z
+// EOF pcl/AdaptiveLocalFilter.cpp - Released 2024-12-28T16:53:56Z
