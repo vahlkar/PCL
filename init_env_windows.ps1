@@ -1,4 +1,4 @@
-$env:PCLDIR = "$env:USERPROFILE\PCL"
+$env:PCLDIR = "$env:USERPROFILE\work\PCL"
 $env:PCLBINDIR64 = "$env:PCLDIR\bin"
 $env:PCLBINDIR = "$env:PCLBINDIR64"
 $env:PCLLIBDIR64 = "$env:PCLDIR\lib\windows\x64"

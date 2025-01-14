@@ -1,4 +1,4 @@
-cd %PCLSRCDIR%\pcl\windows\vc17
+cd %PCLSRCDIR%\pcl\windows\vc16
 msbuild PCL.vcxproj /t:Build -m /p:Configuration=Release /p:Platform=x64
 
 cd %PCLSRCDIR%\3rdparty\windows
